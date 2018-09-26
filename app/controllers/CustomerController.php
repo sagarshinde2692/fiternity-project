@@ -8385,6 +8385,10 @@ class CustomerController extends \BaseController {
 
 			$resp = $this->utilities->uploadFileToS3Kraken($data);
 
+			if(!$resp){
+				return Response::json(['status'=>200, 'message'=>'Error']);	
+			}
+
 	   }
 	   
 	   return ['status'=>200, 'message'=>'Receipt has been upload successfully. You will receive the coupon via email / sms upon successful validations'];
