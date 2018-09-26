@@ -8359,7 +8359,9 @@ class CustomerController extends \BaseController {
 		$customer_id = $decoded->customer->_id;
 
 
-        $image = Input::file('image') ;
+		$image = Input::file('image') ;
+		
+		Log::info($data);
         
         Log::info("Asdsaddasdasd1111122221");
 
@@ -8375,9 +8377,9 @@ class CustomerController extends \BaseController {
 			
 			$data = [
 				"input"=>$image,
-				"upload_path"=>Config::get('app.aws.membershipt_receipt.path'),
+				"upload_path"=>Config::get('app.aws.membership_receipt.path'),
 				"local_directory"=>public_path().'/membershipt_receipt',
-				"file_name"=>$customer_id.'-'.time()
+				"file_name"=>$customer_id.'-'.time().'.'.$image->getClientOriginalExtension()
 				// "resize"=>["height" => 200,"strategy" => "portrait"],
 			];
 
