@@ -6065,12 +6065,13 @@ Class Utilities {
 			if(!empty($already_checkedin)){
 				return ['status'=>400, 'message'=>'Already checked-in for today'];
 			}
+			$customer_id = $data['customer_id'];
 			$checkin = new \Checkin();
 			$checkin->finder_id = $data['finder_id'];
-			$checkin->customer_id = $data['customer_id'];
+			$checkin->customer_id = $customer_id;
             $checkin->date = new \DateTime(date('d-m-Y', time()));
             
-            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer'];
+            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified'];
 
             foreach($fields as $field){
                 if(isset($data[$field])){
@@ -6079,7 +6080,51 @@ Class Utilities {
             }
 
 			$checkin->save();
+
+            $all_checkins = \Checkin::where('customer_id', $customer_id)->get(['unverified', 'type']);
+
+            $checkin_count = count($all_checkins);
+
+            $unverified_membership_checkins_count = count(array_where($all_checkins, function($checkin){
+               return !empty($checkin['type']) && $checkin['type'] == 'memberships' && empty($checkin['unverified']);
+            }));
+
+            $milestones = Config::get('loyalty_constants.milestones', []);
+
+            $milestone_checkins = array_column($milestones, 'count');
+
+
+            $milestone_reached = array_search($checkin_count, $milestone_checkins);
+
+            if(is_integer($milestone_reached)){
+                $milestone = [
+                    'milestone'=>$milestone_reached,
+                    'date'=>new \MongoDate(),
+                    'verified'=>empty($unverified_membership_checkins_count)
+                ];
+
+                $customer = Customer::find($customer_id, ['loyalty']);
+
+                $loyalty = $customer->loyalty;
+
+                $customer_milestones = !empty($loyalty['milestones']) ? $loyalty['milestones'] : [];
+
+                array_push($customer_milestones, $milestone);
+
+                $loyalty['milestones'] = $customer_milestones;
+
+                $customer->loyalty = $loyalty;
+
+                $customer->update();
+
+            }
+
 			$customer_update = \Customer::where('_id', $data['customer_id'])->increment('loyalty.checkins');
+
+            Log::info('checkins updated in customer');
+
+            Log::info($customer_update);
+
 
 			return ['status'=>200, 'checkin'=>$checkin];
 		}catch(Exception $e){
