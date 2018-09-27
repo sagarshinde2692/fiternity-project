@@ -627,7 +627,7 @@ Class CustomerReward {
                         $fitcash_plus *= $order['ticket_quantity'];
                     }
 
-                    $fitcash_plus = intval($fitcash_plus) + 500;
+//                    $fitcash_plus = intval($fitcash_plus) + 500;
 
                 }
 
