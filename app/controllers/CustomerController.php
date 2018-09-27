@@ -362,7 +362,7 @@ class CustomerController extends \BaseController {
 		$selectfields 	=	array('finder', 'finder_id','finder_name','finder_slug','service_name','schedule_date','schedule_slot_start_time','schedule_slot_end_time','code');
 		$trial 			=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))->where('_id', '=', intval($trialid) )->where('going_status', '=', 1)->first($selectfields);
 
-		if(!$trials){
+		if(!$trial){
 			return $this->responseNotFound('Customer does not exist');
 		}
 
@@ -8045,7 +8045,9 @@ class CustomerController extends \BaseController {
                             $post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
                                 if($milestone_no >= $milestone['milestone'] && empty($customer_milestones[$milestone['milestone']-1]['claimed'])){
                                     $post_reward_data_template['claim_enabled'] = true;
-
+                                    if(empty($customer_milestones[$milestone['milestone']-1]['verified'])){
+                                        $post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
+                                    }
                                     !isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
 
                                 }else{
@@ -8324,8 +8326,9 @@ class CustomerController extends \BaseController {
 		$checkin_data = [
 			'customer_id'=>$customer_id,
 			'finder_id'=>intval($finder_id),
-			'type'=>!empty($_GET['type']) ? $_GET['type'] : null
-		];
+			'type'=>!empty($_GET['type']) ? $_GET['type'] : null,
+            'unverified'=>!empty($_GET['type']) ? true : false
+        ];
 		
 		$addedCheckin = $this->utilities->addCheckin($checkin_data);
 		
