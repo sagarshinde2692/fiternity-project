@@ -88,7 +88,9 @@ class TransactionController extends \BaseController {
 
     public function capture($data = null){
 
-        $data = $data ? $data : Input::json()->all();   
+        $data = $data ? $data : Input::json()->all();
+
+        Log::info($_SERVER['REQUEST_URI']);
 
         foreach ($data as $key => $value) {
 
