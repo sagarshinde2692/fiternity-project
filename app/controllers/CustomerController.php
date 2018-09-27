@@ -7205,7 +7205,7 @@ class CustomerController extends \BaseController {
 					
 				}
 				
-				
+
 				// Validate customer is not inviting himself/herself......
 				$emails = array_fetch($inviteesData, 'email');
 				$phones = array_fetch($inviteesData, 'phone');
@@ -7988,6 +7988,7 @@ class CustomerController extends \BaseController {
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
 			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', 'exists', true)->first();
+			$receipt_uploaded = !empty($customer->loyalty->receipt);
 
 			if($customer){
 				
@@ -8044,6 +8045,7 @@ class CustomerController extends \BaseController {
                             $post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
                                 if($milestone_no >= $milestone['milestone'] && empty($customer_milestones[$milestone['milestone']-1]['claimed'])){
                                     $post_reward_data_template['claim_enabled'] = true;
+
                                     !isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
 
                                 }else{
@@ -8374,16 +8376,16 @@ class CustomerController extends \BaseController {
         
         Log::info("Asdsaddasdasd1111122221");
 
-       if($image) {
+        if($image) {
 
-            
+
             if ($image->getError()) {
 
                 return Response::json(['status' => 400, 'message' => 'Please upload jpg/jpeg/png image formats with max. size of 4 MB']);
 
             }
 			Log::info("Asdsaddasdasd111111");
-			
+
 			$data = [
 				"input"=>$image,
 				"upload_path"=>Config::get('app.aws.membership_receipt.path'),
@@ -8392,19 +8394,34 @@ class CustomerController extends \BaseController {
 				// "resize"=>["height" => 200,"strategy" => "portrait"],
 			];
 
-			$resp = $this->utilities->uploadFileToS3Kraken($data);
+			$upload_resp = $this->utilities->uploadFileToS3Kraken($data);
 
-			Log::info($resp);
+			Log::info($upload_resp);
 
-			if(!$resp){
-				return Response::json(['status'=>200, 'message'=>'Error']);	
+			if(!$upload_resp || empty($upload_resp['success'])){
+				return Response::json(['status'=>200, 'message'=>'Error']);
 			}
-			
+
+//			$customer = Customer::find($customer_id, ['loyalty']);
+//
+//			if(empty($customer->loyalty)){
+//                return Response::json(['status'=>400, 'message'=>'Not registered for FITSQUAD']);
+//            }
+//
+//            $receipts = !empty($customer->loyalty['receipts']) && is_array($customer->loyalty['receipts'])? $customer->loyalty['receipts'] : [];
+//
+//            array_push($receipts, str_replace("s3.ap-southeast-1.amazonaws.com/", "", $upload_resp['kraked_url']));
+//
+//            $customer->loyaltyS['receipts'] = $receipts;
+//
+//            $customer->save();
+
+
 			return ['status'=>200, 'message'=>'Receipt has been upload successfully. You will receive the coupon via email / sms upon successful validations'];
 	   }else{
-				return Response::json(['status'=>400, 'message'=>'Image not found']);	
+				return Response::json(['status'=>400, 'message'=>'Image not found']);
 	   }
-	   
+
 
 
 	}
