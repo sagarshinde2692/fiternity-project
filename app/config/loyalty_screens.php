@@ -71,6 +71,7 @@ return array(
             'header' => 'Claim exciting rewards',
             'open_index' => 0,
             'claim_message' => "Are you sure you want to claim this reward as you won't be able to claim other rewards for this milestone?",
+
             'data' => [],
         ],
         'past_check_in' => [
@@ -113,7 +114,8 @@ return array(
         'button_title' => 'Claim',
         'terms' => 'HTMl text',
         'coupon_description' => 'description',
-        'receipt_message'=>'Please upload reciept'
+        'block_message'=>'',
+        'receipt_message'=>'',
     ],
     'success_loyalty_header' => [
         'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
