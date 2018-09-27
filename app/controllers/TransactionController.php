@@ -5260,6 +5260,10 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
+        Log::info("checkoutSummary");
+
+        Log::info($data);
+
         $result = [
 
             'order_details' => [],
