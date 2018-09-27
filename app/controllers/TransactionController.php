@@ -6052,8 +6052,24 @@ class TransactionController extends \BaseController {
             
             $data['amount_payable'] = $data['amount'];
 
+            if($data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
+            {
+                $start_time = explode('-', $data['slot']['slot_time'])[0];
+                $end_time = explode('-', $data['slot']['slot_time'])[1];
+                Log::info("dynamic price");
+                $am_calc=$this->utilities->getWsSlotPrice($start_time,$end_time,$data['service_id'],$data['slot']['date']);
+                if(isset($am_calc['peak'])){
+                    $data['amount']  = $am_calc['peak'];
+                    $data['peak'] = true;
+                }else if(isset($am_calc['non_peak'])){
+                    $data['amount']  = $am_calc['non_peak'];
+                    $data['non_peak'] = true;
+                    $data['non_peak_discount']  = $am_calc['non_peak_discount'];
+                }
+            }
+
             if(!empty($data['customer_quantity'])){
-                $data['amount_payable'] = $data['amount'] = $data['amount_payable'] * $data['customer_quantity'];
+                $data['amount_payable'] = $data['amount']= $data['amount'] * $data['customer_quantity'];
                 $result['customer_quantity'] = $data['customer_quantity'];
             }
 
