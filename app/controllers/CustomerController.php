@@ -8402,22 +8402,27 @@ class CustomerController extends \BaseController {
 				return Response::json(['status'=>200, 'message'=>'Error']);
 			}
 
-//			$customer = Customer::find($customer_id, ['loyalty']);
-//
-//			if(empty($customer->loyalty)){
-//                return Response::json(['status'=>400, 'message'=>'Not registered for FITSQUAD']);
-//            }
-//
-//            $receipts = !empty($customer->loyalty['receipts']) && is_array($customer->loyalty['receipts'])? $customer->loyalty['receipts'] : [];
-//
-//            array_push($receipts, str_replace("s3.ap-southeast-1.amazonaws.com/", "", $upload_resp['kraked_url']));
-//
-//            $customer->loyaltyS['receipts'] = $receipts;
-//
-//            $customer->save();
 
+			$customer = Customer::find($customer_id, ['loyalty']);
+
+			if(empty($customer->loyalty)){
+                return Response::json(['status'=>400, 'message'=>'Not registered for FITSQUAD']);
+            }
+
+            $loyalty = !empty($customer->loyalty) ? $customer->loyalty : new stdClass();
+
+			$receipts = !empty($loyalty['receipts']) ? $loyalty['receipts'] : [];
+
+            array_push($receipts, str_replace("s3.ap-southeast-1.amazonaws.com/", "", $upload_resp['kraked_url']));
+
+            $loyalty['receipts'] = $receipts;
+
+            $customer->loyalty = $loyalty;
+
+            $customer->save();
 
 			return ['status'=>200, 'message'=>'Receipt has been upload successfully. You will receive the coupon via email / sms upon successful validations'];
+
 	   }else{
 				return Response::json(['status'=>400, 'message'=>'Image not found']);
 	   }
