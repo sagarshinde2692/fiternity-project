@@ -6024,6 +6024,13 @@ class TransactionController extends \BaseController {
 
             $order = Order::find(intval($data['order_id']));
 
+            if(!empty($order['schedule_slot']) && !empty($order['schedule_date'])){
+                $data['slot'] = [
+                    'slot_time'=>$order['schedule_slot'],
+                    'date'=>$order['schedule_date']
+                ];
+            }
+
             if(isset($order->ratecard_id) && $order->ratecard_id != ''){
                
                 $ratecard_id = $order->ratecard_id;
