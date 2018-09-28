@@ -7898,5 +7898,61 @@ public function yes($msg){
 		return $utilities->updateRatecardSlots();
 	}
 
+	public function convertOrdersToPPS(){
+
+	    $order_ids = Input::all()['order_ids'];
+
+        $orders = Order::whereIn('_id', $order_ids)->where('converting_membership_to_pps', '!=', true)->get();
+
+        foreach ($orders as $order){
+
+            $order->update(["converting_membership_to_pps"=>true]);
+
+            $amount = $order->amount_finder;
+
+            $amount1 = intval($amount * .8);
+
+            $amount2 = $amount - $amount1;
+
+    		$utilities = new Utilities();
+
+    		$walletData = array(
+                "customer_id"=> $order->customer_id,
+                "amount"=> $amount1,
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $amount1,
+                "type"=>'FITCASHPLUS',
+                'description'=>"Added FitCash+ for converting 1 month membership to pay-per-session only applicable on ".$order->finder_name,
+                'entry'=>'credit',
+                'for'=>'pps',
+                'valid_finder_id'=>$order->finder_id,
+                'remove_wallet_limit'=>true,
+                'validity'=>0,
+                'order_type'=>['workout-session'],
+            );
+
+            $walletTransaction = $utilities->walletTransactionNew($walletData);
+
+            $walletData = array(
+                "customer_id"=> $order->customer_id,
+                "amount"=> $amount2,
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $amount1,
+                "type"=>'FITCASHPLUS',
+                'description'=>"Added FitCash+ for converting 1 month membership to pay-per-session applicable across Fitternity",
+                'entry'=>'credit',
+                'for'=>'pps',
+                'remove_wallet_limit'=>true,
+                'validity'=>0,
+                'order_type'=>['workout-session'],
+            );
+
+            $walletTransaction = $utilities->walletTransactionNew($walletData);
+
+        }
+    }
+
+
+
 }
 

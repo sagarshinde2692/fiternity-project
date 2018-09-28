@@ -1902,6 +1902,10 @@ Class Utilities {
             if(isset($request['valid_finder_id']) && $request['valid_finder_id'] != ""){
 
                 $wallet->valid_finder_id = $request['valid_finder_id'];
+
+                if(empty($request['order_type'])){
+                    $wallet->order_type = ['membership','memberships','healthytiffinmembership'];
+                }
             }
 
             if(isset($request['service_id']) && $request['service_id'] != ""){
@@ -2608,14 +2612,9 @@ Class Utilities {
                 }
             }
 
-            if(isset($request['order_type']) && in_array($request['order_type'],['membership','memberships','healthytiffinmembership'])){
 
-                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
+            $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
 
-            }else{
-
-                $query->where('valid_finder_id','exists',false);
-            }
 
         }else{
 
