@@ -2276,8 +2276,8 @@ Class Utilities {
             $query->where('valid_finder_id','exists',false);
         }
 
-        if(!empty($request['order_type'])){
-            $query->where(function($query) use ($request){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $request['order_type']);});
+        if(!empty($data['order_type'])){
+            $query->where(function($query) use ($data){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $data['order_type']);});
         }
 
         $wallet_balance = $query->sum('balance');
