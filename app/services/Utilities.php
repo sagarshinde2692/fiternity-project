@@ -1603,7 +1603,7 @@ Class Utilities {
         }
         
         if(!empty($request['remove_wallet_limit'])){
-            Log::info("increasing wallet limit for pledge");
+            Log::info("increasing wallet limit");
             $wallet_limit = 100000;
         
         }
@@ -1865,6 +1865,10 @@ Class Utilities {
 
             if(isset($request['order_id']) && $request['order_id'] != ""){
                 $wallet->order_id = (int)$request['order_id'];
+            }
+            
+            if(isset($request['membership_order_id']) && $request['membership_order_id'] != ""){
+                $wallet->membership_order_id = (int)$request['membership_order_id'];
             }
 
             if(isset($request['trial_id']) && $request['trial_id'] != ""){

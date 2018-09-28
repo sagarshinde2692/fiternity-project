@@ -7906,6 +7906,8 @@ public function yes($msg){
 
         foreach ($orders as $order){
 
+            Log::info($order->_id);
+
             $order->update(["converting_membership_to_pps"=>true]);
 
             $amount = $order->amount_finder;
@@ -7927,7 +7929,8 @@ public function yes($msg){
                 'valid_finder_id'=>$order->finder_id,
                 'remove_wallet_limit'=>true,
                 'validity'=>0,
-                'order_type'=>['workout-session'],
+                'order_type'=>['workout-session', 'workout session'],
+                'membership_order_id'=>$order->_id
             );
 
             $walletTransaction = $utilities->walletTransactionNew($walletData);
@@ -7943,11 +7946,13 @@ public function yes($msg){
                 'remove_wallet_limit'=>true,
                 'validity'=>0,
                 'order_type'=>['workout-session', 'workout session'],
+                'membership_order_id'=>$order->_id
             );
 
             $walletTransaction = $utilities->walletTransactionNew($walletData);
-
         }
+
+        return "done";
     }
 
 
