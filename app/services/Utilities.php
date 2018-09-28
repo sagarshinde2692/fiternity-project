@@ -3532,7 +3532,7 @@ Class Utilities {
     public function customerHome(){
 
         $decoded = decode_customer_token();
-
+        Log::info($decoded);
         $customer_id = $decoded->customer->_id;
 
         $response = null;
