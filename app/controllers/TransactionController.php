@@ -6081,8 +6081,8 @@ class TransactionController extends \BaseController {
             }
             
             if(!empty($order['customer_quantity'])){
-                $data['amount_payable'] = $data['amount']= $data['amount'] * $data['customer_quantity'];
-                $result['customer_quantity'] = $data['customer_quantity'];
+                $data['amount_payable'] = $order['amount']= $order['amount'] * $order['customer_quantity'];
+                $result['customer_quantity'] = $order['customer_quantity'];
             }
 
             $ratecard = Ratecard::find(intval($data['ratecard_id']));
