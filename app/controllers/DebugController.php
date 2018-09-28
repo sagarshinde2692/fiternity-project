@@ -6068,6 +6068,7 @@ public function yes($msg){
 		$quantity = $data['quantity'];
 		$count = $data['count'];
 		$label = $data['label'];
+		$name = $data['name'];
 
 		$insert_codes = [];
 		$insert_code_names = [];
@@ -6076,19 +6077,14 @@ public function yes($msg){
 			Log::info($i);
 			$i++;
 			$fitcash_coupon = [];
-			$fitcash_coupon['code'] = "may".strval(rand(1111111, 99999999));
+			$fitcash_coupon['code'] = $name.strval(rand(0, 999999));
 
 			if(!in_array($fitcash_coupon['code'], $insert_code_names)){
-				// $fitcash_coupon['valid_till'] = $valid_till;
-				// $fitcash_coupon['expiry'] = $expiry;
-				// $fitcash_coupon['amount'] = $amount;
-				// $fitcash_coupon['type'] = $type;
-				// $fitcash_coupon['quantity'] = $quantity;
+
 				$fitcash_coupon['label'] = $label;
 				array_push($insert_code_names, $fitcash_coupon['code']);
 				array_push($insert_codes, $fitcash_coupon);
-				// Log::info(count($insert_code_names));
-				// Log::info($fitcash_coupon);
+
 			}
 		}
 
