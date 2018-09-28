@@ -821,6 +821,8 @@ return array(
 	
 	'no_patti_brands_slugs'=>['anytime-fitness-gurgaon'],
 
-	'music_run_event_type'=>'music-run'
+	'music_run_event_type'=>'music-run',
+    
+    'snap_bangalore_finder_ids'=>[3175,3178,3179,3183,3201,3204,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,5964,7081,7106,7111,7114,8872,9446,13670,13671]
 
 );
