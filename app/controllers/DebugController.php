@@ -7924,7 +7924,6 @@ public function yes($msg){
                 "type"=>'FITCASHPLUS',
                 'description'=>"Added FitCash+ for converting 1 month membership to pay-per-session only applicable on ".$order->finder_name,
                 'entry'=>'credit',
-                'for'=>'pps',
                 'valid_finder_id'=>$order->finder_id,
                 'remove_wallet_limit'=>true,
                 'validity'=>0,
@@ -7941,10 +7940,9 @@ public function yes($msg){
                 "type"=>'FITCASHPLUS',
                 'description'=>"Added FitCash+ for converting 1 month membership to pay-per-session applicable across Fitternity",
                 'entry'=>'credit',
-                'for'=>'pps',
                 'remove_wallet_limit'=>true,
                 'validity'=>0,
-                'order_type'=>['workout-session'],
+                'order_type'=>['workout-session', 'workout session'],
             );
 
             $walletTransaction = $utilities->walletTransactionNew($walletData);
