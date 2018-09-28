@@ -5345,7 +5345,7 @@ class TransactionController extends \BaseController {
             }
             
             if(!empty($order['customer_quantity'])){
-                $data['amount_payable'] = $order['amount']= $order['amount'] * $order['customer_quantity'];
+                $data['amount_payable'] = $data['amount']= $data['amount'] * $order['customer_quantity'];
                 $result['customer_quantity'] = $order['customer_quantity'];
             }
 
@@ -5359,7 +5359,7 @@ class TransactionController extends \BaseController {
                 'field' => 'Total Amount',
                 'value' => 'Rs. '.(string)number_format($data['amount'])
             ];
-
+            
             if($this->utilities->isConvinienceFeeApplicable($data)){
                 
                 $convinience_fee_percent = Config::get('app.convinience_fee');
