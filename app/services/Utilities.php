@@ -2268,18 +2268,16 @@ Class Utilities {
 
         if($finder_id && $finder_id != ""){
 
-            if(in_array($order_type,['membership','memberships'])){
+            $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
 
-                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',(int)$finder_id);});
-
-            }else{
-
-                $query->where('valid_finder_id','exists',false);
-            }
 
         }else{
 
             $query->where('valid_finder_id','exists',false);
+        }
+
+        if(!empty($request['order_type'])){
+            $query->where(function($query) use ($request){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $request['order_type']);});
         }
 
         $wallet_balance = $query->sum('balance');
