@@ -615,6 +615,22 @@ Class CustomerReward {
 
                 $fitcash_plus = intval($order['amount']/5);
 
+                if(!empty($order['sub_type']) && $order["sub_type"] == "music-run"){
+                    $ticket = \Ticket::find($order['ticket_id']);
+
+
+                    if(!empty($ticket) && !empty($ticket['price'])){
+                        $fitcash_plus = $order['amount']/2;
+                    }
+
+                    if(!empty($order['ticket_quantity']) && is_integer($order['ticket_quantity'])) {
+                        $fitcash_plus *= $order['ticket_quantity'];
+                    }
+
+//                    $fitcash_plus = intval($fitcash_plus) + 500;
+
+                }
+
                 if(isset($order['event_type']) && $order['event_type']=='TOI'){
                     $fitcash_plus = intval($order['amount']);
                     
