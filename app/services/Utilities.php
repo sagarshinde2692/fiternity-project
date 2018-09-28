@@ -1603,7 +1603,7 @@ Class Utilities {
         }
         
         if(!empty($request['remove_wallet_limit'])){
-            Log::info("increasing wallet limit for pledge");
+            Log::info("increasing wallet limit");
             $wallet_limit = 100000;
         
         }
@@ -1866,6 +1866,10 @@ Class Utilities {
             if(isset($request['order_id']) && $request['order_id'] != ""){
                 $wallet->order_id = (int)$request['order_id'];
             }
+            
+            if(isset($request['membership_order_id']) && $request['membership_order_id'] != ""){
+                $wallet->membership_order_id = (int)$request['membership_order_id'];
+            }
 
             if(isset($request['trial_id']) && $request['trial_id'] != ""){
                 $wallet->trial_id = (int)$request['trial_id'];
@@ -1902,6 +1906,10 @@ Class Utilities {
             if(isset($request['valid_finder_id']) && $request['valid_finder_id'] != ""){
 
                 $wallet->valid_finder_id = $request['valid_finder_id'];
+
+                if(empty($request['order_type'])){
+                    $wallet->order_type = ['membership','memberships','healthytiffinmembership'];
+                }
             }
 
             if(isset($request['service_id']) && $request['service_id'] != ""){
@@ -2264,18 +2272,16 @@ Class Utilities {
 
         if($finder_id && $finder_id != ""){
 
-            if(in_array($order_type,['membership','memberships'])){
+            $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
 
-                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',(int)$finder_id);});
-
-            }else{
-
-                $query->where('valid_finder_id','exists',false);
-            }
 
         }else{
 
             $query->where('valid_finder_id','exists',false);
+        }
+
+        if(!empty($data['order_type'])){
+            $query->where(function($query) use ($data){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $data['order_type']);});
         }
 
         $wallet_balance = $query->sum('balance');
@@ -2608,14 +2614,9 @@ Class Utilities {
                 }
             }
 
-            if(isset($request['order_type']) && in_array($request['order_type'],['membership','memberships','healthytiffinmembership'])){
 
-                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
+            $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
 
-            }else{
-
-                $query->where('valid_finder_id','exists',false);
-            }
 
         }else{
 
