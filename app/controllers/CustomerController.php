@@ -3062,7 +3062,7 @@ class CustomerController extends \BaseController {
 						)),400
 				);
 		}
-		$customer = Customer::where("_id",(int)$customer_id)->first()->toArray();
+		$customer = Customer::where("_id",(int)$customer_id)->first();
 		if($customer["email"] == $data["friend_email_old"]){
 			if(!empty($data["friend_name"])){
 				$customer["name"] = $data["friend_name"];
@@ -3077,16 +3077,16 @@ class CustomerController extends \BaseController {
 			foreach($customer["friends"] as $key => $friend){
 				if($friend["email"] == $data["friend_email_old"]){
 					if(!empty($data["friend_name"])){
-						$customer["friends"][$key]["name"] = $data["friend_name"];
+						$customer->friends[$key]["name"] = $data["friend_name"];
 					}
 					if(!empty($data["friend_email"])){
-						$customer["friends"][$key]["email"] = $data["friend_email"];
+						$customer->friends[$key]["email"] = $data["friend_email"];
 					}
 					if(!empty($data["friend_phone"])){
-						$customer["friends"][$key]["phone"] = $data["friend_phone"];
+						$customer->friends[$key]["phone"] = $data["friend_phone"];
 					}
 					if(!empty($data["friend_gender"])){
-						$customer["friends"][$key]["gender"] = $data["friend_gender"];
+						$customer->friends[$key]["gender"] = $data["friend_gender"];
 					}
 				}
 			}
