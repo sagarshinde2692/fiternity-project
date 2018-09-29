@@ -5343,6 +5343,11 @@ class TransactionController extends \BaseController {
                 $data['amount_payable'] = $data['amount']= $data['amount'] * $data['customer_quantity'];
                 $result['customer_quantity'] = $data['customer_quantity'];
             }
+            
+            if(!empty($order['customer_quantity'])){
+                $data['amount_payable'] = $data['amount']= $data['amount'] * $order['customer_quantity'];
+                $result['customer_quantity'] = $order['customer_quantity'];
+            }
 
             $ratecard = Ratecard::find(intval($data['ratecard_id']));
 
@@ -5354,7 +5359,7 @@ class TransactionController extends \BaseController {
                 'field' => 'Total Amount',
                 'value' => 'Rs. '.(string)number_format($data['amount'])
             ];
-
+            
             if($this->utilities->isConvinienceFeeApplicable($data)){
                 
                 $convinience_fee_percent = Config::get('app.convinience_fee');
