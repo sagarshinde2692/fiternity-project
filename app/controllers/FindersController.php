@@ -1200,7 +1200,7 @@ class FindersController extends \BaseController {
 					$response['vendor_stripe_data'] = "no-patti";
 				}
 				// return $response['finder']["brand_id"];
-				if(isset($response['finder']["brand_id"]) && in_array($response['finder']["brand_id"],[134,33])){
+				// if(isset($response['finder']["brand_id"]) && in_array($response['finder']["brand_id"],[134,33])){
 				
 					if(isset($response['finder']['stripe_text'])){
 						$response['vendor_stripe_data']	=	[
@@ -1227,7 +1227,7 @@ class FindersController extends \BaseController {
 						// 	$response["code_applicable"] = $coupon["code"];
 						// }
 					}
-				}
+				// }
 				unset($response['finder']['info']['stripe']);
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
