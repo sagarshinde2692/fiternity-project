@@ -3062,7 +3062,7 @@ class CustomerController extends \BaseController {
 						)),400
 				);
 		}
-		$customer = Customer::where("_id",(int)$customer_id)->first();
+		$customer = Customer::where("_id",(int)$customer_id)->first()->toArray();
 		if($customer["email"] == $data["friend_email_old"]){
 			if(!empty($data["friend_name"])){
 				$customer["name"] = $data["friend_name"];
