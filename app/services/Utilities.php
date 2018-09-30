@@ -2425,10 +2425,10 @@ Class Utilities {
         $data['deeplink'] = !empty($data['deeplink']) ? $data['deeplink'] : "";
         $data['title'] = !empty($data['title']) ? $data['title'] : "";
         $data['text'] = !empty($data['text']) ? $data['text'] : "";
-        $data['text'] = empty($data['text']) && !empty($data['body']) ? $data['body'] : "";
+        $data['text'] = !empty($data['body']) ? $data['body'] : "";
         $data['unique_id'] = !empty($data['unique_id']) ? $data['unique_id'] : '593a9380820095bf3e8b4568';
         $data['label'] = !empty($data['label']) ? $data['label'] : "label";
-        
+        return $data['text'];
         if($device_type == "android"){
             $notification_object = array("notif_id" => $data['promo_id'],"notif_type" => "promotion", "notif_object" => array("promo_id"=>$data['promo_id'],"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> $data['unique_id'],"title"=> $data["title"],"text"=> $data["text"]));
         }else{
