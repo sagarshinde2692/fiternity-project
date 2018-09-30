@@ -298,7 +298,9 @@ class Service extends \Basemodel{
 						if($value["special_price"] > 0){
 							$value["special_price"] = intval($value["special_price"] * Config::get('app.non_peak_hours.off')) ;
 						}else{
-							$value["price"] = intval($value["price"] * Config::get('app.non_peak_hours.off')) ;
+							if($value["price"] > 0){
+								$value["special_price"] = intval($value["price"] * Config::get('app.non_peak_hours.off')) ;
+							}
 						}	
 					}
 					if(count($ratecardoffers) && isset($ratecardoffers[0]['offer_icon'])){
