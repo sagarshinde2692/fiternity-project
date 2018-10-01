@@ -1217,15 +1217,15 @@ class FindersController extends \BaseController {
 							'background'=> (!empty($response['finder']['info']['stripe']['background_color']))?$response['finder']['info']['stripe']['background_color']:""
 					];
 					} else{
-						// $coupon = getDynamicCouponForTheFinder($finder);
-						// if($coupon["text"] != ""){
-						// 	$response['vendor_stripe_data']	=	[
-						// 		'text'=> $coupon["text"],
-						// 		'background-color'=> "",
-						// 		'text_color'=> ""
-						// 	];
-						// 	$response["code_applicable"] = $coupon["code"];
-						// }
+						$coupon = getDynamicCouponForTheFinder($finder);
+						if($coupon["text"] != ""){
+							$response['vendor_stripe_data']	=	[
+								'text'=> $coupon["text"],
+								'background-color'=> "",
+								'text_color'=> ""
+							];
+							$response["code_applicable"] = $coupon["code"];
+						}
 					}
 				// }
 				unset($response['finder']['info']['stripe']);
