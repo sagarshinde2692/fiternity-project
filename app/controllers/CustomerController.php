@@ -8093,10 +8093,14 @@ class CustomerController extends \BaseController {
 
 				if(!empty($customer->loyalty)){
 					return Response::json(['message'=>'Already registered for Fitsquad'], 400);
-				}else{
-					$customer->loyalty = time();
 				}
-	
+				
+				$resp = $this->utilities->autoRegisterCustomerLoyalty($data);
+
+				if(!empty($resp['status']) || $resp['status'] != 200){
+					return $resp;
+				}
+				
 				if(!empty($data['customer_phone'])){
 					$customer->contact_no = substr($data['contact_no'], -10);
 				}
@@ -8110,6 +8114,7 @@ class CustomerController extends \BaseController {
 					}
 				
 				}
+
 	
 				$customer->update();
 	
@@ -8184,11 +8189,9 @@ class CustomerController extends \BaseController {
 
 			$customer_id = autoRegisterCustomer($data);
 
+			$resp = $this->utilities->autoRegisterCustomerLoyalty($data);
+
 			$customer = Customer::find($customer_id);
-
-			$customer->loyalty = true;
-
-			$customer->update();
 
 			$token = $this->createToken($customer);
 

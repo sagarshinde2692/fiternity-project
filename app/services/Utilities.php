@@ -6098,7 +6098,6 @@ Class Utilities {
 
             $milestone_checkins = array_column($milestones, 'count');
 
-
             $milestone_reached = array_search($checkin_count, $milestone_checkins);
 
             if(is_integer($milestone_reached)){
@@ -6138,16 +6137,52 @@ Class Utilities {
 		}
 	}
 
-    public function afterTranSuccess($data){
+    public function afterTranSuccess($data, $type){
+
+        if($type == 'order'){
+            $data['order_id']=$data['_id'];
+        }else if($type == 'booktrial'){
+            $data['booktrial_id']=$data['_id'];
+        }
+
         $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
+
         return ['loyalty_registration'=>$loyalty_registration];
     }
 
     public function autoRegisterCustomerLoyalty($data){
         try{
-            return $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update(['loyalty'=>['start_date'=>new \MongoDate(strtotime('midnight')), 'transaction_id'=>$data['_id'], 'type'=>$data['type']], 'start_date_time'=>new \MongoDate(), 'finder_id'=>$data['finder_id']]);
+            $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
+
+            if(!$customer){
+                return ['status'=>400, 'Customer already registered'];
+            }
+            
+            $loyalty = [
+                'start_date'=>new \MongoDate(strtotime('midnight')),
+                'start_date_time'=>new \MongoDate()
+            ];
+
+            $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type',]);
+
+            $loyalty = array_merge($loyalty, $fields_to_add);
+
+            $update_data = [
+                'loyalty'=>$loyalty 
+            ];
+
+            $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update($update_data);
+
+            if($customer){
+                return ['status'=>200];
+            }else{
+                return ['status'=>400, 'message'=>'Customer already registered'];
+            }
+        
         }catch(Exception $e){
+        
             Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+            return ['status'=>500, 'Please try after some time'];
         }
     
     }
