@@ -3203,7 +3203,7 @@ Class Utilities {
             $customer_email                     =       $decoded->customer->email;
             $customer_id                        =       $decoded->customer->_id;
             // $customer_phone                     =       isset($decoded->customer->contact_no) ? $decoded->customer->contact_no : "";
-            $pending_payment = \Booktrial::where('type', 'workout-session')->where(function ($query) use($customer_email, $customer_id) { $query->orWhere('customer_email', $customer_email)->orWhere("logged_in_customer_id", $customer_id);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->where(function($query){return $query->orWhere('post_trial_status', '!=', 'no show')->orWhere('post_trial_verified_status','!=', 'yes');})->first(['_id', 'amount', 'order_id']);
+            $pending_payment = \Booktrial::where('type', 'workout-session')->where(function ($query) use($customer_email, $customer_id) { $query->orWhere('customer_email', $customer_email)->orWhere("logged_in_customer_id", $customer_id);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->where(function($query){return $query->orWhere('post_trial_status', '!=', 'no show')->orWhere('post_trial_verified_status','!=', 'yes');})->first(['_id', 'amount', 'order_id', 'finder_name']);
 
 			if(count($pending_payment) > 0){
                 $order = \Order::find($pending_payment['order_id'], ['txnid']);
@@ -3213,6 +3213,7 @@ Class Utilities {
                     'trial_id'=>$pending_payment['_id'],
                     'amount'=>$pending_payment['amount'],
                     'txnid'=>$order['txnid'],
+                    'finder_name'=>$pending_payment['finder_name']
                 ];
 			}else{
 				return false;
