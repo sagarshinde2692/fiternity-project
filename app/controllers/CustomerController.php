@@ -3041,22 +3041,24 @@ class CustomerController extends \BaseController {
 				$customer["gender"] = $data["friend_gender"];
 			}
 		}else{
-			foreach($customer["friends"] as $key => $friend){
+			$friends = $customer["friends"];
+			foreach($friends as $key => $friend){
 				if($friend["email"] == $data["friend_email_old"]){
 					if(!empty($data["friend_name"])){
-						$customer["friends"][$key]["name"] = $data["friend_name"];
+						$friends[$key]["name"] = $data["friend_name"];
 					}
 					if(!empty($data["friend_email"])){
-						$customer["friends"][$key]["email"] = $data["friend_email"];
+						$friends[$key]["email"] = $data["friend_email"];
 					}
 					if(!empty($data["friend_phone"])){
-						$customer["friends"][$key]["phone"] = $data["friend_phone"];
+						$friends[$key]["phone"] = $data["friend_phone"];
 					}
 					if(!empty($data["friend_gender"])){
-						$customer["friends"][$key]["gender"] = $data["friend_gender"];
+						$friends[$key]["gender"] = $data["friend_gender"];
 					}
 				}
 			}
+			$customer["friends"] = $friends;
 		}
 		
 		$customer->update();
