@@ -1280,6 +1280,8 @@ Route::get('getcouponpackages','HomeController@getCouponPackages');
 
 Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
 
+Route::get('integratedvendorlist/{city_id}','FindersController@integratedVendorList');
+
 
 ##################################################################################################
 /*******************  Loyalty API ************************************************/
