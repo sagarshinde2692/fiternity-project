@@ -7595,5 +7595,23 @@ class TransactionController extends \BaseController {
             
     }
 
+    public function webcheckout(){
+        $data = Input::json()->all();
+        $rules = array(
+            'txnId'=>'required',
+        );
+        $validator = Validator::make($data,$rules);
+        $jwt_token = Request::header('Authorization');
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            // $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
+        }
+        $order = Order::where("txnid",$data["txnId"])->first();
+        $order["with_hash_params"] = "checkout";
+        $orderWithHash = getHash($order);
+        return $orderWithHash; 
+        
+    }
+
 
 }
