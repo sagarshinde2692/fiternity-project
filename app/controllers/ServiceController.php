@@ -858,7 +858,7 @@ class ServiceController extends \BaseController {
 				
 		    	if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
 		    	{
-		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@2x%20%281%29.png', 'slot_type'=>1];$nrsh=["title"=>Config::get('app.non_peak_hours.non_peak.title'),"price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png', 'slot_type'=>0];
+		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@2x%20%281%29.png', 'slot_type'=>1];$nrsh=["title"=>Config::get('app.non_peak_hours.non_peak_title'),"price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png', 'slot_type'=>0];
 		    		
 		    		$p_np=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 		    		if(!empty($p_np))
@@ -1046,7 +1046,7 @@ class ServiceController extends \BaseController {
 			// 	$service['peak_text'] = "RUSH HOURS ₹. <b style=\"color:#4fa3a4;\">".$ratecard_price."</b>";
 			// }
 			if(!empty($ratecard_price) && !empty($non_peak_exists)){
-				$service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak.title'), 'price'=>$this->utilities->getRupeeForm(round($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
+				$service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title'), 'price'=>$this->utilities->getRupeeForm(round($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
 			}
 			
 			$peak_exists = false;
@@ -1627,7 +1627,7 @@ class ServiceController extends \BaseController {
 			// return $service_details;
 			$service_details = $service_details->toArray();
 
-			/* $service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["title"=>Config::get('app.non_peak_hours.non_peak.title'),"sub_title"=>Config::get('app.non_peak_hours.non_peak.title')]];
+			/* $service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["title"=>Config::get('app.non_peak_hours.non_peak_title'),"sub_title"=>Config::get('app.non_peak_hours.non_peak_title')]];
 			
 			$this->utilities->getDayWs()
 			array_values(array_filter([],function ($e) use()))
@@ -1847,7 +1847,7 @@ class ServiceController extends \BaseController {
 		}
 		// if((isset($_GET['source']) && $_GET['source'] == 'pps'))
 		// {
-		// 		$service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["data"=>[],"title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["data"=>[],"title"=>Config::get('app.non_peak_hours.non_peak.title'),"sub_title"=>Config::get('app.non_peak_hours.non_peak.title')]];
+		// 		$service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["data"=>[],"title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["data"=>[],"title"=>Config::get('app.non_peak_hours.non_peak_title'),"sub_title"=>Config::get('app.non_peak_hours.non_peak_title')]];
 				
 		// 		 $p_np=$this->utilities->getAnySlotAvailablePNp($requested_date,$service_details);
 		// 		 $service_cat=$this->utilities->getPrimaryCategory(null,$service_details['_id']);
