@@ -3044,6 +3044,58 @@ class CustomerController extends \BaseController {
 		
 	}
 
+	public function editfriendforbooking(){
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+		$rules = [
+			'friend_email_old' => 'required|string',
+		];
+		$data = Input::json()->all();
+		$validator = Validator::make($data,$rules);
+		if ($validator->fails()) {
+			return Response::json(
+				array(
+					'status' => 400,
+					'message' => $this->errorMessage($validator->errors()
+						)),400
+				);
+		}
+		$customer = Customer::where("_id",(int)$customer_id)->first();
+		if($customer["email"] == $data["friend_email_old"]){
+			if(!empty($data["friend_name"])){
+				$customer["name"] = $data["friend_name"];
+			}
+			if(!empty($data["friend_phone"])){
+				$customer["contact_no"] = $data["friend_phone"];
+			}
+			if(!empty($data["friend_gender"])){
+				$customer["gender"] = $data["friend_gender"];
+			}
+		}else{
+			$friends = $customer["friends"];
+			foreach($friends as $key => $friend){
+				if($friend["email"] == $data["friend_email_old"]){
+					if(!empty($data["friend_name"])){
+						$friends[$key]["name"] = $data["friend_name"];
+					}
+					if(!empty($data["friend_email"])){
+						$friends[$key]["email"] = $data["friend_email"];
+					}
+					if(!empty($data["friend_phone"])){
+						$friends[$key]["phone"] = $data["friend_phone"];
+					}
+					if(!empty($data["friend_gender"])){
+						$friends[$key]["gender"] = $data["friend_gender"];
+					}
+				}
+			}
+			$customer["friends"] = $friends;
+		}
+		
+		$customer->update();
+		return $this->getBookingFriends($customer["_id"]);
+	}
 	public function addafriendforbooking(){	
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
