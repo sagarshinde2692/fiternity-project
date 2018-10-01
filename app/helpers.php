@@ -3874,7 +3874,7 @@ if (!function_exists('encodeOrderToken')) {
     }
 
 }
-if (!function_exists('decodeOrderToken')) {
+if (!function_exists('getDynamicCouponForTheFinder')) {
 
     function getDynamicCouponForTheFinder($finder){
         $today = date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
