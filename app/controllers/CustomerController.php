@@ -7926,6 +7926,9 @@ class CustomerController extends \BaseController {
 		$pre_register = Config::get('loyalty_screens.pre_register');
 		$jwt_token = Request::header('Authorization');
 
+		Log::info(Request::header('Mobile-Verified'));
+		
+
 		Log::info("asda");
 		$voucher_categories = VoucherCategory::raw(function($collection){
 			$match = [
