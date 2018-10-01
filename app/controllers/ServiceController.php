@@ -848,10 +848,10 @@ class ServiceController extends \BaseController {
 					];
 				}
 				if($ratecard_price > 0){
-					$service['cost'] = "Rs. ".$ratecard_price;
+					$service['cost'] = "₹ ".$ratecard_price;
 				}
 		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
-		    		$service['cost'] = "₹. ".$ratecard_price;
+		    		$service['cost'] = "₹ ".$ratecard_price;
 				}
 				
 				
