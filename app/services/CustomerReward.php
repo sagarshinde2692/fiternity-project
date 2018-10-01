@@ -1656,18 +1656,18 @@ Class CustomerReward {
         //     }
         // }
         if(!isset($coupon)){
-            // $couponRecieved = getDynamicCouponForTheFinder($finder);
-            // if($couponRecieved["code"] != ""){
-            //     if( $couponRecieved["code"] == strtolower($couponCode)){
-            //         $coupon = $couponRecieved;
-            //     }else{
-            //         $finder_detail = Cache::tags('finder_detail')->has($finder["slug"]) ? Cache::tags('finder_detail')->has($finder["slug"]) : false;
-            //         if($finder_detail && isset($finder_detail["code_applicable"]) && $finder_detail["code_applicable"] == strtolower($couponCode)){
-            //             $this->cacheapi->flushTagKey('finder_detail',$finder["slug"]);
-            //             return $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "error_message"=>"Coupon not valid for this transaction. You can use ".$couponRecieved["code"]. " instead");
-            //         }
-            //     }
-            // }
+            $couponRecieved = getDynamicCouponForTheFinder($finder);
+            if($couponRecieved["code"] != ""){
+                if( $couponRecieved["code"] == strtolower($couponCode)){
+                    $coupon = $couponRecieved;
+                }else{
+                    $finder_detail = Cache::tags('finder_detail')->has($finder["slug"]) ? Cache::tags('finder_detail')->has($finder["slug"]) : false;
+                    if($finder_detail && isset($finder_detail["code_applicable"]) && $finder_detail["code_applicable"] == strtolower($couponCode)){
+                        $this->cacheapi->flushTagKey('finder_detail',$finder["slug"]);
+                        return $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "error_message"=>"Coupon not valid for this transaction. You can use ".$couponRecieved["code"]. " instead");
+                    }
+                }
+            }
         }
         if(!isset($coupon) && (strtolower($couponCode) == "mad18") && $ratecard && $ratecard["finder_id"] == 6168){
             Log::info("New user code");
