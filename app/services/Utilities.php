@@ -31,7 +31,8 @@ Class Utilities {
 
    
    public function __construct() {
-       
+    
+    $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
     $this->vendor_token = false;
         
     $vendor_token = Request::header('Authorization-Vendor');
