@@ -4435,7 +4435,8 @@ Class Utilities {
 			else return ['status'=>0,"message"=>"Token Not Present"];
 			
 			return $response;
-		} catch (Exception $e)
+		} 
+        }catch (Exception $e)
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
