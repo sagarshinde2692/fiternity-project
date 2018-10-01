@@ -5702,34 +5702,6 @@ Class Utilities {
     	}
     	else in_array($customer_email, ['utkarshmehrotra@fitternity.com','shahaansyed@fitternity.com','maheshjadhav@fitternity.com']);
     }
-
-	public function getRateCardBaseID($ratecards=[])
-	{
-		foreach ($ratecards as $value)
-			if(!empty($value)&&!empty($value['_id']))
-				return $value['_id'];
-			return "";
-	}
-	
-	public function mapProperties($properties=null)
-	{
-		$props_arr=[];
-		if(!empty($properties))
-		{
-			foreach ($properties as $k=>$v)
-				(!empty($k)&&!empty($v))?array_push($props_arr,["field"=>$k,"value"=>$v]):"";	
-				return  $props_arr;
-		}
-		else return null;
-	}
-	public function slashPriceFormat($selectedRatecard)
-	{
-        return "";
-		return (empty($selectedRatecard)||empty($selectedRatecard['slash_price']))?"":'<strike>'.$this->getRupeeForm($selectedRatecard['slash_price']).'</strike>';
-	}
-	
-	
-
 //     public function getRupeeForm($amount){
 //     	return (isset($amount)?'\u20B9'.' '.$amount:"");
 //     }
