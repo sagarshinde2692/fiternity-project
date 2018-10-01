@@ -6151,6 +6151,10 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            if(!empty($order['coupon_code'])){
+                $data['coupon'] = $order['coupon_code'];
+            }
+
             if(isset($data['coupon'])){
                 $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
                 $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id_for_coupon);
