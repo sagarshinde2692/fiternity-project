@@ -21,6 +21,7 @@ use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Services\Fitapi as Fitapi;
 use App\Mailers\CustomerMailer as CustomerMailer;
+use Exception;
 use App\Notification\CustomerNotification;
 
 Class Utilities {
@@ -835,7 +836,7 @@ Class Utilities {
         $finder_lon                        =    (isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
         $finder_lat                        =    (isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
         $finder_category_id                =    (isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
-        $finder_slug                       =    (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
+        $data['finder_slug']                       =    (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
         $finder_name                       =    (isset($finder['title']) && $finder['title'] != '') ? ucwords($finder['title']) : "";
 
         $data['finder_city'] =  trim($finder_city);
@@ -996,9 +997,13 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-
-        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched)){
-            if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON") && !(isset($data["order_success_flag"]))){
+    	Log::info(" info data".print_r($data,true));
+    	Log::info(" info order ".print_r($order,true));
+    	if(!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session')
+    		$hash_verified = true;
+    	
+    	else if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK" ||(isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched)){
+            if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
                     $hash_verified = true;
@@ -1011,7 +1016,8 @@ Class Utilities {
                 $hash_verified = true;
             }
             
-        }else{
+	    	}
+        else {
             // If amount is zero check for wallet amount
             if($data['amount'] == 0 || isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
                 $hash_verified = true;
@@ -1081,7 +1087,6 @@ Class Utilities {
                             
                             $myreward->coupon_detail = $coupon_detail;
                             $myreward->update();
-
                             break;
                         }
 
@@ -1593,8 +1598,8 @@ Class Utilities {
     }
 
     public function walletTransactionNew($request, $data=false){
-        Log::info("asdasdas");
-        $wallet_limit = 2500;
+
+        $wallet_limit = 1000000;
 
         if($data && isset($data['type']) && in_array($data['type'], ['wallet'])){
             Log::info("increasing wallet limit for pledge");
@@ -1801,7 +1806,9 @@ Class Utilities {
             }*/
 
             if($current_wallet_balance >= $wallet_limit){
-            	return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
+            	if(!empty($request['qrcodescan']))
+            		return ['status' => 200,'message' => 'Your Fitcash limit of '.$wallet_limit." has been reached.","sub_header"=>""];
+                else return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
 
             }
 
@@ -1966,6 +1973,11 @@ Class Utilities {
 
             $walletTransaction->update(['group'=>$walletTransaction->_id]);
 
+            if(!empty($request['qrcodescan']))
+            	if($current_wallet_balance==$wallet_limit)
+            		return ['status' => 200,'message' => 'Rs. '.$request['amount'].' has been added to your wallet and your fitcash limit of '.$wallet_limit.' has been reached.','amount'=>$request['amount'],"sub_header"=>$request['amount']];
+            		else return ['status' => 200,'message' =>'Rs. '.$request['amount'].' has been added to your wallet'];
+            	
             return ['status' => 200,'message' => 'Success Added Wallet'];
 
         }
@@ -2371,8 +2383,9 @@ Class Utilities {
                     ];
 
                     $customersms = new CustomerSms();
-                    
-                    $customersms->referralFitcash($sms_data);
+                    if(!(isset($_GET['source']) && $_GET['source'] == 'admin')){
+                        $customersms->referralFitcash($sms_data);
+                    }
                 }
             }
         }
@@ -2942,7 +2955,6 @@ Class Utilities {
         }else{
         		$flags = $data['flags'];
         }
-
         $finder = Finder::find((int) $data["finder_id"]);
         
         if((isset($data['session_payment']) && $data['session_payment'])||
@@ -2953,7 +2965,6 @@ Class Utilities {
         {
             return false;
         }
-
         if(!empty($data['type']) && $data['type'] == 'events'){
             return false;
         }
@@ -3217,14 +3228,17 @@ Class Utilities {
             $customer_email                     =       $decoded->customer->email;
             $customer_id                        =       $decoded->customer->_id;
             // $customer_phone                     =       isset($decoded->customer->contact_no) ? $decoded->customer->contact_no : "";
-            $pending_payment = \Booktrial::where('type', 'workout-session')->where('post_trial_verified_status', '!=', 'no')->where(function ($query) use($customer_email, $customer_id) { $query->orWhere('customer_email', $customer_email)->orWhere("logged_in_customer_id", $customer_id);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->where(function($query){return $query->orWhere('post_trial_status', '!=', 'no show')->orWhere('post_trial_verified_status','!=', 'yes');})->first(['_id', 'amount']);
+            $pending_payment = \Booktrial::where('type', 'workout-session')->where('post_trial_verified_status', '!=', 'no')->where(function ($query) use($customer_email, $customer_id) { $query->orWhere('customer_email', $customer_email)->orWhere("logged_in_customer_id", $customer_id);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->where(function($query){return $query->orWhere('post_trial_status', '!=', 'no show')->orWhere('post_trial_verified_status','!=', 'yes');})->first(['_id', 'amount', 'order_id', 'finder_name']);
 
 			if(count($pending_payment) > 0){
+                $order = \Order::find($pending_payment['order_id'], ['txnid']);
 				return [
                     'header'=>'Pending Payment',
                     'text'=>'Please complete your pending payment',
                     'trial_id'=>$pending_payment['_id'],
-                    'amount'=>$pending_payment['amount']
+                    'amount'=>$pending_payment['amount'],
+                    'txnid'=>$order['txnid'],
+                    'finder_name'=>$pending_payment['finder_name']
                 ];
 			}else{
 				return false;
@@ -3487,21 +3501,22 @@ Class Utilities {
 
         $fit_code = false;
 
-        if(isset($data['vendor_code']) && $data['type'] != 'workout-session'){
+        // if(isset($data['vendor_code']) && $data['type'] != 'workout-session'){
+        if(isset($data['vendor_code']) ){
 
             $fit_code = true;
 
-            if(isset($data['post_trial_status']) && $data['post_trial_status'] != ""){
+            if(isset($data['post_trial_status_updated_by_fitcode']) && $data['post_trial_status_updated_by_qrcode'] != ""){
                 $fit_code = false;
             }
 
-            if(!isset($data['post_trial_status_updated_by_fitcode']) && !isset($data['post_trial_status_updated_by_lostfitcode'])){
+            // if(!isset($data['post_trial_status_updated_by_fitcode']) && !isset($data['post_trial_status_updated_by_lostfitcode'])){
 
-                if(isset($data['schedule_date_time']) && $data['schedule_date_time'] != "" && time() <= strtotime('+48 hours', strtotime($data['schedule_date_time']))){
+            //     if(isset($data['schedule_date_time']) && $data['schedule_date_time'] != "" && time() <= strtotime('+48 hours', strtotime($data['schedule_date_time']))){
 
-                    $fit_code = true;
-                }
-            }
+            //         $fit_code = true;
+            //     }
+            // }
 
             if(isset($data['manual_order']) && $data['manual_order']){
                 $fit_code = false;
@@ -3876,7 +3891,6 @@ Class Utilities {
 
             $fitcash = round($getWorkoutSessionFitcash * $data['amount_finder'] / 100);
         }
-
         return $fitcash;
 
     }
@@ -3994,7 +4008,9 @@ Class Utilities {
 
     public function getWorkoutSessionLevel($customer_id){
 
-        $trials_attended = \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->count();
+        $trials_attended = \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->get([]);
+
+        $trials_attended = count($trials_attended);
         
         $streak_data = Config::get('app.streak_data');
         $maxed_out = false;
@@ -4039,6 +4055,10 @@ Class Utilities {
 
     public function getWorkoutSessionFitcash($booktrialData){
         // Log::info($this->getWorkoutSessionLevel($booktrialData['customer_id']));
+        Log::info(__FUNCTION__." called from ".debug_backtrace()[1]['function']);
+
+        Log::info("booktrialData");
+        Log::info($booktrialData);
         $fitcash =  $this->getWorkoutSessionLevel($booktrialData['customer_id'])['current_level']['cashback'];
         return $fitcash;
         
@@ -4307,6 +4327,7 @@ Class Utilities {
 				$finderarr['knowlarityno'] = $finderarr['knowlarityno'][0];
 				$finderarr['knowlarityno']['extension'] = strlen($finderarr['knowlarityno']['extension']) < 2 && $finderarr['knowlarityno']['extension'] >= 1  ?  str_pad($finderarr['knowlarityno']['extension'], 2, '0', STR_PAD_LEFT) : $finderarr['knowlarityno']['extension'];
 				if($finderarr['knowlarityno']['extension']){
+
 					$knowlarity_no[] = ['decription'=>'Already a member & have a query', 'phone_number'=>'+91'.$finderarr['knowlarityno']['phone_number'], 'extension'=>'1'.$finderarr['knowlarityno']['extension'], 'popup'=>true];
 					$knowlarity_no[] = ['decription'=>'Want to join & need assistance', 'phone_number'=>'+91'.$finderarr['knowlarityno']['phone_number'], 'extension'=>'2'.$finderarr['knowlarityno']['extension'], 'popup'=>false];
 					$knowlarity_no[] = ['decription'=>'For collaborations & other matters', 'phone_number'=>'+91'.$finderarr['knowlarityno']['phone_number'], 'extension'=>'3'.$finderarr['knowlarityno']['extension'], 'popup'=>true];
@@ -4397,7 +4418,6 @@ Class Utilities {
 														'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:"",'image'=>!empty($ratecard['image'])?$ratecard['image']:""];
 												array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
 											}
-											else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
 									}
 									else return ['status'=>0,"message"=>"Not a valid product id."];
 								}
@@ -4405,9 +4425,6 @@ Class Utilities {
 								if($update) {
 									$addedToCart=Cart::where('_id', intval($cart_id))->first();
 									$addedToCart=$addedToCart->update(['products'=>$cartData]);
-								}
-								$response['response']['data']=$cartDataExtended;
-								return $response;
 							}
 							else return ['status'=>0,"message"=>"No product Ratecards Found."];
 						}
@@ -4794,7 +4811,88 @@ Class Utilities {
     }
     
 
+    public function getDayWs($date=null)
+    {
+    	return $this->days[date("w",strtotime($date))];
+    	
+    }
+    public function getSlotReqdField($start=null,$end=null,$service_id=null,$start_date=null,$required='limited_seat',$buy_type='workoutsessionschedules') {
+    	
+    	try {
+    		if(!isset($service_id))throw new Exception("Service id Not Defined.");
+    		else if(!isset($start_date))throw new Exception("Start Date not present.");
+    		else if(!isset($start)||!isset($end))throw new Exception("Start/End Not Defined.");
+    		else {
+    			$week_days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+    			$day=$week_days[date("w",strtotime($start_date))];
+    			if(empty($day))throw new Exception("Day Not present in the schedules.");
+    			$start=(str_contains($start, "pm"))?doubleval($start)+12:doubleval($start);$end=(str_contains($end, "pm"))?doubleval($end)+12:doubleval($end);
+    			\Service::$withoutAppends=true;
+    			$service=\Service::where("_id",intval($service_id))->first([$buy_type]);
+    			if(isset($service)&&!empty($service[$buy_type]))
+    			{
+    				$r=array_values(array_filter($service[$buy_type], function($a) use ($day){return !empty($a['weekday'])&&$a['weekday']==$day;}));
+    				if(!empty($r[0])&&!empty($r[0]['slots']))
+    				{
+    					$r=$r[0]['slots'];
+    					$r=array_values(array_filter($r, function($a) use ($start,$end){return isset($a['start_time_24_hour_format'])&&isset($a['end_time_24_hour_format'])&&$a['start_time_24_hour_format'] >=$start&&$a['end_time_24_hour_format'] <=$end;}));
+    					return (!empty($r[0])&&isset($r[0][$required]))?$r[0][$required]:null;
+    				}else return null;
+    			}else return null;
+    		}
+    	} catch (Exception $e) {
+    		Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+    		return null;
+    	}
+    	return null;
+    }
     
+    public function getSlotBookedCount($slot=null,$service_id=null,$date=null,$allowed_qty=10000,$serv_type=['workout-session','booktrials']) {
+    	
+    	$data=["count"=>0,"allowed"=>false];
+    	try {
+    		
+    		if(!isset($service_id))throw new Exception("Service id Not Defined.");
+    		else if(!isset($slot))throw new Exception("Slot not present.");
+    		else if(!isset($date))throw new Exception("Date not present.");
+    		else {
+    			$slot_times=explode('-',$slot);
+    			$slot=trim($slot_times[0]).'-'.trim($slot_times[1]);
+    			$orders=\Order::active()->where("service_id",intval($service_id))
+    			->whereIn("type",$serv_type)
+    			->where("status","1")
+    			->where("schedule_slot",$slot)
+    			->where("schedule_date",$date)->lists("_id");
+    			if(empty($orders))
+    			{
+    				$data['allowed']=true;
+    				return $data;
+    			}
+    			else {
+//     				$orders=$orders->toArray();
+    				if(count($orders)<$allowed_qty)
+    				{
+    					$data['count']=count($orders);
+    					$data['allowed']=true;
+    					return $data;
+    				}
+    				else {
+    					$data['count']=count($orders);
+    					$data['allowed']=false;
+    					return $data;
+    				};
+    			}
+    			return $data;
+    		}
+    	} catch (Exception $e) {
+    		Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+    		return $data;
+    	}
+    	return $data;
+    }
+
+
+
 	public function getRupeeForm($number) {
 		return json_decode('"'."\u20b9".'"')." ".(isset($number)?$number:"");
 	}
@@ -4987,7 +5085,6 @@ Class Utilities {
 	{	if(empty($cart)||empty($cart['products']))return 0;
 		else return (!empty($cart))?array_reduce((!empty($cart['products'])?array_map(function($e){return (!empty($e['quantity'])?intval($e['quantity']):0);},$cart['products']):[]),function($carry,$item){$carry+=$item;return $carry;}):0;
 	}
-
 	public function fetchProductCities(&$data)
 	{
 		$jwt=Request::header("Authorization");
@@ -5003,8 +5100,6 @@ Class Utilities {
 		
 	}
 	
-
-
 	public function getAllProductDetails($order)
 	{
 		
@@ -5209,7 +5304,7 @@ Class Utilities {
     
     }
 
-    public function createOffer($offer_data){
+     public function createOffer($offer_data){
         
         $offer_data['added_by_script'] = true;
         $offer_data['created_from_offer'] = $offer_data['_id'];
@@ -5237,7 +5332,20 @@ Class Utilities {
         \Cache::tags('finder_detail_android_4_4_3')->forget($slug);
         
     }
+
     
+    function decryptQr($encrypted_string, $encryption_key) {	
+    	$iv_size = mcrypt_get_iv_size(MCRYPT_BLOWFISH, MCRYPT_MODE_ECB);
+    	$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+    	$decrypted_string = mcrypt_decrypt(MCRYPT_BLOWFISH, $encryption_key, hex2bin($encrypted_string), MCRYPT_MODE_ECB, $iv);
+    	return $decrypted_string;
+    }
+    public function updateOrderStatus($booktrial){
+    	if(isset($booktrial->pay_later) && $booktrial->pay_later && isset($booktrial->payment_done) && !$booktrial->payment_done){
+    		Order::where('_id', $booktrial->order_id)->where('status', '0')->update(['status'=>'4']);
+    	}
+    }
+
     public function getSessionSlotsService($cityId=null,$cat_ids=[],$cache=true,$cache_key=null)
     {
     	$count=0;
@@ -5262,6 +5370,555 @@ Class Utilities {
     							return $count;
     						}
     						else return $count;
+    		}
+    }
+
+    public function attachExternalVoucher($data){
+        return;
+        if($data['type'] != 'workout-session'){
+            return;
+        }
+    
+        $voucherAttached = \Externalvoucher::where('booktrial_id', $data['_id'])->first();
+
+        Log::info($voucherAttached);
+
+        if(!$voucherAttached){
+           
+            $sessions_attended = $this->getSessionAttended($data['customer_id']);
+            Log::info('$sessions_attended');
+            Log::info($sessions_attended);
+    
+            
+            $voucherType = $this->getVoucherType($sessions_attended);
+    
+            Log::info('$voucherType');
+            Log::info($voucherType);
+            
+            $voucherAttached = $this->attachVoucher($voucherType, $data);
+    
+            if(!$voucherAttached){
+                return;
+            }
+        }
+
+        
+        $resp =  [
+            'header'=>"VOUCHER UNLOCKED",
+            'sub_header'=>"You have unlocked ".strtoupper($voucherAttached['type'])." voucher on attending your session at ".$data['finder_name'],
+            'coupon_title'=>$voucherAttached['description'],
+            'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
+            'coupon_image'=>$voucherAttached['image'],
+            'coupon_code'=>strtoupper($voucherAttached['code']),
+            'coupon_subtext'=>'(also sent via email/sms)',
+            'unlock'=>'UNLOCK VOUCHER',
+            'terms_text'=>'T & C applied.'
+        ];
+        
+        if(!empty($voucherAttached['tnc'])){
+            $tnc = "<p>Terms and Conditions:</p>";
+            foreach($voucherAttached['tnc'] as $key => $t){
+                $tnc = $tnc."<p>".($key+1).". ".$t."</p>";
+            }
+            
+            $resp['terms_detailed_text'] = $tnc;
+        }
+        $customermailer = new CustomerMailer();
+
+        $email_data['finder_name'] = $data['finder_name'];
+        $email_data['customer_name'] = $data['customer_name'];
+        $email_data['customer_email'] = $data['customer_email'];
+        $email_data['resp'] = $resp;
+        $customermailer->externalVoucher($email_data);
+
+        return $resp;
+        
+
+    }
+
+    public function getSessionAttended($customer_id){
+        return \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->count();
+    }
+
+    public function getVoucherType($sessions_attended){
+        $voucher_grid = Config::get('app.voucher_grid');
+        foreach($voucher_grid as $value){
+            if(empty($value['max']) || ($sessions_attended >= $value['min'] && $sessions_attended < $value['max'])){
+                return $value['type'];
+            }
+        }
+    }
+
+    public function getGymServiceNamePPS(){
+        return "Gym Workout";
+    }
+
+    public function reviewScreenData($data){
+        $response['title'] = "Rate your Experience";
+        $response['section_1'] = [
+            'header'=>"How was your experience?",
+            'rating_text'=>Config::get('app.rating_text')
+        ];
+        if(!empty($data['service_name']) && !empty($data['schedule_date_time'])){
+            $response['header'] = "Share your experience for <b>".ucwords($data['service_name'])."</b> at<br/>".$data['finder_name'].", ".$data['finder_location']."<br>".date('jS M', strtotime($data['schedule_date_time']))." | ".date('D', strtotime($data['schedule_date_time']))." | ".date('h:i a', strtotime($data['schedule_date_time']));
+            $response['image'] = "https://b.fitn.in/paypersession/Vendor%20Icon@3x.png";
+        }else if(!empty($data['service_name'])){
+            $response['header'] = "Share your experience for <b>".ucwords($data['service_name'])."</b> at<br/>".$data['title'].", ".$data['service_location'];
+            $response['image'] = "https://b.fitn.in/paypersession/Vendor%20Icon@3x.png";
+        }else{
+            $response['section_1']['header']  = "Rate your overall experience at ".$data['title'];
+        }
+        $response['section_2'] = [
+            'header'=>"Rate your experience basis following parameters (optional)",
+            'detail_ratings' =>[]
+        ];
+        
+        $detail_ratings_array = $data['category']['detail_rating'];
+
+        foreach($detail_ratings_array as $key => $text){
+            array_push($response['section_2']['detail_ratings'], ['image'=>Config::get('app.aws.detail_ratings_images.url').$data['category']['detail_ratings_images'][$key], 'text'=>$text]);
+        }
+
+        $response['block'] = false;
+        
+
+        return $response;
+    }
+
+    public function attachVoucher($type, $data){
+        Log::info($type);
+        Log::info($type);
+        $voucher = \Externalvoucher::active()->where('type', $type)->where('customer_id', 'exists', false)->orderBy('_id')->first();
+
+        Log::info('$voucher');
+        Log::info($voucher);
+
+        if($voucher){
+            $voucher->customer_id = $data['customer_id'];
+            $voucher->booktrial_id = $data['_id'];
+            $voucher->save();
+            return $voucher;
+        }else{
+            return null;
+        }
+    
+    }
+	public function getPrimaryCategory($finder_id=null,$service_id=null) {
+		
+		try {
+			if(!empty($finder_id))
+			{
+				Finder::$withoutAppends=true;$finder=Finder::find(intval($finder_id))->with('category')->first(['category_id']);
+				return (!empty($finder)&&!empty($finder->category))?$finder->toArray()['category']['name']:null;
+			}
+			else if(!empty($service_id))
+			{
+				Service::$withoutAppends=true;$service=Service::find(intval($service_id))->with('category')->first(['servicecategory_id']);
+				return (!empty($service)&&!empty($service->category))?$service->toArray()['category']['name']:null;
+			}
+			else return null;
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			return null;
+		}
+		return null;
+	}
+	public function getWSNonPeakPrice($start=null,$end=null,$workoutSessionPrice=null,$service_cat=null,$just_tag=false) {
+		Log::info(func_get_args());
+		try {
+			$peak=true;
+			if(!empty($start)&&!empty($end)&&!empty($service_cat))
+			{   
+				if($service_cat=='gym')
+				{
+					if(intval($start)>=Config::get('app.non_peak_hours.gym.start')&&intval($end)<=Config::get('app.non_peak_hours.gym.end'))
+					{
+						(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.gym.off')*intval($workoutSessionPrice):"";$peak=false;
+					}
+				}
+				else if(intval($start)>=Config::get('app.non_peak_hours.studios.start')&&intval($end)<=Config::get('app.non_peak_hours.studios.end'))
+				{
+					(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.studios.off')*intval($workoutSessionPrice):"";$peak=false;
+				}			
+			}
+			return ['wsprice'=>$workoutSessionPrice,'peak'=>$peak];
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			return null;
+		}
+		return null;
+	}
+	public function getPeakAndNonPeakPrice($slots=[],$service_cat=null) {
+	
+		try {
+			if(empty($service_cat))throw new Exception("No Service Category Exists.");
+            $resp=[];
+			foreach ($slots as $value) 
+			{
+				if(!isset($resp['peak'])||!isset($resp['non_peak']))
+				{
+                    $temp=$this->getWSNonPeakPrice($value['start_time_24_hour_format'],$value['end_time_24_hour_format'],$value['price'],$service_cat,false);
+					if(!empty($temp)&&isset($temp['wsprice']))
+					{
+                        if(!empty($temp['peak'])){
+                            $resp['peak']=intval($temp['wsprice']);
+                        }
+						else{
+                            $resp['non_peak']=intval($temp['wsprice']);
+                            $resp['non_peak_discount'] = $value['price'] - $resp['non_peak'];
+                        } 
+					}
+				}
+				else return $resp;
+            }
+            return $resp;
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			throw $e;
+		}
+		return null;
+	}
+	
+	public function getWsSlotPrice($start=null,$end=null,$service_id=null,$start_date=null ) {
+		Log::info(func_get_args());
+		try {
+				if(!isset($service_id))throw new Exception("Service id Not Defined.");
+				else if(!isset($start_date))throw new Exception("Start Date not present.");
+				else if(!isset($start)||!isset($end))throw new Exception("Start/End Not Defined.");
+				else {
+						$day=$this->days[date("w",strtotime($start_date))];
+						if(empty($day))throw new Exception("Day Not present in the schedules.");	
+                        
+                        $start=(int)date('G', strtotime($start));
+                        $end=(int)date('G', strtotime($end));
+                        
+						Service::$withoutAppends=true;
+						$service=Service::where("_id",intval($service_id))->first(['workoutsessionschedules']);
+						if(isset($service)&&!empty($service->workoutsessionschedules))
+						{
+							$r=array_values(array_filter($service->workoutsessionschedules, function($a) use ($day){return !empty($a['weekday'])&&$a['weekday']==$day;}));
+                            Log::info($r);
+							if(!empty($r[0])&&!empty($r[0]['slots']))
+									{
+                                        Log::info('$rzdcsc');
+
+										$r=$r[0]['slots'];
+                                        $r=array_values(array_filter($r, function($a) use ($start,$end){return isset($a['start_time_24_hour_format'])&&isset($a['end_time_24_hour_format'])&&$a['start_time_24_hour_format'] >=$start&&$a['end_time_24_hour_format'] <=$end;}));
+                                        Log::info($r);
+                                        return $price = $this->getPeakAndNonPeakPrice($r, $this->getPrimaryCategory(null,$service['_id']));
+										// return (!empty($r[0])&&isset($r[0]['price']))?$r[0]['price']:null;
+									}else return null;
+						}else return null;
+					}
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			throw $e;
+		}
+		return null;
+	}
+	
+	
+	public function getAnySlotAvailablePNp($requested_date,$service_details) {
+		$closeDate=date('Y-m-d', strtotime($requested_date.' + 7 days'));
+		$iterDate=date('Y-m-d', strtotime($requested_date));
+		$p_np=null;
+		while($closeDate!==$iterDate)
+		{
+			$day=$this->getDayWs($requested_date);
+			if(!empty($day))
+			{
+				$tmp=array_values(array_filter($service_details['workoutsessionschedules'],function ($e) use($day){if($e['weekday']==$day)return $e;}));
+				if(!empty($tmp))
+				{
+					$p_np=$this->getPeakAndNonPeakPrice($tmp[0]['slots'],$this->getPrimaryCategory(null,$service_details['_id']));
+					return $p_np;
+				}
+			}
+			else $iterDate=date('Y-m-d', strtotime($requested_date. ' + 1 days'));
+		}
+		return $p_np;
+	}
+	
+    public function removeMobileCodes($coups=[])
+    {
+    	return array_filter($coups,function ($e) { return !empty($e)&&empty($e['app_only']);});
+    }
+    
+    public function removeAlreadyUsedCodes($coups=[],$customer_id,$single=false)
+    {
+    	if(!$single)
+    	{
+	    	\Order::$withoutAppends = true;
+	    	$order_codes=\Order::active()->where("customer_id", $customer_id)->whereIn('coupon_code', $coups)->where('coupon_discount_amount', '>', 0)->get();
+	    	
+	    	if(!empty($order_codes))
+	    	{
+	    		$order_codes=$order_codes->toArray();
+	    		$already_applied_codes=array_pluck($order_codes, 'coupon_code');
+	    		return array_filter($coups,function ($e) use ($already_applied_codes){ return !empty($e)&&!empty($e['code'])&&!in_array($e['code'],$already_applied_codes);});
+	    	}
+	    	else return $coups;    		
+    	}
+    	else {
+    		\Order::$withoutAppends = true;
+    		$order_codes=\Order::active()->where("customer_id", $customer_id)->where('coupon_code',$coups['code'])->where('coupon_discount_amount', '>', 0)->count();
+    		if($order_count >= 1)
+    			return false;
+    		else return true;
+    	}
+    }
+    public function allowSpecificvendors($coups=[],$finder_id=null,$service_id=null,$single=false)
+    {
+    	if(!$single)
+    	{
+    		return array_filter($coups,function ($e) use($finder_id,$service_id) {
+    			
+    			$output=!empty($e)&&!empty($finder_id)&&!empty($service_id)&&!empty($e['finders'])&&!empty($e['services'])&&in_array($finder_id, $e['finders'])&&in_array($finder_id, $e['services']);
+    			
+    			if($output&&(empty($e['finders_exclude'])||!empty($e['finders_exclude'])&&!in_array($finder_id, $e['finders_exclude'])))
+    				return true;
+    				else return false;
+    		});
+    	}
+    	else {
+    		
+    		$output=!empty($finder_id)&&!empty($service_id)&&!empty($coups['finders'])&&!empty($coups['services'])&&in_array($finder_id, $coups['finders'])&&in_array($service_id, $coups['services']);
+    		if($output&&(empty($coups['finders_exclude'])||!empty($coups['finders_exclude'])&&!in_array($finder_id, $e['finders_exclude'])))
+    			return true;
+    		else return false;
+    	}
+    	
+    }
+    
+    public function allowFitternityUsers($coups=[],$customer_id=null,$customer_email=null)
+    {
+    	$customer = \Customer::find((int)$customer_id);
+    	if(!$single)
+    	{
+    		return array_filter($coups,function ($e) use($customer_id,$customer_email) {
+    			return in_array($customer_email, ['utkarshmehrotra@fitternity.com','shahaansyed@fitternity.com','maheshjadhav@fitternity.com']);
+    		});
+    	}
+    	else in_array($customer_email, ['utkarshmehrotra@fitternity.com','shahaansyed@fitternity.com','maheshjadhav@fitternity.com']);
+    }
+
+	public function getRateCardBaseID($ratecards=[])
+	{
+		foreach ($ratecards as $value)
+			if(!empty($value)&&!empty($value['_id']))
+				return $value['_id'];
+			return "";
+	}
+	
+	public function mapProperties($properties=null)
+	{
+		$props_arr=[];
+		if(!empty($properties))
+		{
+			foreach ($properties as $k=>$v)
+				(!empty($k)&&!empty($v))?array_push($props_arr,["field"=>$k,"value"=>$v]):"";	
+				return  $props_arr;
+		}
+		else return null;
+	}
+	public function slashPriceFormat($selectedRatecard)
+	{
+        return "";
+		return (empty($selectedRatecard)||empty($selectedRatecard['slash_price']))?"":'<strike>'.$this->getRupeeForm($selectedRatecard['slash_price']).'</strike>';
+	}
+	
+	
+
+//     public function getRupeeForm($amount){
+//     	return (isset($amount)?'\u20B9'.' '.$amount:"");
+//     }
+    
+    public function getAttendedResponse($status='attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck)
+    {
+    	if($status=='attended')
+    	{
+    		$response = [
+    				'status'=>200,
+    				'header'=>'ENJOY YOUR WORKOUT!',
+    				'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
+    				// 'footer'=>$customer_level_data['current_level']['cashback'].'% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!',
+    				'streak'=>[
+    						'header'=>'STREAK IT OUT',
+    						'data'=>$this->getStreakImages($customer_level_data['current_level']['level'])
+    				]
+    		];
+    		
+    		if($payment_done){
+    			$response['sub_header_1'] = $customer_level_data['current_level']['cashback']."% Cashback";
+    			$response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!";
+    		}else $response['payment'] = $pending_payment;
+    		
+    		if($booktrial['type'] == 'booktrials'){
+    			if (isset($add_chck['sub_header'])){
+    				$response['sub_header_1'] = $add_chck['sub_header'];
+    				$response['sub_header_2'] = $add_chck['message'];
+    			}
+    			else{
+    				$response['sub_header_1'] = $fitcash." Fitcash";
+    				$response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
+    			}
+    		}
+    		$this->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
+    		
+    	}
+    	else
+    	{
+    		$response = [
+    				'status'=>200,
+    				'header'=>'OOPS!',
+    				'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
+    				'sub_header_2'=>'Make sure you attend next time to earn Cashback and continue working out!',
+    				'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
+    				'streak'=>[
+    						'header'=>'STREAK IT OUT',
+    						'data'=>$this->getStreakImages($customer_level_data['current_level']['level'])
+    				]
+    		];
+    		
+    		if(isset($customer_level_data['next_level']['level'])){
+    			$response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
+    		}
+    		if($payment_done){
+    			$response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
+    		}
+    		if($booktrial->type=='booktrials'){
+    			
+    			$response['reschedule_button'] = true;
+    			$response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
+    			
+    		}
+    		$this->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
+    		
+    	}
+    	
+    	if($booktrial->type == 'booktrials' && isset($response['streak'])){
+    		unset($response['streak']);
+    	}
+    	
+    	$description = "";
+    	
+    	if(isset($response['sub_header_1'])){
+    		$description = "<font color='#f7a81e'>".$response['sub_header_1']."</font>";
+    	}
+    	
+    	if(isset($response['sub_header_2'])){
+    		$description = $description.$response['sub_header_2'];
+    	}
+    	$response['description'] = $description;
+    	$response['trial_id'] = (string)$booktrial->_id;
+    	$response['finder_id'] = $booktrial->finder_id;
+    	$response['service_id'] = $booktrial->service_id;
+    	return $response;
+    }
+    
+    public function alreadyPurchasedAnyThing()
+    {
+    	
+    	
+    }
+    
+    
+    
+    public function getScheduleTimeBasedView()
+    {
+    	$currentDateTime=time();
+    	$date         			=   date('Y-m-d',$currentDateTime);
+    	$timestamp    			=   strtotime($date);
+    	$weekday     			=   strtolower(date( "l", $timestamp));
+    	
+    	
+    	
+    	
+    }
+    
+    
+    
+    public function displayFormatSlot($data=[],$service=null,$ratecard_id=null)
+    {
+    	$view=[];
+    	if(!empty($data)&&count($data)>0)
+    	{
+    		foreach ($data as $value)
+    			if(!empty($service)&&!empty($service['name'])&&!empty($value['slot_time']))
+    				array_push($view, ['slot'=>$value['slot_time'],'service_id'=>$service['_id'],'service_name'=>(!empty($service['name'])?$service['name']:""),"ratecard_id"=>(!empty($ratecard_id)?$ratecard_id:"")]);
+    	}
+    	return $view;
+    }
+    public function getCoreSlotsView($slots,$service,$ratecard_id,$cost,$type,$cat_id,$cust=null,$device_type=null,$paymentmode_selected=[],$schedule_date=null,$wallet_pass=[],$sp=null,$rp=null,$city_id=null)
+    {
+    		try {
+    			$baseData=['service_id'=>$service['_id'],'service_name'=>$service['name'],'schedule_date'=>$schedule_date,'finder_id'=>$service['finder_id'],'ratecard_id'=>$ratecard_id,'price'=>intval($cost),'type'=>$type,'qrcodepayment'=>true,'customer_source'=>$device_type,
+    					'btnview'=>($type== 'booktrials')?'Book':"Buy"];
+    			if(!empty($city_id))$baseData['city_id']=$city_id;
+    			if($type!= 'booktrials')
+    				$baseData=array_merge($baseData,$wallet_pass,$paymentmode_selected,['premium_session'=>true]);
+    			else $baseData=array_merge($baseData,['premium_session'=>false]);
+                if(!empty($sp))$baseData['special_price']=$sp;
+    			if(!empty($rp))$baseData['price']=$rp;
+                $cur=time();
+                if(!empty($slots))
+                {
+                    $mainSlots=[];
+    					if(in_array(intval($cat_id),[65]))
+    					{
+    						if(!empty($slots[0]))
+    						{
+    							if(round(($cur-$slots[0]['epoch_start_time'])/60,2)>=0&&round(($slots[0]['epoch_end_time']-$cur)/60,2)>=0)
+    							{
+    								array_push($mainSlots, $this->mergeCustomerToSlot(['schedule_slot'=>date("h:i a",$cur)],$baseData,$cust));
+    							}
+    							else if(round(($slots[0]['epoch_start_time']-$cur)/60,2)<=60)
+    							{
+    								array_push($mainSlots, $this->mergeCustomerToSlot(['schedule_slot'=>date("h:i a",$cur)],$baseData,$cust));
+    							}
+    						}
+    					}
+    					else {
+    						foreach ($slots as $key=>$value)
+    						{
+    							if(!empty($value['start_time_24_hour_format'])&&!empty($value['end_time_24_hour_format'])&&!empty($value['epoch_start_time']) &&!empty($value['epoch_end_time']))
+    							{
+    								if(round(($cur-$value['epoch_start_time'])/60,2)>=0&&round(($value['epoch_end_time']-$cur)/60,2)>=0)
+    								{
+    									array_push($mainSlots, $this->mergeCustomerToSlot(['schedule_slot'=>$value['slot_time']],$baseData,$cust));
+    									if(!empty($slots[($key+1)]))
+    									{
+    										//     									if(round(($slots[($key+1)]['epoch_start_time']-$cur)/60,2)<=60)
+    											//     									{
+    										array_push($mainSlots, $this->mergeCustomerToSlot(['schedule_slot'=>$slots[($key+1)]['slot_time']],$baseData,$cust));
+    										//     									}
+    										break;
+    									}
+    									break;			
+    								}
+    							}
+    						}
+    						if(count($mainSlots)==0&&count($slots)>0)
+    							array_push($mainSlots, $this->mergeCustomerToSlot(['schedule_slot'=>$slots[0]['slot_time']],$baseData,$cust));
+    						
+    					}
+    					if(!empty($mainSlots)){
+                            foreach($mainSlots as &$slot1){
+                                $time_array = explode('-', $slot1['schedule_slot']);
+                                $start = $time_array[0];
+                                if(empty($time_array[1])){
+                                    $time_array[1] = date('g:i a',strtotime('+1 hour', strtotime($start)));
+                                }
+                                $end = $time_array[1];
+                                $dynamic_price = $this->getWsSlotPrice($start, $end, $slot1['service_id'], date('d-m-Y', time()));
+                                isset($dynamic_price['non_peak']) ? ($slot1['special_price'] = $dynamic_price['non_peak']) : (isset($dynamic_price['peak']) ? ($slot1['special_price'] = $dynamic_price['peak']) : null);
+                            }
+                        }
+    					return $mainSlots;
+    				}else return [];
+    		} catch (Exception $e) {
+    			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+    			throw $e;
     		}
     }
 
@@ -5423,6 +6080,15 @@ Class Utilities {
 
     }
 	
+    		
+    	
+    	private function mergeCustomerToSlot($data=[],$baseData=[],$cust=null)
+    	{
+    		if(!empty($cust))
+    			return array_merge($data,$baseData,["customer_name"=>(!empty($cust['name'])?$cust['name']:""),"customer_email"=>(!empty($cust['email'])?$cust['email']:""),"customer_phone"=>(!empty($cust['contact_no'])?$cust['contact_no']:""),"customer_gender"=>(!empty($cust['gender'])?$cust['gender']:"")]);
+    		else return $data;
+    	}
+    
 }
 
 

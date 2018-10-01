@@ -49,4 +49,8 @@ class Booktrial extends \Basemodel {
 		return $this->belongsTo('Service','service_id');
 	}
 
+	public function findercategory(){
+		return $this->hasOne('Findercategory', 'findercategory_id');
+	}
+
 }

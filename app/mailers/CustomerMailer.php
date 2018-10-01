@@ -710,6 +710,18 @@ Class CustomerMailer extends Mailer {
 		$message_data 	= array(
 			'user_email' => array($data['customer']['customer_email']),
 			'user_name' => !empty($data['customer']['customer_name']) ? $data['customer']['customer_name'] : '',
+            );
+
+		return $this->common($label,$data,$message_data);
+	}
+	
+    public function externalVoucher($data){
+
+		$label = 'ExternalVoucher-Customer';
+		
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
 		);
 
 		return $this->common($label,$data,$message_data);

@@ -169,19 +169,29 @@ class FindersController extends \BaseController {
 
 				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
-				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(5);}))
+				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->where('description', '!=', "")->orderBy('updated_at', 'DESC')->limit(5);}))
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 				->first();
 
-				unset($finderarr['ratecards']);
-
+                unset($finderarr['ratecards']);
+			// return $finderarr;
+			
 			$finder = null;	
 			
 			if($finderarr){
-
+				
 				// $ratecards           =   Ratecard::with('serviceoffers')->where('finder_id', intval($finder_id))->orderBy('_id', 'desc')->get();
 				$finderarr = $finderarr->toArray();
-
+				
+				if(count($finderarr['reviews']) < 5){
+					$initial_review_count = count($finderarr['reviews']);
+					$reviews = Review::where('finder_id', $finderarr['_id'])->where('description', "")->orderBy('updated_at', 'DESC')->limit(5-$initial_review_count)->get();
+					if(count($reviews)){
+						$initial_reviews = $finderarr['reviews'];
+						$initial_reviews = array_merge($initial_reviews, $reviews->toArray());
+						$finderarr['reviews'] = $initial_reviews;
+					}
+				}
 				if(isset($finderarr['commercial_type']) && $finderarr['commercial_type']==0){
 					if(isset($finderarr['budget'])){
 						if($finderarr['budget'] < 1000){
@@ -1946,7 +1956,8 @@ class FindersController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 
 		$rules = [
-		    'finder_id' => 'required|integer|numeric',
+			'finder_id' => 'required_without:service_id|integer|numeric',
+			'service_id'=> 'required_without:finder_id|integer|numeric',
 		    'rating' => 'required|numeric',
 		    //'description' => 'required'
 		];
@@ -1963,7 +1974,7 @@ class FindersController extends \BaseController {
 		$data["customer_id"] = $decoded->customer->_id;
 		$data['description'] = (isset($data['description'])) ? $data['description'] : '';
 
-		if(!isset($data['detail_rating'])){
+		if(!isset($data['detail_rating']) || array_sum($data['detail_rating']) == 0){
 			$data['detail_rating'] = [$rating,$rating,$rating,$rating,$rating];
 		}
 
@@ -2023,6 +2034,9 @@ class FindersController extends \BaseController {
 
 
 		// return $images = Input::file('images') ;
+
+		Log::info("addReview");
+		Log::info($data);
 		
 		
 		$jwt_token = Request::header('Authorization');
@@ -2034,7 +2048,17 @@ class FindersController extends \BaseController {
 	    }
 
 		// return Input::json()->all();
-		$validator = Validator::make($data, Review::$rules);
+		if(!empty($data['service_id'])){
+			$validator = Validator::make($data, Review::$rulesService);
+		}else{
+			$validator = Validator::make($data, Review::$rules);
+		}
+		
+		$rating = $data['rating'];
+		
+		if(!isset($data['detail_rating']) || array_sum($data['detail_rating']) == 0){
+			$data['detail_rating'] = [$rating,$rating,$rating,$rating,$rating];
+		}
 		Log::info("Review".$jwt_token);
 		if ($validator->fails()) {
 			$response = array('status' => 400, 'message' => 'Could not create a review.', 'errors' => $validator->errors());
@@ -2090,10 +2114,15 @@ class FindersController extends \BaseController {
 			$booktrial->update();
 		}
 		
-		$reviewdata['booktrial_id'] = ($reviewdata['booktrial_id'] == "" && isset($data['booktrial_id']) && $data['booktrial_id'] != "") ? intval($data['booktrial_id']) : '';
+
+		(isset($data['booktrial_id']) && $data['booktrial_id'] != "") ? $reviewdata['booktrial_id'] =  intval($data['booktrial_id']) : null;
 
 		if(isset($data['agent_name'])){
 			$reviewdata['agent_name'] = $data['agent_name'];
+		}
+		
+		if(!empty($data['service_id'])){
+			$reviewdata['service_id'] = $data['service_id'];
 		}
 
 		if(isset($data['agent_email'])){
@@ -2168,12 +2197,18 @@ class FindersController extends \BaseController {
 			$txn = null;
 			switch($data['tag']){
 				case 'trial':
+				case 'Trial':
+					$data['tag'] = 'trial_verified';
 					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where('type', 'booktrials')->first();
 				break;
 				case 'workout-session':
+				case 'Workout-session':
+					$data['tag'] = 'workout-session';
 					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where('type', 'workout-session')->first();
 				break;
 				case 'membership':
+				case 'Membership':
+					$data['tag'] = 'membership';
 					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->whereNotIn('type', ['workout-session', 'booktrial'])->first();
 				break;
 			}
@@ -2222,13 +2257,18 @@ class FindersController extends \BaseController {
 			$message = 'Thank You. Your review has been posted successfully';
 		}
 
-		$this->updateFinderRatingV2($finder);
+		// if(!empty($reviewdata['booktrial_id'])){
+		// 	Booktrial::where('_id', intval($reviewdata['booktrial_id']))->update(['post_tril_review'=>true]);
+		// }
 
-		$review_detail = $this->updateFinderRatingV1($reviewdata);
+		Queue::connection('redis')->push('FindersController@asyncUpdateFinderRating', array('finder'=>$finder, 'reviewdata'=>$reviewdata),Config::get('app.queue'));
+		// $this->updateFinderRatingV2($finder);
+
+		// $review_detail = $this->updateFinderRatingV1($reviewdata);
 		
-		$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
+		// $review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
 
-		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>$review_detail);
+		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>null);
 
 		if(isset($data['booktrialid']) &&  $data['booktrialid'] != '' && isset($review_id) &&  $review_id != ''){
 			$booktrial_id   =   (int) $data['booktrialid'];
@@ -2245,57 +2285,67 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('finder_detail_ios_4_4_3',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_4_4_3',$finder->slug);
 		
+		if(!empty($reviewdata['service_id'])){
+			$service = Service::find($reviewdata['service_id'], ['slug']);
+			$this->cacheapi->flushTagKey('service_detail',$finder->slug.'-'.$service->slug);
+			$this->cacheapi->flushTagKey('service_detail',$finder->slug.'-'.$service->slug.'-5');
+		}
 
+		
+		if($this->vendor_token){
+			
+			$order_count = Order::active()->where('type','memberships')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
+	
+			$booktrial_count = Booktrial::where('type','booktrials')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
 
-		$order_count = Order::active()->where('type','memberships')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
+			if($fresh_review && $booktrial_count > 0 && $order_count == 0){
 
-		$booktrial_count = Booktrial::where('type','booktrials')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
+				$fitcash_amount = 150;
+	
+				$req = array(
+					"customer_id"=>$data['customer_id'],
+					"review_id"=>$review_id,
+					"finder_id"=>$data['finder_id'],
+					"amount"=>$fitcash_amount,
+					"amount_fitcash" => 0,
+					"amount_fitcash_plus" => $fitcash_amount,
+					"type"=>'CREDIT',
+					'entry'=>'credit',
+					'description'=>"Fitcash+ Added for reviewing ".ucwords($finder['title']),
+				);
+	
+				$this->utilities->walletTransaction($req);
+	
+				$response['fitcash'] = [
+					'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+					'amount'=>(string)$fitcash_amount,
+					'title1'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
+					'title2'=>strtoupper('Has  been  added'),
+					'description'=>'Find  this  on  <b>Fitternity  Wallet</b>  &  use  it  to  purchase  your  membership',
+				];
+	
+				$response['membership'] = [
+					'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+					'amount'=>(string)$fitcash_amount,
+					'title1'=>strtoupper('Membership  On'),
+					'title2'=>strtoupper('Lowest  prices'),
+					'description'=>'Use  this  <b>₹'.$fitcash_amount.'  off</b>  before  it  gets  expired  to  buy  membership  on  this  tab  at  lowest  price  with  complimentary  rewards'
+				];		
+	
+				$response['message'] = "Thanks for your valuable feedback!";
+				$response['message_title'] = "Done!";
+	
+				$response['review_detail'] = null;
+			}
 
-		if($this->vendor_token && $fresh_review && $booktrial_count > 0 && $order_count == 0){
-
-			$fitcash_amount = 150;
-
-			$req = array(
-                "customer_id"=>$data['customer_id'],
-                "review_id"=>$review_id,
-                "finder_id"=>$data['finder_id'],
-                "amount"=>$fitcash_amount,
-                "amount_fitcash" => 0,
-                "amount_fitcash_plus" => $fitcash_amount,
-                "type"=>'CREDIT',
-                'entry'=>'credit',
-                'description'=>"Fitcash+ Added for reviewing ".ucwords($finder['title']),
-            );
-
-			$this->utilities->walletTransaction($req);
-
-			$response['fitcash'] = [
-				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
-				'amount'=>(string)$fitcash_amount,
-				'title1'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
-				'title2'=>strtoupper('Has  been  added'),
-				'description'=>'Find  this  on  <b>Fitternity  Wallet</b>  &  use  it  to  purchase  your  membership',
-			];
-
-			$response['membership'] = [
-				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
-				'amount'=>(string)$fitcash_amount,
-				'title1'=>strtoupper('Membership  On'),
-				'title2'=>strtoupper('Lowest  prices'),
-				'description'=>'Use  this  <b>₹'.$fitcash_amount.'  off</b>  before  it  gets  expired  to  buy  membership  on  this  tab  at  lowest  price  with  complimentary  rewards'
-			];		
-
-			$response['message'] = "Thanks for your valuable feedback!";
-			$response['message_title'] = "Done!";
-
-			$response['review_detail'] = null;
 		}
 
 		return Response::json($response, 200);
 	}
 
 	public function updateFinderRatingV2($finder){
-
+		$finder = Finder::find($finder['_id']);
+		
 		$review = Review::where('finder_id',$finder->_id)->get();
 
 		$detail_rating = array(array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0));
@@ -2353,7 +2403,6 @@ class FindersController extends \BaseController {
 	}
 
 	public function updateFinderRatingV1 ($review, $oldreview = NULL ){
-
 		$data                   =   $review;
 		$total_rating_count     =   round(floatval(Input::json()->get('total_rating_count')),1);
 		$average_rating         =   round(floatval(Input::json()->get('average_rating')),1);
@@ -2591,8 +2640,8 @@ class FindersController extends \BaseController {
 		$finder_id          =   (int) $finder_id;
 		$from               =   ($from != '') ? intval($from) : 0;
 		$size               =   ($size != '') ? intval($size) : 10;
-		
-		$reviews            =   Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->take($size)->skip($from)->orderBy('updated_at', 'desc')->get();
+		$reviews            =   Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->where('description', '!=', '')->take($size)->skip($from)->orderBy('updated_at', 'desc')->get();
+
 		// return $reviews;
 		$customer_ids = array_column($reviews->toArray(), 'customer_id');
  		// return $customer_ids;
@@ -3563,7 +3612,7 @@ class FindersController extends \BaseController {
 			Service::$setAppends=['active_weekdays','serviceratecard'];
 			Finder::$setAppends=['finder_coverimage'];
 			$finderarr = Finder::active()->where('slug','=',$tslug)
-				->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating');}))
+				->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating','detail_ratings_images');}))
 				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
 				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 				->with('categorytags')
@@ -3575,13 +3624,24 @@ class FindersController extends \BaseController {
 
 				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
-				->with(array('reviews'=>function($query){$query->where('status','=','1')->select('_id','finder_id','customer_id','rating','description','updated_at')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
-				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews'));
-			
+				->with(array('reviews'=>function($query){$query->where('status','=','1')->where('description','!=', "")->select('_id','finder_id','customer_id','rating','description','updated_at')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
+                ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews'));
+                
+
 			$finder = false;
 			
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
+
+				if(count($finderarr['reviews']) < 1){
+					$initial_review_count = count($finderarr['reviews']);
+					$reviews = Review::where('finder_id', $finderarr['_id'])->where('description', "")->orderBy('updated_at', 'DESC')->limit(1-$initial_review_count)->get();
+					if(count($reviews)){
+						$initial_reviews = $finderarr['reviews'];
+						$initial_reviews = array_merge($initial_reviews, $reviews->toArray());
+						$finderarr['reviews'] = $initial_reviews;
+					}
+				}
 
 				if(isset($finderarr['trial']) && $finderarr['trial']=='manual'){
 					$finderarr['manual_trial_enable'] = '1';
@@ -4258,6 +4318,13 @@ class FindersController extends \BaseController {
                 $data['recommended_vendor']['title'] = "Other popular options in ".$finderarr["location"]["name"];
                 $data['recommended_vendor']['description'] = "Checkout fitness services near you";
 				$data['recommended_vendor']['near_by_vendor'] = $nearby_other_category;
+
+				// $data['finder']['review_data'] = $this->utilities->reviewScreenData($finder);
+
+				// $data['finder']['review_data']['finder_id'] = $data['finder']['_id'];
+				// $data['finder']['review_data']['tag'] = ['Membership', 'Trial', 'Workout-session'];
+
+				$data['finder']['review_url'] = Config::get('app.url').'/finderreviewdata/'.$data['finder']['_id'];
 				
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
@@ -4304,7 +4371,7 @@ class FindersController extends \BaseController {
 					if($customer_phone != ""){
 
 						$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->orWhere('customer_email', $customer_email)->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');})
-						->where('finder_id', '=', (int) $finder->_id)
+						->where('tag', ['Membership', 'Trial', 'Workout-session'])
 						->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
 						->get(array('id'));
 
@@ -6028,6 +6095,55 @@ class FindersController extends \BaseController {
 		return $return;
 
 
+
+	}
+
+	public function finderReviewData($finder_id){
+
+		Log::info($_SERVER['REQUEST_URI']);
+		
+		Finder::$withoutAppends = true;		
+		
+		$finder = Finder::active()->where('_id', intval($finder_id))
+				->with(array('category'=>function($query){$query->select('_id', 'detail_rating','detail_ratings_images');}))
+				->with(array('location'=>function($query){$query->select('_id','name');}))
+				->first(array('title','category_id', 'category','location_id'));
+
+		if(!empty($_GET['service_name'])){
+			$finder['service_name'] = ucwords(trim(urldecode($_GET['service_name'])));
+		}
+
+		if(!empty($_GET['service_location'])){
+			$finder['service_location'] = ucwords(trim(urldecode($_GET['service_location'])));
+		}
+
+		$review_data = $this->utilities->reviewScreenData($finder);
+
+		if(!empty($_GET['service_id'])){
+			$review_data['service_id'] = intval($_GET['service_id']);
+		}
+
+		$review_data['finder_id'] = $finder['_id'];
+		$review_data['optional'] = false;
+		$review_data['show_rtc'] = false;
+		if(empty($_GET['service_name'])){
+			$review_data['section_3'] = [
+				'tag' => ['Membership', 'Trial', 'Workout-session'],
+				'header' => 'What is your review based on',
+			];
+		}
+
+		return $review_data;
+	}
+
+	public function asyncUpdateFinderRating($job, $data){
+		
+		if($job){
+			$job->delete();
+		}
+
+		$this->updateFinderRatingV2($data['finder']);
+		$this->updateFinderRatingV1($data['reviewdata']);
 
 	}
 

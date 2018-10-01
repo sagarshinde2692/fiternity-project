@@ -101,6 +101,12 @@ class CommunicationsController extends \BaseController {
 			Log::info("$sender_class-$label");
 			
 			$data = $this->prepareData($data, $label);
+
+			if(!empty($data['abort_delay_comm'])){
+				Log::info('aborting_comm');
+				return "no communication sent";
+			}
+
 			$class = strtolower($sender_class);
 
 			$communication_keys = $transaction_data->communication_keys;
@@ -253,6 +259,14 @@ class CommunicationsController extends \BaseController {
 						{
 							$booktrial->pps_cashback=$data['pps_cashback'];
 							$booktrial->update();
+						}
+						break;
+					}
+				case "reviewReminder":
+					{	
+						$booktrial = Booktrial::find($data['_id']);
+						if(!empty($booktrial->skip_review) || !empty($booktrial->has_reviewed)){
+							$data['abort_delay_comm'] = true;
 						}
 						break;
 					}

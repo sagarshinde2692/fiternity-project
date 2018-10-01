@@ -52,7 +52,7 @@ class SchedulebooktrialsController extends \BaseController {
         CustomerReward $customerreward,
         Jwtauth $jwtauth
     ) {
-        //parent::__construct();
+        parent::__construct();
         date_default_timezone_set("Asia/Kolkata");
         $this->customermailer           =   $customermailer;
         $this->findermailer             =   $findermailer;
@@ -2216,7 +2216,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'workout_article_link'          =>      $workout_article_link,
                 'download_app_link'             =>      $download_app_link,
                 'diet_plan_link'                =>      $diet_plan_link,
-                'pre_trial_status'              =>      'yet_to_connect'
+                'pre_trial_status'              =>      'yet_to_connect',
+                'ask_review'                    =>      true,
             );
 
             $session_count = Booktrial::where('customer_id',$customer_id)->count();
@@ -2394,6 +2395,32 @@ class SchedulebooktrialsController extends \BaseController {
 
 
             }
+
+            if(!empty($order['qrcodepayment'])){
+                $booktrial['qrcodepayment'] = true;
+                $booktrial['abort_delay_comm'] = true;
+                $booktrial['post_trial_status'] = 'attended';
+                $booktrial['post_trial_status_updated_by_qrcode'] = time();
+                $booktrial['post_trial_status_date'] = time();
+                
+                if(empty($order['pay_later'])){
+
+                    $fitcash = $this->utilities->getFitcash($booktrial->toArray());
+                    $req = array(
+                        "customer_id"=>$booktrial['customer_id'],
+                        "trial_id"=>$booktrial['_id'],
+                        "amount"=> $fitcash,
+                        "amount_fitcash" => 0,
+                        "amount_fitcash_plus" => $fitcash,
+                        "type"=>'CREDIT',
+                        'entry'=>'credit',
+                        'validity'=>time()+(86400*21),
+                        'description'=>"Added FitCash+ on Session Attendance at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+                    );
+                    $this->utilities->walletTransaction($req);
+                }
+
+            }
             
             if(!(isset($order['pay_later']) && $order['pay_later'])){
                 array_set($orderData, 'status', '1');
@@ -2423,9 +2450,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrial->amount_finder = $order->vendor_price;
 
                 $order->update();
-                $booktrial->update();
             }
-
+            
+            $booktrial->update();
 
 
             // Give Rewards / Cashback to customer based on selection, on purchase success......
@@ -2543,48 +2570,50 @@ class SchedulebooktrialsController extends \BaseController {
             // $delayReminderbefore2Hours      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(-60 * 2);
     
             // $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderbefore2Hours);
+            if(empty($booktrial->qrcodepayment)){
 
-            if( $this->isWeekend(time()) && in_array(date('l', strtotime($booktrial->schedule_date_time)), Config::get('app.trial_comm.end_weekend')) && $schedule_date_time_hour < Config::get('app.trial_comm.off_hours_end_time')){
-                Log::info("Scheduling sunday 8pm");
-                $delayReminderPrevDaySunday      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d 20:00:00',strtotime($booktrial->schedule_date_time)))->addDays(-1);
-    
-                $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderPrevDaySunday);
-            
-            // }else if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && $currentScheduleDateDiffMin <= 15*60){
-            }else if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && (strtotime($booktrial->schedule_date_time) - time() <= 15*60*60)){
-                $booktrial->off_hours = true;
-                if(time() < strtotime(date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00', time())) && strtotime($booktrial->schedule_date_time) > strtotime(date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00', time()))){
-                    
-                    if($schedule_date_time_hour >= 8 && $schedule_date_time_hour < 11){
-                        Log::info("Scheduling offhours 2 hours before");
-                        $delayReminderbefore2Hours      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(-60 * Config::get('app.trial_comm.offhours_scheduled_td_hours'));
-    
-                        $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderbefore2Hours);
-    
-                    }else if($schedule_date_time_hour >= 6 && $schedule_date_time_hour < 8){
-                        Log::info("Scheduling offhours at 10 prev day");
+                if( $this->isWeekend(time()) && in_array(date('l', strtotime($booktrial->schedule_date_time)), Config::get('app.trial_comm.end_weekend')) && $schedule_date_time_hour < Config::get('app.trial_comm.off_hours_end_time')){
+                    Log::info("Scheduling sunday 8pm");
+                    $delayReminderPrevDaySunday      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d 20:00:00',strtotime($booktrial->schedule_date_time)))->addDays(-1);
+        
+                    $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderPrevDaySunday);
+                
+                // }else if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && $currentScheduleDateDiffMin <= 15*60){
+                }else if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && (strtotime($booktrial->schedule_date_time) - time() <= 15*60*60)){
+                    $booktrial->off_hours = true;
+                    if(time() < strtotime(date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00', time())) && strtotime($booktrial->schedule_date_time) > strtotime(date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00', time()))){
                         
-                        $delayReminderPrevDay      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00',strtotime($booktrial->schedule_date_time)))->addDays(-1);
+                        if($schedule_date_time_hour >= 8 && $schedule_date_time_hour < 11){
+                            Log::info("Scheduling offhours 2 hours before");
+                            $delayReminderbefore2Hours      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(-60 * Config::get('app.trial_comm.offhours_scheduled_td_hours'));
+        
+                            $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderbefore2Hours);
+        
+                        }else if($schedule_date_time_hour >= 6 && $schedule_date_time_hour < 8){
+                            Log::info("Scheduling offhours at 10 prev day");
+                            
+                            $delayReminderPrevDay      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00',strtotime($booktrial->schedule_date_time)))->addDays(-1);
+        
+                            $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderPrevDay);
     
-                        $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderPrevDay);
-
+                        }else{
+                            Log::info("Scheduling offhours 5 mins after booking");
+                        
+                            $delayReminderAfter5mins      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addMinutes(Config::get('app.trial_comm.offhours_instant_td_mins'));
+            
+                            $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderAfter5mins);
+                        }
                     }else{
+    
                         Log::info("Scheduling offhours 5 mins after booking");
-                    
+                        
                         $delayReminderAfter5mins      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addMinutes(Config::get('app.trial_comm.offhours_instant_td_mins'));
         
                         $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderAfter5mins);
-                    }
-                }else{
-
-                    Log::info("Scheduling offhours 5 mins after booking");
                     
-                    $delayReminderAfter5mins      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addMinutes(Config::get('app.trial_comm.offhours_instant_td_mins'));
-    
-                    $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderAfter5mins);
-                
+                    }
+                    
                 }
-                
             }
 
             $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finder_sms_messageids  =  $customer_notification_messageids  =  array();
@@ -2628,6 +2657,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             $trailBefore10min = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(10);
             $send_communication["customer_notification_before10min"] = $this->customernotification->bookTrialReminderBefore10Min($booktrialdata, $trailBefore10min);
+
+            // $afterTwoDays = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addDays(2);
+            
+            // $send_communication["customer_notification_after2days"] = $this->customernotification->reviewReminder($booktrialdata, $afterTwoDays);
 
             // }
 
@@ -2791,7 +2824,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $this->utilities->setRedundant($order);
                 }
             }
-            if($currentScheduleDateDiffMin <= 60 && !$this->isWeekend(time()) && !$this->isOffHour($current_hour)){
+            if(empty($booktrial->qrcodepayment) && $currentScheduleDateDiffMin <= 60 && !$this->isWeekend(time()) && !$this->isOffHour($current_hour)){
                 $this->publishConfirmationAlert($booktrialdata);
             }
 
@@ -3341,7 +3374,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'workout_article_link'          =>      $workout_article_link,
                 'download_app_link'             =>      $download_app_link,
                 'diet_plan_link'                =>      $diet_plan_link,
-                'pre_trial_status'              =>      'yet_to_connect'
+                'pre_trial_status'              =>      'yet_to_connect',
+                'ask_review'                    =>      true
             );
 
             if(!empty($data['assisted_by'])){
@@ -4396,7 +4430,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         // }else{
 
-        //     $data = ['status_code' => 401, 'message' => ['error' => 'Hash Required']];
+        //     $data = ['status_code' => 401, 'message' => ['error' => 'Hash 'Required'']];
         //     return Response::json($data, 401);
         // }
 
@@ -6263,7 +6297,7 @@ class SchedulebooktrialsController extends \BaseController {
         // Log::info("before call");
         // return $this->customersms->bookTrial($booktrialdata, "2017-07-07 7pm");
 
-        $this->sendCommunication1(array('booktrial_id'=>intval($id)));
+        $this->sendCommunication(null, array('booktrial_id'=>intval($id)));
         return "done";
     }
  
@@ -6779,7 +6813,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
 
-            $this->updateOrderStatus($booktrial);
+            $this->utilities->updateOrderStatus($booktrial);
             
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_kiosk = time();
@@ -6900,7 +6934,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial->payment_done = true;
         
-        if(time() > strtotime($booktrial->schedule_date_time) ){
+        if(time() > strtotime($booktrial->schedule_date_time) || !empty($order['qrcodepayment'])){
 
             $booktrial->post_trial_status = 'attended';
 
@@ -6919,7 +6953,7 @@ class SchedulebooktrialsController extends \BaseController {
                 "type"=>'CREDIT',
                 'entry'=>'credit',
                 'validity'=>time()+(86400*21),
-                'description'=>"Added FitCash+ on Workout Session Attendance",
+                'description'=>"Added FitCash+ on Session Attendance at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
             );
     
             $this->utilities->walletTransaction($req);
@@ -6987,7 +7021,7 @@ class SchedulebooktrialsController extends \BaseController {
         $fitcash = 0;
         if(isset($booktrial)){
 
-            if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)){
+            if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !isset($booktrial->post_trial_status_updated_by_lostfitcode)){
 
                 $post_trial_status_updated_by_fitcode = time();
                 $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
@@ -7016,7 +7050,7 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
 
-            }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done)){
+            }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done) && !isset($booktrial->post_trial_status_updated_by_lostfitcode)){
 
                 $post_trial_status_updated_by_fitcode = time();
                 $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
@@ -7036,7 +7070,7 @@ class SchedulebooktrialsController extends \BaseController {
                         "type"=>'CREDIT',
                         'entry'=>'credit',
                         'validity'=>time()+(86400*21),
-                        'description'=>"Added FitCash+ on Workout Session Attendance By Fitcode",
+                        'description'=>"Added FitCash+ on Session Attendance at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
                     );
                     
                     //added check and message
@@ -7060,21 +7094,21 @@ class SchedulebooktrialsController extends \BaseController {
 
                     $this->utilities->walletTransaction($req);
 
+                    $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Valid for 21 days";
                 }
-                $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
                 
             }
 
             $booktrial->post_trial_status = 'attended';
 
-            $this->updateOrderStatus($booktrial);
+            $this->utilities->updateOrderStatus($booktrial);
             
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_fitcode = time();
             $booktrial->post_trial_status_date = time();
             $booktrial->update();
 
-            $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
+            // $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
 
             $response = [
                 'status' => 200,
@@ -7101,7 +7135,7 @@ class SchedulebooktrialsController extends \BaseController {
         $decoded = customerTokenDecode($jwt_token);
 
         $customer_id = (int)$decoded->customer->_id;
-
+        
         $booktrial = Booktrial::where('_id',$booktrial_id)
            ->where('customer_id',$customer_id)
            ->whereIn('type',['booktrials','3daystrial','workout-session'])
@@ -7172,7 +7206,7 @@ class SchedulebooktrialsController extends \BaseController {
                 Log::info("not adding fitachs");
             }
             
-            $this->updateOrderStatus($booktrial);
+            $this->utilities->updateOrderStatus($booktrial);
             
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
@@ -7197,8 +7231,8 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
-    public function sessionStatusCapture($status, $booktrial_id){
-    
+    public function sessionStatusCapture($status, $booktrial_id,$qrcode=false){
+        
         $booktrial = Booktrial::find(intval($booktrial_id));
 
         if(!$booktrial){
@@ -7208,18 +7242,21 @@ class SchedulebooktrialsController extends \BaseController {
         $payment_done = !(isset($booktrial->payment_done) && !$booktrial->payment_done);
 
         $pending_payment = [
-                'header'=>"Pending Amount ₹".$booktrial['amount_finder'],
+                'header'=>"Pending Amount ".$this->utilities->getRupeeForm($booktrial['amount_finder']),
                 'sub_header'=>"Make sure you pay up, to earn Cashback & continue booking more sessions",
                 'order_id'=>$booktrial['order_id'],
 	            'trial_id'=>$booktrial['_id']
         ];
 
+        if(!empty($booktrial['order_id']))
+        	$pending_payment['order_id']=$booktrial['order_id'];
+        	 
         $streak = array_column(Config::get('app.streak_data'), 'number');
 
         switch($status){
 
             case 'activate':
-
+                Log::info($_SERVER['REQUEST_URI']);
                 if(!isset($_GET['vendor_code'])){
                     return Response::json(array('status'=>400, 'message'=>'Fitcode not attached'), 200);
                 }
@@ -7227,7 +7264,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $verify_fitcode_result = json_decode(json_encode($this->verifyFitCode($booktrial_id, $vendor_code)->getData()));
                 
                 if($verify_fitcode_result->status==400){
-                    return Response::json(array('status'=>400, 'message'=>'Invalid Fitcode entered'), 200);
+                	return Response::json(array('status'=>400, 'message'=>$verify_fitcode_result['message']), 200);
                 }
 
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
@@ -7245,6 +7282,12 @@ class SchedulebooktrialsController extends \BaseController {
                         'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
                     ]
                 ];
+
+                $voucher_response = $this->utilities->attachExternalVoucher($booktrial);
+
+                if($voucher_response){
+                    $response['voucher_data'] = $voucher_response;
+                }
 
                 // if(!$customer_level_data['maxed_out']){
                 //     $response['streak']['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions!';
@@ -7266,6 +7309,10 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
                 }
 
+                if(isset($_GET['source']) && $_GET['source'] == 'let_us_know'){
+                    $response['header'] = 'GREAT';
+                }
+
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
@@ -7283,13 +7330,19 @@ class SchedulebooktrialsController extends \BaseController {
                     'status'=>200,
                     'header'=>'DON’T WORRY',
                     'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
-                    'sub_header_1'=>$customer_level_data['next_session']['cashback'].'% Cashback',
-                    'sub_header_2'=>' will be added in your wallet once we verify your attendance with '.ucwords($booktrial['finder_name']),
+                    'sub_header_1'=>$customer_level_data['current_level']['cashback'].'% Cashback',
+                    'sub_header_2'=>' is added in your wallet. Use this to book your next session with lowest price.',
                     'streak'=>[
                         'header'=>'STREAK IT OUT',
                         'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
                     ]
                 ];
+
+                $voucher_response = $this->utilities->attachExternalVoucher($booktrial);
+
+                if($voucher_response){
+                    $response['voucher_data'] = $voucher_response;
+                }
 
                 if(isset($_GET['source']) && $_GET['source'] == 'let_us_know'){
                     $response['header'] = 'GREAT';
@@ -7301,7 +7354,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if($booktrial['type'] == 'booktrials'){
                     unset($response['sub_header_1']);
-                    $response['sub_header_2'] = "Surprise discount will be given to you in form of fitcash post we verify your attendance with ".ucwords($booktrial['finder_name']);
+                    $response['sub_header_2'] = " Fitcash is added in your wallet. Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price.";;
                 }
 
                 Log::info("removing n+2 communication");
@@ -7626,6 +7679,168 @@ class SchedulebooktrialsController extends \BaseController {
             return true;
         }
         return false;
+    }
+
+    public function skipreview($booktrial_id){
+        Booktrial::where('_id', intval($booktrial_id))->update(['skip_review'=>true]);
+        return ['status'=>200];
+    }   
+    
+    public function addCustomersForTrial(){
+        
+        $req = Input::json()->all();
+
+        // if($this->device_type){
+        //     $req['source'] = $this->device_type;
+        // }
+        
+        $rules = [
+            'booktrial_id' => 'required|integer|numeric',
+            'invitees' => 'required|array',
+            // 'source' => 'in:android,ios,website',
+        ];
+        $validator = Validator::make($req, $rules);
+
+        if($validator->fails()) {
+            $resp = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+            return  Response::json($resp, 400);
+        }
+
+        Log::info('inviteForTrial',$req);
+
+        $inviteesData = [];
+
+        foreach ($req['invitees'] as $value){
+
+            
+            $rules = [
+                'name' => 'required|string',
+                'input' => 'required|string',
+            ];
+            $messages = [
+                'name' => 'invitee name is required',
+                'input' => 'invitee email or phone is required'
+            ];
+            $validator = Validator::make($value, $rules, $messages);
+            
+            if ($validator->fails()) {
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => $this->errorMessage($validator->errors()
+                    )),400
+                );
+            }
+            
+            $inviteeData = ['name'=>$value['name']];
+
+            if(filter_var($value['input'], FILTER_VALIDATE_EMAIL) != '') {
+                // valid address
+                $inviteeData = array_add($inviteeData, 'email', $value['input']);
+            }
+            else if(filter_var($value['input'], FILTER_VALIDATE_REGEXP, array(
+                    "options" => array("regexp"=>"/^[2-9]{1}[0-9]{9}$/")
+                )) != ''){
+                // valid phone
+                $inviteeData = array_add($inviteeData, 'phone', $value['input']);
+
+            }
+            array_push($inviteesData, $inviteeData);
+
+        }
+        // return $inviteesData;
+
+        foreach ($inviteesData as $value){
+
+            $rules = [
+                'name' => 'required|string',
+                'email' => 'required_without:phone|email',
+                'phone' => 'required_without:email',
+            ];
+            $messages = [
+                'email.required_without' => 'invitee email or phone is required',
+                'phone.required_without' => 'invitee email or phone is required'
+            ];
+            $validator = Validator::make($value, $rules, $messages);
+
+            if ($validator->fails()) {
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => $this->errorMessage($validator->errors()
+                        )),400
+                );
+            }
+        }
+
+        // Get Host Data an validate booktrial ID......
+        $booktrial = Booktrial::where('_id', $req['booktrial_id'])
+            ->with('invite')
+            ->get(array(
+                'customer_id', 'customer_name', 'customer_email','customer_phone','service_name',
+                'type', 'finder_name', 'finder_location','finder_address',
+                'schedule_slot_start_time','schedule_date','schedule_date_time','type','root_booktrial_id'
+            ))
+            ->first();
+
+        if(!$booktrial){
+
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => "Invalid trial id"
+                ),422
+            );
+        }
+        return $booktrial = $booktrial->toArray();
+
+        
+
+        $emails = array_fetch($inviteesData, 'email');
+        $phones = array_fetch($inviteesData, 'phone');
+
+
+        if(array_where($emails, function ($key, $value) use($booktrial)  {
+            if($value == $booktrial['customer_email']){
+                return true;
+            }
+        })) {
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => 'You cannot invite yourself'
+                ),422
+            );
+        }
+
+        if(array_where($phones, function ($key, $value) use($booktrial)  {
+            if($value == $booktrial['customer_phone']){
+                return true;
+            }
+        })) {
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => 'You cannot invite yourself'
+                ),422
+            );
+        }
+
+        // Save Invite info..........
+        foreach ($inviteesData as $invitee){
+            
+            isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($booktrial['type'], $templateData) : null;
+            isset($templateData['invitee_phone']) ? $this->customersms->inviteSMS($booktrial['type'], $templateData) : null;
+        }
+
+        return Response::json(
+            array(
+                'status' => 200,
+                'message' => 'Invitation has been sent successfully',
+                'fitcash_added' => $cashback_amount,
+                'wallet_balance' => $customer_balance
+            ),200
+        );
     }
 
 }
