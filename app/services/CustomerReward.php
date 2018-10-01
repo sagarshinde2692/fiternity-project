@@ -360,22 +360,23 @@ Class CustomerReward {
                         $no_of_sessions = (!empty($no_of_sessions) ? ($no_of_sessions == 1 ? '1 person' : $no_of_sessions.' people') : '1 person');
 
                         $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->first();
-                        
-                        $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+                        if(!empty($mixedreward_content)){
+							$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
-                        foreach($rewards_snapfitness_contents as &$content){
-                            $content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
-                        }
+							foreach($rewards_snapfitness_contents as &$content){
+								$content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
+							}
 
-                        $reward['title'] = $mixedreward_content['title'];
-                        $reward['content'] = $rewards_snapfitness_contents;
-                        $reward['image'] = $mixedreward_content['images'][0];
-                        $images = $mixedreward_content['images'];
-                        $reward['gallery'] = $mixedreward_content['images'];
-                        $reward['new_amount'] = $mixedreward_content['total_amount'];
-                        $reward['payload']['amount'] = $mixedreward_content['total_amount'];
-                        $reward['payload_amount'] = 6000;
-                        $reward['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+							$reward['title'] = $mixedreward_content['title'];
+							$reward['content'] = $rewards_snapfitness_contents;
+							$reward['image'] = $mixedreward_content['images'][0];
+							$images = $mixedreward_content['images'];
+							$reward['gallery'] = $mixedreward_content['images'];
+							$reward['new_amount'] = $mixedreward_content['total_amount'];
+							$reward['payload']['amount'] = $mixedreward_content['total_amount'];
+							$reward['payload_amount'] = 6000;
+							$reward['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+						}
                     }
 
                 }
@@ -1127,15 +1128,15 @@ Class CustomerReward {
         if(in_array($finder_id, Config::get('app.mixed_reward_finders'))){
             
             $mixedreward_content = \MixedRewardContent::where('finder_id', $finder_id)->first();
+            if(!empty($mixedreward_content)){
+				$custom_cashback = intval($mixedreward_content->cashback);
             
-            $custom_cashback = intval($mixedreward_content->cashback);
-            
-            if(!empty($custom_cashback)){
-                
-                $setAlgo = array('cashback'=>$custom_cashback,'fitcash'=>$custom_cashback,'discount'=>0);
+				if(!empty($custom_cashback)){
+					
+					$setAlgo = array('cashback'=>$custom_cashback,'fitcash'=>$custom_cashback,'discount'=>0);
 
-            }
-            
+				}
+			}
         }
 
         $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids');
