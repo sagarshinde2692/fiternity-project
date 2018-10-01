@@ -6164,6 +6164,7 @@ class FindersController extends \BaseController {
 						->where('flags.state','!=', 'closed')
 						->where(function($query){$query->orWhere('membership','!=',"disable")->orWhere('trial','!=',"disable");})
 						->with(array('location'=>function($query){$query->select('name');}))
+						->remember(Config::get('app.cachetime'), 'integrated_vendor_list_'.$city_id)
 						->get(['title', 'location_id'])->toArray();
 
 		foreach($finders as &$finder){
