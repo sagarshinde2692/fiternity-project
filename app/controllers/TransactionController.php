@@ -7189,11 +7189,11 @@ class TransactionController extends \BaseController {
     							'subtitle' => 'AmazonPay',
     							'value' => 'amazonpay'
     					],
-    					[
-    							'title' => 'Mobikwik',
-    							'subtitle' => 'Mobikwik',
-    							'value' => 'mobikwik'
-    					],
+    					// [
+    					// 		'title' => 'Mobikwik',
+    					// 		'subtitle' => 'Mobikwik',
+    					// 		'value' => 'mobikwik'
+    					// ],
     					[
     							'title' => 'PayU',
     							'subtitle' => 'PayU',
