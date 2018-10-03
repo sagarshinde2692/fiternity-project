@@ -4151,10 +4151,10 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
 		}
 
-		$current_version_android = 4.5;
-		$current_version_ios = 4.5;
+		$current_version_android = 5;
+		$current_version_ios = 5;
 
-		$last_stable_version_android = 4.5;
+		$last_stable_version_android = 5;
 
 		if($data["device_type"] == "android"){
 
