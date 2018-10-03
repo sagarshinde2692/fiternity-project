@@ -2896,6 +2896,15 @@ class TransactionController extends \BaseController {
             $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $data['customer_quantity'];
         }
 
+        if(!empty($order['customer_quantity'])){
+
+            $data['ratecard_amount'] = $data['amount'];
+
+            $data['amount_finder'] = $data['amount_finder'] * $order['customer_quantity'];
+
+            $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $order['customer_quantity']['customer_quantity'];
+        }
+
         $amount = $data['amount_customer'] = $data['amount'];
 
         $convinience_fee = 0;
