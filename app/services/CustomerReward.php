@@ -1178,7 +1178,7 @@ Class CustomerReward {
 
         $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
         
-        Log::info('reward_calculation : ',$data);
+        // Log::info('reward_calculation : ',$data);
 
         return $data;
 
@@ -1347,7 +1347,7 @@ Class CustomerReward {
             
             $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
             
-            Log::info('reward_calculation : ',$data);
+            // Log::info('reward_calculation : ',$data);
 
             return $data;
 
@@ -1412,7 +1412,7 @@ Class CustomerReward {
 
             $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
             
-            Log::info('reward_calculation : ',$data);
+            // Log::info('reward_calculation : ',$data);
 
             return $data;
         }
@@ -1561,7 +1561,7 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null){
+    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null){
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
 
@@ -2071,7 +2071,11 @@ Class CustomerReward {
 
                 return $resp;
             }
-
+            if($amount){
+                $price = $amount;
+                Log::info("changing price");
+                Log::info($price);
+            }
             $discount_amount = $coupon["discount_amount"];
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
@@ -2088,6 +2092,9 @@ Class CustomerReward {
 
             if(isset($coupon['vendor_commission']) && is_numeric($coupon['vendor_commission'])){
                 $resp['vendor_commission'] = $coupon['vendor_commission'];
+            }
+            if(isset($coupon['description'])){
+                $resp['description'] = $coupon['description'];
             }
             
         }else{

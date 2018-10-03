@@ -107,6 +107,10 @@ class MyrewardController extends BaseController {
                     $value["cta"] = "Claimed";
                 }
 
+                if($value['reward_type']=='mixed'){
+                    $value['claimed'] = $value['quantity'];
+                }
+
                 $created_at = date('Y-m-d H:i:s',strtotime($value['created_at']));
                 
                 $validity_date_unix = strtotime($created_at . ' +'.(int)$value['validity_in_days'].' days');

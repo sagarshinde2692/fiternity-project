@@ -294,7 +294,15 @@ class Service extends \Basemodel{
 							}
 						}
 					}
-
+					if($value["type"] == "workout session"){
+						if($value["special_price"] > 0){
+							$value["special_price"] = intval($value["special_price"] * Config::get('app.non_peak_hours.off')) ;
+						}else{
+							if($value["price"] > 0){
+								$value["special_price"] = intval($value["price"] * Config::get('app.non_peak_hours.off')) ;
+							}
+						}	
+					}
 					if(count($ratecardoffers) && isset($ratecardoffers[0]['offer_icon'])){
 						if(in_array($value['type'], ['membership', 'packages']) && ((isset($finder['membership']) && $finder['membership'] == 'disable') || (isset($this['membership']) && $this['membership'] == 'disable') || (isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed'])) || $finder['commercial_type'] == 0)){
 							$ratecardoffers[0]['offer_icon'] = "";

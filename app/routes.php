@@ -1235,7 +1235,6 @@ Route::get('customeraddress','HomeController@getCustomerAddress');
 Route::post('customeraddress','HomeController@setCustomerAddress');
 Route::get('sendvendorotpproducts/{order_id}','TransactionController@sendVendorOTPProducts');
 
-
 Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 
 Route::get('lostFitcode','DebugController@lostFitcode');
@@ -1246,7 +1245,6 @@ Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
 
 Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRatecardSlotsByOrderId');
 
-Route::get('getcouponpackages','HomeController@getCouponPackages');
 
 Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
 
@@ -1255,3 +1253,35 @@ Route::post('inviteforevent','EventsController@inviteForEvent');
 // Music Run
 Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
 Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
+
+Route::get('customer/skipreview/{booktrial_id}','SchedulebooktrialsController@skipreview');
+
+Route::get('addpicturestoratingparams','DebugController@addPicturesToRatingParams');
+
+Route::get('finderreviewdata/{finder_id}','FindersController@finderReviewData');
+
+Route::get('toto/{vendorservice_id}', 'MigrationReverseController@tot');
+Route::get('listvalidcoupons','HomeController@listValidCoupons');
+Route::post('getunmarkedattendance','CustomerController@getCustomerUnmarkedAttendance');
+Route::post('markcustomerattendance','CustomerController@markCustomerAttendance');
+
+
+Route::get('checkexistinguser/mobikwik/{cell}','PaymentGatewayController@checkExistingUserMobikwik');
+Route::post('generateotp/{type}','PaymentGatewayController@generateOtp');\
+Route::post('generatetoken/{type}','PaymentGatewayController@generateToken');
+Route::post('regeneratetoken/mobikwik','PaymentGatewayController@regenerateTokenMobikwik');
+Route::post('createuser/mobikwik','PaymentGatewayController@createUserMobikwik');
+Route::post('checkbalance/{type}','PaymentGatewayController@checkBalance');
+Route::post('addmoney/mobikwik','PaymentGatewayController@addMoneyMobikwik');
+Route::post('debitmoney/mobikwik','PaymentGatewayController@debitMoneyMobikwik');
+Route::match(array('GET', 'POST'),'verifyaddmoney/mobikwik', 'PaymentGatewayController@verifyAddMoneyMobikwik');
+Route::post('checkstatus/mobikwik','PaymentGatewayController@checkStatusMobikwik');
+Route::get('verifypayment/{status}','PaymentGatewayController@verifyPayment');
+
+Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
+Route::post('editfriendforbooking','CustomerController@editfriendforbooking');
+Route::get('getbookingfriends','CustomerController@getallBookingfriends');
+Route::post('webcheckout','TransactionController@webcheckout');
+Route::post('addcustomersfortrial','SchedulebooktrialsController@addCustomersForTrial');
+Route::get('getcouponpackages','HomeController@getCouponPackages');
+
