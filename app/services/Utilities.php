@@ -3435,7 +3435,7 @@ Class Utilities {
                 if($member['customer_id'] == $customer_id){
                  
                     $order = \Order::find($member['order_id']);
-    
+					Log::info($order);
                     $new_member_name = $order->customer_name;
     
                     $customersms->addGroupNewMember(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name,'vendor_name'=>$order->finder_name, 'group_id'=>$group['group_id']]);
