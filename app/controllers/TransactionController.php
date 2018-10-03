@@ -2898,9 +2898,7 @@ class TransactionController extends \BaseController {
             $data['amount_finder'] = $data['amount_finder'] * $data['customer_quantity'];
 
             $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $data['customer_quantity'];
-        }
-
-        if(!empty($order['customer_quantity'])){
+        }else if(!empty($order['customer_quantity'])){
 
             $data['ratecard_amount'] = $data['amount'];
 
@@ -2908,6 +2906,8 @@ class TransactionController extends \BaseController {
 
             $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $order['customer_quantity'];
         }
+
+        
 
         $amount = $data['amount_customer'] = $data['amount'];
 
