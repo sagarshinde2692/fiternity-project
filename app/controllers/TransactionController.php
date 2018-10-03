@@ -6106,16 +6106,26 @@ class TransactionController extends \BaseController {
                 $decoded = customerTokenDecode($jwt_token);
                 
                 $customer_id = $decoded->customer->_id;
+                $data['wallet_balance'] = 0;
+                if(!empty($order)){
 
-                $getWalletBalanceData = [
-                    'finder_id'=>$ratecard['finder_id'],
-                    'order_type'=>$ratecard['type']
-                ];
-                if(isset($ratecard) && isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] == True){
-                    $data['wallet_balance'] = 0;    
+                    if(!empty($order['wallet_amount'])){
+                        $data['wallet_balance'] = $order['wallet_amount'];
+                    }
+
                 }else{
-                    $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
+                    $getWalletBalanceData = [
+                        'finder_id'=>$ratecard['finder_id'],
+                        'order_type'=>$ratecard['type']
+                    ];
+                    if(isset($ratecard) && isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] == True){
+                        $data['wallet_balance'] = 0;
+                    }else{
+                        $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
+                    }
                 }
+
+
 
                 $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
                 
