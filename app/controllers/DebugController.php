@@ -7910,7 +7910,7 @@ public function yes($msg){
 
             $order->update(["converting_membership_to_pps"=>true]);
 
-            $amount = $order->amount_finder;
+            $amount = $order->amount_customer;
 
             $amount1 = intval($amount * .8);
 
