@@ -2996,6 +2996,37 @@ class TransactionController extends \BaseController {
 
                 if(isset($new_data['wallet']) && $new_data['wallet'] == true){
 
+
+                    if(!empty($order['wallet']) && !empty($order['wallet_amount'])){
+
+                        $req = array(
+                            'customer_id'=>$order['customer_id'],
+                            'order_id'=>$order['_id'],
+                            'amount'=>$order['wallet_amount'],
+                            'type'=>'REFUND',
+                            'entry'=>'credit',
+                            'description'=>'Refund for Order ID: '.$order['_id'],
+                            'full_amount'=>true,
+                        );
+
+                        $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+
+                        if(isset($order['wallet_refund_sidekiq']) && $order['wallet_refund_sidekiq'] != ''){
+                            try {
+                                $this->sidekiq->delete($order['wallet_refund_sidekiq']);
+                            }catch(\Exception $exception){
+                                Log::error($exception);
+                            }
+                        }
+
+                        $order->unset('wallet', 'wallet_amount');
+                        // $order->unset('wallet_amount');
+
+                    }
+
+                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type']);
+
+
                     if(isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
                         $amount -= $data['cashback_detail']['amount_deducted_from_wallet'];
                     }
