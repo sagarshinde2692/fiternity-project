@@ -88,7 +88,8 @@ class TransactionController extends \BaseController {
 
     public function capture($data = null){
 
-        $data = $data ? $data : Input::json()->all();   
+        $data = $data ? $data : Input::json()->all();
+        Log::info('------------transactionCapture---------------',$data);
 
         foreach ($data as $key => $value) {
 
@@ -104,13 +105,14 @@ class TransactionController extends \BaseController {
                 $pay_later_data = $this->getPayLaterData($pay_later_order);
                 $data = array_merge($data, $pay_later_data);
             }
+            Log::info('------------transactionCapture---------------',$data);
         }
 
         if($data['type'] == 'giftcoupon'){
             return $this->giftCouponCapture();
         }
 
-        Log::info('------------transactionCapture---------------',$data);
+
 
         if(!isset($data['type'])){
             return Response::json(array('status' => 404,'message' =>'type field is required'), $this->error_status);
@@ -629,11 +631,13 @@ class TransactionController extends \BaseController {
              } catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
              } 
         }
+
             //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
 
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
 	
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+
             // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
 
             if($cashbackRewardWallet['status'] != 200){
@@ -2902,7 +2906,7 @@ class TransactionController extends \BaseController {
 
             $data['amount_finder'] = $data['amount_finder'] * $order['customer_quantity'];
 
-            $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $order['customer_quantity']['customer_quantity'];
+            $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $order['customer_quantity'];
         }
 
         $amount = $data['amount_customer'] = $data['amount'];
@@ -3041,7 +3045,7 @@ class TransactionController extends \BaseController {
 
                     }else{
 
-                        $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type']);
+                        // $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type']);
 
 
                         if(isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
@@ -3122,7 +3126,7 @@ class TransactionController extends \BaseController {
             }
 
         }
-
+        
 
         if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
 
