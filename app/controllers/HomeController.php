@@ -5240,7 +5240,7 @@ class HomeController extends BaseController {
 
         public function listValidCoupons()
         {
-        	$resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
+        	return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
         	try {
                 $data = $_GET;
                 Log::info($_GET);
