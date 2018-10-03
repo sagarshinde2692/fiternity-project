@@ -314,6 +314,10 @@ class TransactionController extends \BaseController {
 
         }
 
+        if(!empty($data['pay_later'])){
+            $data['customer_quantity'] = 1;
+        }
+
         $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
         
         $updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;
