@@ -781,6 +781,10 @@ class ServiceController extends \BaseController {
 
 				$service['cost'] = 'Free';
 			}
+
+            if($service['servicecategory_id'] == 65){
+                $service['service_name'] = $this->utilities->getGymServiceNamePPS();
+            }
 			
 			$slots = array();
 

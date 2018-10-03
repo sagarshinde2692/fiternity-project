@@ -6215,12 +6215,16 @@ class TransactionController extends \BaseController {
                 $service_id = (int) $data['service_id'];
     
                 $serviceDetail = $this->getServiceDetail($service_id);
+    
+                $data = array_merge($data,$serviceDetail['data']);
+                if(isset($data['type']) && in_array($data['type'],  ['workout-session', 'workout session', 'booktrials', 'booktrial']) && $data['servicecategory_id'] == 65){
+                    $data['service_name'] = $this->utilities->getGymServiceNamePPS();
+                }
 
                 if($serviceDetail['status'] != 200){
                     return Response::json($serviceDetail,$this->error_status);
                 }
 
-                $data = array_merge($data,$serviceDetail['data']);
             }
 
             $result['order_details'] = [
