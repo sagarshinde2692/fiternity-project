@@ -6145,6 +6145,6 @@ class FindersController extends \BaseController {
 		$this->updateFinderRatingV2($data['finder']);
 		$this->updateFinderRatingV1($data['reviewdata']);
 
-	
+	}
 
 }
