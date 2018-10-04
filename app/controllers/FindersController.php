@@ -3627,7 +3627,7 @@ class FindersController extends \BaseController {
 				->with(array('reviews'=>function($query){$query->where('status','=','1')->where('description','!=', "")->select('_id','finder_id','customer_id','rating','description','updated_at')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
                 ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews'));
                 
-            return $finderarr;
+            
 			$finder = false;
 			
 			if($finderarr){
@@ -6145,6 +6145,6 @@ class FindersController extends \BaseController {
 		$this->updateFinderRatingV2($data['finder']);
 		$this->updateFinderRatingV1($data['reviewdata']);
 
-	}
+	
 
 }
