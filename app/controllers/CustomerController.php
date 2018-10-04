@@ -1866,7 +1866,7 @@ class CustomerController extends \BaseController {
 		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? $customer->bookmarks : [];
 
 		if(empty($finderids)){
-			$responseData 		= 	['bookmarks' => [],  'message' => 'No bookmarks yet :)'];
+			$responseData 		= 	['bookmarksfinders' => [],  'message' => 'No bookmarks yet :)'];
 			return Response::json($responseData, 200);
 		}
 
@@ -6879,12 +6879,32 @@ class CustomerController extends \BaseController {
 				$response['schedule_date_time'] = strtotime($data['schedule_date_time']);
 				$response['subscription_code'] = implode('  ',str_split($data['code']));
 				$response['button_text'] = [
-					'activate'=>['text'=>'ACTIVATE SESSION','url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']],
-					'didnt_get'=>['text'=>'Didn’t get FitCode','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=activate_session"],
-					'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
+					'activate'=>[
+						'text'=>'ACTIVATE SESSION',
+						'url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']
+					],
+					'didnt_get'=>[
+						'text'=>'Didn’t get FitCode',
+						'url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=activate_session", 
+						"header"=> "Didn't get Fitcode?",
+						"subtitle"=> "Let us know the reason to assist you better",
+						"options" => [
+							[
+								"text" => "Don't have/Don't remember fitcode",
+								"url" => Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?reason=2"
+							],
+							[
+								"text" => "Gym/studio did not provide fitcode",
+								"url" => Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?reason=3"
+							]
+						]
+					],
+					'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']],
+					// 'qrcode'=>[
+					// 	'text'=> "SCAN YOUR QR CODE"
+					// ]
 				];
 				$response['block'] = true;
-
 				if(isTabActive($data['finder_id'])){
 					$response['block'] = false;
 					$response['activation_success'] = [
@@ -6894,7 +6914,6 @@ class CustomerController extends \BaseController {
 					];
 					Booktrial::where('_id', $data['_id'])->update(['kiosk_block_shown'=>true]);
 				}
-
 				break;
 			case 'let_us_know':
 			case 'n+2':

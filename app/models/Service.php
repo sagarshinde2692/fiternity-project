@@ -296,10 +296,10 @@ class Service extends \Basemodel{
 					}
 					if($value["type"] == "workout session"){
 						if($value["special_price"] > 0){
-							$value["special_price"] = intval($value["special_price"] * Config::get('app.non_peak_hours.off')) ;
+							$value["special_price"] = intval($value["special_price"]) ;
 						}else{
 							if($value["price"] > 0){
-								$value["special_price"] = intval($value["price"] * Config::get('app.non_peak_hours.off')) ;
+								$value["special_price"] = intval($value["price"]) ;
 							}
 						}	
 					}
