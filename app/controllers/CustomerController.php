@@ -7199,5 +7199,110 @@ class CustomerController extends \BaseController {
 		$userData = curl_call($qs, $wsUrl);
 		return json_decode($userData, true);
 	}
+
+    public function loyaltyProfile(){
+        return file_get_contents(join('/', [storage_path(), 'loyaltyProfile.json']));
+    }
+
+    public function registerLoyalty(){
+        $jwt_token = Request::header('Authorization');
+        $data = Input::json()->all();
+        if(!empty($jwt_token)){
+            $decoded = decode_customer_token($jwt_token);
+            $customer_id = $decoded->customer->_id;
+            $customer = Customer::active()->where('ishulluser', '!=', 1)->where('_id', $customer_id)->first();
+            if($customer){
+                if(!empty($customer->loyalty)){
+                    return Response::json(['message'=>'Already registered for Fitsquad'], 400);
+                }
+
+                $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
+                if(!empty($resp['status']) || $resp['status'] != 200){
+                    return $resp;
+                }
+
+                if(!empty($data['customer_phone'])){
+                    $customer->contact_no = substr($data['contact_no'], -10);
+                }
+
+                $fields_to_update = ['city_id', 'gender'];
+
+                foreach($fields_to_update as $field){
+
+                    if(!empty($data[$field])){
+                        $customer->$field = $data[$field];
+                    }
+
+                }
+
+                $customer->update();
+
+                return Response::json(['message'=>'Registration succesfull']);
+
+            }else{
+                $customer = Customer::active()->where('ishulluser', 1)->where('_id', $customer_id)->first();
+                if(!empty($data['password'])){
+                    $customer_update = [
+                        'name'=>$customer->name,
+                        'email'=>$customer->email,
+                        'contact_no'=>$customer->contact_no,
+                        'password'=>$data['password'],
+                        'password_confirmation'=>$data['password_confirmation'],
+                        'identity'=>'email',
+                    ];
+
+                    return $this->register($customer_update);
+
+                }else{
+                    if(!empty($customer->loyalty)){
+                        return Response::json(['message'=>'Already registered for Fitsquad'], 400);
+                    }
+                    if(!empty($data['customer_phone'])){
+                        $customer->contact_no = substr($data['contact_no'], -10);
+                    }
+
+                    $fields_to_update = ['city_id', 'gender'];
+
+                    foreach($fields_to_update as $field){
+
+                        if(!empty($data[$field])){
+                            $customer->$field = $data[$field];
+                        }
+
+                    }
+                    $customer->loyalty = time();
+                    $customer->update();
+                    $token = $this->createToken($customer);
+                    return Response::json(['message'=>'Registration succesfull', 'token'=>$token['token']]);
+                }
+
+            }
+
+        }else{
+            $rules = [
+                'customer_name' => 'required|max:255',
+                'customer_email' => 'required|email|max:255',
+                'customer_phone' => 'max:15'
+            ];
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+                return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
+            }
+            $data['customer_email'] = strtolower($data['customer_email']);
+
+            $customer = Customer::where('email',$data['customer_email'])->where('loyalty', 'exists', true)->first();
+            if($customer){
+                return Response::json(['message'=>'Already registered for Fitsquad'], 400);
+            }
+            $customer_id = autoRegisterCustomer($data);
+            $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
+            $customer = Customer::find($customer_id);
+            $token = $this->createToken($customer);
+            return Response::json(['message'=>'Registration succesfull', 'token'=>$token['token'], 'password'=>true]);
+
+        }
+    }
 	
 }

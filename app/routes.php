@@ -1255,3 +1255,7 @@ Route::post('inviteforevent','EventsController@inviteForEvent');
 // Music Run
 Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
 Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
+
+
+Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
+Route::post('registerloyalty', 'CustomerController@registerLoyalty');
