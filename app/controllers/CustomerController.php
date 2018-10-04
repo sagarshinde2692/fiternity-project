@@ -6900,9 +6900,9 @@ class CustomerController extends \BaseController {
 						]
 					],
 					'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']],
-					'qrcode'=>[
-						'text'=> "SCAN YOUR QR CODE"
-					]
+					// 'qrcode'=>[
+					// 	'text'=> "SCAN YOUR QR CODE"
+					// ]
 				];
 				$response['block'] = true;
 				if(isTabActive($data['finder_id'])){
