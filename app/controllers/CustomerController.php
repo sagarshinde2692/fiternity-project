@@ -1866,7 +1866,7 @@ class CustomerController extends \BaseController {
 		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? $customer->bookmarks : [];
 
 		if(empty($finderids)){
-			$responseData 		= 	['bookmarks' => [],  'message' => 'No bookmarks yet :)'];
+			$responseData 		= 	['bookmarksfinders' => [],  'message' => 'No bookmarks yet :)'];
 			return Response::json($responseData, 200);
 		}
 
