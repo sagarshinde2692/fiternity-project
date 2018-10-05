@@ -3446,13 +3446,26 @@ class CustomerController extends \BaseController {
 								
 
 								
-							}else if(!((isset($data['has_reviewed']) && $data['has_reviewed']) || (isset($data['skip_review']) && $data['skip_review'])) && strtotime($data['schedule_date_time']) < strtotime('-1 hour') && $this->app_version >= 5){
+							}else if(!((isset($data['has_reviewed']) && $data['has_reviewed']) || (isset($data['skip_review']) && $data['skip_review'])) && strtotime($data['schedule_date_time']) < strtotime('-1 hour')){
 
-								$data['block_screen'] = [
-									'type'=>'review',
-									// 'review_data'=>$this->notificationDataByTrialId($data['_id'], 'review'),
-									'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/review'
-								];	
+
+                                if($this->app_version >= 5){
+
+                                    $data['block_screen'] = [
+                                        'type'=>'review',
+                                        // 'review_data'=>$this->notificationDataByTrialId($data['_id'], 'review'),
+                                        'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/review'
+                                    ];	
+                                }else{
+                                    if($this->device_type == 'android'){
+                                        $data['block_screen'] = [
+                                            'type'=>'let_us_know',
+                                            'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know',
+                                            'time'=>'n+2'
+                                        ];
+                                    }
+                                }
+
 							}
 
 							$data['current_time'] = date('Y-m-d H:i:s', time());
@@ -6989,13 +7002,19 @@ class CustomerController extends \BaseController {
 				$response['block'] = false;
 			break;
 			case 'review':
-				$response = array_merge($response, $this->utilities->reviewScreenData($data));
-				$response['service_id'] = $data['service_id'];
-				$response['booktrialid'] = $data['_id'];
-				$response['finder_id'] = $data['finder_id'];
-				// $response['skip'] = Config::get('app.url')."/customer/skipreview/".$data['_id'];
-				$response['optional'] = true;
-				$response['show_rtc'] = true;
+				$app_version = Request::header('App-Version');
+				if($app_version < '5'){
+                    $response = $this->getFirstScreen($data);
+                    $response['block'] = false;
+                }else{
+                    $response = array_merge($response, $this->utilities->reviewScreenData($data));
+                    $response['service_id'] = $data['service_id'];
+                    $response['booktrialid'] = $data['_id'];
+                    $response['finder_id'] = $data['finder_id'];
+                    // $response['skip'] = Config::get('app.url')."/customer/skipreview/".$data['_id'];
+                    $response['optional'] = true;
+                    $response['show_rtc'] = true;
+                }   
 
 		}
 		$time_diff = strtotime($data['schedule_date_time']) - time();
