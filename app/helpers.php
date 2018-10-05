@@ -2817,17 +2817,17 @@ if (!function_exists(('getHash'))){
         if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios'])){
             
             if($_GET['app_version'] >= '5'){
-        
+                Log::info("Saved cards hash mobile");
                 $detailsForMobileSdk_str1  =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|'. $customer_referId .'|' . $salt ;
         
             }else{
-        
+                Log::info("default hash");
                 $detailsForMobileSdk_str1 =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
             }
         
         }else{
-        
-                $detailsForMobileSdk_str1 =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|'. $customer_referId .'|' . $salt ;
+            Log::info("Saved cards hash web");
+            $detailsForMobileSdk_str1 =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|'. $customer_referId .'|' . $salt ;
         
         }
         
