@@ -211,6 +211,12 @@ class RankingSearchController extends \BaseController
             case 'noida':
                 $city_id = 9;
                 break;
+			case 'jaipur':
+                $city_id = 11;
+                break;
+			case 'chandigarh':
+                $city_id = 12;
+                break;		
             default:
                 break;
         }

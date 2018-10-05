@@ -284,6 +284,53 @@ if(!function_exists('citywise_category')){
                 // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
 
+			$cat['jaipur'] = [
+                ["name" => "All Fitness Options","slug" => "fitness"],
+                ["name" => "Gyms","slug" => "gyms"],
+                ["name" => "Fitness Studios","slug" => "fitness-studios"],
+                ["name" => "Zumba","slug" => "zumba-classes"],
+				["name" => "Cross Functional Training","slug" => "functional-training"],
+                ["name" => "Yoga","slug" => "yoga-classes"],
+				["name" => "Dance","slug" => "dance-classes"],
+                // ["name" => "Aerobics","slug" => "aerobics"],
+                ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
+                
+                
+                // ["name" => "Swimming","slug" => "swimming-pools"],
+                // ["name" => "Aqua Fitness","slug" => "aqua-fitness"]
+                // ["name" => "Pilates","slug" => "pilates-classes"]
+                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
+                // ["name" => "Personal Trainers","slug" => "personal-trainers"],
+                // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
+                // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
+                // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
+                // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
+            ];
+
+			$cat['chandigarh'] = [
+                ["name" => "All Fitness Options","slug" => "fitness"],
+                ["name" => "Gyms","slug" => "gyms"],
+                ["name" => "Zumba","slug" => "zumba-classes"],
+				["name" => "Cross Functional Training","slug" => "functional-training"],
+				["name" => "Fitness Studios","slug" => "fitness-studios"],
+				["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
+                ["name" => "Yoga","slug" => "yoga-classes"],
+				["name" => "Pilates","slug" => "pilates-classes"],
+				["name" => "Dance","slug" => "dance-classes"],
+
+                // ["name" => "Aerobics","slug" => "aerobics"],
+                // ["name" => "Swimming","slug" => "swimming-pools"],
+                // ["name" => "Aqua Fitness","slug" => "aqua-fitness"] 
+                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
+                // ["name" => "Personal Trainers","slug" => "personal-trainers"],
+                // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
+                // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
+                // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
+                // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
+            ];
+
             $cat['all'] = [
                 ["name" => "All Fitness Options","slug" => "fitness"],
                 ["name" => "Gyms","slug" => "gyms"],
@@ -354,6 +401,12 @@ if(!function_exists('getmy_city')){
             case "pimpri-chichwad":
                 return "pune";
                 break;
+			case "chandigarh":
+                return "chandigarh";
+                break;	
+			case "jaipur":
+                return "jaipur";
+                break;		
             default: return $city;
         };
     }
@@ -412,6 +465,14 @@ if(!function_exists('ifCityPresent')){
                 $send_city = "ahmedabad";
                 $ifcity = true;
                 break;
+			case "jaipur":
+                $send_city = "jaipur";
+                $ifcity = true;
+                break;
+			case "chandigarh":
+                $send_city = "chandigarh";
+                $ifcity = true;
+                break;		
         };
         $response = array("city"=>$send_city,"found"=>$ifcity);
         return $response;
@@ -895,7 +956,7 @@ if (!function_exists(('get_elastic_category_doc'))) {
             'inputv2' => '',
             'inputv3' => '',
             'inputv4' => '',
-            'city' => array('mumbai', 'pune', 'bangalore', 'chennai', 'hyderabad', 'delhi', 'ahmedabad', 'gurgaon'),
+            'city' => array('mumbai', 'pune', 'bangalore', 'chennai', 'hyderabad', 'delhi', 'ahmedabad', 'gurgaon','jaipur','chandigarh'),
             'location' => '',
             'identifier' => 'categories',
             'slug' => $data['slug'],
@@ -3777,6 +3838,13 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
             case 'ahmedabad':
                 $ids = [65, 19, 1, 3, 5, 123];
                 break;
+
+			case 'jaipur':
+                $ids = [65, 19, 1, 3, 5, 2];
+                break;
+			case 'chandigarh':
+                $ids = [65, 19, 1, 3, 5, 2, 4];
+                break;		
             case 'all':
                 $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
                 break;
