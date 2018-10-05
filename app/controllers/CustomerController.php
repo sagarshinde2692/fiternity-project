@@ -7258,7 +7258,9 @@ class CustomerController extends \BaseController {
 
         $customer->update();
 
-        return Response::json(['message'=>'Registration succesfull']);
+        $token = $this->createToken($customer);
+   
+        return Response::json(['message'=>'Registration succesfull', 'token'=>$token['token'], 'password'=>true]);
         
     }
 	
