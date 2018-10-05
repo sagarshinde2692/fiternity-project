@@ -1259,3 +1259,5 @@ Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
 
 Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
 Route::post('registerloyalty', 'CustomerController@registerLoyalty');
+
+Route::get('integratedvendorlist/{city_id}','FindersController@integratedVendorList');
