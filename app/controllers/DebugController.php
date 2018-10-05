@@ -7987,5 +7987,19 @@ public function yes($msg){
 
 	}
 
+    public function reviewParamsPicturesStageToLive(){
+        
+        $data = json_decode(file_get_contents(join('/', [storage_path(), 'loyaltyProfile.json'])), true);
+        
+        foreach($data as $x){
+            Findercategory::where('_id', $x['_id'])->update(['detail_ratings_images'=>$x['detail_ratings_images']]);
+            // return $x['detail_ratings_images'];
+        }
+        return "done";
+
+        
+        // return $findercategories;
+    }
+
 }
 

@@ -1284,4 +1284,5 @@ Route::get('getbookingfriends','CustomerController@getallBookingfriends');
 Route::post('webcheckout','TransactionController@webcheckout');
 Route::post('addcustomersfortrial','SchedulebooktrialsController@addCustomersForTrial');
 Route::get('getcouponpackages','HomeController@getCouponPackages');
+// Route::get('reviewParamsPicturesStageToLive','DebugController@reviewParamsPicturesStageToLive');
 

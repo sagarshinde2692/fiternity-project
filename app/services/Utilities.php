@@ -5478,8 +5478,11 @@ Class Utilities {
         $detail_ratings_array = $data['category']['detail_rating'];
 
         foreach($detail_ratings_array as $key => $text){
-            // array_push($response['section_2']['detail_ratings'], ['image'=>Config::get('app.aws.detail_ratings_images.url').$data['category']['detail_ratings_images'][$key], 'text'=>$text]);
-            array_push($response['section_2']['detail_ratings'], ['text'=>$text]);
+            if(!empty($data['category']['detail_ratings_images'][$key])){
+                array_push($response['section_2']['detail_ratings'], ['image'=>Config::get('app.aws.detail_ratings_images.url').$data['category']['detail_ratings_images'][$key], 'text'=>$text]);
+            }else{
+                array_push($response['section_2']['detail_ratings'], ['text'=>$text]);
+            }
         }
 
         $response['block'] = false;
