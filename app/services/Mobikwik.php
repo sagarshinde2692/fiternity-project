@@ -27,7 +27,7 @@ Class Mobikwik {
         $this->mid = 'MBK32060';
         $this->secret_key = 'Ua59lGvaLspmYSI8dcpW1OdktNj0';
         $this->si_secret_key = 'ua57lGvakspmSf18Mrp71OdkXNj0';
-        $this->merchantname = 'Test Merchant';
+        $this->merchantname = 'Fitternity Health e-Solutions Pvt Ltd';
 
         $mobikwik_sandbox = \Config::get('app.mobikwik_sandbox');
 
