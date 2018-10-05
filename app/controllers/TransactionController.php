@@ -5127,7 +5127,11 @@ class TransactionController extends \BaseController {
         }
         
         if(!empty($booking_details_data['start_date']['value']) && !empty($booking_details_data['start_time']['value'])){
-            $booking_details_data["start_date"]["value"] = $booking_details_data["start_date"]["value"].' at '.$booking_details_data['start_time']['value'];
+            $booking_details_data["start_date"]["value"] = $booking_details_data["start_date"]["value"].' at ';
+
+            if(!empty($booking_details_data['start_time']['value']) && $booking_details_data['start_time']['value'] != '-'){
+                $booking_details_data["start_date"]["value"] = $booking_details_data["start_date"]["value"].' at '.$booking_details_data['start_time']['value']
+            }
         }
 
         
