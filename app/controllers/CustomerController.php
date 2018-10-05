@@ -7986,7 +7986,9 @@ class CustomerController extends \BaseController {
 		}
 
 		$pre_register['check_ins']['data'] = $pre_register_check_ins_data;
-		
+		if(!empty($this->device_type) && in_array($this->device_type, ['android', 'ios'])){
+			$pre_register['header']['url'] = $pre_register['footer']['url'] = $pre_register['footer']['url'].'?app=true&token='.$this->authorization.'&otp_verified='.(!empty($this->mobile_verified) ? 'true':'false');
+		}
 
 		if(!empty($jwt_token)){
 

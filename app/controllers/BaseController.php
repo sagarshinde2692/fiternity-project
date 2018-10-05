@@ -16,6 +16,7 @@ class BaseController extends Controller {
         $this->device_type = Request::header('Device-Type');
         $this->app_version = (float)Request::header('App-Version');
         $this->authorization = Request::header('Authorization');
+        $this->mobile_verified = Request::header('Mobile-Verified');
 
         $this->get_device_type = !empty($_GET['device_type']) ? $_GET['device_type'] : '' ;
         $this->get_app_version = !empty($_GET['app_version']) ? $_GET['app_version'] : '' ;
