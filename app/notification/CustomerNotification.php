@@ -314,6 +314,18 @@ Class CustomerNotification extends Notification{
 
 	}
 	
+	protected function reviewReminder($data,$delay){
+
+		$label = 'ReviewReminder-Customer';
+
+		$notif_type = 'open_trial';
+		
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"review", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/review?notif_id=');
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+	}
+	
 	
 
 	public function common($label,$data,$notif_type,$notif_object,$delay = 0){

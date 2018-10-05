@@ -101,6 +101,12 @@ class CommunicationsController extends \BaseController {
 			Log::info("$sender_class-$label");
 			
 			$data = $this->prepareData($data, $label);
+
+			if(!empty($data['abort_delay_comm'])){
+				Log::info('aborting_comm');
+				return "no communication sent";
+			}
+
 			$class = strtolower($sender_class);
 
 			$communication_keys = $transaction_data->communication_keys;
@@ -256,6 +262,14 @@ class CommunicationsController extends \BaseController {
 						}
 						break;
 					}
+				case "reviewReminder":
+					{	
+						$booktrial = Booktrial::find($data['_id']);
+						if(!empty($booktrial->skip_review) || !empty($booktrial->has_reviewed)){
+							$data['abort_delay_comm'] = true;
+						}
+						break;
+					}
 		}
 
 		if(isset($data['customer_id']) && $data['customer_id'] != ""){
@@ -265,7 +279,7 @@ class CommunicationsController extends \BaseController {
 
 		$data['booktrial_link'] = "";
 		
-		if(isset($data['finder_slug']) && $data['service_id']){
+		if(isset($data['finder_slug']) && isset($data['service_id'])){
 			$data['booktrial_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']);
 		}
 

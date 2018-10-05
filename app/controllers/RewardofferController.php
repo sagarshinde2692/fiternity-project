@@ -510,7 +510,7 @@ class RewardofferController extends BaseController {
 
                     $reward_type_order = array(
                         'fitness_kit',
-                        // 'diet_plan',
+                        //  'diet_plan',
                         'sessions',
                         'healthy_snacks',
                         'personal_trainer_at_home',

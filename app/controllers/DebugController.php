@@ -7910,7 +7910,7 @@ public function yes($msg){
 
             $order->update(["converting_membership_to_pps"=>true]);
 
-            $amount = $order->amount_finder;
+            $amount = $order->amount_customer;
 
             $amount1 = intval($amount * .8);
 
@@ -7956,6 +7956,36 @@ public function yes($msg){
     }
 
 
+	public function addPicturesToRatingParams(){
+		$filenames = array_merge(glob("*.png"), glob("*.PNG"));
+
+		$findercategories = Findercategory::active()->get(['detail_rating']);
+
+		foreach($findercategories as $cat){
+			// return $cat;
+			$detail_ratings_images = [];
+			foreach($cat['detail_rating'] as $p){
+				$x=true;
+				foreach($filenames as $name){
+					if(!empty($p) && preg_match('/'.$p.'/i', $name) && preg_match('/3x/i', $name)){
+						array_push($detail_ratings_images, urlencode($name));
+						$x=false;
+						break;
+						// return $p;
+					}	
+				}
+				if($x){
+					array_push($detail_ratings_images, "");
+				}
+
+			}
+			$cat->detail_ratings_images = $detail_ratings_images;
+			$cat->update();
+		}	
+
+		return $findercategories;
+
+	}
 
 }
 

@@ -2812,10 +2812,30 @@ if (!function_exists(('getHash'))){
         $data['verify_hash'] = hash('sha512', $verify_str);
 
         $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
-        $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+        $customer_referId                                   =   $key. ":". $data["logged_in_customer_id"];
+
+        if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios'])){
+            
+            if($_GET['app_version'] >= '5'){
+                Log::info("Saved cards hash mobile");
+                $detailsForMobileSdk_str1  =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|'. $customer_referId .'|' . $salt ;
+        
+            }else{
+                Log::info("default hash");
+                $detailsForMobileSdk_str1 =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+            }
+        
+        }else{
+            Log::info("Saved cards hash web");
+            $detailsForMobileSdk_str1 =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|'. $customer_referId .'|' . $salt ;
+        
+        }
+        
         $detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
         $data['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
-        
+        if(isset($data["with_hash_params"]) && $data["with_hash_params"] == "checkout"){
+            $data["hash_params"] = array("email"=>$email, "firstname"=>$firstname, "email"=>$email, "productinfo"=>$productinfo, "amount" => $amount, "txnid"=>$txnid, "hash"=>$data['payment_hash']);
+        }
         return $data;
     }
 }
