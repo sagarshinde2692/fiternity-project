@@ -2775,6 +2775,8 @@ if (!function_exists(('getHash'))){
     function getHash($data){
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
+        Log::info("getHash===================");
+        Log::info($data);
         $data['service_name'] = trim($data['service_name']);
         $data['finder_name'] = trim($data['finder_name']);
 
