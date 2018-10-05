@@ -5422,6 +5422,37 @@ Class Utilities {
         return ['status'=>200, 'data'=>$data];
 
     }
+
+    public function autoRegisterCustomerLoyalty($data){
+        try{
+            $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
+            if(!$customer){
+                return ['status'=>400, 'Customer already registered'];
+            }
+            
+            $loyalty = [
+                'start_date'=>new \MongoDate(strtotime('midnight')),
+                'start_date_time'=>new \MongoDate()
+            ];
+            $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type',]);
+            $loyalty = array_merge($loyalty, $fields_to_add);
+            $update_data = [
+                'loyalty'=>$loyalty 
+            ];
+            $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update($update_data);
+            if($customer){
+                return ['status'=>200];
+            }else{
+                return ['status'=>400, 'message'=>'Customer already registered'];
+            }
+        
+        }catch(Exception $e){
+        
+            Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+            return ['status'=>500, 'Please try after some time'];
+        }
+    
+    }
 	
 }
 
