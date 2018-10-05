@@ -6834,6 +6834,8 @@ class CustomerController extends \BaseController {
 
 	public function notificationDataByTrialId($booktrial_id, $label){
 
+		Log::info($_SERVER['REQUEST_URI']);
+
 		if(isset($_GET['notif_id']) && $_GET['notif_id'] != ''){
 			
 			$notificationTracking = NotificationTracking::find(intval($_GET['notif_id']));
