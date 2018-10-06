@@ -4164,16 +4164,17 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
 		}
 
-		$current_version_android = 4.5;
-		$current_version_ios = 4.5;
+		$current_version_android = 5.0;
+		$current_version_ios = 5.0;
 
-		$last_stable_version_android = 4.5;
+		$last_stable_version_android = 5.0;
 
 		if($data["device_type"] == "android"){
 
 			$result_android = array(
 				//"message" => "Version ".$current_version_android." is available on Play Store",
 				"message" => "Update is available on Play Store",
+				"dismiss" => false,
 				"force_update" => false
 			);
 
@@ -4189,6 +4190,7 @@ class CustomerController extends \BaseController {
 			"title" => "Update required",
 			"description" => "Fitternity app has been updated and you need to install a newer version of the application.",
 			"force_update" => false,
+			"dismiss" => false,
 			"available_version" => $current_version_ios,
 		);
 
