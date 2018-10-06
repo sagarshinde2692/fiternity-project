@@ -7932,6 +7932,12 @@ class CustomerController extends \BaseController {
 		
 
 		Log::info("asda");
+		if($jwt_token){
+			$pre_register["header"]["url"] .= "&token=".$jwt_token;
+		}
+		if(Request::header('Mobile-Verified')){
+			$pre_register["header"]["url"] .= "&otp_verified=".Request::header('Mobile-Verified');
+		}
 		$voucher_categories = VoucherCategory::raw(function($collection){
 			$match = [
 				'$match'=>[
