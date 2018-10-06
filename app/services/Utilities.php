@@ -5344,7 +5344,7 @@ Class Utilities {
     }
     public function updateOrderStatus($booktrial){
     	if(isset($booktrial->pay_later) && $booktrial->pay_later && isset($booktrial->payment_done) && !$booktrial->payment_done){
-    		Order::where('_id', $booktrial->order_id)->where('status', '0')->update(['status'=>'4']);
+    		\Order::where('_id', $booktrial->order_id)->where('status', '0')->update(['status'=>'4']);
     	}
     }
 
