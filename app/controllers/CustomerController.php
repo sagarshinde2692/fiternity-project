@@ -7938,9 +7938,10 @@ class CustomerController extends \BaseController {
 			}
 		}
 
-
-		if(!empty($post)){
-			
+		$customer["post"] = $post;
+		
+		if(!$post){
+			// return $customer;
 			$receipt_uploaded = !empty($customer->loyalty->receipt);
 			$post_register = Config::get('loyalty_screens.post_register');
 			$milestone_no = 1;
