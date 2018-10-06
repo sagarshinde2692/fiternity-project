@@ -1990,7 +1990,7 @@ class TransactionController extends \BaseController {
                 }
 
                 if($order->type == "memberships"){
-                    $this->utilities->afterTranSuccess($order);
+                    $this->utilities->afterTranSuccess($order, 'order');
                 }
             }
 

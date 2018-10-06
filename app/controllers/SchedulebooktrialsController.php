@@ -2440,7 +2440,8 @@ class SchedulebooktrialsController extends \BaseController {
                 }
                 
             }
-            $after_booking_response = $this->utilities->afterTranSuccess($booktrial);
+           
+            $this->utilities->afterTranSuccess($booktrial, 'booktrial');
 
             if(!empty($after_booking_response['loyalty'])){
                 $booktrial->loyalty_registration = true;
@@ -3509,7 +3510,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             
-            $after_booking_response = $this->utilities->afterTranSuccess($booktrial);
+            $after_booking_response =  $this->utilities->afterTranSuccess($booktrial, 'booktrial');
+                
             
             if(!empty($after_booking_response['loyalty'])){
                 $booktrial->loyalty_registration = true;
