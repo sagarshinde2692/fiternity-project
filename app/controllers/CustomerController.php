@@ -7923,7 +7923,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function loyaltyProfile(){
-
+		Log::info("asdas");
 		$post = true;
 		$jwt_token = Request::header('Authorization');
 		
