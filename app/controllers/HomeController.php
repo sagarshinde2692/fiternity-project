@@ -5195,9 +5195,60 @@ class HomeController extends BaseController {
         	}
         }
 
+        
+        
+        public function getCustomerAddress()
+        {
+        	
+        	try {
+        	$t=[];
+        	$tt=Request::header("Authorization");
+        	Log::info(" token  ".print_r($tt,true));
+        	$cart=$this->utilities->attachCart($t,true);
+        	$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
+
+            $finalData=['status'=>200,"response"=>[]];
+            
+            if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
+        			$finalData=['status'=>200,"response"=>$dataCart['data']];
+        		else return $dataCart;
+        			$this->utilities->fetchCustomerAddresses($finalData['response']);
+        			$cities=$this->utilities->getProductCities();
+        			if(count($cities))$finalData['response']['cities']=$cities;
+        		return $finalData;
+        	} catch (Exception $e) {
+        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}
+        }
+        
+        
+        
+        public function setCustomerAddress()
+        {
+        	try {
+        		$resp=["status"=>200,"messge"=>"Success"];
+        		$data  =  Input::json()->all();
+        		$rules = ['customer_address'=>'required'];
+        		$validator = Validator::make($data,$rules);
+        		
+        		if ($validator->fails()) {
+        			return ['status'=> 0,'message' => error_message($validator->errors())];
+        		}
+        		$added=$this->utilities->addCustomerAddress(null,$data['customer_address']);
+        		return (!empty($added))?$resp:['status'=>0,"message"=>"Couldn't add address"];
+        		
+        	} catch (Exception $e) {
+        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}
+        }
+
+        public function getCouponPackages(){
+            return GiftCoupon::active()->get();
+        }
+
         public function listValidCoupons()
         {
-        	$resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
+        	return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
         	try {
                 $data = $_GET;
                 Log::info($_GET);
@@ -5339,54 +5390,6 @@ class HomeController extends BaseController {
         		return ['status'=>400,"message"=>$message];
         		
         	}
-        }
-        
-        public function getCustomerAddress()
-        {
-        	
-        	try {
-        	$t=[];
-        	$tt=Request::header("Authorization");
-        	Log::info(" token  ".print_r($tt,true));
-        	$cart=$this->utilities->attachCart($t,true);
-        	$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
-            $finalData=['status'=>200,"response"=>[]];
-            
-            if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
-        			$finalData=['status'=>200,"response"=>$dataCart['data']];
-        		else return $dataCart;
-        			$this->utilities->fetchCustomerAddresses($finalData['response']);
-        			$cities=$this->utilities->getProductCities();
-        			if(count($cities))$finalData['response']['cities']=$cities;
-        		return $finalData;
-        	} catch (Exception $e) {
-        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
-        	}
-        }
-        
-        
-        
-        public function setCustomerAddress()
-        {
-        	try {
-        		$resp=["status"=>200,"messge"=>"Success"];
-        		$data  =  Input::json()->all();
-        		$rules = ['customer_address'=>'required'];
-        		$validator = Validator::make($data,$rules);
-        		
-        		if ($validator->fails()) {
-        			return ['status'=> 0,'message' => error_message($validator->errors())];
-        		}
-        		$added=$this->utilities->addCustomerAddress(null,$data['customer_address']);
-        		return (!empty($added))?$resp:['status'=>0,"message"=>"Couldn't add address"];
-        		
-        	} catch (Exception $e) {
-        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
-        	}
-        }
-
-        public function getCouponPackages(){
-            return GiftCoupon::active()->get();
         }
         
 }

@@ -2458,7 +2458,8 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $order->update();
             }
-
+            
+            $booktrial->update();
 
             $booktrial->update();
 
@@ -7330,7 +7331,6 @@ class SchedulebooktrialsController extends \BaseController {
                 if(isset($_GET['source']) && $_GET['source'] == 'let_us_know'){
                     $response['header'] = 'GREAT';
                 }
-	
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
@@ -7636,7 +7636,7 @@ class SchedulebooktrialsController extends \BaseController {
             $this->unsetEmptyDates($booktrial);
             $booktrial_data = $booktrial->toArray();
             $action_link = Config::get('app.url').'/updatetrialstatus/'.$_id.'/'.$source.'/'.$action.'/1';
-            $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
+            $cities 	=	City::orderBy('name')->lists('name', '_id');
             
             return View::make('trialconfirm', compact('booktrial_data', 'action_link', 'action', 'cities'));
         }

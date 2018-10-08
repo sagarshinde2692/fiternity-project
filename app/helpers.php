@@ -288,6 +288,53 @@ if(!function_exists('citywise_category')){
                 // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
 
+			$cat['jaipur'] = [
+                ["name" => "All Fitness Options","slug" => "fitness"],
+                ["name" => "Gyms","slug" => "gyms"],
+                ["name" => "Fitness Studios","slug" => "fitness-studios"],
+                ["name" => "Zumba","slug" => "zumba-classes"],
+				["name" => "Cross Functional Training","slug" => "functional-training"],
+                ["name" => "Yoga","slug" => "yoga-classes"],
+				["name" => "Dance","slug" => "dance-classes"],
+                // ["name" => "Aerobics","slug" => "aerobics"],
+                ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
+                
+                
+                // ["name" => "Swimming","slug" => "swimming-pools"],
+                // ["name" => "Aqua Fitness","slug" => "aqua-fitness"]
+                // ["name" => "Pilates","slug" => "pilates-classes"]
+                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
+                // ["name" => "Personal Trainers","slug" => "personal-trainers"],
+                // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
+                // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
+                // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
+                // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
+            ];
+
+			$cat['chandigarh'] = [
+                ["name" => "All Fitness Options","slug" => "fitness"],
+                ["name" => "Gyms","slug" => "gyms"],
+                ["name" => "Zumba","slug" => "zumba-classes"],
+				["name" => "Cross Functional Training","slug" => "functional-training"],
+				["name" => "Fitness Studios","slug" => "fitness-studios"],
+				["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
+                ["name" => "Yoga","slug" => "yoga-classes"],
+				["name" => "Pilates","slug" => "pilates-classes"],
+				["name" => "Dance","slug" => "dance-classes"],
+
+                // ["name" => "Aerobics","slug" => "aerobics"],
+                // ["name" => "Swimming","slug" => "swimming-pools"],
+                // ["name" => "Aqua Fitness","slug" => "aqua-fitness"] 
+                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
+                // ["name" => "Personal Trainers","slug" => "personal-trainers"],
+                // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
+                // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
+                // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
+                // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
+            ];
+
             $cat['all'] = [
                 ["name" => "All Fitness Options","slug" => "fitness"],
                 ["name" => "Gyms","slug" => "gyms"],
@@ -348,12 +395,22 @@ if(!function_exists('getmy_city')){
             case "gurugram":
                 return "gurgaon";
                 break;
+            case "noida":
+            case "greater noida":
+                return "noida";
+                break;
             case "pimpri":
             case "chinchwad":
             case "poona":
             case "pimpri-chichwad":
                 return "pune";
                 break;
+			case "chandigarh":
+                return "chandigarh";
+                break;	
+			case "jaipur":
+                return "jaipur";
+                break;		
             default: return $city;
         };
     }
@@ -401,7 +458,7 @@ if(!function_exists('ifCityPresent')){
                 break;
             case "noida":
             case "greater noida":
-                $send_city = "gurgaon";
+                $send_city = "noida";
                 $ifcity = true;
                 break;
             case "hyderabad":
@@ -412,6 +469,14 @@ if(!function_exists('ifCityPresent')){
                 $send_city = "ahmedabad";
                 $ifcity = true;
                 break;
+			case "jaipur":
+                $send_city = "jaipur";
+                $ifcity = true;
+                break;
+			case "chandigarh":
+                $send_city = "chandigarh";
+                $ifcity = true;
+                break;		
         };
         $response = array("city"=>$send_city,"found"=>$ifcity);
         return $response;
@@ -895,7 +960,7 @@ if (!function_exists(('get_elastic_category_doc'))) {
             'inputv2' => '',
             'inputv3' => '',
             'inputv4' => '',
-            'city' => array('mumbai', 'pune', 'bangalore', 'chennai', 'hyderabad', 'delhi', 'ahmedabad', 'gurgaon'),
+            'city' => array('mumbai', 'pune', 'bangalore', 'chennai', 'hyderabad', 'delhi', 'ahmedabad', 'gurgaon','jaipur','chandigarh'),
             'location' => '',
             'identifier' => 'categories',
             'slug' => $data['slug'],
@@ -2775,6 +2840,8 @@ if (!function_exists(('getHash'))){
     function getHash($data){
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
+        Log::info("getHash===================");
+        Log::info($data);
         $data['service_name'] = trim($data['service_name']);
         $data['finder_name'] = trim($data['finder_name']);
 
@@ -2813,7 +2880,24 @@ if (!function_exists(('getHash'))){
 
         $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
         $customer_referId                                   =   $key. ":". $data["logged_in_customer_id"];
-        $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|'. $customer_referId .'|' . $salt ;
+
+        if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios'])){
+            
+            if($_GET['app_version'] >= '5'){
+                Log::info("Saved cards hash mobile");
+                $detailsForMobileSdk_str1  =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|'. $customer_referId .'|' . $salt ;
+        
+            }else{
+                Log::info("default hash");
+                $detailsForMobileSdk_str1 =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+            }
+        
+        }else{
+            Log::info("Saved cards hash web");
+            $detailsForMobileSdk_str1 =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|'. $customer_referId .'|' . $salt ;
+        
+        }
+        
         $detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
         $data['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
         if(isset($data["with_hash_params"]) && $data["with_hash_params"] == "checkout"){
@@ -3012,7 +3096,7 @@ if (!function_exists(('getRegId'))){
 }
 
 if (!function_exists(('isNotInoperationalDate'))){
-    function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false){
+    function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null){
 
         $inoperational_dates = ['2018-05-01', '2018-08-15'];
         if(in_array($date, $inoperational_dates)){
@@ -3028,6 +3112,12 @@ if (!function_exists(('isNotInoperationalDate'))){
         $inoperational_dates = ['2018-09-13'];
 
         if(!empty($free) && in_array($date, $inoperational_dates)){
+            return false;
+        }
+        
+        $inoperational_dates = ['2018-10-02'];
+
+        if(!empty($type) && in_array($type, ['trial']) && in_array($date, $inoperational_dates)){
             return false;
         }
         
@@ -3752,6 +3842,13 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
             case 'ahmedabad':
                 $ids = [65, 19, 1, 3, 5, 123];
                 break;
+
+			case 'jaipur':
+                $ids = [65, 19, 1, 3, 5, 2];
+                break;
+			case 'chandigarh':
+                $ids = [65, 19, 1, 3, 5, 2, 4];
+                break;		
             case 'all':
                 $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
                 break;
@@ -3871,7 +3968,7 @@ if (!function_exists('encodeOrderToken')) {
     }
 
 }
-if (!function_exists('decodeOrderToken')) {
+if (!function_exists('getDynamicCouponForTheFinder')) {
 
     function getDynamicCouponForTheFinder($finder){
         $today = date('d-m-Y', strtotime(Carbon::now()->addDays(1)));

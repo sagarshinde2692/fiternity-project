@@ -91,6 +91,7 @@ class TransactionController extends \BaseController {
         $data = $data ? $data : Input::json()->all();
 
         Log::info($_SERVER['REQUEST_URI']);
+        Log::info('------------transactionCapture---------------',$data);
 
         foreach ($data as $key => $value) {
 
@@ -106,13 +107,14 @@ class TransactionController extends \BaseController {
                 $pay_later_data = $this->getPayLaterData($pay_later_order);
                 $data = array_merge($data, $pay_later_data);
             }
+            Log::info('------------transactionCapture---------------',$data);
         }
 
         if($data['type'] == 'giftcoupon'){
             return $this->giftCouponCapture();
         }
 
-        Log::info('------------transactionCapture---------------',$data);
+
 
         if(!isset($data['type'])){
             return Response::json(array('status' => 404,'message' =>'type field is required'), $this->error_status);
@@ -131,6 +133,18 @@ class TransactionController extends \BaseController {
             $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
 
             $data['finder_id'] = (int)$vendor['_id'];
+        }
+
+        if(!empty($data['type']) && $data['type'] == 'events' && !empty($data['sub_type']) && $data['sub_type'] == Config::get('app.music_run_event_type')){
+
+            $transform_response = $this->utilities->tranformEventData($data);
+
+            if($transform_response['status']!=200){
+                return Response::json($transform_response, 404);
+            }
+
+            $data = $transform_response['data'];
+
         }
 
         $rules = array(
@@ -201,8 +215,19 @@ class TransactionController extends \BaseController {
         //         'preferred_starting_date'=>'required'
         //     );
 
+
         //     $rules = array_merge($rules,$membership_rules);
         // }
+
+        if(in_array($data['type'] == 'events',$membership)){
+
+            $event_rules = [
+                'event_id'=>'required | integer',
+                'ticket_id'=>'required | integer'
+            ];
+
+            $rules = array_merge($rules,$event_rules);
+        }
 
         // if($data['type'] == 'diet_plan'){
         //     $diet_plan_rules = array(
@@ -291,6 +316,12 @@ class TransactionController extends \BaseController {
             }
 
         }
+
+        // return $data;
+
+        // if(!empty($data['pay_later'])){
+        //     $data['customer_quantity'] = 1;
+        // }
 
         $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
         
@@ -388,14 +419,6 @@ class TransactionController extends \BaseController {
                 }
     
                 $data = array_merge($data,$ratecardDetail['data']);
-    
-                // if(isset($data['customer_quantity'])){
-                    
-                //     $data['ratecard_amount'] = $data['amount'];
-                //     $data['amount'] = $data['customer_quantity'] * $data['amount'];
-                //     $data['amount_finder'] = $data['customer_quantity'] * $data['amount_finder'];
-                    
-                // }
     
             }
 
@@ -517,7 +540,7 @@ class TransactionController extends \BaseController {
             $data['vertical_type'] = 'event';
             $data['membership_duration_type'] = 'event';
             
-            $data['ticket_quantity'] = isset($data['ticket_quantity']) ? $data['ticket_quantity'] : 1;
+            $data['ticket_quantity'] = isset($data['ticket_quantity']) ? intval($data['ticket_quantity']) : 1;
             
             if(isset($data['ticket_id'])){
                 
@@ -534,6 +557,14 @@ class TransactionController extends \BaseController {
 
                     $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
 
+                    if($data['ticket_quantity'] == 4){
+                        $data['combo_discount'] = 400;
+                        $data['combo_discount_remark'] = "Buy 4 tickets, get 400 off";
+                        $data['amount'] = $data['amount'] - $data['combo_discount'];
+                        $data['amount_customer'] = $data['amount_customer'] - $data['combo_discount'];
+                        $data['amount_finder'] = $data['amount_finder'] - $data['combo_discount'];
+                    }
+
                 }else{
 
                     $resp   =   array('status' => 400,'message' => "Ticket not found");
@@ -547,6 +578,8 @@ class TransactionController extends \BaseController {
                 return Response::json($resp,$this->error_status);
                 
             }
+
+            
 
             $finder = Finder::where('_id', $data['finder_id'])->first(['title']);
             if($finder){
@@ -612,6 +645,7 @@ class TransactionController extends \BaseController {
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
 	
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+
             // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
 
             if($cashbackRewardWallet['status'] != 200){
@@ -620,6 +654,14 @@ class TransactionController extends \BaseController {
 
             $data = array_merge($data,$cashbackRewardWallet['data']);
             
+        }
+
+        if(!empty($data['donation_amount']) && is_numeric($data['donation_amount'])){
+            
+            $data['amount_final'] = $data['amount'] = $data['amount'] + $data['donation_amount'];
+            $data['amount_customer'] = $data['amount_customer'] + $data['donation_amount'];
+            $data['amount_finder'] = $data['amount_finder'] + $data['donation_amount'];
+        
         }
         
         $txnid = "";
@@ -993,12 +1035,13 @@ class TransactionController extends \BaseController {
             }
     
             // if(!empty($order['customer_quantity'])){
-                $resp['data']["pt_details"] = [
-                    "title" => "Add on",
-                    "description" => "Personal Training",
-                    "cost"=>"Rs.300",
-                    "applied" => !empty($data['pt_applied']) ? $data['pt_applied'] : false
-                ];
+
+                // $resp['data']["pt_details"] = [
+                //     "title" => "Add on",
+                //     "description" => "Personal Training",
+                //     "cost"=>"Rs.300",
+                //     "applied" => !empty($data['pt_applied']) ? $data['pt_applied'] : false
+                // ];
             // }
         }
 
@@ -2051,6 +2094,8 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            $snap_block = in_array($order['finder_id'], Config::get('app.snap_bangalore_finder_ids')) && $order['type'] == 'memberships' && time() < strtotime('29-09-2018');
+
             if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
 
                 if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
@@ -2072,23 +2117,26 @@ class TransactionController extends \BaseController {
                     }
                 }
 
+                if(!(!empty($order->duration_day) && $order->duration_day == 30  && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block)){
 
-                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-                    if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
-
+                    if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                        if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+    
+                            if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                                $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                            }else{
+                                $data['instantPurchaseFinderTiggerCount']       =   1;
+                            }
+                        }
+    
+                    }else{
                         if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
                             $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
                         }else{
                             $data['instantPurchaseFinderTiggerCount']       =   1;
                         }
                     }
-
-                }else{
-                    if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
-                        $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
-                    }else{
-                        $data['instantPurchaseFinderTiggerCount']       =   1;
-                    }
+                
                 }
                 
             }
@@ -2201,7 +2249,7 @@ class TransactionController extends \BaseController {
                     }
 
                     //no email to Healthy Snacks Beverages and Healthy Tiffins
-                    if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
+                    if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin") ) && empty($snap_block)){
                         
                         if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                             if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -2247,7 +2295,7 @@ class TransactionController extends \BaseController {
                 }
 
                 //no sms to Healthy Snacks Beverages and Healthy Tiffins
-                if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
+                if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block)){
                     
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                         if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -2863,7 +2911,17 @@ class TransactionController extends \BaseController {
             $data['amount_finder'] = $data['amount_finder'] * $data['customer_quantity'];
 
             $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $data['customer_quantity'];
+
+        }else if(!empty($order['customer_quantity'])){
+
+            $data['ratecard_amount'] = $data['amount'];
+
+            $data['amount_finder'] = $data['amount_finder'] * $order['customer_quantity'];
+
+            $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $order['customer_quantity'];
         }
+
+        
 
         $amount = $data['amount_customer'] = $data['amount'];
 
@@ -2965,37 +3023,78 @@ class TransactionController extends \BaseController {
 
                 if(isset($new_data['wallet']) && $new_data['wallet'] == true){
 
-                    if(isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
-                        $amount -= $data['cashback_detail']['amount_deducted_from_wallet'];
-                    }
 
-                    $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+                    if(!empty($order['wallet']) && !empty($order['wallet_amount']) && !empty($order['cashback_detail'])){
 
-                    if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
 
-                        $req = array(
-                            'customer_id'=>$data['customer_id'],
-                            'order_id'=>$data['order_id'],
-                            'amount'=>$data['wallet_amount'],
-                            'type'=>'DEBIT',
-                            'entry'=>'debit',
-                            'description'=> $this->utilities->getDescription($data),
-                            'finder_id'=>$data['finder_id'],
-                            'order_type'=>$data['type']
-                        );
-                        $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
-                        
-                        if($walletTransactionResponse['status'] != 200){
-                            return $walletTransactionResponse;
-                        }else{
-                            $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
+                        $data['cashback_detail'] = $order['cashback_detail'];
+
+                        if(isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+                            $amount -= $data['cashback_detail']['amount_deducted_from_wallet'];
                         }
 
-                        // Schedule Check orderfailure and refund wallet amount in that case....
-                        $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
-                        $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-                        $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+
+//                        $req = array(
+//                            'customer_id'=>$order['customer_id'],
+//                            'order_id'=>$order['_id'],
+//                            'amount'=>$order['wallet_amount'],
+//                            'type'=>'REFUND',
+//                            'entry'=>'credit',
+//                            'description'=>'Refund for Order ID: '.$order['_id'],
+//                            'full_amount'=>true,
+//                        );
+//
+//                        $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+//
+//                        if(isset($order['wallet_refund_sidekiq']) && $order['wallet_refund_sidekiq'] != ''){
+//                            try {
+//                                $this->sidekiq->delete($order['wallet_refund_sidekiq']);
+//                            }catch(\Exception $exception){
+//                                Log::error($exception);
+//                            }
+//                        }
+//
+//                        $order->unset('wallet', 'wallet_amount');
+                        // $order->unset('wallet_amount');
+
+                    }else{
+
+                        // $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type']);
+
+
+                        if(isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+                            $amount -= $data['cashback_detail']['amount_deducted_from_wallet'];
+                        }
+
+                        $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+
+                        if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
+
+                            $req = array(
+                                'customer_id'=>$data['customer_id'],
+                                'order_id'=>$data['order_id'],
+                                'amount'=>$data['wallet_amount'],
+                                'type'=>'DEBIT',
+                                'entry'=>'debit',
+                                'description'=> $this->utilities->getDescription($data),
+                                'finder_id'=>$data['finder_id'],
+                                'order_type'=>$data['type']
+                            );
+                            $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+
+                            if($walletTransactionResponse['status'] != 200){
+                                return $walletTransactionResponse;
+                            }else{
+                                $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
+                            }
+
+                            // Schedule Check orderfailure and refund wallet amount in that case....
+                            $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
+                            $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                            $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+                        }
                     }
+
 
                 }else{
 
@@ -3041,7 +3140,7 @@ class TransactionController extends \BaseController {
             }
 
         }
-
+        
 
         if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
 
@@ -5071,7 +5170,11 @@ class TransactionController extends \BaseController {
         }
         
         if(!empty($booking_details_data['start_date']['value']) && !empty($booking_details_data['start_time']['value'])){
-            $booking_details_data["start_date"]["value"] = $booking_details_data["start_date"]["value"].' at '.$booking_details_data['start_time']['value'];
+            $booking_details_data["start_date"]["value"] = $booking_details_data["start_date"]["value"];
+
+            if(!empty($booking_details_data['start_time']['value']) && $booking_details_data['start_time']['value'] != '-'){
+                $booking_details_data["start_date"]["value"] = $booking_details_data["start_date"]["value"].' at '.$booking_details_data['start_time']['value'];
+            }
         }
 
         
@@ -5770,34 +5873,29 @@ class TransactionController extends \BaseController {
     public function walletOrderCapture(){
         // ini_set('always_populate_raw_post_data', -1);
         $data = Input::all();
-
         Log::info("wallet capture");
-
         Log::info($data);
-
+        
         if(in_array($this->device_type, ['ios', 'android'])){
             $data['customer_source'] = $this->device_type;
         }
-
+        
         $rules = array(
             'amount'=>'required',
             'customer_source'=>'required',
         );
-
         $validator = Validator::make($data,$rules);
+
 
         if ($validator->fails()) {
             Log::info($validator->errors());
-
             if(Config::get('app.debug')){
                 return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
             }else{
                 return Response::json(array('status' => 404,'message' => 'Invalid request'),404);
             }
         }
-
         $jwt_token = Request::header('Authorization');
-
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
             $data['customer_email'] = $decoded->customer->email;
@@ -5816,21 +5914,17 @@ class TransactionController extends \BaseController {
         }
         
         $data = array_merge($data,$customerDetail['data']);
-
         Log::info("before pledge");
-
         Log::info($data);
 
         $data["fitcash_amount"] = round($data['amount'] * (1 + Config::get('app.add_wallet_extra')/100));
         
         $data['amount_finder'] = 0;
-
         $data['payment_mode'] = 'paymentgateway';
         
         $data['status'] = "0";
         
         $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
-
         $txnid = "";
         $successurl = "";
         $mobilehash = "";
@@ -5858,7 +5952,6 @@ class TransactionController extends \BaseController {
         }
         
         $order = new Order($data);
-
         $order->_id = $order_id;
         
         $order->save();
@@ -5887,13 +5980,9 @@ class TransactionController extends \BaseController {
         );
         $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
         return Response::json($resp);
-
     }
-    
     public function walletOrderSuccess(){
-
         $data = Input::json()->all();
-
         Log::info("wallet success");
         
         Log::info($data);
@@ -5902,30 +5991,20 @@ class TransactionController extends \BaseController {
             'order_id'=>'required',
             'status'=>'required'
         );
-
         $validator = Validator::make($data,$rules);
-
         if ($validator->fails()) {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
         
         $order_id   =   (int) $data['order_id'];
         $order      =   Order::findOrFail($order_id);
-
         if(isset($order->status) && $order->status == '1'){
-
             $resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
             return Response::json($resp,401);
-
         }
-
         $hash_verified = $this->utilities->verifyOrder($data,$order);
-
         // $hash_verified = true;
-
-
         if($data['status'] == 'success' && $hash_verified){
-
             $order->status = "1";
 
             $req = array(
@@ -5938,27 +6017,17 @@ class TransactionController extends \BaseController {
                 'entry'=>'credit',
                 'description'=>"Amount added to Wallet",
             );
-
             Log::info($req);
-
             $order->wallet_req = $req;
-
             $wallet = $this->utilities->walletTransaction($req, $order->toArray());
-
             Log::info("wallet");
-
             Log::info($wallet);
             
             // $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
-
             // $order->redis_id = $redisid;
-
             $order->wallet_balance = $this->utilities->getWalletBalance($order['customer_id']);
-
             $order->website = "www.fitternity.com";
-
             $order->update();
-
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful. ".$order['fitcash_amount']." fitcash has been added into your wallet");
             
         } else {
@@ -6125,16 +6194,26 @@ class TransactionController extends \BaseController {
                 $decoded = customerTokenDecode($jwt_token);
                 
                 $customer_id = $decoded->customer->_id;
+                $data['wallet_balance'] = 0;
+                if(!empty($order)){
 
-                $getWalletBalanceData = [
-                    'finder_id'=>$ratecard['finder_id'],
-                    'order_type'=>$ratecard['type']
-                ];
-                if(isset($ratecard) && isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] == True){
-                    $data['wallet_balance'] = 0;    
+                    if(!empty($order['wallet_amount'])){
+                        $data['wallet_balance'] = $order['wallet_amount'];
+                    }
+
                 }else{
-                    $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
+                    $getWalletBalanceData = [
+                        'finder_id'=>$ratecard['finder_id'],
+                        'order_type'=>$ratecard['type']
+                    ];
+                    if(isset($ratecard) && isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] == True){
+                        $data['wallet_balance'] = 0;
+                    }else{
+                        $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
+                    }
                 }
+
+
 
                 $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
                 
@@ -6200,12 +6279,16 @@ class TransactionController extends \BaseController {
                 $service_id = (int) $data['service_id'];
     
                 $serviceDetail = $this->getServiceDetail($service_id);
+    
+                $data = array_merge($data,$serviceDetail['data']);
+                if(isset($data['type']) && in_array($data['type'],  ['workout-session', 'workout session', 'booktrials', 'booktrial']) && $data['servicecategory_id'] == 65){
+                    $data['service_name'] = $this->utilities->getGymServiceNamePPS();
+                }
 
                 if($serviceDetail['status'] != 200){
                     return Response::json($serviceDetail,$this->error_status);
                 }
 
-                $data = array_merge($data,$serviceDetail['data']);
             }
 
             $result['order_details'] = [
@@ -7164,11 +7247,11 @@ class TransactionController extends \BaseController {
     							'subtitle' => 'AmazonPay',
     							'value' => 'amazonpay'
     					],
-    					[
-    							'title' => 'Mobikwik',
-    							'subtitle' => 'Mobikwik',
-    							'value' => 'mobikwik'
-    					],
+    					// [
+    					// 		'title' => 'Mobikwik',
+    					// 		'subtitle' => 'Mobikwik',
+    					// 		'value' => 'mobikwik'
+    					// ],
     					[
     							'title' => 'PayU',
     							'subtitle' => 'PayU',
@@ -7429,25 +7512,6 @@ class TransactionController extends \BaseController {
         Log::info('updateRatecardSlotsByOrderId');
         $this->utilities->updateRatecardSlots(['order_id'=>$order_id]);
     }
-    public function webcheckout(){
-        $data = Input::json()->all();
-        $rules = array(
-            'txnId'=>'required',
-        );
-        $validator = Validator::make($data,$rules);
-        $jwt_token = Request::header('Authorization');
-
-        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-            $decoded = customerTokenDecode($jwt_token);
-            // $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
-        }
-        $order = Order::where("txnid",$data["txnId"])->first();
-        $order["with_hash_params"] = "checkout";
-        $orderWithHash = getHash($order);
-        return $orderWithHash; 
-
-        
-    }
 
     public function giftCouponCapture(){
         
@@ -7633,5 +7697,22 @@ class TransactionController extends \BaseController {
             
     }
 
+    public function webcheckout(){
+        $data = Input::json()->all();
+        $rules = array(
+            'txnId'=>'required',
+        );
+        $validator = Validator::make($data,$rules);
+        $jwt_token = Request::header('Authorization');
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            // $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
+        }
+        $order = Order::where("txnid",$data["txnId"])->first();
+        $order["with_hash_params"] = "checkout";
+        $orderWithHash = getHash($order);
+        return $orderWithHash; 
+        
+    }
 
 }

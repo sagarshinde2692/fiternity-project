@@ -510,7 +510,7 @@ class RewardofferController extends BaseController {
 
                     $reward_type_order = array(
                         'fitness_kit',
-                        // 'diet_plan',
+                        //  'diet_plan',
                         'sessions',
                         'healthy_snacks',
                         'personal_trainer_at_home',
@@ -1047,47 +1047,49 @@ class RewardofferController extends BaseController {
             $rewardObj = Reward::where('quantity_type','mixed')->first();
                 
             $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();
-            
-            if($rewardObj && $mixedreward_content){
+            if(!empty($mixedreward_content)){
+				if($rewardObj && $mixedreward_content){
                     
-                $rewards = [];
+					$rewards = [];
 
-                $rewardObjData = $rewardObj->toArray();
+					$rewardObjData = $rewardObj->toArray();
 
-                unset($rewardObjData['rewrardoffers']);
-                unset($rewardObjData['updated_at']);
-                unset($rewardObjData['created_at']);
+					unset($rewardObjData['rewrardoffers']);
+					unset($rewardObjData['updated_at']);
+					unset($rewardObjData['created_at']);
 
-                $swimming_session_array = Config::get('fitness_kit.swimming_session');
+					$swimming_session_array = Config::get('fitness_kit.swimming_session');
 
-                foreach ($swimming_session_array as $data_key => $data_value) {
+					foreach ($swimming_session_array as $data_key => $data_value) {
 
-                    if($amount >= $data_value['min'] ){
+						if($amount >= $data_value['min'] ){
 
-                        $no_of_sessions = $data_value['total'];
-                        break;
-                    }
-                }
+							$no_of_sessions = $data_value['total'];
+							break;
+						}
+					}
 
-                $no_of_sessions = (!empty($no_of_sessions) ? ($no_of_sessions == 1 ? '1 person' : $no_of_sessions.' people') : '1 person');
+					$no_of_sessions = (!empty($no_of_sessions) ? ($no_of_sessions == 1 ? '1 person' : $no_of_sessions.' people') : '1 person');
 
-                $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+					$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
-                foreach($rewards_snapfitness_contents as &$content){
-                    $content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
-                }
+					foreach($rewards_snapfitness_contents as &$content){
+						$content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
+					}
 
-                $rewardObjData['title'] = $mixedreward_content['title'];
-                $rewardObjData['contents'] = $rewards_snapfitness_contents;
-                $rewardObjData['image'] = $mixedreward_content['images'][0];
-                $images = $mixedreward_content['images'];
-                $rewardObjData['gallery'] = $mixedreward_content['images'];
-                $rewardObjData['new_amount'] = $mixedreward_content['total_amount'];
-                $rewardObjData['payload']['amount'] = $mixedreward_content['total_amount'];
-                $rewardObjData['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+					$rewardObjData['title'] = $mixedreward_content['title'];
+					$rewardObjData['contents'] = $rewards_snapfitness_contents;
+					$rewardObjData['image'] = $mixedreward_content['images'][0];
+					$images = $mixedreward_content['images'];
+					$rewardObjData['gallery'] = $mixedreward_content['images'];
+					$rewardObjData['new_amount'] = $mixedreward_content['total_amount'];
+					$rewardObjData['payload']['amount'] = $mixedreward_content['total_amount'];
+					$rewardObjData['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
 
-                $rewards[] = $rewardObjData;
-            }
+					$rewards[] = $rewardObjData;
+				}
+			}
+            
         }
 
         if(!empty($rewards)){

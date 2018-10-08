@@ -1210,7 +1210,7 @@ class FindersController extends \BaseController {
 					$response['vendor_stripe_data'] = "no-patti";
 				}
 				// return $response['finder']["brand_id"];
-				if(isset($response['finder']["brand_id"]) && in_array($response['finder']["brand_id"],[134,33])){
+				// if(isset($response['finder']["brand_id"]) && in_array($response['finder']["brand_id"],[134,33])){
 				
 					if(isset($response['finder']['stripe_text'])){
 						$response['vendor_stripe_data']	=	[
@@ -1227,17 +1227,17 @@ class FindersController extends \BaseController {
 							'background'=> (!empty($response['finder']['info']['stripe']['background_color']))?$response['finder']['info']['stripe']['background_color']:""
 					];
 					} else{
-						// $coupon = getDynamicCouponForTheFinder($finder);
-						// if($coupon["text"] != ""){
-						// 	$response['vendor_stripe_data']	=	[
-						// 		'text'=> $coupon["text"],
-						// 		'background-color'=> "",
-						// 		'text_color'=> ""
-						// 	];
-						// 	$response["code_applicable"] = $coupon["code"];
-						// }
+						$coupon = getDynamicCouponForTheFinder($finder);
+						if($coupon["text"] != ""){
+							$response['vendor_stripe_data']	=	[
+								'text'=> $coupon["text"],
+								'background-color'=> "",
+								'text_color'=> ""
+							];
+							$response["code_applicable"] = $coupon["code"];
+						}
 					}
-				}
+				// }
 				unset($response['finder']['info']['stripe']);
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
@@ -2344,9 +2344,6 @@ class FindersController extends \BaseController {
 	}
 
 	public function updateFinderRatingV2($finder){
-		Log::info("updating updateFinderRatingV2");
-		// Log::info(gettype($finder));
-		// Log::info($finder);
 		$finder = Finder::find($finder['_id']);
 		
 		$review = Review::where('finder_id',$finder->_id)->get();
@@ -2406,9 +2403,6 @@ class FindersController extends \BaseController {
 	}
 
 	public function updateFinderRatingV1 ($review, $oldreview = NULL ){
-		Log::info('updateFinderRatingV1');
-		// Log::info(gettype($review));
-		// Log::info($review);
 		$data                   =   $review;
 		$total_rating_count     =   round(floatval(Input::json()->get('total_rating_count')),1);
 		$average_rating         =   round(floatval(Input::json()->get('average_rating')),1);
@@ -2646,8 +2640,6 @@ class FindersController extends \BaseController {
 		$finder_id          =   (int) $finder_id;
 		$from               =   ($from != '') ? intval($from) : 0;
 		$size               =   ($size != '') ? intval($size) : 10;
-		// $total_review = Review::active()->where('finder_id','=',$finder_id)->count(); 
-		// $non_empty_review_count = Review::active()->where('finder_id','=',$finder_id)->where('description', '')->count(); 
 		$reviews            =   Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->where('description', '!=', '')->take($size)->skip($from)->orderBy('updated_at', 'desc')->get();
 
 		// return $reviews;
@@ -3635,7 +3627,7 @@ class FindersController extends \BaseController {
 				->with(array('reviews'=>function($query){$query->where('status','=','1')->where('description','!=', "")->select('_id','finder_id','customer_id','rating','description','updated_at')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
                 ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews'));
                 
-
+            
 			$finder = false;
 			
 			if($finderarr){
@@ -5781,7 +5773,7 @@ class FindersController extends \BaseController {
 					}
 
 					if(!empty($ratecard['offers'][0]['callout'])){
-						$return['callout'] .= $ratecard['offers'][0]['callout'];
+						$return['callout'] = $ratecard['offers'][0]['callout'];
 					}
 
 					$return['ratecard_id'] = (int)$ratecard['_id'];
@@ -6178,5 +6170,4 @@ class FindersController extends \BaseController {
 		return $finders;
 
 	}
-
 }

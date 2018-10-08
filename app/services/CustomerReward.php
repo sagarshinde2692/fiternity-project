@@ -360,22 +360,23 @@ Class CustomerReward {
                         $no_of_sessions = (!empty($no_of_sessions) ? ($no_of_sessions == 1 ? '1 person' : $no_of_sessions.' people') : '1 person');
 
                         $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->first();
-                        
-                        $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+                        if(!empty($mixedreward_content)){
+							$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
-                        foreach($rewards_snapfitness_contents as &$content){
-                            $content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
-                        }
+							foreach($rewards_snapfitness_contents as &$content){
+								$content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
+							}
 
-                        $reward['title'] = $mixedreward_content['title'];
-                        $reward['content'] = $rewards_snapfitness_contents;
-                        $reward['image'] = $mixedreward_content['images'][0];
-                        $images = $mixedreward_content['images'];
-                        $reward['gallery'] = $mixedreward_content['images'];
-                        $reward['new_amount'] = $mixedreward_content['total_amount'];
-                        $reward['payload']['amount'] = $mixedreward_content['total_amount'];
-                        $reward['payload_amount'] = 6000;
-                        $reward['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+							$reward['title'] = $mixedreward_content['title'];
+							$reward['content'] = $rewards_snapfitness_contents;
+							$reward['image'] = $mixedreward_content['images'][0];
+							$images = $mixedreward_content['images'];
+							$reward['gallery'] = $mixedreward_content['images'];
+							$reward['new_amount'] = $mixedreward_content['total_amount'];
+							$reward['payload']['amount'] = $mixedreward_content['total_amount'];
+							$reward['payload_amount'] = 6000;
+							$reward['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+						}
                     }
 
                 }
@@ -614,6 +615,22 @@ Class CustomerReward {
                 $customersms = new CustomerSms();
 
                 $fitcash_plus = intval($order['amount']/5);
+
+                if(!empty($order['sub_type']) && $order["sub_type"] == "music-run"){
+                    $ticket = \Ticket::find($order['ticket_id']);
+
+
+                    if(!empty($ticket) && !empty($ticket['price'])){
+                        $fitcash_plus = $order['amount']/2;
+                    }
+
+                    if(!empty($order['ticket_quantity']) && is_integer($order['ticket_quantity'])) {
+                        $fitcash_plus *= $order['ticket_quantity'];
+                    }
+
+//                    $fitcash_plus = intval($fitcash_plus) + 500;
+
+                }
 
                 if(isset($order['event_type']) && $order['event_type']=='TOI'){
                     $fitcash_plus = intval($order['amount']);
@@ -1111,15 +1128,15 @@ Class CustomerReward {
         if(in_array($finder_id, Config::get('app.mixed_reward_finders'))){
             
             $mixedreward_content = \MixedRewardContent::where('finder_id', $finder_id)->first();
+            if(!empty($mixedreward_content)){
+				$custom_cashback = intval($mixedreward_content->cashback);
             
-            $custom_cashback = intval($mixedreward_content->cashback);
-            
-            if(!empty($custom_cashback)){
-                
-                $setAlgo = array('cashback'=>$custom_cashback,'fitcash'=>$custom_cashback,'discount'=>0);
+				if(!empty($custom_cashback)){
+					
+					$setAlgo = array('cashback'=>$custom_cashback,'fitcash'=>$custom_cashback,'discount'=>0);
 
-            }
-            
+				}
+			}
         }
 
         $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids');
@@ -1613,10 +1630,13 @@ Class CustomerReward {
         }
         
         $coupon = $query->first();
-        Finder::$withoutAppends = true;
-            
-        $finder = Finder::find($ratecard->finder_id);
-        $finder_city = $finder->city_id;
+
+        if(!empty($ratecard)){
+            Finder::$withoutAppends = true;
+                
+            $finder = Finder::find($ratecard->finder_id);
+            $finder_city = $finder->city_id;
+        }
         // if(!isset($coupon) && (strtolower($couponCode) == "srfit")){
         //     $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
         //     $coupon = array("code" => strtolower($couponCode),"discount_max" => 1000,"discount_amount" => 0,"discount_min" => 200);
@@ -1636,18 +1656,18 @@ Class CustomerReward {
         //     }
         // }
         if(!isset($coupon)){
-            // $couponRecieved = getDynamicCouponForTheFinder($finder);
-            // if($couponRecieved["code"] != ""){
-            //     if( $couponRecieved["code"] == strtolower($couponCode)){
-            //         $coupon = $couponRecieved;
-            //     }else{
-            //         $finder_detail = Cache::tags('finder_detail')->has($finder["slug"]) ? Cache::tags('finder_detail')->has($finder["slug"]) : false;
-            //         if($finder_detail && isset($finder_detail["code_applicable"]) && $finder_detail["code_applicable"] == strtolower($couponCode)){
-            //             $this->cacheapi->flushTagKey('finder_detail',$finder["slug"]);
-            //             return $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "error_message"=>"Coupon not valid for this transaction. You can use ".$couponRecieved["code"]. " instead");
-            //         }
-            //     }
-            // }
+            $couponRecieved = getDynamicCouponForTheFinder($finder);
+            if($couponRecieved["code"] != ""){
+                if( $couponRecieved["code"] == strtolower($couponCode)){
+                    $coupon = $couponRecieved;
+                }else{
+                    $finder_detail = Cache::tags('finder_detail')->has($finder["slug"]) ? Cache::tags('finder_detail')->has($finder["slug"]) : false;
+                    if($finder_detail && isset($finder_detail["code_applicable"]) && $finder_detail["code_applicable"] == strtolower($couponCode)){
+                        $this->cacheapi->flushTagKey('finder_detail',$finder["slug"]);
+                        return $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "error_message"=>"Coupon not valid for this transaction. You can use ".$couponRecieved["code"]. " instead");
+                    }
+                }
+            }
         }
         if(!isset($coupon) && (strtolower($couponCode) == "mad18") && $ratecard && $ratecard["finder_id"] == 6168){
             Log::info("New user code");

@@ -6068,6 +6068,7 @@ public function yes($msg){
 		$quantity = $data['quantity'];
 		$count = $data['count'];
 		$label = $data['label'];
+		$name = $data['name'];
 
 		$insert_codes = [];
 		$insert_code_names = [];
@@ -6076,19 +6077,14 @@ public function yes($msg){
 			Log::info($i);
 			$i++;
 			$fitcash_coupon = [];
-			$fitcash_coupon['code'] = "may".strval(rand(1111111, 99999999));
+			$fitcash_coupon['code'] = $name.strval(rand(0, 999999));
 
 			if(!in_array($fitcash_coupon['code'], $insert_code_names)){
-				// $fitcash_coupon['valid_till'] = $valid_till;
-				// $fitcash_coupon['expiry'] = $expiry;
-				// $fitcash_coupon['amount'] = $amount;
-				// $fitcash_coupon['type'] = $type;
-				// $fitcash_coupon['quantity'] = $quantity;
+
 				$fitcash_coupon['label'] = $label;
 				array_push($insert_code_names, $fitcash_coupon['code']);
 				array_push($insert_codes, $fitcash_coupon);
-				// Log::info(count($insert_code_names));
-				// Log::info($fitcash_coupon);
+
 			}
 		}
 
@@ -7902,6 +7898,64 @@ public function yes($msg){
 		return $utilities->updateRatecardSlots();
 	}
 
+	public function convertOrdersToPPS(){
+
+	    $order_ids = Input::all()['order_ids'];
+
+        $orders = Order::whereIn('_id', $order_ids)->where('converting_membership_to_pps', '!=', true)->get();
+
+        foreach ($orders as $order){
+
+            Log::info($order->_id);
+
+            $order->update(["converting_membership_to_pps"=>true]);
+
+            $amount = $order->amount_customer;
+
+            $amount1 = intval($amount * .8);
+
+            $amount2 = $amount - $amount1;
+
+    		$utilities = new Utilities();
+
+    		$walletData = array(
+                "customer_id"=> $order->customer_id,
+                "amount"=> $amount1,
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $amount1,
+                "type"=>'FITCASHPLUS',
+                'description'=>"Added FitCash+ for converting 1 month membership to pay-per-session only applicable on ".$order->finder_name,
+                'entry'=>'credit',
+                'valid_finder_id'=>$order->finder_id,
+                'remove_wallet_limit'=>true,
+                'validity'=>0,
+                'order_type'=>['workout-session', 'workout session'],
+                'membership_order_id'=>$order->_id
+            );
+
+            $walletTransaction = $utilities->walletTransactionNew($walletData);
+
+            $walletData = array(
+                "customer_id"=> $order->customer_id,
+                "amount"=> $amount2,
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $amount1,
+                "type"=>'FITCASHPLUS',
+                'description'=>"Added FitCash+ for converting 1 month membership to pay-per-session applicable across Fitternity",
+                'entry'=>'credit',
+                'remove_wallet_limit'=>true,
+                'validity'=>0,
+                'order_type'=>['workout-session', 'workout session'],
+                'membership_order_id'=>$order->_id
+            );
+
+            $walletTransaction = $utilities->walletTransactionNew($walletData);
+        }
+
+        return "done";
+    }
+
+
 	public function addPicturesToRatingParams(){
 		$filenames = array_merge(glob("*.png"), glob("*.PNG"));
 
@@ -7932,6 +7986,20 @@ public function yes($msg){
 		return $findercategories;
 
 	}
+
+    public function reviewParamsPicturesStageToLive(){
+        
+        $data = json_decode(file_get_contents(join('/', [storage_path(), 'loyaltyProfile.json'])), true);
+        
+        foreach($data as $x){
+            Findercategory::where('_id', $x['_id'])->update(['detail_ratings_images'=>$x['detail_ratings_images']]);
+            // return $x['detail_ratings_images'];
+        }
+        return "done";
+
+        
+        // return $findercategories;
+    }
 
 }
 

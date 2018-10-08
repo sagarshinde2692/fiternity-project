@@ -1329,6 +1329,7 @@ class CustomerController extends \BaseController {
 		
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
+		
 		JWT::$leeway = 500;
 		$token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
 
@@ -1867,7 +1868,7 @@ class CustomerController extends \BaseController {
 		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? $customer->bookmarks : [];
 
 		if(empty($finderids)){
-			$responseData 		= 	['bookmarks' => [],  'message' => 'No bookmarks yet :)'];
+			$responseData 		= 	['bookmarksfinders' => [],  'message' => 'No bookmarks yet :)'];
 			return Response::json($responseData, 200);
 		}
 
@@ -2203,7 +2204,8 @@ class CustomerController extends \BaseController {
 				}
 
 			}
-			$customer[0]['qrcode'] = true;
+			$customer[0]['qrcode'] = false;
+
 			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
 
 			$customer_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);                
@@ -3449,11 +3451,22 @@ class CustomerController extends \BaseController {
 								
 							}else if(!((isset($data['has_reviewed']) && $data['has_reviewed']) || (isset($data['skip_review']) && $data['skip_review'])) && strtotime($data['schedule_date_time']) < strtotime('-1 hour')){
 
-								$data['block_screen'] = [
-									'type'=>'review',
-									// 'review_data'=>$this->notificationDataByTrialId($data['_id'], 'review'),
-									'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/review'
-								];	
+                                if($this->app_version >= 5){
+
+                                    $data['block_screen'] = [
+                                        'type'=>'review',
+                                        // 'review_data'=>$this->notificationDataByTrialId($data['_id'], 'review'),
+                                        'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/review'
+                                    ];	
+                                }else{
+                                    if($this->device_type == 'android'){
+                                        $data['block_screen'] = [
+                                            'type'=>'let_us_know',
+                                            'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know',
+                                            'time'=>'n+2'
+                                        ];
+                                    }
+                                }
 							}
 
 							$data['current_time'] = date('Y-m-d H:i:s', time());
@@ -4152,16 +4165,17 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
 		}
 
-		$current_version_android = 4.5;
-		$current_version_ios = 4.5;
+		$current_version_android = 5.0;
+		$current_version_ios = 5.0;
 
-		$last_stable_version_android = 4.5;
+		$last_stable_version_android = 5.0;
 
 		if($data["device_type"] == "android"){
 
 			$result_android = array(
 				//"message" => "Version ".$current_version_android." is available on Play Store",
 				"message" => "Update is available on Play Store",
+				"dismiss" => false,
 				"force_update" => false
 			);
 
@@ -4177,6 +4191,7 @@ class CustomerController extends \BaseController {
 			"title" => "Update required",
 			"description" => "Fitternity app has been updated and you need to install a newer version of the application.",
 			"force_update" => false,
+			"dismiss" => false,
 			"available_version" => $current_version_ios,
 		);
 
@@ -6835,6 +6850,8 @@ class CustomerController extends \BaseController {
 
 	public function notificationDataByTrialId($booktrial_id, $label){
 
+		Log::info($_SERVER['REQUEST_URI']);
+
 		if(isset($_GET['notif_id']) && $_GET['notif_id'] != ''){
 			
 			$notificationTracking = NotificationTracking::find(intval($_GET['notif_id']));
@@ -6901,12 +6918,12 @@ class CustomerController extends \BaseController {
 						]
 					],
 					'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']],
-					'qrcode'=>[
-						'text'=> "SCAN YOUR QR CODE"
-					]
+
+					// 'qrcode'=>[
+					// 	'text'=> "SCAN YOUR QR CODE"
+					// ]
 				];
 				$response['block'] = true;
-
 				if(isTabActive($data['finder_id'])){
 					$response['block'] = false;
 					$response['activation_success'] = [
@@ -6916,10 +6933,10 @@ class CustomerController extends \BaseController {
 					];
 					Booktrial::where('_id', $data['_id'])->update(['kiosk_block_shown'=>true]);
 				}
-
 				break;
 			case 'let_us_know':
 			case 'n+2':
+
 				$app_version = Request::header('App-Version');
 				$device_type = Request::header('Device-Type');
 				if(($device_type == 'ios' && $app_version > '4.9') || ($device_type == 'android' && $app_version > '4.9')){
@@ -6972,7 +6989,8 @@ class CustomerController extends \BaseController {
 				}else{	
 					$response = $this->getFirstScreen($data);
 				}
-
+				
+				$response['block'] = true;
 				break;
 			case 'n-3':
 			case 'session_reminder':
@@ -6988,13 +7006,20 @@ class CustomerController extends \BaseController {
 				$response['block'] = false;
 			break;
 			case 'review':
-				$response = array_merge($response, $this->utilities->reviewScreenData($data));
-				$response['service_id'] = $data['service_id'];
-				$response['booktrialid'] = $data['_id'];
-				$response['finder_id'] = $data['finder_id'];
-				// $response['skip'] = Config::get('app.url')."/customer/skipreview/".$data['_id'];
-				$response['optional'] = true;
-				$response['show_rtc'] = true;
+
+				$app_version = Request::header('App-Version');
+				if($app_version < '5'){
+                    $response = $this->getFirstScreen($data);
+                    $response['block'] = false;
+                }else{
+                    $response = array_merge($response, $this->utilities->reviewScreenData($data));
+                    $response['service_id'] = $data['service_id'];
+                    $response['booktrialid'] = $data['_id'];
+                    $response['finder_id'] = $data['finder_id'];
+                    // $response['skip'] = Config::get('app.url')."/customer/skipreview/".$data['_id'];
+                    $response['optional'] = true;
+                    $response['show_rtc'] = true;
+                }   
 
 		}
 		$time_diff = strtotime($data['schedule_date_time']) - time();
@@ -7535,7 +7560,7 @@ class CustomerController extends \BaseController {
 					$finderarr = Finder::active()->where('_id',intval($data['vendor_id']))
 					->with(array('services'=>function($query){$query->active()->where('trial','!=','disable')->where('status','=','1')->select('*')->orderBy('ordering', 'ASC');}))
 					->first(['inoperational_dates','services', 'title']);
-					$customer = Customer::find($customer_id);
+					
 					$pnd_pymnt=$this->utilities->hasPendingPayments();
 					
 					$getWalletBalanceData = [
@@ -7639,6 +7664,7 @@ class CustomerController extends \BaseController {
 
 									$resp['response']['options']=$optionsBuy;
 								// }
+
 								$resp['response']['new_booking']=true;
 							}
 							else {
@@ -7755,8 +7781,6 @@ class CustomerController extends \BaseController {
 		if ($validator->fails()) return ['status' => 400,'message' =>$this->errorMessage($validator->errors())];
 		else
 		{
-		    Log::info("markCustomerAttendance");
-		    Log::info($data);
 			$invalid_data=array_filter($data['data'],function ($e){return (empty($e['_id'])||!isset($e['mark']));});
 			if(count($invalid_data)>0) return ['status' => 400,'message' =>"Invalid Data"];
 			$un_updated=[];$not_located=[];$already_attended=[];$attended=[];$not_attended=[];
@@ -8173,8 +8197,7 @@ class CustomerController extends \BaseController {
 					return Response::json(['message'=>'Registration succesfull', 'token'=>$token['token']]);
 
 				}
-				
-			}
+            }
 
 		
 		}else{
@@ -8451,7 +8474,4 @@ class CustomerController extends \BaseController {
 
 	}
 	
-	
-	
-			
 }

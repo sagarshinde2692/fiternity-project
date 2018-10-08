@@ -1257,6 +1257,18 @@ Route::post('getunmarkedattendance','CustomerController@getCustomerUnmarkedAtten
 Route::post('markcustomerattendance','CustomerController@markCustomerAttendance');
 
 
+
+Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
+
+Route::get('integratedvendorlist/{city_id}','FindersController@integratedVendorList');
+
+Route::post('inviteforevent','EventsController@inviteForEvent');
+
+// Music Run
+Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
+Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
+
+
 Route::get('checkexistinguser/mobikwik/{cell}','PaymentGatewayController@checkExistingUserMobikwik');
 Route::post('generateotp/{type}','PaymentGatewayController@generateOtp');\
 Route::post('generatetoken/{type}','PaymentGatewayController@generateToken');
@@ -1268,21 +1280,6 @@ Route::post('debitmoney/mobikwik','PaymentGatewayController@debitMoneyMobikwik')
 Route::match(array('GET', 'POST'),'verifyaddmoney/mobikwik', 'PaymentGatewayController@verifyAddMoneyMobikwik');
 Route::post('checkstatus/mobikwik','PaymentGatewayController@checkStatusMobikwik');
 Route::get('verifypayment/{status}','PaymentGatewayController@verifyPayment');
-
-Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
-Route::post('editfriendforbooking','CustomerController@editfriendforbooking');
-Route::get('getbookingfriends','CustomerController@getallBookingfriends');
-Route::post('webcheckout','TransactionController@webcheckout');
-Route::post('addcustomersfortrial','SchedulebooktrialsController@addCustomersForTrial');
-Route::get('getcouponpackages','HomeController@getCouponPackages');
-
-Route::get('getcouponpackages','HomeController@getCouponPackages');
-
-Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
-
-Route::get('integratedvendorlist/{city_id}','FindersController@integratedVendorList');
-
-
 ##################################################################################################
 /*******************  Loyalty API ************************************************/
 
@@ -1304,3 +1301,11 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 /******************  Loyalty API END HERE************************************************/
 #####################################################################################################
+Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
+Route::post('editfriendforbooking','CustomerController@editfriendforbooking');
+Route::get('getbookingfriends','CustomerController@getallBookingfriends');
+Route::post('webcheckout','TransactionController@webcheckout');
+Route::post('addcustomersfortrial','SchedulebooktrialsController@addCustomersForTrial');
+Route::get('getcouponpackages','HomeController@getCouponPackages');
+// Route::get('reviewParamsPicturesStageToLive','DebugController@reviewParamsPicturesStageToLive');
+

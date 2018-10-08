@@ -279,7 +279,7 @@ class CommunicationsController extends \BaseController {
 
 		$data['booktrial_link'] = "";
 		
-		if(isset($data['finder_slug']) && $data['service_id']){
+		if(isset($data['finder_slug']) && isset($data['service_id'])){
 			$data['booktrial_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']);
 		}
 

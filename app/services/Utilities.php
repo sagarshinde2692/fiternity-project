@@ -31,7 +31,8 @@ Class Utilities {
 
    
    public function __construct() {
-       
+    
+    $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
     $this->vendor_token = false;
         
     $vendor_token = Request::header('Authorization-Vendor');
@@ -1610,7 +1611,7 @@ Class Utilities {
         }
         
         if(!empty($request['remove_wallet_limit'])){
-            Log::info("increasing wallet limit for pledge");
+            Log::info("increasing wallet limit");
             $wallet_limit = 100000;
         
         }
@@ -1875,6 +1876,10 @@ Class Utilities {
             if(isset($request['order_id']) && $request['order_id'] != ""){
                 $wallet->order_id = (int)$request['order_id'];
             }
+            
+            if(isset($request['membership_order_id']) && $request['membership_order_id'] != ""){
+                $wallet->membership_order_id = (int)$request['membership_order_id'];
+            }
 
             if(isset($request['trial_id']) && $request['trial_id'] != ""){
                 $wallet->trial_id = (int)$request['trial_id'];
@@ -1911,6 +1916,10 @@ Class Utilities {
             if(isset($request['valid_finder_id']) && $request['valid_finder_id'] != ""){
 
                 $wallet->valid_finder_id = $request['valid_finder_id'];
+
+                if(empty($request['order_type'])){
+                    $wallet->order_type = ['membership','memberships','healthytiffinmembership'];
+                }
             }
 
             if(isset($request['service_id']) && $request['service_id'] != ""){
@@ -2278,18 +2287,16 @@ Class Utilities {
 
         if($finder_id && $finder_id != ""){
 
-            if(in_array($order_type,['membership','memberships'])){
+            $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
 
-                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',(int)$finder_id);});
-
-            }else{
-
-                $query->where('valid_finder_id','exists',false);
-            }
 
         }else{
 
             $query->where('valid_finder_id','exists',false);
+        }
+
+        if(!empty($data['order_type'])){
+            $query->where(function($query) use ($data){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $data['order_type']);});
         }
 
         $wallet_balance = $query->sum('balance');
@@ -2624,14 +2631,9 @@ Class Utilities {
                 }
             }
 
-            if(isset($request['order_type']) && in_array($request['order_type'],['membership','memberships','healthytiffinmembership'])){
 
-                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
+            $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
 
-            }else{
-
-                $query->where('valid_finder_id','exists',false);
-            }
 
         }else{
 
@@ -2957,15 +2959,17 @@ Class Utilities {
         }else{
         		$flags = $data['flags'];
         }
-
         $finder = Finder::find((int) $data["finder_id"]);
         
         if((isset($data['session_payment']) && $data['session_payment'])||
            ($this->vendor_token)||
            (in_array($data['finder_id'],Config::get('app.vendors_without_convenience_fee')))||
            (isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True)||
-           (!empty($data['type']) && in_array($data['type'], ["workout session", "workout-session", "trial", "booktrials"])))
+           (!empty($data['type']) && in_array($data['type'], ["workout session", "workout-session", "trial", "booktrials","events"])))
         {
+            return false;
+        }
+        if(!empty($data['type']) && $data['type'] == 'events'){
             return false;
         }
         
@@ -3435,8 +3439,8 @@ Class Utilities {
     
                 if($member['customer_id'] == $customer_id){
                  
-                    $order = \Order::find($member['order_id']);
-    
+                    $order = \Order::find(intval($member['order_id']));
+					Log::info($member['order_id']);
                     $new_member_name = $order->customer_name;
     
                     $customersms->addGroupNewMember(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name,'vendor_name'=>$order->finder_name, 'group_id'=>$group['group_id']]);
@@ -4421,7 +4425,6 @@ Class Utilities {
 														'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:"",'image'=>!empty($ratecard['image'])?$ratecard['image']:""];
 												array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
 											}
-											else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
 									}
 									else return ['status'=>0,"message"=>"Not a valid product id."];
 								}
@@ -4429,9 +4432,6 @@ Class Utilities {
 								if($update) {
 									$addedToCart=Cart::where('_id', intval($cart_id))->first();
 									$addedToCart=$addedToCart->update(['products'=>$cartData]);
-								}
-								$response['response']['data']=$cartDataExtended;
-								return $response;
 							}
 							else return ['status'=>0,"message"=>"No product Ratecards Found."];
 						}
@@ -4442,7 +4442,8 @@ Class Utilities {
 			else return ['status'=>0,"message"=>"Token Not Present"];
 			
 			return $response;
-		} catch (Exception $e)
+		} 
+        }catch (Exception $e)
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
@@ -5092,7 +5093,6 @@ Class Utilities {
 	{	if(empty($cart)||empty($cart['products']))return 0;
 		else return (!empty($cart))?array_reduce((!empty($cart['products'])?array_map(function($e){return (!empty($e['quantity'])?intval($e['quantity']):0);},$cart['products']):[]),function($carry,$item){$carry+=$item;return $carry;}):0;
 	}
-
 	public function fetchProductCities(&$data)
 	{
 		$jwt=Request::header("Authorization");
@@ -5108,8 +5108,6 @@ Class Utilities {
 		
 	}
 	
-
-
 	public function getAllProductDetails($order)
 	{
 		
@@ -5282,7 +5280,7 @@ Class Utilities {
     
     }
 
-    public function createOffer($offer_data){
+     public function createOffer($offer_data){
         
         $offer_id = \Offer::max('_id') + 1;
         $offer_data['added_by_script'] = true;
@@ -5312,7 +5310,7 @@ Class Utilities {
     }
     public function updateOrderStatus($booktrial){
     	if(isset($booktrial->pay_later) && $booktrial->pay_later && isset($booktrial->payment_done) && !$booktrial->payment_done){
-    		Order::where('_id', $booktrial->order_id)->where('status', '0')->update(['status'=>'4']);
+    		\Order::where('_id', $booktrial->order_id)->where('status', '0')->update(['status'=>'4']);
     	}
     }
 
@@ -5344,7 +5342,7 @@ Class Utilities {
     }
 
     public function attachExternalVoucher($data){
-
+        return;
         if($data['type'] != 'workout-session'){
             return;
         }
@@ -5446,7 +5444,11 @@ Class Utilities {
         $detail_ratings_array = $data['category']['detail_rating'];
 
         foreach($detail_ratings_array as $key => $text){
-            array_push($response['section_2']['detail_ratings'], ['image'=>Config::get('app.aws.detail_ratings_images.url').$data['category']['detail_ratings_images'][$key], 'text'=>$text]);
+            if(!empty($data['category']['detail_ratings_images'][$key])){
+                array_push($response['section_2']['detail_ratings'], ['image'=>Config::get('app.aws.detail_ratings_images.url').$data['category']['detail_ratings_images'][$key], 'text'=>$text]);
+            }else{
+                array_push($response['section_2']['detail_ratings'], ['text'=>$text]);
+            }
         }
 
         $response['block'] = false;
@@ -6231,6 +6233,55 @@ Class Utilities {
         }
     }
 
+
+    public function tranformEventData($data){
+
+        $rules = [
+            'customer_data'=>'required',
+        ];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return array('status' => 404,'message' => error_message($validator->errors()));
+        }
+
+        $customer = $data['customer_data']['0'];
+
+        $rules = [
+            'firstname'=>'required | string',
+            // 'lastname'=>'required | string',
+            'customer_email'=>'required | email',
+            'customer_phone'=>'required|regex:/[0-9]{10}/',
+        ];
+        
+        $validator = Validator::make($customer,$rules);
+
+        if ($validator->fails()) {
+            return array('status' => 404,'message' => error_message($validator->errors()));
+        }
+
+        $data['customer_name'] = $customer['firstname'];
+
+        if(!empty($customer['lastname'])){
+            $data['customer_name'] = $data['customer_name'].' '.$customer['lastname'];
+        }
+
+        $data = array_merge($data, array_only($customer, ['customer_email', 'customer_phone']));
+
+        return ['status'=>200, 'data'=>$data];
+
+    }
+	
+    		
+    	
+    	private function mergeCustomerToSlot($data=[],$baseData=[],$cust=null)
+    	{
+    		if(!empty($cust))
+    			return array_merge($data,$baseData,["customer_name"=>(!empty($cust['name'])?$cust['name']:""),"customer_email"=>(!empty($cust['email'])?$cust['email']:""),"customer_phone"=>(!empty($cust['contact_no'])?$cust['contact_no']:""),"customer_gender"=>(!empty($cust['gender'])?$cust['gender']:"")]);
+    		else return $data;
+    	}
+    
 }
 
 

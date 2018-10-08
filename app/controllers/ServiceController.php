@@ -781,6 +781,10 @@ class ServiceController extends \BaseController {
 
 				$service['cost'] = 'Free';
 			}
+
+            if($service['servicecategory_id'] == 65){
+                $service['service_name'] = $this->utilities->getGymServiceNamePPS();
+            }
 			
 			$slots = array();
 
@@ -899,8 +903,8 @@ class ServiceController extends \BaseController {
 						if($finder['flags']['newly_launched_date']->sec>$timestamp)
 							$dontShow=true;
 					}
-
-					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id, empty($ratecard_price) ? true : false)||(isset($dontShow)&&$dontShow)){
+    
+					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id, empty($ratecard_price) ? true : false, $ratecard['type'])||(isset($dontShow)&&$dontShow)){
 						continue;
 					}
 
@@ -1561,7 +1565,7 @@ class ServiceController extends \BaseController {
 		Log::info($_SERVER['REQUEST_URI']);
 		$cache_key = "$finder_slug-$service_slug";
 
-		if($this->app_version < 5){
+		if($this->app_version >= 5){
 			$cache_key = $cache_key.'-5';
 		}
 
@@ -1626,6 +1630,12 @@ class ServiceController extends \BaseController {
 
 			// return $service_details;
 			$service_details = $service_details->toArray();
+
+			/* $service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["title"=>Config::get('app.non_peak_hours.non_peak_title'),"sub_title"=>Config::get('app.non_peak_hours.non_peak_title')]];
+			
+			$this->utilities->getDayWs()
+			array_values(array_filter([],function ($e) use()))
+			$this->utilities->getPeakAndNonPeakPrice($service_details,$this->utilities->getPrimaryCategory(null,$service_details['_id'])); */
 
 			// $service_details['title'] = $service_details['name'].' at '.$finder['title'];
 			
