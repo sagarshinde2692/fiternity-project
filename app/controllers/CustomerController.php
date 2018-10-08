@@ -8295,7 +8295,7 @@ class CustomerController extends \BaseController {
 		$data = Input::json()->all();
 		
 		if(!$_id){
-			return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support1.'));
+			return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (1).'));
 		}
 		
 		$jwt_token = Request::header('Authorization');
@@ -8311,25 +8311,36 @@ class CustomerController extends \BaseController {
 
 			if(!empty($milestones[$voucher_category['milestone']-1])){
 				
-				if(!empty($milestones[$voucher_category['milestone']-1]['claimed'])){
-				
-					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
-				
-				}
+//				if(!empty($milestones[$voucher_category['milestone']-1]['claimed'])){
+//
+//					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
+//
+//				}
 
 
 				$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
 
 
 				if(!$voucherAttached){
-					return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support2.'));
+					return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (2).'));
 				}
-				// return 
-				$milestones[$voucher_category['milestone']-1]['claimed'] = true;
+				// return
 
-				$customer->milestones = $milestones;
+                if(empty($milestones[$voucher_category['milestone']-1]['claimed'])){
 
-				// $customer->update();
+//					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
+
+                    $milestones[$voucher_category['milestone']-1]['claimed'] = true;
+
+                    $milestones[$voucher_category['milestone']-1]['claimed_date'] = new \MongoDate(strtotime('midnight'));
+
+                    $milestones[$voucher_category['milestone']-1]['claimed_date'] = new \MongoDate();
+
+    				$customer->milestones = $milestones;
+
+                    $customer->update();
+				}
+
 
 				return $resp =  [
 					'voucher_data'=>[
@@ -8349,7 +8360,7 @@ class CustomerController extends \BaseController {
 				
 			}else{
 				
-				return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support3.'));
+				return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (3).'));
 			
 			}
 

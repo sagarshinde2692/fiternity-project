@@ -6001,22 +6001,32 @@ Class Utilities {
     
     public function assignVoucher($customer, $voucher_category){
 
-        $voucher = \LoyaltyVoucher::active()
+       $already_assigned_voucher = \LoyaltyVoucher::
+           where('voucher_category', $voucher_category->_id)
+            ->where('customer_id', $customer['_id'])
+            ->orderBy('_id', 'asc')
+            ->first();
+
+       if($already_assigned_voucher){
+           return $already_assigned_voucher;
+       }
+
+        $new_voucher = \LoyaltyVoucher::active()
             ->where('voucher_category', $voucher_category->_id)
-            // ->where('customer_id', null)
+            ->where('customer_id', null)
             ->where('expiry_date', '>', new \DateTime(date('d-m-Y', strtotime('+1 month'))))
             ->orderBy('_id', 'asc')
             ->first();
         
-        if(!$voucher){
+        if(!$new_voucher){
             return;
         }
 
-        $voucher->customer_id = $customer['_id'];
+        $new_voucher->customer_id = $customer['_id'];
 
-        $voucher->update();
+        $new_voucher->update();
 
-        return $voucher;
+        return $new_voucher;
 
     }
 
