@@ -6002,7 +6002,7 @@ Class Utilities {
     public function assignVoucher($customer, $voucher_category){
 
        $already_assigned_voucher = \LoyaltyVoucher::
-           where('voucher_category', $voucher_category->_id)
+            where('milestone', $voucher_category->milestone)
             ->where('customer_id', $customer['_id'])
             ->orderBy('_id', 'asc')
             ->first();
