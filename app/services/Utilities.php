@@ -5434,7 +5434,7 @@ Class Utilities {
                 'start_date'=>new \MongoDate(strtotime('midnight')),
                 'start_date_time'=>new \MongoDate()
             ];
-            $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type',]);
+            $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name']);
             $loyalty = array_merge($loyalty, $fields_to_add);
             $update_data = [
                 'loyalty'=>$loyalty 
