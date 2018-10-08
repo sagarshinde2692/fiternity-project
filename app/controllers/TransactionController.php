@@ -145,10 +145,13 @@ class TransactionController extends \BaseController {
         if(!empty($data['third_party'])&&$data['type']!='workout-session')
         	return Response::json(array('status'=>400, 'message'=>'Third Party currently only serving workout sessions.'), $this->error_status);
 
+            
         if(empty($data['service_id']))
         {
+            
         	Ratecard::$withoutAppends=true;
-        	$servId=Ratecard::where("_id",intval($data['ratecard_id']))->first(['service_id']);
+            $servId=Ratecard::where("_id",intval($data['ratecard_id']))->first(['service_id']);
+            Log::info('service_id: ', [$servId->service_id]);
         	(!empty($servId))?$data['service_id']=$servId->service_id:"";
         }
         
@@ -378,16 +381,31 @@ class TransactionController extends \BaseController {
                 }
     
             }
+            
             if(!empty($data['third_party']))
             {
-            	
+                // Log::info('$data["total_sessions_used"]: ', $data['total_sessions_used']);
+                Log::info('$data: ', $data);
             	if(isset($data['total_sessions_used']))
             	{
-            		if(intval($data['total_sessions_used'])>intval($data['total_sessions']))
+            		if(intval($data['total_sessions'])>intval($data['total_sessions_used']))
             		{
 	            		$data['total_sessions_used']=intval($data['total_sessions_used'])+1;
-	            		$data['total_sessions']=intval($data['total_sessions']);
-	            		$order_id = Order::max('_id') + 1;
+                        $data['total_sessions']=intval($data['total_sessions']);
+                        
+                        if(!empty($data['service_id'])){
+
+                            $service = Service::find((int)$data['service_id']);
+            
+                            if($service){
+            
+                                $data['service_name'] = $service['name'];
+                                $data['service_category_id'] = (int)$service['servicecategory_id'];
+                            }
+            
+                        }
+
+	            		$order_id = Order::orderBy('_id', 'desc')->get(['_id'])->first()->_id + 1;
 	            		$order = new Order($data);
 	            		$order->_id = $order_id;
 // 	            		verify
@@ -397,7 +415,10 @@ class TransactionController extends \BaseController {
 	            		$cust->total_sessions=intval($data['total_sessions']);
 	            		$cust->total_sessions_used=intval($data['total_sessions_used']);
 	            		$cust->third_party_token_id=$data['third_party_token_id'];
-	            		$cust->save();
+                        $cust->save();
+                        
+                        $this->utilities->createWorkoutSession($order->_id, true);
+
 	            		return Response::json(['status'=>1,"message"=>"Successfully Generated and maintained Workout session. "]);            			
             		}
             		else return Response::json(['status'=>1,"message"=>"Total sessions already crossed. "]);
@@ -503,7 +524,7 @@ class TransactionController extends \BaseController {
 
         }else{
 
-            $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+            $order_id = $data['_id'] = $data['order_id'] = Order::orderBy('_id', 'desc')->get(['_id'])->first()->_id + 1;
         }
 
         $data['code'] = (string) random_numbers(5); //(string)$data['order_id'];

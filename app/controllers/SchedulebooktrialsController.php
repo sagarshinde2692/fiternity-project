@@ -1278,7 +1278,7 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json($resp,404);
         }
 
-        $orderid 	       =	Order::max('_id') + 1;
+        $orderid 	       =	Order::orderBy('_id', 'desc')->get(['_id'])->first()->_id + 1;
         $customer_id        =	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : autoRegisterCustomer($data);
         array_set($data, 'customer_id', intval($customer_id));
 
@@ -1700,8 +1700,8 @@ class SchedulebooktrialsController extends \BaseController {
 
         $data = Input::json()->all();
 
-
-        //        return $data;
+       // return $data;
+            //    return $data;
 
        Log::info('------------bookTrialPaid------------',$data);
 
@@ -1856,7 +1856,7 @@ class SchedulebooktrialsController extends \BaseController {
             if(isset($order->booktrial_id)){
                 $booktrialid = (int)$order->booktrial_id;
             }else{
-                $booktrialid                       =    Booktrial::max('_id') + 1;
+                $booktrialid                       =    BookTrial::orderBy('_id', 'desc')->get(['_id'])->first()->_id + 1 + 1;
             }
 
             $finderid 					       = 	(int) Input::json()->get('finder_id');
@@ -2332,7 +2332,7 @@ class SchedulebooktrialsController extends \BaseController {
             $this->utilities->demonetisation($order);
 
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
-
+            Log::info("booktrial: ", [$order->booktrial_id]);
             if(isset($order->booktrial_id)){
 
                 if(isset($order->finder_slug) && isset($order->service_id) && isset($order->booktrial_id) ){

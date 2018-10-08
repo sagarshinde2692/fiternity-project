@@ -2957,7 +2957,7 @@ Class Utilities {
 
     }
 
-    public function createWorkoutSession($order_id){
+    public function createWorkoutSession($order_id, $isThirdP=false){
         
         $order = \Order::find($order_id);
 
@@ -3011,8 +3011,8 @@ Class Utilities {
         }
 
         $fitapi = new Fitapi();
-
-        $storeBooktrial = $fitapi->storeBooktrial($data);
+        Log::info('before storeBookTrial');
+        $storeBooktrial = $fitapi->storeBooktrial($data, $isThirdP);
 
         if($storeBooktrial['status'] == 200){
 
