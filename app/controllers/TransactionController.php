@@ -173,7 +173,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if(empty($data['service_id']))
+        if(empty($data['service_id']) && !empty($data['ratecard_id']))
         {
         	Ratecard::$withoutAppends=true;
         	$servId=Ratecard::find(intval($data['ratecard_id']))->first(['service_id']);
