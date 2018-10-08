@@ -7500,6 +7500,7 @@ class CustomerController extends \BaseController {
 			$decoded = customerTokenDecode($jwt_token);
 			$cust=(array)$decoded->customer;
 			$customer_id = (int)$cust['_id'];
+			$customer = Customer::find((int)$cust['_id']);
 			$device_type= Request::header('Device-Type');
 			if(empty($device_type)||!in_array($device_type, ['android','ios','web']))
 				return ['status' => 400,'message' =>"Device Type not in Header or Invalid Device Type."];
