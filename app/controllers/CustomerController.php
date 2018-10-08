@@ -2210,11 +2210,11 @@ class CustomerController extends \BaseController {
 
 			$customer_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);                
 			
-			$response['level'] = [
-				'header'=>'You’re on a workout streak!',
-				'sub_header'=>'Level '.$customer_level_data['current_level']['level'],
-				'image'=>Config::get('app.streak_data')[$customer_level_data['current_level']['level'] - 1]['unlock_icon']
-			];
+			// $response['level'] = [
+			// 	'header'=>'You’re on a workout streak!',
+			// 	'sub_header'=>'Level '.$customer_level_data['current_level']['level'],
+			// 	'image'=>Config::get('app.streak_data')[$customer_level_data['current_level']['level'] - 1]['unlock_icon']
+			// ];
 
 		}else{
 
@@ -3388,10 +3388,10 @@ class CustomerController extends \BaseController {
 								}
 								$data['current_level'] = $workout_session_level_data['current_level']['level'];
 
-								$data['streak'] = [
-									'header'=>'ATTEND MORE & UNLOCK',
-									'data'=>$this->utilities->getStreakImages($data['current_level'])
-								];	
+								// $data['streak'] = [
+								// 	'header'=>'ATTEND MORE & UNLOCK',
+								// 	'data'=>$this->utilities->getStreakImages($data['current_level'])
+								// ];	
 								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session";
 								
 							}else{
