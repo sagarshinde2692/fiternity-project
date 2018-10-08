@@ -1,0 +1,2 @@
+1. Dashboard verify receipt.
+2. Verify checkins on verification of finder and dates.
