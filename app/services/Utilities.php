@@ -6273,15 +6273,6 @@ Class Utilities {
 
     }
 	
-    		
-    	
-    	private function mergeCustomerToSlot($data=[],$baseData=[],$cust=null)
-    	{
-    		if(!empty($cust))
-    			return array_merge($data,$baseData,["customer_name"=>(!empty($cust['name'])?$cust['name']:""),"customer_email"=>(!empty($cust['email'])?$cust['email']:""),"customer_phone"=>(!empty($cust['contact_no'])?$cust['contact_no']:""),"customer_gender"=>(!empty($cust['gender'])?$cust['gender']:"")]);
-    		else return $data;
-    	}
-    
 }
 
 
