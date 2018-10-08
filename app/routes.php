@@ -1286,3 +1286,8 @@ Route::post('addcustomersfortrial','SchedulebooktrialsController@addCustomersFor
 Route::get('getcouponpackages','HomeController@getCouponPackages');
 // Route::get('reviewParamsPicturesStageToLive','DebugController@reviewParamsPicturesStageToLive');
 
+
+Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
+Route::post('registerloyalty', 'CustomerController@registerLoyalty');
+
+Route::get('integratedvendorlist/{city_id}','FindersController@integratedVendorList');
