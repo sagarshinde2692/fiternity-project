@@ -8308,12 +8308,12 @@ class CustomerController extends \BaseController {
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
 			$customer = Customer::find($customer_id);
-			$milestones = !empty($customer->milestones)	? $customer->milestones : [];
+			$milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
 
 			$voucher_category = VoucherCategory::find($_id);
 
 			if(!empty($milestones[$voucher_category['milestone']-1])){
-				
+
 //				if(!empty($milestones[$voucher_category['milestone']-1]['claimed'])){
 //
 //					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
