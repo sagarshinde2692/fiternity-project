@@ -9,6 +9,7 @@ return array(
             'enabled'=>true,
             'next_count'=>10,
             'progress'=>0,
+            'description' => 'Check-ins',
             'amount'=>0
             
         ],
@@ -18,6 +19,7 @@ return array(
             'enabled'=>false,
             'next_count'=>30,
             'progress'=>0,
+            'description' => 'Check-ins',
             'amount'=>600
 
         ],
@@ -27,6 +29,7 @@ return array(
             'enabled'=>false,
             'next_count'=>75,
             'progress'=>0,
+            'description' => 'Check-ins',
             'amount'=>1200
 
         ],
@@ -36,6 +39,7 @@ return array(
             'enabled'=>false,
             'next_count'=>150,
             'progress'=>0,
+            'description' => 'Check-ins',
             'amount'=>2000
 
         ],
@@ -45,6 +49,7 @@ return array(
             'enabled'=>false,
             'next_count'=>225,
             'progress'=>0,
+            'description' => 'Check-ins',
             'amount'=>3000
 
         ],
@@ -53,6 +58,7 @@ return array(
             'count' => 225,
             'enabled'=>false,
             'progress'=>0,
+            'description' => 'Check-ins',
             'amount'=>4000
         ],
       ]

@@ -7669,21 +7669,21 @@ class CustomerController extends \BaseController {
 							}
 							else {
 								unset($resp['response']);
-								$resp['message']="No services available right now.";
+								$resp['header']="No slots available right now.";
 							}
 						}
 						else {
 							unset($resp['response']);
-							$resp['message']="No services available.";
+							$resp['header']="No services available at this studio.";
 						}
 
 						if(!empty($resp['response'])){
 							$booking_response =$resp['response'];
 							unset($resp['response']);
 							$resp['response']['bookings'] = $booking_response;
-						}if(!empty($resp['message'])){
+						}if(!empty($resp['header'])){
 							$resp['response']['bookings'] = $resp;
-							unset($resp['message']);
+							unset($resp['header']);
 						}
 
 
@@ -7736,7 +7736,7 @@ class CustomerController extends \BaseController {
 									"subtitle"=> "Let us know the reason to assist you better",
 									"options" => [
 										[
-											"text" => "Currently hasve a membership at ".$finderarr['title'],
+											"text" => "Currently have a membership at ".$finderarr['title'],
 											"url" => Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=membership",
 										],
 										[
@@ -7948,7 +7948,7 @@ class CustomerController extends \BaseController {
 
 	public function loyaltyProfile(){
 		Log::info("asdas");
-		$post = true;
+		$post = false;
 		$jwt_token = Request::header('Authorization');
 		
 		if(!empty($jwt_token)){
@@ -7958,17 +7958,52 @@ class CustomerController extends \BaseController {
 			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', 'exists', true)->first();
 
 			if($customer){
-				$post = false;
+				$post = true;
 			}
 		}
-
-		$customer["post"] = $post;
 		
-		if(!$post){
+        $voucher_categories = VoucherCategory::raw(function($collection){
+				
+            $match = [
+                '$match'=>[
+                    'status'=>'1',
+                ]
+                
+            ];
+
+            $sort =[
+                '$sort'=>[
+                    'order'=>1
+                ]
+            ];
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$milestone',
+                    'vouchers'=>['$push'=>'$$ROOT']
+                ]
+            ];
+
+            $sort1 = [
+                '$sort'=>[
+                    '_id'=>1
+                ]
+            ];
+
+            $aggregate = [$match, $sort, $group, $sort1];
+            return $collection->aggregate($aggregate);
+        });
+	
+        $voucher_categories_map = [];
+	
+        foreach($voucher_categories['result'] as $vc){
+            $voucher_categories_map[$vc['_id']] = $vc['vouchers'];
+        }
+		
+        if($post){
 			// return $customer;
 			$receipt_uploaded = !empty($customer->loyalty->receipt);
 			$post_register = Config::get('loyalty_screens.post_register');
-			$milestone_no = 1;
 			$checkins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
 			$customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
 			$milestone_no = count($customer_milestones);
@@ -8019,16 +8054,16 @@ class CustomerController extends \BaseController {
 						$post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$post_reward_data_template['_id'];
 						$post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
 						$post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
-							if($milestone_no >= $milestone['milestone'] && empty($customer_milestones[$milestone['milestone']-1]['claimed'])){
-								$post_reward_data_template['claim_enabled'] = true;
-								if(empty($customer_milestones[$milestone['milestone']-1]['verified'])){
-									$post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
-								}
-								!isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
+                        if($milestone_no >= $milestone['milestone'] && empty($customer_milestones[$milestone['milestone']-1]['claimed'])){
+                             $post_reward_data_template['claim_enabled'] = true;
+                            if(empty($customer_milestones[$milestone['milestone']-1]['verified'])){
+                                $post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
+                            }
+                            !isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
 
-							}else{
-								$post_reward_data_template['claim_enabled'] = false;
-							}
+                        }else{
+                            $post_reward_data_template['claim_enabled'] = false;
+                        }
 						$post_reward_template['data'][] = $post_reward_data_template;
 						// return $milestone_no;
 					}
@@ -8050,43 +8085,8 @@ class CustomerController extends \BaseController {
 			Log::info(Request::header('Mobile-Verified'));
 			Log::info("asda");
 
-			$voucher_categories = VoucherCategory::raw(function($collection){
-				
-				$match = [
-					'$match'=>[
-						'status'=>'1',
-					]
-					
-				];
-	
-				$sort =[
-					'$sort'=>[
-						'order'=>1
-					]
-				];
-	
-				$group = [
-					'$group'=>[
-						'_id'=>'$milestone',
-						'vouchers'=>['$push'=>'$$ROOT']
-					]
-				];
-	
-				$sort1 = [
-					'$sort'=>[
-						'_id'=>1
-					]
-				];
-	
-				$aggregate = [$match, $sort, $group, $sort1];
-				return $collection->aggregate($aggregate);
-			});
-	
-			$voucher_categories_map = [];
-	
-			foreach($voucher_categories['result'] as $vc){
-				$voucher_categories_map[$vc['_id']] = $vc['vouchers'];
-			}
+			
+			
 	
 			$pre_register_check_ins_data = [];
 			$milestones = Config::get('loyalty_constants.milestones');
