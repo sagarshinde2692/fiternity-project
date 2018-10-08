@@ -3676,29 +3676,31 @@ class CustomerController extends \BaseController {
 			if($city){
 				
 				$homepage = Homepage::where('city_id', $city_id['_id'])->first();
-				
-				$app_banners = $homepage['app_banners'];
 
 				$campaigns = [];
+                
+                if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
 
-				foreach($app_banners as $banner){
-
-					if(isset($banner['app_version']) && (float)$_GET['app_version'] < 4.4){
-						continue;
-					}	
-
-					array_push($campaigns, $banner);
-
-				}
-	
-				function cmp($a, $b)
-				{
-					return $a['order'] - $b['order'];
-				}
-	
-				usort($campaigns, "cmp");
+                    $app_banners = $homepage['app_banners'];
 
 
+                    foreach($app_banners as $banner){
+
+                        if(isset($banner['app_version']) && (float)$_GET['app_version'] < 4.4){
+                            continue;
+                        }	
+
+                        array_push($campaigns, $banner);
+
+                    }
+        
+                    function cmp($a, $b)
+                    {
+                        return $a['order'] - $b['order'];
+                    }
+        
+                    usort($campaigns, "cmp");
+                }
 			}
 			$result['campaigns'] =  $campaigns;
 			// $result['campaigns'] =  [];
