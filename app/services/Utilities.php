@@ -4419,6 +4419,7 @@ Class Utilities {
 														'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:"",'image'=>!empty($ratecard['image'])?$ratecard['image']:""];
 												array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
 											}
+                                            else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
 									}
 									else return ['status'=>0,"message"=>"Not a valid product id."];
 								}
@@ -4426,6 +4427,9 @@ Class Utilities {
 								if($update) {
 									$addedToCart=Cart::where('_id', intval($cart_id))->first();
 									$addedToCart=$addedToCart->update(['products'=>$cartData]);
+                                }
+                                $response['response']['data']=$cartDataExtended;
+								return $response;
 							}
 							else return ['status'=>0,"message"=>"No product Ratecards Found."];
 						}
@@ -4436,8 +4440,7 @@ Class Utilities {
 			else return ['status'=>0,"message"=>"Token Not Present"];
 			
 			return $response;
-		} 
-        }catch (Exception $e)
+        } catch (Exception $e)
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
