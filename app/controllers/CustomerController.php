@@ -7938,9 +7938,10 @@ class CustomerController extends \BaseController {
 			}
 		}
 
-
-		if(!empty($post)){
-			
+		$customer["post"] = $post;
+		
+		if(!$post){
+			// return $customer;
 			$receipt_uploaded = !empty($customer->loyalty->receipt);
 			$post_register = Config::get('loyalty_screens.post_register');
 			$milestone_no = 1;
@@ -8081,7 +8082,7 @@ class CustomerController extends \BaseController {
 	
 			$pre_register['check_ins']['data'] = $pre_register_check_ins_data;
 			if(!empty($this->device_type) && in_array($this->device_type, ['android', 'ios'])){
-				$pre_register['header']['url'] = $pre_register['footer']['url'] = $pre_register['footer']['url'].'?app=true&token='.$this->authorization.'&otp_verified='.(!empty($this->mobile_verified) ? 'true':'false');
+				$pre_register['header']['url'] = $pre_register['footer']['url'] = $pre_register['header']['url'].'?app=true&token='.$this->authorization.'&otp_verified='.(!empty($this->mobile_verified) ? $this->mobile_verified:'false');
 			}
 			return ['pre_register'=>$pre_register];
 		}
