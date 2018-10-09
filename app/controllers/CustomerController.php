@@ -7703,7 +7703,7 @@ class CustomerController extends \BaseController {
 								'header2' => 'INDIA\'S LARGEST FITENSS CLUB',
 								'header3' => 'GET REWARDED FOR EVERY WORKOUT',
 								'button_text' => 'REGISTER',
-								'url' => Config::get('loyalty_constants.register_url').'?app=true&token='.$this->authorization.'&otp_verified='.(!empty($this->mobile_verified) ? 'true':'false'),
+								'url' => $this->utilities->getLoyaltyRegisterUrl(),
 								'type' => 'register',
 							];
 
@@ -8114,7 +8114,7 @@ class CustomerController extends \BaseController {
 	
 			$pre_register['check_ins']['data'] = $pre_register_check_ins_data;
 			if(!empty($this->device_type) && in_array($this->device_type, ['android', 'ios'])){
-				$pre_register['header']['url'] = $pre_register['footer']['url'] = $pre_register['header']['url'].'?app=true&token='.$this->authorization.'&otp_verified='.(!empty($this->mobile_verified) ? 'true':'false');
+				$pre_register['header']['url'] = $pre_register['footer']['url'] = $this->utilities->getLoyaltyRegisterUrl();
 			}
 			return ['pre_register'=>$pre_register];
 		}
