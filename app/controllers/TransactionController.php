@@ -1698,7 +1698,12 @@ class TransactionController extends \BaseController {
             $finder_id = (int)$data['finder_id'];
         }
 
-        if($finder_id != $order['finder_id']){
+        if($order['type'] != 'product' && $finder_id != $order['finder_id']){
+
+            return Response::json(['status' => 400, "message" => "Incorrect Vendor"],$status);
+        }
+
+        if($order['type'] == 'product' && $finder_id != $order['finder']['finder_id']){
 
             return Response::json(['status' => 400, "message" => "Incorrect Vendor"],$status);
         }
