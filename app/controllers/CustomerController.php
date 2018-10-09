@@ -3888,7 +3888,7 @@ class CustomerController extends \BaseController {
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
             'knowmorelink' => 'know more',
-            'footer' => 'Available across 12 outlets near you | <b> &#x20b9; 149</b>'
+            'footer' => 'Available across 12 outlets near you | <b>'.$this->utilities->getRupeeForm(149).'</b>'
         ];
 
 		return Response::json($result);
