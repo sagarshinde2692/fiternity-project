@@ -3002,7 +3002,9 @@ if (!function_exists(('customerTokenDecode'))){
 
 
         try{
-
+            
+            Log::info(Request::header('Authorization'));
+            
             if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
                 Log::info("Yes1");
                 return Response::json(array('status' => 400,'message' => 'User logged out'),400);
