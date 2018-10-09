@@ -3379,7 +3379,7 @@ class CustomerController extends \BaseController {
 
 							if($data['type'] == 'Workout-session'){
 								$data['unlock'] = [
-									'header'=>'Unlock Level '.$workout_session_level_data['next_session']['level'].'!',
+									// 'header'=>'Unlock Level '.$workout_session_level_data['next_session']['level'].'!',
 									'sub_header_2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions',
 									'image'=>'https://b.fitn.in/paypersession/unlock-icon.png'
 								];
