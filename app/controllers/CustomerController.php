@@ -3873,12 +3873,24 @@ class CustomerController extends \BaseController {
 
 		if(!empty($_REQUEST['selected_region'])){
 
-			$result['categoryheader'] = "Discover | Try | Buy";
+            $result['categoryheader'] = "Discover & Book Gyms & Fitness Classes in ".ucwords($_REQUEST['selected_region']);
+			// $result['categoryheader'] = "Discover | Try | Buy";
 			$result['categorysubheader'] = "Fitness services in ".ucwords($_REQUEST['selected_region']);
 			$result['trendingheader'] = "Trending in ".ucwords($_REQUEST['selected_region']);
 			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($_REQUEST['selected_region']);
 		}
-		
+		else {
+            $result['categoryheader'] = "Discover & Book Gyms & Fitness Classes accross ".ucwords($city);
+        }
+
+        $result['fitex'] =[
+            'logo' => 'https://b.fitn.in/global/pps/fexclusive.png',
+            'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
+            'subheader' => 'Book sessions and only pay for days you workout',
+            'knowmorelink' => 'know more',
+            'footer' => 'Available across 12 outlets near you | Starting at <b>'.$this->utilities->getRupeeForm(149).'</b>'
+        ];
+
 		return Response::json($result);
 		
 	}
