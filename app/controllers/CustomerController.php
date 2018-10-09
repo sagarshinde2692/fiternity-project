@@ -3888,14 +3888,7 @@ class CustomerController extends \BaseController {
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
             'knowmorelink' => 'know more',
-            'footer' => [
-                'left' => 'Available across 12 outlets near you',
-                'delimter' => '|',
-                'right' => [
-                    'text' => 'Starting at',
-                    'amount' => '149'
-                ]
-            ]
+            'footer' => 'Available across 12 outlets near you | <b> &#x20b9; 149</b>'
         ];
 
 		return Response::json($result);
