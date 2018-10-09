@@ -8124,6 +8124,8 @@ class CustomerController extends \BaseController {
 	public function registerLoyalty(){
 		
 		$data = Input::json()->all();
+
+		Log::info($data);
         
         $rules = [
             'customer_name' => 'required|max:255',
