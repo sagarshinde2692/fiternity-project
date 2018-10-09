@@ -3508,7 +3508,11 @@ Class Utilities {
 
             $fit_code = true;
 
-            if(isset($data['post_trial_status_updated_by_fitcode']) && $data['post_trial_status_updated_by_qrcode'] != ""){
+            if(!empty($data['post_trial_status_updated_by_fitcode'])){
+                $fit_code = false;
+            }
+
+            if(!empty($data['post_trial_status_updated_by_qrcode'])){
                 $fit_code = false;
             }
 
