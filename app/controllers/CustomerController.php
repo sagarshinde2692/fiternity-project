@@ -7562,7 +7562,7 @@ class CustomerController extends \BaseController {
 					Service::$setAppends=['active_weekdays','serviceratecard'];
 					$finderarr = Finder::active()->where('_id',intval($data['vendor_id']))
 					->with(array('services'=>function($query){$query->active()->where('trial','!=','disable')->where('status','=','1')->select('*')->orderBy('ordering', 'ASC');}))
-					->first(['inoperational_dates','services', 'title']);
+					->with('location')->first(['inoperational_dates','services', 'title','location_id']);
 					
 					$pnd_pymnt=$this->utilities->hasPendingPayments();
 					
@@ -7658,7 +7658,7 @@ class CustomerController extends \BaseController {
 								// }
 								// else 
 								// {
-									$resp['response']['header']="Showing all available services of ".$finderarr['title']." happening today (".date('jS, M', time()).")";
+									$resp['response']['header']="Showing all available services of ".$finderarr['title'].', '.$finderarr['location']['name']." happening today (".date('jS, M', time()).")";
 									$resp['response']['title']="BOOK A SLOT";
 									
 									if(empty($customer['loyalty'])){
@@ -7695,6 +7695,7 @@ class CustomerController extends \BaseController {
 						
 
 						if(empty($customer['loyalty'])){
+							$resp['response']['title'] = "Register / Book Now";
 							$resp['response']['fitsquad'] = [
 								'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
 								'header1' => 'REGISTER TO FITSQUAD',
@@ -7704,7 +7705,10 @@ class CustomerController extends \BaseController {
 								'url' => 'https://www.fitternity.com',
 								'type' => 'register',
 							];
+
 						}else{
+							$resp['response']['title'] = "Check In / Book Now";
+
 							$resp['response']['fitsquad'] = [
 								'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
 								'header1' => 'CHECK-IN FOR YOUR WORKOUT',
