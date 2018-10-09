@@ -3873,12 +3873,15 @@ class CustomerController extends \BaseController {
 
 		if(!empty($_REQUEST['selected_region'])){
 
-			$result['categoryheader'] = "Discover | Try | Buy";
+            $result['categoryheader'] = "Discover & Book Gyms & Fitness Classes accross ".ucwords($_REQUEST['selected_region']);
+			// $result['categoryheader'] = "Discover | Try | Buy";
 			$result['categorysubheader'] = "Fitness services in ".ucwords($_REQUEST['selected_region']);
 			$result['trendingheader'] = "Trending in ".ucwords($_REQUEST['selected_region']);
 			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($_REQUEST['selected_region']);
 		}
-		
+		else {
+            $result['categoryheader'] = "Discover & Book Gyms & Fitness Classes accross ".$city;
+        }
 		return Response::json($result);
 		
 	}
