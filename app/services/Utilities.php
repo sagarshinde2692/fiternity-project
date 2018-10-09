@@ -2970,7 +2970,7 @@ Class Utilities {
            (in_array($data['finder_id'],Config::get('app.vendors_without_convenience_fee')))||
            (isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True)||
            (!empty($data['type']) && in_array($data['type'], ["workout session", "workout-session", "trial", "booktrials","events"]))||
-           (!empty($data['ratecard_pay_at_vendor'])))
+           (!empty($data['payment_mode']) && $data['payment_mode']== 'at the studio'))
         {
             return false;
         }
