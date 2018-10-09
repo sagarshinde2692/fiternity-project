@@ -2962,7 +2962,8 @@ Class Utilities {
            ($this->vendor_token)||
            (in_array($data['finder_id'],Config::get('app.vendors_without_convenience_fee')))||
            (isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True)||
-           (!empty($data['type']) && in_array($data['type'], ["workout session", "workout-session", "trial", "booktrials","events"])))
+           (!empty($data['type']) && in_array($data['type'], ["workout session", "workout-session", "trial", "booktrials","events"]))||
+           (!empty($data['paymentmode_selected']) && $data['paymentmode_selected']== 'pay_at_vendor'))
         {
             return false;
         }
