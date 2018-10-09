@@ -2952,8 +2952,8 @@ Class Utilities {
 
      public function isConvinienceFeeApplicable($data, $type="order"){
         Log::info(debug_backtrace()[1]['function']);
-        // Log::info("Data for isConvinienceFeeApplicable");
-        // Log::info($data);
+        Log::info("Data for isConvinienceFeeApplicable");
+        Log::info($data);
         
         if($type == "order"){
             $flags = isset($data['ratecard_flags']) ? $data['ratecard_flags'] : array();
