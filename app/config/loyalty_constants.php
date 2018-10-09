@@ -62,6 +62,6 @@ return array(
             'amount'=>4000
         ],
     ],
-    'register_url'=>Config::get('app.website', 'https://www.fitternity.com').'/loyalty-registration'
+    'register_url'=>Config::get('app.website', 'https://www.fitternity.com').'/fitsquad'
 );
 ?>
