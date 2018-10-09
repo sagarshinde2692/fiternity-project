@@ -7692,7 +7692,8 @@ class CustomerController extends \BaseController {
 
 						// return $resp;
 						// $booking_details = $
-						
+						Log::info("mobile_verfied");
+						Log::info($this->mobile_verified);
 
 						if(empty($customer['loyalty'])){
 							$resp['response']['title'] = "Register / Book Now";
