@@ -6127,7 +6127,7 @@ Class Utilities {
                 $loyalty = $customer->loyalty;
                 $memberships = !empty($loyalty['memberships']) ? $loyalty['memberships'] : [];
 
-                if(!in_array($data['finder_id'])){
+                if(!in_array($data['finder_id'], $memberships)){
                     array_push($memberships, $data['finder_id']);
                 }
                 $loyalty['memberships'] = $memberships;
