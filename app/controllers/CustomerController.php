@@ -3884,7 +3884,7 @@ class CustomerController extends \BaseController {
         }
 
         $result['fitex'] =[
-            'logo' => 'https://b.fitn.in/global/pps/fexclusive.png',
+            'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
             'knowmorelink' => 'know more',
