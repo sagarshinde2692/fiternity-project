@@ -8402,7 +8402,7 @@ class CustomerController extends \BaseController {
 				
 				$direct_checkin = true;
 			
-			}else if(!empty($customer['loyalty']['memberships'])  && in_array($finderarr['_id'], $customer['loyalty']['finder_id'])){
+			}else if(!empty($customer['loyalty']['memberships'])  && in_array($finderarr['_id'], $customer['loyalty']['memberships'])){
 				
 				$direct_checkin = true;
 				$external_membership = true;
