@@ -6121,14 +6121,30 @@ Class Utilities {
 
             $milestone_reached = array_search($checkin_count, $milestone_checkins);
 
+            if(!empty($data['finder_id']) && !empty($data['type']) && $data['type'] == 'membership'){
+
+                $customer = Customer::find($customer_id, ['loyalty']);
+                $loyalty = $customer->loyalty;
+                $memberships = !empty($loyalty['memberships']) ? $loyalty['memberships'] : [];
+
+                if(!in_array($data['finder_id'])){
+                    array_push($memberships, $data['finder_id']);
+                }
+                $loyalty['memberships'] = $memberships;
+                $customer->loyalty = $loyalty;
+                
+            }
+
             if(is_integer($milestone_reached)){
                 $milestone = [
                     'milestone'=>$milestone_reached,
                     'date'=>new \MongoDate(),
                     'verified'=>empty($unverified_membership_checkins_count)
                 ];
-
-                $customer = Customer::find($customer_id, ['loyalty']);
+                
+                if(!$customer){
+                    $customer = Customer::find($customer_id, ['loyalty']);
+                }
 
                 $loyalty = $customer->loyalty;
 
@@ -6140,11 +6156,14 @@ Class Utilities {
 
                 $customer->loyalty = $loyalty;
 
-                $customer->update();
-
+                
             }
 
-			$customer_update = \Customer::where('_id', $data['customer_id'])->increment('loyalty.checkins');
+            if(!empty($customer)){
+                $customer->update();
+            }
+
+            $customer_update = \Customer::where('_id', $data['customer_id'])->increment('loyalty.checkins');
 
             Log::info('checkins updated in customer');
 

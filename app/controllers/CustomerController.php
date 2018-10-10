@@ -7575,7 +7575,7 @@ class CustomerController extends \BaseController {
 					$finderarr = Finder::active()->where('_id',intval($data['vendor_id']))
 					->with(array('services'=>function($query){$query->active()->where('trial','!=','disable')->where('status','=','1')->select('*')->orderBy('ordering', 'ASC');}))
 					->with('location')->first(['inoperational_dates','services', 'title','location_id']);
-					
+
 					$pnd_pymnt=$this->utilities->hasPendingPayments();
 					
 					$getWalletBalanceData = [
@@ -7696,7 +7696,8 @@ class CustomerController extends \BaseController {
 							$booking_response =$resp['response'];
 							unset($resp['response']);
 							$resp['response']['bookings'] = $booking_response;
-						}if(!empty($resp['header'])){
+						}
+						if(!empty($resp['header'])){
 							$resp['response']['bookings'] = $resp;
 							unset($resp['header']);
 						}
@@ -7706,69 +7707,8 @@ class CustomerController extends \BaseController {
 						// $booking_details = $
 						Log::info("mobile_verfied");
 						Log::info($this->mobile_verified);
-
-						if(empty($customer['loyalty'])){
-							$resp['response']['title'] = "Register / Book Now";
-							$resp['response']['fitsquad'] = [
-								'logo' => Config::get('loyalty_constants.fitsquad_logo'),
-								'header1' => 'REGISTER TO FITSQUAD',
-								'header2' => 'INDIA\'S LARGEST FITENSS CLUB',
-								'header3' => 'GET REWARDED FOR EVERY WORKOUT',
-								'button_text' => 'REGISTER',
-								'url' => $this->utilities->getLoyaltyRegisterUrl(),
-								'type' => 'register',
-							];
-
-						}else{
-							$resp['response']['title'] = "Check In / Book Now";
-
-							$resp['response']['fitsquad'] = [
-								'logo' => Config::get('loyalty_constants.fitsquad_logo'),
-								'header1' => 'CHECK-IN FOR YOUR WORKOUT',
-								'header3' => 'MARK YOUR ATTENDANCE AND LEVEL UP TO REACH YOUR MILESTONE',
-								'button_text' => 'CHECK-IN',
-								'url' => Config::get('app.url').'/markcheckin/'.$finderarr['_id'],
-								'type' => 'checkin',
-							];
-							$direct_checkin = false;
-							if(!empty($customer['loyalty']['finder_id'])  && $customer['loyalty']['finder_id'] == $finderarr['_id'] && (empty($customer['loyalty']['end_date']) || time() < strtotime($customer['loyalty']['end_date']))){
-								$direct_checkin = true;
-								
-							}else{
-								$current_membership = Order::active()->where('customer_id', $customer_id)->where('finder_id', $finderarr['_id'])->where('type', 'memberships')->where('start_date', '<', new DateTime())->where('end_date', '>=', new DateTime())->first();
-								
-								
-								if($current_membership){
-								
-									$direct_checkin = true;
-								
-								}else{
-									$direct_checkin = false;
-
-								}
-							}
-							
-							if(empty($direct_checkin)){
-								
-								$resp['response']['fitsquad']['url'] = "";
-								$resp['response']['fitsquad']['data'] = [
-									"header"=> "What are you checking-in for?",
-									"subtitle"=> "Let us know the reason to assist you better",
-									"options" => [
-										[
-											"text" => "Currently have a membership at ".$finderarr['title'],
-											"url" => Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=membership",
-										],
-										[
-											"text" => "Have booked a session at ".$finderarr['title'],
-											"url" => Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=workout-session",
-										]
-									]
-								];
-							}else{
-								$resp['response']['fitsquad']['url'] = Config::get('app.url').'/markcheckin/'.$finderarr['_id'];
-							}
-						}
+						$this->getQRLoyaltyScreen($resp, $customer, $finderarr);
+						
 				}
 				
 				if(!empty($pop_up))$resp['response']['bookings']['pop_up']=$pop_up;
@@ -8427,7 +8367,80 @@ class CustomerController extends \BaseController {
 	   }else{
 			return Response::json(['status'=>400, 'message'=>'Image not found']);
 	   }
+	}
 
+	public function getQRLoyaltyScreen(&$resp, $customer, $finderarr){
+		if(empty($customer['loyalty'])){
+			$resp['response']['title'] = "Register / Book Now";
+			$resp['response']['fitsquad'] = [
+				'logo' => Config::get('loyalty_constants.fitsquad_logo'),
+				'header1' => 'REGISTER TO FITSQUAD',
+				'header2' => 'INDIA\'S LARGEST FITENSS CLUB',
+				'header3' => 'GET REWARDED FOR EVERY WORKOUT',
+				'button_text' => 'REGISTER',
+				'url' => $this->utilities->getLoyaltyRegisterUrl(),
+				'type' => 'register',
+			];
+
+		}else{
+			$resp['response']['title'] = "Check In / Book Now";
+
+			$resp['response']['fitsquad'] = [
+				'logo' => Config::get('loyalty_constants.fitsquad_logo'),
+				'header1' => 'CHECK-IN FOR YOUR WORKOUT',
+				'header3' => 'MARK YOUR ATTENDANCE AND LEVEL UP TO REACH YOUR MILESTONE',
+				'button_text' => 'CHECK-IN',
+				'url' => Config::get('app.url').'/markcheckin/'.$finderarr['_id'],
+				'type' => 'checkin',
+			];
+			
+			$direct_checkin = false;
+			
+			$current_membership = Order::active()->where('customer_id', $customer['id'])->where('finder_id', $finderarr['_id'])->where('type', 'memberships')->where('start_date', '<', new DateTime())->where('end_date', '>=', new DateTime())->first();
+
+			if($current_membership){
+				
+				$direct_checkin = true;
+			
+			}else if(!empty($customer['loyalty']['memberships'])  && in_array($finderarr['_id'], $customer['loyalty']['finder_id'])){
+				
+				$direct_checkin = true;
+				$external_membership = true;
+					
+			}else{
+
+				$direct_checkin = false;
+
+			}
+
+			
+			
+			if(empty($direct_checkin)){
+				
+				$resp['response']['fitsquad']['url'] = "";
+				$resp['response']['fitsquad']['data'] = [
+					"header"=> "What are you checking-in for?",
+					"subtitle"=> "Let us know the reason to assist you better",
+					"options" => [
+						[
+							"text" => "Currently have a membership at ".$finderarr['title'],
+							"url" => Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=membership",
+						],
+						[
+							"text" => "Have booked a session at ".$finderarr['title'],
+							"url" => Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=workout-session",
+						]
+					]
+				];
+			}else{
+
+				$resp['response']['fitsquad']['url'] = Config::get('app.url').'/markcheckin/'.$finderarr['_id'];
+				
+				if(!empty($external_membership)){
+					$resp['response']['fitsquad']['url'] = Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=membership";
+				}
+			}
+		}
 	}
 	
 }
