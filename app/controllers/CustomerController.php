@@ -7479,7 +7479,8 @@ class CustomerController extends \BaseController {
         $rules = [
             'customer_name' => 'required|max:255',
             'customer_email' => 'required|email|max:255',
-            'customer_phone' => 'max:15'
+            'customer_phone' => 'max:15',
+            'customer_membership' => 'required|in:yes,no'
         ];
 
         $validator = Validator::make($data,$rules);
