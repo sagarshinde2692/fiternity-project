@@ -524,6 +524,9 @@ class EmailSmsApiController extends \BaseController {
 
         $data = Input::json()->all();
 
+        Log::info("landingpagecallback");
+        Log::info($data);
+
         if($this->vendor_token){
 
             $decodeKioskVendorToken = decodeKioskVendorToken();
