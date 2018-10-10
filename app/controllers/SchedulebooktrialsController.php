@@ -2443,7 +2443,12 @@ class SchedulebooktrialsController extends \BaseController {
            
             $this->utilities->afterTranSuccess($booktrial, 'booktrial');
 
-            if(!empty($after_booking_response['loyalty'])){
+            if(!empty($after_booking_response['checkin'])){
+                if(!empty($after_booking_response['checkin']['status']) && $after_booking_response['checkin']['status'] == 200 && !empty($after_booking_response['checkin']['checkin']['_id'])){
+                    $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
+                }
+            }
+            if(!empty($after_booking_response['loyalty_registration'])){
                 $booktrial->loyalty_registration = true;
                 $orderData['loyalty_registration'] = true;
             }
@@ -2460,9 +2465,6 @@ class SchedulebooktrialsController extends \BaseController {
             }
             
             $booktrial->update();
-
-            $booktrial->update();
-
 
             // Give Rewards / Cashback to customer based on selection, on purchase success......
             

@@ -6159,16 +6159,19 @@ Class Utilities {
 	}
 
     public function afterTranSuccess($data, $type){
-
+        $checkin = null;
         if($type == 'order'){
             $data['order_id']=$data['_id'];
         }else if($type == 'booktrial'){
             $data['booktrial_id']=$data['_id'];
+            
+            if(!empty($data['qrcodepayment']) && empty($data['checkin'])){
+                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id']]);
+            }
         }
-
         $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
 
-        return ['loyalty_registration'=>$loyalty_registration];
+        return ['loyalty_registration'=>$loyalty_registration, 'checkin'=> $checkin];
     }
 
     public function autoRegisterCustomerLoyalty($data){
