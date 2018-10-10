@@ -8001,5 +8001,11 @@ public function yes($msg){
         // return $findercategories;
     }
 
+	public function removeloyalty($id){
+		Customer::where('_id', intval($id))->first()->unset('loyalty');
+
+		return "done";
+	}
+
 }
 

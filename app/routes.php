@@ -1308,4 +1308,5 @@ Route::post('webcheckout','TransactionController@webcheckout');
 Route::post('addcustomersfortrial','SchedulebooktrialsController@addCustomersForTrial');
 Route::get('getcouponpackages','HomeController@getCouponPackages');
 // Route::get('reviewParamsPicturesStageToLive','DebugController@reviewParamsPicturesStageToLive');
+Route::get('removeloyalty/{id}','DebugController@removeloyalty');
 
