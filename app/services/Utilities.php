@@ -6216,7 +6216,7 @@ Class Utilities {
 
             $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update($update_data);
 
-            if($customer){
+            if($customer_update){
                 return ['status'=>200];
             }else{
                 return ['status'=>400, 'message'=>'Customer already registered'];

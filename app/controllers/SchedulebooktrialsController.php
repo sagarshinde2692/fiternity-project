@@ -2441,7 +2441,10 @@ class SchedulebooktrialsController extends \BaseController {
                 
             }
            
-            $this->utilities->afterTranSuccess($booktrial, 'booktrial');
+            $after_booking_response = $this->utilities->afterTranSuccess($booktrial, 'booktrial');
+
+            Log::info("after_booking_response");
+            Log::info($after_booking_response);
 
             if(!empty($after_booking_response['checkin'])){
                 if(!empty($after_booking_response['checkin']['status']) && $after_booking_response['checkin']['status'] == 200 && !empty($after_booking_response['checkin']['checkin']['_id'])){
