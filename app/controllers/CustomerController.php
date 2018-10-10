@@ -7710,7 +7710,7 @@ class CustomerController extends \BaseController {
 						if(empty($customer['loyalty'])){
 							$resp['response']['title'] = "Register / Book Now";
 							$resp['response']['fitsquad'] = [
-								'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
+								'logo' => Config::get('loyalty_constants.fitsquad_logo'),
 								'header1' => 'REGISTER TO FITSQUAD',
 								'header2' => 'INDIA\'S LARGEST FITENSS CLUB',
 								'header3' => 'GET REWARDED FOR EVERY WORKOUT',
@@ -7723,7 +7723,7 @@ class CustomerController extends \BaseController {
 							$resp['response']['title'] = "Check In / Book Now";
 
 							$resp['response']['fitsquad'] = [
-								'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
+								'logo' => Config::get('loyalty_constants.fitsquad_logo'),
 								'header1' => 'CHECK-IN FOR YOUR WORKOUT',
 								'header3' => 'MARK YOUR ATTENDANCE AND LEVEL UP TO REACH YOUR MILESTONE',
 								'button_text' => 'CHECK-IN',

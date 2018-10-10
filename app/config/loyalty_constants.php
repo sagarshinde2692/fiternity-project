@@ -62,6 +62,7 @@ return array(
             'amount'=>4000
         ],
     ],
-    'register_url'=>Config::get('app.website', 'https://www.fitternity.com').'/fitsquad'
+    'register_url'=>Config::get('app.website', 'https://www.fitternity.com').'/fitsquad',
+    'fitsquad_logo'=>'https://b.fitn.in/loyalty/web%20FitSquad%20logo%20orange.png'
 );
 ?>
