@@ -4373,21 +4373,21 @@ class CustomerController extends \BaseController {
 
 		$code = trim(strtoupper($data['code']));
 
-		if(is_numeric(strpos($code, 'R-')) && strpos($code, 'R-') == 0){
-			return $this->setReferralData($code);
-		}
+		// if(is_numeric(strpos($code, 'R-')) && strpos($code, 'R-') == 0){
+		// 	return $this->setReferralData($code);
+		// }
 
-		if(strlen($code)==9 && substr($code, -1 ) == 'R'){
-			Log::info("inside referral ");
-			$referral = $this->setReferralData($code);
-			Log::info($referral);
-			if($referral['status']==200){
-				return $referral;
-			}else{
-				$resp 	= 	array('status' => 401,'message' => "Referral code not valid");
-				return $resp;
-			}
-		}
+		// if(strlen($code)==9 && substr($code, -1 ) == 'R'){
+		// 	Log::info("inside referral ");
+		// 	$referral = $this->setReferralData($code);
+		// 	Log::info($referral);
+		// 	if($referral['status']==200){
+		// 		return $referral;
+		// 	}else{
+		// 		$resp 	= 	array('status' => 401,'message' => "Referral code not valid");
+		// 		return $resp;
+		// 	}
+		// }
 
 		
 
