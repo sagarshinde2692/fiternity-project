@@ -50,7 +50,7 @@ return array(
         'footer' => [
             'image' => 'https://b.fitn.in/loyalty/Footer11.png',
             'ratio' => 1.38,
-            'url'=> Config::get('app.website', 'https://www.fitternity.com').'/loyalty-registration?app=true'
+            'url'=> Config::get('app.website', 'https://www.fitternity.com').'/fitsquad?app=true'
         ],
     ],
     'post_register' => [
