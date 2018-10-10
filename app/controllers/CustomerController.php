@@ -8340,7 +8340,7 @@ class CustomerController extends \BaseController {
 		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200){
 			return [
 				'header'=>'CHECK-IN SUCCESSFUL!',
-				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].". Make sure you continue with your workouts and achieve the milestones quicker",
+				'sub_header_2'=> "Enjoy your workout at ".$finder['title']."\n. Make sure you continue with your workouts and achieve the milestones quicker",
 				'milestones'=>$this->utilities->getMilestoneSection($customer),
 				// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
 			];
