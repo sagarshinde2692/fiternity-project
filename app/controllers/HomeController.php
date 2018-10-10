@@ -1080,7 +1080,15 @@ class HomeController extends BaseController {
                     $response['subline'] = 'Your payment for'.$service_name.' session at '.$finder_name.' is successful';
                 }
 
-                $response['milestones'] = $this->utilities->getMilestoneSection();
+                if(!empty($customer_id)){
+
+                    $customer = Customer::find($customer_id, ['loyalty']);
+
+                    if(!empty($customer['loyalty'])){
+                        $response['milestones'] = $this->utilities->getMilestoneSection();
+                    }
+
+                }
 
                 if(!empty($item['loyalty_registration'])){
                     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
