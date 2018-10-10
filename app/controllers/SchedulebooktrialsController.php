@@ -2451,7 +2451,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
                 }
             }
-            if(!empty($after_booking_response['loyalty_registration'])){
+            if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
                 $booktrial->loyalty_registration = true;
                 $orderData['loyalty_registration'] = true;
             }
