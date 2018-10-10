@@ -8003,6 +8003,7 @@ public function yes($msg){
 
 	public function removeloyalty($id){
 		Customer::where('_id', intval($id))->first()->unset('loyalty');
+		Checkin::where('customer_id', intval($id))->delete();
 
 		return "done";
 	}
