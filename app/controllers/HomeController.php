@@ -2044,6 +2044,24 @@ class HomeController extends BaseController {
                 'why_buy'=>$why_buy
             ];
 
+            if(!empty($customer_id)){
+
+                if(empty($customer)){
+                    $customer = Customer::find($customer_id, ['loyalty']);
+                }
+
+
+                if(!empty($customer['loyalty'])){
+                    $resp['milestones'] = $this->utilities->getMilestoneSection();
+                }
+
+            }
+
+            if(!empty($item['loyalty_registration'])){
+                $resp['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
+            }
+
+
             if(isset($itemData['coupon_id'])){
                 $resp['coupon'] = \GiftCoupon::find($itemData['coupon_id']);
             }
