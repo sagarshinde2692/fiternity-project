@@ -6109,17 +6109,6 @@ Class Utilities {
             }
 
 			$checkin->save();
-
-            $all_checkins = \Checkin::where('customer_id', $customer_id)->get(['unverified', 'type']);
-
-            $checkin_count = count($all_checkins);
-
-            
-            $milestones = Config::get('loyalty_constants.milestones', []);
-            
-            $milestone_checkins = array_column($milestones, 'count');
-            
-            $milestone_reached = array_search($checkin_count, $milestone_checkins);
             
             if(!empty($data['finder_id']) && !empty($data['type']) && $data['type'] == 'membership'){
                 
@@ -6134,6 +6123,20 @@ Class Utilities {
                 $customer->loyalty = $loyalty;
                 
             }
+
+            $all_checkins = \Checkin::where('customer_id', $customer_id)->get(['unverified', 'type']);
+
+            Log::info('$all_checkins');
+            Log::info("$all_checkins");
+
+            $checkin_count = count($all_checkins);
+
+            
+            $milestones = Config::get('loyalty_constants.milestones', []);
+            
+            $milestone_checkins = array_column($milestones, 'count');
+            
+            $milestone_reached = array_search($checkin_count, $milestone_checkins);
             
             if(is_integer($milestone_reached)){
                 
