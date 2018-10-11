@@ -1108,10 +1108,10 @@ class TempsController extends \BaseController {
                     $data = $temp->toArray();
                     $this->customersms->genericOtp($data);
                 }
-
             }
+			$tempAttempt = $temp->attempt < 3 ? $temp->attempt : 2;
 
-            return Response::json(array('status' => 200,'attempt' => $temp->attempt,'sender_id'=>'FTRNTY'),200);
+            return Response::json(array('status' => 200,'attempt' => $tempAttempt,'sender_id'=>'FTRNTY'),200);
 
         }else{
             return Response::json(array('status' => 400,'message' => 'Not Found'),$this->error_status);
