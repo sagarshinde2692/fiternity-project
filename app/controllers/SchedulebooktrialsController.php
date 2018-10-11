@@ -3516,10 +3516,16 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             
-            $after_booking_response =  $this->utilities->afterTranSuccess($booktrial, 'booktrial');
+            $after_booking_response =  $this->utilities->afterTranSuccess($booktrial->toArray(), 'booktrial');
+
+            if(!empty($after_booking_response['checkin'])){
+                if(!empty($after_booking_response['checkin']['status']) && $after_booking_response['checkin']['status'] == 200 && !empty($after_booking_response['checkin']['checkin']['_id'])){
+                    $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
+                }
+            }
                 
             
-            if(!empty($after_booking_response['loyalty'])){
+            if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
                 $booktrial->loyalty_registration = true;
             }
 
