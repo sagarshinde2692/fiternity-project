@@ -8221,9 +8221,13 @@ class CustomerController extends \BaseController {
 
                     $milestones[$voucher_category['milestone']-1]['claimed_date'] = new \MongoDate(strtotime('midnight'));
 
-                    $milestones[$voucher_category['milestone']-1]['claimed_date'] = new \MongoDate();
+					$milestones[$voucher_category['milestone']-1]['claimed_date'] = new \MongoDate();
+					
+					$loyalty = $customer->loyalty;
 
-    				$customer->milestones = $milestones;
+					$loyalty['milestones'] = $milestones;
+
+    				$customer->loyalty = $loyalty;
 
                     $customer->update();
 				}
