@@ -2044,7 +2044,7 @@ class HomeController extends BaseController {
                 'why_buy'=>$why_buy
             ];
 
-            if(!empty($customer_id)){
+            if(!empty($item['type']) && $item['type'] == 'booktrials' && !empty($customer_id)){
 
                 if(empty($customer)){
                     $customer = Customer::find($customer_id, ['loyalty']);
