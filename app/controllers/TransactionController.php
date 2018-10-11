@@ -2033,8 +2033,16 @@ class TransactionController extends \BaseController {
                 }
 
                 if($order->type == "memberships"){
-                    $this->utilities->afterTranSuccess($order->toArray(), 'order');
+                    
+                    $after_booking_response = $this->utilities->afterTranSuccess($order->toArray(), 'order');
+                    
+                    if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
+                        $booktrial->loyalty_registration = true;
+                    }
+                
                 }
+
+    
             }
 
             if(isset($order['previous_booktrial_id']) && $order['previous_booktrial_id'] != ""){
