@@ -8026,14 +8026,21 @@ class CustomerController extends \BaseController {
 						$post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$post_reward_data_template['_id'];
 						$post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
 						$post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
-                        if($milestone_no >= $milestone['milestone'] && empty($customer_milestones[$milestone['milestone']-1]['claimed'])){
-							 $post_reward_data_template['claim_enabled'] = true;
-							 if(!empty($customer['loyalty']['receipt_under_verfication'])){
-								$post_reward_data_template['block_message'] = Config::get('loyalty_screens.receipt_verification_message');
-							 }else if(empty($customer_milestones[$milestone['milestone']-1]['verified'])){
-                                $post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
-                            }
-                            !isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
+                        if($milestone_no >= $milestone['milestone'] ){
+
+							if(empty($customer_milestones[$milestone['milestone']-1]['claimed'])){
+
+								$post_reward_data_template['claim_enabled'] = true;
+								if(!empty($customer['loyalty']['receipt_under_verfication'])){
+								   $post_reward_data_template['block_message'] = Config::get('loyalty_screens.receipt_verification_message');
+								}else if(empty($customer_milestones[$milestone['milestone']-1]['verified'])){
+								   $post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
+							   }
+							   !isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
+							}else{
+								$post_reward_data_template['claim_enabled'] = true;
+								$post_reward_data_template['button_title'] = "View";
+							}
 
                         }else{
                             $post_reward_data_template['claim_enabled'] = false;
@@ -8236,6 +8243,8 @@ class CustomerController extends \BaseController {
                     $milestones[$voucher_category['milestone']-1]['claimed_date'] = new \MongoDate(strtotime('midnight'));
 
 					$milestones[$voucher_category['milestone']-1]['claimed_date'] = new \MongoDate();
+					
+					$milestones[$voucher_category['milestone']-1]['voucher'] = $voucherAttached;
 					
 					$loyalty = $customer->loyalty;
 
