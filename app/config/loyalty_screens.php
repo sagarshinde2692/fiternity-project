@@ -112,7 +112,7 @@ return array(
         'price_header' => 'Worth',
         'claim_enabled' => false,
         'button_title' => 'Claim',
-        'terms' => 'HTMl text',
+        'terms' => 'terms',
         'coupon_description' => 'description',
         'block_message'=>'',
 
