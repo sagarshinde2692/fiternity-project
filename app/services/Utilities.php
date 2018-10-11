@@ -5719,10 +5719,10 @@ Class Utilities {
     				'header'=>'CHCEK-IN SUCCESSFUL',
     				'image'=>'https://b.fitn.in/paypersession/cashback.png',
     				// 'footer'=>$customer_level_data['current_level']['cashback'].'% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!',
-    				'streak'=>[
-    						'header'=>'STREAK IT OUT',
-    						'data'=>$this->getStreakImages($customer_level_data['current_level']['level'])
-    				]
+    				// 'streak'=>[
+    				// 		'header'=>'STREAK IT OUT',
+    				// 		'data'=>$this->getStreakImages($customer_level_data['current_level']['level'])
+    				// ]
     		];
     		
     		if($payment_done){
