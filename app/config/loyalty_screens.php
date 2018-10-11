@@ -12,7 +12,7 @@ return array(
         ],
 
         'partners' => [
-            'header' => 'Proud Partners',
+            'header' => 'GET EXCITING REWARDS ON ACHIEVE MILESTONES OF 10, 30, 75, 150 & 225 WORKOUTS',
             'data' => [
                 'https://b.fitn.in/external-vouchers/BMS.png',
                 'https://b.fitn.in/external-vouchers/OLA.png',
@@ -55,8 +55,8 @@ return array(
     ],
     'post_register' => [
         'header' => [
-            'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
-            'text' => 'Hi <b>$customer_name</b>,<br/><br/>$check_ins/' . Config::get('loyalty_constants.checkin_limit') . ' check-ins completed<br/><br/>You are on milestone $milestone',
+            'logo' => 'https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png',
+            'text' => 'Hi <b>$customer_name</b>,<br/><br/>$check_ins/$next_milestone_checkins check-ins completed<br/><br/>$milestone_text',
             'background_image' => 'https://b.fitn.in/loyalty/banner.jpg',
             'ratio' => 0.36,
         ],
@@ -65,7 +65,7 @@ return array(
             'subheader' => 'You are $next_milestone_check_ins check-ins away from milestone $next_milestone',
             'description' => "Start working out and level up on your streak.\n Achieve milestones and earn crazy rewards",
             'data' => Config::get('loyalty_constants.milestones'),
-            'footer' => 'Your workout counter will reset on 21 Sept 2018',
+            'footer' => 'Your workout counter will reset on $last_date',
         ],
         'rewards' => [
             'header' => 'Claim exciting rewards',
@@ -118,7 +118,7 @@ return array(
 
     ],
     'success_loyalty_header' => [
-        'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
+        'logo' => 'https://b.fitn.in/loyalty/SUCCESS%20PAGE%20LOGO.png',
         'header1' => 'You have successfully registered to FITSQUAD',
         'header2' => 'India\'s largest fitness rewards club',
     ],

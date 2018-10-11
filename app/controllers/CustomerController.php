@@ -7987,16 +7987,25 @@ class CustomerController extends \BaseController {
 			unset($milestone);
 			// return $post_register['milestones']['data'];
 			// return $milestone_next_count-$check_ins;
-			$post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$checkins, '$milestone'=>$milestone_no, '$checkin_limit'=>Config::get('loyalty_screens.checkin_limit')]);
-			$post_register['milestones']['subheader'] = strtr($post_register['milestones']['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$checkins, '$next_milestone'=>$milestone_no+1]);
+			$milestones = Config::get('loyalty_constants.milestones');
+			$next_milestone_checkins = $milestones[$milestone_no]['next_count'];
 
+			if(!empty($milestone_no)){
+				$milestone_text = 'You are on milestone '.$milestone_no;
+			}else{
+				$milestone_text = 'Rush to your first milestone to earn rewards';
+			}
+			
+			$post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$checkins, '$milestone'=>$milestone_no, '$next_milestone_checkins'
+			=>$next_milestone_checkins, '$milestone_text'=>$milestone_text]);
+			$post_register['milestones']['subheader'] = strtr($post_register['milestones']['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$checkins, '$next_milestone'=>$milestone_no+1]);
+			$post_register['milestones']['footer'] = strtr($post_register['milestones']['footer'], ['$last_date'=>date('d M Y', strtotime('+1 year',$customer['loyalty']['start_date']->sec))]);
 			if($checkins){
 				unset($post_register['past_check_in']['subheader']);
 				$post_register['past_check_in']['header'] = Config::get('loyalty_screens.past_check_in_header_text');
 				$post_register['past_check_in']['clickable'] = true;
 			}
 			$post_register_rewards_data = [];
-			$milestones = Config::get('loyalty_constants.milestones');
 			$reward_open_index = null;
 			foreach($milestones as $key => $milestone){
 				if(!$milestone['milestone']){
