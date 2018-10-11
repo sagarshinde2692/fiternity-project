@@ -6140,7 +6140,7 @@ Class Utilities {
             
             if(is_integer($milestone_reached)){
                 
-                $unverified_membership_checkins_count = count(array_where($all_checkins, function($checkin){
+                $unverified_membership_checkins_count = count(array_where($all_checkins, function($key, $checkin){
                    return !empty($checkin['type']) && $checkin['type'] == 'membership' && !empty($checkin['unverified']);
                 }));
                 Log::info("unverified_membership_checkins_count");
