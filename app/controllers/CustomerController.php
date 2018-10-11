@@ -7684,12 +7684,12 @@ class CustomerController extends \BaseController {
 							}
 							else {
 								unset($resp['response']);
-								$resp['header']="No slots available right now.";
+								$resp['header']="No slots available at ".$finderarr['title'].', '.$finderarr['location']['name']." right now.";
 							}
 						}
 						else {
 							unset($resp['response']);
-							$resp['header']="No services available at this studio.";
+							$resp['header']="No services available at ".$finderarr['title'].', '.$finderarr['location']['name'].";
 						}
 
 						if(!empty($resp['response'])){
