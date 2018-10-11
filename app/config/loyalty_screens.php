@@ -129,6 +129,7 @@ return array(
         'description' => '$check_ins/' . Config::get('loyalty_constants.checkin_limit') . ' check-ins done',
         'data' => Config::get('loyalty_constants.milestones')
     ],
-    'receipt_message'=>'Please upload your membership receipt to claim you reward'
+    'receipt_message'=>'Please upload your membership receipt to claim you reward',
+    'receipt_verification_message'=>'Your membership receipt is under verification'
 );
 ?>

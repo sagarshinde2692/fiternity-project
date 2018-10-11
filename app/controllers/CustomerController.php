@@ -8027,8 +8027,10 @@ class CustomerController extends \BaseController {
 						$post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
 						$post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
                         if($milestone_no >= $milestone['milestone'] && empty($customer_milestones[$milestone['milestone']-1]['claimed'])){
-                             $post_reward_data_template['claim_enabled'] = true;
-                            if(empty($customer_milestones[$milestone['milestone']-1]['verified'])){
+							 $post_reward_data_template['claim_enabled'] = true;
+							 if(!empty($customer['loyalty']['receipt_under_verfication'])){
+								$post_reward_data_template['block_message'] = Config::get('loyalty_screens.receipt_verification_message');
+							 }else if(empty($customer_milestones[$milestone['milestone']-1]['verified'])){
                                 $post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
                             }
                             !isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
@@ -8372,9 +8374,11 @@ class CustomerController extends \BaseController {
 
 			$receipts = !empty($loyalty['receipts']) ? $loyalty['receipts'] : [];
 
-            array_push($receipts, str_replace("s3.ap-southeast-1.amazonaws.com/", "", $upload_resp['kraked_url']));
+            array_push($receipts, ['url'=>str_replace("s3.ap-southeast-1.amazonaws.com/", "", $upload_resp['kraked_url']), 'date'=> new \MongoDate()]);
 
-            $loyalty['receipts'] = $receipts;
+			$loyalty['receipts'] = $receipts;
+			
+			$loyalty['receipt_under_verfication'] = true;
 
             $customer->loyalty = $loyalty;
 
