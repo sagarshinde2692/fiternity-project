@@ -6115,7 +6115,7 @@ Class Utilities {
             $checkin_count = count($all_checkins);
 
             $unverified_membership_checkins_count = count(array_where($all_checkins, function($checkin){
-               return !empty($checkin['type']) && $checkin['type'] == 'membership' && empty($checkin['unverified']);
+               return !empty($checkin['type']) && $checkin['type'] == 'membership' && !empty($checkin['unverified']);
             }));
 
             $milestones = Config::get('loyalty_constants.milestones', []);
