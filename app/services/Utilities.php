@@ -6114,22 +6114,19 @@ Class Utilities {
 
             $checkin_count = count($all_checkins);
 
-            $unverified_membership_checkins_count = count(array_where($all_checkins, function($checkin){
-               return !empty($checkin['type']) && $checkin['type'] == 'membership' && !empty($checkin['unverified']);
-            }));
-
+            
             $milestones = Config::get('loyalty_constants.milestones', []);
-
+            
             $milestone_checkins = array_column($milestones, 'count');
-
+            
             $milestone_reached = array_search($checkin_count, $milestone_checkins);
-
+            
             if(!empty($data['finder_id']) && !empty($data['type']) && $data['type'] == 'membership'){
-
+                
                 $customer = Customer::find($customer_id, ['loyalty']);
                 $loyalty = $customer->loyalty;
                 $memberships = !empty($loyalty['memberships']) ? $loyalty['memberships'] : [];
-
+                
                 if(!in_array($data['finder_id'], $memberships)){
                     array_push($memberships, $data['finder_id']);
                 }
@@ -6137,8 +6134,15 @@ Class Utilities {
                 $customer->loyalty = $loyalty;
                 
             }
-
+            
             if(is_integer($milestone_reached)){
+                
+                $unverified_membership_checkins_count = count(array_where($all_checkins, function($checkin){
+                   return !empty($checkin['type']) && $checkin['type'] == 'membership' && !empty($checkin['unverified']);
+                }));
+                Log::info("unverified_membership_checkins_count");
+                Log::info($unverified_membership_checkins_count);
+                
                 $milestone = [
                     'milestone'=>$milestone_reached,
                     'date'=>new \MongoDate(),
