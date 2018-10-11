@@ -1094,6 +1094,10 @@ class HomeController extends BaseController {
                     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
                 }
 
+                if(!empty($item['qrcodepayment'])){
+                    unset($response['subline']);
+                }
+
                 return $response;
             }
 
