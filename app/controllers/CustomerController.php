@@ -7684,13 +7684,13 @@ class CustomerController extends \BaseController {
 							}
 							else {
 								unset($resp['response']);
-								$resp['response']['title']="No slots available at ".$finderarr['title'].', '.$finderarr['location']['name']." right now.";
+								$resp['response']['title']="BOOK A SLOT";
 								$resp['response']['subtitle']="OOPs no slots are available at ".$finderarr['title'].', '.$finderarr['location']['name']." right now.";
 							}
 						}
 						else {
 							unset($resp['response']);
-							$resp['response']['title']="No services available at ".$finderarr['title'].', '.$finderarr['location']['name'];
+							$resp['response']['title']="BOOK A SLOT";
 							$resp['response']['subtitle']="OOPs no services are available at ".$finderarr['title'].', '.$finderarr['location']['name'];
 						}
 
@@ -8406,7 +8406,7 @@ class CustomerController extends \BaseController {
 			$resp['response']['fitsquad'] = [
 				'logo' => Config::get('loyalty_constants.fitsquad_logo'),
 				'header1' => 'CHECK-IN FOR YOUR WORKOUT',
-				'header3' => 'Mark Your Attendance At'.$finderarr['title'].'And Level Up To Reach Your Milestone',
+				'header3' => 'Mark Your Attendance At '.$finderarr['title'].' And Level Up To Reach Your Milestone',
 				'button_text' => 'CHECK-IN',
 				'url' => Config::get('app.url').'/markcheckin/'.$finderarr['_id'],
 				'type' => 'checkin',

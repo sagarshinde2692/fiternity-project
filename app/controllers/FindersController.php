@@ -6060,7 +6060,7 @@ class FindersController extends \BaseController {
 
 		$count = round($count/10) + (!empty($service['traction']['sales']) ? $service['traction']['sales'] : 0 ) + (!empty($service['traction']['trials']) ? $service['traction']['trials'] : 0 ) + (!empty($service['traction']['requests']) ? $service['traction']['requests'] : 0 );
 		
-		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Scared of commitment or not sure of being regular with your workouts?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'('.$count.' people in '.(!empty($service['location']['name']) ? $service['location']['name'] : 'this location').' are using it)', '_id'=>0];
+		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Book multiple sessions without buying a membership & pay only when you workout', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'(Not a Membership, Not a Pass - Even Better)', '_id'=>0];
 
 		$return['pps_details'] =[
 			'pps'=>[
@@ -6070,9 +6070,9 @@ class FindersController extends \BaseController {
 			'description'=>[
 				'header'=>'',
 				'data'=>[
-					['image'=>'https://b.fitn.in/paypersession/pps_stripe1.png', 'text'=>'Pay only when you use (Make each rupee count)'],
-					['image'=>'https://b.fitn.in/paypersession/pps_stripe2.png', 'text'=>'Have the flexibility of working out at different places'],
-					['image'=>'https://b.fitn.in/paypersession/pps_stripe3.png', 'text'=>'Getting regular? Upgrade to a membership or session pack']
+					['image'=>'https://b.fitn.in/paypersession/pps_stripe1.png', 'text'=>'Pay only for the days you workout'],
+					['image'=>'https://b.fitn.in/paypersession/pps_stripe2.png', 'text'=>'Book, Reschedule, Cancel on-the-go'],
+					['image'=>'https://b.fitn.in/paypersession/pps_stripe3.png', 'text'=>'Book sessions multiple times at '.$finder['title']]
 				],
 			],
 		];
@@ -6082,7 +6082,7 @@ class FindersController extends \BaseController {
 		// 	'description'=>"Step 1: Choose your workout form out of 17 different options<br><br>Step 2: Book session of your choice near you with instant booking<br><br>Step3: Enjoy your workout and repeat",
 		// ];
 		
-		$return['pps_details']['ps'] = "P.S. - Really economical for users who end up working out 6-8 times a month";
+		$return['pps_details']['ps'] = '('.$count.' people in '.(!empty($service['location']['name']) ? $service['location']['name'] : 'this location').' are using it)';
 
 		$return['pps_details']['action'] = [
 			'action_text'=>'Book Session here @Rs.'.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
