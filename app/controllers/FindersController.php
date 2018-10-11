@@ -6082,7 +6082,7 @@ class FindersController extends \BaseController {
 		// 	'description'=>"Step 1: Choose your workout form out of 17 different options<br><br>Step 2: Book session of your choice near you with instant booking<br><br>Step3: Enjoy your workout and repeat",
 		// ];
 		
-		$return['pps_details']['ps'] = '('.$count.' people in '.(!empty($service['location']['name']) ? $service['location']['name'] : 'this location').' are using it)';
+		$return['pps_details']['ps'] = $count.' people in '.(!empty($service['location']['name']) ? $service['location']['name'] : 'this location').' are using it.';
 
 		$return['pps_details']['action'] = [
 			'action_text'=>'Book Session here @Rs.'.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
