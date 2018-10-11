@@ -8139,8 +8139,9 @@ class CustomerController extends \BaseController {
 		function format_date(&$value,$key){
 			$value['date'] = date('d M, Y | g:i A ', strtotime($value['created_at']));
 			$value['title'] = $value['finder']['title'];
+			$value['position'] = $key % 2 + 1;
 
-			$value = array_only($value, ['date', 'title']);
+			$value = array_only($value, ['date', 'title', 'position']);
 		}
 		
 		array_walk($checkins, 'format_date');
