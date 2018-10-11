@@ -2033,7 +2033,7 @@ class TransactionController extends \BaseController {
                 }
 
                 if($order->type == "memberships"){
-                    $this->utilities->afterTranSuccess($order, 'order');
+                    $this->utilities->afterTranSuccess($order->toArray(), 'order');
                 }
             }
 

@@ -6197,6 +6197,8 @@ Class Utilities {
     }
 
     public function autoRegisterCustomerLoyalty($data){
+        Log::info('autoRegisterCustomerLoyalty');
+        Log::info($data);
         try{
             $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
 
