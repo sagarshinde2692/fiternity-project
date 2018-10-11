@@ -20,6 +20,7 @@ class BaseController extends Controller {
 
         $this->get_device_type = !empty($_GET['device_type']) ? $_GET['device_type'] : '' ;
         $this->get_app_version = !empty($_GET['app_version']) ? $_GET['app_version'] : '' ;
+		Log::info($_SERVER['REQUEST_URI']);
      	//echo "call in base";
      	//$this->perpage =  Config::get('app.perpage');
     }

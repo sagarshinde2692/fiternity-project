@@ -7736,8 +7736,8 @@ class CustomerController extends \BaseController {
 		$customer_id = (int)$decoded->customer->_id;
 		$data =	Input::json()->all();
 		$rules = ['data' => 'required'];
+		Log::info($data);
 		$validator = Validator::make($data, $rules);
-		
 		if ($validator->fails()) return ['status' => 400,'message' =>$this->errorMessage($validator->errors())];
 		else
 		{
@@ -8143,7 +8143,7 @@ class CustomerController extends \BaseController {
 
 			$value = array_only($value, ['date', 'title', 'position']);
 		}
-		
+	
 		array_walk($checkins, 'format_date');
 		
 		$milestones = Config::get('loyalty_constants.milestones');
