@@ -8040,6 +8040,11 @@ class CustomerController extends \BaseController {
 							}else{
 								$post_reward_data_template['claim_enabled'] = true;
 								$post_reward_data_template['button_title'] = "View";
+								unset($post_reward_data_template['claim_message']);
+								if($vc['_id'] != $customer_milestones[$milestone['milestone']-1]['voucher']['voucher_category']){
+									continue;
+								}
+
 							}
 
                         }else{
@@ -8244,14 +8249,14 @@ class CustomerController extends \BaseController {
 
 					$milestones[$voucher_category['milestone']-1]['claimed_date'] = new \MongoDate();
 					
-					$milestones[$voucher_category['milestone']-1]['voucher'] = $voucherAttached;
+					$milestones[$voucher_category['milestone']-1]['voucher'] = $voucherAttached->toArray();
 					
 					$loyalty = $customer->loyalty;
 
 					$loyalty['milestones'] = $milestones;
 
-    				$customer->loyalty = $loyalty;
-
+					$customer->loyalty = $loyalty;
+					
                     $customer->update();
 				}
 
