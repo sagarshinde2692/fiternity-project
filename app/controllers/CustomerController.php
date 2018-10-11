@@ -7684,14 +7684,14 @@ class CustomerController extends \BaseController {
 							}
 							else {
 								unset($resp['response']);
-								$resp['title']="No slots available at ".$finderarr['title'].', '.$finderarr['location']['name']." right now.";
-								$resp['subtitle']="OOPs no slots are available at ".$finderarr['title'].', '.$finderarr['location']['name']." right now.";
+								$resp['response']['title']="No slots available at ".$finderarr['title'].', '.$finderarr['location']['name']." right now.";
+								$resp['response']['subtitle']="OOPs no slots are available at ".$finderarr['title'].', '.$finderarr['location']['name']." right now.";
 							}
 						}
 						else {
 							unset($resp['response']);
-							$resp['title']="No services available at ".$finderarr['title'].', '.$finderarr['location']['name'];
-							$resp['subtitle']="OOPs no services are available at ".$finderarr['title'].', '.$finderarr['location']['name'];
+							$resp['response']['title']="No services available at ".$finderarr['title'].', '.$finderarr['location']['name'];
+							$resp['response']['subtitle']="OOPs no services are available at ".$finderarr['title'].', '.$finderarr['location']['name'];
 						}
 
 						if(!empty($resp['response'])){
