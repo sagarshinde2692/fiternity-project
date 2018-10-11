@@ -2037,7 +2037,7 @@ class TransactionController extends \BaseController {
                     $after_booking_response = $this->utilities->afterTranSuccess($order->toArray(), 'order');
                     
                     if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
-                        $booktrial->loyalty_registration = true;
+                        $order->loyalty_registration = true;
                     }
                 
                 }
