@@ -951,11 +951,11 @@ class TransactionController extends \BaseController {
 
         if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
 
-            Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', array('event_customers'=>$data['event_customers']),Config::get('app.queue'));
+            Queue::connection('sync')->push('TransactionController@autoRegisterCustomer', array('event_customers'=>$data['event_customers']),Config::get('app.queue'));
         }
 
         if(in_array($data['type'],$this->membership_array)){
-            $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+            $redisid = Queue::connection('sync')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
             $order->update(array('redis_id'=>$redisid));
         }
 
