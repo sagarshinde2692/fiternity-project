@@ -7689,7 +7689,7 @@ class CustomerController extends \BaseController {
 						}
 						else {
 							unset($resp['response']);
-							$resp['header']="No services available at ".$finderarr['title'].', '.$finderarr['location']['name'].";
+							$resp['header']="No services available at ".$finderarr['title'].', '.$finderarr['location']['name'];
 						}
 
 						if(!empty($resp['response'])){
