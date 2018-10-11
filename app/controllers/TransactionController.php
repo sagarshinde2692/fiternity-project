@@ -165,6 +165,13 @@ class TransactionController extends \BaseController {
         if(in_array(strtolower($data["customer_email"]),$asshole_emails)){
             return Response::json("Can't book anything for you.", $this->error_status);
         }
+		if(isset($data["gcm_reg_id"])){
+			$asshole_gcm = ["fAbd5Ws_am4:APA91bFHI-OBhPCXbBkcmcnp7zrlhwVwpQ4bv9MJzTQXDKAxSv7OKMAscV7OCQLthJvYce6D_EUvj6glKkcZsgVsIn0ZmTn90tqcsoyvFECCU-ToR9tX-9pnCgdKpa5tGkFz9AHSvt34", "ee_4c5_T5hs:APA91bFR32t7MT_TTdIeqA82yFjur4LX5cmZXD-sSMiuTdBAbblYpWbDFQvzYaTKMiRDzygIMP9BxZdgP_Q22u2QWqS1nr9b5AOw4rbHuTP5KyPt6S3D6SHnghwc7bt1_106sQrS-ZR4","fiG_xAuFrzk:APA91bEii0FxJeMcw3BW0zuvZLo9zqLnHhDERfMF40DNzd0IhWexY4n0jlhYU9s_vUIr8-gJs8C_-Nso73vePfpSfs8wavCglzndPVs_kqK6bRG4flSEH79agE8iIeViaL8nTkqobD2w","frxy4N3LHIs:APA91bFEda0Je4wZacmEDmHyoiiZdORyE5gAb-t4HStYvCCP4VAHisYpIHa-9JOk6F1pXf2CypivaUrsIFpZmVrw1ksyqszVmr31GESSQXBUHnxMrnrCfpNJDQxKudtbaNzxJGWFC1Q3"];
+			if(in_array(strtolower($data["gcm_reg_id"]),$asshole_gcm)){
+				return Response::json("Can't book anything for you.", $this->error_status);
+			}
+		}
+		
 
         if(!isset($data['manual_order'])){
 
