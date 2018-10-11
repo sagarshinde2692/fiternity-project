@@ -7553,7 +7553,7 @@ class CustomerController extends \BaseController {
 					if($cnt==1&&!empty($booktrial[0]['_id']))
 					{
 						$pop_up=["title"=>"Confirmation",
-								"message"=>'Do you want to check-in for your '.(!empty($booktrial[0]['schedule_slot_start_time'])?$booktrial[0]['schedule_slot_start_time']:"").' '.(!empty($booktrial[0]['service_name'])?$booktrial[0]['service_name']:"").' at '.(!empty($booktrial[0]['finder_name'])?$booktrial[0]['finder_name']:"").'?',
+								"message"=>'Do you want to check-in for your '.(!empty($booktrial[0]['schedule_slot_start_time'])?$booktrial[0]['schedule_slot_start_time']:"").' '.(!empty($booktrial[0]['service_name'])?ucwords($booktrial[0]['service_name']):"").' at '.(!empty($booktrial[0]['finder_name'])?$booktrial[0]['finder_name']:"").'?',
 								"positivebtn"=>"yes",
 								"negativebtn"=>"No",
 								"options"=>["mark"=>false,"_id"=>$booktrial[0]['_id']]	
