@@ -6142,7 +6142,7 @@ Class Utilities {
                     'verified'=>empty($unverified_membership_checkins_count)
                 ];
                 
-                if(!$customer){
+                if(empty($customer)){
                     $customer = Customer::find($customer_id, ['loyalty']);
                 }
 
