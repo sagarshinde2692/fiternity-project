@@ -8151,7 +8151,7 @@ class CustomerController extends \BaseController {
 			$data['finder_id'] = intval($data['finder_id']);
         }
         $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
-        if(!empty($resp['status']) || $resp['status'] != 200){
+        if(empty($resp['status']) || $resp['status'] != 200){
 			return $resp;
         }
 		
@@ -8159,24 +8159,28 @@ class CustomerController extends \BaseController {
 			
 			$parts = parse_url($data['url']);
 			parse_str($parts['query'], $query);
-			$qr_finder_id = $query['finder_id'];
-
-			$checkin_data = [
-				'customer_id'=>$customer_id,
-				'finder_id'=>intval($qr_finder_id),
-				'type'=>'workout-session',
-				'unverified'=>false
-			];
 			
-			$addedCheckin = $this->utilities->addCheckin($checkin_data);
+			if(!empty($query['finder_id'])){
+				$qr_finder_id = $query['finder_id'];
 
-			Log::info('$addedCheckin');
-			Log::info($addedCheckin);
+				$checkin_data = [
+					'customer_id'=>$customer_id,
+					'finder_id'=>intval($qr_finder_id),
+					'type'=>'workout-session',
+					'unverified'=>false
+				];
+
+				$addedCheckin = $this->utilities->addCheckin($checkin_data);
+
+				Log::info('$addedCheckin');
+				Log::info($addedCheckin);
+			}
+			
 
 		}
 
         if(!empty($data['customer_phone'])){
-            $customer->contact_no = substr($data['contact_no'], -10);
+            $customer->contact_no = substr($data['customer_phone'], -10);
         }
         $fields_to_update = ['city_id', 'gender'];
         foreach($fields_to_update as $field){
@@ -8186,8 +8190,8 @@ class CustomerController extends \BaseController {
         }
         $customer->update();
         $token = $this->createToken($customer);
-   
-        return Response::json(['message'=>'Registration succesfull', 'token'=>$token['token'], 'password'=>true]);
+   	Log::info(['message'=>'Registration succesfull', 'token'=>$token['token'], 'password'=>true]);
+        return Response::json(['status'=>200,'message'=>'Registration succesfull', 'token'=>$token['token'], 'password'=>true]);
         
     }
 
