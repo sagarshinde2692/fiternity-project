@@ -948,7 +948,7 @@ class TransactionController extends \BaseController {
         /*if(isset($data["part_payment_calculation"])){
             $result['part_payment_calculation'] = $data["part_payment_calculation"];
         }*/
-        return $data;
+        
         
 
         if(isset($data['full_payment_wallet'])){
