@@ -92,7 +92,7 @@ return array(
         'Terms' => [
             'Title' => 'FitSquad - Terms and conditions',
             'text' => 'HTML Text',
-            'url' => 'https://fitternity.com'
+            'url' => Config::get('loyalty_constants.fitsquad_faq')
         ],
     ],
     'past_check_in_header_text' => 'View Past Check Ins',
