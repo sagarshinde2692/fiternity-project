@@ -7486,67 +7486,6 @@ class CustomerController extends \BaseController {
 		return json_decode($userData, true);
 	}
 
-    public function registerLoyalty(){
-
-        $data = Input::json()->all();
-        
-        $rules = [
-            'customer_name' => 'required|max:255',
-            'customer_email' => 'required|email|max:255',
-            'customer_phone' => 'max:15',
-            'customer_membership' => 'required|in:yes,no'
-        ];
-
-        $validator = Validator::make($data,$rules);
-
-        if ($validator->fails()) {
-            return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
-        }
-
-        $customer_id = autoRegisterCustomer($data);
-
-        $customer = Customer::active()->where('_id', $customer_id)->first();
-
-        if($customer && !empty($customer->loyalty)){
-            return Response::json(['message'=>'Already registered for Fitsquad'], 400);
-        }
-
-        $data['customer_id'] = $customer_id;
-
-        if(!empty($data['membership_end_date'])){
-            $data['end_date'] = new Mongodate(strtotime($data['membership_end_date']));
-        }
-
-        if(!empty($data['finder_id'])){
-            $data['finder_id'] = intval($data['finder_id']);
-        }
-        $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
-
-        if(!empty($resp['status']) || $resp['status'] != 200){
-            return $resp;
-        }
-
-        if(!empty($data['customer_phone'])){
-            $customer->contact_no = substr($data['contact_no'], -10);
-        }
-
-        $fields_to_update = ['city_id', 'gender'];
-
-        foreach($fields_to_update as $field){
-
-            if(!empty($data[$field])){
-                $customer->$field = $data[$field];
-            }
-        }
-
-        $customer->update();
-
-        $token = $this->createToken($customer);
-   
-        return Response::json(['message'=>'Registration succesfull', 'token'=>$token['token'], 'password'=>true]);
-        
-    }
-	
 	public function getFirstScreen($data){
 		
 		$response['header'] = "LET US KNOW";
@@ -8186,7 +8125,8 @@ class CustomerController extends \BaseController {
         $rules = [
             'customer_name' => 'required|max:255',
             'customer_email' => 'required|email|max:255',
-            'customer_phone' => 'max:15'
+            'customer_phone' => 'max:15',
+            'customer_membership' => 'required|in:yes,no'
         ];
         $validator = Validator::make($data,$rules);
 		
