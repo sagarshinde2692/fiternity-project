@@ -5838,7 +5838,7 @@ Class Utilities {
     {
     		try {
     			$baseData=['service_id'=>$service['_id'],'service_name'=>$service['name'],'schedule_date'=>$schedule_date,'finder_id'=>$service['finder_id'],'ratecard_id'=>$ratecard_id,'price'=>intval($cost),'type'=>$type,'qrcodepayment'=>true,'customer_source'=>$device_type,
-    					'btnview'=>($type== 'booktrials')?'Book':"Buy"];
+    					'btnview'=>($type== 'booktrials')?'Book':"Book"];
     			if(!empty($city_id))$baseData['city_id']=$city_id;
     			if($type!= 'booktrials')
     				$baseData=array_merge($baseData,$wallet_pass,$paymentmode_selected,['premium_session'=>true]);
