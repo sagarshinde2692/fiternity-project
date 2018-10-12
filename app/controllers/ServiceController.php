@@ -1582,7 +1582,11 @@ class ServiceController extends \BaseController {
 				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->where("description", "!=", "")->orderBy('updated_at', 'DESC')->limit(3);}))
 				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo']);
 
-			$finder['reviews'] = $finder['reviews']->toArray();
+			if(!$finder){
+				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
+			}
+
+			$finder['reviews'] = !empty($finder['reviews']) ? $finder['reviews']->toArray() : []; 
 			if(count($finder['reviews']) < 3){
 				$initial_review_count = count($finder['reviews']);
 				$empty_reviews = Review::where('finder_id', $finder['_id'])->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('description', "")->orderBy('updated_at', 'DESC')->limit(3-$initial_review_count)->get();
@@ -1592,10 +1596,6 @@ class ServiceController extends \BaseController {
 					$initial_reviews = array_merge($initial_reviews, $empty_reviews->toArray());
 					$finder['reviews'] = $initial_reviews;
 				}
-			}
-
-			if(!$finder){
-				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
 			}
 	
 			// $metropolis = new Metropolis();
@@ -1607,7 +1607,7 @@ class ServiceController extends \BaseController {
 			// }
 			
 			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules', 'short_description','servicesubcategory_id']);
-			// return $service_details['short_description'];
+			
 			if(!empty($service_details['short_description'])){
 				
 				$service_category = Servicecategory::find($service_details["servicesubcategory_id"]);
@@ -2108,28 +2108,28 @@ class ServiceController extends \BaseController {
 		];
 		$cityId=City::where("slug",$city)->first(['_id']);
 		$cityCached=strtolower($city);
-		if(!empty($cityId))
-		{
-			$cityId=$cityId->_id;
-			if(!empty($slotsCountCache))
-			{
-				$gymCacheKey=$cityCached.'-'.'gym';
-				$zumbaCacheKey=$cityCached.'-'.'zumba';
-				$cfCacheKey=$cityCached.'-'.'crossfit';
-				$totCacheKey=$cityCached.'-'.'total';
-				$cche=true;
-			}
-			else {
-				$cfCacheKey=null;$totCacheKey=null;$zumbaCacheKey=null;$gymCacheKey=null;$cche=false;
-			}
+		// if(!empty($cityId))
+		// {
+		// 	$cityId=$cityId->_id;
+		// 	if(!empty($slotsCountCache))
+		// 	{
+		// 		$gymCacheKey=$cityCached.'-'.'gym';
+		// 		$zumbaCacheKey=$cityCached.'-'.'zumba';
+		// 		$cfCacheKey=$cityCached.'-'.'crossfit';
+		// 		$totCacheKey=$cityCached.'-'.'total';
+		// 		$cche=true;
+		// 	}
+		// 	else {
+		// 		$cfCacheKey=null;$totCacheKey=null;$zumbaCacheKey=null;$gymCacheKey=null;$cche=false;
+		// 	}
 			
-			$gymCount=$this->utilities->getSessionSlotsService($cityId,[65,82],$cche,$gymCacheKey);
-			$zumbaCount=$this->utilities->getSessionSlotsService($cityId,[19,20,21,132,133,189],$cche,$zumbaCacheKey);
-			$cfCount=$this->utilities->getSessionSlotsService($cityId,[5,111,112,10],$cche,$cfCacheKey);
-			$total=$this->utilities->getSessionSlotsService($cityId,[],$cche,$totCacheKey);
-			$data["stats_count"]=["crossfit"=>$cfCount,"zumba"=>$zumbaCount,"gym"=>$gymCount,"total"=>$total,"categories"=>count($included_ids)];
+		// 	$gymCount=$this->utilities->getSessionSlotsService($cityId,[65,82],$cche,$gymCacheKey);
+		// 	$zumbaCount=$this->utilities->getSessionSlotsService($cityId,[19,20,21,132,133,189],$cche,$zumbaCacheKey);
+		// 	$cfCount=$this->utilities->getSessionSlotsService($cityId,[5,111,112,10],$cche,$cfCacheKey);
+		// 	$total=$this->utilities->getSessionSlotsService($cityId,[],$cche,$totCacheKey);
+		// 	$data["stats_count"]=["crossfit"=>$cfCount,"zumba"=>$zumbaCount,"gym"=>$gymCount,"total"=>$total,"categories"=>count($included_ids)];
 			
-		}
+		// }
 		try{
 
 			if($this->authorization){
