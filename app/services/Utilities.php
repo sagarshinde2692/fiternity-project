@@ -6949,10 +6949,16 @@ Class Utilities {
     }
 
     public function getLoyaltyRegisterUrl($finder_id=null){
+        
+        Log::info("getLoyaltyRegisterUrl");
+        Log::info(Request::header('Mobile-Verified'));
+        
+        
         $url = Config::get('loyalty_constants.register_url').'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false');
         if(!empty($finder_id)){
             $url = Config::get('loyalty_constants.register_url').'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false').'&finder_id='.$finder_id;
         }
+        Log::info($url);
         return $url;
     }
 
