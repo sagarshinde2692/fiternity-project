@@ -796,6 +796,7 @@ class TransactionController extends \BaseController {
             $data['service_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']);
         
         }
+        
 
         $data['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id']; //$this->utilities->getShortenUrl(Config::get('app.website')."/paymentlink/".$data['order_id']);
 
@@ -827,6 +828,7 @@ class TransactionController extends \BaseController {
             }
             
         }
+
 
         if($this->utilities->checkCorporateLogin()){
             $data['full_payment_wallet'] = true;
@@ -862,7 +864,9 @@ class TransactionController extends \BaseController {
         if(isset($old_order_id)){
 
             if($order){
-               $order->update($data); 
+                
+                $order->update($data); 
+                return $data;
             }else{
                 $order = new Order($data);
                 $order->_id = $order_id;
@@ -877,6 +881,7 @@ class TransactionController extends \BaseController {
             $order->save();
             $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(10)),Config::get('app.queue'));
         }
+        return $data;
 
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
 
@@ -889,6 +894,7 @@ class TransactionController extends \BaseController {
 
             $order->update();
         }
+        return $data;
 
         if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
 
@@ -942,6 +948,7 @@ class TransactionController extends \BaseController {
         /*if(isset($data["part_payment_calculation"])){
             $result['part_payment_calculation'] = $data["part_payment_calculation"];
         }*/
+        return $data;
         
 
         if(isset($data['full_payment_wallet'])){
