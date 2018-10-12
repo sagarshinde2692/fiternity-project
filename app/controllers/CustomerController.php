@@ -7991,7 +7991,7 @@ class CustomerController extends \BaseController {
 			// return $post_register['milestones']['data'];
 			// return $milestone_next_count-$check_ins;
 			$milestones = Config::get('loyalty_constants.milestones');
-			$next_milestone_checkins = $milestones[$milestone_no]['next_count'];
+			$next_milestone_checkins = !empty($milestones[$milestone_no]['next_count']) ? $milestones[$milestone_no]['next_count'] : 225;
 
 			if(!empty($milestone_no)){
 				$milestone_text = 'You are on milestone '.$milestone_no;
