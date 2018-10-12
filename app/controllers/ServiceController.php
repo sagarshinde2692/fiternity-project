@@ -1582,7 +1582,11 @@ class ServiceController extends \BaseController {
 				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->where("description", "!=", "")->orderBy('updated_at', 'DESC')->limit(3);}))
 				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo']);
 
-			$finder['reviews'] = $finder['reviews']->toArray();
+			if(!$finder){
+				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
+			}
+
+			$finder['reviews'] = !empty($finder['reviews']) ? $finder['reviews']->toArray() : []; 
 			if(count($finder['reviews']) < 3){
 				$initial_review_count = count($finder['reviews']);
 				$empty_reviews = Review::where('finder_id', $finder['_id'])->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('description', "")->orderBy('updated_at', 'DESC')->limit(3-$initial_review_count)->get();
@@ -1592,10 +1596,6 @@ class ServiceController extends \BaseController {
 					$initial_reviews = array_merge($initial_reviews, $empty_reviews->toArray());
 					$finder['reviews'] = $initial_reviews;
 				}
-			}
-
-			if(!$finder){
-				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
 			}
 	
 			// $metropolis = new Metropolis();
