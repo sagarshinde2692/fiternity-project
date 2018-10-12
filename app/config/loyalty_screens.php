@@ -30,18 +30,18 @@ return array(
             'header' => 'NO MATTER WHERE YOU WORKOUT | GET REWARDED IN 3 EASY STEPS',
             'data' => [
                 [
-                    'title' => 'CHECK-IN FOR YOUR WORKOUT',
+                    'title' => 'CHECK-IN EVERY TIME YOU WORKOUT',
                     'description' => 'Check-in at the gym/studio by scanning the QR code through the app',
                     'image' => 'https://b.fitn.in/loyalty/Group%20147%281%29.png'
                 ],
                 [
                     'title' => 'WORKOUT MORE AND LEVEL UP',
-                    'description' => 'Level up on your streak to reach different milestones',
+                    'description' => 'Reach easily achievable Fitness Milestones',
                     'image' => 'https://b.fitn.in/loyalty/Group%20128.png'
                 ],
                 [
-                    'title' => 'EARN REWARDS',
-                    'description' => 'Earn exciting rewards on every milestone you achieve ',
+                    'title' => 'EARN REWARDS WORTH Rs. 25,000',
+                    'description' => 'Exciting Rewards from Best Brands in the Country',
                     'image' => 'https://b.fitn.in/loyalty/Group%2049.png'
                 ],
             ]
