@@ -8112,25 +8112,50 @@ class CustomerController extends \BaseController {
             'customer_phone' => 'max:15'
         ];
         $validator = Validator::make($data,$rules);
-        if ($validator->fails()) {
+		
+		if ($validator->fails()) {
             return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
-        }
+		}
+		
+		
+		
         $customer_id = autoRegisterCustomer($data);
         $customer = Customer::active()->where('_id', $customer_id)->first();
         if($customer && !empty($customer->loyalty)){
-            return Response::json(['message'=>'Already registered for Fitsquad'], 400);
+			return Response::json(['message'=>'Already registered for Fitsquad'], 400);
         }
         $data['customer_id'] = $customer_id;
         if(!empty($data['membership_end_date'])){
-            $data['end_date'] = new Mongodate(strtotime($data['membership_end_date']));
+			$data['end_date'] = new Mongodate(strtotime($data['membership_end_date']));
         }
         if(!empty($data['finder_id'])){
-            $data['finder_id'] = intval($data['finder_id']);
+			$data['finder_id'] = intval($data['finder_id']);
         }
         $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
         if(!empty($resp['status']) || $resp['status'] != 200){
-            return $resp;
+			return $resp;
         }
+		
+		if(!empty($data['url'])){
+			
+			$parts = parse_url($data['url']);
+			parse_str($parts['query'], $query);
+			$qr_finder_id = $query['finder_id'];
+
+			$checkin_data = [
+				'customer_id'=>$customer_id,
+				'finder_id'=>intval($qr_finder_id),
+				'type'=>'workout-session',
+				'unverified'=>false
+			];
+			
+			$addedCheckin = $this->utilities->addCheckin($checkin_data);
+
+			Log::info('$addedCheckin');
+			Log::info($addedCheckin);
+
+		}
+
         if(!empty($data['customer_phone'])){
             $customer->contact_no = substr($data['contact_no'], -10);
         }
