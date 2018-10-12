@@ -6995,6 +6995,31 @@ Class Utilities {
         return $url;
     }
 
+     public function assignDietPlanVoucher($customer, $voucher_category){
+
+        $diet_plan = $this->generateFreeDietPlanOrder(['customer_name'=>$customer->name, 'customer_email'=>$customer->email,'customer_phone'=>$customer->contact_no]);
+
+        if($diet_plan['status']!=200){
+            return ['status'=>400, 'message'=> 'Cannot claim reward. Please contact customer support (4).'];
+        }
+
+        $diet_plan_order_id = $diet_plan['order_id'].
+        
+        $voucher_data = [
+            'voucher_category'=>$voucher_category['_id'],
+            'status'=>"1",
+            'description'=>$voucher_category['description'],
+            'milestone'=>$voucher_category['milestone'],
+            'customer_id'=>$customer['_id'],
+            'expiry_date'=>date('Y-m-d H:i:s',strtotime('+1 month')),
+            'code'=>'DIET-PLAN',
+            'diet_plan_order_id'=>$diet_plan_order_id
+        ];
+
+        return $voucher = \LoyaltyVoucher::create($voucher_data);
+        
+    }
+
 }
 
 
