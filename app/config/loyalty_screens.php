@@ -58,6 +58,11 @@ return array(
             'ratio' => 1.38,
             'url'=> Config::get('loyalty_constants.register_url')
         ],
+        'Terms' => [
+            'Title' => 'FitSquad - Terms and conditions',
+            'text' => 'HTML Text',
+            'url' => Config::get('loyalty_constants.fitsquad_faq')
+        ],
     ],
     'post_register' => [
         'header' => [

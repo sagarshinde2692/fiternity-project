@@ -8106,6 +8106,8 @@ class CustomerController extends \BaseController {
 			}
 	
 			$pre_register['check_ins']['data'] = $pre_register_check_ins_data;
+			$pre_register['Terms']['url'] = $pre_register['Terms']['url'].'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false');
+
 			if(!empty($this->device_type) && in_array($this->device_type, ['android', 'ios'])){
 				$pre_register['header']['url'] = $pre_register['footer']['url'] = $this->utilities->getLoyaltyRegisterUrl();
 			}
