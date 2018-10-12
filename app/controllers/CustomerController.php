@@ -3888,8 +3888,8 @@ class CustomerController extends \BaseController {
             'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
-            'knowmorelink' => 'know more',
-            'footer' => 'Available across 12 outlets near you | Starting at <b>₹ 149</b>'
+            // 'knowmorelink' => 'know more',
+            'footer' => "Available across 12 outlets near you | Starting at <b>&#8377; 149</b>"
         ];
 
 		return Response::json($result);
