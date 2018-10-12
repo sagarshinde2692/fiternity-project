@@ -8157,19 +8157,23 @@ class CustomerController extends \BaseController {
 			
 			$parts = parse_url($data['url']);
 			parse_str($parts['query'], $query);
-			$qr_finder_id = $query['finder_id'];
-
-			$checkin_data = [
-				'customer_id'=>$customer_id,
-				'finder_id'=>intval($qr_finder_id),
-				'type'=>'workout-session',
-				'unverified'=>false
-			];
 			
-			$addedCheckin = $this->utilities->addCheckin($checkin_data);
+			if(!empty($query['finder_id'])){
+				$qr_finder_id = $query['finder_id'];
 
-			Log::info('$addedCheckin');
-			Log::info($addedCheckin);
+				$checkin_data = [
+					'customer_id'=>$customer_id,
+					'finder_id'=>intval($qr_finder_id),
+					'type'=>'workout-session',
+					'unverified'=>false
+				];
+
+				$addedCheckin = $this->utilities->addCheckin($checkin_data);
+
+				Log::info('$addedCheckin');
+				Log::info($addedCheckin);
+			}
+			
 
 		}
 
