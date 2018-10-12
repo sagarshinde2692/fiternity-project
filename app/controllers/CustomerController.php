@@ -3667,43 +3667,43 @@ class CustomerController extends \BaseController {
 		// if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "android"){
 		// 	$result['campaign']['link'] = 'ftrnty://ftrnty.com/search/all';
 		// }
-		$campaigns = [];
-
-		// if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
+		
+		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
 			
-		// 	$city_id = City::where('slug', $city)->first(['_id']);
-
-		// 	// return $city_id;
+			$city_id = City::where('slug', $city)->first(['_id']);
 			
-		// 	if($city){
+			// return $city_id;
+			$campaigns = [];
+			
+			// if($city){
 				
-		// 		$homepage = Homepage::where('city_id', $city_id['_id'])->first();
+			// 	$homepage = Homepage::where('city_id', $city_id['_id'])->first();
 
-		// 		$campaigns = [];
+			// 	$campaigns = [];
                 
-        //         if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
+            //     if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
 
-        //             $app_banners = $homepage['app_banners'];
+            //         $app_banners = $homepage['app_banners'];
 
 
-        //             foreach($app_banners as $banner){
+            //         foreach($app_banners as $banner){
 
-        //                 if(isset($banner['app_version']) && (float)$_GET['app_version'] < 4.4){
-        //                     continue;
-        //                 }	
+            //             if(isset($banner['app_version']) && (float)$_GET['app_version'] < 4.4){
+            //                 continue;
+            //             }	
 
-        //                 array_push($campaigns, $banner);
+            //             array_push($campaigns, $banner);
 
-        //             }
+            //         }
         
-        //             function cmp($a, $b)
-        //             {
-        //                 return $a['order'] - $b['order'];
-        //             }
+            //         function cmp($a, $b)
+            //         {
+            //             return $a['order'] - $b['order'];
+            //         }
         
-        //             usort($campaigns, "cmp");
-        //         }
-		// 	}
+            //         usort($campaigns, "cmp");
+            //     }
+			// }
 			$result['campaigns'] =  $campaigns;
 			// $result['campaigns'] =  [];
 
