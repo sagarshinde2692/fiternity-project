@@ -6226,45 +6226,6 @@ Class Utilities {
         return ['loyalty_registration'=>$loyalty_registration, 'checkin'=> $checkin];
     }
 
-    public function autoRegisterCustomerLoyalty($data){
-        Log::info('autoRegisterCustomerLoyalty');
-        Log::info($data);
-        try{
-            $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
-
-            if(!$customer){
-                return ['status'=>400, 'Customer already registered'];
-            }
-            
-            $loyalty = [
-                'start_date'=>new \MongoDate(strtotime('midnight')),
-                'start_date_time'=>new \MongoDate()
-            ];
-
-            $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type',]);
-
-            $loyalty = array_merge($loyalty, $fields_to_add);
-
-            $update_data = [
-                'loyalty'=>$loyalty 
-            ];
-
-            $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update($update_data);
-
-            if($customer_update){
-                return ['status'=>200];
-            }else{
-                return ['status'=>400, 'message'=>'Customer already registered'];
-            }
-        
-        }catch(Exception $e){
-        
-            Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
-            return ['status'=>500, 'Please try after some time'];
-        }
-    
-    }
-
      public function uploadFileToS3Kraken($params){
         try{
             Log::info($params);
@@ -6709,6 +6670,7 @@ Class Utilities {
     public function stripTags($string){
         return ucwords(str_replace("&nbsp;","",strip_tags($string)));
     }
+    
     public function autoRegisterCustomerLoyalty($data){
         try{
             $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
@@ -6726,7 +6688,7 @@ Class Utilities {
                 'loyalty'=>$loyalty 
             ];
             $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update($update_data);
-            if($customer){
+            if($customer_update){
                 return ['status'=>200];
             }else{
                 return ['status'=>400, 'message'=>'Customer already registered'];
@@ -6738,15 +6700,6 @@ Class Utilities {
             return ['status'=>500, 'Please try after some time'];
         }
     
-    }
-	
-    		
-    	
-    private function mergeCustomerToSlot($data=[],$baseData=[],$cust=null)
-    {
-        if(!empty($cust))
-            return array_merge($data,$baseData,["customer_name"=>(!empty($cust['name'])?$cust['name']:""),"customer_email"=>(!empty($cust['email'])?$cust['email']:""),"customer_phone"=>(!empty($cust['contact_no'])?$cust['contact_no']:""),"customer_gender"=>(!empty($cust['gender'])?$cust['gender']:"")]);
-        else return $data;
     }
     
     public function getFinderDetail($finder_id){
