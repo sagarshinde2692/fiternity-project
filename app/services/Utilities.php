@@ -6097,7 +6097,14 @@ Class Utilities {
 			if(!empty($already_checkedin)){
 				return ['status'=>400, 'message'=>'Already checked-in for today'];
 			}
-			$customer_id = $data['customer_id'];
+            $customer_id = $data['customer_id'];
+            $customer = Customer::where('_id', $customer_id)->where('loyalty.start_date', 'exists', true)->first(['loyalty']);
+
+            if(empty($customer)){
+				return ['status'=>400, 'message'=>'Customer not registered'];
+            }
+            
+            
 			$checkin = new \Checkin();
 			$checkin->finder_id = $data['finder_id'];
 			$checkin->customer_id = $customer_id;
@@ -6114,8 +6121,9 @@ Class Utilities {
 			$checkin->save();
             
             if(!empty($data['finder_id']) && !empty($data['type']) && $data['type'] == 'membership'){
-                
-                $customer = Customer::find($customer_id, ['loyalty']);
+                if(empty($customer)){
+                    $customer = Customer::find($customer_id, ['loyalty']);
+                }
                 $loyalty = $customer->loyalty;
                 $memberships = !empty($loyalty['memberships']) ? $loyalty['memberships'] : [];
                 
