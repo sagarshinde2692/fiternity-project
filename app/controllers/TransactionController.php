@@ -981,7 +981,7 @@ class TransactionController extends \BaseController {
         $pay_later = false;
         
         if($data['type'] == 'workout-session' && isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3' && !(isset($data['session_payment']) && $data['session_payment'])){
-            $pay_later = true;
+            $pay_later = false;
             $data['pps_new'] = true;
         }
 
