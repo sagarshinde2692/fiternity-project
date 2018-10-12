@@ -3521,7 +3521,11 @@ Class Utilities {
 
             $fit_code = true;
 
-            if(isset($data['post_trial_status_updated_by_fitcode']) && $data['post_trial_status_updated_by_qrcode'] != ""){
+            if(!empty($data['post_trial_status_updated_by_fitcode'])){
+                $fit_code = false;
+            }
+
+            if(!empty($data['post_trial_status_updated_by_qrcode'])){
                 $fit_code = false;
             }
 
@@ -4273,6 +4277,10 @@ Class Utilities {
 
     public function isPPSReferralCode($code){
         $code = strtoupper($code);
+		$assholeCodes = ["NIRA7325R","GAUR7726R","GAUR2025R","GAUR8976R","GAUR7374R","GAUR1952R","GAUR4066R","GAUR8183R","GAUR9928R","GAUR8907R","GAUR7850R","GAUR3786R","GAUR8213R","GAUR2389R","GAUR2098R","GAUR3549R","GAUR1798R","GAUR3347R","GAUR4958R","GAUR6830R","GAUR7014R","GAUR7675R","GAUR9502R","GAUR3739R","RAJ5078R","RAHU2157R","RAJ1993R","GAUR2466R","GAUR8731R","RAHU4004R","RAJU6022R","GAUR3393R","GORU5013R","RAJ2108R","GAUR3839R","GAUR8786R","RAJ7506R","GAUR1239R","GORU8493R","RAJA9388R","RAHU2224R","RAM8335R","RAGH2992R","RAJ2752R","RAMA9818R","GAUR7926R","GAUR4087R","GANE6913R","GAUR1360R","RAVI1022R","RAIN7225R","RAJE4631R","RAVI7890R","RAGI5524R","DIVY4144R","RAVI7741R","RAVI5252R","RAMA3692R","PRIY2800R","RAM3154R","POOJ5073R","KRIS4965R","SHIV1177R","GAUT9460R","ROHI5588R","RAJE4868R","SNEH7426R","DHAR8793R","ANUJ5700R","AJAY8632R","KANH9604R","PURO8073R","HITE8333R","RAJR7176R","GAUR2482R","RAJE3868R","RAKE5575R","GAUR1404R","RAMG3131R","NIRA8347R","ROBI6419R","GAUT6627R","AMAN9183R","GANP9123R","RAMK8355R","RAJE2832R","RAMR6998R","HEMA1578R","KAMA7471R","GANP4203R","RAVI7593R","JAYA5318R","AMIT6423R","RAJU9276R","NAKU7625R","HARM5287R","NIKI1409R","RAJM9073R","YOGE5696R","BHAV2629R","SHRU6579R","RAJA1533R","SUDH2075R"];
+		if(in_array($code, $assholeCodes)){
+			return false;
+		}
         return (strlen($code)==9 && substr($code, -1 ) == 'R') || (strlen($code)==10 && substr($code, 0, 2) == 'R-');
     }
 
@@ -4433,6 +4441,7 @@ Class Utilities {
 														'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:"",'image'=>!empty($ratecard['image'])?$ratecard['image']:""];
 												array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
 											}
+                                            else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
 									}
 									else return ['status'=>0,"message"=>"Not a valid product id."];
 								}
@@ -4440,6 +4449,9 @@ Class Utilities {
 								if($update) {
 									$addedToCart=Cart::where('_id', intval($cart_id))->first();
 									$addedToCart=$addedToCart->update(['products'=>$cartData]);
+                                }
+                                $response['response']['data']=$cartDataExtended;
+								return $response;
 							}
 							else return ['status'=>0,"message"=>"No product Ratecards Found."];
 						}
@@ -4450,8 +4462,7 @@ Class Utilities {
 			else return ['status'=>0,"message"=>"Token Not Present"];
 			
 			return $response;
-		} 
-        }catch (Exception $e)
+        } catch (Exception $e)
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
@@ -6338,31 +6349,6 @@ Class Utilities {
 
     }
 
-    public function assignDietPlanVoucher($customer, $voucher_category){
-
-        $diet_plan = $this->generateFreeDietPlanOrder(['customer_name'=>$customer->name, 'customer_email'=>$customer->email,'customer_phone'=>$customer->contact_no]);
-
-        if($diet_plan['status']!=200){
-            return ['status'=>400, 'message'=> 'Cannot claim reward. Please contact customer support (4).'];
-        }
-
-        $diet_plan_order_id = $diet_plan['order_id'].
-        
-        $voucher_data = [
-            'voucher_category'=>$voucher_category['_id'],
-            'status'=>"1",
-            'description'=>$voucher_category['description'],
-            'milestone'=>$voucher_category['milestone'],
-            'customer_id'=>$customer['_id'],
-            'expiry_date'=>date('Y-m-d H:i:s',strtotime('+1 month')),
-            'code'=>'DIET-PLAN',
-            'diet_plan_order_id'=>$diet_plan_order_id
-        ];
-
-        return $voucher = \LoyaltyVoucher::create($voucher_data);
-        
-    }
-
     public function generateFreeDietPlanOrder($order,$type = false){
     	
     	$data = [];
@@ -6722,6 +6708,45 @@ Class Utilities {
 
     public function stripTags($string){
         return ucwords(str_replace("&nbsp;","",strip_tags($string)));
+    }
+    public function autoRegisterCustomerLoyalty($data){
+        try{
+            $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
+            if(!$customer){
+                return ['status'=>400, 'Customer already registered'];
+            }
+            
+            $loyalty = [
+                'start_date'=>new \MongoDate(strtotime('midnight')),
+                'start_date_time'=>new \MongoDate()
+            ];
+            $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name','customer_membership']);
+            $loyalty = array_merge($loyalty, $fields_to_add);
+            $update_data = [
+                'loyalty'=>$loyalty 
+            ];
+            $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update($update_data);
+            if($customer){
+                return ['status'=>200];
+            }else{
+                return ['status'=>400, 'message'=>'Customer already registered'];
+            }
+        
+        }catch(Exception $e){
+        
+            Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+            return ['status'=>500, 'Please try after some time'];
+        }
+    
+    }
+	
+    		
+    	
+    private function mergeCustomerToSlot($data=[],$baseData=[],$cust=null)
+    {
+        if(!empty($cust))
+            return array_merge($data,$baseData,["customer_name"=>(!empty($cust['name'])?$cust['name']:""),"customer_email"=>(!empty($cust['email'])?$cust['email']:""),"customer_phone"=>(!empty($cust['contact_no'])?$cust['contact_no']:""),"customer_gender"=>(!empty($cust['gender'])?$cust['gender']:"")]);
+        else return $data;
     }
     
     public function getFinderDetail($finder_id){

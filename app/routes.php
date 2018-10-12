@@ -1310,3 +1310,8 @@ Route::get('getcouponpackages','HomeController@getCouponPackages');
 // Route::get('reviewParamsPicturesStageToLive','DebugController@reviewParamsPicturesStageToLive');
 Route::get('removeloyalty/{id}','DebugController@removeloyalty');
 
+
+Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
+Route::post('registerloyalty', 'CustomerController@registerLoyalty');
+
+Route::get('integratedvendorlist/{city_id}','FindersController@integratedVendorList');

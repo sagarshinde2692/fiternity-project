@@ -6146,6 +6146,25 @@ class FindersController extends \BaseController {
 		$this->updateFinderRatingV1($data['reviewdata']);
 
 	}
+    public function integratedVendorList($city_id){
+        $city_id = intval($city_id);
+        Finder::$withoutAppends = true;
+        $finders = Finder::active()
+            ->where('city_id', $city_id)
+            ->where('commercial_type', '!=', 0)
+            ->where('flags.state','!=', 'closed')
+            ->where(function($query){$query->orWhere('membership','!=',"disable")->orWhere('trial','!=',"disable");})
+            ->with(array('location'=>function($query){$query->select('name');}))
+            ->remember(Config::get('app.cachetime'), 'integrated_vendor_list_'.$city_id)
+            ->get(['title', 'location_id'])->toArray();
+        foreach($finders as &$finder){
+            if(!empty($finder['location']['name'])){
+                $finder['title'] = $finder['title'].', '.$finder['location']['name'];
+            }
+            $finder = array_only($finder, ['_id', 'title']);
+        }
+        return $finders;
+    }
 
 	public function integratedVendorList($city_id){
 		$city_id = intval($city_id);
