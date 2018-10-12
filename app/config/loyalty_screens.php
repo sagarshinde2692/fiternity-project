@@ -22,6 +22,7 @@ return array(
                 "https://b.fitn.in/global/loyalty/ease%20my%20trip.png",
                 "https://b.fitn.in/global/loyalty/o2%20spa.png",
                 "https://b.fitn.in/global/loyalty/hyatt.png",
+                "https://b.fitn.in/external-vouchers/download.png"
             ]
         ],
 
