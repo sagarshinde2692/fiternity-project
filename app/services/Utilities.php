@@ -6191,8 +6191,8 @@ Class Utilities {
         $checkin = null;
         $loyalty_registration = null;
         if($type == 'order'){
-            $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
             $data['order_id']=$data['_id'];
+            $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
         }else if($type == 'booktrial'){
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
