@@ -8440,7 +8440,7 @@ class CustomerController extends \BaseController {
 				'header2' => 'INDIA\'S LARGEST FITENSS CLUB',
 				'header3' => 'GET REWARDED FOR EVERY WORKOUT',
 				'button_text' => 'REGISTER',
-				'url' => $this->utilities->getLoyaltyRegisterUrl(),
+				'url' => $this->utilities->getLoyaltyRegisterUrl($finderarr['_id']),
 				'type' => 'register',
 			];
 
