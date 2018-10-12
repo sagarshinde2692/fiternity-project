@@ -8174,7 +8174,7 @@ class CustomerController extends \BaseController {
 		}
 
         if(!empty($data['customer_phone'])){
-            $customer->contact_no = substr($data['contact_no'], -10);
+            $customer->contact_no = substr($data['customer_phone'], -10);
         }
         $fields_to_update = ['city_id', 'gender'];
         foreach($fields_to_update as $field){
