@@ -8149,7 +8149,7 @@ class CustomerController extends \BaseController {
 			$data['finder_id'] = intval($data['finder_id']);
         }
         $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
-        if(!empty($resp['status']) || $resp['status'] != 200){
+        if(empty($resp['status']) || $resp['status'] != 200){
 			return $resp;
         }
 		
