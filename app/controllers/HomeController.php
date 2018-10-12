@@ -1088,6 +1088,10 @@ class HomeController extends BaseController {
                     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
                 }
                 
+                if(!empty($item['qrcodepayment'])){
+                    unset($response['subline']);
+                }
+                
                 if(isset($item['pay_later']) && $item['pay_later'] && $item['status'] == '1'){
                     if(!empty($response['fitsquad'])){
                         unset($response['fitsquad']);
@@ -1099,9 +1103,6 @@ class HomeController extends BaseController {
                     $response['subline'] = 'Your payment for '.$service_name.' session at '.$finder_name.' for '.$schedule_date.' at '.$schedule_slot.' is successful. Keep booking, reach milestones & earn rewards';
                 }
                 
-                if(!empty($item['qrcodepayment'])){
-                    unset($response['subline']);
-                }
 
                 return $response;
             }
