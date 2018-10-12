@@ -135,6 +135,6 @@ return array(
         'data' => Config::get('loyalty_constants.milestones')
     ],
     'receipt_message'=>'Please upload your membership receipt to claim you reward',
-    'receipt_verification_message'=>'Your membership receipt is under verification'
+    'receipt_verification_message'=>'Your membership receipt is under verification. We will send the reward details on email & sms post the verification.'
 );
 ?>
