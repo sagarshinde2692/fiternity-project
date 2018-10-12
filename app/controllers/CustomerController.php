@@ -7998,10 +7998,22 @@ class CustomerController extends \BaseController {
 			}else{
 				$milestone_text = 'Rush to your first milestone to earn rewards';
 			}
+
+			if(empty($milestone_next_count)){
+
+				$milestone_next_count = Config::get('loyalty_constants.checkin_limit');
+				$all_milestones_done = true;
+			}
 			
 			$post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$checkins, '$milestone'=>$milestone_no, '$next_milestone_checkins'
 			=>$next_milestone_checkins, '$milestone_text'=>$milestone_text]);
 			$post_register['milestones']['subheader'] = strtr($post_register['milestones']['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$checkins, '$next_milestone'=>$milestone_no+1]);
+
+			if(!empty($all_milestones_done)){
+				$post_register['milestones']['subheader'] = "You have completed all your milestones";
+			}
+
+
 			$post_register['milestones']['footer'] = strtr($post_register['milestones']['footer'], ['$last_date'=>date('d M Y', strtotime('+1 year',$customer['loyalty']['start_date']->sec))]);
 			if($checkins){
 				unset($post_register['past_check_in']['subheader']);
