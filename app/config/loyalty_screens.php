@@ -120,8 +120,7 @@ return array(
         'button_title' => 'Claim',
         'terms' => 'terms',
         'coupon_description' => 'description',
-        'block_message'=>'',
-
+        'claim_message' => "Are you sure you want to claim this reward as you won't be able to claim other rewards for this milestone?",
     ],
     'success_loyalty_header' => [
         'logo' => 'https://b.fitn.in/loyalty/SUCCESS%20PAGE%20LOGO.png',
