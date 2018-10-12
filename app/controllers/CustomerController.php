@@ -8020,6 +8020,8 @@ class CustomerController extends \BaseController {
 				$post_register['past_check_in']['header'] = Config::get('loyalty_screens.past_check_in_header_text');
 				$post_register['past_check_in']['clickable'] = true;
 			}
+			$post_register['Terms']['url'] = $post_register['Terms']['url'].'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false');
+			
 			$post_register_rewards_data = [];
 			$reward_open_index = null;
 			foreach($milestones as $key => $milestone){
