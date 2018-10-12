@@ -8189,7 +8189,7 @@ class CustomerController extends \BaseController {
         $customer->update();
         $token = $this->createToken($customer);
    	Log::info(['message'=>'Registration succesfull', 'token'=>$token['token'], 'password'=>true]);
-        return Response::json(['message'=>'Registration succesfull', 'token'=>$token['token'], 'password'=>true]);
+        return Response::json(['status'=>200,'message'=>'Registration succesfull', 'token'=>$token['token'], 'password'=>true]);
         
     }
 
