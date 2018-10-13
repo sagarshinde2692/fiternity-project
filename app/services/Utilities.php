@@ -6145,7 +6145,11 @@ Class Utilities {
     public function addCheckin($data){
 
 		try{
-		    // $already_checkedin =  Checkin::where('customer_id', $data['customer_id'])->where('date', new DateTime(date('d-m-Y', time())))->first();
+
+    		if(!Config::get('app.vendor_communication')){
+		        $already_checkedin =  Checkin::where('customer_id', $data['customer_id'])->where('date', new DateTime(date('d-m-Y', time())))->first();
+            }
+
 			if(!empty($already_checkedin)){
 				return ['status'=>200, 'message'=>'Already checked-in for today', 'already_checked_in'=>true];
 			}
