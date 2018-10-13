@@ -6146,7 +6146,7 @@ Class Utilities {
 
 		try{
 
-    		if(!Config::get('app.vendor_communication')){
+    		if(Config::get('app.vendor_communication')){
 		        $already_checkedin =  Checkin::where('customer_id', $data['customer_id'])->where('date', new DateTime(date('d-m-Y', time())))->first();
             }
 
