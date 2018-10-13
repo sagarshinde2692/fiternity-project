@@ -6105,6 +6105,10 @@ Class Utilities {
 		    $customer = Customer::find($customer_id);
 
         }
+
+        if(empty($customer['loyalty'])){
+            return;
+        }
         
         $post_register_milestones = Config::get('loyalty_screens.milestones');
         $milestone_no = 1;
