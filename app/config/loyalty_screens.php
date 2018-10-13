@@ -73,7 +73,7 @@ return array(
         ],
         'milestones' => [
             'header' => 'Your Workout Journey',
-            'subheader' => 'You are $next_milestone_check_ins check-ins away from milestone $next_milestone',
+            'subheader' => 'You are $next_milestone_check_ins check-ins away from milestone $next_milestone.'."\nYou can check-in for your workout at the gym/studio through a QR code present on homescreen",
             'description' => "Start working out and level up on your streak.\n Achieve milestones and earn crazy rewards",
             'data' => Config::get('loyalty_constants.milestones'),
             'footer' => 'Your workout counter will reset on $last_date',
