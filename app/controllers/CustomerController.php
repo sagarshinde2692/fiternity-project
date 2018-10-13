@@ -8359,13 +8359,19 @@ class CustomerController extends \BaseController {
 		$finder = Finder::find($finder_id, ['title']);
 		
 		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200){
-			return [
+			$return =  [
 				'header'=>'CHECK-IN SUCCESSFUL!',
 				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
 				'milestones'=>$this->utilities->getMilestoneSection($customer),
 				'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
 				// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
 			];
+
+            if(!empty($addedCheckin['already_checked_in'])){
+                $return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';
+            }
+
+            return $return;
 		}else{
 			
 			return $addedCheckin;

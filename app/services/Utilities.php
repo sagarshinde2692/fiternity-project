@@ -6147,7 +6147,7 @@ Class Utilities {
 		try{
 		    $already_checkedin =  Checkin::where('customer_id', $data['customer_id'])->where('date', new DateTime(date('d-m-Y', time())))->first();
 			if(!empty($already_checkedin)){
-				return ['status'=>400, 'message'=>'Already checked-in for today'];
+				return ['status'=>200, 'message'=>'Already checked-in for today', 'already_checked_in'=>true];
 			}
             $customer_id = $data['customer_id'];
             $customer = Customer::where('_id', $customer_id)->where('loyalty.start_date', 'exists', true)->first(['loyalty']);
