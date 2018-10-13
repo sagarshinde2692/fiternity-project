@@ -6095,7 +6095,7 @@ Class Utilities {
 
 
     public function getMilestoneSection($customer=null){
-
+        
         if(!$customer){
 
             $jwt_token = Request::header('Authorization');
@@ -6132,7 +6132,7 @@ Class Utilities {
         }
         unset($milestone);
         $post_register_milestones['subheader'] = strtr($post_register_milestones['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$check_ins, '$next_milestone'=>$milestone_no+1]);
-        $post_register_milestones['description'] = strtr($post_register_milestones['description'], ['$check_ins'=>$check_ins]);
+        $post_register_milestones['description'] = strtr($post_register_milestones['description'], ['$check_ins'=>$check_ins, '$milestone_next_count'=>$milestone_next_count]);
 
         return $post_register_milestones;
     }

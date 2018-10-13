@@ -137,7 +137,7 @@ return array(
     'milestones' => [
         'header' => 'Your Workout Journey',
         'subheader' => 'You are $next_milestone_check_ins check-ins away from milestone $next_milestone',
-        'description' => '$check_ins/' . Config::get('loyalty_constants.checkin_limit') . ' check-ins done',
+        'description' => '$check_ins/$milestone_next_count check-ins done',
         'data' => Config::get('loyalty_constants.milestones')
     ],
     'receipt_message'=>'Please upload your membership receipt to claim you reward',

@@ -7913,6 +7913,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function loyaltyProfile(){
+    return $this->utilities->getMilestoneSection();
 		Log::info("asdas");
 		$post = false;
 		$jwt_token = Request::header('Authorization');
