@@ -27,6 +27,7 @@ use Ratecard;
 use Offer;
 use DateTime;
 use Order;
+use Checkin;
 
 Class Utilities {
 
