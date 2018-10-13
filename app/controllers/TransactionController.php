@@ -89,6 +89,8 @@ class TransactionController extends \BaseController {
     public function capture($data = null){
 
         $data = $data ? $data : Input::json()->all();
+
+        Log::info($_SERVER['REQUEST_URI']);
         Log::info('------------transactionCapture---------------',$data);
 
         foreach ($data as $key => $value) {
@@ -156,13 +158,13 @@ class TransactionController extends \BaseController {
 
         $asshole_numbers = ["7838038094","7982850036","8220720704","8510829603","9990099996","8368952443"];
         
-        if(in_array(substr($data["customer_phone"], -10), $asshole_numbers)){
+        if(isset($data["customer_phone"]) && in_array(substr($data["customer_phone"], -10), $asshole_numbers)){
             return Response::json("Can't book anything for you.", $this->error_status);
         }
 
         $asshole_emails = ["vasuk573@gmail.com","vasukatara01@gmail.com"];
         
-        if(in_array(strtolower($data["customer_email"]),$asshole_emails)){
+        if(isset($data["customer_email"]) && in_array(strtolower($data["customer_email"]),$asshole_emails)){
             return Response::json("Can't book anything for you.", $this->error_status);
         }
 		if(isset($data["gcm_reg_id"])){
@@ -219,6 +221,7 @@ class TransactionController extends \BaseController {
         //     $membership_rules = array(
         //         'preferred_starting_date'=>'required'
         //     );
+
 
         //     $rules = array_merge($rules,$membership_rules);
         // }
@@ -644,7 +647,6 @@ class TransactionController extends \BaseController {
              } catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
              } 
         }
-
             //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
 
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
@@ -801,6 +803,7 @@ class TransactionController extends \BaseController {
             $data['service_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']);
         
         }
+        
 
         $data['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id']; //$this->utilities->getShortenUrl(Config::get('app.website')."/paymentlink/".$data['order_id']);
 
@@ -832,6 +835,7 @@ class TransactionController extends \BaseController {
             }
             
         }
+
 
         if($this->utilities->checkCorporateLogin()){
             $data['full_payment_wallet'] = true;
@@ -865,9 +869,11 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($old_order_id)){
-
+            
             if($order){
-               $order->update($data); 
+                
+            
+                $order->update($data); 
             }else{
                 $order = new Order($data);
                 $order->_id = $order_id;
@@ -883,6 +889,7 @@ class TransactionController extends \BaseController {
             $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(10)),Config::get('app.queue'));
         }
 
+
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
 
             $group_id = isset($data['group_id']) ? $data['group_id'] : null;
@@ -894,6 +901,7 @@ class TransactionController extends \BaseController {
 
             $order->update();
         }
+
 
         if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
 
@@ -948,6 +956,7 @@ class TransactionController extends \BaseController {
             $result['part_payment_calculation'] = $data["part_payment_calculation"];
         }*/
         
+        
 
         if(isset($data['full_payment_wallet'])){
             $result['full_payment_wallet'] = $data['full_payment_wallet'];
@@ -979,7 +988,7 @@ class TransactionController extends \BaseController {
         $pay_later = false;
         
         if($data['type'] == 'workout-session' && isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3' && !(isset($data['session_payment']) && $data['session_payment'])){
-            $pay_later = true;
+            $pay_later = false;
             $data['pps_new'] = true;
         }
 
@@ -1033,13 +1042,14 @@ class TransactionController extends \BaseController {
             if(in_array($order['type'], ['booktrials', 'workout-session'])){
                 $resp['data']["quantity_details"] = [
                     "field" => "No of People",
-                    "description" => "Qty ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1),
+                    "description" => "👤 ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1),
                     'max'=>5,
                     'selected_quantity'=>(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1)
                 ];
             }
     
             // if(!empty($order['customer_quantity'])){
+
                 // $resp['data']["pt_details"] = [
                 //     "title" => "Add on",
                 //     "description" => "Personal Training",
@@ -2040,6 +2050,18 @@ class TransactionController extends \BaseController {
 
                     $reward_type = 'cashback';
                 }
+
+                if($order->type == "memberships"){
+                    
+                    $after_booking_response = $this->utilities->afterTranSuccess($order->toArray(), 'order');
+                    
+                    if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
+                        $order->loyalty_registration = true;
+                    }
+                
+                }
+
+    
             }
 
             if(isset($order['previous_booktrial_id']) && $order['previous_booktrial_id'] != ""){
@@ -2916,6 +2938,7 @@ class TransactionController extends \BaseController {
             $data['amount_finder'] = $data['amount_finder'] * $data['customer_quantity'];
 
             $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $data['customer_quantity'];
+
         }else if(!empty($order['customer_quantity'])){
 
             $data['ratecard_amount'] = $data['amount'];
@@ -3811,6 +3834,41 @@ class TransactionController extends \BaseController {
             $data['amount_finder'] = $data['amount'];
         }
 
+        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+        	
+        	$schedule_date = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
+        	array_set($data, 'start_date', $schedule_date);
+        	
+        	array_set($data, 'end_date', $schedule_date);
+        	
+        	$data['membership_duration_type'] = 'workout_session';
+        }
+        
+        if(isset($data['schedule_slot']) && $data['schedule_slot'] != ""){
+        	
+        	$schedule_slot = explode("-", $data['schedule_slot']);
+        	
+        	$data['start_time'] = trim($schedule_slot[0]);
+        	if(count($schedule_slot) == 1){
+        		$data['end_time'] = date('g:i a', strtotime('+1 hour', strtotime($schedule_slot[0])));
+        		$data['schedule_slot'] = $schedule_slot[0].'-'.$data['end_time'];
+        	}else{
+        		$data['end_time']= trim($schedule_slot[1]);
+        	}
+        }
+        
+        
+        //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
+        /* if($data['type'] == 'workout-session')
+        {
+        	try {
+        		(isset($data['start_time'])&&isset($data['start_date'])&&isset($data['service_id'])&&isset($data['end_time']))?
+        			$am_calc=$this->utilities->getWsSlotPrice($data['start_time'],$data['end_time'],$data['service_id'],$data['start_date']):"";
+        		(isset($am_calc))?$data['amount_finder']=$am_calc:"";
+        	} catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
+        } */
+        //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
+        
         $data['amount'] = $data['amount_finder'];
 
        /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
@@ -5716,6 +5774,9 @@ class TransactionController extends \BaseController {
         Log::info("REsponse from CustomerReward", $resp);
         if($resp["coupon_applied"]){
 
+            if(!empty($resp['data']['discount']))
+        		$resp['coupon_description']="Rs. ".$resp['data']['discount']. " off Applied.";
+
             if(isset($data['event_id']) && isset($data['customer_email'])){
                                 
                 $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
@@ -5841,14 +5902,18 @@ class TransactionController extends \BaseController {
         $data = Input::all();
         Log::info("wallet capture");
         Log::info($data);
+        
         if(in_array($this->device_type, ['ios', 'android'])){
             $data['customer_source'] = $this->device_type;
         }
+        
         $rules = array(
             'amount'=>'required',
             'customer_source'=>'required',
         );
         $validator = Validator::make($data,$rules);
+
+
         if ($validator->fails()) {
             Log::info($validator->errors());
             if(Config::get('app.debug')){
@@ -5878,6 +5943,7 @@ class TransactionController extends \BaseController {
         $data = array_merge($data,$customerDetail['data']);
         Log::info("before pledge");
         Log::info($data);
+
         $data["fitcash_amount"] = round($data['amount'] * (1 + Config::get('app.add_wallet_extra')/100));
         
         $data['amount_finder'] = 0;
@@ -5907,6 +5973,7 @@ class TransactionController extends \BaseController {
         $hash = getHash($data);
         
         $data = array_merge($data,$hash);
+
         if(in_array($data['customer_source'],['android','ios','kiosk'])){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
         }
@@ -5966,6 +6033,7 @@ class TransactionController extends \BaseController {
         // $hash_verified = true;
         if($data['status'] == 'success' && $hash_verified){
             $order->status = "1";
+
             $req = array(
                 "customer_id"=>$order['customer_id'],
                 "order_id"=>$order['_id'],
@@ -6025,6 +6093,7 @@ class TransactionController extends \BaseController {
         $data = Input::json()->all();
 
         Log::info("checkoutSummary");
+
         Log::info($data);
 
         $result = [
@@ -7672,6 +7741,5 @@ class TransactionController extends \BaseController {
         return $orderWithHash; 
         
     }
-
 
 }

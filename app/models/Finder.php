@@ -181,4 +181,9 @@ class Finder extends  \Basemodel {
 		return $this->hasMany('KnowlarityNo','vendor_id');
 	}
 
+	public function finders(){
+		
+		return $this->hasMany('Checkin');
+	}
+
 }

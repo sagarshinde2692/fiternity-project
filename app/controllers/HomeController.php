@@ -1041,7 +1041,7 @@ class HomeController extends BaseController {
 
                 $header = "BOOKING SUCCESSFUL!";
 
-                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.'. FitCode helps you mark your attendance that let\'s you earn cashbacks';  
+                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there. FitCode helps you mark your attendance that let\'s you earn cashbacks.'."<br><br>Keep booking sessions at ".$item['finder_name']." without buying a membership and earn rewards on your every workout";  
 
                 if(isset($item['pay_later']) && $item['pay_later']){
                     $subline .='<br><br>Attend and pay later to earn Cashback!</p>';
@@ -1073,12 +1073,36 @@ class HomeController extends BaseController {
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
+                
+                if(!empty($customer_id)){
+                    
+                    $customer = Customer::find($customer_id, ['loyalty']);
+                    
+                    if(!empty($customer['loyalty'])){
+                        $response['milestones'] = $this->utilities->getMilestoneSection();
+                    }
+                    
+                }
+                
+                if(!empty($item['loyalty_registration'])){
+                    $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
+                }
+                
+                if(!empty($item['qrcodepayment'])){
+                    unset($response['subline']);
+                }
+                
                 if(isset($item['pay_later']) && $item['pay_later'] && $item['status'] == '1'){
+                    if(!empty($response['fitsquad'])){
+                        unset($response['fitsquad']);
+                    }
                     unset($response['conclusion']);
                     unset($response['feedback']);
                     $response['header'] = 'Payment Successful';
-                    $response['subline'] = 'Your payment for'.$service_name.' session at '.$finder_name.' is successful';
+                    // $response['subline'] = 'Your payment for '.$service_name.' session at '.$finder_name.' is successful';
+                    $response['subline'] = 'Your payment for '.$service_name.' session at '.$finder_name.' for '.$schedule_date.' at '.$schedule_slot.' is successful. Keep booking, reach milestones & earn rewards';
                 }
+                
 
                 return $response;
             }
@@ -2025,6 +2049,24 @@ class HomeController extends BaseController {
                 'customer_auto_register' => $customer_auto_register,
                 'why_buy'=>$why_buy
             ];
+
+            if(!empty($item['type']) && $item['type'] == 'booktrials' && !empty($customer_id)){
+
+                if(empty($customer)){
+                    $customer = Customer::find($customer_id, ['loyalty']);
+                }
+
+
+                if(!empty($customer['loyalty'])){
+                    $resp['milestones'] = $this->utilities->getMilestoneSection();
+                }
+
+            }
+
+            if(!empty($item['loyalty_registration'])){
+                $resp['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
+            }
+
 
             if(isset($itemData['coupon_id'])){
                 $resp['coupon'] = \GiftCoupon::find($itemData['coupon_id']);
@@ -3583,9 +3625,9 @@ class HomeController extends BaseController {
         $device_type = $data['device_type'];
         $to = $data['to'];
         if($device_type == "android"){
-            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> ""));
+            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
         }else{
-            $notification_object = array("aps"=>array("alert"=> array("body" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> ""));
+            $notification_object = array("aps"=>array("alert"=> array("body" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
         }
         $notificationData = array("to" =>$data['to'],"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
         $route  = $device_type;
@@ -5188,6 +5230,8 @@ class HomeController extends BaseController {
         		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         }
+
+        
         
         public function getCustomerAddress()
         {

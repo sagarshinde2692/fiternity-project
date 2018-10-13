@@ -24,10 +24,11 @@ Class Mobikwik {
         $debug = ($debug) ? $debug : $this->debug;
 
         $this->base_uri = 'https://walletapi.mobikwik.com';
+
         $this->mid = 'MBK32060';
         $this->secret_key = 'Ua59lGvaLspmYSI8dcpW1OdktNj0';
         $this->si_secret_key = 'ua57lGvakspmSf18Mrp71OdkXNj0';
-        $this->merchantname = 'Fitternity Health e-Solutions Pvt Ltd';
+        $this->merchantname = 'Fitternity Health e-Solution Pvt Ltd';
 
         $mobikwik_sandbox = \Config::get('app.mobikwik_sandbox');
 

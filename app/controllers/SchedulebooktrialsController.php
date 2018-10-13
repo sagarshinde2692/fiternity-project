@@ -2229,6 +2229,10 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($order['assisted_by'])){
                 $booktrialdata['assisted_by'] = $order['assisted_by'];
             }
+            
+            if(!empty($order['customer_quantity'])){
+                $booktrialdata['customer_quantity'] = $order['customer_quantity'];
+            }
 
             if(!empty($order['ratecard_remarks'])){
                 $booktrialdata['ratecard_remarks'] = $order['ratecard_remarks'];
@@ -2441,9 +2445,24 @@ class SchedulebooktrialsController extends \BaseController {
                 
             }
            
+            $after_booking_response = $this->utilities->afterTranSuccess($booktrial->toArray(), 'booktrial');
+
+            Log::info("after_booking_response");
+            Log::info($after_booking_response);
+
+            if(!empty($after_booking_response['checkin'])){
+                if(!empty($after_booking_response['checkin']['status']) && $after_booking_response['checkin']['status'] == 200 && !empty($after_booking_response['checkin']['checkin']['_id'])){
+                    $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
+                }
+            }
+            if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
+                $booktrial->loyalty_registration = true;
+                $orderData['loyalty_registration'] = true;
+            }
+
             array_set($orderData, 'booktrial_id', (int)$booktrialid);
             $order->update($orderData);
-            
+
             if(isset($order->vendor_price) && $order->vendor_price != ''){
                 $order->original_amount_finder = $order->amount_finder;
                 $order->amount_finder = $order->vendor_price;
@@ -2453,7 +2472,6 @@ class SchedulebooktrialsController extends \BaseController {
             }
             
             $booktrial->update();
-
 
             // Give Rewards / Cashback to customer based on selection, on purchase success......
             
@@ -2487,7 +2505,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $orderid = (int) Input::json()->get('order_id');
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid),Config::get('app.queue'));
+            $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid),Config::get('app.queue'));
             $booktrial->update(array('redis_id'=>$redisid));
 
         }
@@ -2506,7 +2524,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();
         }
 
-        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Session Booked Sucessfully", 'code' => $code);
+        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Session Booked Sucessfully", 'code' => $code);        
         Log::info(" info ".print_r("AAAYA",true));
         return Response::json($resp,200);
     }
@@ -3501,11 +3519,25 @@ class SchedulebooktrialsController extends \BaseController {
                 Log::info('addReminderMessage Error : '.json_encode($response));
             }
 
+            
+            $after_booking_response =  $this->utilities->afterTranSuccess($booktrial->toArray(), 'booktrial');
+
+            if(!empty($after_booking_response['checkin'])){
+                if(!empty($after_booking_response['checkin']['status']) && $after_booking_response['checkin']['status'] == 200 && !empty($after_booking_response['checkin']['checkin']['_id'])){
+                    $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
+                }
+            }
+                
+            
+            if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
+                $booktrial->loyalty_registration = true;
+            }
+
             //if vendor type is free special dont send communication
 
            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
             if($finder['commercial_type'] != '2'){*/
-                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid), Config::get('app.queue'));
+                $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid), Config::get('app.queue'));
                 $booktrial->update(array('redis_id'=>$redisid));
             /*}else{
 
@@ -7116,6 +7148,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'booktrial_id'=> (int)$booktrial['_id'],
                 'fitcash'=>$fitcash
             ];
+
+            $this->utilities->addCheckin(['customer_id'=>$booktrial['customer_id'], 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id']]);
         }
 
         return Response::json($response,200);
@@ -7242,8 +7276,8 @@ class SchedulebooktrialsController extends \BaseController {
         $payment_done = !(isset($booktrial->payment_done) && !$booktrial->payment_done);
 
         $pending_payment = [
-                'header'=>"Pending Amount ".$this->utilities->getRupeeForm($booktrial['amount_finder']),
-                'sub_header'=>"Make sure you pay up, to earn Cashback & continue booking more sessions",
+        		'header'=>"Pending Amount ".$this->utilities->getRupeeForm($booktrial['amount_finder']),
+	            'sub_header'=>"Make sure you pay up, to earn Cashback & continue booking more sessions",
                 'order_id'=>$booktrial['order_id'],
 	            'trial_id'=>$booktrial['_id']
         ];
@@ -7251,7 +7285,7 @@ class SchedulebooktrialsController extends \BaseController {
         if(!empty($booktrial['order_id']))
         	$pending_payment['order_id']=$booktrial['order_id'];
         	 
-        $streak = array_column(Config::get('app.streak_data'), 'number');
+        // $streak = array_column(Config::get('app.streak_data'), 'number');
 
         switch($status){
 
@@ -7277,10 +7311,10 @@ class SchedulebooktrialsController extends \BaseController {
                     'header'=>'ENJOY YOUR WORKOUT!',
                     'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
                     // 'footer'=>$customer_level_data['current_level']['cashback'].'% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!',
-                    'streak'=>[
-                        'header'=>'STREAK IT OUT',
-                        'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
-                    ]
+                    // 'streak'=>[
+                    //     'header'=>'STREAK IT OUT',
+                    //     'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
+                    // ]
                 ];
 
                 $voucher_response = $this->utilities->attachExternalVoucher($booktrial);
@@ -7312,7 +7346,6 @@ class SchedulebooktrialsController extends \BaseController {
                 if(isset($_GET['source']) && $_GET['source'] == 'let_us_know'){
                     $response['header'] = 'GREAT';
                 }
-
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
@@ -7329,13 +7362,13 @@ class SchedulebooktrialsController extends \BaseController {
                 $response = [
                     'status'=>200,
                     'header'=>'DON’T WORRY',
-                    'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
+                    'image'=>'https://b.fitn.in/paypersession/cashback.png',
                     'sub_header_1'=>$customer_level_data['current_level']['cashback'].'% Cashback',
                     'sub_header_2'=>' is added in your wallet. Use this to book your next session with lowest price.',
-                    'streak'=>[
-                        'header'=>'STREAK IT OUT',
-                        'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
-                    ]
+                    // 'streak'=>[
+                    //     'header'=>'STREAK IT OUT',
+                    //     'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
+                    // ]
                 ];
 
                 $voucher_response = $this->utilities->attachExternalVoucher($booktrial);
@@ -7374,15 +7407,15 @@ class SchedulebooktrialsController extends \BaseController {
                     'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
                     'sub_header_2'=>'Make sure you attend next time to earn Cashback and continue working out!',
                     'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
-                    'streak'=>[
-                        'header'=>'STREAK IT OUT',
-                        'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
-                    ]
+                    // 'streak'=>[
+                    //     'header'=>'STREAK IT OUT',
+                    //     'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
+                    // ]
                 ];
 
-                if(isset($customer_level_data['next_level']['level'])){
-                    $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
-                }
+                // if(isset($customer_level_data['next_level']['level'])){
+                //     $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
+                // }
                 if($payment_done){
                     $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
                 }
@@ -7406,15 +7439,15 @@ class SchedulebooktrialsController extends \BaseController {
                     'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
                     'sub_header_2'=>'Make sure you attend next time to earn Cashback and continue working out!',
                     'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
-                    'streak'=>[
-                        'header'=>'STREAK IT OUT',
-                        'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
-                    ]
+                    // 'streak'=>[
+                    //     'header'=>'STREAK IT OUT',
+                    //     'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
+                    // ]
                 ];
 
-                if(isset($customer_level_data['next_level']['level'])){
-                    $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
-                }
+                // if(isset($customer_level_data['next_level']['level'])){
+                //     $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
+                // }
                 if($payment_done){
                     $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
                 }
@@ -7466,9 +7499,9 @@ class SchedulebooktrialsController extends \BaseController {
 
         }
         
-        if($booktrial->type == 'booktrials' && isset($response['streak'])){
-            unset($response['streak']);
-        }
+        // if($booktrial->type == 'booktrials' && isset($response['streak'])){
+        //     unset($response['streak']);
+        // }
 
         $description = "";
 
@@ -7483,6 +7516,15 @@ class SchedulebooktrialsController extends \BaseController {
         $response['trial_id'] = (string)$booktrial->_id;
         $response['finder_id'] = $booktrial->finder_id;
         $response['service_id'] = $booktrial->service_id;
+        $response['milestones'] = $this->utilities->getMilestoneSection();
+        
+        // $loyalty_registration = $this->utilities->autoRegisterCustomerLoyalty($booktrial);
+        
+        // if(!empty($loyalty_registration)){
+        //     $booktrial_update = Booktrial::where('_id', $booktrial['_id'])->update(['loyalty_registration'=>true]);
+        //     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
+        // }
+
         return Response::json($response);
 
     }

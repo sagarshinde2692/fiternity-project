@@ -17,7 +17,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 
 
-// require __DIR__.'/debug_routes.php';
+require __DIR__.'/debug_routes.php';
 require __DIR__.'/analytics_routes.php';
 
 
@@ -1245,15 +1245,6 @@ Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
 
 Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRatecardSlotsByOrderId');
 
-
-Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
-
-Route::post('inviteforevent','EventsController@inviteForEvent');
-
-// Music Run
-Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
-Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
-
 Route::get('customer/skipreview/{booktrial_id}','SchedulebooktrialsController@skipreview');
 
 Route::get('addpicturestoratingparams','DebugController@addPicturesToRatingParams');
@@ -1264,6 +1255,16 @@ Route::get('toto/{vendorservice_id}', 'MigrationReverseController@tot');
 Route::get('listvalidcoupons','HomeController@listValidCoupons');
 Route::post('getunmarkedattendance','CustomerController@getCustomerUnmarkedAttendance');
 Route::post('markcustomerattendance','CustomerController@markCustomerAttendance');
+
+
+
+Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
+
+Route::post('inviteforevent','EventsController@inviteForEvent');
+
+// Music Run
+Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
+Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
 
 
 Route::get('checkexistinguser/mobikwik/{cell}','PaymentGatewayController@checkExistingUserMobikwik');
@@ -1277,7 +1278,27 @@ Route::post('debitmoney/mobikwik','PaymentGatewayController@debitMoneyMobikwik')
 Route::match(array('GET', 'POST'),'verifyaddmoney/mobikwik', 'PaymentGatewayController@verifyAddMoneyMobikwik');
 Route::post('checkstatus/mobikwik','PaymentGatewayController@checkStatusMobikwik');
 Route::get('verifypayment/{status}','PaymentGatewayController@verifyPayment');
+##################################################################################################
+/*******************  Loyalty API ************************************************/
 
+Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
+
+Route::post('registerloyalty', 'CustomerController@registerLoyalty');
+
+Route::group(array('before' => 'validatetoken'), function() {
+
+	Route::get('listcheckins', 'CustomerController@listCheckins');
+
+	Route::get('claimexternalcoupon/{_id}', 'CustomerController@claimExternalCoupon');
+
+	Route::get('markcheckin/{finder_id}', 'CustomerController@markCheckin');
+
+	Route::post('uploadreceiptloyalty', 'CustomerController@uploadReceiptLoyalty');
+
+});
+
+/******************  Loyalty API END HERE************************************************/
+#####################################################################################################
 Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
 Route::post('editfriendforbooking','CustomerController@editfriendforbooking');
 Route::get('getbookingfriends','CustomerController@getallBookingfriends');
@@ -1286,8 +1307,5 @@ Route::post('addcustomersfortrial','SchedulebooktrialsController@addCustomersFor
 Route::get('getcouponpackages','HomeController@getCouponPackages');
 // Route::get('reviewParamsPicturesStageToLive','DebugController@reviewParamsPicturesStageToLive');
 
-
-Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
-Route::post('registerloyalty', 'CustomerController@registerLoyalty');
 
 Route::get('integratedvendorlist/{city_id}','FindersController@integratedVendorList');

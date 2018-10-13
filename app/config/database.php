@@ -12,9 +12,10 @@
 // $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
 
 //production
-$host = "54.179.134.14";
-$username = "";
-$password = "";
+
+$host = "54.179.134.14"; 
+$username = ""; 
+$password = ""; 
 
 return array(
 
@@ -89,6 +90,19 @@ return array(
 			// ]
 		), 
 
+		'fitcheckins' => array(
+			'driver' => 'mongodb', 
+			'host' => $host, 
+			'port' => 27017, 
+			'database' => 'fitcheckins', 
+			'username' => $username, 
+			'password' => $password, 
+			// 'options' => $options
+			// 'options' => [
+			// 	'db' => 'admin' // sets the authentication database required by mongo 3
+			// ]
+		), 
+
 
 		// 'mongodb3' => array(
 		// 	'driver'   => 'mongodb',
@@ -108,7 +122,7 @@ return array(
 
 		'mysql' => array(
 			'driver' => 'mysql', 
-			'host' => 'localhost', 
+			'host' => 'apistage.fitn.in', 
 			'database' => 'database', 
 			'username' => 'root', 
 			'password' => '', 

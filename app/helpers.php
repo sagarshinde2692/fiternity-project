@@ -36,12 +36,16 @@ if (!function_exists('decode_customer_token')) {
         $jwt_alg                =   Config::get('app.jwt.alg');
 
         try{
-
+            \Log::info($jwt_token);
             if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
                 return Response::json(array('status' => 400,'message' => 'User logged out'),400);
             }
 
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+            if(!empty($decodedToken->customer->email)){
+                \Log::info($decodedToken->customer->email);
+            }
             return $decodedToken;
 
         }catch(DomainException $e){
@@ -3146,8 +3150,8 @@ if(!function_exists('payPerSession')){
 
 if (!function_exists(('geoLocationFinder'))){
 
-    function geoLocationFinder($request){
-
+    function geoLocationFinder($request, $from=null){
+        
         $client = new Client( ['debug' => false, 'base_uri' => Config::get("app.url")."/"] );
         $offset  = $request['offset'];
         $limit   = $request['limit'];
@@ -3256,6 +3260,11 @@ if (!function_exists(('geoLocationFinder'))){
                     $finder[] = $finder_data;
                 }
             }
+            
+            if(!empty($from)){
+                return ['total_records'=>$response['metadata']['total_records'], 'finder'=>$finder];
+            }
+    // return "sss";
 
             return $finder;
 
@@ -3264,7 +3273,6 @@ if (!function_exists(('geoLocationFinder'))){
             return $finder;
 
         }catch (Exception $e) {
-
             return $finder;
         }
 
@@ -4059,5 +4067,6 @@ if (!function_exists('bladeCompile')) {
 	}
 
 }
+
 
 ?>
