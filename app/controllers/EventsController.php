@@ -152,7 +152,7 @@ class EventsController extends \BaseController {
 			if(isset($_GET['timestamp']) && $_GET['timestamp'] != "") {
 				$timestamp = $_GET['timestamp'];
 				$from_date = new MongoDate(strtotime(date('Y-m-d H:i:s',$timestamp)));
-				$orderList->where('created_at','>=',$from_date);
+				$orderList->where('updated_at','>=',$from_date);
 			}
 			// $orderList = $orderList->get(['order_id','amount','cutomer_name','ticket_quantity','event_address','ticket_name','event_name','event_venue','created_at','updated_at']);
 			$orderList = $orderList->get();
