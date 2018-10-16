@@ -20,7 +20,7 @@ return array(
             'next_count'=>30,
             'progress'=>0,
             'description' => 'Check-ins',
-            'amount'=>600
+            'amount'=>500
 
         ],
         [
@@ -30,7 +30,7 @@ return array(
             'next_count'=>75,
             'progress'=>0,
             'description' => 'Check-ins',
-            'amount'=>1200
+            'amount'=>3000
 
         ],
         [
@@ -40,7 +40,7 @@ return array(
             'next_count'=>150,
             'progress'=>0,
             'description' => 'Check-ins',
-            'amount'=>2000
+            'amount'=>4000
 
         ],
         [
@@ -50,7 +50,7 @@ return array(
             'next_count'=>225,
             'progress'=>0,
             'description' => 'Check-ins',
-            'amount'=>3000
+            'amount'=>7000
 
         ],
         [
@@ -59,7 +59,7 @@ return array(
             'enabled'=>false,
             'progress'=>0,
             'description' => 'Check-ins',
-            'amount'=>4000
+            'amount'=>12000
         ],
     ],
     'register_url'=>Config::get('app.website', 'https://www.fitternity.com').'/fitsquad',
