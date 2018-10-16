@@ -6,7 +6,7 @@ return array(
 
     'pre_register' => [
         'header' => [
-            'image' => 'https://b.fitn.in/loyalty/Header%20Final11.png',
+            'image' => 'https://b.fitn.in/loyalty/FITSQUAD-APP-Cover%20image-DESIGN.jpg',
             'ratio' => 1.23,
             'url'=> Config::get('loyalty_constants.register_url')
         ],
@@ -54,7 +54,7 @@ return array(
         ],
 
         'footer' => [
-            'image' => 'https://b.fitn.in/loyalty/Footer11.png',
+            'image' => 'https://b.fitn.in/loyalty/FITSQUAD-APP-Registration-design.jpg',
             'ratio' => 1.38,
             'url'=> Config::get('loyalty_constants.register_url')
         ],
