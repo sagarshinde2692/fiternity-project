@@ -6150,6 +6150,10 @@ Class Utilities {
 
 		try{
 
+            if(!empty($data['sub_type']) && $data['sub_type'] == 'booktrials'){
+				return ['status'=>400, 'message'=>'Checkin not registered for booktrials'];
+            }
+
     		if(Config::get('app.vendor_communication')){
 		        $already_checkedin =  Checkin::where('customer_id', $data['customer_id'])->where('date', new DateTime(date('d-m-Y', time())))->first();
             }
