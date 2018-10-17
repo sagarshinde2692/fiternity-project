@@ -105,7 +105,7 @@ return array(
         'title' => 'Milestone milestone',
         'milestone' => 'No of sessions - count',
         'count'=> 'count',
-        'amount' => '₹ amount',
+        'amount' => 'amount',
         'images' => []
     ],
 

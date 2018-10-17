@@ -8102,7 +8102,7 @@ class CustomerController extends \BaseController {
 				$pre_reward_template = Config::get('loyalty_screens.pre_register_check_ins_data_template');
 				$pre_reward_template['title'] = strtr($pre_reward_template['title'], $milestone);
 				$pre_reward_template['milestone'] = strtr($pre_reward_template['milestone'], $milestone);
-				$pre_reward_template['amount'] = strtr($pre_reward_template['amount'], $milestone);
+				$pre_reward_template['amount'] = '₹'.strtr($pre_reward_template['amount'], $milestone);
 				$pre_reward_template['count'] = intval(strtr($pre_reward_template['count'], $milestone));
 				$pre_reward_template['images'] = array_column($voucher_categories_map[$milestone['milestone']], 'image');
 				$pre_register_check_ins_data[] = $pre_reward_template;
