@@ -2157,6 +2157,33 @@ Class CustomerReward {
             
             }
 
+            if(isset($coupon['customer_emails']) && is_array($coupon['customer_emails'])){
+
+                if(empty($customer_email)){
+
+                    $jwt_token = Request::header('Authorization');
+
+                    if(empty($jwt_token)){
+
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                        return $resp;
+                    }
+
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    
+                    $customer_email = $decoded->customer->email;
+                
+                }
+
+
+                if(!in_array(strtolower($customer_email), $coupon['customer_emails'])){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Invalid Coupon");
+
+                    return $resp;
+                }
+            }
+
 
             if(isset($coupon['total_used']) && isset($coupon['total_available']) && $coupon['total_used'] >= $coupon['total_available']){
                     

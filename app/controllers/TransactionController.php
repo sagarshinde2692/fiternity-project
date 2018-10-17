@@ -5770,7 +5770,7 @@ class TransactionController extends \BaseController {
 
         $customer_id = isset($customer_id) ? $customer_id : false;
 
-        return $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id); 
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id); 
         Log::info("REsponse from CustomerReward", $resp);
         if($resp["coupon_applied"]){
 
