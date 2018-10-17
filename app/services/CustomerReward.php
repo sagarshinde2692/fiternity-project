@@ -2069,7 +2069,7 @@ Class CustomerReward {
                     $service = Service::where('_id', $ratecard['service_id'])->first();
                 }
 
-                $data = ['finder'=>$finder, 'service'=>$service];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard];
 
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
