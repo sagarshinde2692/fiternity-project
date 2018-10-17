@@ -1859,9 +1859,12 @@ Class CustomerReward {
                     }
                    
                 }
-                
-                $finder = Finder::where('_id', $ratecard['finder_id'])->first(['flags']);
-                $service = Service::where('_id', $ratecard['service_id'])->first(['flags','servicecategory_id']);
+                if(empty($finder)){
+                    $finder = Finder::where('_id', $ratecard['finder_id'])->first();
+                }
+                if(empty($service)){
+                    $service = Service::where('_id', $ratecard['service_id'])->first();
+                }
 
                 if(!empty($coupon_data['service_category_ids']) && !in_array($service['servicecategory_id'],$coupon_data['service_category_ids'])){
      
@@ -2057,6 +2060,125 @@ Class CustomerReward {
                 }
                 
             }
+            if($ratecard){
+
+                if(empty($finder)){
+                    $finder = Finder::where('_id', $ratecard['finder_id'])->first();
+                }
+                if(empty($service)){
+                    $service = Service::where('_id', $ratecard['service_id'])->first();
+                }
+
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard];
+
+                if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
+                
+                    $and_condition = true;
+                        
+                    foreach($coupon['and_conditions'] as $condition){
+                        if(!empty($condition['key']) && !empty($condition['operator']) && !empty($condition['values'])){
+
+                            $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
+                            
+                            if($condition['operator'] == 'in'){
+                                if(empty($embedded_value)){
+                                    $and_condition = false;
+                                    break;
+                                }
+                                if(!in_array($embedded_value, $condition['values'])){
+                                    $and_condition = false;
+                                    break;
+
+                                }
+                            }else if($condition['operator'] == 'nin'){
+                                if(!empty($embedded_value) && in_array($embedded_value, $condition['values'])){
+                                    $and_condition = false;
+                                    break;
+
+                                }
+                            }
+                        }
+                    }
+
+
+                    if(!$and_condition){
+                        return array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired");
+                    }
+
+                }
+
+                if(isset($coupon['or_conditions']) && is_array($coupon['or_conditions'])){
+                    
+                    $or_condition = false;
+                    
+                    foreach($coupon['or_conditions'] as $condition){
+                        Log::info('or_conditions');
+
+                        
+                        if(!empty($condition['key']) && !empty($condition['operator']) && !empty($condition['values'])){
+                            // return $condition['key'];
+                            $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
+
+                            Log::info($embedded_value);
+                            
+                            if($condition['operator'] == 'in'){
+                                if(empty($embedded_value)){
+                                    break;
+                                }
+                                if(in_array($embedded_value, $condition['values'])){
+                                    $or_condition = true;
+                                    break;
+
+                                }
+                            }else if($condition['operator'] == 'nin'){
+                                if(empty($embedded_value)){
+                                    $or_condition = true;
+                                    break;
+                                }
+                                if(!in_array($embedded_value, $condition['values'])){
+                                    $or_condition = true;
+                                    break;
+
+                                }
+                            }
+                        
+                        }
+                    }
+                    
+                    if(!$or_condition){
+                        return array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired");
+                    }
+                }
+            
+            }
+
+            if(isset($coupon['customer_emails']) && is_array($coupon['customer_emails'])){
+
+                if(empty($customer_email)){
+
+                    $jwt_token = Request::header('Authorization');
+
+                    if(empty($jwt_token)){
+
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                        return $resp;
+                    }
+
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    
+                    $customer_email = $decoded->customer->email;
+                
+                }
+
+
+                if(!in_array(strtolower($customer_email), $coupon['customer_emails'])){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Invalid Coupon");
+
+                    return $resp;
+                }
+            }
+
 
             if(isset($coupon['total_used']) && isset($coupon['total_available']) && $coupon['total_used'] >= $coupon['total_available']){
                     
@@ -2286,6 +2408,21 @@ Class CustomerReward {
          
         return isset($data['flags']) && isset($data['flags']['campaign_offer']) && $data['flags']['campaign_offer'];
     
+    }
+
+    public function getEmbeddedValue($data, $key){
+    
+        $key = explode('.', $key);
+    
+        
+        if(count($key) == 1){
+    
+            return isset($data[$key[0]]) ? $data[$key[0]] : null;
+        }
+
+        
+        return $this->getEmbeddedValue($data[$key[0]], implode('.', array_splice($key, 1)));
+
     }
 
 }
