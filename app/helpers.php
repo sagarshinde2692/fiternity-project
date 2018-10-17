@@ -3117,7 +3117,7 @@ if (!function_exists(('isNotInoperationalDate'))){
             return false;
         }
         
-        $inoperational_dates = ['2018-10-02'];
+        $inoperational_dates = ['2018-10-18'];
 
         if(!empty($type) && in_array($type, ['trial']) && in_array($date, $inoperational_dates)){
             return false;
