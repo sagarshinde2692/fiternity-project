@@ -2122,8 +2122,9 @@ Class CustomerReward {
                         
                         if(isset($condition['key']) && isset($condition['operator']) && isset($condition['values'])){
                             // return $condition['key'];
-                        return $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
-                        
+                            $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
+
+                            Log::info($embedded_value);
                             
                             if($condition['operator'] == 'in'){
                                 if(empty($embedded_value)){
@@ -2388,15 +2389,17 @@ Class CustomerReward {
     }
 
     public function getEmbeddedValue($data, $key){
-        Log::info($data);
-        Log::info($key);
-        $keys = explode('.', $key);
-        return array_splice($keys, 1);
-        if(count($keys) == 1){
-            return isset($data[$keys[0]]) ? $data[$keys[0]] : null;
+    
+        $key = explode('.', $key);
+    
+        
+        if(count($key) == 1){
+    
+            return isset($data[$key[0]]) ? $data[$key[0]] : null;
         }
 
-        $this->getEmbeddedValue($data[$keys[0]], implode('.', array_splice($keys, 1)));
+        
+        return $this->getEmbeddedValue($data[$key[0]], implode('.', array_splice($key, 1)));
 
     }
 
