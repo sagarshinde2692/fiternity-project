@@ -1859,9 +1859,12 @@ Class CustomerReward {
                     }
                    
                 }
-                
-                $finder = Finder::where('_id', $ratecard['finder_id'])->first(['flags']);
-                $service = Service::where('_id', $ratecard['service_id'])->first(['flags','servicecategory_id']);
+                if(empty($finder)){
+                    $finder = Finder::where('_id', $ratecard['finder_id'])->first(['flags']);
+                }
+                if(empty($service)){
+                    $service = Service::where('_id', $ratecard['service_id'])->first(['flags','servicecategory_id']);
+                }
 
                 if(!empty($coupon_data['service_category_ids']) && !in_array($service['servicecategory_id'],$coupon_data['service_category_ids'])){
      
@@ -2057,6 +2060,66 @@ Class CustomerReward {
                 }
                 
             }
+            if($ratecard){
+
+                if(empty($finder)){
+                    $finder = Finder::where('_id', $ratecard['finder_id'])->first();
+                }
+                if(empty($service)){
+                    $service = Service::where('_id', $ratecard['service_id'])->first();
+                }
+
+                if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
+                    
+                    $and_true = true;
+                    
+                    foreach($coupon['and_conditions'] as $condtion){
+                        if(isset($data[$condition['key']])){
+                            if($condtion['operator'] == 'in' && !in_array($this->getEmbeddedValue($data , $condition['key']), $condtion['values'])){
+                                $and_true = false;
+                            }else if($condtion['operator'] == 'nin' && in_array($this->getEmbeddedValue($data , $condition['key']), $condtion['values'])){
+                                $and_true = false;
+                            }
+
+                        }
+                    }
+
+                    if(!$and_true){
+                        return array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired");
+                    }
+
+                }
+
+                if(isset($coupon['or_conditions']) && is_array($coupon['or_conditions'])){
+                    
+                    $data = [];
+
+                    $or_true = false;
+                    
+                    foreach($coupon['and_conditions'] as $condtion){
+
+                        $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
+                        if(empty($embedded_value)){
+                            break;
+                        }
+                        if(isset($data[$condition['key']])){
+                            if($condtion['operator'] == 'in' && !in_array($this->getEmbeddedValue($data , $condition['key']), $condtion['values'])){
+                                $or_true = true;
+                                break;
+                            }else if($condtion['operator'] == 'nin' && in_array($this->getEmbeddedValue($data , $condition['key']), $condtion['values'])){
+                                $or_true = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if(!$or_true){
+                        return array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired");
+                    }
+                }
+            
+            }
+
 
             if(isset($coupon['total_used']) && isset($coupon['total_available']) && $coupon['total_used'] >= $coupon['total_available']){
                     
@@ -2286,6 +2349,15 @@ Class CustomerReward {
          
         return isset($data['flags']) && isset($data['flags']['campaign_offer']) && $data['flags']['campaign_offer'];
     
+    }
+
+    public function getEmbeddedValue($data, $key){
+
+        $
+
+
+
+
     }
 
 }
