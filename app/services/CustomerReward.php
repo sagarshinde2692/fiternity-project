@@ -2073,7 +2073,7 @@ Class CustomerReward {
 
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
-                    if(isset($condition['key']) && isset($condition['operator']) && isset($condition['key'])){
+                    if(isset($condition['key']) && isset($condition['operator']) && isset($condition['values'])){
                         
                         $and_condition = true;
                         
@@ -2081,26 +2081,22 @@ Class CustomerReward {
 
                             $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
                             
-                            if(isset($data[$condition['key']])){
-                                
-                                if($condition['operator'] == 'in'){
-                                    if(empty($embedded_value)){
-                                        $and_condition = false;
-                                        break;
-                                    }
-                                    if(!in_array($embedded_value, $condition['values'])){
-                                        $and_condition = false;
-                                        break;
-
-                                    }
-                                }else if($condition['operator'] == 'nin'){
-                                    if(!empty($embedded_value) && in_array($embedded_value, $condition['values'])){
-                                        $and_condition = false;
-                                        break;
-
-                                    }
+                            if($condition['operator'] == 'in'){
+                                if(empty($embedded_value)){
+                                    $and_condition = false;
+                                    break;
                                 }
-                            
+                                if(!in_array($embedded_value, $condition['values'])){
+                                    $and_condition = false;
+                                    break;
+
+                                }
+                            }else if($condition['operator'] == 'nin'){
+                                if(!empty($embedded_value) && in_array($embedded_value, $condition['values'])){
+                                    $and_condition = false;
+                                    break;
+
+                                }
                             }
                         }
                     }
