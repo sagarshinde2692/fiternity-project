@@ -14,7 +14,6 @@ return array(
         'partners' => [
             'header' => "<b>GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <font color='#f8a81b'>10, 30, 75, 150 & 225</font> WORKOUTS</b>",
             'data' => [
-                "https://b.fitn.in/external-vouchers/ease%20my%20trip.png",
                 "https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
                 "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
                 "https://b.fitn.in/external-vouchers/JCB1.png",
