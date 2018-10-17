@@ -2069,22 +2069,40 @@ Class CustomerReward {
                     $service = Service::where('_id', $ratecard['service_id'])->first();
                 }
 
+                $data = ['finder'=>$finder, 'service'=>$service];
+
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                     
-                    $and_true = true;
+                    $and_condition = true;
                     
-                    foreach($coupon['and_conditions'] as $condtion){
-                        if(isset($data[$condition['key']])){
-                            if($condtion['operator'] == 'in' && !in_array($this->getEmbeddedValue($data , $condition['key']), $condtion['values'])){
-                                $and_true = false;
-                            }else if($condtion['operator'] == 'nin' && in_array($this->getEmbeddedValue($data , $condition['key']), $condtion['values'])){
-                                $and_true = false;
-                            }
+                    foreach($coupon['and_conditions'] as $condition){
 
+                        $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
+                        
+                        if(isset($data[$condition['key']])){
+                            
+                            if($condition['operator'] == 'in'){
+                                if(empty($embedded_value)){
+                                    $and_condition = false;
+                                    break;
+                                }
+                                if(!in_array($embedded_value, $condition['values'])){
+                                    $and_condition = false;
+                                    break;
+
+                                }
+                            }else if($condition['operator'] == 'nin'){
+                                if(!empty($embedded_value) && in_array($embedded_value, $condition['values'])){
+                                    $and_condition = false;
+                                    break;
+
+                                }
+                            }
+                        
                         }
                     }
 
-                    if(!$and_true){
+                    if(!$and_condition){
                         return array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired");
                     }
 
@@ -2092,28 +2110,39 @@ Class CustomerReward {
 
                 if(isset($coupon['or_conditions']) && is_array($coupon['or_conditions'])){
                     
-                    $data = [];
-
-                    $or_true = false;
+                    $or_condition = false;
                     
-                    foreach($coupon['and_conditions'] as $condtion){
+                    foreach($coupon['or_conditions'] as $condition){
 
                         $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
-                        if(empty($embedded_value)){
-                            break;
-                        }
+                        
                         if(isset($data[$condition['key']])){
-                            if($condtion['operator'] == 'in' && !in_array($this->getEmbeddedValue($data , $condition['key']), $condtion['values'])){
-                                $or_true = true;
-                                break;
-                            }else if($condtion['operator'] == 'nin' && in_array($this->getEmbeddedValue($data , $condition['key']), $condtion['values'])){
-                                $or_true = true;
-                                break;
+                            
+                            if($condition['operator'] == 'in'){
+                                if(empty($embedded_value)){
+                                    break;
+                                }
+                                if(in_array($embedded_value, $condition['values'])){
+                                    $or_condition = true;
+                                    break;
+
+                                }
+                            }else if($condition['operator'] == 'nin'){
+                                if(empty($embedded_value)){
+                                    $or_condition = true;
+                                    break;
+                                }
+                                if(!in_array($embedded_value, $condition['values'])){
+                                    $or_condition = true;
+                                    break;
+
+                                }
                             }
+                        
                         }
                     }
                     
-                    if(!$or_true){
+                    if(!$or_condition){
                         return array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired");
                     }
                 }
@@ -2353,10 +2382,13 @@ Class CustomerReward {
 
     public function getEmbeddedValue($data, $key){
 
-        $
+        $keys = explode('.', $key);
+        
+        if(count($keys) == 1){
+            return isset($data[$keys[0]]) ? $data[$keys[0]] : null;
+        }
 
-
-
+        $this->getEmbeddedValue($data, implode('.', array_splice($keys, 1)));
 
     }
 
