@@ -6250,6 +6250,10 @@ Class Utilities {
 
             $customer_update = \Customer::where('_id', $data['customer_id'])->increment('loyalty.checkins');
 
+            if(!empty($data['tansaction_id']) && !empty($data['type']) && $data['type'] == 'workout-session'){
+                $booktrial_update = \Booktrial::where('_id', $data['tansaction_id'])->update(['checkin'=>$checkin->_id, 'from_add'=>true]);
+            }
+
             Log::info('checkins updated in customer');
 
             Log::info($customer_update);
