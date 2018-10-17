@@ -17,7 +17,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 
 
-require __DIR__.'/debug_routes.php';
+// require __DIR__.'/debug_routes.php';
 require __DIR__.'/analytics_routes.php';
 
 
@@ -1309,3 +1309,4 @@ Route::get('getcouponpackages','HomeController@getCouponPackages');
 
 
 Route::get('integratedvendorlist/{city_id}','FindersController@integratedVendorList');
+Route::get('assignRenewal','DebugController@assignRenewal');

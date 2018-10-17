@@ -7955,7 +7955,6 @@ public function yes($msg){
         return "done";
     }
 
-
 	public function addPicturesToRatingParams(){
 		$filenames = array_merge(glob("*.png"), glob("*.PNG"));
 
@@ -8006,6 +8005,106 @@ public function yes($msg){
 		Checkin::where('customer_id', intval($id))->delete();
 
 		return "done";
+    }
+    public function assignRenewal(){
+
+
+    $ids = Config::get('app.renewal_ids');
+		Log::info("extracting order");
+
+		$orders = Order::whereIn('_id', $ids)->get(['success_date', 'customer_phone', 'customer_email', 'finder_id']);
+		Log::info("extracted order");
+		$update = [];
+		$customer_emails = array_pluck($orders->toArray(), 'customer_email');
+		
+		
+
+		$all_orders = Order::raw(function($collection) use ($customer_emails, $ids){
+
+			$aggregate = [
+				[
+					'$match'=>[
+						'customer_email'=>['$in'=>$customer_emails],
+						'_id'=>['$nin'=>$ids],
+						'status'=>'1',
+						'success_date'=>['$lte'=>new Mongodate(strtotime('2018-09-01'))]
+					]
+				],
+				[
+					'$project'=>[
+						'finder_id'=>1,
+						'customer_phone'=>1,
+						'created_at'=>1,
+						'success_date'=>1,
+						'customer_email'=>1,
+						'customer_id'=>1
+					]
+				],
+				[
+					'$group'=>[
+						'_id'=>'$customer_email',
+						'orders'=>['$push'=>'$$ROOT']
+					]
+				]
+			];
+
+			return $collection->aggregate($aggregate);
+		});
+
+		$order_data = [];
+
+		foreach($all_orders['result'] as $o){
+			// Log::info($o);
+			// return $o['_id'];
+			$order_data[strval($o['_id'])] = $o['orders'];
+		}
+
+		
+		$renewals = [];
+		$non_renewals = [];
+		foreach($orders as $key => $order){
+			
+			if(empty($order['finder_id'])){
+				array_push($non_renewals, $order['_id']);
+				continue;
+			}
+
+			if(empty($order_data[$order['customer_email']])){
+				array_push($non_renewals, $order['_id']);
+				continue;
+			}
+			
+			$curr_date = !empty($order->success_date) ? strtotime($order->success_date) : strtotime($order->created_at);
+			$pushed = false;
+			foreach($order_data[$order['customer_email']] as $pre){
+
+				$pre_date = null;
+				
+				if(!empty($pre['success_date'])){
+					
+					$pre_date = $pre['success_date']->sec;
+
+				}elseif(!empty($pre['created_at'])){
+
+					$pre_date = $pre['created_at']->sec;
+
+				}
+
+				if($pre_date && $curr_date > $pre_date && $order['finder_id'] == $pre['finder_id'] && substr($pre['customer_phone'], -8) == substr($order['customer_phone'], -8)){
+					array_push($renewals, $order['_id']);
+					$pushed = true;
+					break;
+				}
+				
+			}
+
+			if(!$pushed){
+				array_push($non_renewals, $order['_id']);
+			}
+		}
+		
+		return ['renewals'=>array_values(array_unique($renewals)), 'non_re'=>array_values(array_unique($non_renewals))];
+
 	}
 
 }
