@@ -3949,7 +3949,7 @@ class FindersController extends \BaseController {
 
 				$finder['assured']  =   array();
 				$not_assured        =   [41,42,45,25,46,10,26,40];
-
+				$not_assured_brands = [130];
 
 				if(!in_array($finderarr['category_id'], $not_assured) && $finderarr['commercial_type'] != 0 ){
 
@@ -3998,7 +3998,10 @@ class FindersController extends \BaseController {
 							]
 						];
 					}
-
+					if(isset($finder["brand_id"]) && in_array($finder["brand_id"], $not_assured_brands)){
+						$finder['assured'] = null;
+						$assured_flag = false;
+					}
 				}
 
 				$finder['review_count']     =   isset($finder["total_rating_count"]) ? $finder["total_rating_count"] : 0;
