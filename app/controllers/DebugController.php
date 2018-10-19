@@ -8108,22 +8108,24 @@ public function yes($msg){
 	}
 
     public function registerOngoingLoyalty(){
-
-        $customers = Customer::where('loyalty', 'exists', true)->get(['_id']);
+        $customers = Customer::where('loyalty', 'exists', true)->lists('_id');
         
-        $orders = Order::active()->where('type', 'memberhips')->whereNotIn('customer_id', $customers)->where('end_date', '>=', new DateTime())->where('start_date', '<=', new DateTime())->get(['customer_name', 'customer_email', 'customer_id', 'finder_id', 'end_date'])->toArray();
+        $orders = Order::active()->where('type', 'memberships')->whereNotIn('customer_id', $customers)->where('end_date', '>=', new DateTime())->where('start_date', '<=', new DateTime())->get(['customer_name', 'customer_email', 'customer_id', 'finder_id', 'end_date'])->toArray();
+
+        // echo "<pre>";print_r($trials);   
+        return count($orders);
 
         $utilities = new Utilities();
-
+        $customermailer = new CustomerMailer();
         $sent_customers = [];
     
         foreach($orders as $order){
-
+            $order['order_id'] = $order['_id'];
             $register = $utilities->autoRegisterCustomerLoyalty($order);
 
             if(!empty($register['status']) && $register['status'] == 200){
                 array_push($sent_customers, $order['customer_id']);
-                
+                $mail = $customermailer->registerOngoingLoyalty($order);
             }
 
         }

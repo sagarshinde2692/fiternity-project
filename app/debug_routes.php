@@ -2698,3 +2698,5 @@ Route::post('convertOrdersToPPS','DebugController@convertOrdersToPPS');
 
 Route::get('removeloyalty/{id}','DebugController@removeloyalty');
 Route::get('assignRenewal','DebugController@assignRenewal');
+
+Route::get('registerOngoingLoyalty','DebugController@registerOngoingLoyalty');
