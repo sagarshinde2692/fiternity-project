@@ -2189,7 +2189,8 @@ class CustomerController extends \BaseController {
 			'notification',
 			'fitness_goal',
 			'city',
-			'place'))->toArray();
+			'place',
+            'freshchat_restore_id'))->toArray();
 
 
 		if($customer){
@@ -8532,5 +8533,43 @@ class CustomerController extends \BaseController {
 			}
 		}
 	}
+
+    public function updateFreshchatId(){
+
+        try{
+            
+            $data = Input::all();
+
+            $jwt = Request::header('Authorization');
+
+            if(empty($jwt)){
+                return ['status'=>400];
+            }
+
+            $decodedToken = decode_customer_token();
+
+            $customer_id = $decodedToken->customer->_id;
+
+            if(empty($data['freshchat_restore_id'])){
+                
+                return ['status'=>400, 'message'=>'Data empty'];
+            
+            }
+            $freshchat_restore_id = $data['freshchat_restore_id'];
+            
+            $customer_update = Customer::where('_id', (int)$customer_id)->update(['freshchat_restore_id'=>$freshchat_restore_id]);
+
+            if($customer_update){
+                return ['status'=>200];
+            }
+
+            return ['status'=>400];
+
+        }catch(Exception $e){
+            
+            return ['status'=>500];
+        
+        }
+    }
 	
 }
