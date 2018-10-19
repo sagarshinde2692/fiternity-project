@@ -1749,17 +1749,22 @@ Class CustomerReward {
 
             if(isset($coupon["once_per_user"]) && $coupon["once_per_user"]){
 
-                $jwt_token = Request::header('Authorization');
+                if(empty($customer_id)){
 
-                if(empty($jwt_token)){
+                    $jwt_token = Request::header('Authorization');
 
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+                    if(empty($jwt_token)){
 
-                    return $resp;
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                        return $resp;
+                    }
+
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    $customer_id = $decoded->customer->_id;
+
                 }
 
-                $decoded = $this->customerTokenDecode($jwt_token);
-                $customer_id = $decoded->customer->_id;
 
                 \Order::$withoutAppends = true;
 
