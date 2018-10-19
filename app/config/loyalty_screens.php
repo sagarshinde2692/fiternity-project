@@ -57,7 +57,7 @@ return array(
             'url'=> Config::get('loyalty_constants.register_url')
         ],
         'Terms' => [
-            'Title' => 'FitSquad - Terms and conditions',
+            'Title' => 'FitSquad - FAQ and Terms and conditions',
             'text' => 'HTML Text',
             'url' => Config::get('loyalty_constants.fitsquad_faq')
         ],
@@ -93,7 +93,7 @@ return array(
             'ph_no' => Config::get('app.contact_us_customer_number'),
         ],
         'Terms' => [
-            'Title' => 'FitSquad - Terms and conditions',
+            'Title' => 'FitSquad - FAQ and Terms and conditions',
             'text' => 'HTML Text',
             'url' => Config::get('loyalty_constants.fitsquad_faq')
         ],
