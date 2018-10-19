@@ -382,6 +382,7 @@ class TempsController extends \BaseController {
         if($jwt_token){
             $decoded = decode_customer_token();
             $customerToken = $jwt_token;
+            $customer_id = (int)$decoded->customer->_id;
         }
 
         $otp = (int)$otp;
@@ -398,7 +399,9 @@ class TempsController extends \BaseController {
             $finder_id = "";
             $amount = "";
             $cashback = null;
-            $customer_id = "";
+            if(empty($customer_id)){
+                $customer_id = "";
+            }
 
             if(isset($temp->ratecard_id) && $temp->ratecard_id != ""){
 
