@@ -1315,3 +1315,6 @@ Route::group(array('before' => 'validatetoken'), function() {
     Route::post('updatefreshchatid','CustomerController@updateFreshchatId');
 
 });
+
+Route::post('apicrashlogs','HomeController@apicrashlogs');
+
