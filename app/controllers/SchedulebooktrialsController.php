@@ -2437,6 +2437,7 @@ class SchedulebooktrialsController extends \BaseController {
                 
             }
            
+            $this->utilities->updateCoupon($order);
             $after_booking_response = $this->utilities->afterTranSuccess($booktrial->toArray(), 'booktrial');
 
             Log::info("after_booking_response");
