@@ -1287,7 +1287,8 @@ Log::info("location".$loc['name']);
             "type": "synonym",
             "synonyms": [
             "golds , gold",
-            "talwalkars, talwalkar"
+            "talwalkars, talwalkar",
+			"powerhouse, hanman"
             ]
           }
         }
