@@ -7030,6 +7030,12 @@ Class Utilities {
         
     }
 
+    public function updateCoupon($order){
+        if(!empty($order['coupon_code']) && !empty($order['coupon_discount_amount'])){
+            $coupon_update = \Coupon::where('code', strtolower($order['coupon_code']))->increment('total_used');
+        }
+    }
+
 }
 
 

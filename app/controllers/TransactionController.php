@@ -2429,7 +2429,7 @@ class TransactionController extends \BaseController {
 
             $this->utilities->addAssociateAgent($order);
 
-            $this->updateCoupon($order);
+            $this->utilities->updateCoupon($order);
 
             if(!empty($order['ticket_id']) && !empty($order['ticket_quantity'])){
 
@@ -7744,10 +7744,6 @@ class TransactionController extends \BaseController {
         
     }
 
-    public function updateCoupon($order){
-        if(!empty($order['coupon_code']) && !empty($order['coupon_discount_amount'])){
-            $coupon_update = Coupon::where('code', strtolower($order['coupon_code']))->increment('total_used');
-        }
-    }
+    
 
 }
