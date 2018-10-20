@@ -1752,7 +1752,7 @@ Class CustomerReward {
 
                     \Order::$withoutAppends = true;
 
-                    $order_count = \Order::active()->where("customer_id", $customer_email)->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+                    $order_count = \Order::active()->where("customer_email", $customer_email)->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
 
                     if($order_count >= 1){
 
