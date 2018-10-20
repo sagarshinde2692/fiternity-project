@@ -2429,6 +2429,8 @@ class TransactionController extends \BaseController {
 
             $this->utilities->addAssociateAgent($order);
 
+            $this->updateCoupon($order);
+
             if(!empty($order['ticket_id']) && !empty($order['ticket_quantity'])){
 
                 $ticket = Ticket::find(intval($order['ticket_id']));
@@ -7740,6 +7742,12 @@ class TransactionController extends \BaseController {
         $orderWithHash = getHash($order);
         return $orderWithHash; 
         
+    }
+
+    public function updateCoupon($order){
+        if(!empty($order['coupon_code']) && !empty($order['coupon_discount_amount'])){
+            $coupon_update = Coupon::where('code', strtolower($order['coupon_code']))->increment('total_used');
+        }
     }
 
 }
