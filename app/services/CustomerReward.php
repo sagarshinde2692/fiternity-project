@@ -2211,6 +2211,14 @@ Class CustomerReward {
 
                 return $resp;
             }
+
+            if(isset($coupon['ticket_qty']) && is_numeric($coupon['ticket_qty']) &&  (empty($ticket_quantity) || $ticket_quantity < $coupon['ticket_qty'])){
+                
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon applicable on minimum ".$coupon['ticket_qty']."tickets","user_login_error"=>true);
+
+                return $resp;
+            }
+            
             if($amount){
                 $price = $amount;
                 Log::info("changing price");
