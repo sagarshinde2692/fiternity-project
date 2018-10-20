@@ -5769,10 +5769,11 @@ class TransactionController extends \BaseController {
         if(isset($data['event_id'])){
             $customer_id = false;
         }
-
+        !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
+        
         $customer_id = isset($customer_id) ? $customer_id : false;
 
-        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id); 
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, null, $customer_email); 
         Log::info("REsponse from CustomerReward", $resp);
         if($resp["coupon_applied"]){
 
