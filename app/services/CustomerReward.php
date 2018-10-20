@@ -2078,7 +2078,7 @@ Class CustomerReward {
                 }
                 
             }
-            if($ratecard){
+            if($ratecard && (isset($coupon['and_conditions']) || isset($coupon['or_conditions']) )){
 
                 if(empty($finder)){
                     $finder = Finder::where('_id', $ratecard['finder_id'])->first();
@@ -2086,8 +2086,17 @@ Class CustomerReward {
                 if(empty($service)){
                     $service = Service::where('_id', $ratecard['service_id'])->first();
                 }
+                
+                $jwt_token = Request::header('Authorization');
+                $logged_in_customer = [];
+                if(!empty($jwt_token)){
 
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard];
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    $logged_in_customer = (array)$decoded->customer;
+                    
+                }
+
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer];
 
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
@@ -2229,7 +2238,7 @@ Class CustomerReward {
             $discount_amount = intval($discount_amount);
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
             
-            
+
             $discount_price = $price - $discount_amount;
             $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
             $vendor_routed_coupon = isset($coupon["vendor_routed_coupon"]) ? $coupon["vendor_routed_coupon"] : false;
