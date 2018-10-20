@@ -1570,6 +1570,7 @@ Class CustomerReward {
         }else{
 
             $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
+        
             if($offer){
                 $price = $offer->price;
             }else{
@@ -1578,8 +1579,6 @@ Class CustomerReward {
         }
 
         $code = trim(strtoupper($couponCode));
-        Log::info(substr($code, -1 ));
-        Log::info($ratecard);
         
         $utilities = new Utilities;
         
