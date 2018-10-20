@@ -1561,7 +1561,7 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null){
+    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null){
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
 
@@ -1654,7 +1654,7 @@ Class CustomerReward {
         //         $coupon["discount_percent"] = 5;
         //     }
         // }
-        if(!isset($coupon)){
+        if(!isset($coupon) && !empty($finder)){
             $couponRecieved = getDynamicCouponForTheFinder($finder);
             if($couponRecieved["code"] != ""){
                 if( $couponRecieved["code"] == strtolower($couponCode)){
@@ -1747,8 +1747,22 @@ Class CustomerReward {
             }
 
             if(isset($coupon["once_per_user"]) && $coupon["once_per_user"]){
+                
+                if(!empty($customer_email)){
 
-                if(empty($customer_id)){
+                    \Order::$withoutAppends = true;
+
+                    $order_count = \Order::active()->where("customer_email", $customer_email)->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+
+                    if($order_count >= 1){
+
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon already used","user_login_error"=>true);
+
+                        return $resp;
+
+                    }
+
+                }else if(empty($customer_id)){
 
                     $jwt_token = Request::header('Authorization');
 
@@ -2164,7 +2178,7 @@ Class CustomerReward {
 
                     if(empty($jwt_token)){
 
-                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Invalid User","user_login_error"=>true);
 
                         return $resp;
                     }
@@ -2197,6 +2211,14 @@ Class CustomerReward {
 
                 return $resp;
             }
+    
+            if(isset($coupon['ticket_qty']) && is_numeric($coupon['ticket_qty']) &&  (empty($ticket_quantity) || intval($ticket_quantity) < $coupon['ticket_qty'])){
+                
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon applicable on purchase of minimum ".$coupon['ticket_qty']." tickets","user_login_error"=>true);
+
+                return $resp;
+            }
+            
             if($amount){
                 $price = $amount;
                 Log::info("changing price");
