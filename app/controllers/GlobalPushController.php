@@ -1287,7 +1287,8 @@ class GlobalPushController extends \BaseController
             "type": "synonym",
             "synonyms": [
             "golds , gold",
-            "talwalkars, talwalkar"
+            "talwalkars, talwalkar",
+			"powerhouse, hanman"
             ]
           }
         }
