@@ -8108,37 +8108,65 @@ public function yes($msg){
 	}
 
     public function createLoyaltyCoupons(){
+        $lock_file_path = join('/',[public_path(),'exakat.lock'] );
+        if (!file_exists($lock_file_path)) {
+            
+            $fp = fopen($lock_file_path, 'w') ;
+
+            $data = Input::all();
+
+            $coupon_info = array_only($data, ['voucher_category','milestone','description','expiry_date']);
+
+            $coupon_info['expiry_date'] = new MongoDate(strtotime($coupon_info['expiry_date']));
+            $coupon_info['created_at'] = new MongoDate();
+            $coupon_info['updated_at'] = new MongoDate();
+            $coupon_info['status'] = '1';
+            $codes = $data['codes'];
+            
+            $codes = array_map('strtolower', $codes);
+            $already_created = LoyaltyVoucher::where('voucher_category', $data['voucher_category'])->whereIn('code', $codes)->get(['code'])->toArray();
+
+            if(!empty($already_created)){
+                fclose($fp) ;
+                unlink($lock_file_path) ;
+                return ['status'=>400, 'message'=>'Codes already exist', 'codes'=>$already_created];
+            }
+            $coupons = [];
+            $label = time();
+
+            if(empty($data['count'])){
+                foreach($codes as $code){
+                    array_push($coupons, ['code'=>$code, 'label'=>$label]);
+                }
+            }else if(!empty($data['codes'])){
+                $i=1;
+                while($i<=$data['count']){
+                    array_push($coupons, ['code'=>$codes[0], 'label'=>$label]);
+                }
+            }else{
+                return "Bad data";
+            }
+
+            $inserted = LoyaltyVoucher::insert($coupons);
+
+            Log::info("Inserted");
+
+            Log::info($inserted);
+
+            $coupons_update = LoyaltyVoucher::where('label',$label)->update($coupon_info);
+
+            Log::info("coupons_update");
+            Log::info($coupons_update);
+            
+            fclose($fp) ;
+
+            unlink($lock_file_path) ;
 
 
-        $data = Input::all();
-
-        $coupon_info = array_only($data, ['voucher_category','milestone','description','expiry_date']);
-
-        $coupon_info['expiry_date'] = new MongoDate(strtotime($coupon_info['expiry_date']));
-        $coupon_info['created_at'] = new MongoDate();
-        $coupon_info['updated_at'] = new MongoDate();
-        $coupon_info['status'] = '1';
-        
-
-        $coupons = [];
-        $label = time();
-        foreach($data['codes'] as $code){
-            array_push($coupons, ['code'=>$code, 'label'=>$label]);
+            return $coupons_update;
+        }else{
+            return "Another script is running";
         }
-
-        $inserted = LoyaltyVoucher::insert($coupons);
-
-        Log::info("Inserted");
-
-        Log::info($inserted);
-
-        $coupons_update = LoyaltyVoucher::where('label',$label)->update($coupon_info);
-
-        Log::info("coupons_update");
-        Log::info($coupons_update);
-
-
-        return $coupons_update;
 
 
     }
