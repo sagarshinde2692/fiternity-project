@@ -6470,8 +6470,8 @@ class TransactionController extends \BaseController {
                     "value"=>$data['slot']['slot_time']
                 ];
             }
-            $result['finder_name'] = $data['finder_name'];
-            $result['finder_location'] = $data['finder_location'];
+            !empty($order['finder_name']) ? $result['finder_name'] = $order['finder_name'] : null;
+            !empty($order['finder_location']) ? $result['finder_location'] = $order['finder_location'] : null;
 
 
             $data['you_save'] = 0;
