@@ -6456,8 +6456,8 @@ class TransactionController extends \BaseController {
 
             $result['order_details'] = [
                 "session"=>[
-                    "field"=> $data['service_name'],
-                    "value"=> "₹ ".number_format($data['amount'])
+                    "field"=> $order['service_name'],
+                    "value"=> "₹ ".number_format($order['amount'])
                 ]
             ];
              if(isset($data['slot'])){
