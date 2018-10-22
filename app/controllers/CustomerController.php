@@ -8337,6 +8337,8 @@ class CustomerController extends \BaseController {
 
 	public function markCheckin($finder_id){
 
+		Log::info($_SERVER['REQUEST_URI']);
+
 		$finder_id = intval($finder_id);
 		
 		$jwt_token = Request::header('Authorization');
