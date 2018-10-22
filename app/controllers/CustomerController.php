@@ -7508,9 +7508,9 @@ class CustomerController extends \BaseController {
 	public function getCustomerUnmarkedAttendance()
 	{
 
-        if(empty($_GET['lat']) || empty($_GET['lon'])){
-            return ['status'=>400, 'message'=>'Checkin from invalid location'];
-        }
+        // if(empty($_GET['lat']) || empty($_GET['lon'])){
+        //     return ['status'=>400, 'message'=>'Checkin from invalid location'];
+        // }
 		Log::info($_SERVER['REQUEST_URI']);
 
 		$resp=['status'=>200,'response'=>[]];
@@ -8346,9 +8346,9 @@ class CustomerController extends \BaseController {
 
 	public function markCheckin($finder_id){
 
-        if(empty($_GET['lat']) || empty($_GET['lon'])){
-            return ['status'=>400, 'message'=>'Checkin from invalid location'];
-        }
+        // if(empty($_GET['lat']) || empty($_GET['lon'])){
+        //     return ['status'=>400, 'message'=>'Checkin from invalid location'];
+        // }
 		Log::info($_SERVER['REQUEST_URI']);
         // return ['status'=>400];
 
