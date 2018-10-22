@@ -14,7 +14,7 @@ class BaseController extends Controller {
      */
     public function __construct() {
         $this->device_type = Request::header('Device-Type');
-        $this->app_version = (float)Request::header('App-Version');
+        $this->app_version = Request::header('App-Version');
         $this->authorization = Request::header('Authorization');
         $this->mobile_verified = Request::header('Mobile-Verified');
 
