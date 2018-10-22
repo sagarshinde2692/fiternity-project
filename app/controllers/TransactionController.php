@@ -6515,7 +6515,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(isset($data['coupon'])){
+            if(!empty($data['coupon'])){
                 
                 $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
 
