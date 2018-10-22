@@ -8109,12 +8109,36 @@ public function yes($msg){
 
     public function createLoyaltyCoupons(){
 
-        $category = $data['category'];
-        $milestone = $data['milestone'];
-        $description = $data['description'];
-        $expiry_date = $data['expiry_date'];
 
-        return $data;
+        $data = Input::all();
+
+        $coupon_info = array_only($data, ['voucher_category','milestone','description','expiry_date']);
+
+        $coupon_info['expiry_date'] = new MongoDate(strtotime($coupon_info['expiry_date']));
+        $coupon_info['created_at'] = new MongoDate();
+        $coupon_info['updated_at'] = new MongoDate();
+        $coupon_info['status'] = '1';
+        
+
+        $coupons = [];
+        $label = time();
+        foreach($data['codes'] as $code){
+            array_push($coupons, ['code'=>$code, 'label'=>$label]);
+        }
+
+        $inserted = LoyaltyVoucher::insert($coupons);
+
+        Log::info("Inserted");
+
+        Log::info($inserted);
+
+        $coupons_update = LoyaltyVoucher::where('label',$label)->update($coupon_info);
+
+        Log::info("coupons_update");
+        Log::info($coupons_update);
+
+
+        return $coupons_update;
 
 
     }
