@@ -8065,7 +8065,10 @@ class CustomerController extends \BaseController {
 							}else{
 								$post_reward_data_template['claim_enabled'] = true;
 								$post_reward_data_template['button_title'] = "View";
-								unset($post_reward_data_template['claim_message']);
+
+                                if(in_array($this->device_type, ['ios']) || in_array($this->device_type, ['android']) && $this->app_version >= 5.12){
+    								unset($post_reward_data_template['claim_message']);
+                                }
 								if($vc['_id'] != $customer_milestones[$milestone['milestone']-1]['voucher']['voucher_category']){
 									continue;
 								}
