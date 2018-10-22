@@ -1310,3 +1310,4 @@ Route::get('getcouponpackages','HomeController@getCouponPackages');
 
 Route::get('integratedvendorlist/{city_id}','FindersController@integratedVendorList');
 Route::get('assignRenewal','DebugController@assignRenewal');
+Route::post('createLoyaltyCoupons','DebugController@createLoyaltyCoupons');

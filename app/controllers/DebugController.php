@@ -8107,5 +8107,17 @@ public function yes($msg){
 
 	}
 
+    public function createLoyaltyCoupons(){
+
+        $category = $data['category'];
+        $milestone = $data['milestone'];
+        $description = $data['description'];
+        $expiry_date = $data['expiry_date'];
+
+        return $data;
+
+
+    }
+
 }
 
