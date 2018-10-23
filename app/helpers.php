@@ -391,7 +391,8 @@ if(!function_exists('getmy_city')){
             case "bengaluru":
                 return "bangalore";
                 break;
-            case "gurgaon":
+            case "gurgoan":
+			case "gurgaon":
             case "gurugram":
                 return "gurgaon";
                 break;
