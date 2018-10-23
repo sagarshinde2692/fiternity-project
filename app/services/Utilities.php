@@ -6187,9 +6187,9 @@ Class Utilities {
                 $checkin->lon = floatval($_GET['lon']);
             }
 
-            if(!empty(Input::get('lat')) && !empty(Input::get('lon'))){
-                $checkin->lat = floatval(Input::get('lat'));
-                $checkin->lon = floatval(Input::get('lon'));
+            if(!empty(\Input::get('lat')) && !empty(\Input::get('lon'))){
+                $checkin->lat = floatval(\Input::get('lat'));
+                $checkin->lon = floatval(\Input::get('lon'));
             }
 
 			$checkin->save();
