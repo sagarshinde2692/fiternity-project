@@ -330,6 +330,15 @@ class TransactionController extends \BaseController {
         //     $data['customer_quantity'] = 1;
         // }
 
+        if(!empty($_GET['lat'])){
+            $data['lat'] = floatval($_GET['lat']);
+        }
+
+
+        if(!empty($_GET['lon'])){
+            $data['lon'] = floatval($_GET['lon']);
+        }
+
         $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
         
         $updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;

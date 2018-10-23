@@ -2229,6 +2229,14 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($order['assisted_by'])){
                 $booktrialdata['assisted_by'] = $order['assisted_by'];
             }
+
+            if(!empty($order['lat'])){
+                $booktrialdata['lat'] = $order['lat'];
+            }
+            
+            if(!empty($order['lon'])){
+                $booktrialdata['lon'] = $order['lon'];
+            }
             
             if(!empty($order['customer_quantity'])){
                 $booktrialdata['customer_quantity'] = $order['customer_quantity'];
