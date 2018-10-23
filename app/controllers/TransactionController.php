@@ -6456,8 +6456,8 @@ class TransactionController extends \BaseController {
 
             $result['order_details'] = [
                 "session"=>[
-                    "field"=> $data['service_name'],
-                    "value"=> "₹ ".number_format($data['amount'])
+                    "field"=> $order['service_name'],
+                    "value"=> "₹ ".number_format($order['amount'])
                 ]
             ];
              if(isset($data['slot'])){
@@ -6470,8 +6470,8 @@ class TransactionController extends \BaseController {
                     "value"=>$data['slot']['slot_time']
                 ];
             }
-            $result['finder_name'] = $data['finder_name'];
-            $result['finder_location'] = $data['finder_location'];
+            !empty($order['finder_name']) ? $result['finder_name'] = $order['finder_name'] : null;
+            !empty($order['finder_location']) ? $result['finder_location'] = $order['finder_location'] : null;
 
 
             $data['you_save'] = 0;
@@ -6515,7 +6515,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(isset($data['coupon'])){
+            if(!empty($data['coupon'])){
                 
                 $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
 

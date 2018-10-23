@@ -31,6 +31,27 @@ class DebugController extends \BaseController {
 
 	}
 
+    public function __call($method, $arguments){
+
+        $file = fopen("$method.txt","w+");
+        Log::info("Checking lock");
+        if(flock($file,LOCK_EX)){
+            Log::info("Lock aquired");
+            $return = $this->$method();
+            Log::info("releasing lock");
+            return $return;
+            
+        }else{
+
+            return  "Error locking file!";
+        
+        }
+
+        fclose($file);
+        
+    }
+
+
 	public function invalidFinderStats(){
 
 		$finder = Finder::active()->where('finder_vcc_email', 'exists', true)->where("finder_vcc_email","!=","")->orderBy('_id', 'asc')->get(array('_id','slug','finder_vcc_email'));
@@ -8106,6 +8127,81 @@ public function yes($msg){
 		return ['renewals'=>array_values(array_unique($renewals)), 'non_re'=>array_values(array_unique($non_renewals))];
 
 	}
+
+    private function createLoyaltyCoupons(){
+        
+        Log::info("Creating coupons");
+        
+        $data = Input::all();
+
+        $rules = [
+            'voucher_category'  => 'required',
+            'expiry_date'       => 'required',
+            'codes'             => 'required'
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }   
+
+        $voucher_category = VoucherCategory::find($data['voucher_category']);
+
+        if(empty($voucher_category)){
+            return ['status'=>400, 'message'=>'Voucher category not exist'];
+        }
+
+        $coupon_info = array_only($data, ['voucher_category','expiry_date']);
+
+        
+        $coupon_info['description'] = $voucher_category['description'];
+        $coupon_info['milestone'] = $voucher_category['milestone'];
+        
+        $coupon_info['expiry_date'] = new MongoDate(strtotime($coupon_info['expiry_date']));
+        
+        $coupon_info['created_at'] = new MongoDate();
+        $coupon_info['updated_at'] = new MongoDate();
+        
+        $coupon_info['status'] = '1';
+        $codes = $data['codes'];
+        
+        $codes = array_map('strtolower', $codes);
+        $already_created = LoyaltyVoucher::where('voucher_category', $data['voucher_category'])->whereIn('code', $codes)->get(['code'])->toArray();
+        Log::info("Retrieved aready");
+        if(!empty($already_created)){
+            return ['status'=>400, 'message'=>'Codes already exist', 'codes'=>$already_created];
+        }
+        $coupons = [];
+        $label = time();
+
+        if(empty($data['count'])){
+            foreach($codes as $code){
+                array_push($coupons, ['code'=>$code, 'label'=>$label]);
+            }
+        }else if(!empty($data['codes'])){
+            $i=1;
+            while($i++<=$data['count']){
+                array_push($coupons, ['code'=>$codes[0], 'label'=>$label]);
+            }
+        }else{
+            return "Bad data";
+        }
+
+        $inserted = LoyaltyVoucher::insert($coupons);
+
+        Log::info("Inserted");
+
+        Log::info($inserted);
+
+        $coupons_update = LoyaltyVoucher::where('label',$label)->update($coupon_info);
+
+        Log::info("coupons_update");
+        Log::info($coupons_update);
+        return $coupons_update;
+
+
+    }
 
 }
 
