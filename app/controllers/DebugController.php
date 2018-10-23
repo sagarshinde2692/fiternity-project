@@ -8108,31 +8108,111 @@ public function yes($msg){
 	}
 
     public function registerOngoingLoyalty(){
-        $customers = Customer::where('loyalty', 'exists', true)->lists('_id');
         
-        $orders = Order::active()->where('type', 'memberships')->whereNotIn('customer_id', $customers)->where('end_date', '>=', new DateTime())->where('start_date', '<=', new DateTime())->get(['customer_name', 'customer_email', 'customer_id', 'finder_id', 'end_date'])->toArray();
+        $already_reg_cust_ids = Customer::where('loyalty', 'exists', true)->lists('_id');
+        
+        $orders = Order::active()->where('type', 'memberships')->whereNotIn('customer_email', [null, ''])->whereNotIn('customer_id', $already_reg_cust_ids)->where('end_date', '>=', new DateTime())->where('start_date', '<=', new DateTime())->orderBy('_id', 'desc')->get(['customer_name', 'customer_email', 'customer_id', 'finder_id', 'end_date','type'])->toArray();
 
-        // echo "<pre>";print_r($trials);   
-        return count($orders);
+        // return $customer_ids = count(array_values(array_unique(array_column($orders, 'customer_id'))));
+        // return count($orders);
 
-        $utilities = new Utilities();
-        $customermailer = new CustomerMailer();
+        // $utilities = new Utilities();
+        // $customermailer = new CustomerMailer();
         $sent_customers = [];
-    
+        $customers_update_data = [];
         foreach($orders as $order){
-            $order['order_id'] = $order['_id'];
-            $register = $utilities->autoRegisterCustomerLoyalty($order);
-
-            if(!empty($register['status']) && $register['status'] == 200){
+            
+            if(!in_array($order['customer_id'], $sent_customers)){
+                // Log::info($order['_id']);
                 array_push($sent_customers, $order['customer_id']);
-                $mail = $customermailer->registerOngoingLoyalty($order);
-            }
+                array_push($customers_update_data, [
+                    "q"=>['_id'=>$order['customer_id']],
+                    "u"=>[
+                        '$set'=>[
+                            'script_loyalty_register'=>true, 
+                            'loyalty'=>[
+                                'order_id'=>$order['_id'],
+                                'start_date'=>new \MongoDate(strtotime('midnight')),
+                                'start_date_time'=>new \MongoDate(),
+                                'finder_id'=>$order['finder_id'],
+                                'end_date'=>new MongoDate(strtotime($order['end_date'])),
+                                'type'=>$order['type']
+                            ]
+                        ]
+                    ],
+                    'multi' => false
+                ]);
 
+            }
         }
 
+        $update = $this->batchUpdate('mongodb', 'customers', $customers_update_data);
+
+        return $update;
+
+         // $register = $utilities->autoRegisterCustomerLoyalty($order);
+
+            // if(!empty($register['status']) && $register['status'] == 200){
+            //     array_push($sent_customers, $order['customer_id']);
+            //     $order['script_register'] = true;
+            //     $mail = $customermailer->registerOngoingLoyalty($order);
+            // }
+
+
+    }
+
+    public function batchUpdate($db, $collection, $update_data){
+        $usr="";$opts=[];
+        if(!empty(Config::get ( "database.connections.$db.username")))
+        {
+            $opts=["authMechanism"=>Config::get ( "database.connections.$db.options.authMechanism"),"db"=>Config::get ( "database.connections.$db.options.db")];
+            $usr=Config::get ( "database.connections.$db.username" ).":".Config::get ( "database.connections.$db.password" )."@";
+        }
+        if(!empty($opts)&&!empty($opts['authMechanism'])&&!empty($opts['db']))
+        {
+            $mongoclient = new \MongoClient(Config::get ( "database.connections.$db.driver" ) . "://".$usr. Config::get ( "database.connections.$db.host" ) . ":" . Config::get ( "database.connections.$db.port").'/'. Config::get ( "database.connections.$db.database"),$opts);
+        }
+        else {
+            $mongoclient = new \MongoClient(Config::get ( "database.connections.$db.driver" ) . "://".$usr. Config::get ( "database.connections.$db.host" ) . ":" . Config::get ( "database.connections.$db.port"));
+        }
+            
+        $pt_collection = $mongoclient->selectDB ( Config::get ( "database.connections.$db.database" ) )->selectCollection ( $collection );
+        // return $update_service_data;
+        $batch_update = new \MongoUpdateBatch($pt_collection);
+
+        foreach($update_data as $item){
+            $batch_update->add($item); 
+        }
+        $update = $batch_update->execute(array("w" => 1));
+
+        $mongoclient->close();
+        Log::info($update);
+        return $update;
+    }
+
+    public function registerOngoingLoyaltyMail(){
         
+        Customer::$withoutAppends = true;
+        $customers = Customer::where('script_loyalty_register', true)
+        ->where('_id', 87977)
+        ->get(['name', 'email'])
+        ->take(1)->toArray();
 
+        $customermailer = new CustomerMailer();
+        // return $customers;
+        foreach($customers as $customer){
+            $mail = $customermailer->registerOngoingLoyalty($customer);
+            Log::info($mail);
+        }
+        // $i=0;
+        // while($i++<100)
+        // {
+        //     $mail = $customermailer->registerOngoingLoyalty($customers[0]);
 
+        // }
+
+        return DB::getQueryLog();
+        
     }
 
 }

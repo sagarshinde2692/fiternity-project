@@ -726,6 +726,20 @@ Class CustomerMailer extends Mailer {
 
 		return $this->common($label,$data,$message_data);
 	}
+    
+    public function registerOngoingLoyalty($data){
+
+		$label = 'RegisterOngoingLoyalty-Customer';
+		
+		$message_data 	= array(
+			'user_email' => array($data['email']),
+			'user_name' => $data['name'],
+            );
+
+		return $this->common($label,$data,$message_data);
+	}
+
+    
 	
 	protected function common($label,$data,$message_data,$delay = 0){
 
@@ -733,7 +747,7 @@ Class CustomerMailer extends Mailer {
 			return "";
 		}
 		
-		$template = \Template::where('label',$label)->first();
+		$template = \Template::where('created_at', 'exists', true)->where('label',$label)->first();
 
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
 		$email_subject = 	$this->bladeCompile($template->email_subject,$data);
