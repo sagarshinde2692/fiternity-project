@@ -7997,9 +7997,9 @@ class CustomerController extends \BaseController {
 			$next_milestone_checkins = !empty($milestones[$milestone_no]['next_count']) ? $milestones[$milestone_no]['next_count'] : 225;
 
 			if(!empty($milestone_no)){
-				$milestone_text = 'You are on milestone '.$milestone_no;
+				$milestone_text = '(View)<br/><br/>You are on milestone '.$milestone_no;
 			}else{
-				$milestone_text = 'Rush to your first milestone to earn rewards';
+				$milestone_text = '<br/><br/>Rush to your first milestone to earn rewards';
 			}
 
 			if(empty($milestone_next_count)){
