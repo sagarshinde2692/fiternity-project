@@ -452,6 +452,7 @@ if(!function_exists('ifCityPresent')){
                 $send_city = "delhi";
                 $ifcity = true;
                 break;
+			case "gurgoan":
             case "gurugram":
             case "gurgaon":
                 $send_city = "gurgaon";
