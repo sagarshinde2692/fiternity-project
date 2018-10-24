@@ -735,7 +735,8 @@ Class CustomerMailer extends Mailer {
 			'user_email' => array($data['email']),
 			'user_name' => $data['name'],
             );
-
+        print_r($message_data);
+        exit();
 		return $this->common($label,$data,$message_data);
 	}
 
