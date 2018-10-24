@@ -2189,7 +2189,8 @@ class CustomerController extends \BaseController {
 			'notification',
 			'fitness_goal',
 			'city',
-			'place'))->toArray();
+			'place',
+            'freshchat_restore_id'))->toArray();
 
 
 		if($customer){
@@ -7506,6 +7507,12 @@ class CustomerController extends \BaseController {
 	
 	public function getCustomerUnmarkedAttendance()
 	{
+
+        // if(empty($_GET['lat']) || empty($_GET['lon'])){
+        //     return ['status'=>400, 'message'=>'Checkin from invalid location'];
+        // }
+		Log::info($_SERVER['REQUEST_URI']);
+
 		$resp=['status'=>200,'response'=>[]];
 		try {
 			
@@ -8066,7 +8073,10 @@ class CustomerController extends \BaseController {
 							}else{
 								$post_reward_data_template['claim_enabled'] = true;
 								$post_reward_data_template['button_title'] = "View";
-								unset($post_reward_data_template['claim_message']);
+
+                                if(in_array($this->device_type, ['ios']) || in_array($this->device_type, ['android']) && $this->app_version >= 5.12){
+    								unset($post_reward_data_template['claim_message']);
+                                }
 								if($vc['_id'] != $customer_milestones[$milestone['milestone']-1]['voucher']['voucher_category']){
 									continue;
 								}
@@ -8344,6 +8354,12 @@ class CustomerController extends \BaseController {
 
 	public function markCheckin($finder_id){
 
+        // if(empty($_GET['lat']) || empty($_GET['lon'])){
+        //     return ['status'=>400, 'message'=>'Checkin from invalid location'];
+        // }
+		Log::info($_SERVER['REQUEST_URI']);
+        // return ['status'=>400];
+
 		$finder_id = intval($finder_id);
 		
 		$jwt_token = Request::header('Authorization');
@@ -8540,5 +8556,43 @@ class CustomerController extends \BaseController {
 			}
 		}
 	}
+
+    public function updateFreshchatId(){
+
+        try{
+            
+            $data = Input::all();
+
+            $jwt = Request::header('Authorization');
+
+            if(empty($jwt)){
+                return ['status'=>400];
+            }
+
+            $decodedToken = decode_customer_token();
+
+            $customer_id = $decodedToken->customer->_id;
+
+            if(empty($data['freshchat_restore_id'])){
+                
+                return ['status'=>400, 'message'=>'Data empty'];
+            
+            }
+            $freshchat_restore_id = $data['freshchat_restore_id'];
+            
+            $customer_update = Customer::where('_id', (int)$customer_id)->update(['freshchat_restore_id'=>$freshchat_restore_id]);
+
+            if($customer_update){
+                return ['status'=>200];
+            }
+
+            return ['status'=>400];
+
+        }catch(Exception $e){
+            
+            return ['status'=>500];
+        
+        }
+    }
 	
 }

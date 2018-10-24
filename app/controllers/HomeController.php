@@ -5427,5 +5427,21 @@ class HomeController extends BaseController {
         		
         	}
         }
+
+    public function apicrashlogs(){
+
+        try{
+            $data = Input::all();
+
+            $crashlog = new ApiCrashLog($data);
+
+            $crashlog->save();
+
+            return ['status'=>200];
+
+        }catch(Exception $e){
+            return ['status'=>500];
+        }
+    }
         
 }

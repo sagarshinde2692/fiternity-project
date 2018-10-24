@@ -1310,4 +1310,11 @@ Route::get('getcouponpackages','HomeController@getCouponPackages');
 
 Route::get('integratedvendorlist/{city_id}','FindersController@integratedVendorList');
 Route::get('assignRenewal','DebugController@assignRenewal');
+Route::group(array('before' => 'validatetoken'), function() {
+
+    Route::post('updatefreshchatid','CustomerController@updateFreshchatId');
+
+});
+
+Route::post('apicrashlogs','HomeController@apicrashlogs');
 
