@@ -1320,6 +1320,8 @@ class CustomerController extends \BaseController {
 			$data['cart_id']=$customer['cart_id'];
 		if(!empty($customer['referral_code']))
 			$data['referral_code'] = $customer['referral_code'];
+		if(!empty($customer['freshchat_restore_id']))
+			$data['freshchat_restore_id'] = $customer['freshchat_restore_id'];
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
 			"nbf" => Config::get('app.jwt.nbf'),
@@ -8582,8 +8584,12 @@ class CustomerController extends \BaseController {
             
             $customer_update = Customer::where('_id', (int)$customer_id)->update(['freshchat_restore_id'=>$freshchat_restore_id]);
 
+            $customer = Customer::find((int)$customer_id);
+
+            $token = $this->createToken($customer);
+
             if($customer_update){
-                return ['status'=>200];
+                return ['status'=>200, 'token'=>$token['token']];
             }
 
             return ['status'=>400];
