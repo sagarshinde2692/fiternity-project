@@ -6174,7 +6174,17 @@ Class Utilities {
 			$checkin->customer_id = $customer_id;
             $checkin->date = new \DateTime(date('d-m-Y', time()));
             
-            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified'];
+            if(!empty($_GET['lat']) && !empty($_GET['lon'])){
+                $data['lat'] = floatval($_GET['lat']);
+                $data['lon'] = floatval($_GET['lon']);
+            }
+
+            if(!empty(\Input::get('lat')) && !empty(\Input::get('lon'))){
+                $data['lat'] = floatval(\Input::get('lat'));
+                $data['lon'] = floatval(\Input::get('lon'));
+            }
+            
+            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon'];
 
             foreach($fields as $field){
                 if(isset($data[$field])){
@@ -6276,7 +6286,7 @@ Class Utilities {
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
             if(!empty($data['qrcodepayment']) && empty($data['checkin'])){
-                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id']]);
+                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null ]);
             }
         }
 

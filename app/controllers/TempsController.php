@@ -463,7 +463,7 @@ class TempsController extends \BaseController {
                     $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
                 }else{
 
-                    $customer = Customer::find($customer_id,['name','email','contact_no','dob','gender']);
+                    $customer = Customer::find($customer_id,['name','email','contact_no','dob','gender'.'freshchat_restore_id']);
                 }
                 
                 if($customer) {
