@@ -801,6 +801,7 @@ class TransactionController extends \BaseController {
         }
 
         $data['base_amount'] = $order['amount_customer'] - $data['convinience_fee'] ;
+        Log::info("data before hash");
         Log::info($data);
         $hash = getHash($data);
         $data = array_merge($data,$hash);
@@ -7262,6 +7263,7 @@ class TransactionController extends \BaseController {
         $data['session_payment'] = true;
         $data['paymentmode_selected'] = 'paymentgateway';
         $data['payment_mode'] =  'paymentgateway';
+        $data['customer_source'] =  !empty($_GET['device_type']) ? $_GET['device_type'] : "website";
         // $data['wallet'] =  false;
         
 
