@@ -86,12 +86,58 @@ class TransactionController extends \BaseController {
 
     }
 
+    public function saveTPMemberDetails($tpoDetails) {
+        Log::info('tpo_id', [$tpoDetails['tpo_id']]);
+        Log::info('member_details', [$tpoDetails['memberDetails']]);
+        
+        $tpoRec = ThirdPartyOrder::where('_id', $tpoDetails['tpo_id'])->first();
+        $_tempDtls = [];
+        foreach ($tpoDetails['memberDetails'] as $rec) {
+            $_tpoRec = [];
+            $_tpoRec['dob'] = new MongoDate(strtotime(date($rec['dob'].' 00:00:00')));
+            $_tpoRec['email_id'] = $rec['emailId'];
+            $_tpoRec['extension'] = $rec['extension'];
+            $_tpoRec['first_name'] = $rec['firstName'];
+            $_tpoRec['middle_name'] = $rec['middleName'];
+            $_tpoRec['last_name'] = $rec['lastName'];
+            $_tpoRec['mobile_no'] = $rec['mobileNo'];
+            $_tpoRec['address_line_1'] = $rec['addressLine1'];
+            $_tpoRec['address_line_2'] = $rec['addressLine2'];
+            $_tpoRec['city'] = $rec['addressCity'];
+            $_tpoRec['state'] = $rec['addressState'];
+            $_tpoRec['country'] = $rec['addressCountry'];
+            $_tpoRec['pincode'] = $rec['addressPincode'];
+            $_tpoRec['marital_status'] = $rec['maritalStatus'];
+            $_tpoRec['nationality'] = $rec['nationality'];
+            $_tpoRec['program_code'] = $rec['programCode'];
+            $_tpoRec['gender'] = $rec['gender'];
+            $_tpoRec['agent_code'] = $rec['agentCode'];
+            $_tpoRec['role'] = $rec['role'];
+            $_tpoRec['relationship'] = $rec['relationship'];
+            $_tpoRec['emp_group_offering_cd'] = $rec['empGroupOfferingCd'];
+            array_push($_tempDtls, $_tpoRec);
+        }
+        $tpoRec->member_details = $_tempDtls;
+        $tpoRec->txnid = 'TPFIT'.$tpoDetails['tpo_id'];
+        Log::info('$tpoRec->member_details', $tpoRec->member_details);
+        $tpoRec->save();
+        $dtls = $tpoRec->member_details;
+        Log::info('lets see', [$dtls]);
+        return ['txnid' => $tpoRec->txnid];
+    }
+
     public function capture($data = null){
 
         $data = $data ? $data : Input::json()->all();
 
         Log::info($_SERVER['REQUEST_URI']);
         Log::info('------------transactionCapture---------------',$data);
+
+        if(!empty($data['tpo_details'])){
+            $tpMemberDetailsResp = $this->saveTPMemberDetails($data['tpo_details']);
+            Log::info('$tpMemberDetailsResp: ', [$tpMemberDetailsResp]);
+           return Response::json(array('status' => 200,'response' => $tpMemberDetailsResp), 200);
+        }
 
         foreach ($data as $key => $value) {
 

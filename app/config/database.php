@@ -1,9 +1,9 @@
 <?php
 
 //local
-// $host = "localhost";
-// $username = "";
-// $password = "";
+$host = "localhost";
+$username = "";
+$password = "";
 
 //stage
 // $host = "apistage.fitn.in";
@@ -13,9 +13,9 @@
 
 //production
 
-$host = "54.179.134.14"; 
-$username = ""; 
-$password = ""; 
+// $host = "54.179.134.14"; 
+// $username = ""; 
+// $password = ""; 
 
 return array(
 
