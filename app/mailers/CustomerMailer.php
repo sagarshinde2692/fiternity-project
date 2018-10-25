@@ -735,8 +735,6 @@ Class CustomerMailer extends Mailer {
 			'user_email' => array($data['email']),
 			'user_name' => $data['name'],
             );
-        print_r($message_data);
-        exit();
 		return $this->common($label,$data,$message_data);
 	}
 
@@ -748,7 +746,7 @@ Class CustomerMailer extends Mailer {
 			return "";
 		}
 		
-		$template = \Template::where('created_at', 'exists', true)->where('label',$label)->first();
+		$template = \Template::where('created_at', 'exists', true)->where('label',$label)->remember(Config::get('app.cachetime'))->first();
 
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
 		$email_subject = 	$this->bladeCompile($template->email_subject,$data);

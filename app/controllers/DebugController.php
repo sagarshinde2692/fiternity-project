@@ -8194,36 +8194,21 @@ public function yes($msg){
         Finder::$withoutAppends = true;
         Customer::$withoutAppends = true;
         $customers = Customer::where('script_loyalty_register', true)
-        // ->where('_id', 235220)
+        ->where('_id','>',273974)
+        ->whereNotIn('email', [null, ''])
+        ->whereNotIn('name', [null, ''])
         ->with(['loyaltyFinder' => function($query){$query->select('title');}])
-        ->get(['name', 'email', 'loyalty'])
-        ->take(1)->toArray();
+        ->orderBy('_id', 'asc')
+        ->get(['name', 'email', 'loyalty'])->toArray();
         
-        Log::info('custList: ', $customers);
-
         $customermailer = new CustomerMailer();
-        foreach($customers as $customer){
-            $customer['email'] = 'akhilkulkarni@fitternity.com';
-            $mail = $customermailer->registerOngoingLoyalty($customer);
+        Log::info('$customers length:',[count($customers)]);
+        foreach($customers as $key => $customer){
+            Log::info($key);
             Log::info($customer);
+            // $mail = $customermailer->registerOngoingLoyalty($customer);
         }
-        return $customers;
-        // $customermailer = new CustomerMailer();
-        // $mail = $customermailer->registerOngoingLoyalty($customers[0]);
-        // return $customers;
-        // $customermailer = new CustomerMailer();
-        // return $customers;
-        // foreach($customers as $customer){
-        //     $mail = $customermailer->registerOngoingLoyalty($customer);
-        //     Log::info($mail);
-        // }
-        // $i=0;
-        // while($i++<100)
-        // {
-        //     $mail = $customermailer->registerOngoingLoyalty($customers[0]);
-
-        // }
-
+        Log::info('done!');
         return DB::getQueryLog();
         
     }
