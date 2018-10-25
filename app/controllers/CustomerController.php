@@ -8565,6 +8565,10 @@ class CustomerController extends \BaseController {
             
             $data = Input::all();
 
+            if(empty($data)){
+                $data = Input::json()->all();
+            }
+
             $jwt = Request::header('Authorization');
 
             if(empty($jwt)){
