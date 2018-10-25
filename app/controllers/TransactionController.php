@@ -2131,7 +2131,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            $snap_block = in_array($order['finder_id'], Config::get('app.snap_bangalore_finder_ids')) && $order['type'] == 'memberships' && time() < strtotime('29-09-2018');
+            $snap_block = in_array($order['finder_id'], Config::get('app.snap_bangalore_finder_ids')) && $order['type'] == 'memberships';
 
             if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
 
