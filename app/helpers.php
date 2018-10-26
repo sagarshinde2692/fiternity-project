@@ -3979,6 +3979,10 @@ if (!function_exists('encodeOrderToken')) {
 if (!function_exists('getDynamicCouponForTheFinder')) {
 
     function getDynamicCouponForTheFinder($finder){
+		// Remove these lines to get Dynamic coupon
+		$coupon = array("code" => "", "text" => "");
+		return $coupon;
+		// Remove these lines to get Dynamic coupon
         $today = date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
         $lastSixtyDays = date('d-m-Y', strtotime(Carbon::now()->subDays(45)));
         
