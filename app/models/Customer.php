@@ -99,5 +99,8 @@ class Customer extends  \Basemodel {
 		return $this->hasMany('Customer', 'customer_id');
 	}
 	
+    public function loyaltyFinder(){
+        return $this->belongsTo('Finder', 'loyalty.finder_id');
+    }
 
 }
