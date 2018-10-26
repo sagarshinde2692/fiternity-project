@@ -726,6 +726,19 @@ Class CustomerMailer extends Mailer {
 
 		return $this->common($label,$data,$message_data);
 	}
+    
+    public function registerOngoingLoyalty($data){
+
+		$label = 'RegisterOngoingLoyalty-Customer';
+		
+		$message_data 	= array(
+			'user_email' => array($data['email']),
+			'user_name' => $data['name'],
+            );
+		return $this->common($label,$data,$message_data);
+	}
+
+    
 	
 	protected function common($label,$data,$message_data,$delay = 0){
 

@@ -2699,3 +2699,7 @@ Route::post('convertOrdersToPPS','DebugController@convertOrdersToPPS');
 Route::get('removeloyalty/{id}','DebugController@removeloyalty');
 Route::get('assignRenewal','DebugController@assignRenewal');
 Route::post('createLoyaltyCoupons','DebugController@createLoyaltyCoupons');
+
+Route::get('registerOngoingLoyalty','DebugController@registerOngoingLoyalty');
+
+Route::get('registerOngoingLoyaltyMail','DebugController@registerOngoingLoyaltyMail');
