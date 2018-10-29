@@ -5431,15 +5431,25 @@ class HomeController extends BaseController {
     public function apicrashlogs(){
 
         try{
-            $data = Input::all();
+            
+            $data = ["post_data"=>Input::all()];
+            
+            $data['header_data'] = apache_request_headers();
 
             $crashlog = new ApiCrashLog($data);
 
             $crashlog->save();
+            $customersms = new \App\Sms\FinderSms();
+            $sms = $customersms->apicrashlogsSMS(['data'=>json_encode(array_only($crashlog->toArray(), ['post_data', 'created_at','_id']))]);
+
+            // $customermailer = new CustomerMailer();
+            // $mail = $customermailer->apicrashlogsSMS(['data'=>json_encode(array_only($crashlog->toArray(), ['post_data', 'created_at', '_id']))]);
+            // $sms = $customersms->apicrashlogsSMS(['data'=>$crashlog['post_data']]);
 
             return ['status'=>200];
 
         }catch(Exception $e){
+            Log::info($e);
             return ['status'=>500];
         }
     }
