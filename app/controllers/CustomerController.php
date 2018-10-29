@@ -7122,6 +7122,10 @@ class CustomerController extends \BaseController {
 			'email'=>true,
 		];
 
+        if($this->device_type == 'android'){
+            $response['google'] = false;
+        }
+
 		return Response::json($response,200);
 	}
 
