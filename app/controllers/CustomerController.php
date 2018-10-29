@@ -8166,7 +8166,8 @@ class CustomerController extends \BaseController {
         }
         $data['customer_id'] = $customer_id;
         if(!empty($data['membership_end_date'])){
-			$data['end_date'] = new Mongodate(strtotime($data['membership_end_date']));
+			// $data['end_date'] = new Mongodate(strtotime($data['membership_end_date']));
+			$data['end_date_month_year'] = $data['membership_end_date'];
         }
         if(!empty($data['finder_id'])){
 			$data['finder_id'] = intval($data['finder_id']);
