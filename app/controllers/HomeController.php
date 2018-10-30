@@ -5440,7 +5440,7 @@ class HomeController extends BaseController {
 
             $crashlog->save();
             $customersms = new \App\Sms\FinderSms();
-            $sms = $customersms->apicrashlogsSMS(['data'=>json_encode(array_only($crashlog->toArray(), ['post_data', 'created_at','_id']))]);
+            $sms = $customersms->apicrashlogsSMS(['url'=>$crashlog['post_data']['url'], '_id'=>$crashlog['_id'], 'device'=>$data['header_data']['Device-Type']]);
 
             // $customermailer = new CustomerMailer();
             // $mail = $customermailer->apicrashlogsSMS(['data'=>json_encode(array_only($crashlog->toArray(), ['post_data', 'created_at', '_id']))]);
