@@ -3102,29 +3102,11 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null){
 
-        $inoperational_dates = ['2018-05-01', '2018-08-15'];
-        if(in_array($date, $inoperational_dates)){
+        $inoperational_dates = ['2018-11-01'];
+
+        if(!empty($city_id) && !empty($type) && in_array($type, ['trial']) && in_array($city_id, [3]) && in_array($date, $inoperational_dates)){
             return false;
         }
-
-        $inoperational_dates = ['2018-01-01'];
-
-        if($findercategory_id && !in_array($findercategory_id, [5]) && in_array($date, $inoperational_dates)){
-            return false;
-        }
-
-        $inoperational_dates = ['2018-09-13'];
-
-        if(!empty($free) && in_array($date, $inoperational_dates)){
-            return false;
-        }
-        
-        $inoperational_dates = ['2018-10-18'];
-
-        if(!empty($type) && in_array($type, ['trial']) && in_array($date, $inoperational_dates)){
-            return false;
-        }
-        
         
         return true;
 
