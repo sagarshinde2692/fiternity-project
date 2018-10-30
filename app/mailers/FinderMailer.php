@@ -289,6 +289,10 @@ Class FinderMailer extends Mailer {
 			$user_email 	= 	array(Config::get('mail.to_mailus'));
 		}
 
+        if(!empty($data['finder_id']) && !empty($data['type']) && in_array($data['finder_id'], Config::get('app.snap_bangalore_finder_ids')) && $data['type'] == 'memberships'){
+            $user_email = [];
+        }
+
 		$user_name = ucwords($data['finder_name']);
 
 		$fitternity_email = [];
@@ -1194,7 +1198,8 @@ Class FinderMailer extends Mailer {
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
 
 		$message_data['email_subject'] = $email_subject;
-
+        Log::info('$message_data');
+        Log::info($message_data);
 		return $this->sendDbToWorker('vendor',$email_template, $message_data, $label, $delay);
 
 	}

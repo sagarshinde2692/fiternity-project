@@ -284,6 +284,19 @@ Class FinderSms extends VersionNextSms{
 
 		return $this->common($label,$to,$data);
 	}
+	
+    protected function apicrashlogsSMS ($data){
+	
+		$label = 'ApicrashlogsSMS-Customer';
+
+		$to = [
+            '7506026203',
+            '9730401839',
+            '9824313243'
+         ];
+
+		return $this->common($label,$to,$data);
+	}
 
 	public function common($label,$to,$data,$delay = 0){
 
