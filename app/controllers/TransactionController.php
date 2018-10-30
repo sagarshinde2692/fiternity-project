@@ -136,7 +136,8 @@ class TransactionController extends \BaseController {
         if(!empty($data['tpo_details'])){
             $tpMemberDetailsResp = $this->saveTPMemberDetails($data['tpo_details']);
             Log::info('$tpMemberDetailsResp: ', [$tpMemberDetailsResp]);
-           return Response::json(array('status' => 200,'response' => $tpMemberDetailsResp), 200);
+            $orderData = $this->getThirdPartyOrderDetails($tpMemberDetailsResp['txnid']);
+            return Response::json(array('status' => 200,'response' => $orderData), 200);
         }
 
         foreach ($data as $key => $value) {
@@ -7786,22 +7787,86 @@ class TransactionController extends \BaseController {
             
     }
 
+    public function getThirdPartyOrderDetails($txnid) {
+        Log::info('inside getThirdPartyOrderDetails: $txnid: ', [$txnid]);
+        $orderData = [];
+        $tpoRec = ThirdPartyOrder::where('txnid', $txnid)->first();
+        Log::info('$tpoRec: ', [$tpoRec]);
+        if(!empty($tpoRec)) {
+            Log::info('Third party order record found for txnid: ', [$txnid]);
+            $principalMember = array_filter($tpoRec['member_details'], function($member) {
+                return $member['role']=='principal';
+            });
+            if(!empty($principalMember)){
+                $orderData['logged_in_customer_id'] = $tpoRec['customer_id'];
+                $orderData['txnid'] = $tpoRec['txnid'];
+                $orderData['amount'] = $tpoRec['fee_details']['total_price'];
+                $orderData['firstname'] = $principalMember[0]['first_name'];
+                $orderData['email'] = $principalMember[0]['email_id'];
+                $orderData['phone'] = $principalMember[0]['mobile_no'];
+                $orderData['orderid'] = $tpoRec['_id'];
+                $orderData['service_name'] = $tpoRec['plan_code'];
+                $orderData['finder_name'] = $tpoRec['thirdparty']['acronym'];
+                $orderData['productinfo'] = $orderData['service_name'].' - '.$orderData['finder_name'];
+
+
+                $orderData['customer_name'] = $principalMember[0]['first_name'];
+                $orderData['customer_email'] = $principalMember[0]['email_id'];
+                $orderData['gender'] = $principalMember[0]['gender']=='M'?'male':'female';
+                $orderData['customer_phone'] = $principalMember[0]['mobile_no'];
+                $orderData['dob'] = date('Y-m-d', $principalMember[0]['dob']->sec).' 00:00:00';
+                $orderData['customer_address'] = [$principalMember[0]['address_line_1'], $principalMember[0]['address_line_2']];
+
+                if(empty($orderData['logged_in_customer_id'])){
+                    Log::info('registering customer');
+                    $orderData['logged_in_customer_id'] = autoRegisterCustomer($orderData);
+                    $tpoRec['customer_id'] = $orderData['logged_in_customer_id'];
+                    Log::info('customer registered: ', [$orderData['logged_in_customer_id']]);
+                    $tpoRec->save();
+                }
+
+                Log::info('$orderData before getHash(): ', $orderData);
+                $orderData = getHash($orderData);
+                $orderData['hash'] = $orderData['payment_hash'];
+                Log::info('$orderData after getHash(): ', $orderData);
+                return ($orderData);
+            } else {
+                Log::info('principal member not found');
+                // principal member not found
+                return null;
+            }
+        } else {
+            Log::info('order not found based on txn id');
+            // order not found based on txn id
+            return null;
+        }
+    }
+
     public function webcheckout(){
         $data = Input::json()->all();
         $rules = array(
             'txnId'=>'required',
         );
-        $validator = Validator::make($data,$rules);
-        $jwt_token = Request::header('Authorization');
-        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-            $decoded = customerTokenDecode($jwt_token);
-            // $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
+        $orderWithHash = null;
+        $isThirdParty = substr($data["txnId"], 0, 2)==="TP";
+        if(!$isThirdParty){
+            $validator = Validator::make($data,$rules);
+            $jwt_token = Request::header('Authorization');
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                $decoded = customerTokenDecode($jwt_token);
+                // $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
+            }
         }
-        $order = Order::where("txnid",$data["txnId"])->first();
-        $order["with_hash_params"] = "checkout";
-        $orderWithHash = getHash($order);
-        return $orderWithHash; 
-        
+        if(!!$data["txnId"] && $isThirdParty){
+            $orderWithHash = $this -> getThirdPartyOrderDetails($data["txnId"]);
+            $orderWithHash["with_hash_params"] = "checkout";
+        }
+        else {
+            $order = Order::where("txnid",$data["txnId"])->first();
+            $order["with_hash_params"] = "checkout";
+            $orderWithHash = getHash($order);
+        }
+        return $orderWithHash;
     }
 
     
