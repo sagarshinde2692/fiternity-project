@@ -86,10 +86,10 @@ class TransactionController extends \BaseController {
 
     }
 
-    public function saveTPMemberDetails($tpoDetails) {
+    public function saveTPMemberDetails($tpoDetails, $_env) {
         Log::info('tpo_id: ', [$tpoDetails['tpo_id']]);
         Log::info('member_details: ', [$tpoDetails['memberDetails']]);
-        Log::info('env: ', [$tpoDetails['env']]);
+        Log::info('env: ', [$_env]);
         
         $tpoRec = ThirdPartyOrder::where('_id', $tpoDetails['tpo_id'])->first();
         $_tempDtls = [];
@@ -119,7 +119,7 @@ class TransactionController extends \BaseController {
             array_push($_tempDtls, $_tpoRec);
         }
         $tpoRec->member_details = $_tempDtls;
-        $tpoRec->env = $tpoDetails['env'];
+        $tpoRec->env = $_env;
         $tpoRec->txnid = 'TPFIT'.$tpoDetails['tpo_id'];
         Log::info('$tpoRec->member_details', $tpoRec->member_details);
         $tpoRec->save();
@@ -136,7 +136,7 @@ class TransactionController extends \BaseController {
         Log::info('------------transactionCapture---------------',$data);
 
         if(!empty($data['tpo_details'])){
-            $tpMemberDetailsResp = $this->saveTPMemberDetails($data['tpo_details']);
+            $tpMemberDetailsResp = $this->saveTPMemberDetails($data['tpo_details'], $data['env']);
             Log::info('$tpMemberDetailsResp: ', [$tpMemberDetailsResp]);
             $orderData = $this->getThirdPartyOrderDetails($tpMemberDetailsResp['txnid']);
             return Response::json(array('status' => 200,'response' => $orderData), 200);
