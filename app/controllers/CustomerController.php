@@ -8270,7 +8270,7 @@ class CustomerController extends \BaseController {
 		
 		if(!empty($customer->loyalty['start_date'])){
 			
-			array_push($checkins, ['title'=>'Registered for','date'=>'FITSQUAD' , 'start'=>date('d M, Y | g:i A ', $customer->loyalty['start_date']->sec)]);
+			array_push($checkins, ['title'=>'Registered for','date'=>'FITSQUAD' , 'start'=>date('d M, Y', $customer->loyalty['start_date']->sec)]);
 
 		}
 		
