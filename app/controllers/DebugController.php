@@ -7923,6 +7923,10 @@ public function yes($msg){
         $data = Input::all();
 	    $order_ids = Input::all()['order_ids'];
 
+        $already_added_order_ids = Wallet::whereIn('membership_order_id', $order_ids)->lists('membership_order_id');
+
+        $order_ids = array_values(array_diff($order_ids, $already_added_order_ids));
+
         $orders = Order::whereIn('_id', $order_ids)->where('converting_membership_to_pps', '!=', true)->get();
 
         foreach ($orders as $order){
