@@ -95,7 +95,7 @@ class TransactionController extends \BaseController {
         $_tempDtls = [];
         foreach ($tpoDetails['memberDetails'] as $rec) {
             $_tpoRec = [];
-            $_tpoRec['dob'] = new MongoDate(strtotime(date($rec['dob'].' 00:00:00')));
+            $_tpoRec['dob'] = $rec['dob'].' 00:00:00'; //new MongoDate(strtotime(date($rec['dob'].' 00:00:00')));
             $_tpoRec['email_id'] = $rec['emailId'];
             $_tpoRec['extension'] = $rec['extension'];
             $_tpoRec['first_name'] = $rec['firstName'];
@@ -7816,7 +7816,7 @@ class TransactionController extends \BaseController {
                 $orderData['customer_email'] = $principalMember[0]['email_id'];
                 $orderData['gender'] = $principalMember[0]['gender']=='M'?'male':'female';
                 $orderData['customer_phone'] = $principalMember[0]['mobile_no'];
-                $orderData['dob'] = date('Y-m-d', $principalMember[0]['dob']->sec).' 00:00:00';
+                $orderData['dob'] = $principalMember[0]['dob']; // date('Y-m-d', $principalMember[0]['dob']->sec).' 00:00:00';
                 $orderData['customer_address'] = [$principalMember[0]['address_line_1'], $principalMember[0]['address_line_2']];
 
                 if(empty($orderData['logged_in_customer_id'])){
