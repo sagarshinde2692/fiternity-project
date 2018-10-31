@@ -86,41 +86,73 @@ class TransactionController extends \BaseController {
 
     }
 
-    public function saveTPMemberDetails($tpoDetails, $_env) {
-        Log::info('tpo_id: ', [$tpoDetails['tpo_id']]);
-        Log::info('member_details: ', [$tpoDetails['memberDetails']]);
+    public function saveTPMemberDetails($orderData) {
+        $tpoDetails = null;
+        $tpoId = null;
+        if(!empty($orderData['tpo_details'])){
+            $tpoDetails = $orderData['tpo_details'];
+            $tpoId = $tpoDetails['tpo_id'];
+            Log::info('tpo_id: ', [$tpoDetails['tpo_id']]);
+            Log::info('member_details: ', [$tpoDetails['memberDetails']]);
+        } else if (isset($orderData['order_id'])) {
+            $tpoId = $orderData['order_id'];
+        }
+        else {
+            return null;
+        }
+        $_env = $orderData['env'];
         Log::info('env: ', [$_env]);
         
-        $tpoRec = ThirdPartyOrder::where('_id', $tpoDetails['tpo_id'])->first();
-        $_tempDtls = [];
-        foreach ($tpoDetails['memberDetails'] as $rec) {
-            $_tpoRec = [];
-            $_tpoRec['dob'] = $rec['dob'].' 00:00:00'; //new MongoDate(strtotime(date($rec['dob'].' 00:00:00')));
-            $_tpoRec['email_id'] = $rec['emailId'];
-            $_tpoRec['extension'] = $rec['extension'];
-            $_tpoRec['first_name'] = $rec['firstName'];
-            $_tpoRec['middle_name'] = $rec['middleName'];
-            $_tpoRec['last_name'] = $rec['lastName'];
-            $_tpoRec['mobile_no'] = $rec['mobileNo'];
-            $_tpoRec['address_line_1'] = $rec['addressLine1'];
-            $_tpoRec['address_line_2'] = $rec['addressLine2'];
-            $_tpoRec['city'] = $rec['addressCity'];
-            $_tpoRec['state'] = $rec['addressState'];
-            $_tpoRec['country'] = $rec['addressCountry'];
-            $_tpoRec['pincode'] = $rec['addressPincode'];
-            $_tpoRec['marital_status'] = $rec['maritalStatus'];
-            $_tpoRec['nationality'] = $rec['nationality'];
-            $_tpoRec['program_code'] = $rec['programCode'];
-            $_tpoRec['gender'] = $rec['gender'];
-            $_tpoRec['agent_code'] = $rec['agentCode'];
-            $_tpoRec['role'] = $rec['role'];
-            $_tpoRec['relationship'] = $rec['relationship'];
-            $_tpoRec['emp_group_offering_cd'] = $rec['empGroupOfferingCd'];
-            array_push($_tempDtls, $_tpoRec);
+        $tpoRec = ThirdPartyOrder::where('_id', $tpoId)->first();
+        if(!empty($tpoDetails)){
+            $_tempDtls = [];
+            foreach ($tpoDetails['memberDetails'] as $rec) {
+                $_tpoRec = [];
+                $_tpoRec['dob'] = $rec['dob'].' 00:00:00'; //new MongoDate(strtotime(date($rec['dob'].' 00:00:00')));
+                $_tpoRec['email_id'] = $rec['emailId'];
+                $_tpoRec['extension'] = $rec['extension'];
+                $_tpoRec['first_name'] = $rec['firstName'];
+                $_tpoRec['middle_name'] = $rec['middleName'];
+                $_tpoRec['last_name'] = $rec['lastName'];
+                $_tpoRec['mobile_no'] = $rec['mobileNo'];
+                $_tpoRec['address_line_1'] = $rec['addressLine1'];
+                $_tpoRec['address_line_2'] = $rec['addressLine2'];
+                $_tpoRec['city'] = $rec['addressCity'];
+                $_tpoRec['state'] = $rec['addressState'];
+                $_tpoRec['country'] = $rec['addressCountry'];
+                $_tpoRec['pincode'] = $rec['addressPincode'];
+                $_tpoRec['marital_status'] = $rec['maritalStatus'];
+                $_tpoRec['nationality'] = $rec['nationality'];
+                $_tpoRec['program_code'] = $rec['programCode'];
+                $_tpoRec['gender'] = $rec['gender'];
+                $_tpoRec['agent_code'] = $rec['agentCode'];
+                $_tpoRec['role'] = $rec['role'];
+                $_tpoRec['relationship'] = $rec['relationship'];
+                $_tpoRec['emp_group_offering_cd'] = $rec['empGroupOfferingCd'];
+                array_push($_tempDtls, $_tpoRec);
+            }
+            $tpoRec->member_details = $_tempDtls;
         }
-        $tpoRec->member_details = $_tempDtls;
+        else {
+            $tpoRec->pg_payment_mode_selected = $orderData['pg_payment_mode_selected'];
+            $tpoRec->repitition = $orderData['repitition'];
+            $tpoRec->wallet = $orderData['wallet'];
+            $tpoRec->type = $orderData['type'];
+            $tpoRec->customer_name = $orderData['customer_name'];
+            $tpoRec->customer_phone = $orderData['customer_phone'];
+            $tpoRec->customer_source = $orderData['customer_source'];
+            $tpoRec->customer_email = $orderData['customer_email'];
+            $tpoRec->amount = $orderData['amount'];
+        }
         $tpoRec->env = $_env;
-        $tpoRec->txnid = 'TPFIT'.$tpoDetails['tpo_id'];
+        $_txnid = 'TPFIT'.$tpoId;
+        if(!isset($tpoRec->txnid)){
+            $tpoRec->txnid = $_txnid;
+        }
+        else{
+            $tpoRec->repetition_count = (isset($tpoRec->repetition_count)?$tpoRec->repetition_count+1:1);
+            $tpoRec->txnid = $_txnid.'-R'.$tpoRec->repetition_count;
+        }
         Log::info('$tpoRec->member_details', $tpoRec->member_details);
         $tpoRec->save();
         $dtls = $tpoRec->member_details;
@@ -135,8 +167,8 @@ class TransactionController extends \BaseController {
         Log::info($_SERVER['REQUEST_URI']);
         Log::info('------------transactionCapture---------------',$data);
 
-        if(!empty($data['tpo_details'])){
-            $tpMemberDetailsResp = $this->saveTPMemberDetails($data['tpo_details'], $data['env']);
+        if(!empty($data['tpo_details']) || (isset($data['type']) && $data['type']=='thirdparty')){
+            $tpMemberDetailsResp = $this->saveTPMemberDetails($data);
             Log::info('$tpMemberDetailsResp: ', [$tpMemberDetailsResp]);
             $orderData = $this->getThirdPartyOrderDetails($tpMemberDetailsResp['txnid']);
             return Response::json(array('status' => 200,'response' => $orderData), 200);
@@ -7802,6 +7834,7 @@ class TransactionController extends \BaseController {
             if(!empty($principalMember)){
                 $orderData['_id'] = $tpoRec['_id'];
                 $orderData['third_party_order'] = true;
+                $orderData['type'] = 'thirdparty';
                 $orderData['logged_in_customer_id'] = $tpoRec['customer_id'];
                 $orderData['txnid'] = $tpoRec['txnid'];
                 $orderData['amount'] = $tpoRec['fee_details']['total_price'];
@@ -7814,10 +7847,10 @@ class TransactionController extends \BaseController {
                 $orderData['productinfo'] = $orderData['service_name'].' - '.$orderData['finder_name'];
                 $orderData['env'] = $tpoRec['env'];
 
-                $orderData['customer_name'] = $principalMember[0]['first_name'];
-                $orderData['customer_email'] = $principalMember[0]['email_id'];
+                $orderData['customer_name'] = (isset($tpoRec['customer_name']))?($tpoRec['customer_name']):($principalMember[0]['first_name'].' '.$principalMember[0]['last_name']);
+                $orderData['customer_email'] = (isset($tpoRec['customer_email']))?($tpoRec['customer_email']):($principalMember[0]['email_id']);
                 $orderData['gender'] = $principalMember[0]['gender']=='M'?'male':'female';
-                $orderData['customer_phone'] = $principalMember[0]['mobile_no'];
+                $orderData['customer_phone'] = (isset($tpoRec['customer_phone']))?($tpoRec['customer_phone']):($principalMember[0]['mobile_no']);
                 $orderData['dob'] = $principalMember[0]['dob']; // date('Y-m-d', $principalMember[0]['dob']->sec).' 00:00:00';
                 $orderData['customer_address'] = [$principalMember[0]['address_line_1'], $principalMember[0]['address_line_2']];
 
