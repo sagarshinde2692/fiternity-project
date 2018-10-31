@@ -7,7 +7,7 @@ return array(
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
 	'url' => 'http://fitapi.com',
 	'admin_url' => 'http://fitadmin.com',
-	'website' => 'https://www.fitternity.com',
+	'website' => 'http://apistage.fitn.in:8888',
 	'sidekiq_url' => 'http://kick.fitn.in/', 
 	'queue' => 'booktrial',
 	'vendor_communication' => false,

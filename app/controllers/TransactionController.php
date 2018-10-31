@@ -7828,6 +7828,7 @@ class TransactionController extends \BaseController {
                 }
 
                 Log::info('$orderData before getHash(): ', $orderData);
+                $orderData["with_hash_params"] = "checkout";
                 $orderData = getHash($orderData);
                 $orderData['hash'] = $orderData['payment_hash'];
                 Log::info('$orderData after getHash(): ', $orderData);
@@ -7861,7 +7862,6 @@ class TransactionController extends \BaseController {
         }
         if(!!$data["txnId"] && $isThirdParty){
             $orderWithHash = $this -> getThirdPartyOrderDetails($data["txnId"]);
-            $orderWithHash["with_hash_params"] = "checkout";
         }
         else {
             $order = Order::where("txnid",$data["txnId"])->first();
