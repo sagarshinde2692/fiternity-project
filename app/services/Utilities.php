@@ -6183,6 +6183,14 @@ Class Utilities {
                 $data['lat'] = floatval(\Input::get('lat'));
                 $data['lon'] = floatval(\Input::get('lon'));
             }
+
+            if(Request::header('Device-Type')){
+                $checkin->device_type = Request::header('Device-Type');
+            }
+
+            if(Request::header('App-Version')){
+                $checkin->app_version = Request::header('App-Version');
+            }
             
             $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon'];
 
