@@ -7920,7 +7920,7 @@ public function yes($msg){
 	}
 
 	public function convertOrdersToPPS(){
-
+        $data = Input::all();
 	    $order_ids = Input::all()['order_ids'];
 
         $orders = Order::whereIn('_id', $order_ids)->where('converting_membership_to_pps', '!=', true)->get();
@@ -7929,9 +7929,8 @@ public function yes($msg){
 
             Log::info($order->_id);
 
-            $order->update(["converting_membership_to_pps"=>true]);
-
             $amount = $order->amount_customer;
+            // $amount = $data['amount'];
 
             $amount1 = intval($amount * .8);
 
@@ -7960,7 +7959,7 @@ public function yes($msg){
                 "customer_id"=> $order->customer_id,
                 "amount"=> $amount2,
                 "amount_fitcash" => 0,
-                "amount_fitcash_plus" => $amount1,
+                "amount_fitcash_plus" => $amount2,
                 "type"=>'FITCASHPLUS',
                 'description'=>"Added FitCash+ for converting 1 month membership to pay-per-session applicable across Fitternity",
                 'entry'=>'credit',
@@ -7971,9 +7970,12 @@ public function yes($msg){
             );
 
             $walletTransaction = $utilities->walletTransactionNew($walletData);
+
+            $order->update(["converting_membership_to_pps"=>true, 'converting_membership_to_pps_date'=>time()]);
         }
 
-        return "done";
+        Log::info("done");
+        return $orders;
     }
 
 	public function addPicturesToRatingParams(){
