@@ -7800,6 +7800,8 @@ class TransactionController extends \BaseController {
                 return $member['role']=='principal';
             });
             if(!empty($principalMember)){
+                $orderData['_id'] = $tpoRec['_id'];
+                $orderData['third_party_order'] = true;
                 $orderData['logged_in_customer_id'] = $tpoRec['customer_id'];
                 $orderData['txnid'] = $tpoRec['txnid'];
                 $orderData['amount'] = $tpoRec['fee_details']['total_price'];
