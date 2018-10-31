@@ -8297,7 +8297,7 @@ class CustomerController extends \BaseController {
 
 			$voucher_category = VoucherCategory::find($_id);
 
-			if(!empty($milestones[$voucher_category['milestone']-1])){
+			if(!empty($milestones[$voucher_category['milestone']-1]) && !empty($milestones[$voucher_category['milestone']-1]['verified'])){
 
 //				if(!empty($milestones[$voucher_category['milestone']-1]['claimed'])){
 //
