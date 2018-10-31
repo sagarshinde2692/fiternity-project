@@ -171,7 +171,7 @@ class TransactionController extends \BaseController {
             $tpMemberDetailsResp = $this->saveTPMemberDetails($data);
             Log::info('$tpMemberDetailsResp: ', [$tpMemberDetailsResp]);
             $orderData = $this->getThirdPartyOrderDetails($tpMemberDetailsResp['txnid']);
-            return Response::json(array('status' => 200,'response' => $orderData), 200);
+            return Response::json(['data' => $orderData], 200);
         }
 
         foreach ($data as $key => $value) {
