@@ -87,8 +87,9 @@ class TransactionController extends \BaseController {
     }
 
     public function saveTPMemberDetails($tpoDetails) {
-        Log::info('tpo_id', [$tpoDetails['tpo_id']]);
-        Log::info('member_details', [$tpoDetails['memberDetails']]);
+        Log::info('tpo_id: ', [$tpoDetails['tpo_id']]);
+        Log::info('member_details: ', [$tpoDetails['memberDetails']]);
+        Log::info('env: ', [$tpoDetails['env']]);
         
         $tpoRec = ThirdPartyOrder::where('_id', $tpoDetails['tpo_id'])->first();
         $_tempDtls = [];
@@ -118,6 +119,7 @@ class TransactionController extends \BaseController {
             array_push($_tempDtls, $_tpoRec);
         }
         $tpoRec->member_details = $_tempDtls;
+        $tpoRec->env = $tpoDetails['env'];
         $tpoRec->txnid = 'TPFIT'.$tpoDetails['tpo_id'];
         Log::info('$tpoRec->member_details', $tpoRec->member_details);
         $tpoRec->save();
@@ -7808,7 +7810,7 @@ class TransactionController extends \BaseController {
                 $orderData['service_name'] = $tpoRec['plan_code'];
                 $orderData['finder_name'] = $tpoRec['thirdparty']['acronym'];
                 $orderData['productinfo'] = $orderData['service_name'].' - '.$orderData['finder_name'];
-
+                $orderData['env'] = $tpoRec['env'];
 
                 $orderData['customer_name'] = $principalMember[0]['first_name'];
                 $orderData['customer_email'] = $principalMember[0]['email_id'];
