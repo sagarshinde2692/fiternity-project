@@ -3487,7 +3487,7 @@ class CustomerController extends \BaseController {
 							}
 							
 							if(isset($data['amount_finder'])){
-								$data['amount'] = "₹".$data['amount_finder'];
+								$data['amount'] = "₹".$data['amount'];
 							}
 							
 							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
