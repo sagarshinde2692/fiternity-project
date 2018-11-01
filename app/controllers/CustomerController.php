@@ -7930,7 +7930,7 @@ class CustomerController extends \BaseController {
 		Log::info("asdas");
 		$post = false;
 		$jwt_token = Request::header('Authorization');
-		
+		$customer = null;
 		if(!empty($jwt_token)){
 
 			$decoded = decode_customer_token($jwt_token);
@@ -7983,11 +7983,10 @@ class CustomerController extends \BaseController {
         if($post){
 
             return $this->postLoyaltyRegistration($customer, $voucher_categories);
-			
 
 		}else{
 
-            return $this->preLoyaltyRegistration($customer, $voucher_categories);
+            return $this->preLoyaltyRegistration($voucher_categories);
 			
 			
 		}
@@ -8470,7 +8469,7 @@ class CustomerController extends \BaseController {
         $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
         // $checkins = 52;
 
-        
+
         $post_register['milestones']['data'] = $this->utilities->getMilestoneSection($customer);
 
         // foreach($post_register['milestones']['data'] as &$milestone){
@@ -8590,7 +8589,7 @@ class CustomerController extends \BaseController {
         return ['post_register'=>$post_register];
     }
 
-    public function preLoyaltyRegistration(){
+    public function preLoyaltyRegistration($voucher_categories_map){
         
         $pre_register = Config::get('loyalty_screens.pre_register');
 	

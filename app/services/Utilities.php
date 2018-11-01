@@ -28,6 +28,7 @@ use Offer;
 use DateTime;
 use Order;
 use Checkin;
+use FinderMilestone;
 
 Class Utilities {
 
@@ -6105,7 +6106,6 @@ Class Utilities {
 		    $customer = Customer::find($customer_id);
 
         }
-
         if(empty($customer['loyalty'])){
             return;
         }
@@ -6115,7 +6115,17 @@ Class Utilities {
         $check_ins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
         $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
         $milestone_no = count($customer_milestones);
+        $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
         // $check_ins = 52;
+        $checkin_limit = Config::get('loyalty_constants.checkin_limit');
+        if(is_numeric($finder_loyalty)){
+
+            $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
+            if($finder_milestones){
+                $post_register_milestones['data'] = $finder_milestones['milestones'];
+                $checkin_limit = $finder_milestones['checkin_limit'];
+            }
+        }
 
         foreach($post_register_milestones['data'] as &$milestone){
             
