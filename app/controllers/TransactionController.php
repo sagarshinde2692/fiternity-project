@@ -111,18 +111,22 @@ class TransactionController extends \BaseController {
                 $_tpoRec['dob'] = $rec['dob'].' 00:00:00'; //new MongoDate(strtotime(date($rec['dob'].' 00:00:00')));
                 $_tpoRec['email_id'] = $rec['emailId'];
                 $_tpoRec['extension'] = $rec['extension'];
+                if(isset($rec['titleCode']))
+                    $_tpoRec['title_code'] = $rec['titleCode'];
                 $_tpoRec['first_name'] = $rec['firstName'];
                 $_tpoRec['middle_name'] = $rec['middleName'];
                 $_tpoRec['last_name'] = $rec['lastName'];
                 $_tpoRec['mobile_no'] = $rec['mobileNo'];
                 $_tpoRec['address_line_1'] = $rec['addressLine1'];
                 $_tpoRec['address_line_2'] = $rec['addressLine2'];
-                $_tpoRec['city'] = $rec['addressCity'];
+                $_tpoRec['city'] = $rec['addressCity'] || "Thane";
                 $_tpoRec['state'] = $rec['addressState'];
-                $_tpoRec['country'] = $rec['addressCountry'];
+                $_tpoRec['country'] = "IND";//$rec['addressCountry'];
                 $_tpoRec['pincode'] = $rec['addressPincode'];
                 $_tpoRec['marital_status'] = $rec['maritalStatus'];
-                $_tpoRec['nationality'] = $rec['nationality'];
+                $_tpoRec['nationality'] = "INDIAN";//$rec['nationality'];
+                if(isset($rec['campaignCode']))
+                    $_tpoRec['campaign_code'] = $rec['campaignCode'];
                 $_tpoRec['program_code'] = $rec['programCode'];
                 $_tpoRec['gender'] = $rec['gender'];
                 $_tpoRec['agent_code'] = $rec['agentCode'];
