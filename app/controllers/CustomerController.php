@@ -8441,7 +8441,7 @@ class CustomerController extends \BaseController {
 
             if ($image->getError()) {
 
-                return Response::json(['status' => 400, 'message' => 'Please upload jpg/jpeg/png image formats with max. size of 4 MB']);
+                return Response::json(['status' => 400, 'message' => 'Please upload jpg/jpeg/png image formats with max. size of 10 MB']);
 
             }
 			Log::info("Asdsaddasdasd111111");
