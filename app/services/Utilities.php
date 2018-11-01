@@ -6088,6 +6088,8 @@ Class Utilities {
         }
 
         $new_voucher->customer_id = $customer['_id'];
+        $new_voucher->name = $voucher_category['name'];
+        $new_voucher->image = $customer['image'];
 
         $new_voucher->update();
 
@@ -6096,7 +6098,7 @@ Class Utilities {
     }
 
 
-    public function getMilestoneSection($customer=null){
+    public function getMilestoneSection($customer=null, $finder_milestones=null){
         
         if(!$customer){
 
@@ -6119,11 +6121,12 @@ Class Utilities {
         // $check_ins = 52;
         $checkin_limit = Config::get('loyalty_constants.checkin_limit');
         if(is_numeric($finder_loyalty)){
-
-            $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
-            if($finder_milestones){
-                $post_register_milestones['data'] = $finder_milestones['milestones'];
-                $checkin_limit = $finder_milestones['checkin_limit'];
+            if(!$finder_milestones){
+                $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
+                if($finder_milestones){
+                    $post_register_milestones['data'] = $finder_milestones['milestones'];
+                    $checkin_limit = $finder_milestones['checkin_limit'];
+                }
             }
         }
 

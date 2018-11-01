@@ -7931,18 +7931,19 @@ class CustomerController extends \BaseController {
 		$post = false;
 		$jwt_token = Request::header('Authorization');
 		$customer = null;
+        $finder_loyalty = null;
 		if(!empty($jwt_token)){
 
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
 			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', 'exists', true)->first();
-
+            $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
 			if($customer){
 				$post = true;
 			}
 		}
 		
-        $voucher_categories = VoucherCategory::raw(function($collection){
+        $voucher_categories = VoucherCategory::raw(function($collection) use($finder_loyalty){
 				
             $match = [
                 '$match'=>[
@@ -7950,6 +7951,10 @@ class CustomerController extends \BaseController {
                 ]
                 
             ];
+            
+            if(!empty($finder_loyalty)){
+                $match['$match']['finder_ids'] = $finder_loyalty;
+            }
 
             $sort =[
                 '$sort'=>[
@@ -7969,8 +7974,9 @@ class CustomerController extends \BaseController {
                     '_id'=>1
                 ]
             ];
-
             $aggregate = [$match, $sort, $group, $sort1];
+            Log::info($aggregate);
+            // exit();
             return $collection->aggregate($aggregate);
         });
 	
@@ -7982,11 +7988,11 @@ class CustomerController extends \BaseController {
 		
         if($post){
 
-            return $this->postLoyaltyRegistration($customer, $voucher_categories);
+            return $this->postLoyaltyRegistration($customer, $voucher_categories_map);
 
 		}else{
 
-            return $this->preLoyaltyRegistration($voucher_categories);
+            return $this->preLoyaltyRegistration($voucher_categories_map);
 			
 			
 		}
@@ -8145,66 +8151,76 @@ class CustomerController extends \BaseController {
 			$customer = Customer::find($customer_id);
 			$milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
 
-			$voucher_category = VoucherCategory::find($_id);
 
-			if(!empty($milestones[$voucher_category['milestone']-1]) && !empty($milestones[$voucher_category['milestone']-1]['verified'])){
+            if(!empty($_GET['milestone']) && !empty($milestones[intval($_GET['milestone'])]['voucher'])){
+            
+                $voucherAttached = $milestones[intval($_GET['milestone'])]['voucher'];
+            
+            }else{
 
-//				if(!empty($milestones[$voucher_category['milestone']-1]['claimed'])){
-//
-//					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
-//
-//				}
+                $voucher_category = VoucherCategory::find($_id);
 
+                if(!empty($milestones[$voucher_category['milestone']-1]) && !empty($milestones[$voucher_category['milestone']-1]['verified'])){
 
-				$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
-
-
-				if(!$voucherAttached){
-					return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (2).'));
-				}
-				// return
-
-                if(empty($milestones[$voucher_category['milestone']-1]['claimed'])){
-
-//					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
-
-                    $milestones[$voucher_category['milestone']-1]['claimed'] = true;
-
-					$milestones[$voucher_category['milestone']-1]['claimed_date_time'] = new \MongoDate();
-					
-					$milestones[$voucher_category['milestone']-1]['voucher'] = $voucherAttached->toArray();
-					
-					$loyalty = $customer->loyalty;
-
-					$loyalty['milestones'] = $milestones;
-
-					$customer->loyalty = $loyalty;
-					
-                    $customer->update();
-				}
+    //				if(!empty($milestones[$voucher_category['milestone']-1]['claimed'])){
+    //
+    //					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
+    //
+    //				}
 
 
-				return $resp =  [
-					'voucher_data'=>[
-						'header'=>"VOUCHER UNLOCKED",
-						'sub_header'=>"You have unlocked ".strtoupper($voucher_category['name']),
-						'coupon_title'=>$voucherAttached['description'],
-						'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
-						'coupon_image'=>$voucher_category['image'],
-						'coupon_code'=>strtoupper($voucherAttached['code']),
-						'coupon_subtext'=>'(also sent via email/sms)',
-						'unlock'=>'UNLOCK VOUCHER',
-						'terms_text'=>'T & C applied.'
-					]
-				];
+                    $voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
 
 
-				
-			}else{
-				
-				return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (3).'));
-			
-			}
+                    if(!$voucherAttached){
+                        return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (2).'));
+                    }
+                    // return
+
+                    if(empty($milestones[$voucher_category['milestone']-1]['claimed'])){
+
+    //					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
+
+                        $milestones[$voucher_category['milestone']-1]['claimed'] = true;
+
+                        $milestones[$voucher_category['milestone']-1]['claimed_date_time'] = new \MongoDate();
+                        
+                        $milestones[$voucher_category['milestone']-1]['voucher'] = $voucherAttached->toArray();
+                        
+                        $loyalty = $customer->loyalty;
+
+                        $loyalty['milestones'] = $milestones;
+
+                        $customer->loyalty = $loyalty;
+                        
+                        $customer->update();
+                    }
+
+
+                   
+
+
+                    
+                }else{
+                    
+                    return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (3).'));
+                
+                }
+            }
+
+            return $resp =  [
+                'voucher_data'=>[
+                    'header'=>"VOUCHER UNLOCKED",
+                    'sub_header'=>"You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : ""),
+                    'coupon_title'=>(!empty($voucherAttached['description']) ? $voucherAttached['description'] : ""),
+                    'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
+                    'coupon_image'=>(!empty($voucherAttached['image']) ? $voucherAttached['image'] : ""),
+                    'coupon_code'=>strtoupper($voucherAttached['code']),
+                    'coupon_subtext'=>'(also sent via email/sms)',
+                    'unlock'=>'UNLOCK VOUCHER',
+                    'terms_text'=>'T & C applied.'
+                ]
+            ];
 
 		}
 	}
@@ -8460,7 +8476,9 @@ class CustomerController extends \BaseController {
         }
     }
 
-    public function postLoyaltyRegistration($customer, $voucher_categories){
+    public function postLoyaltyRegistration($customer, $voucher_categories_map){
+
+        // return $voucher_categories_map;
         
         $post_register = Config::get('loyalty_screens.post_register');
         $checkins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
@@ -8468,9 +8486,18 @@ class CustomerController extends \BaseController {
         $milestone_no = count($customer_milestones);
         $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
         // $checkins = 52;
+        $milestones = Config::get('loyalty_constants.milestones');
+        $checkin_limit = Config::get('loyalty_constants.checkin_limit');
+        
+        if(is_numeric($finder_loyalty)){
+            $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
+            if($finder_milestones){
+                $milestones = $finder_milestones['milestones'];
+                $checkin_limit = $finder_milestones['checkin_limit'];
+            }
+        }
 
-
-        $post_register['milestones']['data'] = $this->utilities->getMilestoneSection($customer);
+        $post_register['milestones']['data'] = $this->utilities->getMilestoneSection($customer, $finder_milestones);
 
         // foreach($post_register['milestones']['data'] as &$milestone){
             
@@ -8489,7 +8516,6 @@ class CustomerController extends \BaseController {
         // unset($milestone);
         // return $post_register['milestones']['data'];
         // return $milestone_next_count-$check_ins;
-        $milestones = Config::get('loyalty_constants.milestones');
         $next_milestone_checkins = !empty($milestones[$milestone_no]['next_count']) ? $milestones[$milestone_no]['next_count'] : 225;
         
         $milestone_text = '';
@@ -8508,7 +8534,7 @@ class CustomerController extends \BaseController {
 
         if(empty($milestone_next_count)){
 
-            $milestone_next_count = Config::get('loyalty_constants.checkin_limit');
+            $milestone_next_count = $checkin_limit;
             $all_milestones_done = true;
         }
         
@@ -8545,8 +8571,12 @@ class CustomerController extends \BaseController {
                     $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
                     $post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $vc);
                     $post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$post_reward_data_template['_id'];
+                    Log::info($vc);
+                    Log::info($post_reward_data_template['coupon_description']);
+                    unset($vc['finder_ids']);
                     $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
                     $post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
+                    
                     if($milestone_no >= $milestone['milestone'] ){
 
                         if(empty($customer_milestones[$milestone['milestone']-1]['claimed'])){
@@ -8565,15 +8595,14 @@ class CustomerController extends \BaseController {
                             if(in_array($this->device_type, ['ios']) || in_array($this->device_type, ['android']) && $this->app_version >= 5.12){
                                 unset($post_reward_data_template['claim_message']);
                             }
-                            if($vc['_id'] != $customer_milestones[$milestone['milestone']-1]['voucher']['voucher_category']){
-                                continue;
-                            }
 
+                            $post_reward_data_template['claim_url'] = $post_reward_data_template['claim_url']."?milestone=".$milestone['milestone'] ;
                         }
 
                     }else{
                         $post_reward_data_template['claim_enabled'] = false;
-                    }
+                    } 
+                    // return $post_reward_data_template;
                     $post_reward_template['data'][] = $post_reward_data_template;
                     // return $milestone_no;
                 }
@@ -8581,6 +8610,7 @@ class CustomerController extends \BaseController {
             $post_register_rewards_data[] = $post_reward_template;
             
         }
+        return $post_register_rewards_data;
         !isset($reward_open_index) ? $reward_open_index = ($milestone_no < count($milestones) ? $milestone_no : $milestone_no-1) : null;
         $post_register['rewards']['open_index'] = $reward_open_index;
 
