@@ -138,7 +138,7 @@ return array(
         'description' => '$check_ins/$milestone_next_count check-ins done',
         'data' => Config::get('loyalty_constants.milestones')
     ],
-    'receipt_message'=>'Please upload your membership receipt to claim you reward',
-    'receipt_verification_message'=>'Your membership receipt is under verification. We will send the reward details on email & sms post the verification.'
+    'receipt_message'=>'Please upload the membership receipt to claim your reward',
+    'receipt_verification_message'=>'Your membership receipt is under verification. We will notify you post verification.'
 );
 ?>
