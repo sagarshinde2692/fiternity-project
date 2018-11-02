@@ -6099,17 +6099,15 @@ Class Utilities {
 
 
     public function getMilestoneSection($customer=null, $finder_milestones=null){
-        
-        if(!$customer){
 
+        if(empty($customer)){
             $jwt_token = Request::header('Authorization');
 		    $decoded = decode_customer_token($jwt_token);
 		    $customer_id = $decoded->customer->_id;
 		    $customer = Customer::find($customer_id);
-
         }
         if(empty($customer['loyalty'])){
-            return;
+            return ['data'=>[]];
         }
         
         $post_register_milestones = Config::get('loyalty_screens.milestones');
@@ -6118,15 +6116,17 @@ Class Utilities {
         $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
         $milestone_no = count($customer_milestones);
         $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
-        // $check_ins = 52;
+
         $checkin_limit = Config::get('loyalty_constants.checkin_limit');
+        
         if(is_numeric($finder_loyalty)){
             if(!$finder_milestones){
-                $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
-                if($finder_milestones){
-                    $post_register_milestones['data'] = $finder_milestones['milestones'];
-                    $checkin_limit = $finder_milestones['checkin_limit'];
-                }
+               $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
+            }
+
+            if($finder_milestones){
+                $post_register_milestones['data'] = $finder_milestones['milestones'];
+                $checkin_limit = $finder_milestones['checkin_limit'];
             }
         }
 
