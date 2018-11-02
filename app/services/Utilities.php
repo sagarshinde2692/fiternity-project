@@ -6064,6 +6064,7 @@ Class Utilities {
 
        $already_assigned_voucher = \LoyaltyVoucher::
             where('milestone', $voucher_category->milestone)
+            ->where('voucher_category', $voucher_category->_id)
             ->where('customer_id', $customer['_id'])
             ->orderBy('_id', 'asc')
             ->first();
@@ -6216,6 +6217,18 @@ Class Utilities {
                 }
             }
 
+            $milestones = Config::get('loyalty_constants.milestones', []);
+
+            if(is_numeric($finder_loyalty)){
+                $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
+                if($finder_milestones){
+                    $milestones = $finder_milestones['milestones'];
+                    $checkin->unverified = false;
+                    $checkin->finder_loyalty = $finder_loyalty;
+                }
+
+            }
+
 			$checkin->save();
             
             if(!empty($data['finder_id']) && !empty($data['type']) && $data['type'] == 'membership'){
@@ -6241,13 +6254,7 @@ Class Utilities {
             $checkin_count = count($all_checkins);
 
             
-            $milestones = Config::get('loyalty_constants.milestones', []);
-
-            if(is_numeric($finder_loyalty)){
-                if(!$finder_milestones){
-                    $milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
-                }
-            }
+            
                 
             $milestone_checkins = array_column($milestones, 'count');
             
