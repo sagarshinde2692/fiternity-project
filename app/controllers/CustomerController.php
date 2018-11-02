@@ -8566,6 +8566,14 @@ class CustomerController extends \BaseController {
             $post_reward_template['_id'] = $key;
             // return $milestone_no;
             if(!empty($voucher_categories_map[$milestone['milestone']])){
+
+                if(!empty())
+
+
+
+
+
+
                 foreach($voucher_categories_map[$milestone['milestone']] as $vc){
                     $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
                     $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);

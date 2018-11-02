@@ -8163,6 +8163,9 @@ public function yes($msg){
         
         $coupon_info['description'] = $voucher_category['description'];
         $coupon_info['milestone'] = $voucher_category['milestone'];
+        $coupon_info['name'] = $voucher_category['name'];
+        $coupon_info['image'] = $voucher_category['image'];
+        $coupon_info['terms'] = $voucher_category['terms'];
         
         $coupon_info['expiry_date'] = new MongoDate(strtotime($coupon_info['expiry_date']));
         
