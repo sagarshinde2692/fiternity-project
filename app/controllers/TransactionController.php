@@ -119,9 +119,16 @@ class TransactionController extends \BaseController {
                 $_tpoRec['mobile_no'] = $rec['mobileNo'];
                 $_tpoRec['address_line_1'] = $rec['addressLine1'];
                 $_tpoRec['address_line_2'] = $rec['addressLine2'];
-                $_tpoRec['city'] = $rec['addressCity'] || "Thane";
+                $_tpoRec['city'] = $rec['addressCity'];
                 $_tpoRec['state'] = $rec['addressState'];
                 $_tpoRec['country'] = "IND";//$rec['addressCountry'];
+                $stateCityDetails = PincodeMaster::where('pincode', $rec['addressPincode'])->first();
+                Log::info('stateCityDetails: ', [$stateCityDetails]);
+                if(empty($stateCityDetails)){
+                    return ['err' => "pincode doesn't exist"];
+                }
+                $_tpoRec['city'] = $stateCityDetails['city_name'];
+                $_tpoRec['state'] = $stateCityDetails['state_code'];
                 $_tpoRec['pincode'] = $rec['addressPincode'];
                 $_tpoRec['marital_status'] = $rec['maritalStatus'];
                 $_tpoRec['nationality'] = "INDIAN";//$rec['nationality'];
@@ -174,6 +181,9 @@ class TransactionController extends \BaseController {
         if(!empty($data['tpo_details']) || (isset($data['type']) && $data['type']=='thirdparty')){
             $tpMemberDetailsResp = $this->saveTPMemberDetails($data);
             Log::info('$tpMemberDetailsResp: ', [$tpMemberDetailsResp]);
+            if(isset($tpMemberDetailsResp['err'])){
+                return Response::json(['err' => $tpMemberDetailsResp['err']], 500);    
+            }
             $orderData = $this->getThirdPartyOrderDetails($tpMemberDetailsResp['txnid']);
             return Response::json(['data' => $orderData], 200);
         }
