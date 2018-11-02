@@ -2220,6 +2220,13 @@ class SchedulebooktrialsController extends \BaseController {
                 'ask_review'                    =>      true,
             );
 
+            if(!empty($data['third_party'])) {
+                $booktrialdata['third_party'] = $data['third_party'];
+                // $booktrialdata['third_party_used_sessions'] = $data['third_party_used_sessions'];
+                // $booktrialdata['third_party_token_id'] = $data['third_party_token_id'];
+                // $booktrialdata['third_party_id'] = $data['third_party_id'];
+                $booktrialdata['third_party_details'] = $data['third_party_details'];
+            }
             $session_count = Booktrial::where('customer_id',$customer_id)->count();
 
             if($session_count == 0){
@@ -2354,7 +2361,7 @@ class SchedulebooktrialsController extends \BaseController {
             $this->utilities->demonetisation($order);
 
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
-
+            
             if(isset($order->booktrial_id)){
 
                 if(isset($order->finder_slug) && isset($order->service_id) && isset($order->booktrial_id) ){

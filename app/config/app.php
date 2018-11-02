@@ -5,7 +5,7 @@ return array(
 
 	//local
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
-	'url' => 'http://localhost:8000/',
+	'url' => 'http://fitapi.com/',
 	'admin_url' => 'http://fitadmin.com',
 	'website' => 'https://apistage.fitn.in:8888',
 	'sidekiq_url' => 'http://kick.fitn.in/', 

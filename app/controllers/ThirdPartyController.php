@@ -30,7 +30,7 @@ class ThirdPartyController extends \BaseController {
         Log::info('$res: ', [$res]);
 
         if(!!$res)
-            return ['status'=>1, 'response'=>'S'];
+            return ['status'=>1, 'code' => $smsdata['vendor_code'], 'response'=>'S'];
         else
             return ['status'=>0, 'response'=>'F'];
     }

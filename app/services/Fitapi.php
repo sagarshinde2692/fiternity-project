@@ -41,15 +41,17 @@ Class Fitapi {
 	}
 
     public function storeBooktrial ($data, $isThirdP=false){
-
+        Log::info('storeBooktrial isThirdP: ', [$isThirdP]);
         $json = $data;
-
+        Log::info('storeBooktrial data: ', [$json]);
         try {
-            Log::info('inside data: ', $data);
+            Log::info('in try');
             $payload = [
                 'json'=>$json
             ];
+            Log::info('set payload');
             if($isThirdP){
+                Log::info('in here isThirdP');
                 $token = $this->createToken($data);
                 Log::info('inside storeBookTrial: ', [$token]);
                 $payload = [

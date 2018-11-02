@@ -3183,6 +3183,14 @@ Class Utilities {
         $data['service_name'] = $order['service_name'];
         $data['type'] = $order['type'];
 
+        if($isThirdP) {
+            $data['third_party'] = $order['third_party'];
+            // $data['third_party_used_sessions'] = $order['third_party_used_sessions'];
+            // $data['third_party_token_id'] = $order['third_party_token_id'];
+            // $data['third_party_id'] = $order['third_party_id'];
+            $data['third_party_details'] = $order['third_party_details'];
+        }
+
         /*if(isset($order->pay_later) && $order->pay_later){
             $data['premium_session'] = true;
             $data['payment_done'] = false;
@@ -3221,7 +3229,7 @@ Class Utilities {
         }
 
         $fitapi = new Fitapi();
-        Log::info('before storeBookTrial');
+        Log::info('before storeBookTrial: ', [$isThirdP]);
         $storeBooktrial = $fitapi->storeBooktrial($data, $isThirdP);
 
         if($storeBooktrial['status'] == 200){
