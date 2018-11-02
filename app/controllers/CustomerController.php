@@ -8610,7 +8610,7 @@ class CustomerController extends \BaseController {
             $post_register_rewards_data[] = $post_reward_template;
             
         }
-        return $post_register_rewards_data;
+        //return $post_register_rewards_data;
         !isset($reward_open_index) ? $reward_open_index = ($milestone_no < count($milestones) ? $milestone_no : $milestone_no-1) : null;
         $post_register['rewards']['open_index'] = $reward_open_index;
 
