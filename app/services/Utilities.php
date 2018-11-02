@@ -6176,6 +6176,7 @@ Class Utilities {
 			}
             $customer_id = $data['customer_id'];
             $customer = Customer::where('_id', $customer_id)->where('loyalty.start_date', 'exists', true)->first(['loyalty']);
+            $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
 
             if(empty($customer)){
 				return ['status'=>400, 'message'=>'Customer not registered'];
@@ -6239,7 +6240,13 @@ Class Utilities {
 
             
             $milestones = Config::get('loyalty_constants.milestones', []);
-            
+
+            if(is_numeric($finder_loyalty)){
+                if(!$finder_milestones){
+                    $milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
+                }
+            }
+                
             $milestone_checkins = array_column($milestones, 'count');
             
             $milestone_reached = array_search($checkin_count, $milestone_checkins);
