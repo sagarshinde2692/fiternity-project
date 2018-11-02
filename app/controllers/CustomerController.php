@@ -8497,7 +8497,7 @@ class CustomerController extends \BaseController {
             }
         }
 
-        $post_register['milestones']['data'] = $this->utilities->getMilestoneSection($customer, $finder_milestones);
+        $post_register['milestones']['data'] = $this->utilities->getMilestoneSection($customer, $finder_milestones)['data'];
 
         // foreach($post_register['milestones']['data'] as &$milestone){
             

@@ -1,0 +1,366 @@
+{
+    "post_register": {
+        "header": {
+            "logo": "https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png",
+            "text": "Hi <b>Dhruv</b>,<br/><br/>10/30 check-ins completed. (View)<br/><br/>You are on milestone 1",
+            "background_image": "https://b.fitn.in/loyalty/banner.jpg",
+            "ratio": 0.36
+        },
+        "milestones": {
+            "header": "Your Workout Journey",
+            "subheader": "You are 20 check-ins away from milestone 2.\n\nYou can check-in for your workout at the gym/studio through a QR code present on homescreen",
+            "description": "Start working out and level up on your streak.\n Achieve milestones and earn crazy rewards",
+            "data": [
+                {
+                    "milestone": 0,
+                    "count": 0,
+                    "enabled": true,
+                    "next_count": 10,
+                    "progress": 100,
+                    "description": "Check-ins",
+                    "amount": 0
+                },
+                {
+                    "milestone": 1,
+                    "count": 10,
+                    "enabled": true,
+                    "next_count": 30,
+                    "progress": 0,
+                    "description": "Check-ins",
+                    "amount": 500
+                },
+                {
+                    "milestone": 2,
+                    "count": 30,
+                    "enabled": false,
+                    "next_count": 75,
+                    "progress": 0,
+                    "description": "Check-ins",
+                    "amount": 3000
+                },
+                {
+                    "milestone": 3,
+                    "count": 75,
+                    "enabled": false,
+                    "next_count": 150,
+                    "progress": 0,
+                    "description": "Check-ins",
+                    "amount": 4000
+                },
+                {
+                    "milestone": 4,
+                    "count": 150,
+                    "enabled": false,
+                    "next_count": 225,
+                    "progress": 0,
+                    "description": "Check-ins",
+                    "amount": 7000
+                },
+                {
+                    "milestone": 5,
+                    "count": 225,
+                    "enabled": false,
+                    "progress": 0,
+                    "description": "Check-ins",
+                    "amount": 12000
+                }
+            ],
+            "footer": "Your workout counter will reset on 10 Oct 2019"
+        },
+        "rewards": {
+            "header": "Claim exciting rewards",
+            "open_index": 0,
+            "claim_message": "Are you sure you want to claim this reward as you won't be able to claim other rewards for this milestone?",
+            "data": [
+                {
+                    "title": "Milestone 1",
+                    "description": "Select one reward",
+                    "_id": 1,
+                    "data": [
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae4820",
+                            "price": "500",
+                            "price_header": "Worth",
+                            "claim_enabled": true,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Zomato</strong></p><p><strong>Offer description - Flat Rs. 100 &nbsp;off on each food order upto 5 orders. </strong></p><p>&nbsp;</p><p><span style=\"font-weight: 400;\">Terms and Conditions:</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Offer available for 1st time users only </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Voucher is applicable on any order. No restriction on minimum order value. </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Zomato offer cannot be clubbed with any other offer or deal.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">All terms and conditions applicable to Zomato(as mentioned in the T&amp;Cs on www.zomato.com) are applicable to the memberships purchased under this offer.</span></li></ul><p><br/><br/></p>",
+                            "coupon_description": "Rs.100 off on each food order upto 5 orders",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae4820"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/external-vouchers1/book%20my%20show.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae4822",
+                            "price": "300",
+                            "price_header": "Worth",
+                            "claim_enabled": true,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Book My Show:</strong></p><p><br/><br/></p><p><span style=\"font-weight: 400;\">Terms and conditions</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Vouchers can be redeemed on the purchase of tickets for Movies on BookMyShow.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Tickets can only be booked on BookMyShow site and on BMS mobile app on Mon-Thur all day all shows and Fri - Sun upto 12 pm shows only.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Tickets need to be booked minimum 2 days in advance.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Minimum 2 tickets need to be booked in a single transaction.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\"> Vouchers can be redeemed only on BookMyShow Website/Mobile App and cannot be redeemed directly at the Cinema/Venue Box Office.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Voucher will only be adjusted against the ticket cost each. BookmyShow convenience fees &nbsp;and/or any additional amount transaction to be borne by the voucher user.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Winpin vouchers can be used only once within the validity period and multiple vouchers cannot be clubbed in a single transaction</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Voucher to be locked to one email id and mobile no. only</span></li></ul><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Vouchers are valid PAN India across all Cinemas/Partners associated with BookMyShow.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Customer needs to redeem it themselves on BMS's website/mobile app</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Assistance if any can be provided by our contact centre on 022 61445050</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">This product is based on 100% advanced module. </span></li></ul><p>&nbsp;</p>",
+                            "coupon_description": "Get Rs. 300/- off on Movie Ticket bookings",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae4822"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/external-vouchers1/gnc.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae4824",
+                            "price": "500",
+                            "price_header": "Worth",
+                            "claim_enabled": true,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>GNC</strong></p><p><br/><br/></p><p><span style=\"font-weight: 400;\">Terms and Conditions</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Coupon code can be used once per user</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">This cannot be clubbed with any other offers that may be running on </span><a href=\"http://guardian.in/\"><span style=\"font-weight: 400;\">guardian.in</span></a></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">In case of any issues please reach out to guardian's help center at 1800-266-8666 or at hello@guardian.in. Please mention that you are a Fitternity user.</span></li></ul><p>&nbsp;</p>",
+                            "coupon_description": "Get Rs. 500/ - off on sports nutrition and supplemens",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae4824"
+                        }
+                    ]
+                },
+                {
+                    "title": "Milestone 2",
+                    "description": "Select one reward",
+                    "_id": 2,
+                    "data": [
+                        {
+                            "logo": "https://b.fitn.in/external-vouchers1/epigamia.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae4826",
+                            "price": "2500",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Epigamia</strong></p><p><span style=\"font-weight: 400;\">Terms and Conditions</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Products will take 7-10 days to get delivered</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Shelf life of the products are 14 days</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Ensure to put the address where you want the products delivered.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Products once delivered cannot be returned unless they are spoiled.</span></li></ul><p>&nbsp;</p>",
+                            "coupon_description": "Get a Epigami Greek Yogurt Hamper worth Rs. 2500",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae4826"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/external-vouchers1/JCB.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae4828",
+                            "price": "1300",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Jean Claude Biguine</strong></p><p><span style=\"font-weight: 400;\">Terms and Conditions</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Services can be availed only between Monday to Thursday</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">You will need to show the email/ sms to avail the service</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">You will have to make a prior appointment </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Appointment basis on availability</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">The offer cannot be clubbed with any other on-going offer or promotion</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">The voucher is valid only for one time usage by a customer in a period of 3 months</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Haircut valid only with stylist/senior-stylist</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Incase of any dispute decision lies with the salon manager</span></li></ul><p>&nbsp;</p>",
+                            "coupon_description": "Get JCB services worth Rs. 1300/- for Haircut or Pedicure",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae4828"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/external-vouchers1/cleartrip.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae482a",
+                            "price": "3000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Cleartrip</strong></p><p>&nbsp;</p><p><span style=\"font-weight: 400;\">Terms and Conditions</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Book between 15th October 2018 to 31st January 2019 (3 months). Dates of Travel are completely open.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Valid only on Credit &amp; Debit Cards. Not valid on Netbanking/ Wallet / IVR Phone bookings or any other payment mode.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Transaction Capping per card: 1 Domestic Flight Transaction + 1 International Flight Transaction + 1 Domestic Hotel Transaction + 1 International Hotel Transaction allowed per Card (i.e Total 4 Transactions).</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Cleartrip Wallet Credits can be redeemed in subsequent transactions across any Flight / Hotel or Local experience on Cleartrip. (it&rsquo;s actually unconditional with no hidden T&amp;C)</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Cleartrip Wallet Validity: 60 days. Dates of Travel / Activity are completely open.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Total Cashback cost will be funded 100% by Cleartrip for above amounts. &nbsp;</span></li></ul><p><br/><br/><br/><br/><br/><br/></p>",
+                            "coupon_description": "Get Rs. 3000/- Cashback on Flight and Hotel bookings",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae482a"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/SWIMMING%20SESSION.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae482c",
+                            "price": "1000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Swimming Session</strong></p><p>&nbsp;</p><p><span style=\"font-weight: 400;\">Terms &amp; Conditions</span></p><p>&nbsp;</p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Once you have booked the session the you cannot refund or transfer the session to someone else. Session booking will be done on Fitternity platforms.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Can be used only once, no validity on the usage. </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Fitternity Health- E Solution Pvt. Ltd.(Fitternity) reserves the right to cancel/ modify/ add/ delete any of the terms and conditions of the offer at any time without notice</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">The voucher is valid across all locations in India where Fitternity has association with the service provider.</span></li></ul><p><br/><br/><br/><br/><br/><br/><br/><br/><br/></p>",
+                            "coupon_description": "Swimming session Worth Rs. 1000 at a 5- star property",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae482c"
+                        }
+                    ]
+                },
+                {
+                    "title": "Milestone 3",
+                    "description": "Select one reward",
+                    "_id": 3,
+                    "data": [
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae482e",
+                            "price": "2500",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Zomato Gold</strong></p><p>&nbsp;</p><p><span style=\"font-weight: 400;\">Terms and Conditions:</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Offer not valid for existing users of Zomato Gold. </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Once the promo code is redeemed, the membership is non-refundable</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Zomato Gold offer cannot be clubbed with any other offer or deal.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">All terms and conditions applicable to Zomato Gold membership (as mentioned in the T&amp;Cs on www.zomato.com/gold) are applicable to the memberships purchased under this offer.</span></li></ul><p>&nbsp;</p>",
+                            "coupon_description": "Get Zomato Gold membership for 13 months worth Rs. 2500/-",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae482e"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/external-vouchers1/o2.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae4830",
+                            "price": "3200",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>O2 spa</strong></p><p>&nbsp;</p><p><span style=\"font-weight: 400;\">Terms and Conditions</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Services can be availed across Non Airport select outlets only</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Time: Outlet opening time to 16:00 hours IST only (The service should be completed on or before 17:00 hours IST)</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Applicable Days: Monday to Friday</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Duration of the service will be 60 &nbsp;mins</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Last date for usage: 31</span><span style=\"font-weight: 400;\">st</span><span style=\"font-weight: 400;\"> December &lsquo;18</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Offer cannot be clubbed with any other offer or on-going promotions</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">All our regular Terms &amp; Conditions would apply and the same can be viewed on </span><a href=\"https://www.o2spa.org/terms-and-conditions/\"><span style=\"font-weight: 400;\">https://www.o2spa.org/terms-and-conditions/</span></a></li></ul><p>&nbsp;</p>",
+                            "coupon_description": "Get a Spa and Full Body Massage worth Rs. 3200/-",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae4830"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/external-vouchers1/easemy%20trip.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae4832",
+                            "price": "2000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Ease My TrIp</strong></p><p><br/><br/></p><p><span style=\"font-weight: 400;\">Terms and Conditions</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Book between 15th October 2018 to 31st January 2019 (3 months). Dates of Travel are completely open.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Valid only on Credit &amp; Debit Cards. Not valid on Netbanking/ Wallet / IVR Phone bookings or any other payment mode.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Transaction Capping per card: 1 Domestic Flight Transaction &nbsp;+ 1 Domestic Hotel Transaction allowed per Card (ie Total 2 Transactions).</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">This cannot be clubbed with any other offers that may be running on Ease My Trip</span></li></ul><p><br/><br/><br/><br/><br/><br/><br/></p>",
+                            "coupon_description": "Get Rs. 2000/- off on Flight and Hotel bookings",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae4832"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/personal%20training%20session.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae4834",
+                            "price": "4000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Personal Training</strong></p><p><br/><br/></p><p><span style=\"font-weight: 400;\">Terms &amp; Conditions</span></p><p>&nbsp;</p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">The amount cannot be refunded or transferred post booking </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">The personal training sessions can be availed at the gym/studio you are working out across all locations in India where Fitternity has association with the service providers</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Fitternity Health- E Solution Pvt. Ltd. (Fitternity) reserves the right to cancel/ modify/ add/delete any of the terms and conditions of the offer at any time without notice</span></li></ul><p><br/><br/><br/></p>",
+                            "coupon_description": "Get personal training sessions worth Rs. 4000",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae4834"
+                        }
+                    ]
+                },
+                {
+                    "title": "Milestone 4",
+                    "description": "Select one reward",
+                    "_id": 4,
+                    "data": [
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/SWIMING%20%26%20SPA.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae4836",
+                            "price": "7000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Swimming + Spa </strong></p><p><br/><br/></p><p><span style=\"font-weight: 400;\">Terms &amp; Conditions</span></p><p>&nbsp;</p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Once the swimming session is booked, the amount cannot be refunded or transferred. </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Swimming services can be used only once. No validity on the usage</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Vouchers cannot be encashed.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Fitternity Health- E Solution Pvt. Ltd. (Fitternity) reserves the right to cancel/ modify/ add/ delete any of the terms and conditions of the offer at any time without notice</span></li></ul><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Spa Services can be availed at selected 5-stars : Hyatt &nbsp;( Mumbai, Pune and Hyderabad), Delhi ( Le Meridian) &amp; Bangalore ( Hilton)</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Time to avail spa services : Monday to Friday - Outlet opening time to 16:00 hours IST only (The service should be completed on or before 17:00 hours IST)</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Duration of the spa will be 60 minutes.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Offer cannot be clubbed &nbsp;with any other offer or on-going promotions</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">All our regular Terms &amp; Conditions would be applicable</span></li></ul><p><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/></p>",
+                            "coupon_description": "Get a Swimming and Spa session worth Rs. 7000 at a 5-star property",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae4836"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/HEALTH%20INSURANCE.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae4838",
+                            "price": "4000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Aditya Birla Health Insurance</strong></p><p>&nbsp;</p><p><span style=\"font-weight: 400;\">How to Avail?</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">On claiming the reward you will get an email from Fitternity to fill out a form</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Once you complete filling out the details your policy will be activated in 24 hours</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Once your policy has been activated you will receive an email with the policy details</span></li></ul><p>&nbsp;</p>",
+                            "coupon_description": "Get Aditya Birla Health Insurance with a cover of Rs. 20 lakhs",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae4838"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/FITNESS%20GEAR.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae483a",
+                            "price": "3000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Fitness Kit</strong></p><p>&nbsp;</p><p><span style=\"font-weight: 400;\">How to Avail?</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">On claiming the reward you will have to provide your address.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">It will take 7 - 10 working days for us to deliver the kit to you.</span></li></ul><p><br/><br/></p>",
+                            "coupon_description": "Get a quirky fitness kit from Fitternity worth Rs. 3000",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae483a"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/diet%20consultation.png",
+                            "_id": "5bc0bc1745c2aa2dc0ae483c",
+                            "price": "5000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Diet Consultation</strong></p><p>&nbsp;</p><p><span style=\"font-weight: 400;\">Terms and Conditions:</span></p><p>&nbsp;</p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Once the session has been booked, you will not be allowed to reschedule the session more than once</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Once you have booked the session then you cannot refund or transfer the session to someone else</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">The session can be booked on Fittenity website </span></li></ul><p><br/><br/></p>",
+                            "coupon_description": "Get a 3 month diet consultation worth Rs. 5000",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1745c2aa2dc0ae483c"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/1%20month%20extension.png",
+                            "_id": "5bc0bc1845c2aa2dc0ae483e",
+                            "price": "5000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Extension on Membership</strong></p><p><br/><br/></p><p><span style=\"font-weight: 400;\">Terms &amp; Conditions</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">This voucher gets you the 1 month extension worth Rs. 5000 &nbsp;at the gym/studio across all locations in India where Fitternity has association with the service providers</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">The voucher cannot be encashed or refunded/transferred.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">The voucher can be used only once. No validity on the usage. </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Fitternity Health- E Solution Pvt. Lts.(Fitternity) reserves the right to cancel/ modify/ add/ delete any of the terms and conditions of the offer at any time without notice</span></li></ul><p><br/><br/><br/></p>",
+                            "coupon_description": "Get 1 month extension at the Gym or Crossfit Box",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1845c2aa2dc0ae483e"
+                        }
+                    ]
+                },
+                {
+                    "title": "Milestone 5",
+                    "description": "Select one reward",
+                    "_id": 5,
+                    "data": [
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/5%20STAR%20STAY.png",
+                            "_id": "5bc0bc1845c2aa2dc0ae4840",
+                            "price": "12000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>5- Star Stay</strong></p><p><br/><br/><br/></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">This offer is not applicable on holidays.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Once you have booked &nbsp;you cannot refund or transfer the session to someone else</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Maximum Limit of the gift voucher is Rs. 12000 on your stay</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Can be used only once until 31st December, 2018</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Only applicable on weekdays Monday - Thursday</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Once you have booked &nbsp;the you cannot refund or transfer to someone ele</span></li></ul><p><br/><br/></p>",
+                            "coupon_description": "Get one night stay at a 5-star property",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1845c2aa2dc0ae4840"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
+                            "_id": "5bc0bc1845c2aa2dc0ae4842",
+                            "price": "3000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Amazon</strong></p><p>&nbsp;</p><p><span style=\"font-weight: 400;\">Terms and Conditions</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Coupon code can be used once per user</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">This cannot be clubbed with any other offers that may be running on amazon.in</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">In case of any issues please reach out to guardian's help center at </span><span style=\"font-weight: 400;\">1800 3000 9009</span><span style=\"font-weight: 400;\">. Please mention that you are a Fitternity user.</span></li></ul><p><br/><br/></p>",
+                            "coupon_description": "Get Rs. 3000/- off across Amazon",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1845c2aa2dc0ae4842"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/fitcash.png",
+                            "_id": "5bc0bc1845c2aa2dc0ae4844",
+                            "price": "5000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>FitCash</strong></p><p><br/><br/></p><p><span style=\"font-weight: 400;\">Terms and Conditions</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Once the Fitcash has been used/redeemed for any transaction on Fitternity, it cannot be refunded </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">FitCash cannot be transferred to someone else.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Fitcash can be redeemed for any transactions on Fitternity </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Fitcash can be used/redeemed within 12 months.</span></li></ul><p><br/><br/></p>",
+                            "coupon_description": "Get rs. 5000 FitCash ( Fitternity Currency)",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1845c2aa2dc0ae4844"
+                        },
+                        {
+                            "logo": "https://b.fitn.in/loyalty/vouchers3/discount%20on%20renewal.png",
+                            "_id": "5bc0bc1845c2aa2dc0ae4846",
+                            "price": "10000",
+                            "price_header": "Worth",
+                            "claim_enabled": false,
+                            "button_title": "Claim",
+                            "terms": "<p><strong>Discount on Renewal of Membership</strong></p><p><br/><br/></p><p><span style=\"font-weight: 400;\">Terms &amp; Conditions</span></p><ul><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">This voucher can only be used to get discount worth Rs. 10000 on your membership renewal </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">The voucher cannot be encashed or refunded/transferred.</span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">The voucher can be used only once. No validity on the usage. </span></li><li style=\"font-weight: 400;\"><span style=\"font-weight: 400;\">Fitternity Health- E Solution Pvt. Lts.(Fitternity) reserves the right to cancel/ modify/ add/ delete any of the terms and conditions of the offer at any time without notice</span></li></ul><p><br/><br/><br/><br/><br/><br/><br/><br/><br/></p>",
+                            "coupon_description": "Get 10000 off on renewals",
+                            "claim_message": "Are you sure you want to claim this reward? After claiming other rewards will get blocked.",
+                            "claim_url": "https://a1.fitternity.com/claimexternalcoupon/5bc0bc1845c2aa2dc0ae4846"
+                        }
+                    ]
+                }
+            ]
+        },
+        "past_check_in": {
+            "header": "View Past Check Ins",
+            "clickable": true
+        },
+        "Contact": {
+            "title": "Want further Assistance? Call us",
+            "ph_no": "+912261094444"
+        },
+        "Terms": {
+            "Title": "FitSquad - FAQ and Terms and conditions",
+            "text": "HTML Text",
+            "url": "https://www.fitternity.com/fitsquad-faq?app=true&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NDA4OTc2OTAsIm5iZiI6MTU0MDg5NzcwMCwiZXhwIjoxNTcyNDMzNjkwLCJjdXN0b21lciI6eyJfaWQiOjk5OTAxLCJuYW1lIjoiRGhydXYiLCJlbWFpbCI6ImRocnV2c2FyYXdhZ2kwMDdAZ21haWwuY29tIiwicGljdHVyZSI6Imh0dHBzOlwvXC9ncmFwaC5mYWNlYm9vay5jb21cLzEzNDE1NTYyNzkyMTU1MDJcL3BpY3R1cmU_dHlwZT1sYXJnZSIsImZhY2Vib29rX2lkIjoiMTM0MTU1NjI3OTIxNTUwMiIsImlkZW50aXR5IjoiZmFjZWJvb2siLCJhZGRyZXNzIjoiIG11bWJhaSIsImNvbnRhY3Rfbm8iOiIiLCJsb2NhdGlvbiI6IiIsImdlbmRlciI6Im1hbGUiLCJleHRyYSI6eyJtb2IiOiIiLCJsb2NhdGlvbiI6IiJ9LCJjb3Jwb3JhdGVfbG9naW4iOmZhbHNlLCJjYXJ0X2lkIjoxNzAwMywicmVmZXJyYWxfY29kZSI6IlItREhSVTY4NDAifX0.yxN61L-XbHkqG5hkV1FN5JSLEjSbs98-T-lh6QB3Fe0&otp_verified=false"
+        }
+    }
+}
