@@ -469,6 +469,8 @@ class TempsController extends \BaseController {
                 if($customer) {
 
                     $customer->verified = true;
+                    
+                    $customer->contact_no = substr($temp['customer_phone'], -10);
 
                     $customer->update();
 
