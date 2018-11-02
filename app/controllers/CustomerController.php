@@ -3324,17 +3324,17 @@ class CustomerController extends \BaseController {
 							});
 						})
 						->orderBy('schedule_date_time', 'asc')
-						->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review')
+						->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount')
 						->get();
 				
 				}else if($this->app_version > '4.4.3'){
 					Log::info("4.4.3");
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id')->get();
+					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount')->get();
 
 
 				}else{
 					
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id')->get();
+					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id','amount')->get();
 				}
 				
 				$activate = [];
@@ -3482,13 +3482,16 @@ class CustomerController extends \BaseController {
 								unset($data['payment_done']);
 								$data['schedule_date_time_text'] = "Scheduled For ".date('jS M, h:i a', strtotime($data['schedule_date_time']));
 							}
-							if(isset($data['payment_done']) && !$data['payment_done']){
-								$data['schedule_date_time_text'] = "Pending Amount: Rs.".$data['amount_finder'];
-							}
 							
-							if(isset($data['amount_finder'])){
+                            
+							
+                            if(isset($data['payment_done']) && !$data['payment_done']){
+								$data['schedule_date_time_text'] = "Pending Amount: Rs.".$data['amount'];
+								$data['amount'] = "₹".$data['amount'];
+							}else if(isset($data['amount_finder'])){
 								$data['amount'] = "₹".$data['amount_finder'];
 							}
+							
 							
 							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
 
@@ -8270,7 +8273,7 @@ class CustomerController extends \BaseController {
 		
 		if(!empty($customer->loyalty['start_date'])){
 			
-			array_push($checkins, ['title'=>'Registered for','date'=>'FITSQUAD' , 'start'=>date('d M, Y | g:i A ', $customer->loyalty['start_date']->sec)]);
+			array_push($checkins, ['title'=>'Registered for','date'=>'FITSQUAD' , 'start'=>date('d M, Y', $customer->loyalty['start_date']->sec)]);
 
 		}
 		

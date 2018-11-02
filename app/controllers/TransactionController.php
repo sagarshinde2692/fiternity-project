@@ -110,6 +110,16 @@ class TransactionController extends \BaseController {
             Log::info('------------transactionCapture---------------',$data);
         }
 
+        if(!empty($data['qrcodepayment']) && empty($data['customer_phone']) && !empty($data['customer_email'])){
+            
+            $customer = Customer::where('email', $data['customer_email'])->first(['contact_no']);
+
+            if(!empty($customer['contact_no'])){
+                $data['customer_phone'] = substr($customer['contact_no'], -10);
+            }
+
+        }
+
         if($data['type'] == 'giftcoupon'){
             return $this->giftCouponCapture();
         }
