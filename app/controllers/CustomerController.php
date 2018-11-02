@@ -8486,8 +8486,9 @@ class CustomerController extends \BaseController {
         $milestone_no = count($customer_milestones);
         $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
         // $checkins = 52;
-        $milestones = Config::get('loyalty_constants.milestones');
-        $checkin_limit = Config::get('loyalty_constants.checkin_limit');
+        $finder_milestones = Config::get('loyalty_constants');
+        $milestones = $finder_milestones['milestones'];
+        $checkin_limit = $finder_milestones['checkin_limit'];
         
         if(is_numeric($finder_loyalty)){
             $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
