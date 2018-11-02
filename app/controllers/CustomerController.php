@@ -8496,8 +8496,8 @@ class CustomerController extends \BaseController {
                 $checkin_limit = $finder_milestones['checkin_limit'];
             }
         }
-
-        $post_register['milestones']['data'] = $this->utilities->getMilestoneSection($customer, $finder_milestones)['data'];
+        $milestones_data = $this->utilities->getMilestoneSection($customer, $finder_milestones);
+        $post_register['milestones']['data'] = $milestones_data['data'];
 
         // foreach($post_register['milestones']['data'] as &$milestone){
             
@@ -8532,11 +8532,11 @@ class CustomerController extends \BaseController {
             $milestone_text = $milestone_text.'Rush to your first milestone to earn rewards';
         }
 
-        if(empty($milestone_next_count)){
+        
 
-            $milestone_next_count = $checkin_limit;
-            $all_milestones_done = true;
-        }
+        $milestone_next_count = $milestones_data['milestone_next_count'];
+        $all_milestones_done = !empty($milestones_data['all_milestones_done']) ? true : false;
+        
         
         $post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$checkins, '$milestone'=>$milestone_no, '$next_milestone_checkins'=>$next_milestone_checkins, '$milestone_text'=>$milestone_text]);
         $post_register['milestones']['subheader'] = strtr($post_register['milestones']['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$checkins, '$next_milestone'=>$milestone_no+1]);

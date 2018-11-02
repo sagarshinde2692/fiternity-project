@@ -6146,8 +6146,10 @@ Class Utilities {
             }
         }
         if(empty($milestone_next_count)){
-            $milestone_next_count = Config::get('loyalty_constants.checkin_limit');
+            $milestone_next_count = $checkin_limit;
+            $post_register_milestones['all_milestones_done'] = true;
         }
+        $post_register_milestones['milestone_next_count'] = $milestone_next_count;
         unset($milestone);
         $post_register_milestones['subheader'] = strtr($post_register_milestones['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$check_ins, '$next_milestone'=>$milestone_no+1]);
         $post_register_milestones['description'] = strtr($post_register_milestones['description'], ['$check_ins'=>$check_ins, '$milestone_next_count'=>$milestone_next_count]);
