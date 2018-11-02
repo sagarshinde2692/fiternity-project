@@ -1318,3 +1318,6 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 Route::post('apicrashlogs','HomeController@apicrashlogs');
 
+Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
+
+Route::post('sendcommvendorthirdparty','ThirdPartyController@sendClockUserDaySMS');

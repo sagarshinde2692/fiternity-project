@@ -184,6 +184,7 @@ class TransactionController extends \BaseController {
 
         if(empty($data['service_id']) && !empty($data['ratecard_id']))
         {
+            
         	Ratecard::$withoutAppends=true;
         	$servId=Ratecard::find(intval($data['ratecard_id']))->first(['service_id']);
         	(!empty($servId))?$data['service_id']=$servId->service_id:"";
@@ -436,6 +437,58 @@ class TransactionController extends \BaseController {
     
                 $data = array_merge($data,$ratecardDetail['data']);
     
+                if(isset($data['customer_quantity'])){
+                    
+                    $data['ratecard_amount'] = $data['amount'];
+                    $data['amount'] = $data['customer_quantity'] * $data['amount'];
+                    $data['amount_finder'] = $data['customer_quantity'] * $data['amount_finder'];
+                    
+                }
+    
+            }
+            
+            if(!empty($data['third_party']))
+            {
+                // Log::info('$data["total_sessions_used"]: ', $data['total_sessions_used']);
+                Log::info('$data: ', $data);
+            	if(isset($data['total_sessions_used']))
+            	{
+            		if(intval($data['total_sessions'])>intval($data['total_sessions_used']))
+            		{
+	            		$data['total_sessions_used']=intval($data['total_sessions_used'])+1;
+                        $data['total_sessions']=intval($data['total_sessions']);
+                        
+                        if(!empty($data['service_id'])){
+
+                            $service = Service::find((int)$data['service_id']);
+            
+                            if($service){
+            
+                                $data['service_name'] = $service['name'];
+                                $data['service_category_id'] = (int)$service['servicecategory_id'];
+                            }
+            
+                        }
+
+	            		$order_id = Order::orderBy('_id', 'desc')->get(['_id'])->first()->_id + 1;
+	            		$order = new Order($data);
+	            		$order->_id = $order_id;
+// 	            		verify
+	            		$order->save();
+	            		
+	            		$cust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
+	            		$cust->total_sessions=intval($data['total_sessions']);
+	            		$cust->total_sessions_used=intval($data['total_sessions_used']);
+	            		$cust->third_party_token_id=$data['third_party_token_id'];
+                        $cust->save();
+                        
+                        $this->utilities->createWorkoutSession($order->_id, true);
+
+	            		return Response::json(['status'=>1,"message"=>"Successfully Generated and maintained Workout session. "]);            			
+            		}
+            		else return Response::json(['status'=>1,"message"=>"Total sessions already crossed. "]);
+            	}
+            	else return Response::json(['status'=>2,"message"=>"Total sessions used not present. "]);
             }
 
             if(isset($data['manual_order']) && $data['manual_order']){
