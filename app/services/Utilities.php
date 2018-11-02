@@ -6117,12 +6117,13 @@ Class Utilities {
         $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
         $milestone_no = count($customer_milestones);
         $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
+        $finder_loyalty_duration = !empty($customer->loyalty['finder_loyalty_duration']) ? $customer->loyalty['finder_loyalty_duration'] : null;
 
         $checkin_limit = Config::get('loyalty_constants.checkin_limit');
         
-        if(is_numeric($finder_loyalty)){
+        if(is_numeric($finder_loyalty) && is_numeric($finder_loyalty_duration)){
             if(!$finder_milestones){
-               $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
+               $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->where('duration', $finder_loyalty_duration)->first();
             }
 
             if($finder_milestones){
@@ -6180,6 +6181,9 @@ Class Utilities {
             $customer_id = $data['customer_id'];
             $customer = Customer::where('_id', $customer_id)->where('loyalty.start_date', 'exists', true)->first(['loyalty']);
             $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
+            $finder_loyalty_duration = !empty($customer->loyalty['finder_loyalty_duration']) ? $customer->loyalty['finder_loyalty_duration'] : null;
+
+
 
             if(empty($customer)){
 				return ['status'=>400, 'message'=>'Customer not registered'];
@@ -6219,8 +6223,8 @@ Class Utilities {
 
             $milestones = Config::get('loyalty_constants.milestones', []);
 
-            if(is_numeric($finder_loyalty)){
-                $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
+            if(is_numeric($finder_loyalty) && is_numeric($finder_loyalty_duration)){
+                $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->where('duration', $finder_loyalty_duration)->first();
                 if($finder_milestones){
                     $milestones = $finder_milestones['milestones'];
                     $checkin->unverified = false;

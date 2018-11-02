@@ -7938,12 +7938,13 @@ class CustomerController extends \BaseController {
 			$customer_id = $decoded->customer->_id;
 			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', 'exists', true)->first();
             $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
+            $finder_loyalty_duration = !empty($customer->loyalty['finder_loyalty_duration']) ? $customer->loyalty['finder_loyalty_duration'] : null;
 			if($customer){
 				$post = true;
 			}
 		}
 		
-        $voucher_categories = VoucherCategory::raw(function($collection) use($finder_loyalty){
+        $voucher_categories = VoucherCategory::raw(function($collection) use($finder_loyalty, $finder_loyalty_duration){
 				
             $match = [
                 '$match'=>[
@@ -7952,8 +7953,9 @@ class CustomerController extends \BaseController {
                 
             ];
             
-            if(!empty($finder_loyalty)){
+            if(!empty($finder_loyalty) && !empty($finder_loyalty_duration)){
                 $match['$match']['finder_ids'] = $finder_loyalty;
+                $match['$match']['duration'] = $finder_loyalty_duration;
             }
 
             $sort =[
@@ -8489,13 +8491,14 @@ class CustomerController extends \BaseController {
         $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
         $milestone_no = count($customer_milestones);
         $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
+        $finder_loyalty_duration = !empty($customer->loyalty['finder_loyalty_duration']) ? $customer->loyalty['finder_loyalty_duration'] : null;
         // $checkins = 52;
         $finder_milestones = Config::get('loyalty_constants');
         $milestones = $finder_milestones['milestones'];
         $checkin_limit = $finder_milestones['checkin_limit'];
         
-        if(is_numeric($finder_loyalty)){
-            $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->first();
+        if(is_numeric($finder_loyalty) && is_numeric($finder_loyalty_duration)){
+            $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->where('duration', $finder_loyalty_duration)->first();
             if($finder_milestones){
                 $milestones = $finder_milestones['milestones'];
                 $checkin_limit = $finder_milestones['checkin_limit'];
