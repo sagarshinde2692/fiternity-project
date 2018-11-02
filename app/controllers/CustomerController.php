@@ -8152,13 +8152,13 @@ class CustomerController extends \BaseController {
 			$milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
 
 
-            if(!empty($_GET['milestone']) && !empty($milestones[intval($_GET['milestone'])]['voucher'])){
+            if(!empty($_GET['milestone']) && !empty($milestones[intval($_GET['milestone'])-1]['voucher'])){
                 
-                if(!isset($_GET['index']) || empty($milestones[intval($_GET['milestone'])]['voucher'][(int)$_GET['index']])){
+                if(!isset($_GET['index']) || empty($milestones[intval($_GET['milestone'])-1]['voucher'][(int)$_GET['index']])){
 			        return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (4).'));
                 }
 
-                $voucherAttached = $milestones[intval($_GET['milestone'])]['voucher'][(int)$_GET['index']];
+                $voucherAttached = $milestones[intval($_GET['milestone']) - 1]['voucher'][(int)$_GET['index']];
             
             }else{
 
