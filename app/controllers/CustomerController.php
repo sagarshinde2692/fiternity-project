@@ -8191,15 +8191,18 @@ class CustomerController extends \BaseController {
                     }
                     // return
 
-                    if(empty($milestones[$voucher_category['milestone']-1]['claimed'])){
+                    // if(empty($milestones[$voucher_category['milestone']-1]['claimed'])){
 
     //					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
 
-                        $milestones[$voucher_category['milestone']-1]['claimed'] = true;
+                        // $milestones[$voucher_category['milestone']-1]['claimed'] = true;
+                        $voucherAttached = $voucherAttached->toArray();
 
-                        $milestones[$voucher_category['milestone']-1]['claimed_date_time'] = new \MongoDate();
+                        $voucherAttached['claimed_date_time'] = new \MongoDate();
                         
-                        $milestones[$voucher_category['milestone']-1]['voucher'] = $voucherAttached->toArray();
+                        $milestones[$voucher_category['milestone']-1]['voucher'] = !empty($milestones[$voucher_category['milestone']-1]['voucher']) ? $milestones[$voucher_category['milestone']-1]['voucher'] : [];
+
+                        array_push($milestones[$voucher_category['milestone']-1]['voucher'], $voucherAttached);
                         
                         $loyalty = $customer->loyalty;
 
@@ -8208,7 +8211,7 @@ class CustomerController extends \BaseController {
                         $customer->loyalty = $loyalty;
                         
                         $customer->update();
-                    }
+                    // }
 
 
                    
