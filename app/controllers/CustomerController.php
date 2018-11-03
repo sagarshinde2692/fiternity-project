@@ -7932,6 +7932,8 @@ class CustomerController extends \BaseController {
 		$jwt_token = Request::header('Authorization');
 		$customer = null;
         $brand_loyalty = null;
+        $brand_loyalty_duration = null;
+        $brand_loyalty_city = null;
 		if(!empty($jwt_token)){
 
 			$decoded = decode_customer_token($jwt_token);
