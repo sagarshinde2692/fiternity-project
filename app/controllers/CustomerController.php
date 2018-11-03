@@ -7931,20 +7931,21 @@ class CustomerController extends \BaseController {
 		$post = false;
 		$jwt_token = Request::header('Authorization');
 		$customer = null;
-        $finder_loyalty = null;
+        $brand_loyalty = null;
 		if(!empty($jwt_token)){
 
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
 			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', 'exists', true)->first();
-            $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
-            $finder_loyalty_duration = !empty($customer->loyalty['finder_loyalty_duration']) ? $customer->loyalty['finder_loyalty_duration'] : null;
+            $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
+            $brand_loyalty_city = !empty($customer->loyalty['brand_loyalty_city']) ? $customer->loyalty['brand_loyalty_city'] : null;
+            $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
 			if($customer){
 				$post = true;
 			}
 		}
 		
-        $voucher_categories = VoucherCategory::raw(function($collection) use($finder_loyalty, $finder_loyalty_duration){
+        $voucher_categories = VoucherCategory::raw(function($collection) use($brand_loyalty, $brand_loyalty_duration, $brand_loyalty_city){
 				
             $match = [
                 '$match'=>[
@@ -7953,9 +7954,10 @@ class CustomerController extends \BaseController {
                 
             ];
             
-            if(!empty($finder_loyalty) && !empty($finder_loyalty_duration)){
-                $match['$match']['finder_ids'] = $finder_loyalty;
-                $match['$match']['duration'] = $finder_loyalty_duration;
+            if(!empty($brand_loyalty) && !empty($brand_loyalty_duration) && !empty($brand_loyalty_city)){
+                $match['$match']['brand_id'] = $brand_loyalty;
+                $match['$match']['duration'] = $brand_loyalty_duration;
+                $match['$match']['city'] = $brand_loyalty_city;
             }
 
             $sort =[
@@ -8490,21 +8492,21 @@ class CustomerController extends \BaseController {
         $checkins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
         $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
         $milestone_no = count($customer_milestones);
-        $finder_loyalty = !empty($customer->loyalty['finder_loyalty']) ? $customer->loyalty['finder_loyalty'] : null;
-        $finder_loyalty_duration = !empty($customer->loyalty['finder_loyalty_duration']) ? $customer->loyalty['finder_loyalty_duration'] : null;
+        $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
+        $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
         // $checkins = 52;
-        $finder_milestones = Config::get('loyalty_constants');
-        $milestones = $finder_milestones['milestones'];
-        $checkin_limit = $finder_milestones['checkin_limit'];
+        $brand_milestones = Config::get('loyalty_constants');
+        $milestones = $brand_milestones['milestones'];
+        $checkin_limit = $brand_milestones['checkin_limit'];
         
-        if(is_numeric($finder_loyalty) && is_numeric($finder_loyalty_duration)){
-            $finder_milestones = FinderMilestone::where('finder_id', $finder_loyalty)->where('duration', $finder_loyalty_duration)->first();
-            if($finder_milestones){
-                $milestones = $finder_milestones['milestones'];
-                $checkin_limit = $finder_milestones['checkin_limit'];
+        if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
+            $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
+            if($brand_milestones){
+                $milestones = $brand_milestones['milestones'];
+                $checkin_limit = $brand_milestones['checkin_limit'];
             }
         }
-        $milestones_data = $this->utilities->getMilestoneSection($customer, $finder_milestones);
+        $milestones_data = $this->utilities->getMilestoneSection($customer, $brand_milestones);
         $post_register['milestones']['data'] = $milestones_data['data'];
 
         // foreach($post_register['milestones']['data'] as &$milestone){
@@ -8618,13 +8620,14 @@ class CustomerController extends \BaseController {
                         if(in_array($vc['name'], $claimed_voucher_categories)){
                             continue;
                         }
-
+                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description']);
+                        Log::info($vc);
+                        Log::info("============================================================================================================================================================");
                         $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
                         $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
                         $post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $vc);
                         $post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$post_reward_data_template['_id'];
-                        Log::info($vc);
                         Log::info($post_reward_data_template['coupon_description']);
                         unset($vc['finder_ids']);
                         $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
