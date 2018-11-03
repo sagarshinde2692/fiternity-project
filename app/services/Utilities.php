@@ -6091,6 +6091,8 @@ Class Utilities {
         $new_voucher->customer_id = $customer['_id'];
         $new_voucher->name = $voucher_category['name'];
         $new_voucher->image = $voucher_category['image'];
+        $new_voucher->terms = $voucher_category['terms'];
+        $new_voucher->amount = $voucher_category['amount'];
         $new_voucher->claim_date = new \MongoDate();
 
         $new_voucher->update();
