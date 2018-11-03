@@ -8317,5 +8317,18 @@ public function yes($msg){
         
     }
 
+    public function addvoucherimages(){
+        $vouchers = VoucherCategory::where('brand_id', 'exists', true)->get();
+        $i=0;
+        foreach($vouchers as $voucher){
+            $voucher->image = "https://b.fitn.in/loyalty/goldvouchers/".urlencode(strtolower($voucher->name)).".jpg";
+            $voucher->save();
+            Log::info($i++);
+        }
+
+        return "Done";
+        
+    }
+
 }
 

@@ -1317,4 +1317,5 @@ Route::group(array('before' => 'validatetoken'), function() {
 });
 
 Route::post('apicrashlogs','HomeController@apicrashlogs');
+Route::get('addvoucherimages','DebugController@addvoucherimages');
 
