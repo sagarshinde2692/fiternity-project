@@ -6792,6 +6792,12 @@ Class Utilities {
             ];
             $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name','customer_membership']);
             $loyalty = array_merge($loyalty, $fields_to_add);
+
+            if(in_array($data['finder_id'], Config::get('app.gold_loyalty_finder_ids')) && in_array($data['type'], ['memberships']) && in_array($data['duration_day'], [180, 360])){
+                $loyalty['finder_loyalty'] = $data['finder_id'];
+                $loyalty['finder_loyalty_duration'] = $data['duration_day'];
+            }
+
             $update_data = [
                 'loyalty'=>$loyalty 
             ];
