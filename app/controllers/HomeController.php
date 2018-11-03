@@ -2054,6 +2054,12 @@ class HomeController extends BaseController {
                 'why_buy'=>$why_buy
             ];
 
+            if(empty($finder) && !empty($itemData['finder_id'])){
+                $finder = Finder::find($itemData['finder_id']);
+            }
+            
+            $resp['loyalty_collaterals_delivered'] = !empty($finder) && !empty($finder['flags']['loyalty_collaterals_delivered']);
+
             if(!empty($item['type']) && $item['type'] == 'booktrials' && !empty($customer_id)){
 
                 if(empty($customer)){
