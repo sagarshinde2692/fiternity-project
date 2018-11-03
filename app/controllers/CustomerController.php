@@ -7958,6 +7958,10 @@ class CustomerController extends \BaseController {
                 $match['$match']['brand_id'] = $brand_loyalty;
                 $match['$match']['duration'] = $brand_loyalty_duration;
                 $match['$match']['city'] = $brand_loyalty_city;
+            }else{
+                $match['$match']['brand_id'] =['$exists'=>false];
+                $match['$match']['duration'] =['$exists'=>false];
+                $match['$match']['city'] =['$exists'=>false];
             }
 
             $sort =[
