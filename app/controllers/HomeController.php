@@ -1532,7 +1532,7 @@ class HomeController extends BaseController {
                 }
             }*/
 
-            if(isset($item["membership"]) && !empty($item["membership"])){
+            if(isset($item["membership"]) && !empty($item["membership"]) && empty($customer['loyalty']['brand_loyalty'])){
 
                 if(isset($item["membership"]['cashback']) && $item["membership"]['cashback'] === true){
 
