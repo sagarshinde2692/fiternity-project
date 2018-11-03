@@ -1086,7 +1086,7 @@ class RewardofferController extends BaseController {
 					$rewardObjData['payload']['amount'] = $mixedreward_content['total_amount'];
 					$rewardObjData['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
 
-                    if(!empty($mixedreward_content['footer'])){
+                    if(!empty($mixedreward_content['footer']) && !in_array(Request::header('Device-Type'), ['android', 'ios'])){
                         if($duration_day==360){
                             $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>'1']);
                         }else{
