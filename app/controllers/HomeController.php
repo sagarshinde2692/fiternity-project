@@ -1073,6 +1073,10 @@ class HomeController extends BaseController {
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
+
+                if(!empty($finder) && !empty($finder['brand_id'])){
+                    $response['brand_id'] = !empty($finder['brand_id']);
+                }
                 
                 if(!empty($customer_id)){
                     
@@ -2066,6 +2070,11 @@ class HomeController extends BaseController {
             if(!empty($item['loyalty_registration'])){
                 $resp['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
             }
+
+            if(!empty($finder) && !empty($finder['brand_id'])){
+                $resp['brand_id'] = !empty($finder['brand_id']);
+            }
+                
 
 
             if(isset($itemData['coupon_id'])){
