@@ -6090,7 +6090,7 @@ Class Utilities {
 
         $new_voucher->customer_id = $customer['_id'];
         $new_voucher->name = $voucher_category['name'];
-        $new_voucher->image = $customer['image'];
+        $new_voucher->image = $voucher_category['image'];
 
         $new_voucher->update();
 
