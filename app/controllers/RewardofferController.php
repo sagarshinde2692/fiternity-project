@@ -1086,6 +1086,10 @@ class RewardofferController extends BaseController {
 					$rewardObjData['payload']['amount'] = $mixedreward_content['total_amount'];
 					$rewardObjData['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
 
+                    if(!empty($mixedreward_content['footer'])){
+                        $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>$duration_day/30]);
+                    }
+
 					$rewards[] = $rewardObjData;
 				}
 			}
@@ -1212,6 +1216,10 @@ class RewardofferController extends BaseController {
             'message'                   =>  "Rewards offers",
             'amount'                    =>  $amount
         );
+
+        if(empty($calculation['algo']['cashback'])){
+            $data['cashback'] = null;
+        }
         // $data['cross_sell'] = array(
         //     'diet_plan' => $customerReward->fitternityDietVendor($amount)
         // );
