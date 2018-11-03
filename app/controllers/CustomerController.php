@@ -4180,6 +4180,16 @@ class CustomerController extends \BaseController {
 
 		$data = $_REQUEST;
 
+        
+        
+        if(intval(Request::header('Os-Version')) >= 9 && Request::header('App-Version') < '5.13'){
+            return [
+                "message" => "Update is available on Play Store",
+				"dismiss" => false,
+				"force_update" => true
+                ];
+        }
+
 		$validator = Validator::make($data,$rules);
 
 		if($validator->fails()) {
