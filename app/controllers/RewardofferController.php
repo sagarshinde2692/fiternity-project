@@ -1087,7 +1087,11 @@ class RewardofferController extends BaseController {
 					$rewardObjData['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
 
                     if(!empty($mixedreward_content['footer'])){
-                        $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>$duration_day/30]);
+                        if($duration_day==360){
+                            $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>'1']);
+                        }else{
+                            $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>'6']);
+                        }
                     }
 
 					$rewards[] = $rewardObjData;
