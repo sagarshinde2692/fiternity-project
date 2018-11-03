@@ -6224,7 +6224,7 @@ Class Utilities {
             $milestones = Config::get('loyalty_constants.milestones', []);
 
             if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
-                $finder_milestones = FinderMilestone::where('finder_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
+                $finder_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
                 if($finder_milestones){
                     $milestones = $finder_milestones['milestones'];
                     $checkin->unverified = false;
