@@ -1074,7 +1074,7 @@ class HomeController extends BaseController {
                     'id'=>$id
                 ];
 
-                if(!empty($finder) && !empty($finder['brand_id'])){
+                if(!empty($finder) && isset($finder['brand_id'])){
                     $response['brand_id'] = !empty($finder['brand_id']);
                 }
                 
@@ -2077,8 +2077,8 @@ class HomeController extends BaseController {
                 $resp['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
             }
 
-            if(!empty($finder) && !empty($finder['brand_id'])){
-                $resp['brand_id'] = !empty($finder['brand_id']);
+            if(!empty($finder) && isset($finder['brand_id'])){
+                $resp['brand_id'] = $finder['brand_id'];
             }
                 
 
