@@ -8308,5 +8308,21 @@ public function yes($msg){
         
     }
 
+	public function objectToArrayVoucher(){
+		$customers = Customer::where("loyalty.milestones.voucher", "exists",true)->get();
+		foreach($customers as $customer){
+			$loyalty = (array) $customer["loyalty"];
+			$vouchers = array($customer["loyalty"]["milestones"][0]["voucher"]);
+			$vouchers[0]["claimed_date_time"] = $customer["loyalty"]["milestones"][0]["claimed_date_time"];	
+			$vouchers[0]["name"] = $customer["loyaltyvoucher_category"][0]["name"];
+			$vouchers[0]["image"] = $customer["loyaltyvoucher_category"][0]["image"];
+			$vouchers[0]["terms"] = $customer["loyaltyvoucher_category"][0]["terms"];
+			$loyalty["milestones"][0]["voucher"] = array_values($vouchers);
+			// return $customer["loyalty"] = $loyalty;
+			$customer->update(['loyalty'=>$loyalty]);
+		}
+
+	}
+
 }
 
