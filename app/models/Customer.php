@@ -11,7 +11,7 @@ class Customer extends  \Basemodel {
 
 	protected $collection = "customers";
 	protected $dates = array('last_visited','birthday');
-	protected $appends = array('uber_trial','ttt_trial');
+	protected $appends = array('uber_trial','ttt_trial',"loyaltyvoucher_category");
 
 	public static $withoutAppends = false;
 
@@ -102,5 +102,13 @@ class Customer extends  \Basemodel {
     public function loyaltyFinder(){
         return $this->belongsTo('Finder', 'loyalty.finder_id');
     }
+
+	public function getloyaltyvoucherCategoryAttribute(){
+		// return $this["loyalty"];
+		if(!empty($this["loyalty"]["milestones"][0]["voucher"]["voucher_category"])){
+			
+			return $voucherCategory = VoucherCategory::where("_id", $this["loyalty"]["milestones"][0]["voucher"]["voucher_category"])->get(array("name", "image", "terms", "amount"));
+		}
+	}
 
 }

@@ -1281,9 +1281,12 @@ class FindersController extends \BaseController {
 			->where('finder_id', '=', (int) $response['finder']['_id'])
 			->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
 			->get(array('id'));
+            $customer = Customer::where('email', $customer_email)->first();
+            $response['register_loyalty'] = !empty($customer['loyalty']);
 			$response['trials_detials']              =      $customer_trials_with_vendors;
 			$response['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
 		}else{
+            $response['register_loyalty'] = false;
 			$response['trials_detials']              =      [];
 			$response['trials_booked_status']        =      false;
 		}

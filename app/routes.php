@@ -1282,6 +1282,7 @@ Route::get('verifypayment/{status}','PaymentGatewayController@verifyPayment');
 /*******************  Loyalty API ************************************************/
 
 Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
+Route::get("objectToArrayVoucher", "DebugController@objectToArrayVoucher");
 
 Route::post('registerloyalty', 'CustomerController@registerLoyalty');
 
