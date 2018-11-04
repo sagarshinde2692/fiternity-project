@@ -264,7 +264,8 @@ Class Mobikwik {
 
         if(stripos($data['orderid'],'fit') == 0){
 
-            $data['redirecturl'] = "http://localhost:3000/verifymobikwik";
+            $data['redirecturl'] = \Config::get('app.website')."/verifymobikwik";
+        
         }
 
         $checksum = $this->createChecksum($data);
