@@ -6129,7 +6129,8 @@ class TransactionController extends \BaseController {
                 'amount_payable' => [],
                 'note'=>""
             ],
-            'full_wallet_payment' => false
+            'full_wallet_payment' => false,
+            'register_loyalty'=>false
         ];
 
         $ratecard_id = null;
@@ -6280,6 +6281,9 @@ class TransactionController extends \BaseController {
                     $data['you_save'] += $data['fitcash_applied'];
 
                 }
+
+                $customer = Customer::find($customer_id);
+                $result['register_loyalty'] = empty($customer['loyalty']);
             }
             
             if(!empty($order['coupon_code'])){

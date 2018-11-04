@@ -1040,9 +1040,8 @@ class RewardofferController extends BaseController {
         }
 
         // if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
-
         
-        if(in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360){
+        if((in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360) || ($finder['brand_id'] == 135 && $duration_day == 180)){
                 
             $rewardObj = Reward::where('quantity_type','mixed')->first();
                 
@@ -1085,6 +1084,14 @@ class RewardofferController extends BaseController {
 					$rewardObjData['new_amount'] = $mixedreward_content['total_amount'];
 					$rewardObjData['payload']['amount'] = $mixedreward_content['total_amount'];
 					$rewardObjData['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+
+                    if(!empty($mixedreward_content['footer']) && !in_array(Request::header('Device-Type'), ['android', 'ios'])){
+                        if($duration_day==360){
+                            $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>'1']);
+                        }else{
+                            $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>'6']);
+                        }
+                    }
 
 					$rewards[] = $rewardObjData;
 				}
@@ -1212,6 +1219,10 @@ class RewardofferController extends BaseController {
             'message'                   =>  "Rewards offers",
             'amount'                    =>  $amount
         );
+
+        if(empty($calculation['algo']['cashback'])){
+            $data['cashback'] = null;
+        }
         // $data['cross_sell'] = array(
         //     'diet_plan' => $customerReward->fitternityDietVendor($amount)
         // );

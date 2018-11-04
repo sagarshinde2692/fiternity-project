@@ -1131,7 +1131,7 @@ Class CustomerReward {
             if(!empty($mixedreward_content)){
 				$custom_cashback = intval($mixedreward_content->cashback);
             
-				if(!empty($custom_cashback)){
+				if(isset($custom_cashback)){
 					
 					$setAlgo = array('cashback'=>$custom_cashback,'fitcash'=>$custom_cashback,'discount'=>0);
 

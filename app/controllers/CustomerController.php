@@ -7602,7 +7602,7 @@ class CustomerController extends \BaseController {
 					Service::$setAppends=['active_weekdays','serviceratecard'];
 					$finderarr = Finder::active()->where('_id',intval($data['vendor_id']))
 					->with(array('services'=>function($query){$query->active()->where('trial','!=','disable')->where('status','=','1')->select('*')->orderBy('ordering', 'ASC');}))
-					->with('location')->first(['inoperational_dates','services', 'title','location_id']);
+					->with('location')->first();
 
 					$pnd_pymnt=$this->utilities->hasPendingPayments();
 					
@@ -7699,6 +7699,11 @@ class CustomerController extends \BaseController {
 								// else 
 								// {
 									$resp['response']['header']="Showing all available services of ".$finderarr['title'].', '.$finderarr['location']['name']." happening today (".date('jS, M', time()).")";
+
+                                     if(!empty($finderarr['location_id']) && $finderarr['location_id'] == 10000){
+                                        $resp['response']['header']="Showing all available services of ".$finderarr['title'].', '.$finderarr['custom_location']." happening today (".date('jS, M', time()).")";
+                                    }
+
 									$resp['response']['title']="BOOK A SLOT";
 									
 									if(empty($customer['loyalty'])){
@@ -7714,12 +7719,19 @@ class CustomerController extends \BaseController {
 								unset($resp['response']);
 								$resp['response']['title']="BOOK A SLOT";
 								$resp['response']['subtitle']="OOPs no slots are available at ".$finderarr['title'].', '.$finderarr['location']['name']." right now.";
+                                if(!empty($finderarr['location_id']) && $finderarr['location_id'] == 10000){
+    								$resp['response']['subtitle']="OOPs no slots are available at ".$finderarr['title'].', '.$finderarr['custom_location']." right now.";
+                                }
 							}
 						}
 						else {
 							unset($resp['response']);
 							$resp['response']['title']="BOOK A SLOT";
 							$resp['response']['subtitle']="OOPs no services are available at ".$finderarr['title'].', '.$finderarr['location']['name'];
+
+                            if(!empty($finderarr['location_id']) && $finderarr['location_id'] == 10000){
+                                $resp['response']['subtitle']="OOPs no services are available at ".$finderarr['title'].', '.$finderarr['custom_location'];
+                            }
 						}
 
 						if(!empty($resp['response'])){

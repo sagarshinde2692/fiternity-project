@@ -1073,6 +1073,10 @@ class HomeController extends BaseController {
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
+
+                if(!empty($finder) && isset($finder['brand_id'])){
+                    $response['brand_id'] = !empty($finder['brand_id']);
+                }
                 
                 if(!empty($customer_id)){
                     
@@ -1528,7 +1532,7 @@ class HomeController extends BaseController {
                 }
             }*/
 
-            if(isset($item["membership"]) && !empty($item["membership"])){
+            if(isset($item["membership"]) && !empty($item["membership"]) && empty($customer['loyalty']['brand_loyalty'])){
 
                 if(isset($item["membership"]['cashback']) && $item["membership"]['cashback'] === true){
 
@@ -2050,6 +2054,12 @@ class HomeController extends BaseController {
                 'why_buy'=>$why_buy
             ];
 
+            if(empty($finder) && !empty($itemData['finder_id'])){
+                $finder = Finder::find($itemData['finder_id']);
+            }
+            
+            $resp['loyalty_collaterals_delivered'] = !empty($finder) && !empty($finder['flags']['loyalty_collaterals_delivered']);
+
             if(!empty($item['type']) && $item['type'] == 'booktrials' && !empty($customer_id)){
 
                 if(empty($customer)){
@@ -2066,6 +2076,11 @@ class HomeController extends BaseController {
             if(!empty($item['loyalty_registration'])){
                 $resp['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
             }
+
+            if(!empty($finder) && isset($finder['brand_id'])){
+                $resp['brand_id'] = $finder['brand_id'];
+            }
+                
 
 
             if(isset($itemData['coupon_id'])){
