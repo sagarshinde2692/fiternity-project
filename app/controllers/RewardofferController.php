@@ -1046,6 +1046,9 @@ class RewardofferController extends BaseController {
             $rewardObj = Reward::where('quantity_type','mixed')->first();
                 
             $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();
+			if($finder['brand_id'] == 135){
+				$mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->where("duration_day",$duration_day)->first();
+			}
             if(!empty($mixedreward_content)){
 				if($rewardObj && $mixedreward_content){
                     
