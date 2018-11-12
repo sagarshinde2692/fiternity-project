@@ -8313,7 +8313,27 @@ public function yes($msg){
         return DB::getQueryLog();
         
     }
+	public function getreversehash(){
+		$data = Input::json()->all();
+		$order = Order::where("_id",$data["_id"])->get();
+		$reverseData = getReversehash($order[0]);
+		$resp = array(
+				"order_id"=> $reverseData["_id"],
+   				"status"=> "success",
+   				"customer_name"=> $reverseData["customer_name"],
+				"customer_email"=> $reverseData["customer_email"],
+				"customer_phone"=> $reverseData["customer_phone"],
+				"customer_id"=> $reverseData["customer_id"],
+				"customer_location"=> "-",
+				"error_Message"=> "",
+				"type"=> "workout-session",
+				"txnid"=>$reverseData["txnid"],
+				"hash"=> $reverseData["reverse_hash"],
+				"order_status"=>$reverseData["status"]
+		);
+	return $resp;
 
+	}
 	public function objectToArrayVoucher(){
 		$customers = Customer::where("loyalty.milestones.voucher", "exists",true)->get();
 		foreach($customers as $customer){
