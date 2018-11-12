@@ -6137,12 +6137,12 @@ class TransactionController extends \BaseController {
 
         $data['you_save'] = 0;
 
-        if(!isset($data['ratecard_id']) && !isset($data['order_id'])){
+        if(!isset($data['ratecard_id']) && !isset($data['order_id']) && !isset($data['ticket_id'])){
                 
                 return Response::json(array('status'=>400, 'message'=>'Order id or Ratecard id is required'), $this->error_status);
         }
 
-        if(!isset($data['ratecard_id'])){
+        if(!isset($data['ratecard_id']) && isset($data['order_id'])){
 
             $order = Order::find(intval($data['order_id']));
 
@@ -6159,7 +6159,9 @@ class TransactionController extends \BaseController {
             
             }
         
-        }else{
+        }elseif(isset($data['ticket_id'])){
+			$ticket_id = intval($data['ticket_id']);
+		}else{
 
                 $ratecard_id = intval($data['ratecard_id']);
         }
@@ -6449,7 +6451,34 @@ class TransactionController extends \BaseController {
             }
 
 
-        }else{
+        }elseif(isset($data['ticket_id'])){
+			$ticket = Ticket::where("_id", intval($ticket_id))->with("event")->get();
+			$ticket = $ticket[0];
+			$result["event_name"] = $ticket["event"]["name"];
+			$result["event_id"] = $ticket["event"]["_id"];
+			$result["ticket_id"] = $ticket["_id"];
+			$result["finder_id"] = isset($ticket["event"]["finder_id"]) ? $ticket["event"]["finder_id"] : "";
+            $result['customer_quantity'] = 1;
+			$result['order_details'] = [
+                "start_date"=>[
+                    "field"=> "Date",
+                    "value"=> date('d-m-Y', strtotime($ticket["start_date"]))
+                ],
+                "date_time"=>[
+                    "field"=> "Date",
+                    "value"=> date('H:i:s', strtotime($ticket["start_date"]))
+                ],
+                "discount"=>[
+                    "field"=> "Pay Now Discount(20% Off)",
+                    "value"=> "Rs. ".$ticket['price'] - ($ticket['price'] * 20/100)
+                ]
+                // "address"=>[
+                //     "field"=> "ADDRESS",
+                //     "value"=> $data['finder_address']
+                // ]
+            ];
+
+		}else{
 
             Log::info("elelelelelelel");
             
