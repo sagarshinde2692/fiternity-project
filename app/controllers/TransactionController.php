@@ -6458,25 +6458,32 @@ class TransactionController extends \BaseController {
 			$result["event_id"] = $ticket["event"]["_id"];
 			$result["ticket_id"] = $ticket["_id"];
 			$result["finder_id"] = isset($ticket["event"]["finder_id"]) ? $ticket["event"]["finder_id"] : "";
-            $result['customer_quantity'] = 1;
+            $result['customer_quantity'] = isset($data['customer_quantity']) ? $data['customer_quantity'] : 1;
 			$result['order_details'] = [
                 "start_date"=>[
                     "field"=> "Date",
                     "value"=> date('d-m-Y', strtotime($ticket["start_date"]))
                 ],
                 "date_time"=>[
-                    "field"=> "Date",
+                    "field"=> "Time",
                     "value"=> date('H:i:s', strtotime($ticket["start_date"]))
                 ],
-                "discount"=>[
-                    "field"=> "Pay Now Discount(20% Off)",
-                    "value"=> "Rs. ".$ticket['price'] - ($ticket['price'] * 20/100)
-                ]
+                // "discount"=>[
+                //     "field"=> "Pay Now Discount(20% Off)",
+                //     "value"=> "Rs. ".($ticket['price'] * 20/100)
+                // ]
                 // "address"=>[
                 //     "field"=> "ADDRESS",
                 //     "value"=> $data['finder_address']
                 // ]
             ];
+			$total_amount = $ticket['price'] * intval($data['customer_quantity']);
+			$result['payment_details']['amount_summary'][] = [
+                'field' => 'Total Amount',
+                'value' => 'Rs. '.(string)$ticket['price'] * intval($data['customer_quantity'])
+            ];
+
+            $data['amount_payable'] = $total_amount;
 
 		}else{
 
