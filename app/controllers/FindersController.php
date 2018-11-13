@@ -670,16 +670,11 @@ class FindersController extends \BaseController {
 									// 		$service['serviceratecard'][$ratekey]['offers'][0]['offer_icon'] = "https://b.fitn.in/global/finder/women-offer2.png";
 									// 	}
 									// }
-									
+
 									if(isset($service['membership']) && $service['membership']=='manual'){
 										$service['serviceratecard'][$ratekey]['direct_payment_enable'] = "0";
 									}
 									
-									if(in_array($rateval['type'], ['workout session']) && isset($rateval['peak_price'])){
-										if(in_array($service["trial"],["manual","diable", "manualauto"]) || in_array($finder["trial"],["manual","diable", "manualauto"]) || in_array($finder["category_id"],[47])){
-											$service['serviceratecard'][$ratekey]['special_price'] = $rateval['peak_price'];
-										}
-									}
 
 									$customerDiscount = 0;
 									// $customerDiscount = $this->utilities->getCustomerDiscount();
@@ -693,6 +688,12 @@ class FindersController extends \BaseController {
 									}else{
 										$discount_amount = intval($rateval['price'] * ($discount/100));
 										$final_price = $service['serviceratecard'][$ratekey]['price'] = $rateval['price'] - $discount_amount;
+									}
+									if(in_array($rateval['type'], ['workout session']) && isset($rateval['peak_price'])){
+										if(in_array($service["trial"],["manual","diable", "manualauto"]) || in_array($finder["trial"],["manual","diable", "manualauto"]) || in_array($finder["category_id"],[47])){
+											$service['serviceratecard'][$ratekey]['special_price'] = $rateval['peak_price'];
+											// return $service['serviceratecard'][$ratekey];
+										}
 									}
 
 
