@@ -7931,10 +7931,27 @@ public function yes($msg){
 
         foreach ($orders as $order){
 
+            $finder_id = $order->finder_id;
+
+            $finder_name = $order->finder_name;
+
+            if(!empty($data['finder_id'])){
+            
+                $finder = Finder::find($data['finder_id']);
+
+                $finder_name = $finder['title'];
+                $finder_id = $finder['_id'];
+            
+            }
+
             Log::info($order->_id);
 
             $amount = $order->amount_customer;
-            // $amount = $data['amount'];
+
+            if(!empty($data['amount'])){
+                $amount = $data['amount'];
+            }
+            
 
             $amount1 = intval($amount * .8);
 
@@ -7948,15 +7965,15 @@ public function yes($msg){
                 "amount_fitcash" => 0,
                 "amount_fitcash_plus" => $amount1,
                 "type"=>'FITCASHPLUS',
-                'description'=>"Added FitCash+ for converting 1 month membership to pay-per-session only applicable on ".$order->finder_name,
+                'description'=>"Added FitCash+ for converting 1 month membership to pay-per-session only applicable on ".$finder_name,
                 'entry'=>'credit',
-                'valid_finder_id'=>$order->finder_id,
+                'valid_finder_id'=>$finder_id,
                 'remove_wallet_limit'=>true,
                 'validity'=>0,
                 'order_type'=>['workout-session', 'workout session'],
                 'membership_order_id'=>$order->_id
             );
-
+            
             $walletTransaction = $utilities->walletTransactionNew($walletData);
 
             $walletData = array(
