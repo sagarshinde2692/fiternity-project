@@ -3884,7 +3884,7 @@ class HomeController extends BaseController {
 		foreach($mfpEvents as $key => $mfpEvent){
 			$mfpEvents[$key]["action_btn"] = "Buy Now";
 			$mfpEvents[$key]["action"] = "buy";
-			if($mfpEvents[$key]["notify"]){
+			if(isset($mfpEvents[$key]["notify"])){
 				$mfpEvents[$key]["action_btn"] = "Notify";
 				$mfpEvents[$key]["action"] = "notify";
 			}
@@ -3966,11 +3966,11 @@ class HomeController extends BaseController {
 		$data["sponsors"] = [
                 [
                     "title"=>"Presented By",
-                    "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Aegonlife-Logo.png"
+                    "image"=>"https://b.fitn.in/mfp-2018/MORNING-FITNESS-PARTY.jpg-jockey.jpg"
                 ],
                 [
                     "title"=>"Powered By",
-                    "image"=>"https://b.fitn.in/global/toi/partners/LSLOGO.JPG"
+                    "image"=>"https://b.fitn.in/mfp-2018/MORNING-FITNESS-PARTY.jpg-times-of-india.jpg"
                 ]
             ];
         $data["what_people_say"] = [
