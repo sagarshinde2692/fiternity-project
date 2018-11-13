@@ -3880,7 +3880,7 @@ class HomeController extends BaseController {
         if(!$city){
             $city = 'mumbai';
         }
-		return $mfpEvents = DbEvent::where("mfp",true)->with(array("city" => function($query){$query->select("name");}) )->get(["name", "slug", "venue","start_date","end_date","gallery","coverimage","city_id", "city"])->toArray();
+		$mfpEvents = DbEvent::where("mfp",true)->with(array("city" => function($query){$query->select("name");}) )->get(["name", "slug", "venue","start_date","end_date","gallery","coverimage","city_id", "city"])->toArray();
 		foreach($mfpEvents as $key => $mfpEvent){
 			$mfpEvents[$key]["action_btn"] = "Buy Now";
 			$mfpEvents[$key]["action"] = "buy";
