@@ -130,7 +130,7 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' =>'type field is required'), $this->error_status);
         }
 
-        if(!empty($data['type']) && $data['type'] == 'membershipwithpg'){
+        if(!empty($data['type']) && $data['type'] == 'membershipwithpg' && $data['type'] == 'membershipwithoutpg'){
             $data['type'] = 'memberships';
         }
 
