@@ -1445,12 +1445,14 @@ Class CustomerReward {
 
     public function customerTokenDecode($token){
 
-        $jwt_token = $token;
-        $jwt_key = Config::get('app.jwt.key');
-        $jwt_alg = Config::get('app.jwt.alg');
-        $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+        // $jwt_token = $token;
+        // $jwt_key = Config::get('app.jwt.key');
+        // $jwt_alg = Config::get('app.jwt.alg');
+        // $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
-        return $decodedToken;
+        // return $decodedToken;
+
+        return customerTokenDecode($token);
     }
 
     public function getFinderData($finder_id){
