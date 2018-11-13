@@ -1319,5 +1319,3 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 Route::post('apicrashlogs','HomeController@apicrashlogs');
 
-// Route::post('getreversehash','DebugController@getreversehash');
-
