@@ -3293,9 +3293,9 @@ class CustomerController extends \BaseController {
 
 				$decoded = $this->customerTokenDecode($jwt_token);
 
-                if(empty($decoded->customer)){
-                    return ['isSessionExpired'=>true];
-                }
+                // if(empty($decoded->customer)){
+                //     return ['isSessionExpired'=>true];
+                // }
 				
                 $customeremail = $decoded->customer->email;
 				$customer_id = $decoded->customer->_id;
