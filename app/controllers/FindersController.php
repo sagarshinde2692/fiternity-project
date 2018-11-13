@@ -4723,19 +4723,21 @@ class FindersController extends \BaseController {
 
 	public function customerTokenDecode($token){
 
-        $jwt_token = $token;
+        // $jwt_token = $token;
 
-        $jwt_key = Config::get('app.jwt.key');
-        $jwt_alg = Config::get('app.jwt.alg');
-        try {
-            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+        // $jwt_key = Config::get('app.jwt.key');
+        // $jwt_alg = Config::get('app.jwt.alg');
+        // try {
+        //     $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
-        }catch (Exception $e) {
-            // Log::info($e);
-            return null;
-        }
+        // }catch (Exception $e) {
+        //     // Log::info($e);
+        //     return null;
+        // }
         
-        return $decodedToken;
+        // return $decodedToken;
+
+        return customerTokenDecode($token);
     }
 
 	public function sortNoMembershipServices($serviceArray, $from){

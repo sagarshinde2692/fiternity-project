@@ -3292,7 +3292,12 @@ class CustomerController extends \BaseController {
 			try {
 
 				$decoded = $this->customerTokenDecode($jwt_token);
-				$customeremail = $decoded->customer->email;
+
+                // if(empty($decoded->customer)){
+                //     return ['isSessionExpired'=>true];
+                // }
+				
+                $customeremail = $decoded->customer->email;
 				$customer_id = $decoded->customer->_id;
 
 				Log::info("------------home------------$customeremail");

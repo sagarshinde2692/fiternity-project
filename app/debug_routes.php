@@ -2703,3 +2703,6 @@ Route::post('createLoyaltyCoupons','DebugController@createLoyaltyCoupons');
 Route::get('registerOngoingLoyalty','DebugController@registerOngoingLoyalty');
 
 Route::get('registerOngoingLoyaltyMail','DebugController@registerOngoingLoyaltyMail');
+
+
+Route::post('getreversehash','DebugController@getreversehash');
