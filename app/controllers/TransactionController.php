@@ -6454,7 +6454,7 @@ class TransactionController extends \BaseController {
         }elseif(isset($data['ticket_id'])){
 			$ticket = Ticket::where("_id", intval($ticket_id))->with("event")->get();
 			$ticket = $ticket[0];
-			$result["event_name"] = $ticket["event"]["name"];
+			$result["event_name"] = $ticket["name"];
 			$result["event_id"] = $ticket["event"]["_id"];
 			$result["ticket_id"] = $ticket["_id"];
 			$result["finder_id"] = isset($ticket["event"]["finder_id"]) ? $ticket["event"]["finder_id"] : "";
