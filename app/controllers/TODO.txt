@@ -1,3 +1,0 @@
-1. Put all vendorcategory data into customer claimed voucher.
-2. Change voucher claimed into array
-3. milestone claim date under voucher
