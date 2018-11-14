@@ -8660,14 +8660,11 @@ class CustomerController extends \BaseController {
                             continue;
                         }
                         $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description']);
-                        Log::info($vc);
-                        Log::info("============================================================================================================================================================");
                         $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
                         $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
                         $post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $vc);
                         $post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$post_reward_data_template['_id'];
-                        Log::info($post_reward_data_template['coupon_description']);
                         unset($vc['finder_ids']);
                         $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
                         $post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
@@ -8710,8 +8707,8 @@ class CustomerController extends \BaseController {
         
         $pre_register = Config::get('loyalty_screens.pre_register');
 	
+        Log::info("preLoyaltyRegistration");
         Log::info(Request::header('Mobile-Verified'));
-        Log::info("asda");
 
         
         
