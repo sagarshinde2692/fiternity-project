@@ -8430,9 +8430,26 @@ class CustomerController extends \BaseController {
 			
 			$direct_checkin = false;
 			
-			$current_membership = Order::active()->where('customer_id', $customer['id'])->where('finder_id', $finderarr['_id'])->where('type', 'memberships')->where('start_date', '<', new DateTime())->where('end_date', '>=', new DateTime())->first();
+			
+            $current_membership = Order::active()->where('customer_id', $customer['id'])->where('finder_id', $finderarr['_id'])->where('type', 'memberships')->where('start_date', '<', new DateTime())->where('end_date', '>=', new DateTime())->first();
 
-			if($current_membership){
+            if(!$current_membership){
+                 
+                if(!empty($customer['loyalty']['receipts'])){
+                    
+                    $receipts_verified = array_where($customer['loyalty']['receipts'], function($key, $x) use ($finderarr){
+                        return !empty($x['verified']) && !empty($x['finder_id']) && !empty($x['verified_start_date']) && !empty($x['verified_end_date']) && $x['finder_id'] == $finderarr['_id'] && time() > $x['verified_start_date']->sec && time() < $x['verified_end_date']->sec;
+                    });
+
+                    if(!empty($receipts_verified)){
+        				$direct_checkin = true;
+                        
+                    }
+                }
+            
+            }
+
+			if($current_membership || $direct_checkin){
 				
 				$direct_checkin = true;
 			
@@ -8672,11 +8689,17 @@ class CustomerController extends \BaseController {
                         if($milestone_no >= $milestone['milestone'] ){
 
                             $post_reward_data_template['claim_enabled'] = true;
-                            if(!empty($customer['loyalty']['receipt_under_verfication'])){
-                                $post_reward_data_template['block_message'] = Config::get('loyalty_screens.receipt_verification_message');
-                            }else if(empty($customer_milestones[$milestone['milestone']-1]['verified'])){
-                                $post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
+
+                            if(empty($customer_milestones[$milestone['milestone']-1]['verified'])){
+
+                                if(!empty($customer['loyalty']['receipt_under_verfication'])){
+                                    $post_reward_data_template['block_message'] = Config::get('loyalty_screens.receipt_verification_message');
+                                }else{
+                                    $post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
+                                }
+                            
                             }
+
                             !isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
 
                         }else{
