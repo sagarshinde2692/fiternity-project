@@ -28,6 +28,7 @@ use Offer;
 use DateTime;
 use Order;
 use Checkin;
+use FinderMilestone;
 
 Class Utilities {
 
@@ -6065,6 +6066,7 @@ Class Utilities {
 
        $already_assigned_voucher = \LoyaltyVoucher::
             where('milestone', $voucher_category->milestone)
+            ->where('voucher_category', $voucher_category->_id)
             ->where('customer_id', $customer['_id'])
             ->orderBy('_id', 'asc')
             ->first();
@@ -6089,6 +6091,11 @@ Class Utilities {
         }
 
         $new_voucher->customer_id = $customer['_id'];
+        $new_voucher->name = $voucher_category['name'];
+        $new_voucher->image = $voucher_category['image'];
+        $new_voucher->terms = $voucher_category['terms'];
+        $new_voucher->amount = $voucher_category['amount'];
+        $new_voucher->claim_date = new \MongoDate();
 
         $new_voucher->update();
 
@@ -6097,19 +6104,16 @@ Class Utilities {
     }
 
 
-    public function getMilestoneSection($customer=null){
-        
-        if(!$customer){
+    public function getMilestoneSection($customer=null, $brand_milestones=null){
 
+        if(empty($customer)){
             $jwt_token = Request::header('Authorization');
 		    $decoded = decode_customer_token($jwt_token);
 		    $customer_id = $decoded->customer->_id;
 		    $customer = Customer::find($customer_id);
-
         }
-
         if(empty($customer['loyalty'])){
-            return;
+            return ['data'=>[]];
         }
         
         $post_register_milestones = Config::get('loyalty_screens.milestones');
@@ -6117,7 +6121,21 @@ Class Utilities {
         $check_ins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
         $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
         $milestone_no = count($customer_milestones);
-        // $check_ins = 52;
+        $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
+        $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
+
+        $checkin_limit = Config::get('loyalty_constants.checkin_limit');
+        
+        if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
+            if(!$brand_milestones){
+               $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
+            }
+
+            if($brand_milestones){
+                $post_register_milestones['data'] = $brand_milestones['milestones'];
+                $checkin_limit = $brand_milestones['checkin_limit'];
+            }
+        }
 
         foreach($post_register_milestones['data'] as &$milestone){
             
@@ -6135,8 +6153,10 @@ Class Utilities {
             }
         }
         if(empty($milestone_next_count)){
-            $milestone_next_count = Config::get('loyalty_constants.checkin_limit');
+            $milestone_next_count = $checkin_limit;
+            $post_register_milestones['all_milestones_done'] = true;
         }
+        $post_register_milestones['milestone_next_count'] = $milestone_next_count;
         unset($milestone);
         $post_register_milestones['subheader'] = strtr($post_register_milestones['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$check_ins, '$next_milestone'=>$milestone_no+1]);
         $post_register_milestones['description'] = strtr($post_register_milestones['description'], ['$check_ins'=>$check_ins, '$milestone_next_count'=>$milestone_next_count]);
@@ -6165,6 +6185,10 @@ Class Utilities {
 			}
             $customer_id = $data['customer_id'];
             $customer = Customer::where('_id', $customer_id)->where('loyalty.start_date', 'exists', true)->first(['loyalty']);
+            $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
+            $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
+
+
 
             if(empty($customer)){
 				return ['status'=>400, 'message'=>'Customer not registered'];
@@ -6202,6 +6226,18 @@ Class Utilities {
                 }
             }
 
+            $milestones = Config::get('loyalty_constants.milestones', []);
+
+            if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
+                $finder_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
+                if($finder_milestones){
+                    $milestones = $finder_milestones['milestones'];
+                    $checkin->unverified = false;
+                    $checkin->brand_loyalty = $brand_loyalty;
+                }
+
+            }
+
 			$checkin->save();
             
             if(!empty($data['finder_id']) && !empty($data['type']) && $data['type'] == 'membership'){
@@ -6227,8 +6263,8 @@ Class Utilities {
             $checkin_count = count($all_checkins);
 
             
-            $milestones = Config::get('loyalty_constants.milestones', []);
             
+                
             $milestone_checkins = array_column($milestones, 'count');
             
             $milestone_reached = array_search($checkin_count, $milestone_checkins);
@@ -6761,6 +6797,17 @@ Class Utilities {
             ];
             $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name','customer_membership']);
             $loyalty = array_merge($loyalty, $fields_to_add);
+
+            if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['duration_day']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($data['duration_day'], [180, 360])){
+                Finder::$withoutAppends = true;
+                $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+                if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
+                    $loyalty['brand_loyalty'] = $finder['brand_id'];
+                    $loyalty['brand_loyalty_duration'] = $data['duration_day'];
+                    $loyalty['brand_loyalty_city'] = $data['city_id'];
+                }
+            }
+
             $update_data = [
                 'loyalty'=>$loyalty 
             ];

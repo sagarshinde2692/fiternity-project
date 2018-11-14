@@ -20,7 +20,7 @@ return array(
             'next_count'=>30,
             'progress'=>0,
             'description' => 'Check-ins',
-            'amount'=>500
+            'amount'=>500,
 
         ],
         [
@@ -65,6 +65,7 @@ return array(
     'register_url'=>Config::get('app.website', 'https://www.fitternity.com').'/fitsquad',
     'fitsquad_logo'=>'https://b.fitn.in/loyalty/web%20FitSquad%20logo%20orange.png',
     'fitsquad_faq'=>Config::get('app.website', 'https://www.fitternity.com').'/fitsquad-faq',
+    
     
     
 );
