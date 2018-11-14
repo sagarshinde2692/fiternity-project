@@ -3966,11 +3966,11 @@ class HomeController extends BaseController {
 		$data["sponsors"] = [
                 [
                     "title"=>"Presented By",
-                    "image"=>"https://b.fitn.in/mfp-2018/MORNING-FITNESS-PARTY.jpg-jockey.jpg"
+                    "image"=>"https://b.fitn.in/mfp-2018/p1.png"
                 ],
                 [
                     "title"=>"Powered By",
-                    "image"=>"https://b.fitn.in/mfp-2018/MORNING-FITNESS-PARTY.jpg-times-of-india.jpg"
+                    "image"=>"https://b.fitn.in/mfp-2018/p2.png"
                 ]
             ];
         $data["what_people_say"] = [
