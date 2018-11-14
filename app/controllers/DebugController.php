@@ -8358,6 +8358,9 @@ public function yes($msg){
 		$customers = Customer::where("loyalty.milestones.voucher", "exists",true)->get();
 		foreach($customers as $customer){
 			$loyalty = (array) $customer["loyalty"];
+            if(isset($loyalty['milestones'][0]['voucher'][0])){
+                continue;
+            }
 			$vouchers = array($customer["loyalty"]["milestones"][0]["voucher"]);
 			$vouchers[0]["claimed_date_time"] = $customer["loyalty"]["milestones"][0]["claimed_date_time"];	
 			$vouchers[0]["name"] = $customer["loyaltyvoucher_category"][0]["name"];
