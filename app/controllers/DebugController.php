@@ -8180,6 +8180,9 @@ public function yes($msg){
         
         $coupon_info['description'] = $voucher_category['description'];
         $coupon_info['milestone'] = $voucher_category['milestone'];
+        $coupon_info['name'] = $voucher_category['name'];
+        $coupon_info['image'] = $voucher_category['image'];
+        $coupon_info['terms'] = $voucher_category['terms'];
         
         $coupon_info['expiry_date'] = new MongoDate(strtotime($coupon_info['expiry_date']));
         
@@ -8366,6 +8369,19 @@ public function yes($msg){
 		}
 
 	}
+
+    public function addvoucherimages(){
+        $vouchers = VoucherCategory::where('brand_id', 'exists', true)->get();
+        $i=0;
+        foreach($vouchers as $voucher){
+            $voucher->image = "https://b.fitn.in/loyalty/goldvouchers/".urlencode(strtolower($voucher->name)).".jpg";
+            $voucher->save();
+            Log::info($i++);
+        }
+
+        return "Done";
+        
+    }
 
 }
 

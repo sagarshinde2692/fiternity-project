@@ -110,7 +110,7 @@ return array(
 
     'post_register_rewards_data_outer_template' => [
         'title' => 'Milestone milestone',
-        'description' => 'Select one reward',
+        'description' => 'Select 1 reward',
         '_id' => 1,
         'data' => []
     ],
