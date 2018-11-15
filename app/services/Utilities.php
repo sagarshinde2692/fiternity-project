@@ -5628,7 +5628,12 @@ Class Utilities {
                         $end=(int)date('G', strtotime($end));
                         
 						Service::$withoutAppends=true;
-						$service=Service::where("_id",intval($service_id))->first(['workoutsessionschedules']);
+						$service=Service::where("_id",intval($service_id))->first(['workoutsessionschedules', 'finder_id']);
+                        Finder::$withoutAppends = true;
+                        $finder = Finder::find($service['finder_id'], ['category_id']);
+                        if($finder['category_id'] == 47){
+                            return null;
+                        }
 						if(isset($service)&&!empty($service->workoutsessionschedules))
 						{
 							$r=array_values(array_filter($service->workoutsessionschedules, function($a) use ($day){return !empty($a['weekday'])&&$a['weekday']==$day;}));
