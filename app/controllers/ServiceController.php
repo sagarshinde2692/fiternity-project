@@ -822,28 +822,6 @@ class ServiceController extends \BaseController {
                 }else{
 					$ratecard_price = $ratecard['price'];
                 }
-//******************************************************************************************************DYNAMIC PRICING START*****************************************************************************************
-                /* if($type == "workoutsessionschedules"){
-                	$temp=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
-
-                	$service["workout_session"] = [];
-                	$service['cost']=[];
-                	if(!empty($temp))
-                	{
-                		if(isset($temp['peak']))
-                		{
-                				$service["workout_session"]['available']=true;
-                				$service["workout_session"]["peak_amount"]=$temp['peak'];
-                				$service['cost']['peak'] = "₹ ".$temp['peak'];
-                		}
-                		if(isset($temp['non_peak']))
-                		{
-	                			$service["workout_session"]["non_peak_amount"]=$temp['non_peak'];
-	                			$service['cost']['non_peak'] = "₹ ".$temp['non_peak'];
-                		}
-                	}
-		    	} */
-//******************************************************************************************************DYNAMIC PRICING END*****************************************************************************************
 
 				if($type == "workoutsessionschedules"){
 					$service["workout_session"] = [
@@ -962,12 +940,12 @@ class ServiceController extends \BaseController {
 						$total_slots_count +=1;
 						
 						// if(isset($_GET['source']) && $_GET['source'] == 'pps')
-						$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
-						
-						
-						
+                        if($finder['category_id'] != 47){
 
-						
+						    $ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
+
+                        }
+
 						if(!$slot['passed']){
 							$total_slots_available_count +=1;
 // 							return $ck;
@@ -1628,17 +1606,8 @@ class ServiceController extends \BaseController {
 			$service_details['lat'] = (string)$service_details['lat'];
 			$service_details['lon'] = (string)$service_details['lon'];
 
-			// return $service_details;
 			$service_details = $service_details->toArray();
 
-			/* $service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["title"=>Config::get('app.non_peak_hours.non_peak_title'),"sub_title"=>Config::get('app.non_peak_hours.non_peak_title')]];
-			
-			$this->utilities->getDayWs()
-			array_values(array_filter([],function ($e) use()))
-			$this->utilities->getPeakAndNonPeakPrice($service_details,$this->utilities->getPrimaryCategory(null,$service_details['_id'])); */
-
-			// $service_details['title'] = $service_details['name'].' at '.$finder['title'];
-			
 			$service_details['pass_title'] = 'Quick Book';
 			
 			if($service_details['servicecategory_id'] == 65){

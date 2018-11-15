@@ -294,17 +294,7 @@ class Service extends \Basemodel{
 							}
 						}
 					}
-					if($value["type"] == "workout session"){
-						if($value["special_price"] > 0){
-							$value["peak_price"] = intval($value["special_price"]);
-							$value["special_price"] = intval($value["special_price"] * Config::get('app.non_peak_hours.off', 0.6)) ;
-						}else{
-							if($value["price"] > 0){
-								$value["peak_price"] = intval($value["price"]) ;
-								$value["special_price"] = intval($value["price"] * Config::get('app.non_peak_hours.off', 0.6)) ;
-							}
-						}	
-					}
+					
 					if(count($ratecardoffers) && isset($ratecardoffers[0]['offer_icon'])){
 						if(in_array($value['type'], ['membership', 'packages']) && ((isset($finder['membership']) && $finder['membership'] == 'disable') || (isset($this['membership']) && $this['membership'] == 'disable') || (isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed'])) || $finder['commercial_type'] == 0)){
 							$ratecardoffers[0]['offer_icon'] = "";
@@ -335,6 +325,18 @@ class Service extends \Basemodel{
                     }
 
 				}
+                
+                if($value["type"] == "workout session" && $finder->category_id != 47){
+                    if($value["special_price"] > 0){
+                        $value["peak_price"] = intval($value["special_price"]);
+                        $value["special_price"] = $value["special_price1"] = intval($value["special_price"] * Config::get('app.non_peak_hours.off', 0.6)) ;
+                    }else{
+                        if($value["price"] > 0){
+                            $value["peak_price"] = intval($value["price"]) ;
+                            $value["special_price"] = intval($value["price"] * Config::get('app.non_peak_hours.off', 0.6)) ;
+                        }
+                    }	
+                }
 				
 				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;
 
