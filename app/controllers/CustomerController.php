@@ -3151,9 +3151,12 @@ class CustomerController extends \BaseController {
 	}
 	public function getallBookingfriends(){	
 		$jwt_token = Request::header('Authorization');
-		$decoded = $this->customerTokenDecode($jwt_token);
-		$customer_id = $decoded->customer->_id;	
-		return $this->getBookingFriends($customer_id);
+		if(!empty($jwt_token)){
+			$decoded = $this->customerTokenDecode($jwt_token);
+			$customer_id = $decoded->customer->_id;	
+			return $this->getBookingFriends($customer_id);
+		}
+		return [];
 	}
 	public function getBookingFriends($customer_id){
 		$customer = Customer::find((int)$customer_id);
