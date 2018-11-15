@@ -2618,6 +2618,9 @@ class HomeController extends BaseController {
             $cites		= 	City::orderBy('order')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'), 'getcities')->get(array('name','_id','slug'));
             // $cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->get(array('name','_id','slug'));
         }
+        if($this->device_type == 'android' && $this->app_version >= '5.14'){
+            return Response::json(['data'=>$cites],200);
+        }
 
         return Response::json($cites,200);
     }
