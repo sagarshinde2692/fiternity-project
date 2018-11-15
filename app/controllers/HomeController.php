@@ -3942,37 +3942,23 @@ class HomeController extends BaseController {
 
         $data["madness"] = [
             "title"=>"Check Out The Madness",
+			"baseurl"=>"https://b.fitn.in/mfp-2018/madness/web/",
+			"baseurl_mobile"=>"https://b.fitn.in/mfp-2018/madness/",
             "images"=>[
-                "https://b.fitn.in/global/toi/mfp/madness/14.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/15.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/21.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/22.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/2_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/3.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/33.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/34.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/4.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/4_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/5.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/5_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/6.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/7.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/9_11.jpg",
-
-				"https://b.fitn.in/mfp-2018/madness/1.jpg",
-				"https://b.fitn.in/mfp-2018/madness/2.jpg",
-				"https://b.fitn.in/mfp-2018/madness/3.jpg",
-				"https://b.fitn.in/mfp-2018/madness/4.jpg",
-				"https://b.fitn.in/mfp-2018/madness/5.jpg",
-				"https://b.fitn.in/mfp-2018/madness/6.jpg",
-				"https://b.fitn.in/mfp-2018/madness/7.jpg",
-				"https://b.fitn.in/mfp-2018/madness/8.jpg",
-				"https://b.fitn.in/mfp-2018/madness/9.jpg",
-				"https://b.fitn.in/mfp-2018/madness/10.jpg",
-				"https://b.fitn.in/mfp-2018/madness/11.jpg",
-				"https://b.fitn.in/mfp-2018/madness/12.jpg",
-				"https://b.fitn.in/mfp-2018/madness/13.jpg",
-				"https://b.fitn.in/mfp-2018/madness/14.jpg"
+				"1.jpg",
+				"2.jpg",
+				"3.jpg",
+				"4.jpg",
+				"5.jpg",
+				"6.jpg",
+				"7.jpg",
+				"8.jpg",
+				"9.jpg",
+				"10.jpg",
+				"11.jpg",
+				"12.jpg",
+				"13.jpg",
+				"14.jpg"
 
             ]
         ];
