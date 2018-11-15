@@ -2706,3 +2706,4 @@ Route::get('registerOngoingLoyaltyMail','DebugController@registerOngoingLoyaltyM
 
 
 Route::post('getreversehash','DebugController@getreversehash');
+Route::get('verifyCheckinsFromReceipts','DebugController@verifyCheckinsFromReceipts');

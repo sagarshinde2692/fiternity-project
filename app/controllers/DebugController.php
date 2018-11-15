@@ -8386,5 +8386,34 @@ public function yes($msg){
         
     }
 
+    private function verifyCheckinsFromReceipts(){
+        
+        $utilities = new Utilities();
+
+
+        $customers = Customer::where('loyalty.receipts.verified', true)->get(['loyalty']);
+        // $customers = Customer::where('loyalty.receipts.verified', true)->lists('_id');
+        // return Checkin::whereIn('customer_id', $customers)->where('unverified', true)->where('type', 'membership')->get();
+        Log::info("Total customers ::".count($customers));
+        $checkins_to_verify = [];
+        foreach($customers as $key => $customer){
+
+            $receipt = $customer['loyalty']['receipts'][0];
+            $unverified_checkins = Checkin::where('customer_id', $customer['_id'])->where('finder_id', $receipt['finder_id'])->where('type', 'membership')->where('unverified', true)
+            ->where('created_at', '>', new DateTime(date('d-m-Y H:i:s', $receipt['verified_start_date']->sec)))->where('created_at', '<', new DateTime(date('d-m-Y H:i:s', $receipt['verified_end_date']->sec)))
+            ->get()->toArray();
+            $checkins_to_verify = array_merge($checkins_to_verify, $unverified_checkins);
+            
+            // if(!empty(count($unverified_checkins))){
+            //     return $unverified_checkins;
+            // }
+            Log::info($key);
+        
+        }
+        $checkins_to_verify = array_column($checkins_to_verify, '_id');
+        $time = time();
+        return Checkin::whereIn('_id', $checkins_to_verify)->where('unverified', true)->update(['unverified'=>false, 'verified_by_script_against_receipt'=>$time]);
+    }
+
 }
 
