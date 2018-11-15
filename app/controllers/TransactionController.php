@@ -616,6 +616,7 @@ class TransactionController extends \BaseController {
 
             if($event){
                 $data['event_name'] = $event->name;
+				$data['event_address'] = $event["contact"]["address"];
                 if(in_array($event['slug'],Config::get('app.my_fitness_party_slug')) || !empty($event['mfp'])){
                     $data['event_type'] = "TOI";
                 }
@@ -6475,7 +6476,7 @@ class TransactionController extends \BaseController {
                     "value"=> date('d-m-Y', strtotime($ticket["start_date"]))
                 ],
                 "date_time"=>[
-                    "field"=> "Time",
+                    "field"=> "Start Time",
                     "value"=> date('H:i:s', strtotime($ticket["start_date"]))
                 ],
                 // "discount"=>[
