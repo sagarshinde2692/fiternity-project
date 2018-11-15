@@ -6158,6 +6158,11 @@ class TransactionController extends \BaseController {
                 $ratecard_id = $order->ratecard_id;
             
             }
+			if(isset($order->ticket_id) && $order->ticket_id != ''){
+               
+                $ticket_id = $order->ticket_id;
+            
+            }
         
         }elseif(isset($data['ticket_id'])){
 			$ticket_id = intval($data['ticket_id']);
@@ -6451,7 +6456,11 @@ class TransactionController extends \BaseController {
             }
 
 
-        }elseif(isset($data['ticket_id'])){
+        }elseif(isset($ticket_id)){
+			if(isset($order)){
+				$data = $order;
+				$data["customer_quantity"] = $order["ticket_quantity"];
+			}
 			$ticket = Ticket::where("_id", intval($ticket_id))->with("event")->get();
 			$ticket = $ticket[0];
 			$result["event_name"] = $ticket["name"];
