@@ -2418,6 +2418,9 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                         if (isset($data['customer_phone']) && $data['customer_phone'] != '') {
                             $customer->contact_no = $data['customer_phone'];
+							if(isset($data['verified'])){
+								$customer->verified = true;
+							}
                         }
 
                         if (isset($data['customer_address'])) {

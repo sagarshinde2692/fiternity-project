@@ -3104,49 +3104,73 @@ class CustomerController extends \BaseController {
 	}
 	public function addafriendforbooking(){	
 		$jwt_token = Request::header('Authorization');
-		$decoded = $this->customerTokenDecode($jwt_token);
-		$customer_id = $decoded->customer->_id;
-		$rules = [
-		'friend_name' => 'required|string',
-		'friend_email' => 'required|string',
-		'friend_phone' => 'required|string',
-		'friend_gender' => 'required|string'
-		];
 		$data = Input::json()->all();
-		$validator = Validator::make($data,$rules);
-		if ($validator->fails()) {
-			return Response::json(
-				array(
-					'status' => 400,
-					'message' => $this->errorMessage($validator->errors()
-						)),400
-				);
-		}
-		$friend = array(
-			"name" => $data["friend_name"],
-			"email" => $data["friend_email"],
-			"phone" => $data["friend_phone"],
-			"gender" => $data["friend_gender"]
-		);
-		
-		$customer = Customer::where("_id",(int)$customer_id)->where("friends.email","!=", $data["friend_email"])->first();
-		if(!empty($customer)){
-			if(empty($customer["friends"])){
-				$customer["friends"] = array($friend);
-			}else{
-				$friends = $customer["friends"];
-				array_push($friends, $friend);
-				$customer["friends"] = $friends;
+		if($data["signUp"]){
+			$newData = array(
+				"customer_name" => $data["friend_name"],
+				"customer_email" => $data["friend_email"],
+				"customer_phone" => $data["friend_phone"],
+				"customer_gender" => $data["friend_gender"],
+				"verified" => true
+			);
+			$customer_id = autoRegisterCustomer($data);
+			$customer = Customer::where("_id",(int)$customer_id)->where("friends.email","!=", $data["friend_email"])->first();
+			if(!empty($customer)){
+				if(empty($customer["friends"])){
+					$customer["friends"] = array($friend);
+				}else{
+					$friends = $customer["friends"];
+					array_push($friends, $friend);
+					$customer["friends"] = $friends;
+				}
+				$customer->update();
+				return $this->getBookingFriends($customer_id);
 			}
-			$customer->update();
-			return $this->getBookingFriends($customer_id);
 		}else{
-			return Response::json(
-				array(
-					'status' => 400,
-					'message' => "Your friend is already added"
-						),400
-				);
+			$decoded = $this->customerTokenDecode($jwt_token);
+			$customer_id = $decoded->customer->_id;
+			$rules = [
+			'friend_name' => 'required|string',
+			'friend_email' => 'required|string',
+			'friend_phone' => 'required|string',
+			'friend_gender' => 'required|string'
+			];
+			
+			$validator = Validator::make($data,$rules);
+			if ($validator->fails()) {
+				return Response::json(
+					array(
+						'status' => 400,
+						'message' => $this->errorMessage($validator->errors()
+							)),400
+					);
+			}
+			$friend = array(
+				"name" => $data["friend_name"],
+				"email" => $data["friend_email"],
+				"phone" => $data["friend_phone"],
+				"gender" => $data["friend_gender"]
+			);
+			
+			$customer = Customer::where("_id",(int)$customer_id)->where("friends.email","!=", $data["friend_email"])->first();
+			if(!empty($customer)){
+				if(empty($customer["friends"])){
+					$customer["friends"] = array($friend);
+				}else{
+					$friends = $customer["friends"];
+					array_push($friends, $friend);
+					$customer["friends"] = $friends;
+				}
+				$customer->update();
+				return $this->getBookingFriends($customer_id);
+			}else{
+				return Response::json(
+					array(
+						'status' => 400,
+						'message' => "Your friend is already added"
+							),400
+					);
+			}
 		}
 	}
 	public function getallBookingfriends(){	
