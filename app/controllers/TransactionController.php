@@ -6460,6 +6460,7 @@ class TransactionController extends \BaseController {
 			if(isset($order)){
 				$data = $order;
 				$data["customer_quantity"] = $order["ticket_quantity"];
+				$data["coupon"] = $order["coupon_code"];
 			}
 			$ticket = Ticket::where("_id", intval($ticket_id))->with("event")->get();
 			$ticket = $ticket[0];
