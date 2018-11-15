@@ -944,6 +944,8 @@ class ServiceController extends \BaseController {
 
 						    $ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
 
+                        }else{
+                            $ck=['peak'=>true];
                         }
 
 						if(!$slot['passed']){
