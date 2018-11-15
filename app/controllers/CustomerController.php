@@ -3105,7 +3105,7 @@ class CustomerController extends \BaseController {
 	public function addafriendforbooking(){	
 		$jwt_token = Request::header('Authorization');
 		$data = Input::json()->all();
-		if($data["signUp"]){
+		if(!empty($data["signUp"]) && $data["signUp"]){
 			$newData = array(
 				"customer_name" => $data["friend_name"],
 				"customer_email" => $data["friend_email"],

@@ -3989,10 +3989,10 @@ class HomeController extends BaseController {
                 "name"=>"Dreema H Baherwani Lala ",
                 "comment"=>"The best combination of fitness and fun. Each and every session was energizing and enjoyable. The host was extremely funny and knew how to keep the crowd engaged. A colourful and vibrant way to celebrate fitness. I'm eagerly awaiting the next party."
             ],
-            [
-                "name"=>" Nupur Banerji",
-                "comment"=>"This was my second experience at the Morning Fitness Party and I’m blown off with the love and the energy of the people who turn up at 7 am on a Sunday! The Time of India and the team of Fitternity is doing an amazing job and going through such a big event with a smile on their faces.. You all make it easier for us to shine on the frontline.. Thank you for being such an amazing Team!"
-            ],
+            // [
+            //     "name"=>" Nupur Banerji",
+            //     "comment"=>"This was my second experience at the Morning Fitness Party and I’m blown off with the love and the energy of the people who turn up at 7 am on a Sunday! The Time of India and the team of Fitternity is doing an amazing job and going through such a big event with a smile on their faces.. You all make it easier for us to shine on the frontline.. Thank you for being such an amazing Team!"
+            // ],
             [
                 "name"=>" Jaspreet Bajaj",
                 "comment"=>"Awesome Experience & loved the ambience... Great Instructors & Energetic folks,, too much fun"
