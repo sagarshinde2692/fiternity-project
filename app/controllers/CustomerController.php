@@ -3113,19 +3113,29 @@ class CustomerController extends \BaseController {
 				"customer_gender" => $data["friend_gender"],
 				"verified" => true
 			);
-			$customer_id = autoRegisterCustomer($data);
-			$customer = Customer::where("_id",(int)$customer_id)->where("friends.email","!=", $data["friend_email"])->first();
-			if(!empty($customer)){
-				if(empty($customer["friends"])){
-					$customer["friends"] = array($friend);
-				}else{
-					$friends = $customer["friends"];
-					array_push($friends, $friend);
-					$customer["friends"] = $friends;
-				}
-				$customer->update();
-				return $this->getBookingFriends($customer_id);
-			}
+			$customer_id = autoRegisterCustomer($newData);
+			$customerToken = createCustomerToken($customer_id);
+			Log::info("autoRegisterCustomer".$customer_id );
+			$newCustomer = $this->customerTokenDecode($customerToken);
+			return array("token" => $customerToken, "customer" => $newCustomer);
+			
+			// if(!empty($customer)){
+			// 	$friend = array(
+			// 		"name" => $data["friend_name"],
+			// 		"email" => $data["friend_email"],
+			// 		"phone" => $data["friend_phone"],
+			// 		"gender" => $data["friend_gender"]
+			// 	);
+			// 	if(empty($customer["friends"])){
+			// 		$customer["friends"] = array($friend);
+			// 	}else{
+			// 		$friends = $customer["friends"];
+			// 		array_push($friends, $friend);
+			// 		$customer["friends"] = $friends;
+			// 	}
+			// 	$customer->update();
+			// 	return $this->getBookingFriends($customer_id);
+			// }
 		}else{
 			$decoded = $this->customerTokenDecode($jwt_token);
 			$customer_id = $decoded->customer->_id;
