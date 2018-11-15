@@ -612,11 +612,12 @@ class TransactionController extends \BaseController {
                 $data['finder_name'] = $finder->title;
             }
 
-            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug','mfp']);
+            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug','mfp','contact','venue']);
 
             if($event){
                 $data['event_name'] = $event->name;
 				$data['event_address'] = $event["contact"]["address"];
+				$data['event_venue'] = $event["venue"];
                 if(in_array($event['slug'],Config::get('app.my_fitness_party_slug')) || !empty($event['mfp'])){
                     $data['event_type'] = "TOI";
                 }
