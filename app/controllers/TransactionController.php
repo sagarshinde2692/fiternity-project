@@ -6480,8 +6480,32 @@ class TransactionController extends \BaseController {
 			$total_amount = $ticket['price'] * intval($data['customer_quantity']);
 			$result['payment_details']['amount_summary'][] = [
                 'field' => 'Total Amount',
-                'value' => 'Rs. '.(string)$ticket['price'] * intval($data['customer_quantity'])
+                'value' => 'Rs. '.(string)$total_amount
             ];
+			if(!empty($data['coupon'])){
+				$resp = $this->customerreward->couponCodeDiscountCheck(array(),$data['coupon'],null, $ticket, $data["customer_quantity"]); 	
+                // $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
+				
+                if($resp["coupon_applied"]){
+					
+                    $data['coupon_discount'] = $total_amount > $resp['data']['discount'] ? $resp['data']['discount'] : $total_amount;
+
+                    $total_amount = $total_amount - $data['coupon_discount'];
+                    Log::info($total_amount);
+                    $data['you_save'] += $data['coupon_discount'];
+                    
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.(string)$data['coupon_discount']
+                    ];
+					$result['payment_details']['amount_summary'][] = [
+                        'field' => 'Total Payable Amount',
+                        'value' => 'Rs. '.(string)$total_amount
+                    ];
+                
+                }
+
+            }
 
             $data['amount_payable'] = $total_amount;
 
