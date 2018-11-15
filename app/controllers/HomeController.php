@@ -20,6 +20,7 @@ class HomeController extends BaseController {
 
 
     public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities) {
+        parent::__construct();
         $this->customernotification     =   $customernotification;
         $this->sidekiq = $sidekiq;
         $this->api_url = Config::get("app.url")."/";
