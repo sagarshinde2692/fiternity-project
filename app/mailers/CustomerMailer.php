@@ -140,6 +140,7 @@ Class CustomerMailer extends Mailer {
 
 		if(isset($data['event_type']) && $data['event_type']=='TOI'){
 			$label = 'Order-PG-Event-TOI';
+            $data['via'] = 'mfp';
 		}
 
 		$message_data 	= array(
