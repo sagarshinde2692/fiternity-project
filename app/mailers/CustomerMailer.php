@@ -755,7 +755,9 @@ Class CustomerMailer extends Mailer {
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
 
 		$message_data['email_subject'] = $email_subject;
-		
+		if(!empty($data['via']) && $data['via']== 'mfp'){
+    		return $this->sendDbToWorker('mfp',$email_template, $message_data, $label, $delay);
+        }
 		return $this->sendDbToWorker('customer',$email_template, $message_data, $label, $delay);
 
 	}
