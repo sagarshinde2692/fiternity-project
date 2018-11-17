@@ -11,4 +11,8 @@ class Ticket extends \Basemodel {
 	protected $collection = "tickets";
 
 	protected $dates = array('start_date','end_date');
+
+	public function event(){
+		return $this->belongsTo('DbEvent');
+	}	
 }

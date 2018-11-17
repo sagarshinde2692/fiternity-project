@@ -2418,6 +2418,9 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                         if (isset($data['customer_phone']) && $data['customer_phone'] != '') {
                             $customer->contact_no = $data['customer_phone'];
+							if(isset($data['verified'])){
+								$customer->verified = true;
+							}
                         }
 
                         if (isset($data['customer_address'])) {
@@ -2447,7 +2450,12 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         	$customer->cart_id=$cart_id;
                         	$customer->update();
                         }
-                        registerMail($customer->_id);
+						if(!empty($data["thirdparty_register"]) && $data["thirdparty_register"] != false){
+							$customer->thirdparty_register=$data["thirdparty_register"];
+                        	$customer->update();
+						}else{
+							registerMail($customer->_id);
+						}
 
                         // invalidateDuplicatePhones($data, $customer->toArray());
 
