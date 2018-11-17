@@ -612,11 +612,13 @@ class TransactionController extends \BaseController {
                 $data['finder_name'] = $finder->title;
             }
 
-            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug']);
+            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug','mfp','contact','venue']);
 
             if($event){
                 $data['event_name'] = $event->name;
-                if(in_array($event['slug'],Config::get('app.my_fitness_party_slug'))){
+				$data['event_address'] = $event["contact"]["address"];
+				$data['event_venue'] = $event["venue"];
+                if(in_array($event['slug'],Config::get('app.my_fitness_party_slug')) || !empty($event['mfp'])){
                     $data['event_type'] = "TOI";
                 }
             }
@@ -6127,12 +6129,12 @@ class TransactionController extends \BaseController {
 
         $data['you_save'] = 0;
 
-        if(!isset($data['ratecard_id']) && !isset($data['order_id'])){
+        if(!isset($data['ratecard_id']) && !isset($data['order_id']) && !isset($data['ticket_id'])){
                 
                 return Response::json(array('status'=>400, 'message'=>'Order id or Ratecard id is required'), $this->error_status);
         }
 
-        if(!isset($data['ratecard_id'])){
+        if(!isset($data['ratecard_id']) && isset($data['order_id'])){
 
             $order = Order::find(intval($data['order_id']));
 
@@ -6148,8 +6150,15 @@ class TransactionController extends \BaseController {
                 $ratecard_id = $order->ratecard_id;
             
             }
+			if(isset($order->ticket_id) && $order->ticket_id != ''){
+               
+                $ticket_id = $order->ticket_id;
+            
+            }
         
-        }else{
+        }elseif(isset($data['ticket_id'])){
+			$ticket_id = intval($data['ticket_id']);
+		}else{
 
                 $ratecard_id = intval($data['ratecard_id']);
         }
@@ -6439,7 +6448,70 @@ class TransactionController extends \BaseController {
             }
 
 
-        }else{
+        }elseif(isset($ticket_id)){
+			if(isset($order)){
+				$data = $order;
+				$data["customer_quantity"] = $order["ticket_quantity"];
+				$data["coupon"] = $order["coupon_code"];
+			}
+			$ticket = Ticket::where("_id", intval($ticket_id))->with("event")->get();
+			$ticket = $ticket[0];
+			$result["event_name"] = $ticket["name"];
+			$result["event_id"] = $ticket["event"]["_id"];
+			$result["ticket_id"] = $ticket["_id"];
+			$result["finder_id"] = isset($ticket["event"]["finder_id"]) ? $ticket["event"]["finder_id"] : "";
+            $result['customer_quantity'] = isset($data['customer_quantity']) ? $data['customer_quantity'] : 1;
+			$result['order_details'] = [
+                "start_date"=>[
+                    "field"=> "Date",
+                    "value"=> date('d-m-Y', strtotime($ticket["start_date"]))
+                ],
+                "date_time"=>[
+                    "field"=> "Start Time",
+                    "value"=> date('H:i:s', strtotime($ticket["start_date"]))
+                ],
+                // "discount"=>[
+                //     "field"=> "Pay Now Discount(20% Off)",
+                //     "value"=> "Rs. ".($ticket['price'] * 20/100)
+                // ]
+                // "address"=>[
+                //     "field"=> "ADDRESS",
+                //     "value"=> $data['finder_address']
+                // ]
+            ];
+			$total_amount = $ticket['price'] * intval($data['customer_quantity']);
+			$result['payment_details']['amount_summary'][] = [
+                'field' => 'Total Amount',
+                'value' => 'Rs. '.(string)$total_amount
+            ];
+			if(!empty($data['coupon'])){
+				$resp = $this->customerreward->couponCodeDiscountCheck(array(),$data['coupon'],null, $ticket, $data["customer_quantity"]); 	
+                // $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
+				
+                if($resp["coupon_applied"]){
+					
+                    $data['coupon_discount'] = $total_amount > $resp['data']['discount'] ? $resp['data']['discount'] : $total_amount;
+
+                    $total_amount = $total_amount - $data['coupon_discount'];
+                    Log::info($total_amount);
+                    $data['you_save'] += $data['coupon_discount'];
+                    
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.(string)$data['coupon_discount']
+                    ];
+					$result['payment_details']['amount_summary'][] = [
+                        'field' => 'Total Payable Amount',
+                        'value' => 'Rs. '.(string)$total_amount
+                    ];
+                
+                }
+
+            }
+
+            $data['amount_payable'] = $total_amount;
+
+		}else{
 
             Log::info("elelelelelelel");
             
