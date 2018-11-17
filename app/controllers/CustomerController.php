@@ -3111,7 +3111,8 @@ class CustomerController extends \BaseController {
 				"customer_email" => $data["friend_email"],
 				"customer_phone" => $data["friend_phone"],
 				"customer_gender" => $data["friend_gender"],
-				"verified" => true
+				"verified" => true,
+				"thirdparty_register" => !empty($data["thirdparty_register"]) && $data["thirdparty_register"] != false ? $data["thirdparty_register"] : false
 			);
 			$customer_id = autoRegisterCustomer($newData);
 			$customerToken = createCustomerToken($customer_id);

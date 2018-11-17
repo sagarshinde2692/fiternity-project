@@ -2450,7 +2450,12 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         	$customer->cart_id=$cart_id;
                         	$customer->update();
                         }
-                        registerMail($customer->_id);
+						if(!empty($data["thirdparty_register"]) && $data["thirdparty_register"] != false){
+							$customer->thirdparty_register=$data["thirdparty_register"];
+                        	$customer->update();
+						}else{
+							registerMail($customer->_id);
+						}
 
                         // invalidateDuplicatePhones($data, $customer->toArray());
 
