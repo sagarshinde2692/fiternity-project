@@ -633,6 +633,7 @@ Class CustomerReward {
                 }
 
                 if(isset($order['event_type']) && $order['event_type']=='TOI'){
+                    return;
                     $fitcash_plus = intval($order['amount']);
                     
                     if(isset($order['coupon_code'])){
