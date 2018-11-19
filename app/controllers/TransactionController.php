@@ -90,7 +90,7 @@ class TransactionController extends \BaseController {
         try{
             $tpoDetails = null;
             $tpoId = null;
-            if(!empty($orderData['tpo_details'])){
+            if(!empty($orderData['tpo_details']) && !empty($orderData['tpo_details']['tpo_id'])){
                 $tpoDetails = $orderData['tpo_details'];
                 $tpoId = $tpoDetails['tpo_id'];
                 Log::info('tpo_id: ', [$tpoDetails['tpo_id']]);
@@ -100,7 +100,7 @@ class TransactionController extends \BaseController {
             }
             else {
                 Log::info('both order id and tpo details are not available!');
-                return ['err' => "both order id and tpo details are not available"];
+                return ['err' => "order id and (tpo details or tpo id) are not available"];
             }
             $_env = $orderData['env'];
             Log::info('env: ', [$_env]);
