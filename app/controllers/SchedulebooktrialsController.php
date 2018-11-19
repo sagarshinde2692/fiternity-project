@@ -7259,7 +7259,14 @@ class SchedulebooktrialsController extends \BaseController {
             if($reason_message){
                 $message = $reason_message;
             }
-            
+            $finderName = ucwords($booktrial['finder_name']);
+            if(!empty($_GET['thirdparty'])){
+                $message = ucwords($booktrial['customer_name']).", Lost Fitcode to mark your active day for Multiply free session booking at "
+                .$finderName."? Don't worry. We'll verify your session attendance with ".$finderName
+                ." and process your active day shortly. For quick assistance call Fitternity - 02261094444. "
+                ."Team Aditya Birla Wellness.";
+            }
+
             $booktrial->update();
 
             $response = [
