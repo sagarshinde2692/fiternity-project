@@ -29,6 +29,8 @@ use DateTime;
 use Order;
 use Checkin;
 use FinderMilestone;
+use MongoDate;
+use Coupon;
 
 Class Utilities {
 
@@ -7098,7 +7100,7 @@ Class Utilities {
             'code'=>$voucher_category['name'],
         ];
 
-        if($voucher_category->name == 'diet_plan'){
+        if(!empty($voucher_category->diet_plan)){
         
             $diet_plan = $this->generateFreeDietPlanOrder(['customer_name'=>$customer->name, 'customer_email'=>$customer->email,'customer_phone'=>$customer->contact_no]);
 
@@ -7109,8 +7111,69 @@ Class Utilities {
             $voucher_data['diet_plan_order_id'] = $diet_plan['order_id'];
         }
 
+        if(!empty($voucher_category->swimming_session)){
+            
+            $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'finder_id'=>[8892], 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months'))]);
+            Log::info("asdsad");
+        }
+        
         return $voucher = \LoyaltyVoucher::create($voucher_data);
 
+    }
+
+    public function generateSwimmingCouponCode($data){
+
+        $coupon = [
+            "name" =>$data['description'],
+            "discount_percent" =>0,
+            "discount_max" =>$data['amount'],
+            "discount_amount" =>$data['amount'],
+            "start_date" =>new MongoDate(),
+            "end_date" =>$data['end_date'],
+        ];
+
+        $coupon['and_conditions'] = [
+            [
+                "key" =>"service.servicecategory_id",
+                "operator" =>"in",
+                "values" =>[ 
+                    123
+                ]
+            ],
+            [
+                "key" =>"logged_in_customer._id",
+                "operator" =>"in",
+                "values" =>[ 
+                    $data['customer']['_id']
+                ]
+            ]   
+        ];
+        
+
+        $coupon['once_per_user'] = true;
+        $coupon['used'] = 0;
+        $coupon["ratecard_type"] = [ "workout session"];
+
+        $coupon['code'] = $this->getSwimmingSessionCode();
+        // print_r($coupon);
+        // exit();
+        
+        $coupon = new Coupon($coupon);
+        $coupon->_id = Coupon::max('_id')+1;
+        $coupon->save();
+        return $coupon['code'];
+
+    }
+
+    public function getSwimmingSessionCode(){
+        $code = 'sw'.strtolower($this->generateRandomString());
+        // print_r($code);
+        // exit();
+        $alreadyExists = Coupon::where('code', $code)->first();
+        if($alreadyExists){
+            return $this->getSwimmingSessionCode();
+        }
+        return $code;
     }
 
 }
