@@ -6069,30 +6069,34 @@ Class Utilities {
     
     public function assignVoucher($customer, $voucher_category){
 
-       $already_assigned_voucher = \LoyaltyVoucher::
-            where('milestone', $voucher_category->milestone)
-            ->where('voucher_category', $voucher_category->_id)
-            ->where('customer_id', $customer['_id'])
-            ->orderBy('_id', 'asc')
-            ->first();
+        $already_assigned_voucher = \LoyaltyVoucher::
+                where('milestone', $voucher_category->milestone)
+                ->where('voucher_category', $voucher_category->_id)
+                ->where('customer_id', $customer['_id'])
+                ->orderBy('_id', 'asc')
+                ->first();
 
-       if($already_assigned_voucher){
-           return $already_assigned_voucher;
-       }
+        if($already_assigned_voucher){
+            return $already_assigned_voucher;
+        }
 
-       if($voucher_category->name == 'diet_plan'){
-           return $this->assignDietPlanVoucher($customer, $voucher_category);
-       }
+        if(!empty($voucher_category['manual_redemption'])){
 
-        $new_voucher = \LoyaltyVoucher::active()
-            ->where('voucher_category', $voucher_category->_id)
-            ->where('customer_id', null)
-            ->where('expiry_date', '>', new \DateTime(date('d-m-Y', strtotime('+1 month'))))
-            ->orderBy('_id', 'asc')
-            ->first();
+            $new_voucher =  $this->assignManualVoucher($customer, $voucher_category);
         
-        if(!$new_voucher){
-            return;
+        }else{
+
+            $new_voucher = \LoyaltyVoucher::active()
+                ->where('voucher_category', $voucher_category->_id)
+                ->where('customer_id', null)
+                ->where('expiry_date', '>', new \DateTime(date('d-m-Y', strtotime('+1 month'))))
+                ->orderBy('_id', 'asc')
+                ->first();
+            
+            if(!$new_voucher){
+                return;
+            }
+        
         }
 
         $new_voucher->customer_id = $customer['_id'];
@@ -7077,35 +7081,36 @@ Class Utilities {
         return $url;
     }
 
-     public function assignDietPlanVoucher($customer, $voucher_category){
-
-        $diet_plan = $this->generateFreeDietPlanOrder(['customer_name'=>$customer->name, 'customer_email'=>$customer->email,'customer_phone'=>$customer->contact_no]);
-
-        if($diet_plan['status']!=200){
-            return ['status'=>400, 'message'=> 'Cannot claim reward. Please contact customer support (4).'];
+    public function updateCoupon($order){
+        if(!empty($order['coupon_code']) && !empty($order['coupon_discount_amount'])){
+            $coupon_update = \Coupon::where('code', strtolower($order['coupon_code']))->increment('total_used');
         }
+    }
 
-        $diet_plan_order_id = $diet_plan['order_id'].
-        
+    public function assignManualVoucher($customer, $voucher_category){
+
         $voucher_data = [
             'voucher_category'=>$voucher_category['_id'],
             'status'=>"1",
             'description'=>$voucher_category['description'],
             'milestone'=>$voucher_category['milestone'],
-            'customer_id'=>$customer['_id'],
             'expiry_date'=>date('Y-m-d H:i:s',strtotime('+1 month')),
-            'code'=>'DIET-PLAN',
-            'diet_plan_order_id'=>$diet_plan_order_id
+            'code'=>$voucher_category['name'],
         ];
 
-        return $voucher = \LoyaltyVoucher::create($voucher_data);
+        if($voucher_category->name == 'diet_plan'){
         
-    }
+            $diet_plan = $this->generateFreeDietPlanOrder(['customer_name'=>$customer->name, 'customer_email'=>$customer->email,'customer_phone'=>$customer->contact_no]);
 
-    public function updateCoupon($order){
-        if(!empty($order['coupon_code']) && !empty($order['coupon_discount_amount'])){
-            $coupon_update = \Coupon::where('code', strtolower($order['coupon_code']))->increment('total_used');
+            if($diet_plan['status']!=200){
+                return ['status'=>400, 'message'=> 'Cannot claim reward. Please contact customer support (4).'];
+            }
+
+            $voucher_data['diet_plan_order_id'] = $diet_plan['order_id'];
         }
+
+        return $voucher = \LoyaltyVoucher::create($voucher_data);
+
     }
 
 }

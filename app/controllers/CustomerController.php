@@ -8221,7 +8221,6 @@ class CustomerController extends \BaseController {
 		}
 		
 		$jwt_token = Request::header('Authorization');
-
 		if(!empty($jwt_token)){
 
 			$decoded = decode_customer_token($jwt_token);
@@ -8237,7 +8236,7 @@ class CustomerController extends \BaseController {
                 }
 
                 $voucherAttached = $milestones[intval($_GET['milestone']) - 1]['voucher'][(int)$_GET['index']];
-            
+
             }else{
 
                 $voucher_category = VoucherCategory::find($_id);
@@ -8252,6 +8251,7 @@ class CustomerController extends \BaseController {
 
 
                     $voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
+
 
 
                     if(!$voucherAttached){
@@ -8281,11 +8281,8 @@ class CustomerController extends \BaseController {
                         $customer->update();
                     // }
 
+                    $communication = true;
 
-                   
-
-
-                    
                 }else{
                     
                     return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (3).'));
@@ -8293,7 +8290,7 @@ class CustomerController extends \BaseController {
                 }
             }
 
-            return $resp =  [
+            $resp =  [
                 'voucher_data'=>[
                     'header'=>"VOUCHER UNLOCKED",
                     'sub_header'=>"You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : ""),
@@ -8306,6 +8303,12 @@ class CustomerController extends \BaseController {
                     'terms_text'=>'T & C applied.'
                 ]
             ];
+            $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
+            if(!empty($communication)){
+                $redisid = Queue::connection('sync')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
+            }
+
+            return $resp;
 
 		}
 	}
@@ -8797,6 +8800,17 @@ class CustomerController extends \BaseController {
             $pre_register['header']['url'] = $pre_register['footer']['url'] = $this->utilities->getLoyaltyRegisterUrl();
         }
         return ['pre_register'=>$pre_register];
+    }
+
+    public function voucherCommunication($job,$data){
+
+        $job->delete();
+
+        try{
+            $this->customermailer->externalVoucher($data);
+        }catch(Exception $e){
+            Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);            
+        }
     }
 	
 }
