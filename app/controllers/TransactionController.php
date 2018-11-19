@@ -2995,9 +2995,23 @@ class TransactionController extends \BaseController {
             $data['convinience_fee'] = $convinience_fee;
         }
 
-        
+        if(empty($data['coupon_code']) && $data['type'] == 'workout-session' && !empty($this->authorization)){
 
-        if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+            $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
+
+            if($free_trial_ratecard){
+                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'])){
+                    $data['coupon_code'] = 'FIRSTPPSFREE';
+                    $data['coupon_description'] = 'FIRSTPPSFREE';
+                    $data['coupon_discount_amount'] = $data['amount'];
+                    $amount = $data['amount'] = 0;
+                }
+            }
+
+        }
+
+        if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'&&!empty($data['amount'])){
+            
             if($data['type'] == 'workout-session' && !(isset($data['pay_later']) && $data['pay_later']) && !(isset($data['session_payment']) && $data['session_payment'])){
                 Log::info("inside instant discount");
                 

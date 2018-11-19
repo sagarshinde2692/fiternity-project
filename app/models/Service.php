@@ -178,7 +178,7 @@ class Service extends \Basemodel{
 		$second_max_validity_ids = [];
 		$ratecardsarr = null;
 		if(!empty($this->_id) && isset($this->_id)){
-			$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
+			$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->where('type', '!=', 'trial')->orderBy('order', 'asc')->get()->toArray();
 		}
 
 		

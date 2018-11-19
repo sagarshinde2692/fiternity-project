@@ -667,6 +667,7 @@ class ServiceController extends \BaseController {
         $timestamp    			=   strtotime($date);
         $weekday     			=   strtolower(date( "l", $timestamp));
         $type 					= 	(isset($request['type']) && $request['type'] != "") ? $request['type'] : "trial" ;
+        $type                   =   'workout-session';
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
 		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id');
@@ -1200,65 +1201,8 @@ class ServiceController extends \BaseController {
     }
 
     public function checkTrialAlreadyBooked($finder_id,$service_id = false){
-
-    	$return = false;
-
-    	if($finder_id == ""){
-        	return false;
-        }
-
-    	$customer_id = "";
-        $jwt_token = Request::header('Authorization');
-
-        Log::info('jwt_token : '.$jwt_token);
-
-        if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
-            $decoded = decode_customer_token();
-            $customer_id = intval($decoded->customer->_id);
-            $customer_email = intval($decoded->customer->email);
-
-            $customer_phone = "";
-
-            if(isset($decoded->customer->contact_no)){
-				$customer_phone = $decoded->customer->contact_no;
-			}
-        }
-
-        $booktrial_count = 0;
-
-        if($customer_id != ""){
-
-        	if($customer_phone != ""){
-
-        		$query = Booktrial::where(function ($query) use($customer_email, $customer_phone) {
-								$query->orWhere('customer_email', $customer_email)
-									->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');
-							})
-                        ->where('finder_id',(int)$finder_id)
-                        ->where('type','booktrials')
-                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
-            }else{
-
-            	$query = Booktrial::where('customer_email', $customer_email)
-                        ->where('finder_id',(int)$finder_id)
-                        ->where('type','booktrials')
-                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
-
-            }
-
-            // if($service_id){
-            // 	$query->where('service_id',(int)$service_id);
-            // }
-
-            $booktrial_count = $query->count();
-        }
-
-        if($booktrial_count > 0){
-
-        	$return = true;
-        }
-
-        return $return;
+        
+        return $this->utilities->checkTrialAlreadyBooked($finder_id,$service_id);
 
     }
 
