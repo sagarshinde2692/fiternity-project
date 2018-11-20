@@ -6082,7 +6082,7 @@ Class Utilities {
             return $already_assigned_voucher;
         }
 
-        if(!empty($voucher_category['manual_redemption'])){
+        if(!empty($voucher_category['flags']['manual_redemption'])){
 
             $new_voucher =  $this->assignManualVoucher($customer, $voucher_category);
         
@@ -6107,6 +6107,10 @@ Class Utilities {
         $new_voucher->terms = $voucher_category['terms'];
         $new_voucher->amount = $voucher_category['amount'];
         $new_voucher->claim_date = new \MongoDate();
+
+        if(isset($voucher_category['flags'])){
+            $new_voucher->flags = $voucher_category['flags'];
+        }
 
         $new_voucher->update();
 
@@ -7100,7 +7104,7 @@ Class Utilities {
             'code'=>$voucher_category['name'],
         ];
 
-        if(!empty($voucher_category->diet_plan)){
+        if(!empty($voucher_category['flags']['diet_plan'])){
         
             $diet_plan = $this->generateFreeDietPlanOrder(['customer_name'=>$customer->name, 'customer_email'=>$customer->email,'customer_phone'=>$customer->contact_no]);
 
@@ -7111,7 +7115,7 @@ Class Utilities {
             $voucher_data['diet_plan_order_id'] = $diet_plan['order_id'];
         }
 
-        if(!empty($voucher_category->swimming_session)){
+        if(!empty($voucher_category['flags']['swimming_session'])){
             
             $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months'))]);
             Log::info("asdsad");

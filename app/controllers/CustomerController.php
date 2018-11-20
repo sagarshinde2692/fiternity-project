@@ -8303,6 +8303,9 @@ class CustomerController extends \BaseController {
                     'terms_text'=>'T & C applied.'
                 ]
             ];
+            if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
+                $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
+            }
             $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
             if(!empty($communication)){
                 $redisid = Queue::connection('sync')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
