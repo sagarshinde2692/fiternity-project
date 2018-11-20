@@ -583,6 +583,24 @@ class EmailSmsApiController extends \BaseController {
         		
         	}
         	
+            $data['coupon'] = 'exitipps';
+        	
+        }
+        
+        if(!empty($data['order_token']) && isset($data['capture_type']) && $data['capture_type'] == 'exit_intent_rtcb'){
+            Log::info("exit_intent_rtcb11");
+            $already_added = Capture::where("referrer_id", $data['order_token'])->count();
+            if($already_added){
+                return ['status'=>200];
+            }
+            
+            $exit_intent_capture = Capture::find($data['order_token']);
+            
+            Log::info($exit_intent_capture);
+            $data = $exit_intent_capture->toArray();
+            $data['referrer_id'] = $data['_id'];
+            unset($data['_id']);
+            $data['capture_type'] = 'exit_intent_rtcb';
         }
 
         if($data['capture_type'] == 'fitness_canvas'){
@@ -594,7 +612,7 @@ class EmailSmsApiController extends \BaseController {
             }
         }
 
-        if(!empty($data['order_token'])){
+        if(!empty($data['order_token']) && $data['capture_type']!= 'exit_intent'){
 
             $decodeOrderToken = decodeOrderToken($data['order_token']);
 
