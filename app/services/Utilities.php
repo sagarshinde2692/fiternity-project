@@ -7113,7 +7113,7 @@ Class Utilities {
 
         if(!empty($voucher_category->swimming_session)){
             
-            $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'finder_id'=>[8892], 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months'))]);
+            $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months'))]);
             Log::info("asdsad");
         }
         
