@@ -8305,6 +8305,7 @@ class CustomerController extends \BaseController {
             ];
             if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
                 $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
+                $resp['voucher_data']['header']= "REWARD UNLOCKED";
             }
             $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
             if(!empty($communication)){
@@ -8686,6 +8687,7 @@ class CustomerController extends \BaseController {
                     foreach($claimed_vouchers as $key => $claimed_voucher){
                         $claimed_voucher = (array)$claimed_voucher;
                         
+                        unset($claimed_voucher['flags']);
                         $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
                         $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $claimed_voucher);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $claimed_voucher);
