@@ -29,6 +29,8 @@ use DateTime;
 use Order;
 use Checkin;
 use FinderMilestone;
+use MongoDate;
+use Coupon;
 
 Class Utilities {
 
@@ -6069,30 +6071,34 @@ Class Utilities {
     
     public function assignVoucher($customer, $voucher_category){
 
-       $already_assigned_voucher = \LoyaltyVoucher::
-            where('milestone', $voucher_category->milestone)
-            ->where('voucher_category', $voucher_category->_id)
-            ->where('customer_id', $customer['_id'])
-            ->orderBy('_id', 'asc')
-            ->first();
+        $already_assigned_voucher = \LoyaltyVoucher::
+                where('milestone', $voucher_category->milestone)
+                ->where('voucher_category', $voucher_category->_id)
+                ->where('customer_id', $customer['_id'])
+                ->orderBy('_id', 'asc')
+                ->first();
 
-       if($already_assigned_voucher){
-           return $already_assigned_voucher;
-       }
+        if($already_assigned_voucher){
+            return $already_assigned_voucher;
+        }
 
-       if($voucher_category->name == 'diet_plan'){
-           return $this->assignDietPlanVoucher($customer, $voucher_category);
-       }
+        if(!empty($voucher_category['flags']['manual_redemption'])){
 
-        $new_voucher = \LoyaltyVoucher::active()
-            ->where('voucher_category', $voucher_category->_id)
-            ->where('customer_id', null)
-            ->where('expiry_date', '>', new \DateTime(date('d-m-Y', strtotime('+1 month'))))
-            ->orderBy('_id', 'asc')
-            ->first();
+            $new_voucher =  $this->assignManualVoucher($customer, $voucher_category);
         
-        if(!$new_voucher){
-            return;
+        }else{
+
+            $new_voucher = \LoyaltyVoucher::active()
+                ->where('voucher_category', $voucher_category->_id)
+                ->where('customer_id', null)
+                ->where('expiry_date', '>', new \DateTime(date('d-m-Y', strtotime('+1 month'))))
+                ->orderBy('_id', 'asc')
+                ->first();
+            
+            if(!$new_voucher){
+                return;
+            }
+        
         }
 
         $new_voucher->customer_id = $customer['_id'];
@@ -6101,6 +6107,10 @@ Class Utilities {
         $new_voucher->terms = $voucher_category['terms'];
         $new_voucher->amount = $voucher_category['amount'];
         $new_voucher->claim_date = new \MongoDate();
+
+        if(isset($voucher_category['flags'])){
+            $new_voucher->flags = $voucher_category['flags'];
+        }
 
         $new_voucher->update();
 
@@ -7077,35 +7087,98 @@ Class Utilities {
         return $url;
     }
 
-     public function assignDietPlanVoucher($customer, $voucher_category){
-
-        $diet_plan = $this->generateFreeDietPlanOrder(['customer_name'=>$customer->name, 'customer_email'=>$customer->email,'customer_phone'=>$customer->contact_no]);
-
-        if($diet_plan['status']!=200){
-            return ['status'=>400, 'message'=> 'Cannot claim reward. Please contact customer support (4).'];
+    public function updateCoupon($order){
+        if(!empty($order['coupon_code']) && !empty($order['coupon_discount_amount'])){
+            $coupon_update = \Coupon::where('code', strtolower($order['coupon_code']))->increment('total_used');
         }
+    }
 
-        $diet_plan_order_id = $diet_plan['order_id'].
-        
+    public function assignManualVoucher($customer, $voucher_category){
+
         $voucher_data = [
             'voucher_category'=>$voucher_category['_id'],
             'status'=>"1",
             'description'=>$voucher_category['description'],
             'milestone'=>$voucher_category['milestone'],
-            'customer_id'=>$customer['_id'],
             'expiry_date'=>date('Y-m-d H:i:s',strtotime('+1 month')),
-            'code'=>'DIET-PLAN',
-            'diet_plan_order_id'=>$diet_plan_order_id
+            'code'=>$voucher_category['name'],
         ];
 
-        return $voucher = \LoyaltyVoucher::create($voucher_data);
+        if(!empty($voucher_category['flags']['diet_plan'])){
         
+            $diet_plan = $this->generateFreeDietPlanOrder(['customer_name'=>$customer->name, 'customer_email'=>$customer->email,'customer_phone'=>$customer->contact_no]);
+
+            if($diet_plan['status']!=200){
+                return ['status'=>400, 'message'=> 'Cannot claim reward. Please contact customer support (4).'];
+            }
+
+            $voucher_data['diet_plan_order_id'] = $diet_plan['order_id'];
+        }
+
+        if(!empty($voucher_category['flags']['swimming_session'])){
+            
+            $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months'))]);
+            Log::info("asdsad");
+        }
+        
+        return $voucher = \LoyaltyVoucher::create($voucher_data);
+
     }
 
-    public function updateCoupon($order){
-        if(!empty($order['coupon_code']) && !empty($order['coupon_discount_amount'])){
-            $coupon_update = \Coupon::where('code', strtolower($order['coupon_code']))->increment('total_used');
+    public function generateSwimmingCouponCode($data){
+
+        $coupon = [
+            "name" =>$data['description'],
+            "discount_percent" =>0,
+            "discount_max" =>$data['amount'],
+            "discount_amount" =>$data['amount'],
+            "start_date" =>new MongoDate(),
+            "end_date" =>$data['end_date'],
+        ];
+
+        $coupon['and_conditions'] = [
+            [
+                "key" =>"service.servicecategory_id",
+                "operator" =>"in",
+                "values" =>[ 
+                    123
+                ]
+            ],
+            [
+                "key" =>"logged_in_customer._id",
+                "operator" =>"in",
+                "values" =>[ 
+                    $data['customer']['_id']
+                ]
+            ]   
+        ];
+        
+
+        $coupon['once_per_user'] = true;
+        $coupon['used'] = 0;
+        $coupon["ratecard_type"] = [ "workout session"];
+        $coupon["loyalty_reward"] = true;
+
+        $coupon['code'] = $this->getSwimmingSessionCode();
+        // print_r($coupon);
+        // exit();
+        
+        $coupon = new Coupon($coupon);
+        $coupon->_id = Coupon::max('_id')+1;
+        $coupon->save();
+        return $coupon['code'];
+
+    }
+
+    public function getSwimmingSessionCode(){
+        $code = 'sw'.strtolower($this->generateRandomString());
+        // print_r($code);
+        // exit();
+        $alreadyExists = Coupon::where('code', $code)->first();
+        if($alreadyExists){
+            return $this->getSwimmingSessionCode();
         }
+        return $code;
     }
 
 }
