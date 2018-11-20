@@ -6060,6 +6060,7 @@ class TransactionController extends \BaseController {
                 "type"=>'CREDIT',
                 'entry'=>'credit',
                 'description'=>"Fitcash wallet recharge",
+                'duplicate_allowed'=>true
             );
             Log::info($req);
             // $order->wallet_req = $req;
@@ -6078,6 +6079,7 @@ class TransactionController extends \BaseController {
                 'entry'=>'credit',
                 'description'=>"Fitcash wallet recharge (Applicable only on workout sessions)",
                 'order_type'=>['workout-session', 'workout session'],
+                'duplicate_allowed'=>true
             );
             Log::info($req);
             // $order->wallet_req = $req;
