@@ -4308,9 +4308,9 @@ class TransactionController extends \BaseController {
 
             $order = Order::find($order_id);
 
-            if(isset($order['type']) && $order['type'] == 'wallet'){
+            if(isset($order['type']) && $order['type'] == 'wallet' && !empty($order['customer_phone'])){
                 
-                $this->customersms->pledge($order->toArray());
+                $this->customersms->walletRecharge($order->toArray());
                 
                 return "success";
             
@@ -6087,7 +6087,7 @@ class TransactionController extends \BaseController {
             Log::info("wallet");
             Log::info($wallet);
             
-            // $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+            $redisid = Queue::connection('sync')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
             // $order->redis_id = $redisid;
             $order->wallet_balance = $this->utilities->getWalletBalance($order['customer_id']);
             $order->website = "www.fitternity.com";
