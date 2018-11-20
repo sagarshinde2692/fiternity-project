@@ -7108,7 +7108,7 @@ Class Utilities {
         }
     }
 
-    public function checkTrialAlreadyBooked($finder_id,$service_id = false){
+    public function checkTrialAlreadyBooked($finder_id,$service_id = false,$customer_email=null,$customer_phone="",$check_workout=false){
 
     	$return = false;
 
@@ -7121,38 +7121,39 @@ Class Utilities {
 
         Log::info('jwt_token : '.$jwt_token);
 
-        if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
+        if(empty($customer_email) && $jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
             $decoded = decode_customer_token();
             $customer_id = intval($decoded->customer->_id);
-            $customer_email = intval($decoded->customer->email);
-
+            $customer_email = $decoded->customer->email;
             $customer_phone = "";
 
             if(isset($decoded->customer->contact_no)){
 				$customer_phone = $decoded->customer->contact_no;
 			}
         }
-
         $booktrial_count = 0;
-
-        if($customer_id != ""){
+           
+        // if($customer_id != ""){
 
         	if($customer_phone != ""){
 
         		$query = Booktrial::where(function ($query) use($customer_email, $customer_phone) {
 								$query->orWhere('customer_email', $customer_email)
-									->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');
+									->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -10).'%');
 							})
                         ->where('finder_id',(int)$finder_id)
-                        ->where('type','booktrials')
                         ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
             }else{
 
             	$query = Booktrial::where('customer_email', $customer_email)
                         ->where('finder_id',(int)$finder_id)
-                        ->where('type','booktrials')
+                        
                         ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
 
+            }
+
+            if(!$check_workout){
+                $query->where('type','booktrials');
             }
 
             // if($service_id){
@@ -7160,10 +7161,10 @@ Class Utilities {
             // }
 
             $booktrial_count = $query->count();
-        }
-
+        // }
+       
         if($booktrial_count > 0){
-
+            Log::info("returning true=========================================");
         	$return = true;
         }
 

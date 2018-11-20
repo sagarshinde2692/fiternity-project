@@ -2995,20 +2995,6 @@ class TransactionController extends \BaseController {
             $data['convinience_fee'] = $convinience_fee;
         }
 
-        if(empty($data['coupon_code']) && $data['type'] == 'workout-session' && !empty($this->authorization)){
-
-            $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
-
-            if($free_trial_ratecard){
-                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'])){
-                    $data['coupon_code'] = 'FIRSTPPSFREE';
-                    $data['coupon_description'] = 'FIRSTPPSFREE';
-                    $data['coupon_discount_amount'] = $data['amount'];
-                    $amount = $data['amount'] = 0;
-                }
-            }
-
-        }
 
         if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'&&!empty($data['amount'])){
             
@@ -3021,6 +3007,22 @@ class TransactionController extends \BaseController {
     
             }
         }            
+        
+        if((empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization)){
+
+            $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
+
+            if($free_trial_ratecard){
+                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
+                    $data['coupon_code'] = 'FIRSTPPSFREE';
+                    $data['coupon_description'] = 'First wourkout session free';
+                    $data['coupon_discount_amount'] = $data['ratecard_amount'];
+                    $amount = $data['amount'] - $data['coupon_discount_amount'];
+
+                }
+            }
+
+        }
 
         if($data['type'] != 'events'){
 
