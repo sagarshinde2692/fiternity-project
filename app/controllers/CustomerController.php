@@ -8307,6 +8307,10 @@ class CustomerController extends \BaseController {
                 $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
                 $resp['voucher_data']['header']= "REWARD UNLOCKED";
             }
+
+            if(!empty($voucher_category['email_text'])){
+                $resp['voucher_data']['email_text']= $voucher_category['email_text'];
+            }
             $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
             if(!empty($communication)){
                 $redisid = Queue::connection('sync')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
