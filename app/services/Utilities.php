@@ -7153,6 +7153,7 @@ Class Utilities {
         $coupon['once_per_user'] = true;
         $coupon['used'] = 0;
         $coupon["ratecard_type"] = [ "workout session"];
+        $coupon["loyalty_reward"] = true;
 
         $coupon['code'] = $this->getSwimmingSessionCode();
         // print_r($coupon);
