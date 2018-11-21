@@ -100,7 +100,7 @@ class TransactionController extends \BaseController {
             }
             else {
                 Log::info('both order id and tpo details are not available!');
-                return ['err' => "order id and (tpo details or tpo id) are not available"];
+                return ['status' => 500, 'message' => 'order id and (tpo details or tpo id) are not available'];
             }
             $_env = $orderData['env'];
             Log::info('env: ', [$_env]);
@@ -127,7 +127,7 @@ class TransactionController extends \BaseController {
                     $stateCityDetails = PincodeMaster::where('pincode', $rec['addressPincode'])->first();
                     Log::info('stateCityDetails: ', [$stateCityDetails]);
                     if(empty($stateCityDetails)){
-                        return ['err' => "pincode doesn't exist"];
+                        return ['status' => 500, 'message' => "please enter the valid pincode"];
                     }
                     $_tpoRec['city'] = $stateCityDetails['city_name'];
                     $_tpoRec['state'] = $stateCityDetails['state_code'];
@@ -173,7 +173,7 @@ class TransactionController extends \BaseController {
             return ['txnid' => $tpoRec->txnid];
         }catch(Exception $e) {
             Log::info('Exception in saveTPMemberDetails: ', [$e]);
-            return ['err' => 'Something went wrong...'];
+            return ['status' => 500, 'message' => 'Something went wrong...'];
         }
     }
 
@@ -189,11 +189,11 @@ class TransactionController extends \BaseController {
             Log::info('$tpMemberDetailsResp: ', [$tpMemberDetailsResp]);
             if(isset($tpMemberDetailsResp['err'])){
                 Log::info('error: ', [$tpMemberDetailsResp['err']]);
-                return Response::json(['err' => $tpMemberDetailsResp['err']], 500);    
+                return Response::json(['status' => 500, 'message' => $tpMemberDetailsResp['err']], 500);    
             }
             $orderData = $this->getThirdPartyOrderDetails($tpMemberDetailsResp['txnid']);
             if(empty($orderData)){
-                return Response::json(['err' => 'Something went wrong'], 500);
+                return Response::json(['status' => 500, 'message' => 'order details not found'], 500);
             }
             return Response::json(['data' => $orderData], 200);
         }
