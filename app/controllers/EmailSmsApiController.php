@@ -860,6 +860,20 @@ class EmailSmsApiController extends \BaseController {
 
         $storecapture   = Capture::create($data);
 
+        if(isset($data['capture_type']) && $data['capture_type'] == 'exit_intent'){
+            
+            $finder = Finder::with('location')->with('city')->find($data['finder_id'], ['location_id', 'city_id']);
+
+            $storecapture['nearby_options_link'] = Config::get('app.website').'/'.$finder['city']['slug'].'/'.$finder['location']['slug'].'/fitness';
+            
+            $storecapture['rtcb_link'] = Config::get('app.website').'/membership?order_token='.$storecapture['_id'].'&capture_type=exit_intent_rtcb';
+            
+            $storecapture['pps_link'] = Config::get('app.website').'/pay-per-session';
+            
+            $storecapture['emial_instant_customer'] = $this->customermailer->exitIntent($storecapture->toArray());
+            
+        }
+
         if(isset($data['capture_type']) && $data['capture_type']=='my-home-fitness-trial'){
 
             $this->customersms->myHomFitnessWithoutSlotInstant($data);
