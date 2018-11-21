@@ -1320,3 +1320,6 @@ Route::group(array('before' => 'validatetoken'), function() {
 Route::post('apicrashlogs','HomeController@apicrashlogs');
 Route::get('addvoucherimages','DebugController@addvoucherimages');
 
+Route::post('getumarkedmfpattendance','TransactionController@getUmarkedMfpAttendance');
+Route::post('markmfpattendance','TransactionController@markMfpAttendance');
+

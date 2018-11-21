@@ -7597,6 +7597,7 @@ class CustomerController extends \BaseController {
 			else
 			{
 				$dcd=$this->utilities->decryptQr($data['code'], Config::get('app.core_key'));
+                Log::info($dcd);
 				if(empty($dcd))
 					return ['status' => 400,'message' =>"Invalid Qr Code"];
 				$data=json_decode(preg_replace('/[\x00-\x1F\x7F]/', '', $dcd),true);
