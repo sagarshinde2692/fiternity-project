@@ -7184,7 +7184,14 @@ Class Utilities {
     public function encryptQr($data){
         define("ENCRYPTION_KEY", Config::get('app.core_key'));
         $string = $data;
-        return $encrypted = encrypt(json_encode($string), ENCRYPTION_KEY);
+        return $encrypted = $this->encrypt(json_encode($string), ENCRYPTION_KEY);
+    }
+
+    public function encrypt($pure_string, $encryption_key) {
+        $iv_size = mcrypt_get_iv_size(MCRYPT_BLOWFISH, MCRYPT_MODE_ECB);
+        $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+        $encrypted_string = mcrypt_encrypt(MCRYPT_BLOWFISH, $encryption_key, $pure_string, MCRYPT_MODE_ECB, $iv);
+        return bin2hex($encrypted_string);
     }
     
 
