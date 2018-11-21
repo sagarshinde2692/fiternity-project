@@ -7181,6 +7181,13 @@ Class Utilities {
         return $code;
     }
 
+    public function encryptQr($data){
+        define("ENCRYPTION_KEY", Config::get('app.core_key'));
+        $string = $data;
+        return $encrypted = encrypt(json_encode($string), ENCRYPTION_KEY);
+    }
+    
+
 }
 
 

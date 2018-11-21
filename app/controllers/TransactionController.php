@@ -620,6 +620,7 @@ class TransactionController extends \BaseController {
 				$data['event_venue'] = $event["venue"];
                 if(in_array($event['slug'],Config::get('app.my_fitness_party_slug')) || !empty($event['mfp'])){
                     $data['event_type'] = "TOI";
+                    $data['qr_code'] = $this->utilities->getOrderIdQR(['owner'=>'fitternity','order_id'=>$order['_id']]);
                 }
             }
 
@@ -7832,6 +7833,61 @@ class TransactionController extends \BaseController {
         $orderWithHash = getHash($order);
         return $orderWithHash; 
         
+    }
+
+    public function getUmarkedMfpAttendance(){
+
+        $data = Input::json()->all();
+        
+        $dcd=$this->utilities->decryptQr($data['code'], Config::get('app.core_key'));
+        Log::info($dcd);
+
+        $order_id = $dcd['order_id'];
+        $order = Order::where('_id', $order_id)->where('customer_data.attendance', '!=', true)->first(['customer_data']);
+
+        if(!$order){
+            return ['status'=>400, 'message'=>'Attendance marked for all customers'];
+        }
+
+        return ['order_id'=>$order['_id'], 'customers'=>array_only($order['customer_data'], ['firstname', 'customer_email', 'customer_phone'])];
+
+    }
+
+    public function markMfpAttendance(){
+        
+        $data = Input::json()->all();
+
+        $order['_id'] = $data['order_id'];
+        $attendance = $data['attendance'];
+        $attendance_data = [];
+        
+        foreach($attendance as $key =>$x){
+            if(!empty($x)){
+                array_push($attendance_data, $key);
+            }
+        }
+
+        if(!emmpty($attendance_data)){
+            
+            $order = Order::find($order_id);
+
+            $customer_data = $order['customer_data'];
+
+            foreach($customer_data as $key => &$customer){
+                if(in_array($key, $attendance_data)){
+                    $customer['attendance'] = true;
+                }
+            }
+
+            $order->update(['customer_data'=>$customer_data]);
+
+            return ['status'=>200, 'message'=>'Attendance MArked'];
+
+        }
+
+
+
+
     }
 
     

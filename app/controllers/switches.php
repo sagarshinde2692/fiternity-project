@@ -267,7 +267,7 @@ $vendor_ids = [
 foreach($vendor_ids as $_id){
 
 	define("ENCRYPTION_KEY", "FITITRNTY");
-	$string = ['owner'=>'fitternity','vendor_id'=>$_id['id']];
+	$string = ['owner'=>'fitternity','order_id'=>$order['_id'];
 	// echo json_encode($string); 
 	echo "<div>".$_id['id']."</div>\n";
 	echo "<div>".$_id['name']."</div>\n";
