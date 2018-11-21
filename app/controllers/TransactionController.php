@@ -127,7 +127,7 @@ class TransactionController extends \BaseController {
                     $stateCityDetails = PincodeMaster::where('pincode', $rec['addressPincode'])->first();
                     Log::info('stateCityDetails: ', [$stateCityDetails]);
                     if(empty($stateCityDetails)){
-                        return ['err' => "please enter the valid pincode"];
+                        return ['err' => "Please enter a valid pincode"];
                     }
                     $_tpoRec['city'] = $stateCityDetails['city_name'];
                     $_tpoRec['state'] = $stateCityDetails['state_code'];
