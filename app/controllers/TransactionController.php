@@ -7867,7 +7867,7 @@ class TransactionController extends \BaseController {
         $ticket_quantity = !empty($order['ticket_quantity']) ? $order['ticket_quantity'] : 1;
         $order_attendance = !empty($order['attendance']) ? $order['attendance'] : [];
 
-        if(count($order_attendance) > $ticket_quantity){
+        if(count($order_attendance) >= $ticket_quantity){
             return ['status'=>400, 'message'=>'Attendance already marked for all customers'];
         }
         
