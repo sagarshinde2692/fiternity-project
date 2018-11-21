@@ -100,7 +100,7 @@ class TransactionController extends \BaseController {
             }
             else {
                 Log::info('both order id and tpo details are not available!');
-                return ['status' => 500, 'message' => 'order id and (tpo details or tpo id) are not available'];
+                return ['err' => 'order id and (tpo details or tpo id) are not available'];
             }
             $_env = $orderData['env'];
             Log::info('env: ', [$_env]);
@@ -127,7 +127,7 @@ class TransactionController extends \BaseController {
                     $stateCityDetails = PincodeMaster::where('pincode', $rec['addressPincode'])->first();
                     Log::info('stateCityDetails: ', [$stateCityDetails]);
                     if(empty($stateCityDetails)){
-                        return ['status' => 500, 'message' => "please enter the valid pincode"];
+                        return ['err' => "please enter the valid pincode"];
                     }
                     $_tpoRec['city'] = $stateCityDetails['city_name'];
                     $_tpoRec['state'] = $stateCityDetails['state_code'];
@@ -173,7 +173,7 @@ class TransactionController extends \BaseController {
             return ['txnid' => $tpoRec->txnid];
         }catch(Exception $e) {
             Log::info('Exception in saveTPMemberDetails: ', [$e]);
-            return ['status' => 500, 'message' => 'Something went wrong...'];
+            return ['err' => 'Something went wrong...'];
         }
     }
 
