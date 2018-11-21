@@ -7841,15 +7841,18 @@ class TransactionController extends \BaseController {
         
         $dcd=$this->utilities->decryptQr($data['code'], Config::get('app.core_key'));
         Log::info($dcd);
+        $data=json_decode(preg_replace('/[\x00-\x1F\x7F]/', '', $dcd),true);
+        $order_id = $data['order_id'];
+        $order = Order::where('_id', $order_id)->first();
 
-        $order_id = $dcd['order_id'];
-        $order = Order::where('_id', $order_id)->where('customer_data.attendance', '!=', true)->first(['customer_data']);
-
-        if(!$order){
-            return ['status'=>400, 'message'=>'Attendance marked for all customers'];
+        $attendance = !empty($order['attendance']) ? $order['attendance'] : [];
+        $ticket_quantity = !empty($order['ticket_quantity']) ? $order['ticket_quantity'] : 1;
+        $attendance_count = count($attendance);
+        if($attendance_count >= $ticket_quantity){
+            return ['status'=>400, 'message'=>'Attendance marked for all customers', 'customers'=>$attendance];
         }
 
-        return ['order_id'=>$order['_id'], 'customers'=>array_only($order['customer_data'], ['firstname', 'customer_email', 'customer_phone'])];
+        return ['order_id'=>$order['_id'], 'count'=>$ticket_quantity-$attendance_count];
 
     }
 
@@ -7857,37 +7860,24 @@ class TransactionController extends \BaseController {
         
         $data = Input::json()->all();
 
-        $order['_id'] = $data['order_id'];
+        $order_id = $data['order_id'];
         $attendance = $data['attendance'];
         $attendance_data = [];
+        $order = Order::find($order_id);
+        $ticket_quantity = !empty($order['ticket_quantity']) ? $order['ticket_quantity'] : 1;
+        $order_attendance = !empty($order['attendance']) ? $order['attendance'] : [];
+
+        if(count($order_attendance) > $ticket_quantity){
+            return ['status'=>400, 'message'=>'Attendance already marked for all customers'];
+        }
         
-        foreach($attendance as $key =>$x){
-            if(!empty($x)){
-                array_push($attendance_data, $key);
-            }
-        }
+        
+        array_push($order_attendance, $attendance);
 
-        if(!emmpty($attendance_data)){
+        $order->update(['attendance'=>$order_attendance]);
+
+        return ['status'=>200, 'message'=>'Attendance Marked'];
             
-            $order = Order::find($order_id);
-
-            $customer_data = $order['customer_data'];
-
-            foreach($customer_data as $key => &$customer){
-                if(in_array($key, $attendance_data)){
-                    $customer['attendance'] = true;
-                }
-            }
-
-            $order->update(['customer_data'=>$customer_data]);
-
-            return ['status'=>200, 'message'=>'Attendance MArked'];
-
-        }
-
-
-
-
     }
 
     
