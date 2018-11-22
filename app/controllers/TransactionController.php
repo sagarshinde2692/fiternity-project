@@ -620,7 +620,7 @@ class TransactionController extends \BaseController {
 				$data['event_venue'] = $event["venue"];
                 if(in_array($event['slug'],Config::get('app.my_fitness_party_slug')) || !empty($event['mfp'])){
                     $data['event_type'] = "TOI";
-                    $data['qr_code'] = $this->utilities->encryptQr(['owner'=>'fitternity','order_id'=>$order['_id']]);
+                    $data['qr_code'] = $this->utilities->encryptQr(['owner'=>'fitternity','order_id'=>$data['_id']]);
                 }
             }
 
