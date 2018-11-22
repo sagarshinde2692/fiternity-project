@@ -2155,6 +2155,22 @@ class ServiceController extends \BaseController {
 		}catch(Exception $e){
 			Log::info($e);
 		}
+
+        try{
+
+			if(empty($this->app_version) ){
+                $search_resp = $this->utilities->getPPSSearchResult(['city'=>$city
+                ,'keys'=>['name', 'slug', 'location', 'coverimage', 'vendor_name','vendor_slug']
+                ]);
+				$data['nearby_options']['header'] = "There are ".$search_resp['metadata']['total_records']." sessions happening near you in the next 4 hours";
+                $data['nearby_options']['view_all_link'] = Config::get('app.website')."/pay-per-session/".$city."/fitness?day=within-4-hours";
+                $data['nearby_options']['results'] = $search_resp['results'];
+			}			
+
+
+		}catch(Exception $e){
+			return ['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()];
+		}
 		// return DB::getQueryLog();
 
 		return $data;
