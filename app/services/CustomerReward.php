@@ -2216,6 +2216,13 @@ Class CustomerReward {
 
                 return $resp;
             }
+            
+            if(isset($coupon['ticket_qty']) && is_numeric($coupon['ticket_qty']) &&  (empty($ticket_quantity) || intval($ticket_quantity) < $coupon['ticket_qty'])){
+                
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon applicable on purchase of minimum ".$coupon['ticket_qty']." tickets","user_login_error"=>true);
+
+                return $resp;
+            }
 
             if(isset($coupon['min_price']) && is_numeric($coupon['min_price']) &&  $price < $coupon['min_price']){
                 
@@ -2224,12 +2231,6 @@ Class CustomerReward {
                 return $resp;
             }
     
-            if(isset($coupon['ticket_qty']) && is_numeric($coupon['ticket_qty']) &&  (empty($ticket_quantity) || intval($ticket_quantity) < $coupon['ticket_qty'])){
-                
-                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon applicable on purchase of minimum ".$coupon['ticket_qty']." tickets","user_login_error"=>true);
-
-                return $resp;
-            }
             
             if($amount){
                 $price = $amount;
