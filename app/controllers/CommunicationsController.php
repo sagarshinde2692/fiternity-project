@@ -270,6 +270,14 @@ class CommunicationsController extends \BaseController {
 						}
 						break;
 					}
+				case "bookTrialReminderAfter24Hour":
+					{	
+						$booktrial = Booktrial::find($data['_id']);
+						if($booktrial->post_trial_status == "attended" || $booktrial->post_trial_verified_status == 'yes'){
+							$data['abort_delay_comm'] = true;
+						}
+						break;
+					}
 		}
 
 		if(isset($data['customer_id']) && $data['customer_id'] != ""){
