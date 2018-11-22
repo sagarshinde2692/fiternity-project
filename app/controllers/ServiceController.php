@@ -2103,7 +2103,7 @@ class ServiceController extends \BaseController {
 		}
 		try{
 
-			if($this->authorization){
+			if($this->authorization && !empty($this->app_version) ){
 				Log::info($this->authorization);
 				$decoded = decode_customer_token();
 				
