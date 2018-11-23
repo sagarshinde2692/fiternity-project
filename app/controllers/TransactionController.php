@@ -7845,9 +7845,9 @@ class TransactionController extends \BaseController {
         $order_id = $data['order_id'];
         $order = Order::where('_id', $order_id)->first();
 
-        $attendance = !empty($order['attendance']) ? $order['attendance'] : [];
+        $attendance = !empty($order['attendance']) ? $order['attendance'] : 0;
         $ticket_quantity = !empty($order['ticket_quantity']) ? $order['ticket_quantity'] : 1;
-        $attendance_count = count($attendance);
+        $attendance_count = $attendance;
         if($attendance_count >= $ticket_quantity){
             return ['status'=>400, 'message'=>'Attendance marked for all customers', 'customers'=>$attendance];
         }
@@ -7862,17 +7862,16 @@ class TransactionController extends \BaseController {
 
         $order_id = $data['order_id'];
         $attendance = $data['attendance'];
-        $attendance_data = [];
+        // $attendance_data = [];
         $order = Order::find($order_id);
         $ticket_quantity = !empty($order['ticket_quantity']) ? $order['ticket_quantity'] : 1;
-        $order_attendance = !empty($order['attendance']) ? $order['attendance'] : [];
+        $order_attendance = !empty($order['attendance']) ? $order['attendance'] : 0;
 
         if(count($order_attendance) >= $ticket_quantity){
             return ['status'=>400, 'message'=>'Attendance already marked for all customers'];
         }
         
-        
-        array_push($order_attendance, $attendance);
+        $order_attendance = $attendance+1;
 
         $order->update(['attendance'=>$order_attendance]);
 
