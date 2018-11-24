@@ -127,8 +127,7 @@ class PWAINBackendSDK {
 	 */
 	public function generateSignatureAndEncrypt($parameters = array()) {
 		$startTime = $this->microtime_float();
-		try{
-			if (! array_key_exists ('operationName', $parameters) ) {
+		if (! array_key_exists ('operationName', $parameters) ) {
 				$this->checkForRequiredParameters ( $parameters, $this->params_SignAndEncrypt );
 				$operation = 'SIGN_AND_ENCRYPT';
 			} elseif ($parameters['operationName'] == 'SIGN_AND_ENCRYPT_GET_CHARGE_STATUS_REQUEST') {
@@ -138,6 +137,7 @@ class PWAINBackendSDK {
 			} else {
 				throw new \Exception ( $operation . "is not a valid operation for sign and encrypt." );
 			}
+		try{
 			$encryptedResponse = array ();
 			$parameters = $this->calculateSignForEncryption ( $parameters );
 			$parametersToEncrypt = $this->getParametersToEncrypted ( $parameters );
