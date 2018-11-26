@@ -6257,6 +6257,19 @@ class TransactionController extends \BaseController {
             
             Log::info('jwt_token checkout summary: '.$jwt_token);
 
+            if(!empty($jwt_token) && $jwt_token != 'null'){
+                
+                $decoded = customerTokenDecode($jwt_token);
+
+                if(empty($data['customer_email'])){
+                    $data['customer_email'] = $decoded->customer->email;
+
+                    if(!empty($decoded->customer->contact_no)){
+                        $data['customer_phone'] = $decoded->customer->contact_no;
+                    }
+                }
+            }
+
 
             if(!empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && !empty($data['customer_email']) && !empty($data['customer_phone'])){
 
@@ -6282,7 +6295,7 @@ class TransactionController extends \BaseController {
                 
             if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
                 
-                $decoded = customerTokenDecode($jwt_token);
+                $decoded = !empty($decoded) ? $decoded : customerTokenDecode($jwt_token);
                 
                 $customer_id = $decoded->customer->_id;
                 $data['wallet_balance'] = 0;
