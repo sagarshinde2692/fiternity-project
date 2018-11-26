@@ -6256,6 +6256,29 @@ class TransactionController extends \BaseController {
             $jwt_token = Request::header('Authorization');
             
             Log::info('jwt_token checkout summary: '.$jwt_token);
+
+
+            if(!empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && !empty($data['customer_email']) && !empty($data['customer_phone'])){
+
+                $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
+
+                if($free_trial_ratecard){
+                    if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
+
+                        $data['coupon_discount'] = $data['amount_payable'];
+
+                        $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                        
+                        $data['you_save'] += $data['coupon_discount'];
+                        
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => 'Coupon Discount',
+                            'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
+                        ];
+                        
+                    }
+                }
+            }
                 
             if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
                 
