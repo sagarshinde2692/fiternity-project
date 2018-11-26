@@ -20,7 +20,8 @@ return array(
                 "https://b.fitn.in/external-vouchers/epigamia.png",
                 "https://b.fitn.in/external-vouchers/small-cleartrip%20logo.jpg",
                 "https://b.fitn.in/external-vouchers/O21.png",
-                "https://b.fitn.in/external-vouchers/book%20my%20show.png"
+                "https://b.fitn.in/external-vouchers/book%20my%20show.png",
+                "https://b.fitn.in/loyalty/goldvouchers/uber%20logo.jpg"
             ]
         ],
 
