@@ -8336,23 +8336,44 @@ class CustomerController extends \BaseController {
 		
 		$decoded = decode_customer_token($jwt_token);
 		$customer_id = $decoded->customer->_id;
+
+        $type = !empty($_GET['type']) ? $_GET['type'] : null;
+        $unverified = !empty($_GET['type']) ? true : false;
+        $customer = Customer::find($customer_id);
+
+        if(!empty($type) && $type == 'workout-session'){
+            $loyalty = $customer->loyalty;
+            $finder_ws_sessions = !empty($loyalty['workout_sessions'][$finder_id]) ? $loyalty['workout_sessions'][$finder_id] : 0;
+            
+            if($finder_ws_sessions >= 5){
+                $type = 'membership';
+            }else{
+                $update_finder_ws_sessions = true;
+            }
+        }
 		
 		$checkin_data = [
 			'customer_id'=>$customer_id,
 			'finder_id'=>intval($finder_id),
-			'type'=>!empty($_GET['type']) ? $_GET['type'] : null,
+			'type'=>$type,
             'unverified'=>!empty($_GET['type']) ? true : false
         ];
 		
 		$addedCheckin = $this->utilities->addCheckin($checkin_data);
 		
-		$customer = Customer::find($customer_id);
 		
 		Finder::$withoutAppends = true;
 		
 		$finder = Finder::find($finder_id, ['title']);
 		
 		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200){
+
+            if(!empty($update_finder_ws_sessions)){
+                $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
+                $customer->update(['loyalty'=>$loyalty]);
+            }
+
+
 			$return =  [
 				'header'=>'CHECK-IN SUCCESSFUL!',
 				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
