@@ -6212,6 +6212,8 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            $data['ratecard_amount'] = $data['amount'];
+
             if(!empty($data['customer_quantity'])){
                 $data['amount_payable'] = $data['amount']= $data['amount'] * $data['customer_quantity'];
                 $result['customer_quantity'] = $data['customer_quantity'];
@@ -6278,7 +6280,7 @@ class TransactionController extends \BaseController {
                 if($free_trial_ratecard){
                     if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
 
-                        $data['coupon_discount'] = $data['amount_payable'];
+                        $data['coupon_discount'] = $data['ratecard_amount'];
 
                         $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
                         
