@@ -5227,6 +5227,14 @@ Class Utilities {
         }
 
         $order = \Order::find(intval($data['order_id']));
+
+        Finder::$withoutAppends = true;
+        $finder = Finder::find($order['finder_id'], ['brand_id']);
+        if($finder['brand_id'] == 135){
+            return;
+        }
+
+
         
         if($order && !empty($order['service_id'])){
 
