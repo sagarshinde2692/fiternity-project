@@ -8373,8 +8373,10 @@ class CustomerController extends \BaseController {
                 $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
                 $customer->update(['loyalty'=>$loyalty]);
             }elseif(!empty($update_finder_membership)){
-                array_push($loyalty['memberships'], $finder_id);
-                $customer->update(['loyalty'=>$loyalty]);
+                if(!in_array($finder_id, $loyalty['memberships'])){
+                    array_push($loyalty['memberships'], $finder_id);
+                    $customer->update(['loyalty'=>$loyalty]);
+                }
             }
 
 			$return =  [
