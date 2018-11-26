@@ -8343,10 +8343,11 @@ class CustomerController extends \BaseController {
 
         if(!empty($type) && $type == 'workout-session'){
             $loyalty = $customer->loyalty;
-            $finder_ws_sessions = !empty($loyalty['workout_sessions'][$finder_id]) ? $loyalty['workout_sessions'][$finder_id] : 0;
+            $finder_ws_sessions = !empty($loyalty['workout_sessions'][(string)$finder_id]) ? $loyalty['workout_sessions'][(string)$finder_id] : 0;
             
             if($finder_ws_sessions >= 5){
                 $type = 'membership';
+                $update_finder_membership = true;
             }else{
                 $update_finder_ws_sessions = true;
             }
@@ -8371,8 +8372,10 @@ class CustomerController extends \BaseController {
             if(!empty($update_finder_ws_sessions)){
                 $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
                 $customer->update(['loyalty'=>$loyalty]);
+            }elseif(!empty($update_finder_membership)){
+                array_push($loyalty['memberships'], $finder_id);
+                $customer->update(['loyalty'=>$loyalty]);
             }
-
 
 			$return =  [
 				'header'=>'CHECK-IN SUCCESSFUL!',
@@ -8529,6 +8532,11 @@ class CustomerController extends \BaseController {
 				$direct_checkin = true;
 				$external_membership = true;
 					
+			}else if(!empty($customer['loyalty']['workout_session'][(string)$finderarr['_id']])){
+				
+				$direct_checkin = true;
+				$external_ws_session = true;
+					
 			}else{
 
 				$direct_checkin = false;
@@ -8560,6 +8568,10 @@ class CustomerController extends \BaseController {
 				
 				if(!empty($external_membership)){
 					$resp['response']['fitsquad']['url'] = Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=membership";
+				}
+				
+                if(!empty($external_ws_session)){
+					$resp['response']['fitsquad']['url'] = Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=workout-session";
 				}
 			}
 		}
