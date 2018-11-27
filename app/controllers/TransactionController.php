@@ -3785,7 +3785,7 @@ class TransactionController extends \BaseController {
         $data['duration'] = (isset($ratecard['duration'])) ? $ratecard['duration'] : "";
         $data['duration_type'] = (isset($ratecard['duration_type'])) ? $ratecard['duration_type'] : "";
 
-        if($ratecard['type'] == 'workout session' && isset($ratecard['vendor_price']) && $ratecard['vendor_price'] != ''){
+        if($ratecard['type'] == 'workout session' && !empty($ratecard['vendor_price'])){
             $data['vendor_price'] = $ratecard['vendor_price'];
         }
 

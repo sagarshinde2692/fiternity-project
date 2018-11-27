@@ -4010,7 +4010,7 @@ Class Utilities {
         
         }
 
-        $amount_used = (isset($order->vendor_price)) ? $order->vendor_price : $order->amount_finder;
+        $amount_used = (!empty($order->vendor_price)) ? $order->vendor_price : $order->amount_finder;
 
         $order->cos_finder_amount = ceil(($amount_used * $order->cos_percentage) / 100);
 
@@ -6527,7 +6527,7 @@ Class Utilities {
         $data['duration'] = (isset($ratecard['duration'])) ? $ratecard['duration'] : "";
         $data['duration_type'] = (isset($ratecard['duration_type'])) ? $ratecard['duration_type'] : "";
 
-        if($ratecard['type'] == 'workout session' && isset($ratecard['vendor_price']) && $ratecard['vendor_price'] != ''){
+        if($ratecard['type'] == 'workout session' && !empty($ratecard['vendor_price'])){
             $data['vendor_price'] = $ratecard['vendor_price'];
         }
 
