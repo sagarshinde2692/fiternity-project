@@ -6286,10 +6286,10 @@ class TransactionController extends \BaseController {
                         
                         $data['you_save'] += $data['coupon_discount'];
                         
-                        // $result['payment_details']['amount_summary'][] = [
-                        //     'field' => 'Coupon Discount',
-                        //     'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
-                        // ];
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => 'Coupon Discount',
+                            'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
+                        ];
 
                         $first_session_free = true;
                         
