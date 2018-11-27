@@ -2464,7 +2464,7 @@ class SchedulebooktrialsController extends \BaseController {
             array_set($orderData, 'booktrial_id', (int)$booktrialid);
             $order->update($orderData);
 
-            if(isset($order->vendor_price) && $order->vendor_price != ''){
+            if(!empty($order->vendor_price)){
                 $order->original_amount_finder = $order->amount_finder;
                 $order->amount_finder = $order->vendor_price;
                 $booktrial->amount_finder = $order->vendor_price;
