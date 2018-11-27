@@ -6372,6 +6372,10 @@ class TransactionController extends \BaseController {
                 'value' => 'Rs. '.(string)number_format($data['amount_payable'])
             ];
 
+            if(!empty($first_session_free) && $data['amount_payable'] == 0){
+                $result['payment_details']['amount_payable']['value'] = "Free via Fitternity";
+            }
+
             if($data['amount_payable'] == 0){
                 $result['full_wallet_payment'] = true;
             }
@@ -6502,11 +6506,6 @@ class TransactionController extends \BaseController {
                     'amount' => $data['you_save']
                 ];
             }
-
-            if(!empty($first_session_free) && $data['amount_payable'] == 0){
-                $data['amount_payable'] = 'Free via Fitternity';
-            }
-
 
         }elseif(isset($ticket_id)){
 			if(isset($order)){
