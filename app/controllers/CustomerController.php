@@ -6858,6 +6858,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function uploadReceipt(){
+        Log::info("uploadReceiptuploadReceiptuploadReceiptuploadReceiptuploadReceipt");
 
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
