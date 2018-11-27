@@ -6290,6 +6290,8 @@ class TransactionController extends \BaseController {
                             'field' => 'Coupon Discount',
                             'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
                         ];
+
+                        $first_session_free = true;
                         
                     }
                 }

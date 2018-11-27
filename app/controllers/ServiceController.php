@@ -1202,7 +1202,7 @@ class ServiceController extends \BaseController {
 
     public function checkTrialAlreadyBooked($finder_id,$service_id = false){
         
-        return $this->utilities->checkTrialAlreadyBooked($finder_id,$service_id);
+        return $this->utilities->checkTrialAlreadyBooked($finder_id,$service_id, null, null, true);
 
     }
 
