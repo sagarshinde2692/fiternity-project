@@ -856,7 +856,8 @@ class CustomerController extends \BaseController {
 		        "App-Version"=>"",
 		        "Os-Version"=>"",
 		        "Device-Serial"=>"",
-		        "Device-Id"=>""
+		        "Device-Id"=>"",
+		        "Mac-Address"=>"",
 		    ];
 
 		    foreach ($header_array as $header_key => $header_value) {
@@ -876,6 +877,7 @@ class CustomerController extends \BaseController {
 		    $data['app_version'] = $header_array['App-Version'];
 		    $data['serialNumber'] = $header_array['Device-Serial'];
 		    $data['device_id'] = $header_array['Device-Id'];
+		    $data['mac_address'] = $header_array['Mac-Address'];
 		    $data['vendor_id'] = (int)$kiosk_user['finder_id'];
 			Log::info("header_array");
 			Log::info($header_array);
@@ -895,6 +897,8 @@ class CustomerController extends \BaseController {
 		    	$data['old_vendor_id'] = (int)$kiosk_tab['vendor_id'];
 
 		    	if($data['vendor_id'] != $kiosk_tab['vendor_id']){
+
+                    $kiosk_tab->update($data);
 
 		    		$this->findermailer->kioskTabVendorChange($data);
 		    	}
