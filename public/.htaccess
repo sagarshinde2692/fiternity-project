@@ -27,7 +27,7 @@ allow from all
 <IfModule mod_rewrite.c>
   Header set Access-Control-Allow-Origin "*"
   Header set Access-Control-Allow-Methods: "GET,POST,OPTIONS,DELETE,PUT"
-  Header set Access-Control-Allow-Headers: "Content-Type,Authorization,Client,Dev-Certificate,Device-Type,Device-Model,App-Version,Os-Version,Device-Token,Device-Id,Authorization-Vendor,Device-Serial"
+  Header set Access-Control-Allow-Headers: "Content-Type,Authorization,Client,Dev-Certificate,Device-Type,Device-Model,App-Version,Os-Version,Device-Token,Device-Id,Authorization-Vendor,Device-Serial,Mac-Address"
  
   RewriteEngine on
   RewriteBase /
