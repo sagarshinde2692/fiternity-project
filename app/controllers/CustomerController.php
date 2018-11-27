@@ -8348,6 +8348,10 @@ class CustomerController extends \BaseController {
 			'type'=>!empty($_GET['type']) ? $_GET['type'] : null,
             'unverified'=>!empty($_GET['type']) ? true : false
         ];
+
+        if(!empty($_GET['receipt'])){
+            $checkin_data['receipt'] = true;
+        }
 		
 		$addedCheckin = $this->utilities->addCheckin($checkin_data);
 		
@@ -8498,7 +8502,7 @@ class CustomerController extends \BaseController {
 
                     if(!empty($receipts_verified)){
         				$direct_checkin = true;
-                        
+                        $receipt = true;
                     }
                 }
             
@@ -8542,6 +8546,9 @@ class CustomerController extends \BaseController {
 
 				$resp['response']['fitsquad']['url'] = Config::get('app.url').'/markcheckin/'.$finderarr['_id'];
 				
+				if(!empty($receipt)){
+					$resp['response']['fitsquad']['url'] = Config::get('app.url')."/markcheckin/".$finderarr['_id']."?receipt=true";
+				}
 				if(!empty($external_membership)){
 					$resp['response']['fitsquad']['url'] = Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=membership";
 				}

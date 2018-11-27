@@ -6241,7 +6241,7 @@ Class Utilities {
                 $checkin->app_version = Request::header('App-Version');
             }
             
-            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon'];
+            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon','receipt'];
 
             foreach($fields as $field){
                 if(isset($data[$field])){
