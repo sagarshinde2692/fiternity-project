@@ -6503,6 +6503,10 @@ class TransactionController extends \BaseController {
                 ];
             }
 
+            if(!empty($first_session_free) && $data['amount_payable'] == 0){
+                $data['amount_payable'] = 'Free via Fitternity';
+            }
+
 
         }elseif(isset($ticket_id)){
 			if(isset($order)){
