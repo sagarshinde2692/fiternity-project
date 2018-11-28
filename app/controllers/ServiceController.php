@@ -2038,7 +2038,7 @@ class ServiceController extends \BaseController {
 	}
 
 	public function workoutServiceCategorys($city='mumbai',$slotsCountCache=true){
-		Log::info($_GET);
+		Log::info($_SERVER['REQUEST_URI']);
 		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
 
 		$order = [65, 5, 19, 1, 123, 3, 4, 2, 114, 86];
@@ -2160,7 +2160,7 @@ class ServiceController extends \BaseController {
 
 			if(empty($this->app_version) ){
                 $search_resp = $this->utilities->getPPSSearchResult(['city'=>$city
-                ,'keys'=>['name', 'slug', 'location', 'coverimage', 'vendor_name','vendor_slug']
+                ,'keys'=>['name', 'slug', 'location', 'coverimage', 'vendor_name','vendor_slug','average_rating', 'total_rating_count']
                 ]);
 				$data['nearby_options']['header'] = "There are ".$search_resp['metadata']['total_records']." sessions happening near you in the next 4 hours";
                 $data['nearby_options']['view_all_link'] = Config::get('app.website')."/pay-per-session/".$city."/fitness?day=within-4-hours";
@@ -2169,7 +2169,19 @@ class ServiceController extends \BaseController {
 
 
 		}catch(Exception $e){
-			return ['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()];
+			Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+		}
+
+         try{
+
+			if(empty($this->app_version) ){
+               $data['feedback'] = [['text'=>"I've been using Fitternity services, the experience has always been pleasant. The offers are always fascinating, also the customer success team has always been helpful. The online facility has made it so easier for me to try out different options instantly &amp; also continue with my regular fitness always! ", 'name'=>"Rohit", "location"=>"Mumbai"],['text'=>"I've been using Fitternity services, the experience has always been pleasant. The offers are always fascinating, also the customer success team has always been helpful. The online facility has made it so easier for me to try out different options instantly &amp; also continue with my regular fitness always! ", 'name'=>"Rohit", "location"=>"Mumbai"],['text'=>"I've been using Fitternity services, the experience has always been pleasant. The offers are always fascinating, also the customer success team has always been helpful. The online facility has made it so easier for me to try out different options instantly &amp; also continue with my regular fitness always! ", 'name'=>"Rohit", "location"=>"Mumbai"],['text'=>"I've been using Fitternity services, the experience has always been pleasant. The offers are always fascinating, also the customer success team has always been helpful. The online facility has made it so easier for me to try out different options instantly &amp; also continue with my regular fitness always! ", 'name'=>"Rohit", "location"=>"Mumbai"]];
+			}			
+
+
+		}catch(Exception $e){
+			Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+			
 		}
 		// return DB::getQueryLog();
 
