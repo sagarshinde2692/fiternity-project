@@ -375,10 +375,10 @@ class Service extends \Basemodel{
 					$value['campaign_color'] = "#43a047";
 				}
 
-                // if(!empty($value['special_price']) && $value['price'] <= $value['special_price']){
-				// 	 $value['price'] = $value['special_price'];
-                //      unset($value['special_price']);
-				// }
+                if(!empty($value['special_price']) && $value['price'] <= $value['special_price']){
+					 $value['price'] = $value['special_price'];
+                     $value['special_price'] = 0;
+				}
 				
 				// if(isset($value['type']) && in_array($value['type'], ['membership', 'packages']) && isset($value['flags']) && isset($value['flags']['campaign_offer']) && $value['flags']['campaign_offer']){
 				// 	$value['campaign_offer'] = "(Women - Get additional 30% off)";
