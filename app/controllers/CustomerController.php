@@ -856,7 +856,7 @@ class CustomerController extends \BaseController {
 		        "App-Version"=>"",
 		        "Os-Version"=>"",
 		        "Device-Serial"=>"",
-		        "Device-Id"=>"",
+		       "Device-Id"=>"",
 		        "Mac-Address"=>"",
 		    ];
 
@@ -877,7 +877,7 @@ class CustomerController extends \BaseController {
 		    $data['app_version'] = $header_array['App-Version'];
 		    $data['serialNumber'] = $header_array['Device-Serial'];
 		    $data['device_id'] = $header_array['Device-Id'];
-		    $data['mac_address'] = $header_array['Mac-Address'];
+            $data['mac_address'] = $header_array['Mac-Address'];
 		    $data['vendor_id'] = (int)$kiosk_user['finder_id'];
 			Log::info("header_array");
 			Log::info($header_array);
@@ -8049,7 +8049,8 @@ class CustomerController extends \BaseController {
             $group = [
                 '$group'=>[
                     '_id'=>'$milestone',
-                    'vouchers'=>['$push'=>'$$ROOT']
+                    'vouchers'=>['$push'=>'$$ROOT'],
+                    'amount'=>['$max'=>'$amount']
                 ]
             ];
 
@@ -8068,6 +8069,9 @@ class CustomerController extends \BaseController {
 	
         foreach($voucher_categories['result'] as $vc){
             $voucher_categories_map[$vc['_id']] = $vc['vouchers'];
+            if(!$post ){
+                $voucher_categories_map[$vc['_id']][0]['max_amount'] = $vc['amount'];
+            }
         }
 		
         if($post){
@@ -8790,6 +8794,15 @@ class CustomerController extends \BaseController {
     }
 
     public function preLoyaltyRegistration($voucher_categories_map){
+
+
+        // $pre_register = Cache::tags('loyalty')->has('pre_register');
+
+        // if($pre_register){
+        //     Log::info("returning cached");
+        //     return $pre_register = Cache::tags('loyalty')->get('pre_register');
+        //     return ['pre_register'=>$pre_register];
+        // }
         
         $pre_register = Config::get('loyalty_screens.pre_register');
 	
@@ -8797,7 +8810,7 @@ class CustomerController extends \BaseController {
         Log::info(Request::header('Mobile-Verified'));
 
         
-        
+
 
         $pre_register_check_ins_data = [];
         $milestones = Config::get('loyalty_constants.milestones');
@@ -8810,6 +8823,9 @@ class CustomerController extends \BaseController {
             $pre_reward_template['title'] = strtr($pre_reward_template['title'], $milestone);
             $pre_reward_template['milestone'] = strtr($pre_reward_template['milestone'], $milestone);
             $pre_reward_template['amount'] = '₹'.strtr($pre_reward_template['amount'], $milestone);
+            if(!empty($voucher_categories_map[$milestone['milestone']]['max_amount'])){
+                $pre_reward_template['amount'] = '₹'.$voucher_categories_map[$milestone['milestone']]['amount'];
+            }
             $pre_reward_template['count'] = intval(strtr($pre_reward_template['count'], $milestone));
             $pre_reward_template['images'] = array_column($voucher_categories_map[$milestone['milestone']], 'image');
             $pre_register_check_ins_data[] = $pre_reward_template;
@@ -8821,6 +8837,9 @@ class CustomerController extends \BaseController {
         if(!empty($this->device_type) && in_array($this->device_type, ['android', 'ios'])){
             $pre_register['header']['url'] = $pre_register['footer']['url'] = $this->utilities->getLoyaltyRegisterUrl();
         }
+        
+        // Cache::tags('loyalty')->put('pre_register', $pre_register, Config::get('cache.cache_time'));
+
         return ['pre_register'=>$pre_register];
     }
 
