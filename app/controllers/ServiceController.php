@@ -672,7 +672,7 @@ class ServiceController extends \BaseController {
 
 		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id');
 		Service::$withoutAppends=true;
-		Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays'];
+		 Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
 		
         $query = Service::active()->where('trial','!=','disable');
 
@@ -775,7 +775,8 @@ class ServiceController extends \BaseController {
 				'inoperational_dates_array' => $finder['inoperational_dates_array'],
 				'cost'=>'Free Via Fitternity',
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
-				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : ""
+				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : "",
+                'free_trial_available'=>!empty($item['freeTrialRatecards'])
 			);
 
 			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){

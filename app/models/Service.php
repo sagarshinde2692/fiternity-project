@@ -476,4 +476,23 @@ class Service extends \Basemodel{
 		return $this->hasMany('Ratecard','service_id');
 	}
 
+    public function getFreeTrialRatecardsAttribute(){
+
+		return Ratecard::where('service_id', $this->_id)
+            ->where('type', 'trial')
+            ->where('price', 0)
+            ->where(function($query){
+                $query
+                ->orWhere('expiry_date', 'exists', false)
+                ->orWhere('expiry_date', '>', new MongoDate(strtotime('-1 days')));
+            })
+            ->where(function($query){
+                $query
+                ->orWhere('start_date', 'exists', false)
+                ->orWhere('start_date', '<', new MongoDate(time()));
+            })
+            ->count();
+		
+	}
+
 }

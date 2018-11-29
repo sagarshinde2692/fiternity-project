@@ -4046,7 +4046,7 @@ class TransactionController extends \BaseController {
     public function getServiceDetail($service_id){
 
         $data = array();
-
+        
         $service = Service::active()->find((int)$service_id);
 
         if(!$service){
@@ -6287,6 +6287,8 @@ class TransactionController extends \BaseController {
                         $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
                         
                         $data['you_save'] += $data['coupon_discount'];
+
+                        $data['free_trial_available'] = true;
                         
                         $result['payment_details']['amount_summary'][] = [
                             'field' => 'Coupon Discount',
@@ -6394,7 +6396,10 @@ class TransactionController extends \BaseController {
     
             if(isset($data['service_id'])){
                 $service_id = (int) $data['service_id'];
-    
+                
+                // Service::$setAppends = array_merge(array_values(Service::getArrayableAppends()), ['freeTrialRatecards']);
+                // Service::$withoutAppends = true;
+
                 $serviceDetail = $this->getServiceDetail($service_id);
     
                 $data = array_merge($data,$serviceDetail['data']);
