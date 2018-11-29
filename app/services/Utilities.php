@@ -7239,7 +7239,7 @@ Class Utilities {
                         ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
             }else{
 
-            	$query = Booktrial::where('customer_email', $customer_email)
+            	$query = \Booktrial::where('customer_email', $customer_email)
                         ->where('finder_id',(int)$finder_id)
                         
                         ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
