@@ -7202,6 +7202,69 @@ Class Utilities {
         return bin2hex($encrypted_string);
     }
     
+    public function checkTrialAlreadyBooked($finder_id,$service_id = false,$customer_email=null,$customer_phone="",$check_workout=false){
+
+    	$return = false;
+
+    	if($finder_id == ""){
+        	return false;
+        }
+
+    	$customer_id = "";
+        $jwt_token = Request::header('Authorization');
+
+        Log::info('jwt_token : '.$jwt_token);
+
+        if(empty($customer_email) && $jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
+            $decoded = decode_customer_token();
+            $customer_id = intval($decoded->customer->_id);
+            $customer_email = $decoded->customer->email;
+            $customer_phone = "";
+
+            if(isset($decoded->customer->contact_no)){
+				$customer_phone = $decoded->customer->contact_no;
+			}
+        }
+        $booktrial_count = 0;
+           
+        // if($customer_id != ""){
+
+        	if($customer_phone != ""){
+
+        		$query = Booktrial::where(function ($query) use($customer_email, $customer_phone) {
+								$query->orWhere('customer_email', $customer_email)
+									->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -10).'%');
+							})
+                        ->where('finder_id',(int)$finder_id)
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
+            }else{
+
+            	$query = Booktrial::where('customer_email', $customer_email)
+                        ->where('finder_id',(int)$finder_id)
+                        
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
+
+            }
+
+            if(!$check_workout){
+                $query->where('type','booktrials');
+            }
+
+            // if($service_id){
+            // 	$query->where('service_id',(int)$service_id);
+            // }
+
+            $booktrial_count = $query->count();
+        // }
+       
+        if($booktrial_count > 0){
+            Log::info("returning true=========================================");
+        	$return = true;
+        }
+
+        return $return;
+
+    }
 
 }
 

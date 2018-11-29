@@ -8346,7 +8346,7 @@ public function yes($msg){
 				"customer_id"=> $reverseData["customer_id"],
 				"customer_location"=> "-",
 				"error_Message"=> "",
-				"type"=> "workout-session",
+				"type"=> $order[0]['type'],
 				"txnid"=>$reverseData["txnid"],
 				"hash"=> $reverseData["reverse_hash"],
 				"order_status"=>$reverseData["status"]
