@@ -7231,7 +7231,7 @@ Class Utilities {
 
         	if($customer_phone != ""){
 
-        		$query = Booktrial::where(function ($query) use($customer_email, $customer_phone) {
+        		$query = \Booktrial::where(function ($query) use($customer_email, $customer_phone) {
 								$query->orWhere('customer_email', $customer_email)
 									->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -10).'%');
 							})
