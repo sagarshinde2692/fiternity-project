@@ -6140,7 +6140,8 @@ class TransactionController extends \BaseController {
                 'note'=>""
             ],
             'full_wallet_payment' => false,
-            'register_loyalty'=>false
+            'register_loyalty'=>false,
+            'free_trial_available'=>false
         ];
 
         $ratecard_id = null;
@@ -6288,7 +6289,7 @@ class TransactionController extends \BaseController {
                         
                         $data['you_save'] += $data['coupon_discount'];
 
-                        $data['free_trial_available'] = true;
+                        $result['free_trial_available'] = true;
                         
                         $result['payment_details']['amount_summary'][] = [
                             'field' => 'Coupon Discount',
