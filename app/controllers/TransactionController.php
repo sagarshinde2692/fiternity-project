@@ -3008,7 +3008,7 @@ class TransactionController extends \BaseController {
             }
         }            
         
-        if((empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization)){
+        if((empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
             $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
 
@@ -3018,7 +3018,9 @@ class TransactionController extends \BaseController {
                     $data['coupon_description'] = 'First wourkout session free';
                     $data['coupon_discount_amount'] = $data['ratecard_amount'];
                     $amount = $data['amount'] - $data['coupon_discount_amount'];
-
+                    $data['first_session_free'] = true;
+                    $data['amount_finder'] = 0;
+                    $data['vendor_price'] = 0;
                 }
             }
 
@@ -6273,7 +6275,7 @@ class TransactionController extends \BaseController {
             }
 
 
-            if(!empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && !empty($data['customer_email']) && !empty($data['customer_phone'])){
+            if(!empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && !empty($data['customer_email']) && !empty($data['customer_phone']) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
                 $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
 
