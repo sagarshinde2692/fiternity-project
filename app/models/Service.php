@@ -178,7 +178,7 @@ class Service extends \Basemodel{
 		$second_max_validity_ids = [];
 		$ratecardsarr = null;
 		if(!empty($this->_id) && isset($this->_id)){
-			$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
+			$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->where('type', '!=', 'trial')->orderBy('order', 'asc')->get()->toArray();
 		}
 
 		
@@ -479,6 +479,25 @@ class Service extends \Basemodel{
 
 	public function serviceratecards(){
 		return $this->hasMany('Ratecard','service_id');
+	}
+
+    public function getFreeTrialRatecardsAttribute(){
+
+		return Ratecard::where('service_id', $this->_id)
+            ->where('type', 'trial')
+            ->where('price', 0)
+            ->where(function($query){
+                $query
+                ->orWhere('expiry_date', 'exists', false)
+                ->orWhere('expiry_date', '>', new MongoDate(strtotime('-1 days')));
+            })
+            ->where(function($query){
+                $query
+                ->orWhere('start_date', 'exists', false)
+                ->orWhere('start_date', '<', new MongoDate(time()));
+            })
+            ->count();
+		
 	}
 
 }

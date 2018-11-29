@@ -2996,9 +2996,9 @@ class TransactionController extends \BaseController {
             $data['convinience_fee'] = $convinience_fee;
         }
 
-        
 
-        if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+        if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'&&!empty($data['amount'])){
+            
             if($data['type'] == 'workout-session' && !(isset($data['pay_later']) && $data['pay_later']) && !(isset($data['session_payment']) && $data['session_payment'])){
                 Log::info("inside instant discount");
                 
@@ -3008,6 +3008,24 @@ class TransactionController extends \BaseController {
     
             }
         }            
+        
+        if((empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
+
+            $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
+
+            if($free_trial_ratecard){
+                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
+                    $data['coupon_code'] = 'FIRSTPPSFREE';
+                    $data['coupon_description'] = 'First wourkout session free';
+                    $data['coupon_discount_amount'] = $data['ratecard_amount'];
+                    $amount = $data['amount'] - $data['coupon_discount_amount'];
+                    $data['first_session_free'] = true;
+                    $data['amount_finder'] = 0;
+                    $data['vendor_price'] = 0;
+                }
+            }
+
+        }
 
         if($data['type'] != 'events'){
 
@@ -4029,7 +4047,7 @@ class TransactionController extends \BaseController {
     public function getServiceDetail($service_id){
 
         $data = array();
-
+        
         $service = Service::active()->find((int)$service_id);
 
         if(!$service){
@@ -6123,7 +6141,8 @@ class TransactionController extends \BaseController {
                 'note'=>""
             ],
             'full_wallet_payment' => false,
-            'register_loyalty'=>false
+            'register_loyalty'=>false,
+            'free_trial_available'=>false
         ];
 
         $ratecard_id = null;
@@ -6197,6 +6216,8 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            $data['ratecard_amount'] = $data['amount'];
+
             if(!empty($data['customer_quantity'])){
                 $data['amount_payable'] = $data['amount']= $data['amount'] * $data['customer_quantity'];
                 $result['customer_quantity'] = $data['customer_quantity'];
@@ -6241,10 +6262,63 @@ class TransactionController extends \BaseController {
             $jwt_token = Request::header('Authorization');
             
             Log::info('jwt_token checkout summary: '.$jwt_token);
+
+            if(!empty($jwt_token) && $jwt_token != 'null'){
+                
+                $decoded = customerTokenDecode($jwt_token);
+
+                if(empty($data['customer_email'])){
+                    $data['customer_email'] = $decoded->customer->email;
+
+                    if(!empty($decoded->customer->contact_no)){
+                        $data['customer_phone'] = $decoded->customer->contact_no;
+                    }
+                }
+            }
+
+
+            if(!empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && !empty($data['customer_email']) && !empty($data['customer_phone']) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
+
+                $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])
+                ->where('type', 'trial')
+                ->where('price', 0)
+                ->where(function($query){
+                    $query
+                    ->orWhere('expiry_date', 'exists', false)
+                    ->orWhere('expiry_date', '>', new MongoDate(strtotime('-1 days')));
+                })
+                ->where(function($query){
+                    $query
+                    ->orWhere('start_date', 'exists', false)
+                    ->orWhere('start_date', '<', new MongoDate(time()));
+                })
+                ->first();
+
+                if($free_trial_ratecard){
+                    if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
+
+                        $data['coupon_discount'] = $data['ratecard_amount'];
+
+                        $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                        
+                        $data['you_save'] += $data['coupon_discount'];
+
+                        $result['free_trial_available'] = true;
+                        
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => 'Coupon Discount',
+                            'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
+                        ];
+
+                        $first_session_free = true;
+                        
+                    }
+                }
+            }
                 
             if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
                 
-                $decoded = customerTokenDecode($jwt_token);
+                $decoded = !empty($decoded) ? $decoded : customerTokenDecode($jwt_token);
                 
                 $customer_id = $decoded->customer->_id;
                 $data['wallet_balance'] = 0;
@@ -6317,6 +6391,10 @@ class TransactionController extends \BaseController {
                 'value' => 'Rs. '.(string)number_format($data['amount_payable'])
             ];
 
+            if(!empty($first_session_free) && $data['amount_payable'] == 0){
+                $result['payment_details']['amount_payable']['value'] = "Free via Fitternity";
+            }
+
             if($data['amount_payable'] == 0){
                 $result['full_wallet_payment'] = true;
             }
@@ -6333,7 +6411,10 @@ class TransactionController extends \BaseController {
     
             if(isset($data['service_id'])){
                 $service_id = (int) $data['service_id'];
-    
+                
+                // Service::$setAppends = array_merge(array_values(Service::getArrayableAppends()), ['freeTrialRatecards']);
+                // Service::$withoutAppends = true;
+
                 $serviceDetail = $this->getServiceDetail($service_id);
     
                 $data = array_merge($data,$serviceDetail['data']);
@@ -6447,7 +6528,6 @@ class TransactionController extends \BaseController {
                     'amount' => $data['you_save']
                 ];
             }
-
 
         }elseif(isset($ticket_id)){
 			if(isset($order)){
