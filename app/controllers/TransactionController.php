@@ -6278,7 +6278,20 @@ class TransactionController extends \BaseController {
 
             if(!empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && !empty($data['customer_email']) && !empty($data['customer_phone']) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
-                $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
+                $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])
+                ->where('type', 'trial')
+                ->where('price', 0)
+                ->where(function($query){
+                    $query
+                    ->orWhere('expiry_date', 'exists', false)
+                    ->orWhere('expiry_date', '>', new MongoDate(strtotime('-1 days')));
+                })
+                ->where(function($query){
+                    $query
+                    ->orWhere('start_date', 'exists', false)
+                    ->orWhere('start_date', '<', new MongoDate(time()));
+                })
+                ->first();
 
                 if($free_trial_ratecard){
                     if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
