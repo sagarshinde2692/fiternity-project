@@ -1126,7 +1126,7 @@ class ServiceController extends \BaseController {
         	// 	$data['trial_booked'] = $this->checkTrialAlreadyBooked($item['finder_id']);
 			// }else{
         	// 	$data['trial_booked'] = $all_trials_booked;
-			// }
+			// }    
 
         	if($type == "trialschedules" &&  !empty($schedules)){
         		$data['schedules'] = $this->checkWorkoutSessionAvailable($schedules);
@@ -1142,6 +1142,13 @@ class ServiceController extends \BaseController {
 					if(isset($schedule['slots'])&&count($schedule['slots'])>0)
 					{
 						$slots =$schedule['slots'];
+
+                        
+                        if(!empty($schedule['free_trial_available']) && empty($data['trial_booked'])){
+                            foreach($slots as &$s){
+                                $s['price'] .= Config::get('app.first_free_string');
+                            }
+                        }
 						//$slots = pluck($schedule['slots'], ['slot_time', 'price', 'service_id', 'finder_id', 'ratecard_id', 'epoch_start_time', 'epoch_end_time']);
 					}
 
@@ -1161,7 +1168,16 @@ class ServiceController extends \BaseController {
 				];
 
 
-			} 
+			}else{
+                foreach($data['schedules'] as &$sc){
+                    if(!empty($sc['free_trial_available']) && empty($data['trial_booked'])){
+                        $sc['cost'] .= Config::get('app.first_free_string');
+                        if(!empty($sc['non_peak']['price'])){
+                            $sc['non_peak']['price'].=Config::get('app.first_free_string');
+                        }
+                    }
+                }
+            }
 
 
 	        return Response::json($data,200);
