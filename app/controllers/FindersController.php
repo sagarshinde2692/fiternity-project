@@ -4384,7 +4384,7 @@ class FindersController extends \BaseController {
 					if($customer_phone != ""){
 
 						$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->orWhere('customer_email', $customer_email)->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');})
-						->where('tag', ['Membership', 'Trial', 'Workout-session'])
+						// ->where('tag', ['Membership', 'Trial', 'Workout-session'])
 						->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
 						->get(array('id'));
 
