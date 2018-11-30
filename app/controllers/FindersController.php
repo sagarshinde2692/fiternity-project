@@ -4399,6 +4399,21 @@ class FindersController extends \BaseController {
 					$finderData['trials_detials']              =      $customer_trials_with_vendors;
 					$finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
 
+                    if(!empty($finderData['finder']['category']['_id']) && $finderData['finder']['category']['_id'] != 42 ){
+                       
+                        if(!empty($finderData['finder']['facilities']) && in_array( "Free Trial" , $finderData['finder']['facilities']) && empty($customer_trials_with_vendors)){
+
+                            $finderData['call_for_action_button']      =      "Book Your First Free Session";
+                            $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session';
+
+
+                        }else{
+                            $finderData['call_for_action_button']      =      "Book Your First Session";
+                            $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session';
+                        }
+
+                    }
+
 				}
 			
 			}
