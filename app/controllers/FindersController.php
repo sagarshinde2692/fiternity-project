@@ -4592,7 +4592,7 @@ class FindersController extends \BaseController {
 			if(!$finderData['pending_payment']){
 				unset($finderData['pending_payment']);	
 			}
-
+            $finderData['trials_booked_status'] = true;
 		}else{
 
 			$finderData['status'] = 404;
