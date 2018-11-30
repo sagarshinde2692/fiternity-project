@@ -8697,7 +8697,7 @@ class CustomerController extends \BaseController {
             
             $post_reward_template['_id'] = $key;
             // return $milestone_no;
-            
+            $claimed_vouchers = [];
             if(!empty($voucher_categories_map[$milestone['milestone']])){
                 
                 $claimed_vouchers =  !empty($customer_milestones[$milestone['milestone']-1]['voucher']) ? $customer_milestones[$milestone['milestone']-1]['voucher'] : [];
@@ -8852,6 +8852,12 @@ class CustomerController extends \BaseController {
         }catch(Exception $e){
             Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);            
         }
+    }
+
+    public function createtokenbycustomerid($customer_email){
+        
+        $customer = Customer::where('email', strtolower($customer_email))->first();
+        return $this->createToken($customer);
     }
 	
 }
