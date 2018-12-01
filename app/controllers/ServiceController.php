@@ -667,7 +667,7 @@ class ServiceController extends \BaseController {
         $timestamp    			=   strtotime($date);
         $weekday     			=   strtolower(date( "l", $timestamp));
         $type 					= 	(isset($request['type']) && $request['type'] != "") ? $request['type'] : "trial" ;
-        $type                   =   'workout-session';
+        // $type                   =   'workout-session';
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
 		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id');
