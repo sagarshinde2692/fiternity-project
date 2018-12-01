@@ -1297,6 +1297,13 @@ class FindersController extends \BaseController {
 			$response['trials_detials']              =      [];
 			$response['trials_booked_status']        =      false;
 		}
+
+
+        $response['trial_button'] = false;
+
+        if(empty(count($response['trials_detials'])) && $response['finder']['brand_id'] == 130){
+            $response['trial_button'] = true;
+        }
 		$response['pending_payment'] = $this->utilities->hasPendingPayments();
 		if(!$response['pending_payment']){
 			unset($response['pending_payment']);	
@@ -4593,7 +4600,12 @@ class FindersController extends \BaseController {
 			if(!$finderData['pending_payment']){
 				unset($finderData['pending_payment']);	
 			}
-            $finderData['trials_booked_status'] = true;
+
+            if(!empty($finderData['finder']['brand_id']) && $finderData['finder']['brand_id'] == 130 && empty($finderData['trials_booked_status'])){
+
+            }else{
+               $finderData['trials_booked_status'] = true;
+            }
 		}else{
 
 			$finderData['status'] = 404;

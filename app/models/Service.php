@@ -177,8 +177,14 @@ class Service extends \Basemodel{
 		$max_validity_ids = [];
 		$second_max_validity_ids = [];
 		$ratecardsarr = null;
+        $finder = $this->finder;
 		if(!empty($this->_id) && isset($this->_id)){
-			$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->where('type', '!=', 'trial')->orderBy('order', 'asc')->get()->toArray();
+
+            if($finder->brand_id != 130){
+			    $ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->where('type', '!=', 'trial')->orderBy('order', 'asc')->get()->toArray();
+            }else{
+			    $ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
+            }
 		}
 
 		
@@ -192,7 +198,6 @@ class Service extends \Basemodel{
 									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout','added_by_script'])
 									->toArray();
-			$finder = $this->finder;
 			foreach ($ratecardsarr as $key => $value) {
 
 				// if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
