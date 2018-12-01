@@ -4384,6 +4384,7 @@ class FindersController extends \BaseController {
 					if($customer_phone != ""){
 
 						$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->orWhere('customer_email', $customer_email)->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');})
+                        ->where('finder_id', '=', (int) $finder->_id)
 						// ->where('tag', ['Membership', 'Trial', 'Workout-session'])
 						->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
 						->get(array('id'));
@@ -4400,16 +4401,19 @@ class FindersController extends \BaseController {
 					$finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
 
                     if(!empty($finderData['finder']['category']['_id']) && $finderData['finder']['category']['_id'] != 42 ){
-                       
-                        if(!empty($finderData['finder']['facilities']) && in_array( "Free Trial" , $finderData['finder']['facilities']) && empty($customer_trials_with_vendors->toArray())){
 
-                            $finderData['call_for_action_button']      =      "Book Your First Free Session";
-                            $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session';
+                        if(empty($customer_trials_with_vendors->toArray())){
 
-
+                            if(!empty($finderData['finder']['facilities']) && in_array( "Free Trial" , $finderData['finder']['facilities'])){
+                                $finderData['call_for_action_button']      =      "Book Your First Free Session";
+                                $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session';    
+                            }else{
+                                $finderData['call_for_action_button']      =      "Book Your First Session";
+                                $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session';    
+                            }
                         }else{
-                            $finderData['call_for_action_button']      =      "Book Your First Session";
-                            $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session';
+                            $finderData['call_for_action_button']      =      "Book a Session";
+                            $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking sessions';    
                         }
 
                     }
