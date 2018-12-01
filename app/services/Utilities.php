@@ -4287,6 +4287,12 @@ Class Utilities {
 		if(in_array($code, $assholeCodes)){
 			return false;
 		}
+
+        $couponCodes = ["32REDTFMR","RED33TFMR","35REDTFMR","RED36TFMR","38REDTFMR","RED39TFMR","41REDTFMR","RED42TFMR","44REDTFMR","RED45TFMR"];
+
+        if(in_array($code, $couponCodes)){
+			return false;
+		}
         return (strlen($code)==9 && substr($code, -1 ) == 'R') || (strlen($code)==10 && substr($code, 0, 2) == 'R-');
     }
 
