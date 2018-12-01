@@ -4401,7 +4401,7 @@ class FindersController extends \BaseController {
 
                     if(!empty($finderData['finder']['category']['_id']) && $finderData['finder']['category']['_id'] != 42 ){
                        
-                        if(!empty($finderData['finder']['facilities']) && in_array( "Free Trial" , $finderData['finder']['facilities']) && empty($customer_trials_with_vendors)){
+                        if(!empty($finderData['finder']['facilities']) && in_array( "Free Trial" , $finderData['finder']['facilities']) && empty($customer_trials_with_vendors->toArray())){
 
                             $finderData['call_for_action_button']      =      "Book Your First Free Session";
                             $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session';
