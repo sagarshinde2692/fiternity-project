@@ -1301,7 +1301,7 @@ class FindersController extends \BaseController {
 
         $response['trial_button'] = false;
 
-        if(empty(count($response['trials_detials'])) && $response['finder']['brand_id'] == 130){
+        if(empty(count($response['trials_detials'])) && !empty($response['finder']['brand_id']) && $response['finder']['brand_id'] == 130){
             $response['trial_button'] = true;
         }
 		$response['pending_payment'] = $this->utilities->hasPendingPayments();
