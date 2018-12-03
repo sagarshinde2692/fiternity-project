@@ -7232,7 +7232,7 @@ Class Utilities {
 			}
         }
         $booktrial_count = 0;
-           
+        
         if(!empty($customer_email)){
 
         	if($customer_phone != ""){
@@ -7260,14 +7260,14 @@ Class Utilities {
             // 	$query->where('service_id',(int)$service_id);
             // }
 
-            $booktrial_count = $query->orderBy('created_at', 'desc')->get(['created_at']);
+            $booktrial_count = $query->orderBy('created_at', 'desc')->get(['created_at'])->toArray();
         }
 
         if(!empty($from) && $from == 'checkoutSummary'){
             return $booktrial_count[0];
         }
        
-        if(count($booktrial_count) > 0){
+        if(!empty($booktrial_count)){
             Log::info("returning true=========================================");
         	$return = true;
         }
