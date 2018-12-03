@@ -2253,6 +2253,10 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($order['punching_order'])){
                 $booktrialdata['punching_order'] = $order['punching_order'];
             }
+            
+            if(!empty($order['first_session_free'])){
+                $booktrialdata['first_session_free'] = $order['first_session_free'];
+            }
 
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
