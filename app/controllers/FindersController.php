@@ -4529,7 +4529,8 @@ class FindersController extends \BaseController {
 					}
 
 					if($_GET['app_version'] > '5.13'){
-						if($this->addPPSStripe($finderData['finder'])){
+						if($pps_stripe = $this->addPPSStripe($finderData['finder'])){
+                            $finderData['finder']['services'] = $pps_stripe;
                             $finderData['fit_ex_title'] = "Now working out at ".$finderData['finder']['title']." is possible without buying a membership";
                             $finderData['fit_ex_sub_title'] = "Use Fitternity's Pay-Per-Session to workout here and pay session by session";
                         }
@@ -6063,6 +6064,7 @@ class FindersController extends \BaseController {
 					
 					if(isset($ratecard['type']) && $ratecard['type'] == 'workout session'){
 						$pps_exists = true;
+                        $ratecard['start_price_text'] = 'Starting at';
 						// $pps_ratecard = $ratecard;
 					}
 	
@@ -6079,7 +6081,7 @@ class FindersController extends \BaseController {
 			}
 		}
 		
-		return !empty($pps_exists);
+		return !empty($pps_exists) ? $finder['services'] : false;
 	}
 
 	public function addPPSStripeData($ratecard, $service, $finder){
