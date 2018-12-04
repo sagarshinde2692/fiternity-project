@@ -6478,11 +6478,11 @@ class TransactionController extends \BaseController {
                  if(isset($data['slot'])){
                     $result['order_details']['date'] = [
                         "field"=>"Date",
-                        "value"=>date('dS M Y', strtotime($data['slot']['date']))
+                        "value"=>date('dS M', strtotime($data['slot']['date']))
                     ];
                      $result['order_details']['time'] = [
                         "field"=>"Time",
-                        "value"=>$data['slot']['slot_time']
+                        "value"=>trim(explode('-', $data['slot']['slot_time'])[0])
                     ];
                 }
                 $result['finder_name'] = $data['finder_name'];
@@ -6492,7 +6492,7 @@ class TransactionController extends \BaseController {
             if(!empty($result['order_details']['date']) && !empty($result['order_details']['time'])){
                 $result['order_details']['date_time'] = [
                     'field'=> 'Date & Time',
-                    'value'=>$result['order_details']['date']['value'].', '.$result['order_details']['time']['value']
+                    'value'=>$result['order_details']['date']['value'].' at '.$result['order_details']['time']['value']
                 ];
 
                 unset($result['order_details']['date']);
