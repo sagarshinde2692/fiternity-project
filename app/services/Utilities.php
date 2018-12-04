@@ -7264,7 +7264,12 @@ Class Utilities {
         }
 
         if(!empty($from) && $from == 'checkoutSummary'){
-            return $booktrial_count[0];
+
+            if(!empty($booktrial_count)){
+               return $booktrial_count[0];
+            }else{
+                return false;
+            }
         }
        
         if(!empty($booktrial_count)){
