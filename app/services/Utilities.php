@@ -7208,7 +7208,7 @@ Class Utilities {
         return bin2hex($encrypted_string);
     }
     
-    public function checkTrialAlreadyBooked($finder_id,$service_id = false,$customer_email=null,$customer_phone="",$check_workout=false){
+    public function checkTrialAlreadyBooked($finder_id,$service_id = false,$customer_email=null,$customer_phone="",$check_workout=false, $from=null){
 
     	$return = false;
 
@@ -7232,8 +7232,8 @@ Class Utilities {
 			}
         }
         $booktrial_count = 0;
-           
-        // if($customer_id != ""){
+        
+        if(!empty($customer_email)){
 
         	if($customer_phone != ""){
 
@@ -7260,10 +7260,19 @@ Class Utilities {
             // 	$query->where('service_id',(int)$service_id);
             // }
 
-            $booktrial_count = $query->count();
-        // }
+            $booktrial_count = $query->orderBy('created_at', 'desc')->get(['created_at'])->toArray();
+        }
+
+        if(!empty($from) && $from == 'checkoutSummary'){
+
+            if(!empty($booktrial_count)){
+               return $booktrial_count[0];
+            }else{
+                return false;
+            }
+        }
        
-        if($booktrial_count > 0){
+        if(!empty($booktrial_count)){
             Log::info("returning true=========================================");
         	$return = true;
         }

@@ -6282,7 +6282,7 @@ class TransactionController extends \BaseController {
             }
 
 
-            if(!empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && !empty($data['customer_email']) && !empty($data['customer_phone']) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
+            if(!empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
                 $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])
                 ->where('type', 'trial')
@@ -6300,7 +6300,8 @@ class TransactionController extends \BaseController {
                 ->first();
 
                 if($free_trial_ratecard){
-                    if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
+                    $already_booked_trials = $this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, !empty($data['customer_email']) ? $data['customer_email'] : '', !empty($data['customer_phone']) ? $data['customer_phone'] : null , true, 'checkoutSummary');
+                    if(empty($already_booked_trials)){
 
                         $data['coupon_discount'] = $data['ratecard_amount'];
 
@@ -6317,6 +6318,9 @@ class TransactionController extends \BaseController {
 
                         $first_session_free = true;
                         
+                    }else{
+                        Log::info($already_booked_trials['created_at']);
+                        $last_booked_at = date('dS M Y', strtotime($already_booked_trials['created_at']));
                     }
                 }
             }
@@ -6463,19 +6467,37 @@ class TransactionController extends \BaseController {
                         "value"=> "₹ ".number_format($data['amount'])
                     ]
                 ];
+
+                if(!empty($last_booked_at)){
+                    $result['order_details']["last_booked_at"]= [
+                        "field"=> "Last booked at",
+                        "value"=> $last_booked_at,
+                        "type"=> "subtext"
+                    ];
+                }
                  if(isset($data['slot'])){
                     $result['order_details']['date'] = [
                         "field"=>"Date",
-                        "value"=>date('dS M Y', strtotime($data['slot']['date']))
+                        "value"=>date('dS M', strtotime($data['slot']['date']))
                     ];
                      $result['order_details']['time'] = [
                         "field"=>"Time",
-                        "value"=>$data['slot']['slot_time']
+                        "value"=>trim(explode('-', $data['slot']['slot_time'])[0])
                     ];
                 }
                 $result['finder_name'] = $data['finder_name'];
                 $result['finder_location'] = $data['finder_location'];
             // }
+
+            if(!empty($result['order_details']['date']) && !empty($result['order_details']['time'])){
+                $result['order_details']['date_time'] = [
+                    'field'=> 'Date & Time',
+                    'value'=>$result['order_details']['date']['value'].' at '.$result['order_details']['time']['value']
+                ];
+
+                unset($result['order_details']['date']);
+                unset($result['order_details']['time']);
+            }
 
             if(isset($data['reward_ids'])){
                 
@@ -6526,7 +6548,7 @@ class TransactionController extends \BaseController {
             }
             $result['order_details'] = array_values($result['order_details']);
 
-            if($data['you_save'] > 0){
+            if($data['you_save'] > 0 && (empty($data['type']) || $data['type'] != 'workout session')){
                 $result['payment_details']['savings'] = [
                     'field' => 'Your total savings',
                     'value' => "Rs. ".number_format($data['you_save']),
