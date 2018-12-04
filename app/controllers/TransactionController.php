@@ -6489,6 +6489,16 @@ class TransactionController extends \BaseController {
                 $result['finder_location'] = $data['finder_location'];
             // }
 
+            if(!empty($result['order_details']['date']) && !empty($result['order_details']['time'])){
+                $result['order_details']['date_time'] = [
+                    'field'=> 'Date & Time',
+                    'value'=>$result['order_details']['date']['value'].', '.$result['order_details']['time']['value']
+                ];
+
+                unset($result['order_details']['date']);
+                unset($result['order_details']['time']);
+            }
+
             if(isset($data['reward_ids'])){
                 
                 $reward = Reward::find(intval($data['reward_ids'][0]));
@@ -6538,7 +6548,7 @@ class TransactionController extends \BaseController {
             }
             $result['order_details'] = array_values($result['order_details']);
 
-            if($data['you_save'] > 0){
+            if($data['you_save'] > 0 && (empty($data['type']) || $data['type'] != 'workout session')){
                 $result['payment_details']['savings'] = [
                     'field' => 'Your total savings',
                     'value' => "Rs. ".number_format($data['you_save']),
