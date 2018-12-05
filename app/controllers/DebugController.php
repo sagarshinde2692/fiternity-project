@@ -8415,5 +8415,38 @@ public function yes($msg){
         return Checkin::whereIn('_id', $checkins_to_verify)->where('unverified', true)->update(['unverified'=>false, 'verified_by_script_against_receipt'=>$time]);
     }
 
+    private function assignGoldLoyalty(){
+        $ids = [219103,220255,220256,220782,220783];
+        $orders = Order::whereIn('_id', $ids)->orderBy('_id', 'asc')->get();
+        foreach($orders as $data){
+            $customer = Customer::where('loyalty.brand_loyalty', null)->where('_id', $data['customer_id'])->first();
+            if(empty($customer)){
+                continue;
+            }
+            Log::info($data['_id']);
+            $loyalty = $customer->loyalty;
+            // return $data['duration_day'];
+            if(!empty($data['duration_day']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($data['duration_day'], [180, 360, 720])){
+                Finder::$withoutAppends = true;
+                $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+                if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
+                    $loyalty['brand_loyalty'] = $finder['brand_id'];
+                    $loyalty['brand_loyalty_duration'] = $data['duration_day'];
+                    if($data['duration_day'] == 720){
+                        $loyalty['brand_loyalty_duration'] = 360;
+                    }
+                    $loyalty['brand_loyalty_city'] = $data['city_id'];
+                }
+            }
+            $customer->loyalty = $loyalty;
+            // return $customer;
+            $customer->update();
+        }
+
+
+
+
+    }
+
 }
 
