@@ -496,13 +496,13 @@ class TransactionController extends \BaseController {
                         $cust->third_party_details=$data['third_party_details'];
                         $cust->save();
                         
-                        $this->utilities->createWorkoutSession($order->_id, true);
+                        $booktrialData = json_decode($this->utilities->createWorkoutSession($order->_id, true)->getContent(), true);
 
-	            		return Response::json(['status'=>1,"message"=>"Successfully Generated and maintained Workout session. "]);            			
+	            		return Response::json(['status'=>200,"message"=>"Successfully Generated and maintained Workout session.", 'booktrial_id' => $booktrialData['booktrialid']]);            			
             		}
-            		else return Response::json(['status'=>1,"message"=>"Total sessions already crossed. "]);
+            		else return Response::json(['status'=>400,"message"=>"Total sessions already crossed. "]);
             	}
-            	else return Response::json(['status'=>2,"message"=>"Total sessions used not present. "]);
+            	else return Response::json(['status'=>400,"message"=>"Total sessions used not present. "]);
             }
 
             if(isset($data['manual_order']) && $data['manual_order']){

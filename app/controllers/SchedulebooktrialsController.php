@@ -4545,14 +4545,17 @@ class SchedulebooktrialsController extends \BaseController {
             $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id),Config::get('app.queue'));
             $booktrial->update(array('cancel_redis_id'=>$redisid));
 
+            $resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
+
             if(!empty($booktrial['third_party_details'])){
                 $cust = Customer::find($booktrial['customer_id']);
                 Log::info('cust:::: ', [$cust]);
                 if($cust['total_sessions_used']>0)
                     $cust['total_sessions_used'] -= 1;
                 $cust->update();
+                $resp['booktrial_id'] = $booktrial['_id'];
             }
-            $resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
+            
             return Response::json($resp,200);
 
         }else{
