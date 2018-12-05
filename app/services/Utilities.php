@@ -6826,13 +6826,14 @@ Class Utilities {
             ];
             $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name','customer_membership']);
             $loyalty = array_merge($loyalty, $fields_to_add);
-
-            if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['duration_day']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($data['duration_day'], [180, 360])){
+            $duration = !empty($data['duration_day']) ? $data['duration_day'] : $data['order_duration_day'];
+            $duration = $duration > 180 ? 360 : $duration;
+            if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
                 Finder::$withoutAppends = true;
                 $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
                 if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
                     $loyalty['brand_loyalty'] = $finder['brand_id'];
-                    $loyalty['brand_loyalty_duration'] = $data['duration_day'];
+                    $loyalty['brand_loyalty_duration'] = $duration;
                     $loyalty['brand_loyalty_city'] = $data['city_id'];
                 }
             }
