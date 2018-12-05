@@ -6111,7 +6111,7 @@ class TransactionController extends \BaseController {
             Log::info("wallet");
             Log::info($wallet);
             
-            $redisid = Queue::connection('sync')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+            $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
             // $order->redis_id = $redisid;
             $order->wallet_balance = $this->utilities->getWalletBalance($order['customer_id']);
             $order->website = "www.fitternity.com";
