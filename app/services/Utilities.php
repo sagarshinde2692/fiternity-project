@@ -6826,7 +6826,7 @@ Class Utilities {
             ];
             $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name','customer_membership']);
             $loyalty = array_merge($loyalty, $fields_to_add);
-            $duration = !empty($data['duration_day']) ? $data['duration_day'] : $data['order_duration_day'];
+            $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
             $duration = $duration > 180 ? 360 : $duration;
             if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
                 Finder::$withoutAppends = true;
