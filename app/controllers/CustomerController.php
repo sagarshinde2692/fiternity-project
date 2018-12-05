@@ -8370,8 +8370,9 @@ class CustomerController extends \BaseController {
 		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200){
 
             if(!empty($update_finder_ws_sessions)){
-                $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
-                $customer->update(['loyalty'=>$loyalty]);
+                 // $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
+				// $customer->update(['loyalty'=>$loyalty]);
+				Customer::where('_id', $customer_id)->increment('loyalty.workout_sessions.'.$finder_id);
             }elseif(!empty($update_finder_membership)){
                 if(!in_array($finder_id, $loyalty['memberships'])){
                     array_push($loyalty['memberships'], $finder_id);
