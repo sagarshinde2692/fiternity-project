@@ -1144,7 +1144,7 @@ class ServiceController extends \BaseController {
 						$slots =$schedule['slots'];
 
                         
-                        if((empty($this->device_type) || !in_array($this->device_type, ['ios', 'android'])) && !empty($schedule['free_trial_available']) && empty($data['trial_booked'])){
+                        if((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($schedule['free_trial_available']) && empty($data['trial_booked'])){
                             foreach($slots as &$s){
                                 $s['price'] .= Config::get('app.first_free_string');
                             }
@@ -1170,7 +1170,7 @@ class ServiceController extends \BaseController {
 
 			}else{
                 foreach($data['schedules'] as &$sc){
-                    if((empty($this->device_type) || !in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])){
+                    if((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])){
                         $sc['cost'] .= Config::get('app.first_free_string');
                         if(!empty($sc['non_peak']['price'])){
                             $sc['non_peak']['price'].=Config::get('app.first_free_string');
