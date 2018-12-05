@@ -1612,25 +1612,25 @@ Class Utilities {
 
     public function walletTransactionNew($request, $data=false){
 
-        $wallet_limit = 1000000;
+        $wallet_limit = 100000;
 
-        if($data && isset($data['type']) && in_array($data['type'], ['wallet'])){
-            Log::info("increasing wallet limit for pledge");
-            $wallet_limit = 100000;
+        // if($data && isset($data['type']) && in_array($data['type'], ['wallet'])){
+        //     Log::info("increasing wallet limit for pledge");
+        //     $wallet_limit = 100000;
         
-        }
+        // }
         
-        if(!empty($request['remove_wallet_limit'])){
-            Log::info("increasing wallet limit");
-            $wallet_limit = 100000;
+        // if(!empty($request['remove_wallet_limit'])){
+        //     Log::info("increasing wallet limit");
+        //     $wallet_limit = 100000;
         
-        }
+        // }
 
-        if($request && isset($request['code']) && in_array($request['code'], ["of001","of@2","of03!","o4f","of005","of@6","of07!","o8f","of009","of@10","of011!","o012f","of0013","of@14","of015!","o016f","of0017","of@18","of019!","o020f","opf001","ofp@2","ofp03!","o4fp","ofp005","ofp@6","ofp07!","o8fp","ofp009","ofp@10","ofp011!","o012fp","ofp0013","ofp@14","ofp015!","o016fp","ofp0017","ofp@18","ofp019!","o020fp"])){
-            Log::info("increasing wallet limit for coupon");
-            $wallet_limit = 100000;
+        // if($request && isset($request['code']) && in_array($request['code'], ["of001","of@2","of03!","o4f","of005","of@6","of07!","o8f","of009","of@10","of011!","o012f","of0013","of@14","of015!","o016f","of0017","of@18","of019!","o020f","opf001","ofp@2","ofp03!","o4fp","ofp005","ofp@6","ofp07!","o8fp","ofp009","ofp@10","ofp011!","o012fp","ofp0013","ofp@14","ofp015!","o016fp","ofp0017","ofp@18","ofp019!","o020fp"])){
+        //     Log::info("increasing wallet limit for coupon");
+        //     $wallet_limit = 100000;
         
-        }
+        // }
 
         $customer_id = (int)$request['customer_id'];
 
@@ -1667,7 +1667,7 @@ Class Utilities {
                 ->orderBy('_id','desc')
                 ->first();
 
-            if($duplicateRequest != ''){
+            if($duplicateRequest != '' && empty($request['duplicate_allowed'])){
 
                 if($request['type'] == "DEBIT"){
 
