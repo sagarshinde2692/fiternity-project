@@ -6490,8 +6490,8 @@ class TransactionController extends \BaseController {
 
                 if(!empty($last_booked_at)){
                     $result['order_details']["last_booked_at"]= [
-                        "field"=> "Last booked at",
-                        "value"=> $last_booked_at,
+                        "field"=> "You have already availed 1 free session at ".$data['finder_name'],
+                        "value"=> "",
                         "type"=> "subtext"
                     ];
                 }
