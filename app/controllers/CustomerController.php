@@ -8797,6 +8797,8 @@ class CustomerController extends \BaseController {
 
                                 if(!empty($customer['loyalty']['receipt_under_verfication'])){
                                     $post_reward_data_template['block_message'] = Config::get('loyalty_screens.receipt_verification_message');
+                                    unset($post_reward_data_template['claim_message']);
+                                    unset($post_reward_data_template['claim_url']);
                                 }else{
                                     $post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
                                 }
