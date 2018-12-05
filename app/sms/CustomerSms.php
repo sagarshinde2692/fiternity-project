@@ -1140,6 +1140,15 @@ Class CustomerSms extends VersionNextSms{
 		
 		return $this->common($label,$to,$data);	
 	}
+	
+    public function walletRecharge($data){
+		
+		$label = 'WalletRecharge-Customer';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);	
+	}
 	public function inviteEvent($data){
 		
 		$label = 'InviteEvent-Customer';

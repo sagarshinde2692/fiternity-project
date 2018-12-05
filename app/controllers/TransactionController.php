@@ -4332,9 +4332,9 @@ class TransactionController extends \BaseController {
 
             $order = Order::find($order_id);
 
-            if(isset($order['type']) && $order['type'] == 'wallet'){
+            if(isset($order['type']) && $order['type'] == 'wallet' && !empty($order['customer_phone'])){
                 
-                $this->customersms->pledge($order->toArray());
+                $this->customersms->walletRecharge($order->toArray());
                 
                 return "success";
             
@@ -5986,7 +5986,7 @@ class TransactionController extends \BaseController {
         Log::info($data);
 
         $data["fitcash_amount"] = round($data['amount'] * (1 + Config::get('app.add_wallet_extra')/100));
-        
+        $data["additional_fitcash"] = $data['fitcash_amount']-$data['amount'];
         $data['amount_finder'] = 0;
         $data['payment_mode'] = 'paymentgateway';
         
@@ -6078,20 +6078,40 @@ class TransactionController extends \BaseController {
             $req = array(
                 "customer_id"=>$order['customer_id'],
                 "order_id"=>$order['_id'],
-                "amount"=>$order['fitcash_amount'],
+                "amount"=>$order['amount'],
                 "amount_fitcash" => 0,
-                "amount_fitcash_plus" => $order['fitcash_amount'],
+                "amount_fitcash_plus" => $order['amount'],
                 "type"=>'CREDIT',
                 'entry'=>'credit',
-                'description'=>"Amount added to Wallet",
+                'description'=>"Fitcash wallet recharge",
+                'duplicate_allowed'=>true
             );
             Log::info($req);
-            $order->wallet_req = $req;
+            // $order->wallet_req = $req;
+            $wallet = $this->utilities->walletTransaction($req, $order->toArray());
+            Log::info("wallet");
+            Log::info($wallet);
+
+
+             $req = array(
+                "customer_id"=>$order['customer_id'],
+                "order_id"=>$order['_id'],
+                "amount"=>$order['additional_fitcash'],
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $order['additional_fitcash'],
+                "type"=>'CREDIT',
+                'entry'=>'credit',
+                'description'=>"Fitcash wallet recharge (Applicable only on workout sessions)",
+                'order_type'=>['workout-session', 'workout session'],
+                'duplicate_allowed'=>true
+            );
+            Log::info($req);
+            // $order->wallet_req = $req;
             $wallet = $this->utilities->walletTransaction($req, $order->toArray());
             Log::info("wallet");
             Log::info($wallet);
             
-            // $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+            $redisid = Queue::connection('sync')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
             // $order->redis_id = $redisid;
             $order->wallet_balance = $this->utilities->getWalletBalance($order['customer_id']);
             $order->website = "www.fitternity.com";
