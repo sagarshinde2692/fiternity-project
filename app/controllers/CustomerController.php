@@ -2196,22 +2196,26 @@ class CustomerController extends \BaseController {
 			'fitness_goal',
 			'city',
 			'place',
-            'freshchat_restore_id'))->toArray();
-
-
+			'freshchat_restore_id'))->toArray();
+			
+			
 		if($customer){
-
+			
 			foreach ($array as $key => $value) {
-
+				
 				if(array_key_exists($key, $customer[0]))
 				{
 					continue;
 				}else{
 					$customer[0][$key] = $value;
 				}
-
+				
 			}
 			$customer[0]['qrcode'] = false;
+            
+            if(!empty($customer[0]['address']) && is_string($customer[0]['address'])){
+				unset($customer[0]['address']);
+			}
 
 			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
 
