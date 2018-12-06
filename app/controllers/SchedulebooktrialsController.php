@@ -7209,6 +7209,9 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($_GET['reason'])){
                 $key = intval($_GET['reason']) - 1;
                 $lostcode_reasons_array = ["not_interested_in_fitcash","lost_fitcode","didnt_get_fitcode"];
+                if(isset($booktrial['third_party_details'])){
+                    $lostcode_reasons_array = array_merge($lostcode_reasons_array, ["i_didn't_get_the_fitcode_from_the_fitness_centre","the_fitcode_given_is_invalid","i_am_getting_an_error_while_submitting_the_fitcode"]);
+                }
                 $reason = $lostcode_reasons_array[$key];
                 $lostfitcode->$reason = time();
                 $reason_message = (isset($reason_message_array[$key])) ? $reason_message_array[$key] : null;
