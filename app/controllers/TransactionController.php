@@ -6492,7 +6492,8 @@ class TransactionController extends \BaseController {
                     $result['order_details']["last_booked_at"]= [
                         "field"=> "Last booked at",
                         "value"=> $last_booked_at,
-                        "type"=> "subtext"
+                        "type"=> "subtext",
+                        "long_text"=> "You have already availed 1 free session at ".$data['finder_name'],
                     ];
                 }
                  if(isset($data['slot'])){
