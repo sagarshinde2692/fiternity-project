@@ -499,10 +499,10 @@ class TransactionController extends \BaseController {
                         $createWorkoutRes = $this->utilities->createWorkoutSession($order->_id, true);
                         $booktrialData = json_decode($createWorkoutRes->getContent(), true);
                         if($booktrialData['status']==200){
-	            		    return Response::json(['status'=>200,"message"=>"Successfully Generated and maintained Workout session.", 'booktrial_id' => $booktrialData['booktrialid']]);            			
+	            		    return Response::json(['status'=>200,"message"=>"Successfully Generated and maintained Workout session.", 'booktrial_id' => $booktrialData['booktrialid']]);
                         }
                         else {
-                            return Response::json(['status'=>400,"message"=>"Successfully Generated and maintained Workout session."]);            			
+                            return Response::json(['status'=>$booktrialData['status'],"message"=>$booktrialData['message']]);
                         }
             		}
             		else return Response::json(['status'=>400,"message"=>"Total sessions already crossed. "]);
