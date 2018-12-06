@@ -1259,7 +1259,7 @@ class FindersController extends \BaseController {
 					unset($response['finder']['payment_options']);
 				}
 
-				$response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
+				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
@@ -4345,6 +4345,7 @@ class FindersController extends \BaseController {
 				// $data['finder']['review_data']['tag'] = ['Membership', 'Trial', 'Workout-session'];
 
 				$data['finder']['review_url'] = Config::get('app.url').'/finderreviewdata/'.$data['finder']['_id'];
+                $data['show_membership_bargain'] = false;
 				
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
@@ -4545,8 +4546,12 @@ class FindersController extends \BaseController {
 						$finderData['finder']['pay_per_session'] = false;
 					}
 
-					if($_GET['app_version'] > 4.8){
-						$finderData['finder']['services'] = $this->addPPSStripe($finderData['finder']);
+					if($_GET['app_version'] > '5.13'){
+						if($pps_stripe = $this->addPPSStripe($finderData['finder'])){
+                            $finderData['finder']['services'] = $pps_stripe;
+                            $finderData['fit_ex_title'] = "Now working out at ".$finderData['finder']['title']." is possible without buying a membership";
+                            $finderData['fit_ex_sub_title'] = "Use Fitternity's Pay-Per-Session to workout here and pay session by session";
+                        }
 					}
 				}
 				if($finderData['finder']['commercial_type'] == 0){
@@ -6077,23 +6082,24 @@ class FindersController extends \BaseController {
 					
 					if(isset($ratecard['type']) && $ratecard['type'] == 'workout session'){
 						$pps_exists = true;
-						$pps_ratecard = $ratecard;
+                        $ratecard['start_price_text'] = 'Starting at';
+						// $pps_ratecard = $ratecard;
 					}
 	
-					if(isset($ratecard['type']) && $ratecard['type'] == 'membership'){
-						if(isset($pps_exists) && $pps_exists){
-							array_splice( $service[$ratecard_key], $key+1, 0, [$this->addPPSStripeData($pps_ratecard, $service, $finder)]); 
-							break;
-						}else{
-							break;
-						}
+					// if(isset($ratecard['type']) && $ratecard['type'] == 'membership'){
+					// 	if(isset($pps_exists) && $pps_exists){
+					// 		array_splice( $service[$ratecard_key], $key+1, 0, [$this->addPPSStripeData($pps_ratecard, $service, $finder)]); 
+					// 		break;
+					// 	}else{
+					// 		break;
+					// 	}
 						
-					}
+					// }
 				}
 			}
 		}
 		
-		return $finder['services'];
+		return !empty($pps_exists) ? $finder['services'] : false;
 	}
 
 	public function addPPSStripeData($ratecard, $service, $finder){
