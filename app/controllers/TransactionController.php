@@ -549,7 +549,9 @@ class TransactionController extends \BaseController {
         }else{
 
             $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
-            $order = new Order(['_id'=>$order_id]);
+            $order = new Order();
+            $order->_id = $order_id;
+            $order->save();
         }
         
         $data['code'] = (string) random_numbers(5); //(string)$data['order_id'];
@@ -906,9 +908,9 @@ class TransactionController extends \BaseController {
 
         }else{
 
-            $order = new Order($data);
-            $order->_id = $order_id;
-            $order->save();
+              // $order = new Order($data);
+            // $order->_id = $order_id;
+            $order->update($data);
             $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(10)),Config::get('app.queue'));
         }
 
