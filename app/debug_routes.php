@@ -2695,6 +2695,7 @@ Route::get('addFacilityImages','DebugController@addFacilityImages');
 
 Route::post('createFitcashCoupons','DebugController@createFitcashCoupons');
 Route::post('convertOrdersToPPS','DebugController@convertOrdersToPPS');
+Route::post('convertorderstoppsdiva','DebugController@convertOrdersToPPSDiva');
 
 Route::get('removeloyalty/{id}','DebugController@removeloyalty');
 Route::get('assignRenewal','DebugController@assignRenewal');
