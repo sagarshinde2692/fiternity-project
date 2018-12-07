@@ -77,7 +77,15 @@ class EventsController extends \BaseController {
 				return Response::json($responsedata, 401);
 			}
 			$orderdata = Order::where('sub_type','music-run')->with(['ticket'=>function($query){$query->select('name', 'price');}])->find(intval($orderid));
-			unset($orderdata['ticket']['_id']);
+            if(isset($orderdata['ticket'])) {
+                unset($orderdata['ticket']['_id']);
+            } else {
+                
+                $orderdata['ticket'] = array(
+                    'name' =>  $orderdata['ticket_name'],
+                    'price' => ($orderdata['amount_finder'] / $orderdata['ticket_quantity']) 
+                );
+            }
 			if(empty($orderdata)){
 				$responsedata = ['message' => 'Order does not exists.', 'status' => 400];
 				return Response::json($responsedata, 400);
@@ -192,7 +200,8 @@ class EventsController extends \BaseController {
 					'date_updated' => $orderdata['updated_at']->toDateTimeString(),
 					'customer_booking_data' => $orderdata['customer_data'],
 					'ticket_quantity' => $orderdata['ticket_quantity'],
-					// 'ticket_info' => $orderdata['ticket'],
+                    // 'ticket_info' => $orderdata['ticket'],
+                    'ticket_name' => $orderdata['ticket_name'],
 					'event_name' => $orderdata['event_name'],
 				);
 				array_push($returnOrder, $eventdatadetails);
