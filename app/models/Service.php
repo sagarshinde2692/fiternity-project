@@ -504,5 +504,16 @@ class Service extends \Basemodel{
             ->count();
 		
 	}
+    public function scopeIntegrated ($query){
+		return $query->where('status','=','1')->whereNotIn('showOnFront', [[], ['kiosk']])->where(function($query){$query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');});
+	}
+
+	public function scopeIntegratedMembership ($query){
+		return $query->where('status','=','1')->whereNotIn('showOnFront', [[], ['kiosk']])->where('membership', '!=', 'disable');
+	}
+
+	public function scopeIntegratedTrial ($query){
+		return $query->where('status','=','1')->whereNotIn('showOnFront', [[], ['kiosk']])->where('trial', '!=', 'disable');
+	}
 
 }
