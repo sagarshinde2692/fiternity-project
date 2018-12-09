@@ -633,6 +633,10 @@ Class CustomerReward {
                 }
 
                 if(isset($order['event_type']) && $order['event_type']=='TOI'){
+
+                    if(empty($order->jockey_code)){
+                        $utilities->assignJockeyCoupon($order);
+                    }
                     return;
                     $fitcash_plus = intval($order['amount']);
                     
@@ -767,6 +771,8 @@ Class CustomerReward {
             if(isset($order->coupon_code) && $utilities->isPPSReferralCode($order->coupon_code)){
                 $utilities->setPPSReferralData($order->toArray());
             }
+
+            
             
         }
         catch (Exception $e) {

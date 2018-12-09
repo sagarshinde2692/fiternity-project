@@ -7282,6 +7282,18 @@ Class Utilities {
 
     }
 
+    public function assignJockeyCoupon($order){
+        
+        $code = \JockeyCode::where('order_id', 'exists', false)->first();
+
+        if($code){
+            Order::where('_id', $order->_id)->update(['jockey_code'=>$code['code']]);
+            $code->order_id = $order->_id;
+            $code->update();
+        }
+
+    }
+
 }
 
 
