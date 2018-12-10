@@ -4522,31 +4522,31 @@ class FindersController extends \BaseController {
 					// 	$finderData['finder']['pay_per_session'] = true;
 					// }
 
-					if(isset($finderData['finder']['pay_per_session']) && $finderData['finder']['pay_per_session']){
+					// if(isset($finderData['finder']['pay_per_session']) && $finderData['finder']['pay_per_session']){
 
-						$cheapest_price = $this->getCheapestWorkoutSession($finderData['finder']['services_workout'], 'app');
+					// 	$cheapest_price = $this->getCheapestWorkoutSession($finderData['finder']['services_workout'], 'app');
 						
-						if($cheapest_price>0){
+					// 	if($cheapest_price>0){
 
-							$finderData['finder']['pps_content'] = [
-								'header1'=>	'PAY - PER - SESSION',
-								'header2'=>	'Available here',
-								'header3'=>	"Why pay for 30 days when you use for 6 days?\nPay Per Session at ".$finderData['finder']['title']." by just paying Rs. ".$cheapest_price,
-								'image'=>''
-							];
+					// 		$finderData['finder']['pps_content'] = [
+					// 			'header1'=>	'PAY - PER - SESSION',
+					// 			'header2'=>	'Available here',
+					// 			'header3'=>	"Why pay for 30 days when you use for 6 days?\nPay Per Session at ".$finderData['finder']['title']." by just paying Rs. ".$cheapest_price,
+					// 			'image'=>''
+					// 		];
 
-						}else{
+					// 	}else{
 
-							$finderData['finder']['pay_per_session'] = false;
-						}
-					}
+					// 		$finderData['finder']['pay_per_session'] = false;
+					// 	}
+					// }
 
 					if(!in_array("false", $disable_button)){
 						$finderData['call_for_action_button'] = "";
 						$finderData['finder']['pay_per_session'] = false;
 					}
 
-					if($_GET['app_version'] > '5.13'){
+					if($_GET['app_version'] > '5.1.3'){
 						if($pps_stripe = $this->addPPSStripe($finderData['finder'])){
                             $finderData['finder']['services'] = $pps_stripe;
                             $finderData['fit_ex_title'] = "Now working out at ".$finderData['finder']['title']." is possible without buying a membership";
