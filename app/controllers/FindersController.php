@@ -4546,7 +4546,7 @@ class FindersController extends \BaseController {
 						$finderData['finder']['pay_per_session'] = false;
 					}
 
-					if($_GET['app_version'] > '5.13'){
+					if($_GET['app_version'] > '5.1.3'){
 						if($pps_stripe = $this->addPPSStripe($finderData['finder'])){
                             $finderData['finder']['services'] = $pps_stripe;
                             $finderData['fit_ex_title'] = "Now working out at ".$finderData['finder']['title']." is possible without buying a membership";
