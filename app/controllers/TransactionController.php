@@ -2269,7 +2269,7 @@ class TransactionController extends \BaseController {
 
                     if(!in_array($finder->category_id, $abundant_category)){
                         $emailData      =   [];
-                        $emailData      =   $order->toArray();
+                        $emailData      =   $updated_order->toArray();
                         if($emailData['type'] == 'events'){
                             if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
                                 $emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
