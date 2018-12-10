@@ -3948,8 +3948,8 @@ class HomeController extends BaseController {
 
         $data["madness"] = [
             "title"=>"Check Out The Madness",
-			"baseurl"=>"https://b.fitn.in/mfp-2018/madness/web/",
-			"baseurl_mobile"=>"https://b.fitn.in/mfp-2018/madness/",
+			"baseurl"=>"https://b.fitn.in/mfp-2018/madness/web2/",
+			"baseurl_mobile"=>"https://b.fitn.in/mfp-2018/madness/mobile1",
             "images"=>[
 				"1.jpg",
 				"2.jpg",
@@ -3963,9 +3963,7 @@ class HomeController extends BaseController {
 				"10.jpg",
 				"11.jpg",
 				"12.jpg",
-				"13.jpg",
-				"14.jpg"
-
+				"13.jpg"
             ]
         ];
 
