@@ -8702,6 +8702,7 @@ class CustomerController extends \BaseController {
             $post_reward_template['_id'] = $key;
             // return $milestone_no;
             $claimed_vouchers = [];
+            $milestone_claim_count = 1;
             if(!empty($voucher_categories_map[$milestone['milestone']])){
                 
                 $claimed_vouchers =  !empty($customer_milestones[$milestone['milestone']-1]['voucher']) ? $customer_milestones[$milestone['milestone']-1]['voucher'] : [];
