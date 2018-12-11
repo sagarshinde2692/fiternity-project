@@ -2289,8 +2289,20 @@ class TransactionController extends \BaseController {
                             }
 
                         }else{
+
+                            if(!empty($emailData['event_type']) && $emailData['event_type'] == 'TOI' && !empty($emailData['event_customers'])){
+                                foreach($emailData['event_customers'] as $c){
+                                    $emailData['bbcustomer_name'] = $emailData['customer_name'];
+                                    $emailData['customer_email'] = $c['customer_email'];
+                                    $emailData['customer_name'] = $c['customer_name'];
+                                    $emailData['jockey_code'] = $c['jockey_code'];
+                                    $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                                }
                             
-                            $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                            }else{
+                                $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                            }
+                            
 
                             // $this->customermailer->payPerSessionFree($emailData);
 
@@ -2975,7 +2987,17 @@ class TransactionController extends \BaseController {
             $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $order['customer_quantity'];
         }
 
+        if(!empty($data['ticket_id']) && $data['ticket_id'] == 495 && !empty($data['ticket_quantity']) && is_integer($data['ticket_quantity']) && $data['ticket_quantity'] % 2 == 0){
+
+            $data['ticket_discount'] = $data['ticket_quantity']/2 * 150;
+            
+            $data['amount_finder'] = $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] - $data['ticket_discount'];
+
+            if(empty($data['amount'])){
+                $data['amount_finder'] = $data['amount'] = $data['amount_customer'] = $data['amount_final'] = 0;
+            }
         
+        }
 
         $amount = $data['amount_customer'] = $data['amount'];
 
@@ -6604,6 +6626,7 @@ class TransactionController extends \BaseController {
 			if(isset($order)){
 				$data = $order;
 				$data["customer_quantity"] = $order["ticket_quantity"];
+				$data["ticket_id"] = $order["ticket_id"];
 				$data["coupon"] = $order["coupon_code"];
 			}
 			$ticket = Ticket::where("_id", intval($ticket_id))->with("event")->get();
@@ -6631,12 +6654,29 @@ class TransactionController extends \BaseController {
                 //     "value"=> $data['finder_address']
                 // ]
             ];
-			$total_amount = $ticket['price'] * intval($data['customer_quantity']);
+            !empty($data['customer_quantity']) ? $data['customer_quantity'] = intval($data['customer_quantity']) : null;
+			
+            $total_amount = $ticket['price'] * intval($data['customer_quantity']);
 			$result['payment_details']['amount_summary'][] = [
                 'field' => 'Total Amount',
                 'value' => 'Rs. '.(string)$total_amount
             ];
-			if(!empty($data['coupon'])){
+
+            if(!empty($data['ticket_id']) && $data['ticket_id'] == 495 && !empty($data['customer_quantity']) && is_integer($data['customer_quantity']) && $data['customer_quantity'] % 2 == 0){
+                
+                $ticket_discount = ($data['customer_quantity']/2) * 150;
+            
+                $total_amount = $total_amount - $ticket_discount;
+
+                if(!empty($ticket_discount)){
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Ticket Discount',
+                        'value' => '-Rs. '.(string)$ticket_discount
+                    ];
+                }
+            }
+            
+            if(!empty($data['coupon'])){
 				$resp = $this->customerreward->couponCodeDiscountCheck(array(),$data['coupon'],null, $ticket, $data["customer_quantity"]); 	
                 // $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
 				
@@ -6652,14 +6692,16 @@ class TransactionController extends \BaseController {
                         'field' => 'Coupon Discount',
                         'value' => '-Rs. '.(string)$data['coupon_discount']
                     ];
-					$result['payment_details']['amount_summary'][] = [
-                        'field' => 'Total Payable Amount',
-                        'value' => 'Rs. '.(string)$total_amount
-                    ];
+					
                 
                 }
 
             }
+
+            $result['payment_details']['amount_summary'][] = [
+                'field' => 'Total Payable Amount',
+                'value' => 'Rs. '.(string)$total_amount
+            ];
 
             $data['amount_payable'] = $total_amount;
 

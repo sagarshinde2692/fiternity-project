@@ -1010,8 +1010,8 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-    	Log::info(" info data".print_r($data,true));
-    	Log::info(" info order ".print_r($order,true));
+    	// Log::info(" info data".print_r($data,true));
+    	// Log::info(" info order ".print_r($order,true));
     	if(!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session')
     		$hash_verified = true;
     	
@@ -7283,14 +7283,28 @@ Class Utilities {
     }
 
     public function assignJockeyCoupon($order){
-        
-        $code = \JockeyCode::where('order_id', 'exists', false)->first();
 
-        if($code){
-            Order::where('_id', $order->_id)->update(['jockey_code'=>$code['code']]);
-            $code->order_id = $order->_id;
-            $code->update();
+        if(empty($order['event_customers'])){
+            return;
         }
+        
+        $event_customers = $order['event_customers'];
+        
+        foreach($event_customers as &$customer){
+            if(!empty($customer['jockey_code'])){
+                continue;
+            }
+            
+            $code = \JockeyCode::where('order_id', 'exists', false)->first();
+
+            if($code){
+                $customer['jockey_code'] = $code['code'];
+                $code->order_id = $order->_id;
+                $code->update();
+            }
+        }
+
+        Order::where('_id', $order['_id'])->update(['event_customers'=>$event_customers]);
 
     }
 
