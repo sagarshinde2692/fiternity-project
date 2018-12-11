@@ -2289,8 +2289,20 @@ class TransactionController extends \BaseController {
                             }
 
                         }else{
+
+                            if(!empty($emailData['event_type']) && $emailData['event_type'] == 'TOI' && !empty($emailData['event_customers'])){
+                                foreach($emailData['event_customers'] as $c){
+                                    $emailData['bbcustomer_name'] = $emailData['customer_name'];
+                                    $emailData['customer_email'] = $c['customer_email'];
+                                    $emailData['customer_name'] = $c['customer_name'];
+                                    $emailData['jockey_code'] = $c['jockey_code'];
+                                    $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                                }
                             
-                            $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                            }else{
+                                $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                            }
+                            
 
                             // $this->customermailer->payPerSessionFree($emailData);
 
