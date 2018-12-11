@@ -5573,6 +5573,27 @@ class TransactionController extends \BaseController {
                     ]
             ]
         ];
+        $os_version = intval(Request::header('Os-Version'));
+        
+        if($os_version >= 9 && $this->device_type == 'android'){
+            $payment_options['wallet']['options'] = [
+                    [
+                            'title' => 'Paytm',
+                            'subtitle' => 'Paytm',
+                            'value' => 'paytm'
+                    ],
+                    [
+                            'title' => 'Mobikwik',
+                            'subtitle' => 'Mobikwik',
+                            'value' => 'mobikwik'
+                    ],
+                    [
+                            'title' => 'PayU',
+                            'subtitle' => 'PayU',
+                            'value' => 'payu'
+                    ]
+            ];
+        }
         
         if(!empty($data['pay_later'])){
             
