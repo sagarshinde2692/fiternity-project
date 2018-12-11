@@ -5104,7 +5104,7 @@ class HomeController extends BaseController {
             $crashlog = new ApiCrashLog($data);
 
             $crashlog->save();
-			if(!empty($data["post_data"]["res_header"])){
+			if(!empty($data["post_data"]["res_header"]) && (empty($data["post_data"]["res_header"]['Status']) || $data["post_data"]["res_header"]['Status'] != "200 OK")){
 				$customersms = new \App\Sms\FinderSms();
             	$sms = $customersms->apicrashlogsSMS(['url'=>$crashlog['post_data']['url'], '_id'=>$crashlog['_id'], 'device'=>$data['header_data']['Device-Type']]);
 			}
