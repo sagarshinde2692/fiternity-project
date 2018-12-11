@@ -6633,16 +6633,14 @@ class TransactionController extends \BaseController {
                 
                 $ticket_discount = ($data['customer_quantity'] - 1) * 50;
             
-                $total_amount = $data['amount'] - $data['ticket_discount'];
+                $total_amount = $total_amount - $ticket_discount;
 
-                if(empty($data['amount'])){
-                    $total_amount = 0;
+                if(!empty($ticket_discount)){
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Ticket Discount',
+                        'value' => '-Rs. '.(string)$ticket_discount
+                    ];
                 }
-
-                $result['payment_details']['amount_summary'][] = [
-                    'field' => 'Ticket Discount',
-                    'value' => '-Rs. '.(string)$data['ticket_discount']
-                ];
             }
             
             if(!empty($data['coupon'])){
@@ -6661,14 +6659,16 @@ class TransactionController extends \BaseController {
                         'field' => 'Coupon Discount',
                         'value' => '-Rs. '.(string)$data['coupon_discount']
                     ];
-					$result['payment_details']['amount_summary'][] = [
-                        'field' => 'Total Payable Amount',
-                        'value' => 'Rs. '.(string)$total_amount
-                    ];
+					
                 
                 }
 
             }
+
+            $result['payment_details']['amount_summary'][] = [
+                'field' => 'Total Payable Amount',
+                'value' => 'Rs. '.(string)$total_amount
+            ];
 
             $data['amount_payable'] = $total_amount;
 
