@@ -7929,6 +7929,8 @@ public function yes($msg){
 
         $orders = Order::whereIn('_id', $order_ids)->where('converting_membership_to_pps', '!=', true)->get();
 
+        $utilities = new Utilities();
+
         foreach ($orders as $order){
 
             $finder_id = $order->finder_id;
@@ -7957,7 +7959,7 @@ public function yes($msg){
 
             $amount2 = $amount - $amount1;
 
-    		$utilities = new Utilities();
+    		
 
     		$walletData = array(
                 "customer_id"=> $order->customer_id,
@@ -8000,47 +8002,47 @@ public function yes($msg){
     }
 
     public function convertOrdersToPPSDiva(){
+
+
         $data = Input::all();
-	    $order_ids = Input::all()['order_ids'];
+
+        $orders = $data['order_ids'];
+
+	    $order_ids = array_column($orders, 'order_id');
 
         $already_added_order_ids = Wallet::whereIn('membership_order_id', $order_ids)->lists('membership_order_id');
 
-        $order_ids = array_values(array_diff($order_ids, $already_added_order_ids));
-
-        $orders = Order::whereIn('_id', $order_ids)->where('converting_membership_to_pps', '!=', true)->get();
-
+        $utilities = new Utilities();
+        
         foreach ($orders as $order){
-
-            $finder_id = $order->finder_id;
-
-            $finder_name = $order->finder_name;
-
-            if(!empty($data['finder_id'])){
             
-                $finder = Finder::find($data['finder_id']);
+            $o = Order::where('_id', $order['order_id'])->whereNotIn('_id', $already_added_order_ids)->where('converting_membership_to_pps', '!=', true)->first();
 
-                $finder_name = $finder['title'];
-                $finder_id = $finder['_id'];
+            $finder_id = $o->finder_id;
+
+            $finder_name = $o->finder_name;
+
+            // if(!empty($order['finder_id'])){
             
-            }
+            //     $finder = Finder::find($order['finder_id']);
 
-            Log::info($order->_id);
-
-            $amount = $order->amount_customer;
-
-            if(!empty($data['amount'])){
-                $amount = $data['amount'];
-            }
+            //     $finder_name = $finder['title'];
+            //     $finder_id = $finder['_id'];
             
+            // }
 
-            $amount1 = $amount;
+            Log::info($o->_id);
 
-            // $amount2 = $amount - $amount1;
+            // $amount = $order->amount_customer;
 
-    		$utilities = new Utilities();
+            $amount = $order['amount'];
+
+            $expiry = $order['expiry'];
+
+    		
 
     		$walletData = array(
-                "customer_id"=> $order->customer_id,
+                "customer_id"=> $o->customer_id,
                 "amount"=> $amount,
                 "amount_fitcash" => 0,
                 "amount_fitcash_plus" => $amount,
@@ -8049,31 +8051,15 @@ public function yes($msg){
                 'entry'=>'credit',
                 'valid_finder_id'=>$finder_id,
                 'remove_wallet_limit'=>true,
-                'validity'=>strtotime($order['start_date'])+(86400*90),
+                'validity'=>strtotime($o['start_date'])+(86400*$order['expiry']),
                 'order_type'=>['workout-session', 'workout session'],
-                'membership_order_id'=>$order->_id
+                'membership_order_id'=>$o->_id
             );
 
             
             $walletTransaction = $utilities->walletTransactionNew($walletData);
 
-            // $walletData = array(
-            //     "customer_id"=> $order->customer_id,
-            //     "amount"=> $amount2,
-            //     "amount_fitcash" => 0,
-            //     "amount_fitcash_plus" => $amount2,
-            //     "type"=>'FITCASHPLUS',
-            //     'description'=>"Added FitCash+ for converting 1 month membership to pay-per-session applicable across Fitternity",
-            //     'entry'=>'credit',
-            //     'remove_wallet_limit'=>true,
-            //     'validity'=>0,
-            //     'order_type'=>['workout-session', 'workout session'],
-            //     'membership_order_id'=>$order->_id
-            // );
-
-            // $walletTransaction = $utilities->walletTransactionNew($walletData);
-
-            $order->update(["converting_membership_to_pps"=>true, 'converting_membership_to_pps_date'=>time()]);
+            $o->update(["converting_membership_to_pps"=>true, 'converting_membership_to_pps_date'=>time()]);
         }
 
         Log::info("done");
