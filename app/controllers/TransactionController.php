@@ -2975,7 +2975,17 @@ class TransactionController extends \BaseController {
             $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $order['customer_quantity'];
         }
 
+        if(!empty($data['ticket_id']) && $data['ticket_id'] == 495 && !empty($data['ticket_quantity'])){
+
+            $data['ticket_discount'] = ($data['ticket_quantity'] - 1) * 50;
+            
+            $data['amount_finder'] = $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] - $data['ticket_discount'];
+
+            if(empty($data['amount'])){
+                $data['amount_finder'] = $data['amount'] = $data['amount_customer'] = $data['amount_final'] = 0;
+            }
         
+        }
 
         $amount = $data['amount_customer'] = $data['amount'];
 
@@ -6583,6 +6593,7 @@ class TransactionController extends \BaseController {
 			if(isset($order)){
 				$data = $order;
 				$data["customer_quantity"] = $order["ticket_quantity"];
+				$data["ticket_id"] = $order["ticket_id"];
 				$data["coupon"] = $order["coupon_code"];
 			}
 			$ticket = Ticket::where("_id", intval($ticket_id))->with("event")->get();
@@ -6610,12 +6621,31 @@ class TransactionController extends \BaseController {
                 //     "value"=> $data['finder_address']
                 // ]
             ];
-			$total_amount = $ticket['price'] * intval($data['customer_quantity']);
+            !empty($data['customer_quantity']) ? $data['customer_quantity'] = intval($data['customer_quantity']) : null;
+			
+            $total_amount = $ticket['price'] * intval($data['customer_quantity']);
 			$result['payment_details']['amount_summary'][] = [
                 'field' => 'Total Amount',
                 'value' => 'Rs. '.(string)$total_amount
             ];
-			if(!empty($data['coupon'])){
+
+            if(!empty($data['ticket_id']) && $data['ticket_id'] == 495 && !empty($data['customer_quantity'])){
+                
+                $ticket_discount = ($data['customer_quantity'] - 1) * 50;
+            
+                $total_amount = $data['amount'] - $data['ticket_discount'];
+
+                if(empty($data['amount'])){
+                    $total_amount = 0;
+                }
+
+                $result['payment_details']['amount_summary'][] = [
+                    'field' => 'Ticket Discount',
+                    'value' => '-Rs. '.(string)$data['ticket_discount']
+                ];
+            }
+            
+            if(!empty($data['coupon'])){
 				$resp = $this->customerreward->couponCodeDiscountCheck(array(),$data['coupon'],null, $ticket, $data["customer_quantity"]); 	
                 // $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
 				
