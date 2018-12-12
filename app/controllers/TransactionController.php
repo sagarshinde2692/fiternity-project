@@ -2987,7 +2987,7 @@ class TransactionController extends \BaseController {
             $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $order['customer_quantity'];
         }
 
-        if(!empty($data['ticket_id']) && $data['ticket_id'] == 495 && !empty($data['ticket_quantity']) && is_integer($data['ticket_quantity']) && $data['ticket_quantity'] % 2 == 0){
+        if(!empty($data['ticket_id']) && $data['ticket_id'] == 494 && !empty($data['ticket_quantity']) && is_integer($data['ticket_quantity']) && $data['ticket_quantity'] % 2 == 0){
 
             $data['ticket_discount'] = $data['ticket_quantity']/2 * 150;
             
@@ -6662,7 +6662,7 @@ class TransactionController extends \BaseController {
                 'value' => 'Rs. '.(string)$total_amount
             ];
 
-            if(!empty($data['ticket_id']) && $data['ticket_id'] == 495 && !empty($data['customer_quantity']) && is_integer($data['customer_quantity']) && $data['customer_quantity'] % 2 == 0){
+            if(!empty($data['ticket_id']) && $data['ticket_id'] == 494 && !empty($data['customer_quantity']) && is_integer($data['customer_quantity']) && $data['customer_quantity'] % 2 == 0){
                 
                 $ticket_discount = ($data['customer_quantity']/2) * 150;
             
