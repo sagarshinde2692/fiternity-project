@@ -6284,7 +6284,7 @@ Class Utilities {
                 
             }
 
-            $all_checkins = \Checkin::where('customer_id', $customer_id)->get(['unverified', 'type']);
+            $all_checkins = \Checkin::where('customer_id', $customer_id)->get();
 
             Log::info('$all_checkins');
             Log::info("$all_checkins");
