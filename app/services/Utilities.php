@@ -6303,14 +6303,23 @@ Class Utilities {
                 $unverified_membership_checkins_count = count(array_where($all_checkins, function($key, $checkin){
                    return !empty($checkin['type']) && $checkin['type'] == 'membership' && !empty($checkin['unverified']);
                 }));
+
+                $receipt_checkins_count = count(array_where($all_checkins, function($key, $checkin){
+                    return !empty($checkin['receipt']);
+                }));
+                
                 Log::info("unverified_membership_checkins_count");
                 Log::info($unverified_membership_checkins_count);
                 
                 $milestone = [
                     'milestone'=>$milestone_reached,
                     'date'=>new \MongoDate(),
-                    'verified'=>empty($unverified_membership_checkins_count)
+                    'verified'=>empty($unverified_membership_checkins_count),
                 ];
+
+                if(!empty($receipt_checkins_count)){
+                    $milestone['receipt_index'] = '1';
+                }
                 
                 if(empty($customer)){
                     $customer = Customer::find($customer_id, ['loyalty']);
