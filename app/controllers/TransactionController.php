@@ -3835,9 +3835,10 @@ class TransactionController extends \BaseController {
             $data['type'] = $ratecard['type'];
         }
 
-        // if($ratecard['type'] == 'workout session'){
-        //     $data['type'] = 'workout-session';
-        // }
+        if($ratecard['type'] == 'no validity'){
+            $data['type'] = 'no-validity';
+            $data['no_of_sessions'] = $ratecard['quantity'];
+        }
         
 
         if($ratecard['finder_id'] == 8892 && $ratecard['type'] == 'workout session'){
