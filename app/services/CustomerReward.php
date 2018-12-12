@@ -2104,8 +2104,9 @@ Class CustomerReward {
                     $logged_in_customer = (array)$decoded->customer;
                     
                 }
-
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer];
+                $utilities = new Utilities();
+                $ratecard['duration_day'] = $utilities->getDurationDay($ratecard);
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email];
 
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
@@ -2113,8 +2114,9 @@ Class CustomerReward {
                         
                     foreach($coupon['and_conditions'] as $condition){
                         if(!empty($condition['key']) && !empty($condition['operator']) && !empty($condition['values'])){
-
+                            // print_r($condition['key']);
                             $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
+                            // exit();
                             
                             if($condition['operator'] == 'in'){
                                 if(empty($embedded_value)){
@@ -2128,6 +2130,20 @@ Class CustomerReward {
                                 }
                             }else if($condition['operator'] == 'nin'){
                                 if(!empty($embedded_value) && in_array($embedded_value, $condition['values'])){
+                                    $and_condition = false;
+                                    break;
+
+                                }
+                            }else if($condition['operator'] == 'regex'){
+                                // print_r ($embedded_value);
+                                // exit();
+                                
+                                if(empty($embedded_value)){
+                                    $and_condition = false;
+                                    break;
+                                }
+                                
+                                if(!preg_match($condition['values'], $embedded_value)){
                                     $and_condition = false;
                                     break;
 
