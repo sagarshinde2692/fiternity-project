@@ -8779,7 +8779,7 @@ public function yes($msg){
     
     }
 
-    public function salesRangeFinders(){
+    public function salesRangeFindersall(){
 
         $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
 
@@ -8840,6 +8840,127 @@ public function yes($msg){
         });
 
         return ['total_g'=>count($gym_integrated_vendors), 'total_s'=>count($studio_integrated_vendors), 'agg'=>$aggregate];
+
+    
+    
+    }
+
+    public function salesRangeFindersGyms(){
+
+        $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+
+        $gym_integrated_vendors = Finder::integrated()
+        ->whereIn('_id', $gym_service_finders)
+        ->where('created_at', '<=', new DateTime('01-12-2018'))
+        ->whereIn('city_id', [1])
+        ->lists('_id');
+        
+        // return count(array_values(array_unique($integrated_services)));
+        $aggregate = Order::raw(function($collection) use ($gym_integrated_vendors){
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['$or'=>[
+                            ['status'=>'1', 'success_date'=>['$gt'=>new MongoDate(strtotime('01-12-2017')), '$lt'=>new MongoDate(strtotime('01-12-2018'))]],
+                            ['pay_later'=>true, 'created_at'=>['$gt'=>new MongoDate(strtotime('01-12-2017')), '$lt'=>new MongoDate(strtotime('01-12-2018'))]],
+                        ]],
+                        ['finder_id'=>['$in'=>$gym_integrated_vendors]],
+                        ['amount_finder'=>['$gt'=>0]],
+                    ]
+                ]
+            ];
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$finder_id',
+                    'sales'=>['$sum'=>'$amount_finder'],
+                ]
+            ];
+            
+            $aggregate[] = $group;
+
+            $project = [
+                '$project'=>['group1'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 2500000 ] ], 'then'=>'>25L', 'else'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 2000000 ] ], 'then'=>'>20L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 1500000 ] ], 'then'=>'>15L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 1000000 ] ], 'then'=>'>10L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 500000 ] ], 'then'=>'>5L', 'else'=>'blank']]]]]]]] ]]]
+            ];
+
+            $aggregate[] = $project;
+
+            $group1 = [
+                '$group'=>[
+                    '_id'=>'$group1',
+                    'count'=>['$sum'=>1],
+                ]
+            ];
+            
+            $aggregate[] = $group1;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        return ['total_g'=>count($gym_integrated_vendors), 'agg'=>$aggregate];
+
+    
+    
+    }
+
+    public function salesRangeFindersStudio(){
+
+        $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+        
+        return count($studio_integrated_vendors = Finder::integrated()
+        ->whereNotIn('_id', $gym_service_finders)
+        ->whereNotIn('category_id', [42,45,40,25,41, 26])
+        ->whereIn('city_id', [1])
+        ->where('created_at', '<=', new DateTime('01-12-2018'))
+        ->lists('_id'));
+
+        // return count(array_values(array_unique($integrated_services)));
+        $aggregate = Order::raw(function($collection) use ($studio_integrated_vendors){
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['$or'=>[
+                            ['status'=>'1', 'success_date'=>['$gt'=>new MongoDate(strtotime('01-12-2017')), '$lt'=>new MongoDate(strtotime('01-12-2018'))]],
+                            ['pay_later'=>true, 'created_at'=>['$gt'=>new MongoDate(strtotime('01-12-2017')), '$lt'=>new MongoDate(strtotime('01-12-2018'))]],
+                        ]],
+                        ['finder_id'=>['$in'=>$studio_integrated_vendors]],
+                        ['amount_finder'=>['$gt'=>0]],
+                    ]
+                ]
+            ];
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$finder_id',
+                    'sales'=>['$sum'=>'$amount_finder'],
+                ]
+            ];
+            
+            $aggregate[] = $group;
+
+            $project = [
+                '$project'=>['group1'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 2000000 ] ], 'then'=>'>20L', 'else'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 1200000 ] ], 'then'=>'>12L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 800000 ] ], 'then'=>'>8L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 400000 ] ], 'then'=>'>4L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 200000 ] ], 'then'=>'>2L', 'else'=>'blank']]]]]]]] ]]]
+            ];
+
+            $aggregate[] = $project;
+
+            $group1 = [
+                '$group'=>[
+                    '_id'=>'$group1',
+                    'count'=>['$sum'=>1],
+                ]
+            ];
+            
+            $aggregate[] = $group1;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        return ['total_s'=>count($studio_integrated_vendors), 'agg'=>$aggregate];
 
     
     

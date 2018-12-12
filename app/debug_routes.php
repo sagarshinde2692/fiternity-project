@@ -2722,3 +2722,5 @@ Route::get('integratedSplit','DebugController@integratedSplit');
 Route::get('salesGMVFinders','DebugController@salesGMVFinders');
 Route::get('leadsCaptures','DebugController@leadsCaptures');
 Route::get('salesRangeFinders','DebugController@salesRangeFinders');
+Route::get('salesRangeFindersGyms','DebugController@salesRangeFindersGyms');
+Route::get('salesRangeFindersStudio','DebugController@salesRangeFindersStudio');
