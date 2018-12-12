@@ -2721,3 +2721,4 @@ Route::get('commission','DebugController@commission');
 Route::get('integratedSplit','DebugController@integratedSplit');
 Route::get('salesGMVFinders','DebugController@salesGMVFinders');
 Route::get('leadsCaptures','DebugController@leadsCaptures');
+Route::get('salesRangeFinders','DebugController@salesRangeFinders');
