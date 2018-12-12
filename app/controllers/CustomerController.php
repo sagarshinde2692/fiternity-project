@@ -8613,7 +8613,7 @@ class CustomerController extends \BaseController {
     public function postLoyaltyRegistration($customer, $voucher_categories_map){
 
         // return $voucher_categories_map;
-        
+
         $post_register = Config::get('loyalty_screens.post_register');
         $checkins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
         $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
@@ -8770,6 +8770,59 @@ class CustomerController extends \BaseController {
                                     $post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
                                 }
                             
+                            }else{
+
+                                if(!empty($milestone['bookings']) && !empty($milestone['booking_amount']) && isset($customer_milestones[$milestone['milestone']-1]['receipt_index'])){
+                                    // return $milestone;
+                                    // return $customer->_id;
+                                    $orders_aggregate = Booktrial::raw(function($collection) use ($customer){
+                                        $match = [
+                                            '$match'=>[
+                                                '$and'=>[
+                                                    [
+                                                        'customer_id'=>$customer->_id,
+                                                        'type'=>'workout-session',
+                                                        'going_status_txt'=>['$nin'=>['cancel']],
+                                                        'payment_done'=>['$ne'=>false]
+                                                    ]
+                                                ]
+                                            ]
+                                        ];
+
+                                        $lookup = [
+                                            '$lookup'=>[
+                                                'from'=>'orders',
+                                                'localField'=>'order_id',
+                                                'foreignField'=>'_id',
+                                                'as'=>'order'
+                                            ]
+                                        ];
+
+                                        $project = [
+                                            '$project'=>[
+                                                'order'=>['$arrayElemAt'=>['$order', 0]]
+                                            ]
+                                        ];
+                                        $group = [
+                                            '$group'=>[
+                                                '_id'=>null,
+                                                'bookings'=>['$sum'=>1],
+                                                'booking_amount'=>['$sum'=>'$order.amount_customer']
+                                            ]
+                                        ];
+
+                                        return $collection->aggregate([$match, $lookup, $project, $group]);
+                                    
+                                    });  
+
+                                    $orders = $orders_aggregate['result'];
+
+                                    if(!(!empty($orders[0]) && !empty($orders[0]['bookings']) && !empty($orders[0]['booking_amount']) && $orders[0]['bookings'] >=$milestone['bookings'] && $orders[0]['booking_amount'] >=$milestone['booking_amount'])){
+                                        $post_reward_data_template['block_message'] = strtr(Config::get('loyalty_screens.bookings_block_message'), $milestone);
+                                    }
+                                
+                                }
+
                             }
 
                             !isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;

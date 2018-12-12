@@ -30,8 +30,9 @@ return array(
             'next_count'=>75,
             'progress'=>0,
             'description' => 'Check-ins',
-            'amount'=>3000
-
+            'amount'=>3000,
+            'bookings'=>1,
+            'booking_amount'=>500
         ],
         [
             'milestone' => 3,
@@ -40,7 +41,9 @@ return array(
             'next_count'=>150,
             'progress'=>0,
             'description' => 'Check-ins',
-            'amount'=>4000
+            'amount'=>4000,
+            'bookings'=>3,
+            'booking_amount'=>1500
 
         ],
         [
