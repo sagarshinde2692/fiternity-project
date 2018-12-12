@@ -3259,7 +3259,7 @@ class TransactionController extends \BaseController {
                 $total_amount = $data['amount'];
             }
 
-            !empty($data['customer_email']) && !empty($data['sub_type']) && $data['sub_type'] == 'music-run' ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
+            !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
 
             $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id, $total_amount, $customer_email);
 
