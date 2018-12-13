@@ -1048,6 +1048,7 @@ class RewardofferController extends BaseController {
             $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();
 			if($finder['brand_id'] == 135){
 				$mixedreward_content = MixedRewardContent::where('brand_id', 135)->where("duration",$duration_day)->first();
+                $gold_mixed = true;
 			}
             if(!empty($mixedreward_content)){
 				if($rewardObj && $mixedreward_content){
@@ -1210,6 +1211,9 @@ class RewardofferController extends BaseController {
         }
         
         if(!empty($finder['_id']) && $finder['_id'] == 11230 && $duration_day == 360){
+            $cashback = null;
+        }
+        if(!empty($gold_mixed)){
             $cashback = null;
         }
 
