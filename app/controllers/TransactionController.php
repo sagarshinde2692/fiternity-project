@@ -3835,10 +3835,6 @@ class TransactionController extends \BaseController {
             $data['type'] = $ratecard['type'];
         }
 
-        if($ratecard['type'] == 'no validity'){
-            $data['type'] = 'no-validity';
-            $data['no_of_sessions'] = $ratecard['quantity'];
-        }
         
 
         if($ratecard['finder_id'] == 8892 && $ratecard['type'] == 'workout session'){
@@ -3932,9 +3928,13 @@ class TransactionController extends \BaseController {
         	}
         }
         
-        
-        
         $data['amount'] = $data['amount_finder'];
+
+        if($ratecard['type'] == 'no validity'){
+            $data['type'] = 'no-validity';
+            $data['no_of_sessions'] = $ratecard['quantity'];
+            $data['amount_finder'] = 0;
+        }
 
        /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
         $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
