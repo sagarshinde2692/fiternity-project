@@ -1041,7 +1041,7 @@ class RewardofferController extends BaseController {
 
         // if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
         
-        if((in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360) || ($finder['brand_id'] == 135 && $duration_day == 180)){
+        if((in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360) || ($finder['brand_id'] == 135 && in_array($duration_day, [180, 360]))){
                 
             $rewardObj = Reward::where('quantity_type','mixed')->first();
                 
