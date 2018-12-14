@@ -642,7 +642,7 @@ class FindersController extends \BaseController {
 								}
 
 							}
-
+                            
 
 							if(count($service['serviceratecard']) > 0){
 
@@ -652,7 +652,9 @@ class FindersController extends \BaseController {
 										unset($service['serviceratecard'][$ratekey]);
 										continue;
 									}
+                                    if($rateval['type'] == 'no validity'){
 
+                                    }
 									// if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
 									if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
 										$campaign_offer = true;
@@ -780,6 +782,17 @@ class FindersController extends \BaseController {
 
 					
 				}
+
+                $no_validity_ratecard_exists = false;
+                $no_validity_service = false;
+
+
+                foreach($finder['services'] as $service){
+
+                    foreach($service['serviceratecard'] as $ratecard){
+
+                    }
+                }
 
 				if(isset($finder['pay_per_session']) && $finder['pay_per_session']){
 
