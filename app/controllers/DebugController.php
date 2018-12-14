@@ -8002,12 +8002,24 @@ public function yes($msg){
     }
 
     public function convertOrdersToPPSDiva(){
-        return "asdas";
+
+        $rows = array_map('str_getcsv', file(public_path()."/test.csv"));
+        $header = array_shift($rows);
+
+        foreach($rows as &$r){
+            $r = array_map('intval', $r);
+        }
+
+        $csv = array();
+        
+        foreach ($rows as $row) {
+            $csv[] = array_combine($header, $row);
+        }
 
         $data = Input::all();
 
-        $orders = $data['order_ids'];
-
+        $orders = $csv;
+        
 	    $order_ids = array_column($orders, 'order_id');
 
         $already_added_order_ids = Wallet::whereIn('membership_order_id', $order_ids)->lists('membership_order_id');
