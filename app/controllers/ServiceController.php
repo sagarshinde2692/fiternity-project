@@ -1170,20 +1170,19 @@ class ServiceController extends \BaseController {
 
 			}else{
 
-				function remove_image(&$sl){
-					if(!empty($sl['image'])){
-						unset($sl['image']);
-					}
-				}
-
                 foreach($data['schedules'] as &$sc){
                     if((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])){
                         $sc['cost'] .= Config::get('app.first_free_string');
                         if(!empty($sc['non_peak']['price'])){
                             unset($sc['non_peak']['price']);
 						}
-						
-						$sc['slots'] = array_map("remove_image", $sc['slots']);
+
+                        foreach($sc['slots'] as &$x){
+                            if(!empty($x['image'])){
+                                unset($x['image']);
+                            }
+                        }
+						return $sc['slots'];
                     }
                 }
             }
