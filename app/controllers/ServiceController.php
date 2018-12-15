@@ -1032,7 +1032,7 @@ class ServiceController extends \BaseController {
 			// 	$service['peak_text'] = "RUSH HOURS ₹. <b style=\"color:#4fa3a4;\">".$ratecard_price."</b>";
 			// }
 			if(!empty($ratecard_price) && !empty($non_peak_exists)){
-				$service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
+				$service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title1'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
 			}
 			
 			$peak_exists = false;
