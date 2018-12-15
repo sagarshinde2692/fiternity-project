@@ -1181,6 +1181,10 @@ class ServiceController extends \BaseController {
                             if(!empty($x['image'])){
                                 unset($x['image']);
                             }
+
+                            if(!empty($x['price']) && in_array($this->device_type, ['ios'])){
+								unset($x['price']);
+							}
                         }
                     }
                 }
