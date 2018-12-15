@@ -1182,7 +1182,6 @@ class ServiceController extends \BaseController {
                                 unset($x['image']);
                             }
                         }
-						return $sc['slots'];
                     }
                 }
             }
