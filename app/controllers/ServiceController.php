@@ -1144,11 +1144,11 @@ class ServiceController extends \BaseController {
 						$slots =$schedule['slots'];
 
                         
-                        if((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($schedule['free_trial_available']) && empty($data['trial_booked'])){
-                            foreach($slots as &$s){
-                                $s['price'] .= Config::get('app.first_free_string');
-                            }
-                        }
+                        // if((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($schedule['free_trial_available']) && empty($data['trial_booked'])){
+                        //     foreach($slots as &$s){
+                        //         $s['price'] .= Config::get('app.first_free_string');
+                        //     }
+                        // }
 						//$slots = pluck($schedule['slots'], ['slot_time', 'price', 'service_id', 'finder_id', 'ratecard_id', 'epoch_start_time', 'epoch_end_time']);
 					}
 
