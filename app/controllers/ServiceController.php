@@ -1620,7 +1620,7 @@ class ServiceController extends \BaseController {
 			
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
 
-			$service_details['price'] = "Startting at ₹".$service_details['amount'] * Config::get('app.non_peak_hours.off');
+			$service_details['price'] = "Starting at ₹".$service_details['amount'] * Config::get('app.non_peak_hours.off');
 
 			$service_details['contact'] = [
 				'address'=>''
