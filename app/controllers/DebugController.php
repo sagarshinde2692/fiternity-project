@@ -9417,6 +9417,64 @@ public function yes($msg){
 
     }
 
+    public function salesOrganicFinderDetails(){
+
+
+
+        $aggregate = Order::raw(function($collection){
+            $match = [
+                '$match'=>[
+                    // '$and'=>[
+                        // [
+                            'status'=>'1', 
+                            'success_date'=>['$gt'=>new MongoDate(strtotime('-90 days'))], 
+                            'type'=>'memberships', 
+                            'amount_finder'=>['$gt'=>0],
+                            "routed_order"=>['$eq'=>"1"]
+                        // ],
+                    // ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$finder_id',
+                    'sales'=>['$sum'=>1],
+                    'sales_amount'=>['$sum'=>'$amount_finder'],
+                ]
+            ];
+
+            $aggregate[] = $group;
+
+            $sort = ['$sort'=>['sales_amount'=>-1]];
+
+            $aggregate[] = $sort;
+
+            return $collection->aggregate($aggregate);
+        });
+
+        $aggregate = $aggregate['result'];
+        $finder_ids = array_column($aggregate, '_id');
+        Finder::$withoutAppends = true;
+        $finders = Finder::whereIn('_id', $finder_ids)->with(['city'=>function($query){$query->select('name');}])->with(['location'=>function($query){$query->select('name');}])->get(['title', 'city_id', 'location_id']);
+
+        $data = [];
+
+        foreach($finders as $x){
+            $data[strval($x['_id'])] = $x;
+        }
+
+        foreach($aggregate as &$a){
+            $a['title'] = $data[strval($a['_id'])]['title'];
+            $a['city'] = ucwords($data[strval($a['_id'])]['city']['name']);
+            $a['location'] = ucwords($data[strval($a['_id'])]['location']['name']);
+        }
+        return $aggregate;
+
+    }
+
 
 }
 
