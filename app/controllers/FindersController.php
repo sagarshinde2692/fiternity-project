@@ -652,9 +652,7 @@ class FindersController extends \BaseController {
 										unset($service['serviceratecard'][$ratekey]);
 										continue;
 									}
-                                    if($rateval['type'] == 'no validity'){
-
-                                    }
+                                    
 									// if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
 									if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
 										$campaign_offer = true;
@@ -786,13 +784,7 @@ class FindersController extends \BaseController {
                 $no_validity_ratecard_exists = false;
                 $no_validity_service = false;
 
-
-                foreach($finder['services'] as $service){
-
-                    foreach($service['serviceratecard'] as $ratecard){
-
-                    }
-                }
+                
 
 				if(isset($finder['pay_per_session']) && $finder['pay_per_session']){
 
@@ -3882,8 +3874,6 @@ class FindersController extends \BaseController {
 				array_set($finder, 'locationtags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))))));
 				array_set($finder, 'offerings', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))))));
 				array_set($finder, 'facilities', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['facilities'] , array('name') ))))));
-				
-
 
 				try {
 					if(isset($finder['info']['service']) && $finder['info']['service'] != ""){
@@ -4360,6 +4350,30 @@ class FindersController extends \BaseController {
 				$data['finder']['review_url'] = Config::get('app.url').'/finderreviewdata/'.$data['finder']['_id'];
                 $data['show_membership_bargain'] = false;
 				
+
+
+                 
+                foreach($data['finder']['services'] as $service){
+                    $no_validity_ratecards = [];
+                    foreach($service['ratecard'] as $ratecard){
+                        if($ratecard['type'] == 'no validity'){
+                            array_push($no_validity_ratecards, $ratecard) ;
+                        }
+                    }
+                    if(!empty($no_validity_ratecards)){
+                        $service['non_validity'] = [
+                        'image' => 'http:\imageKaUrl.com',
+                        'title' => 'Desh me nikla hoga chand',
+                        'title_color' => '#53b7b7',
+                        'description' => 'ASDFasdf ASDFASDF  aasdfasdf  <br/>',
+                        ];
+
+                        $service['service_name'] = $service['service_name']."--extended";
+
+                    }
+                    array_push($data['finder']['services'], $service);
+                }
+                // return $data; 
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
 			}
