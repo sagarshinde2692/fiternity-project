@@ -4247,7 +4247,7 @@ class CustomerController extends \BaseController {
 		$last_stable_version_android = 5.0;
 
 		if($data["device_type"] == "android"){
-
+            Log::info(floatval($data["app_version"]));
 			$result_android = array(
 				//"message" => "Version ".$current_version_android." is available on Play Store",
 				"message" => "Update is available on Play Store",
