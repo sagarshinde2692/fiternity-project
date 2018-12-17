@@ -2673,8 +2673,16 @@ class SchedulebooktrialsController extends \BaseController {
                 		$booktrialdata=$booktrial->toArray();
                 		Log::info(" booktrialdata 23 ".print_r($booktrialdata,true));
                 }
-                
-                $send_communication["customer_sms_instant"] = $this->customersms->bookTrial($booktrialdata);
+                // abg check needed
+                Log::info('before abg check', [$booktrialdata]);
+                if  (isset($booktrialdata['third_party_details'])){
+                    Log::info('$booktrialdata->third_party_details is set', [$booktrialdata['third_party_details']]);
+                    $send_communication["customer_sms_instant_abg"] = $this->customersms->bookTrial($booktrialdata);    
+                }
+                else {
+                    Log::info('$booktrialdata->third_party_details is not set');
+                    $send_communication["customer_sms_instant"] = $this->customersms->bookTrial($booktrialdata);
+                }
                 $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrialdata);
                 $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrialdata);
             }
@@ -2727,7 +2735,14 @@ class SchedulebooktrialsController extends \BaseController {
                 
             $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);     
             $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
-            $send_communication["customer_sms_before12hour"] = $this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
+                if(isset($booktrialdata['third_party_details'])){
+                    Log::info('$booktrialdata->third_party_details is set customer_email_before12hour_abg: ', [$booktrialdata['third_party_details']]);
+                    $send_communication["customer_sms_before12hour_abg"] = $this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
+                }
+                else {
+                    Log::info('$booktrialdata->third_party_details is not set');
+                    $send_communication["customer_sms_before12hour"] = $this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
+                }
             }
 
 
@@ -2761,8 +2776,13 @@ class SchedulebooktrialsController extends \BaseController {
                 	$before3HourDateTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60);
                 	// as it is
                }
-
-                $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
+                if(isset($booktrialdata['third_party_details'])){
+                    Log::info('$booktrialdata->third_party_details is set customer_email_before3hour_abg: ', [$booktrialdata['third_party_details']]);
+                    $send_communication["customer_sms_before3hour_abg"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
+                }
+                else {
+                    $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
+                }
                 $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
             }
 
@@ -2792,7 +2812,13 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $delayReminderTimeBefore10Min=    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(10);
 
-                $send_communication["customer_sms_before10Min"] = $this->customersms->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
+                if(isset($booktrialdata['third_party_details'])){
+                    Log::info('$booktrialdata->third_party_details is set customer_sms_before10Min_abg: ', [$booktrialdata['third_party_details']]);
+                    $send_communication["customer_sms_before10Min_abg"] = $this->customersms->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
+                }
+                else {
+                    $send_communication["customer_sms_before10Min"] = $this->customersms->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
+                }
                 $send_communication["customer_email_before10Min"] = $this->customermailer->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
                 
                 // $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
@@ -2808,8 +2834,13 @@ class SchedulebooktrialsController extends \BaseController {
 
             	$delayReminderTimeAfter2Hrs      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*2);
 
-            	$send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
-                
+                if(isset($booktrialdata['third_party_details'])){
+                    Log::info('$booktrialdata->third_party_details is set customer_sms_after2hour_abg: ', [$booktrialdata['third_party_details']]);
+                    $send_communication["customer_sms_after2hour_abg"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
+                }
+                else {
+            	    $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
+                }
                 $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter6Hrs);
 
                 $promoData = [
@@ -2828,8 +2859,14 @@ class SchedulebooktrialsController extends \BaseController {
             else 
             {
             	
-            	$delayReminderTimeAfter24Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*24);
-            	$send_communication["customer_sms_after24hour"] = $this->customersms->bookTrialReminderAfter24Hour($booktrialdata, $delayReminderTimeAfter24Hour);
+                $delayReminderTimeAfter24Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*24);
+                if(isset($booktrialdata['third_party_details'])){
+                    Log::info('$booktrialdata->third_party_details is set customer_sms_after24hour_abg: ', [$booktrialdata['third_party_details']]);
+                    $send_communication["customer_sms_after24hour_abg"] = $this->customersms->bookTrialReminderAfter24Hour($booktrialdata, $delayReminderTimeAfter24Hour);
+                }
+                else {
+                    $send_communication["customer_sms_after24hour"] = $this->customersms->bookTrialReminderAfter24Hour($booktrialdata, $delayReminderTimeAfter24Hour);
+                }
             }  
             
             
@@ -2898,7 +2935,13 @@ class SchedulebooktrialsController extends \BaseController {
         	"customer_email_before10Min",
         	"customer_email_instant_workoutlevelstart",
             "customer_notification_block_screen",
-            "customer_sms_offhours_confirmation"
+            "customer_sms_offhours_confirmation",
+            "customer_sms_instant_abg",
+            "customer_sms_before12hour_abg",
+            "customer_sms_before3hour_abg",
+            "customer_sms_before10Min_abg",
+            "customer_sms_after2hour_abg",
+            "customer_sms_after24hour_abg",
         ];
 
         foreach ($array as $value) {

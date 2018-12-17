@@ -13,7 +13,7 @@ Class Sidekiq {
 
     public function __construct() {
 
-        $this->route_type = array('email'=>'trig/email','sms'=>'trig/sms','delete'=>'trig/delmsg','outbound'=>'trig/outbound','fitmaniabuyable'=>'trig/fitmaniabuyable','android'=>'trig/android','ios'=>'trig/ios', 'otp'=>'trig/otp');
+        $this->route_type = array('email'=>'trig/email','sms'=>'trig/sms','smstp'=>'trig/smstp','delete'=>'trig/delmsg','outbound'=>'trig/outbound','fitmaniabuyable'=>'trig/fitmaniabuyable','android'=>'trig/android','ios'=>'trig/ios', 'otp'=>'trig/otp', 'otptp'=>'trig/otptp');
         $this->initClient();
     }
 
