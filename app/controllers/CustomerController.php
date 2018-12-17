@@ -4233,13 +4233,6 @@ class CustomerController extends \BaseController {
 
         
         
-        if(intval(Request::header('Os-Version')) >= 9 && Request::header('App-Version') < '5.13'){
-            return [
-                "message" => "Update is available on Play Store",
-				"dismiss" => false,
-				"force_update" => true
-                ];
-        }
 
 		$validator = Validator::make($data,$rules);
 
@@ -4249,9 +4242,9 @@ class CustomerController extends \BaseController {
 		}
 
 		$current_version_android = 5.0;
-		$current_version_ios = 5.0;
+		$current_version_ios = '5.1.4';
 
-		$last_stable_version_android = 5.0;
+		$last_stable_version_android = 5.17;
 
 		if($data["device_type"] == "android"){
 
@@ -4266,6 +4259,14 @@ class CustomerController extends \BaseController {
 
 				$result_android['force_update'] = true;
 			}
+
+            if(intval(Request::header('Os-Version')) >= 9 && Request::header('App-Version') < '5.13'){
+                $result_android = [
+                    "message" => "Update is available on Play Store",
+                    "dismiss" => false,
+                    "force_update" => true
+                    ];
+            }
 
 			return Response::json($result_android,200);
 		}
