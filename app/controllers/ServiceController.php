@@ -1179,6 +1179,11 @@ class ServiceController extends \BaseController {
 			}else{
 
                 foreach($data['schedules'] as &$sc){
+
+                    if(!empty($_GET['init_source']) && $_GET['init_source'] == 'pps'){
+                        $sc['free_trial_available'] = false;
+                    }
+
                     if((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])){
                         $sc['cost'] .= Config::get('app.first_free_string');
                         if(!empty($sc['non_peak'])){
