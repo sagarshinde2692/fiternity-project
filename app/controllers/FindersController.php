@@ -4267,6 +4267,9 @@ class FindersController extends \BaseController {
 							];
 	
 							$service['service_name'] = $service['service_name']."--extended";
+							$service['extended_text'] = "--extended";
+                            $service['ratecard'] = $no_validity_ratecards;
+                            $service['type'] = 'non-validity';
 	
 						}
 						array_push($data['finder']['services'], $service);
