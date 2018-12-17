@@ -3203,8 +3203,8 @@ class FindersController extends \BaseController {
 		}else{
 			$items = $finder["services"];
 
-			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn', 'slug', 'location'));
-
+			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn', 'slug', 'location','non_validity'));
+			
 		}
 
 		if(!$items){
@@ -3547,7 +3547,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = true){
+	public function finderDetailApp($slug, $cache = false){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -4251,6 +4251,27 @@ class FindersController extends \BaseController {
 
 					$device_type = ['ios','android'];
 
+					foreach($data['finder']['services'] as $service){
+						$no_validity_ratecards = [];
+						foreach($service['ratecard'] as $ratecard){
+							if($ratecard['type'] == 'no validity'){
+								array_push($no_validity_ratecards, $ratecard) ;
+							}
+						}
+						if(!empty($no_validity_ratecards)){
+							$service['non_validity'] = [
+							'image' => 'http:\imageKaUrl.com',
+							'title' => 'Desh me nikla hoga chand',
+							'title_color' => '#53b7b7',
+							'description' => 'ASDFasdf ASDFASDF  aasdfasdf  <br/>',
+							];
+	
+							$service['service_name'] = $service['service_name']."--extended";
+	
+						}
+						array_push($data['finder']['services'], $service);
+					}
+
 					if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
 						
 						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial', $data['finder']['trial']);
@@ -4353,26 +4374,6 @@ class FindersController extends \BaseController {
 
 
                  
-                foreach($data['finder']['services'] as $service){
-                    $no_validity_ratecards = [];
-                    foreach($service['ratecard'] as $ratecard){
-                        if($ratecard['type'] == 'no validity'){
-                            array_push($no_validity_ratecards, $ratecard) ;
-                        }
-                    }
-                    if(!empty($no_validity_ratecards)){
-                        $service['non_validity'] = [
-                        'image' => 'http:\imageKaUrl.com',
-                        'title' => 'Desh me nikla hoga chand',
-                        'title_color' => '#53b7b7',
-                        'description' => 'ASDFasdf ASDFASDF  aasdfasdf  <br/>',
-                        ];
-
-                        $service['service_name'] = $service['service_name']."--extended";
-
-                    }
-                    array_push($data['finder']['services'], $service);
-                }
                 // return $data; 
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
