@@ -4244,7 +4244,7 @@ class CustomerController extends \BaseController {
 		$current_version_android = 5.0;
 		$current_version_ios = '5.1.4';
 
-		$last_stable_version_android = 5.17;
+		$last_stable_version_android = 5.0;
 
 		if($data["device_type"] == "android"){
 
