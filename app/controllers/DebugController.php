@@ -8289,11 +8289,13 @@ public function yes($msg){
 
 	}
 
-    private function createLoyaltyCoupons(){
+    private function createLoyaltyCoupons($data = null){
         
         Log::info("Creating coupons");
         
-        $data = Input::all();
+        if(!$data){
+            $ata = Input::all();
+        }
 
         $rules = [
             'voucher_category'  => 'required',
@@ -8333,11 +8335,11 @@ public function yes($msg){
         $codes = array_map('strtolower', $codes);
         $already_created = LoyaltyVoucher::where('voucher_category', $data['voucher_category'])->whereIn('code', $codes)->get(['code'])->toArray();
         Log::info("Retrieved aready");
-        if(!empty($already_created)){
-            return ['status'=>400, 'message'=>'Codes already exist', 'codes'=>$already_created];
-        }
+        // if(!empty($already_created)){
+        //     return ['status'=>400, 'message'=>'Codes already exist', 'codes'=>$already_created];
+        // }
         $coupons = [];
-        $label = time();
+        $label = strval(time()).$data['voucher_category'];
 
         if(empty($data['count'])){
             foreach($codes as $code){
@@ -8582,6 +8584,21 @@ public function yes($msg){
         }
 
 
+
+
+    }
+
+    public function addLoyaltyVouherAll(){
+        // return "asdsa";
+        $voucher_categories = VoucherCategory::lists('_id');
+
+        Log::info("ssss");
+
+        foreach($voucher_categories as $vc){
+            Log::info($this->createLoyaltyCoupons(['voucher_category'=>$vc, "codes"=>['fitt'], "expiry_date"=>"12-12-2022", "count"=>100]));
+        }
+        
+        return "DOne";
 
 
     }
