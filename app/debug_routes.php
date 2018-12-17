@@ -2711,3 +2711,4 @@ Route::post('getreversehash','DebugController@getreversehash');
 Route::get('verifyCheckinsFromReceipts','DebugController@verifyCheckinsFromReceipts');
 Route::get('createtokenbycustomerid/{customer_email}','CustomerController@createtokenbycustomerid');
 Route::get('assignGoldLoyalty','DebugController@assignGoldLoyalty');
+Route::get('addLoyaltyVouherAll','DebugController@addLoyaltyVouherAll');

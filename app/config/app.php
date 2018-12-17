@@ -72,7 +72,7 @@ return array(
 	'paytm_sandbox'=>false,
 
 	"core_key"=> "FITITRNTY",
-	'non_peak_hours' => ["off"=>0.6,"non_peak_title"=>"NON RUSH HOUR (40% OFF)", "gym"=>["off"=>0.6,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.6]],
+	'non_peak_hours' => ["off"=>0.6,"non_peak_title1"=>"Look for this sign to book a slot for ", "non_peak_title"=>"NON RUSH HOUR (40% OFF)", "gym"=>["off"=>0.6,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.6]],
     'product_delivery_charges' => 50,
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
@@ -742,7 +742,7 @@ return array(
         ),
     'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com'],
 	
-	'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym'],
+	'test_vendors' => ['fitternity-test-page', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym'],
 	'hide_from_search' => [11128, 6332, 6865, 7146, 9309, 9329, 9379, 9381, 9403, 9623, 9863, 9869, 9891, 10037, 11128, 12110],
 
 	// 'delay_methods' =>["bookTrialReminderAfter2Hour","bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore3Hour","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "before3HourSlotBooking", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days"]
