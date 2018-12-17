@@ -1177,14 +1177,17 @@ Class CustomerSms extends VersionNextSms{
 
 		Log::info('orderDetails: ', $data);
 
-		$sender = null;
-		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])){
-			$sender = 'ABCPRO';
-		}
-
 		$template = \Template::where('label',$label)->first();
 
 		$to = array($to);
+
+		$sender = null;
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])){
+			$sender = 'ABCPRO';
+			if(Config::get('app.env') == 'stage'){
+				$to = ['9619240452'];
+			}
+		}
 
 		$message = $this->bladeCompile($template->sms_text,$data);
 
