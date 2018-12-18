@@ -4249,30 +4249,9 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
 
-					$device_type = ['ios','android'];
+                    $data['finder']['services']  = $this->applyNonValidity($data, 'app');
 
-					foreach($data['finder']['services'] as $service){
-						$no_validity_ratecards = [];
-						foreach($service['ratecard'] as $ratecard){
-							if($ratecard['type'] == 'no validity'){
-								array_push($no_validity_ratecards, $ratecard) ;
-							}
-						}
-						if(!empty($no_validity_ratecards)){
-							$service['non_validity'] = [
-							'image' => 'http:\imageKaUrl.com',
-							'title' => 'Desh me nikla hoga chand',
-							'title_color' => '#53b7b7',
-							'description' => 'ASDFasdf ASDFASDF  aasdfasdf  <br/>',
-							];
-	
-							$service['service_name'] = $service['service_name']."--extended";
-                            $service['ratecard'] = $no_validity_ratecards;
-                            $service['type'] = 'no validity';
-	
-						}
-						array_push($data['finder']['services'], $service);
-					}
+					$device_type = ['ios','android'];
 
 					if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
 						
@@ -6247,5 +6226,37 @@ class FindersController extends \BaseController {
         }
         return $finders;
 	}
+
+    public function applyNonValidity($data, $source = 'web'){
+
+        $ratecard_key = 'ratecard';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
+        
+        foreach($data['finder']['services'] as $service){
+            $no_validity_ratecards = [];
+            foreach($service['ratecard'] as $ratecard){
+                if($ratecard['type'] == 'no validity'){
+                    array_push($no_validity_ratecards, $ratecard) ;
+                }
+            }
+            if(!empty($no_validity_ratecards)){
+
+
+                $service['non_validity'] = Config::get('nonvalidity.finder_banner');
+                $service['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
+
+                $service['service_name'] = $service['service_name']."--extended";
+                $service['ratecard'] = $no_validity_ratecards;
+                $service['type'] = 'no validity';
+
+            }
+            array_push($data['finder']['services'], $service);
+        }
+
+        return $data['finder']['services'];
+    }
 	
 }
