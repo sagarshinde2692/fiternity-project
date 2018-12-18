@@ -1032,7 +1032,15 @@ class ServiceController extends \BaseController {
 			// 	$service['peak_text'] = "RUSH HOURS ₹. <b style=\"color:#4fa3a4;\">".$ratecard_price."</b>";
 			// }
 			if(!empty($ratecard_price) && !empty($non_peak_exists)){
-				$service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
+                if(!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])){
+				    
+                    $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title1'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
+
+                }else{
+
+                    $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
+
+                }
 			}
 			
 			$peak_exists = false;
@@ -1144,11 +1152,11 @@ class ServiceController extends \BaseController {
 						$slots =$schedule['slots'];
 
                         
-                        if((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($schedule['free_trial_available']) && empty($data['trial_booked'])){
-                            foreach($slots as &$s){
-                                $s['price'] .= Config::get('app.first_free_string');
-                            }
-                        }
+                        // if((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($schedule['free_trial_available']) && empty($data['trial_booked'])){
+                        //     foreach($slots as &$s){
+                        //         $s['price'] .= Config::get('app.first_free_string');
+                        //     }
+                        // }
 						//$slots = pluck($schedule['slots'], ['slot_time', 'price', 'service_id', 'finder_id', 'ratecard_id', 'epoch_start_time', 'epoch_end_time']);
 					}
 
@@ -1169,11 +1177,27 @@ class ServiceController extends \BaseController {
 
 
 			}else{
+
                 foreach($data['schedules'] as &$sc){
+
+                    if(!empty($_GET['init_source']) && $_GET['init_source'] == 'pps'){
+                        $sc['free_trial_available'] = false;
+                    }
+
                     if((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])){
                         $sc['cost'] .= Config::get('app.first_free_string');
-                        if(!empty($sc['non_peak']['price'])){
-                            $sc['non_peak']['price'].=Config::get('app.first_free_string');
+                        if(!empty($sc['non_peak'])){
+                            unset($sc['non_peak']);
+						}
+
+                        foreach($sc['slots'] as &$x){
+                            if(!empty($x['image'])){
+                                unset($x['image']);
+                            }
+
+                            if(!empty($x['price']) && in_array($this->device_type, ['ios'])){
+								unset($x['price']);
+							}
                         }
                     }
                 }
@@ -1521,7 +1545,7 @@ class ServiceController extends \BaseController {
 				->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
 				->with('category')
 				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->where("description", "!=", "")->orderBy('updated_at', 'DESC')->limit(3);}))
-				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo']);
+				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo', 'category_id']);
 
 			if(!$finder){
 				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
@@ -1609,7 +1633,13 @@ class ServiceController extends \BaseController {
 			
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
 
-			$service_details['price'] = "₹".$service_details['amount']." PER SESSION";
+
+
+            if(!empty($finder['category_id']) && $finder['category_id'] == 47){
+                $service_details['price'] = "Starting at ₹".$service_details['amount'];
+            }else{
+                $service_details['price'] = "Starting at ₹".floor($service_details['amount'] * Config::get('app.non_peak_hours.off'));
+            }
 
 			$service_details['contact'] = [
 				'address'=>''

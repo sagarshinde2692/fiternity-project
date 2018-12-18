@@ -4233,13 +4233,6 @@ class CustomerController extends \BaseController {
 
         
         
-        if(intval(Request::header('Os-Version')) >= 9 && Request::header('App-Version') < '5.13'){
-            return [
-                "message" => "Update is available on Play Store",
-				"dismiss" => false,
-				"force_update" => true
-                ];
-        }
 
 		$validator = Validator::make($data,$rules);
 
@@ -4249,12 +4242,12 @@ class CustomerController extends \BaseController {
 		}
 
 		$current_version_android = 5.0;
-		$current_version_ios = 5.0;
+		$current_version_ios = '5.1.4';
 
-		$last_stable_version_android = 5.0;
+		$last_stable_version_android = 5.16;
 
 		if($data["device_type"] == "android"){
-
+            Log::info(floatval($data["app_version"]));
 			$result_android = array(
 				//"message" => "Version ".$current_version_android." is available on Play Store",
 				"message" => "Update is available on Play Store",
@@ -4266,6 +4259,14 @@ class CustomerController extends \BaseController {
 
 				$result_android['force_update'] = true;
 			}
+
+            if(intval(Request::header('Os-Version')) >= 9 && Request::header('App-Version') < '5.13'){
+                $result_android = [
+                    "message" => "Update is available on Play Store",
+                    "dismiss" => false,
+                    "force_update" => true
+                    ];
+            }
 
 			return Response::json($result_android,200);
 		}
@@ -8349,11 +8350,27 @@ class CustomerController extends \BaseController {
 		
 		$decoded = decode_customer_token($jwt_token);
 		$customer_id = $decoded->customer->_id;
+
+        $type = !empty($_GET['type']) ? $_GET['type'] : null;
+        $unverified = !empty($_GET['type']) ? true : false;
+        $customer = Customer::find($customer_id);
+
+        if(!empty($type) && $type == 'workout-session'){
+            $loyalty = $customer->loyalty;
+            $finder_ws_sessions = !empty($loyalty['workout_sessions'][(string)$finder_id]) ? $loyalty['workout_sessions'][(string)$finder_id] : 0;
+            
+            if($finder_ws_sessions >= 5){
+                $type = 'membership';
+                $update_finder_membership = true;
+            }else{
+                $update_finder_ws_sessions = true;
+            }
+        }
 		
 		$checkin_data = [
 			'customer_id'=>$customer_id,
 			'finder_id'=>intval($finder_id),
-			'type'=>!empty($_GET['type']) ? $_GET['type'] : null,
+			'type'=>$type,
             'unverified'=>!empty($_GET['type']) ? true : false
         ];
 
@@ -8363,17 +8380,28 @@ class CustomerController extends \BaseController {
 		
 		$addedCheckin = $this->utilities->addCheckin($checkin_data);
 		
-		$customer = Customer::find($customer_id);
 		
 		Finder::$withoutAppends = true;
 		
 		$finder = Finder::find($finder_id, ['title']);
 		
 		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200){
+
+            if(!empty($update_finder_ws_sessions)){
+                 // $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
+				// $customer->update(['loyalty'=>$loyalty]);
+				Customer::where('_id', $customer_id)->increment('loyalty.workout_sessions.'.$finder_id);
+            }elseif(!empty($update_finder_membership)){
+                if(empty($loyalty['memberships']) || !in_array($finder_id, $loyalty['memberships'])){
+                    array_push($loyalty['memberships'], $finder_id);
+                    $customer->update(['loyalty'=>$loyalty]);
+                }
+            }
+
 			$return =  [
 				'header'=>'CHECK-IN SUCCESSFUL!',
 				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
-				'milestones'=>$this->utilities->getMilestoneSection($customer),
+				'milestones'=>$this->utilities->getMilestoneSection(),
 				'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
 				// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
 			];
@@ -8525,6 +8553,11 @@ class CustomerController extends \BaseController {
 				$direct_checkin = true;
 				$external_membership = true;
 					
+			}else if(!empty($customer['loyalty']['workout_session'][(string)$finderarr['_id']])){
+				
+				$direct_checkin = true;
+				$external_ws_session = true;
+					
 			}else{
 
 				$direct_checkin = false;
@@ -8559,6 +8592,10 @@ class CustomerController extends \BaseController {
 				}
 				if(!empty($external_membership)){
 					$resp['response']['fitsquad']['url'] = Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=membership";
+				}
+				
+                if(!empty($external_ws_session)){
+					$resp['response']['fitsquad']['url'] = Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=workout-session";
 				}
 			}
 		}
@@ -8766,6 +8803,7 @@ class CustomerController extends \BaseController {
 
                                 if(!empty($customer['loyalty']['receipt_under_verfication'])){
                                     $post_reward_data_template['block_message'] = Config::get('loyalty_screens.receipt_verification_message');
+                                    $post_reward_data_template['block_msg'] = Config::get('loyalty_screens.receipt_verification_message');//for ios device v < 5.1.4
                                 }else{
                                     $post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
                                 }
