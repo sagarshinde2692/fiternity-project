@@ -8955,5 +8955,28 @@ class CustomerController extends \BaseController {
         $customer = Customer::where('email', strtolower($customer_email))->first();
         return $this->createToken($customer);
     }
+
+    public function getSessionPacks($offset = 0, $limit = 10){
+        $jwt_token = Request::header('Authorization');
+		if(!empty($jwt_token)){
+			
+            $decoded = decode_customer_token($jwt_token);
+			$customer_email = $decoded->customer->email;
+            $offset 			=	intval($offset);
+            $limit 				=	intval($limit);
+
+            $orders 			=  	[];
+            Finder::$withoutAppends = true;
+            
+            return $orders = Order::active()->where('customer_email', $customer_email)->where('extended_validity', true)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address']);
+
+
+
+
+			
+		}else{
+            return ['status'=>400];
+        }
+    }
 	
 }
