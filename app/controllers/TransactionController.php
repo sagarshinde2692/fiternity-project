@@ -2146,7 +2146,13 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            if(!empty($order['extended_validity'])){
+                Finder::$withoutAppends = true;
+                $finder = Finder::find($order['finder_id'], ['flags']);
+            }
+
             $snap_block = in_array($order['finder_id'], Config::get('app.snap_bangalore_finder_ids')) && $order['type'] == 'memberships';
+            $extended_validity_block = !empty($order['extended_validity']) && empty($finder['flags']['enable_vendor_novalidity_comm']);
 
             if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
 
@@ -2169,7 +2175,7 @@ class TransactionController extends \BaseController {
                     }
                 }
 
-                if(!(!empty($order->duration_day) && $order->duration_day == 30  && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block)){
+                if(!(!empty($order->duration_day) && $order->duration_day == 30  && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block) && empty($extended_validity_block)){
 
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                         if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -2359,7 +2365,7 @@ class TransactionController extends \BaseController {
                 }
 
                 //no sms to Healthy Snacks Beverages and Healthy Tiffins
-                if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block)){
+                if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block) && empty($extended_validity_block)){
                     
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                         if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -2968,6 +2974,16 @@ class TransactionController extends \BaseController {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
+        }
+
+        if($data['type'] == 'workout-session'){
+            Order::$withoutAppends = true;
+            $extended_validity_order = Order::active()->where('customer_id', $data['customer_id'])->where('service_id', $data['service_id'])->where('start_date', '<=', new DateTime())->where('end_date', '>=', new DateTime())->where('sessions_left', '>', 0)->first();
+            if($extended_validity_order){
+                $data['extended_validity_order_id'] = $extended_validity_order['_id'];
+                $data['session_pack_discount'] = $data['amount'];
+                $data['session_pack_discount'] = $data['amount'];
+            }
         }
 
         if(!empty($data['customer_quantity'])){
@@ -3930,9 +3946,10 @@ class TransactionController extends \BaseController {
         
         $data['amount'] = $data['amount_finder'];
 
-        if($ratecard['type'] == 'no validity'){
-            $data['type'] = 'no-validity';
-            $data['no_of_sessions'] = $ratecard['quantity'];
+        if($ratecard['type'] == 'extended validity'){
+            $data['type'] = 'memberships';
+            $data['sessions_left'] = $ratecard['quantity'];
+            $data['extended_validity'] = true;
             $data['amount_finder'] = 0;
         }
 
