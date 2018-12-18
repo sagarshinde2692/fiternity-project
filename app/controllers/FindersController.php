@@ -1264,6 +1264,8 @@ class FindersController extends \BaseController {
 					unset($response['finder']['payment_options']);
 				}
 
+				$response['finder']['services']  = $this->applyNonValidity($response, 'web');
+
 				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
@@ -6230,26 +6232,29 @@ class FindersController extends \BaseController {
     public function applyNonValidity($data, $source = 'web'){
 
         $ratecard_key = 'ratecard';
+		$service_name_key = 'service_name';
 
 		if($source != 'app'){
 			$ratecard_key = 'serviceratecard';
+			$service_name_key = 'name';
 		}
+
         
-        foreach($data['finder']['services'] as $service){
-            $no_validity_ratecards = [];
-            foreach($service['ratecard'] as $ratecard){
-                if($ratecard['type'] == 'no validity'){
-                    array_push($no_validity_ratecards, $ratecard) ;
-                }
-            }
+        foreach($data['finder']['services'] as $key => $service){
+			$no_validity_ratecards = [];
+			if(!empty($service[$ratecard_key])){
+				foreach($service[$ratecard_key] as $ratecard){
+					if($ratecard['type'] == 'no validity'){
+						array_push($no_validity_ratecards, $ratecard) ;
+					}
+				}
+			}
             if(!empty($no_validity_ratecards)){
 
-
                 $service['non_validity'] = Config::get('nonvalidity.finder_banner');
-                $service['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
-
-                $service['service_name'] = $service['service_name']."--extended";
-                $service['ratecard'] = $no_validity_ratecards;
+                $data['finder']['services'][$key]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
+                $service[$service_name_key] = $service[$service_name_key]."--extended";
+                $service[$ratecard_key] = $no_validity_ratecards;
                 $service['type'] = 'no validity';
 
             }
