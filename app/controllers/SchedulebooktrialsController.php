@@ -1827,6 +1827,14 @@ class SchedulebooktrialsController extends \BaseController {
                 
             }
 
+            if(!empty($order['extended_validity_order_id'])){
+                $extended_validity_order_update = $this->utilities->getExtendedValidityOrder($order);
+                if(!$extended_validity_order_update){
+                    $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
+                    return  Response::json($resp, 400);
+                }
+            }
+
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
 
             if($count > 0){

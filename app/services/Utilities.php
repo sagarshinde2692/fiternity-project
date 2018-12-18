@@ -7319,6 +7319,27 @@ Class Utilities {
 
     }
 
+    public function getExtendedValidityOrder($data){
+
+
+        if(!empty($data['order_customer_email'])){
+            $data['customer_email'] = $data['order_customer_email'];
+        }
+
+        if(!empty($data['customer_email'])){
+            return Order::active()->where('customer_email', $data['customer_email'])->where('service_id', $data['service_id'])->where('start_date', '<=', new DateTime())->where('end_date', '>=', new DateTime())->where('sessions_left', '>', 0)->first();
+        }
+
+        if(!empty($data['customer_id'])){
+            return Order::active()->where('customer_id', $data['customer_id'])->where('service_id', $data['service_id'])->where('start_date', '<=', new DateTime())->where('end_date', '>=', new DateTime())->where('sessions_left', '>', 0)->first();
+        }
+
+        return null;
+    }
+
+    
+            
+
 }
 
 

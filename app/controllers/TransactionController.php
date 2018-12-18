@@ -2976,16 +2976,6 @@ class TransactionController extends \BaseController {
             $customer_id = $decoded->customer->_id;
         }
 
-        if($data['type'] == 'workout-session'){
-            Order::$withoutAppends = true;
-            $extended_validity_order = Order::active()->where('customer_id', $data['customer_id'])->where('service_id', $data['service_id'])->where('start_date', '<=', new DateTime())->where('end_date', '>=', new DateTime())->where('sessions_left', '>', 0)->first();
-            if($extended_validity_order){
-                $data['extended_validity_order_id'] = $extended_validity_order['_id'];
-                $data['session_pack_discount'] = $data['amount'];
-                $data['session_pack_discount'] = $data['amount'];
-            }
-        }
-
         if(!empty($data['customer_quantity'])){
             
             $data['ratecard_amount'] = $data['amount'];
@@ -3047,9 +3037,24 @@ class TransactionController extends \BaseController {
                 $amount  =  $data['amount'];
     
             }
-        }            
+        }    
+
+        if($data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
+            Order::$withoutAppends = true;
+            $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
+            Order::active()->where('customer_id', $data['customer_id'])->where('service_id', $data['service_id'])->where('start_date', '<=', new DateTime())->where('end_date', '>=', new DateTime())->where('sessions_left', '>', 0)->first();
+            if($extended_validity_order){
+                $data['extended_validity_order_id'] = $extended_validity_order['_id'];
+                $data['session_pack_discount'] = $data['ratecard_amount'];
+                $amount = $data['amount'] - $data['session_pack_discount'];
+                if(!empty($data['finder_flags']['enable_vendor_novalidity_comm'])){
+                    $data['amount_finder'] = 0;
+                    $data['vendor_price'] = 0;
+                }
+            }
+        }        
         
-        if(((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
+        if(empty($data['session_pack_discount']) && empty($order['session_pack_discount']) && ((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
             $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
 
@@ -5366,6 +5371,13 @@ class TransactionController extends \BaseController {
             }
         }
 
+        if(!empty($order['session_pack_discount'])){
+             $amount_summary[] = array(
+                    'field' => 'Session pack discount',
+                    'value' => 'Rs. '.$data['session_pack_discount']
+            );
+        }
+
         $amount_payable = [];
 
         $amount_payable= array(
@@ -6288,6 +6300,36 @@ class TransactionController extends \BaseController {
             
             $data['amount_payable'] = $data['amount'];
 
+            $jwt_token = Request::header('Authorization');
+
+            if(!empty($data['customer_email'])){
+                $data['order_customer_email'] = $data['customer_email'];
+            }
+            
+            Log::info('jwt_token checkout summary: '.$jwt_token);
+
+            if(!empty($jwt_token) && $jwt_token != 'null'){
+                
+                $decoded = customerTokenDecode($jwt_token);
+
+                if(empty($data['customer_email'])){
+                    $data['customer_email'] = $decoded->customer->email;
+
+                    if(!empty($decoded->customer->contact_no)){
+                        $data['customer_phone'] = $decoded->customer->contact_no;
+                    }
+                }
+            }
+
+            if($data['type'] == 'workout session' && !empty($data['customer_email']) && !((!empty($data['customer_quantity']) && $data['customer_quantity'] > 1) || (!empty($order['customer_quantity']) && $order['customer_quantity'] > 1)) ){
+
+                $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
+
+                if($extended_validity_order){
+
+                }
+            }
+
             if($data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
             {
                 $start_time = explode('-', $data['slot']['slot_time'])[0];
@@ -6345,23 +6387,6 @@ class TransactionController extends \BaseController {
                     'value' => '+Rs. '.(string)$data['convinience_fee'],
                     /*"info" => "Convenience fees is applicable for exclusive offers on online payments & Cash on delivery."*/
                 ];
-            }
-
-            $jwt_token = Request::header('Authorization');
-            
-            Log::info('jwt_token checkout summary: '.$jwt_token);
-
-            if(!empty($jwt_token) && $jwt_token != 'null'){
-                
-                $decoded = customerTokenDecode($jwt_token);
-
-                if(empty($data['customer_email'])){
-                    $data['customer_email'] = $decoded->customer->email;
-
-                    if(!empty($decoded->customer->contact_no)){
-                        $data['customer_phone'] = $decoded->customer->contact_no;
-                    }
-                }
             }
 
 
