@@ -8967,10 +8967,41 @@ class CustomerController extends \BaseController {
 
             $orders 			=  	[];
             Finder::$withoutAppends = true;
+            Service::$withoutAppends = true;
             
-            $orders = Order::active()->where('customer_email', $customer_email)->where('extended_validity', true)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address']);
+            $orders = Order::active()
+                    ->where('customer_email', $customer_email)
+                    ->where('extended_validity', true)
+                    ->with(['finder'=>function($query){
+                        $query->select('slug');
+                    }])
+                    ->with(['service'=>function($query){
+                        $query->select('slug');
+                    }])
+                    ->skip($offset)
+                    ->take($limit)
+                    ->orderBy('_id', 'desc')
+                    ->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location']);
 
-            
+            foreach($orders as &$order){
+                if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
+                    $order['button_title'] = 'Book a Session';
+                    $order['button_type'] = 'book';
+                }else{
+                    $order['button_title'] = 'Renew Pack';
+                    $order['button_type'] = 'renew';
+                }
+
+                $order['valid_text'] = 'Valid till: ';
+                $order['valid_date'] = date('d M, Y', strtotime($order['end_date']));
+                $order['subscription_text'] = "Subscription code";
+                $order['title'] = $order['finder_name'].' - '.$order['service_name'];
+                $order['detail_text'] = "VIEW DETAILS";
+                $order['total_session_text'] = $order['no_of_sessions']." Session pack";
+
+            }
+
+            return $orders;          
 
 
 
