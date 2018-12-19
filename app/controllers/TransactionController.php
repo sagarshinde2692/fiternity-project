@@ -3042,7 +3042,6 @@ class TransactionController extends \BaseController {
         if($data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
             Order::$withoutAppends = true;
             $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
-            Order::active()->where('customer_id', $data['customer_id'])->where('service_id', $data['service_id'])->where('start_date', '<=', new DateTime())->where('end_date', '>=', new DateTime())->where('sessions_left', '>', 0)->first();
             if($extended_validity_order){
                 $data['extended_validity_order_id'] = $extended_validity_order['_id'];
                 $data['session_pack_discount'] = $data['ratecard_amount'];
