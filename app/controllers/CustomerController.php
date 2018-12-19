@@ -3587,6 +3587,16 @@ class CustomerController extends \BaseController {
 			}
 			
 		}
+        // if($this->app_version > '')
+        try{
+
+            $active_session_packs = $this->getSessionPacks(null, null, true, $customer_id);
+
+        }catch(Exception $e){
+
+            $active_session_packs = [];
+        
+        }
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
 			if(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 4.2)){
@@ -3685,6 +3695,7 @@ class CustomerController extends \BaseController {
 		}
 		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
+        $result['session_packs'] = $active_session_packs;
 		// $result['campaign'] =  new \stdClass();
 		// $result['campaign'] = array(
 		// 	'image'=>'http://b.fitn.in/iconsv1/womens-day/women_banner_app_50.png',
@@ -8956,60 +8967,87 @@ class CustomerController extends \BaseController {
         return $this->createToken($customer);
     }
 
-    public function getSessionPacks($offset = 0, $limit = 10){
+    public function getSessionPacks($offset = 0, $limit = 10, $active = false, $customer_id = null){
+    
         $jwt_token = Request::header('Authorization');
+
 		if(!empty($jwt_token)){
 			
             $decoded = decode_customer_token($jwt_token);
-			$customer_email = $decoded->customer->email;
-            $offset 			=	intval($offset);
-            $limit 				=	intval($limit);
-
-            $orders 			=  	[];
-            Finder::$withoutAppends = true;
-            Service::$withoutAppends = true;
-            
-            $orders = Order::active()
-                    ->where('customer_email', $customer_email)
-                    ->where('extended_validity', true)
-                    ->with(['finder'=>function($query){
-                        $query->select('slug');
-                    }])
-                    ->with(['service'=>function($query){
-                        $query->select('slug');
-                    }])
-                    ->skip($offset)
-                    ->take($limit)
-                    ->orderBy('_id', 'desc')
-                    ->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location']);
-
-            foreach($orders as &$order){
-                if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
-                    $order['button_title'] = 'Book a Session';
-                    $order['button_type'] = 'book';
-                }else{
-                    $order['button_title'] = 'Renew Pack';
-                    $order['button_type'] = 'renew';
-                }
-
-                $order['valid_text'] = 'Valid till: ';
-                $order['valid_date'] = date('d M, Y', strtotime($order['end_date']));
-                $order['subscription_text'] = "Subscription code";
-                $order['title'] = $order['finder_name'].' - '.$order['service_name'];
-                $order['detail_text'] = "VIEW DETAILS";
-                $order['total_session_text'] = $order['no_of_sessions']." Session pack";
-
-            }
-
-            return $orders;          
-
-
-
-
-			
-		}else{
-            return ['status'=>400];
+			$customer_id = $decoded->customer->_id;
+        
+        }else{
+            return ['status'=>400, 'message'=>'No customer found'];
         }
+        $offset 			=	intval($offset);
+        $limit 				=	intval($limit);
+
+        $orders 			=  	[];
+        Finder::$withoutAppends = true;
+        Service::$withoutAppends = true;
+        
+        $orders = Order::active()
+                ->where('customer_id', $customer_id)
+                ->where('extended_validity', true)
+                ->with(['finder'=>function($query){
+                    $query->select('slug');
+                }])
+                ->with(['service'=>function($query){
+                    $query->select('slug');
+                }])
+                ->skip($offset)
+                ->take($limit)
+                ->orderBy('_id', 'desc');
+
+        if(!empty($active)){
+
+            $orders->where('start_date', '<=', new DateTime())
+                    ->where('end_date', '>=', new DateTime());
+
+        }
+
+        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id']);
+
+        $orders = $this->formatSessionPackList($orders);
+
+        return $orders;          
+		
+    }
+
+    public function formatSessionPackList($orders){
+        foreach($orders as &$order){
+           
+            $order = $this->formatSessionPack($order);
+            
+        }
+        return $orders;
+    }
+
+    public function formatSessionPack($order){
+        
+        if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
+            $order['button_title'] = 'Book a Session';
+            $order['button_type'] = 'book';
+
+        }else{
+            $order['button_title'] = 'Renew Pack';
+            $order['button_type'] = 'renew';
+        }
+
+        $order['start_date'] = strtotime($order['start_date']);
+        $order['valid_text'] = 'Valid till: ';
+        $order['valid_date'] = date('d M, Y', strtotime($order['end_date']));
+        $order['subscription_text'] = "Subscription code: ";
+        $order['title'] = $order['finder_name'].' - '.$order['service_name'];
+        $order['detail_text'] = "VIEW DETAILS";
+        $order['total_session_text'] = $order['no_of_sessions']." Session pack";
+        $order['left_text'] = "left";
+        $order['before_start_message'] = "Your session pack start from ".date('d M, Y', strtotime($order['end_date'])).". Session pack will not be applied to bookings before the start date";
+
+
+
+        return $order;
+
     }
 	
 }
