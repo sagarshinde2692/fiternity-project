@@ -9010,7 +9010,7 @@ class CustomerController extends \BaseController {
 
         $orders = $this->formatSessionPackList($orders);
 
-        return $orders;          
+        return ['status'=>200, 'data'=>$orders];          
 		
     }
 
