@@ -124,10 +124,10 @@ class TransactionController extends \BaseController {
                     $_tpoRec['city'] = $rec['addressCity'];
                     $_tpoRec['state'] = $rec['addressState'];
                     $_tpoRec['country'] = "IND";//$rec['addressCountry'];
-                    $stateCityDetails = PincodeMaster::where('pincode', $rec['addressPincode'])->first();
+                    $stateCityDetails = PincodeMaster::where('pincode', $rec['addressPincode'])->where('fit_city_id','exists',true)->first();
                     Log::info('stateCityDetails: ', [$stateCityDetails]);
                     if(empty($stateCityDetails)){
-                        return ['err' => "Please enter a valid pincode"];
+                        return ['err' => "We do not serve in this city."];
                     }
                     $_tpoRec['city'] = $stateCityDetails['city_name'];
                     $_tpoRec['state'] = $stateCityDetails['state_code'];
