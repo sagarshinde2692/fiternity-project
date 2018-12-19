@@ -3590,7 +3590,7 @@ class CustomerController extends \BaseController {
         // if($this->app_version > '')
         try{
 
-            $active_session_packs = $this->getSessionPacks(null, null, true, $customer_id);
+            $active_session_packs = $this->getSessionPacks(null, null, true, $customer_id)['data'];
 
         }catch(Exception $e){
 
