@@ -16,6 +16,10 @@ return array(
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;\"></p>
             <hr color=\"#767676\" style=\"height: 1px;\" width=\"90%\">
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\">&lt; 11 &gt; people have already bought an extended validity membership</p>",
+    ],
+    'recommnded_block'=>[
+        'text'=>'Recommended',
+        'text_color'=>'#cc0000'
     ]
 );
 ?>

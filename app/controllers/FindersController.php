@@ -6245,6 +6245,7 @@ class FindersController extends \BaseController {
 			if(!empty($service[$ratecard_key])){
 				foreach($service[$ratecard_key] as $ratecard){
 					if($ratecard['type'] == 'extended validity'){
+                        $ratecard['recommended'] = Config::get('nonvalidity.recommnded_block');
 						array_push($no_validity_ratecards, $ratecard) ;
 					}
 				}
@@ -6253,6 +6254,7 @@ class FindersController extends \BaseController {
 
                 $service['non_validity'] = Config::get('nonvalidity.finder_banner');
                 $data['finder']['services'][$key]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
+                $data['finder']['services'][$key]['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service[$service_name_key] = $service[$service_name_key]."--extended";
                 $service[$ratecard_key] = $no_validity_ratecards;
                 $service['type'] = 'extended validity';

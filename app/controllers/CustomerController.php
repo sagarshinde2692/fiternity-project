@@ -8968,7 +8968,9 @@ class CustomerController extends \BaseController {
             $orders 			=  	[];
             Finder::$withoutAppends = true;
             
-            return $orders = Order::active()->where('customer_email', $customer_email)->where('extended_validity', true)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address']);
+            $orders = Order::active()->where('customer_email', $customer_email)->where('extended_validity', true)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address']);
+
+            
 
 
 
