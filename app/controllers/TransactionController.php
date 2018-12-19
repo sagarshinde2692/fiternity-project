@@ -3953,7 +3953,7 @@ class TransactionController extends \BaseController {
 
         if($ratecard['type'] == 'extended validity'){
             $data['type'] = 'memberships';
-            $data['no_of_sessions'] = $data['sessions_left'] = $ratecard['quantity'];
+            $data['no_of_sessions'] = $data['sessions_left'] = $ratecard['duration'];
             $data['extended_validity'] = true;
             $data['amount_finder'] = 0;
         }
