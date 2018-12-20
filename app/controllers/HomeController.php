@@ -1492,7 +1492,7 @@ class HomeController extends BaseController {
 
             $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
             
-            if(isset($item['extended_validity_order_id'])){
+            if(isset($item['extended_validity']) && $item['extended_validity']){ 
                 $booking_details_data["validity"] = ['field'=>'VALIDITY','value'=>$serviceDurArr[1],'position'=>$position++];
             }
 
@@ -1514,15 +1514,15 @@ class HomeController extends BaseController {
 
             if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
 
-                 $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free','position'=>$position++];
+                $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free','position'=>$position++];
 
             }else{
 
                 $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free Via Fitternity','position'=>$position++];
             }
 
-            $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
-
+            $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];            
+            
             $booking_details_data["amount_paid"] = ['field'=>'AMOUNT PAID','value'=>'','position'=>$position++];
 
             if($poc != ""){ 
@@ -1768,7 +1768,6 @@ class HomeController extends BaseController {
                 $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
 
                 if(isset($item['extended_validity']) && $item['extended_validity']){  
-                    // return $booking_details_data;
                     $header = "Session Pack Confirmed";
                     $subline = "Hi <b>".$item['customer_name']."</b>, your ".$serviceDurArr[0]." pack (valid for ".$serviceDurArr[1].") for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed by paying Rs. ".(string)$item['amount_customer'].". We have also sent you a confirmation Email and SMS";
                 }
@@ -1796,11 +1795,11 @@ class HomeController extends BaseController {
 
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
                 
-                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id']);
+                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id', 'validity']);
                 
                 }else{
                     
-                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc']);
+                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'validity']);
                 
                 }
 
@@ -1825,7 +1824,7 @@ class HomeController extends BaseController {
                     $subline = "You have booked a session for ".ucwords($item['customer_name'])." for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value'].". We have also sent a confirmation Email and SMS.";
                 }
 
-                $booking_details_data = array_only($booking_details_data, ['booking_id','start_date','address','poc','start_time']);
+                $booking_details_data = array_only($booking_details_data, ['booking_id','start_date','address','poc','start_time', 'validity']);
 
                 $booking_details_data['start_date']['value'] = $booking_details_data['start_date']['value'].", ".$booking_details_data['start_time']['value'];
                 $booking_details_data['start_date']['field'] = "DATE & TIME";
@@ -2126,6 +2125,30 @@ class HomeController extends BaseController {
                     'end_point'=> 'sharegroupid'
                 ];
 
+            }
+
+            if(isset($item['extended_validity']) && $item['extended_validity']){  
+                $resp['session_pack'] = [
+                    'header' => 'Session Pack Activated', 
+                    'text' => 'All you need to do is book your slot everytime you want to workout',
+                    'data' => [
+                        [
+                            'header' => 'Easy/One Click Booking', 
+                            'text' => 'Book before your workout through the QR code at gym/ studio or your profile', 
+                            'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
+                        ],
+                        [
+                            'header' => 'Keep an eye on Session counter', 
+                            'text' => 'View session details under My Session Packs in your profile', 
+                            'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%202.png'
+                        ],
+                        [
+                            'header' => 'Easy cancellation', 
+                            'text' => 'Don\'t lose out on your workouts with easy cancellations through your profile', 
+                            'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%203.png'
+                        ]
+                    ]
+                ];
             }
 
             // if(isset($booktrial['extended_validity_order_id'])){
