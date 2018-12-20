@@ -5156,28 +5156,28 @@ class CustomerController extends \BaseController {
 
 
         if(!empty($order['extended_validity'])){
-             
-             if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
-                $action['book_session'] = [
-                    "button_text"=>"Book a session",
-                    "activity"=>"book",
-                    "color"=>"#26ADE5",
-                    "info" => "Book a workout session",
-                ];
+			$action['book_session'] = $this->sessionPackDetail($order_id);
+            //  if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
+            //     $action['book_session'] = [
+            //         "button_text"=>"Book a session",
+            //         "activity"=>"book",
+            //         "color"=>"#26ADE5",
+            //         "info" => "Book a workout session",
+            //     ];
 
-            }else{
-                $action['renew_membership'] =[
-                    "button_text"=>"Renew",
-                    "activity"=>"renew_membership",
-                    "color"=>"#EF1C26",
-                    "info" => "Renew your membership with the lowest price and assured rewards",
-                    "popup" =>[
-                        "title"=>"",
-                        "message"=>"Renew your membership with the lowest price and assured rewards"
-                    ]
-                ];
+            // }else{
+            //     $action['renew_membership'] =[
+            //         "button_text"=>"Renew",
+            //         "activity"=>"renew_membership",
+            //         "color"=>"#EF1C26",
+            //         "info" => "Renew your membership with the lowest price and assured rewards",
+            //         "popup" =>[
+            //             "title"=>"",
+            //             "message"=>"Renew your membership with the lowest price and assured rewards"
+            //         ]
+            //     ];
                 
-            }   
+            // }   
 
             return $action;    
         }
