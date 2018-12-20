@@ -1763,13 +1763,14 @@ class HomeController extends BaseController {
 
             
             if(in_array($type,["membershipwithpg","membershipwithoutpg","healthytiffinmembership"])){
-
+                
                 $header = "Membership Confirmed";
                 $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
 
-                if(isset($item['extended_validity_order_id'])){
+                if(isset($item['extended_validity']) && $item['extended_validity']){  
+                    // return $booking_details_data;
                     $header = "Session Pack Confirmed";
-                    $subline = "Hi <b>".$item['customer_name']."</b>, your ".$serviceDurArr[0]." pack (valid for ".$serviceDurArr[1].") for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed by paying ".$booking_details_data['amount_paid']['value'].". We have also sent you a confirmation Email and SMS";
+                    $subline = "Hi <b>".$item['customer_name']."</b>, your ".$serviceDurArr[0]." pack (valid for ".$serviceDurArr[1].") for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed by paying Rs. ".(string)$item['amount_customer'].". We have also sent you a confirmation Email and SMS";
                 }
 
                 if(isset($item['booking_for_others']) && $item['booking_for_others']){
