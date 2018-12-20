@@ -6280,7 +6280,7 @@ class FindersController extends \BaseController {
                                     $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
                                         'header'=>'Want to SAVE MORE?',
                                         'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
-                                        'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\n You are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
+                                        'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\nYou are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
                                         'ratecards'=>$duration_value,
                                         'continue_text'=>"Continue with ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' at Rs.'.$price
                                     ];
