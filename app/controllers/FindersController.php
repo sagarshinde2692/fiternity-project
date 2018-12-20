@@ -6271,16 +6271,18 @@ class FindersController extends \BaseController {
 
                                 if(intval($duration_key) == $session_pack_duration_map[strval($duration_day)]){
                                     $unlimited_validity = false;
-                                    foreach($duration_value as $rc){
-                                        $unlimited_validity = $unlimited_validity || !empty($ratecard['flags']['unlimited_validity']);
+                                    foreach($duration_value as &$rc){
+										$unlimited_validity = $unlimited_validity || !empty($ratecard['flags']['unlimited_validity']);
+										$rc['remarks'] = !empty($ratecard['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']);
                                     }
                                     $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
                                     
                                     $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
                                         'header'=>'Want to SAVE MORE?',
                                         'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
-                                        'line2'=>"The Most effective way to avail a membership at ".$data['finder']['title']."\n\n You are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
-                                        'ratecards'=>$duration_value
+                                        'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\n You are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
+                                        'ratecards'=>$duration_value,
+                                        'continue_text'=>"Continue with ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' at Rs.'.$price
                                     ];
                                     break;
                                 
