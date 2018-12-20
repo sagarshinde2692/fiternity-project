@@ -1058,7 +1058,7 @@ class HomeController extends BaseController {
                     array_push($streak_items, ['title'=>$value['cashback'].'%', 'value'=>$value['number'].' Sessions']);
 
                 }
-
+                 
                 $streak = [
                     'header'=>'Attend More Earn More',
                     'items'=>$streak_items
@@ -1485,7 +1485,9 @@ class HomeController extends BaseController {
 
             $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
             
-            $booking_details_data["validity"] = ['field'=>'VALIDITY','value'=>$serviceDurArr[1],'position'=>$position++];
+            if(isset($item['extended_validity_order_id'])){
+                $booking_details_data["validity"] = ['field'=>'VALIDITY','value'=>$serviceDurArr[1],'position'=>$position++];
+            }
 
             if(in_array($type,["healthytiffintrail","healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"])){
                 $booking_details_data["finder_name_location"] = ['field'=>'MEMBERSHIP BOUGHT AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
