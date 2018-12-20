@@ -9127,6 +9127,8 @@ class CustomerController extends \BaseController {
     }
 
     public function sessionPackDetail($id){
+        Service::$withoutAppends = true;
+		Finder::$withoutAppends = true;
         $order = Order::with(['finder'=>function($query){
                     $query->select('slug');
                 }])
