@@ -4900,7 +4900,7 @@ class CustomerController extends \BaseController {
 
 		$order_id = (int) $order_id;
 
-		$order = Order::find($order_id);
+		$order = Order::with(['service'=>function($query){$query->select('slug');}])->find($order_id);
 
 	    if(!$order){
 
@@ -4916,6 +4916,8 @@ class CustomerController extends \BaseController {
 	    $finder = Finder::find((int)$order->finder_id);
 
 	    $data = [];
+        $data['finder_slug'] = $finder['slug'];
+        $data['service_slug'] = $order['service']['slug'];
 	    $data['order_id'] = $order_id;
 	    $data['start_date'] = strtotime($order->start_date);
 
@@ -5147,6 +5149,35 @@ class CustomerController extends \BaseController {
 			'upgrade_membership'=>null,
 			'feedback'=>null,
 		];
+
+
+        if(!empty($order['extended_validity'])){
+             
+             if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
+                $action['book_session'] = [
+                    "button_text"=>"Book a session",
+                    "activity"=>"book",
+                    "color"=>"#26ADE5",
+                    "info" => "Book a workout session",
+                ];
+
+            }else{
+                $action['renew_membership'] =[
+                    "button_text"=>"Renew",
+                    "activity"=>"renew_membership",
+                    "color"=>"#EF1C26",
+                    "info" => "Renew your membership with the lowest price and assured rewards",
+                    "popup" =>[
+                        "title"=>"",
+                        "message"=>"Renew your membership with the lowest price and assured rewards"
+                    ]
+                ];
+                
+            }   
+
+            return $action;    
+        }
+
 
 		$change_start_date = true;
 		$renew_membership = true;
@@ -9049,5 +9080,5 @@ class CustomerController extends \BaseController {
         return $order;
 
     }
-	
+
 }
