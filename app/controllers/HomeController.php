@@ -1076,9 +1076,12 @@ class HomeController extends BaseController {
                     'id'=>$id
                 ];
 
-                if(isset($item['extended_validity_order_id']) && (($device_type=='android' && $app_version >= '5.17') || ($device_type=='ios' && $app_version > '5.1.4'))){
-                    // unset($response['streak']);
+                if(isset($item['extended_validity_order_id']) && (($device_type=='android' && $app_version < '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
+                    $response['streak']['headers'] = '';
                     $response['streak']['items'] = [];
+                }
+                if(isset($item['extended_validity_order_id']) && (($device_type=='android' && $app_version >= '5.17') || ($device_type=='ios' && $app_version > '5.1.4'))){
+                    unset($response['streak']);
                 }
 
                 if(!empty($finder) && isset($finder['brand_id'])){
