@@ -4913,9 +4913,9 @@ class CustomerController extends \BaseController {
 	        return Response::json($resp,$resp["status"]);
 	    }*/
 
-        if(!empty($order['extended_validity'])){
-            return $this->sessionPackDetail($order_id);
-        }
+        // if(!empty($order['extended_validity'])){
+        //     return $this->sessionPackDetail($order_id);
+        // }
 
 	    $finder = Finder::find((int)$order->finder_id);
 
