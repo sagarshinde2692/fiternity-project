@@ -9127,7 +9127,7 @@ class CustomerController extends \BaseController {
     }
 
     public function sessionPackDetail($id){
-        $orders = Order::with(['finder'=>function($query){
+        $order = Order::with(['finder'=>function($query){
                     $query->select('slug');
                 }])
                 ->with(['service'=>function($query){

@@ -6293,12 +6293,14 @@ class FindersController extends \BaseController {
                     }
                     if($ratecard['type'] == 'extended validity'){
                         // return $ratecard;
+                        $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
                         if(!empty($ratecard['flags']['unlimited_validity'])){
                             $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $service[$ratecard_key][$key1]['duration_type'].' ( Unlimited Validity)';
                         }else{
                             $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $service[$ratecard_key][$key1]['duration_type'].' (Valid for '.$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'].')';
                         }
-                        
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['price'] = $price;
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['special_price'] = 0;
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity']);
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
                         // return $service[$ratecard_key][$key1];
