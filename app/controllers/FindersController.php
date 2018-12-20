@@ -1299,6 +1299,7 @@ class FindersController extends \BaseController {
             $response['register_loyalty'] = !empty($customer['loyalty']);
 			$response['trials_detials']              =      $customer_trials_with_vendors;
 			$response['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
+            $response['session_pack']                =      !empty($this->utilities->getAllExtendedValidityOrders(['customer_email'=>$customer_email]));
 		}else{
             $response['register_loyalty'] = false;
 			$response['trials_detials']              =      [];
