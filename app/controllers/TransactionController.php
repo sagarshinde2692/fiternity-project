@@ -2612,7 +2612,7 @@ class TransactionController extends \BaseController {
 
             if($getRegId['flag']){
 
-                $$device_type = $data["device_type"] = $getRegId["device_type"];;
+                $device_type = $data["device_type"] = $getRegId["device_type"];;
                 $gcm_reg_id = $data["reg_id"] = $getRegId["reg_id"]; 
 
                 $data['gcm_reg_id'] = $getRegId["reg_id"];

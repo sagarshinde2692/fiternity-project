@@ -8016,7 +8016,7 @@ public function yes($msg){
             $csv[] = array_combine($header, $row);
         }
 
-        $data = Input::all();
+        // $data = Input::all();
 
         $orders = $csv;
         
@@ -8029,6 +8029,10 @@ public function yes($msg){
         foreach ($orders as $order){
             
             $o = Order::where('_id', $order['order_id'])->whereNotIn('_id', $already_added_order_ids)->where('converting_membership_to_pps', '!=', true)->first();
+
+            if(!$order){
+                continue;
+            }
 
             $finder_id = $o->finder_id;
 
