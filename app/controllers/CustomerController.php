@@ -9113,6 +9113,7 @@ class CustomerController extends \BaseController {
         $order['detail_text'] = "VIEW DETAILS";
         $order['total_session_text'] = $order['no_of_sessions']." Session pack";
         $order['left_text'] = "left";
+        $order['session_active'] = "SESSION PACK ACTIVE";
         $order['before_start_message'] = "Your session pack start from ".date('d M, Y', strtotime($order['end_date'])).". Session pack will not be applied to bookings before the start date";
         if(!empty($order['finder']['slug'])){
             $order['finder_slug'] = $order['finder']['slug'];
