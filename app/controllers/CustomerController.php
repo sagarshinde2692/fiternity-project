@@ -4913,9 +4913,9 @@ class CustomerController extends \BaseController {
 	        return Response::json($resp,$resp["status"]);
 	    }*/
 
-        if(!empty($order['extended_validity'])){
-            return $this->sessionPackDetail($order_id);
-        }
+        // if(!empty($order['extended_validity'])){
+        //     return $this->sessionPackDetail($order_id);
+        // }
 
 	    $finder = Finder::find((int)$order->finder_id);
 
@@ -5156,28 +5156,29 @@ class CustomerController extends \BaseController {
 
 
         if(!empty($order['extended_validity'])){
-             
-             if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
-                $action['book_session'] = [
-                    "button_text"=>"Book a session",
-                    "activity"=>"book",
-                    "color"=>"#26ADE5",
-                    "info" => "Book a workout session",
-                ];
+			$action['book_session'] = $this->sessionPackDetail($order['_id']);
+			$action['book_session']['sessions_left'] = $action['book_session']['sessions_left'].' sessions left';
+            //  if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
+            //     $action['book_session'] = [
+            //         "button_text"=>"Book a session",
+            //         "activity"=>"book",
+            //         "color"=>"#26ADE5",
+            //         "info" => "Book a workout session",
+            //     ];
 
-            }else{
-                $action['renew_membership'] =[
-                    "button_text"=>"Renew",
-                    "activity"=>"renew_membership",
-                    "color"=>"#EF1C26",
-                    "info" => "Renew your membership with the lowest price and assured rewards",
-                    "popup" =>[
-                        "title"=>"",
-                        "message"=>"Renew your membership with the lowest price and assured rewards"
-                    ]
-                ];
+            // }else{
+            //     $action['renew_membership'] =[
+            //         "button_text"=>"Renew",
+            //         "activity"=>"renew_membership",
+            //         "color"=>"#EF1C26",
+            //         "info" => "Renew your membership with the lowest price and assured rewards",
+            //         "popup" =>[
+            //             "title"=>"",
+            //             "message"=>"Renew your membership with the lowest price and assured rewards"
+            //         ]
+            //     ];
                 
-            }   
+            // }   
 
             return $action;    
         }
@@ -9112,6 +9113,7 @@ class CustomerController extends \BaseController {
         $order['detail_text'] = "VIEW DETAILS";
         $order['total_session_text'] = $order['no_of_sessions']." Session pack";
         $order['left_text'] = "left";
+        $order['session_active'] = "SESSION PACK ACTIVE";
         $order['before_start_message'] = "Your session pack start from ".date('d M, Y', strtotime($order['end_date'])).". Session pack will not be applied to bookings before the start date";
         if(!empty($order['finder']['slug'])){
             $order['finder_slug'] = $order['finder']['slug'];
@@ -9127,13 +9129,15 @@ class CustomerController extends \BaseController {
     }
 
     public function sessionPackDetail($id){
-        $orders = Order::with(['finder'=>function($query){
+        Service::$withoutAppends = true;
+		Finder::$withoutAppends = true;
+        $order = Order::with(['finder'=>function($query){
                     $query->select('slug');
                 }])
                 ->with(['service'=>function($query){
                     $query->select('slug');
                 }])
-                ->find($id);
+                ->find($id, ['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id']);
 
 
         return $this->formatSessionPack($order);
