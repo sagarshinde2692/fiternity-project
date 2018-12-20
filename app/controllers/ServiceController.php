@@ -942,7 +942,18 @@ class ServiceController extends \BaseController {
 						$total_slots_count +=1;
 						
 						// if(isset($_GET['source']) && $_GET['source'] == 'pps')
-                        if($finder['category_id'] != 47){
+                        $jwt_token = Request::header('Authorization');
+
+                        Log::info('jwt_token : '.$jwt_token);
+
+                        if(!empty($jwt_token)){
+                            $decoded = decode_customer_token();
+                            $customer_email = $decoded->customer->email;
+                            $extended_validity_order =  $this->utilities->getExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id']]);
+                            $service['extended_validity'] = !empty($extended_validity_order);
+                        }
+
+                        if($finder['category_id'] != 47 && empty($service['extended_validity'])){
 
 						    $ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
 
@@ -1152,6 +1163,13 @@ class ServiceController extends \BaseController {
 						$slots =$schedule['slots'];
 
                         
+                        if((!empty($schedule['extended_validity']))){
+                            foreach($slots as &$s){
+                                $s['title'] = Config::get('nonvalidity.slots_header');
+                                unset($s['price']);
+                            }
+                        }
+
                         // if((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($schedule['free_trial_available']) && empty($data['trial_booked'])){
                         //     foreach($slots as &$s){
                         //         $s['price'] .= Config::get('app.first_free_string');
@@ -1184,8 +1202,15 @@ class ServiceController extends \BaseController {
                         $sc['free_trial_available'] = false;
                     }
 
-                    if((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])){
+                    
+                    if(((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])) || (!empty($sc['extended_validity']))){
                         $sc['cost'] .= Config::get('app.first_free_string');
+
+                        if(!empty($sc['extended_validity'])){
+                            $sc['cost'] = Config::get('nonvalidity.slots_header');
+                        }
+
+
                         if(!empty($sc['non_peak'])){
                             unset($sc['non_peak']);
 						}
@@ -1200,6 +1225,10 @@ class ServiceController extends \BaseController {
 							}
                         }
                     }
+                    if(!empty($service['extended_validity'])){
+
+                    }
+
                 }
             }
 
