@@ -20,6 +20,11 @@ return array(
     'recommnded_block'=>[
         'text'=>'Recommended',
         'text_color'=>'#cc0000'
+    ],
+    'session_pack_duration_map'=>[
+        "30"=>30,
+        "90"=>180,
+        "360"=>720,
     ]
 );
 ?>

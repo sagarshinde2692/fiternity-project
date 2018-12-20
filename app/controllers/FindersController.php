@@ -4700,7 +4700,7 @@ class FindersController extends \BaseController {
 				// return $finderservice['ratecard'];
 				// exit;
 				foreach ($finderservice['ratecard'] as $ratecard){
-
+                    Log::info($ratecard);
 					if(in_array($ratecard["type"],["workout session", "trial"])){
 
 						if($type == "workout session" && in_array($ratecard["type"],["trial"])){
@@ -6239,25 +6239,53 @@ class FindersController extends \BaseController {
 			$service_name_key = 'name';
 		}
 
-        
+        $session_pack_duration_map =  Config::get('nonvalidity.session_pack_duration_map');
         foreach($data['finder']['services'] as $key => $service){
 			$no_validity_ratecards = [];
 			if(!empty($service[$ratecard_key])){
-				foreach($service[$ratecard_key] as $ratecard){
+				foreach($service[$ratecard_key] as $rate_key => $ratecard){
+                    $duration_day = $this->utilities->getDurationDay($ratecard);
 					if($ratecard['type'] == 'extended validity'){
-                        $ratecard['recommended'] = Config::get('nonvalidity.recommnded_block');
-						array_push($no_validity_ratecards, $ratecard) ;
+                        $service[$ratecard_key][$rate_key]['recommended'] = Config::get('nonvalidity.recommnded_block');
+                        $extended_validity_exists = true;
+                        if(empty($no_validity_ratecards[$duration_day])){
+                            $no_validity_ratecards[$duration_day] = [];
+                        }
+						array_push($no_validity_ratecards[$duration_day], $ratecard) ;
 					}
 				}
 			}
             if(!empty($no_validity_ratecards)){
 
+				foreach($service[$ratecard_key] as $key1 => $ratecard){
+                    if($ratecard['type'] == 'membership'){
+                        $duration_day = $this->utilities->getDurationDay($ratecard);
+                        // print_r($session_pack_duration_map);
+                        // exit();
+                        if(!empty($session_pack_duration_map[strval($duration_day)])){
+
+                            foreach($no_validity_ratecards as $duration_key => $duration_value){
+
+                                if(intval($duration_key) == $session_pack_duration_map[strval($duration_day)]){
+                                    $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
+                                        'line1'=>'',
+                                        'line2'=>'',
+                                        'ratecards'=>$duration_value
+                                    ];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+				}
+
                 $service['non_validity'] = Config::get('nonvalidity.finder_banner');
-                $data['finder']['services'][$key]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
-                $data['finder']['services'][$key]['recommended'] = Config::get('nonvalidity.recommnded_block');
-                $service[$service_name_key] = $service[$service_name_key]."--extended";
+                $service['recommended'] = Config::get('nonvalidity.recommnded_block');
+                $service[$service_name_key] = $service[$service_name_key]."New - Years Offer";
                 $service[$ratecard_key] = $no_validity_ratecards;
                 $service['type'] = 'extended validity';
+				
+				$data['finder']['services'][$key]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
 
             }
             array_push($data['finder']['services'], $service);
