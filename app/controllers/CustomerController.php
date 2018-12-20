@@ -9069,11 +9069,19 @@ class CustomerController extends \BaseController {
         $order['valid_text'] = 'Valid till: ';
         $order['valid_date'] = date('d M, Y', strtotime($order['end_date']));
         $order['subscription_text'] = "Subscription code: ";
+        $order['subscription_code'] = strval($order['_id']);
+        $order['sessions_left'] = strval($order['sessions_left']);
         $order['title'] = $order['finder_name'].' - '.$order['service_name'];
         $order['detail_text'] = "VIEW DETAILS";
         $order['total_session_text'] = $order['no_of_sessions']." Session pack";
         $order['left_text'] = "left";
         $order['before_start_message'] = "Your session pack start from ".date('d M, Y', strtotime($order['end_date'])).". Session pack will not be applied to bookings before the start date";
+        if(!empty($order['finder']['slug'])){
+            $order['finder_slug'] = $order['finder']['slug'];
+        }
+        if(!empty($order['service']['slug'])){
+            $order['service_slug'] = $order['finder']['slug'];
+        }
 
 
 
