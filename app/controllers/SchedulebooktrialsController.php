@@ -7555,6 +7555,12 @@ class SchedulebooktrialsController extends \BaseController {
         //     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
         // }
 
+        if(isset($booktrial['extended_validity_order_id']) && isset($response['description'])){
+            unset($response['description']);
+            unset($response['sub_header_1']);
+            unset($response['sub_header_2']);
+        }
+
         return Response::json($response);
 
     }
