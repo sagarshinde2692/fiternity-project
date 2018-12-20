@@ -6247,6 +6247,7 @@ class FindersController extends \BaseController {
 				foreach($service[$ratecard_key] as $rate_key => $ratecard){
                     $duration_day = $this->utilities->getDurationDay($ratecard);
 					if($ratecard['type'] == 'extended validity'){
+                       
                         $service[$ratecard_key][$rate_key]['recommended'] = Config::get('nonvalidity.recommnded_block');
                         $extended_validity_exists = true;
                         if(empty($no_validity_ratecards[$duration_day])){
@@ -6263,17 +6264,26 @@ class FindersController extends \BaseController {
                         $duration_day = $this->utilities->getDurationDay($ratecard);
                         // print_r($session_pack_duration_map);
                         // exit();
+                        
                         if(!empty($session_pack_duration_map[strval($duration_day)])){
-
+                            // return $ratecard;
                             foreach($no_validity_ratecards as $duration_key => $duration_value){
 
                                 if(intval($duration_key) == $session_pack_duration_map[strval($duration_day)]){
+                                    $unlimited_validity = false;
+                                    foreach($duration_value as $rc){
+                                        $unlimited_validity = $unlimited_validity || !empty($ratecard['flags']['unlimited_validity']);
+                                    }
+                                    $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+                                    
                                     $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
-                                        'line1'=>'',
-                                        'line2'=>'',
+                                        'header'=>'Want to SAVE MORE?',
+                                        'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
+                                        'line2'=>"The Most effective way to avail a membership at ".$data['finder']['title']."\n\n You are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
                                         'ratecards'=>$duration_value
                                     ];
                                     break;
+                                
                                 }
                             }
                         }

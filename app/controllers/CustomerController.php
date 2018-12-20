@@ -4913,6 +4913,10 @@ class CustomerController extends \BaseController {
 	        return Response::json($resp,$resp["status"]);
 	    }*/
 
+        if(!empty($order['extended_validity'])){
+            return $this->sessionPackDetail($order_id);
+        }
+
 	    $finder = Finder::find((int)$order->finder_id);
 
 	    $data = [];
@@ -9113,13 +9117,26 @@ class CustomerController extends \BaseController {
             $order['finder_slug'] = $order['finder']['slug'];
         }
         if(!empty($order['service']['slug'])){
-            $order['service_slug'] = $order['finder']['slug'];
+            $order['service_slug'] = $order['service']['slug'];
         }
 
 
 
         return $order;
 
+    }
+
+    public function sessionPackDetail($id){
+        $orders = Order::with(['finder'=>function($query){
+                    $query->select('slug');
+                }])
+                ->with(['service'=>function($query){
+                    $query->select('slug');
+                }])
+                ->find($id);
+
+
+        return $this->formatSessionPack($order);
     }
 
 }
