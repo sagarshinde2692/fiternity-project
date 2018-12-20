@@ -1828,11 +1828,12 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             if(!empty($order['extended_validity_order_id'])){
-                $extended_validity_order_update = $this->utilities->getExtendedValidityOrder($order);
-                if(!$extended_validity_order_update){
+                $extended_validity_order = $this->utilities->getExtendedValidityOrder($order);
+                if(!$extended_validity_order){
                     $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 400);
                 }
+                $extended_validity_order_update = Order::where('_id', $extended_validity_order)->decrement('sessions_left');
             }
 
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
@@ -2227,6 +2228,10 @@ class SchedulebooktrialsController extends \BaseController {
                 'pre_trial_status'              =>      'yet_to_connect',
                 'ask_review'                    =>      true,
             );
+
+            if(!empty($extended_validity_order['_id'])){
+                $booktrialdata['extended_validity_order_id'] = $extended_validity_order['_id'];
+            }
 
             $session_count = Booktrial::where('customer_id',$customer_id)->count();
 
