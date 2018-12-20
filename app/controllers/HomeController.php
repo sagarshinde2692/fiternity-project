@@ -1058,7 +1058,7 @@ class HomeController extends BaseController {
                     array_push($streak_items, ['title'=>$value['cashback'].'%', 'value'=>$value['number'].' Sessions']);
 
                 }
-
+                 
                 $streak = [
                     'header'=>'Attend More Earn More',
                     'items'=>$streak_items
@@ -1076,9 +1076,9 @@ class HomeController extends BaseController {
                     'id'=>$id
                 ];
 
-                // if(isset($item['extended_validity_order_id'])){
-                //     unset($response['streak']);
-                // }
+                if(isset($item['extended_validity_order_id'])){
+                    unset($response['streak']);
+                }
 
                 if(!empty($finder) && isset($finder['brand_id'])){
                     $response['brand_id'] = !empty($finder['brand_id']);
