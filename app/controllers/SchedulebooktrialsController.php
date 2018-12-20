@@ -1775,11 +1775,11 @@ class SchedulebooktrialsController extends \BaseController {
 
             $order        = 	Order::findOrFail((int)$order_id);
 
-            if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought' && !isset($data['order_success_flag'])){
+            // if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought' && !isset($data['order_success_flag'])){
 
-                $resp 	= 	array('status' => 200, 'order_id' => $order_id, 'message' => "Already Status Successfull");
-                return Response::json($resp);
-            }
+            //     $resp 	= 	array('status' => 200, 'order_id' => $order_id, 'message' => "Already Status Successfull");
+            //     return Response::json($resp);
+            // }
 
             $order_data = $order->toArray();
 
@@ -1833,7 +1833,8 @@ class SchedulebooktrialsController extends \BaseController {
                     $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 400);
                 }
-                $extended_validity_order_update = Order::where('_id', $extended_validity_order)->decrement('sessions_left');
+                $extended_validity_order->sessions_left = $extended_validity_order->sessions_left - 1;
+                $extended_validity_order->update();
             }
 
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
