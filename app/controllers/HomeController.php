@@ -1026,7 +1026,7 @@ class HomeController extends BaseController {
             $schedule_slot  =   (isset($itemData['schedule_slot']) && $itemData['schedule_slot'] != "") ? $itemData['schedule_slot'] : "";
             $service_duration = (isset($itemData['service_duration_purchase']) && $itemData['service_duration_purchase'] != "") ? $itemData['service_duration_purchase'] : "";
             $preferred_starting_date = (isset($itemData['preferred_starting_date'])) ? $itemData['preferred_starting_date'] : "";
-            $serviceDurArr = array_map('trim',explode(",",$service_duration));
+            $serviceDurArr = array_map('trim',explode("-",$service_duration));
 
             $header     =   "Congratulations!";
             $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61094444 and we will resolve it immediately";
