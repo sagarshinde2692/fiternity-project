@@ -7918,21 +7918,37 @@ class CustomerController extends \BaseController {
 								$booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status_updated_by_qrcode'=>$post_trial_status_updated_by_qrcode]);
 								else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status'=>'no show']);
 								
-								
+
 								if($booktrial_update&&!empty($value['mark']))
 								{
-									$fitcash = $this->utilities->getFitcash($booktrial->toArray());
-									$req = array(
-											"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,
-											"type"=>'CREDIT','entry'=>'credit','validity'=>time()+(86400*21),
-											'description'=>"Added FitCash+ on Trial Attendance By QrCode Scan, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
-											"valid_finder_id"=>intval($booktrial['finder_id']),"finder_id"=>intval($booktrial['finder_id']),"qrcodescan"=>true);
-									$add_chck=$this->utilities->walletTransaction($req);
+									if(!isset($booktrial['extended_validity_order_id'])){
+										$fitcash = $this->utilities->getFitcash($booktrial->toArray());
+										$req = array(
+												"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,
+												"type"=>'CREDIT','entry'=>'credit','validity'=>time()+(86400*21),
+												'description'=>"Added FitCash+ on Trial Attendance By QrCode Scan, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+												"valid_finder_id"=>intval($booktrial['finder_id']),"finder_id"=>intval($booktrial['finder_id']),"qrcodescan"=>true);
+										$add_chck=$this->utilities->walletTransaction($req);
+									}
+									else {
+										$fitcash = 0;
+									}
 									
-									if(!empty($add_chck)&&$add_chck['status']==200)
+									if((!empty($add_chck)&&$add_chck['status']==200) || (isset($booktrial['extended_validity_order_id'])))
 									{
 										$total_fitcash=$total_fitcash+$fitcash;
+										if(!isset($add_chck) && (isset($booktrial['extended_validity_order_id']))){
+											$add_chck = null;
+										}
 										$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
+										if(isset($booktrial['extended_validity_order_id'])) {
+											if(isset($resp1) && isset($resp1['sub_header_1'])){
+												unset($resp1['sub_header_1']);
+											}
+											if(isset($resp1) && isset($resp1['sub_header_2'])){
+												unset($resp1['sub_header_2']);
+											}
+										}
 										array_push($attended, $resp1);
 									}
 									else array_push($un_updated,$value['_id']);
@@ -7941,6 +7957,7 @@ class CustomerController extends \BaseController {
 									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
 									array_push($not_attended,$resp1);
 								}
+								
 						}
 						else array_push($already_attended,$value['_id']);
 					}
@@ -7956,21 +7973,37 @@ class CustomerController extends \BaseController {
 								
 								if($booktrial_update&&!empty($value['mark'])&& !empty($booktrial->payment_done)){
 									
-									$fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
-									$req = array(
-											"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
-											"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
-											'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan","qrcodescan"=>true
-									);
+									if(!isset($booktrial['extended_validity_order_id'])){
+										$fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+										$req = array(
+												"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
+												"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
+												'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan","qrcodescan"=>true
+										);
+										
+										$booktrial->pps_fitcash=$fitcash;
+										$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
+										$add_chck=$this->utilities->walletTransaction($req);
+									}
+									else {
+										$fitcash = 0;
+									}
 									
-									$booktrial->pps_fitcash=$fitcash;
-									$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
-									$add_chck=$this->utilities->walletTransaction($req);
-									
-									if(!empty($add_chck)&&$add_chck['status']==200)
+									if((!empty($add_chck)&&$add_chck['status']==200) || (isset($booktrial['extended_validity_order_id'])))
 									{
 										$total_fitcash=$total_fitcash+$fitcash;
+										if(!isset($add_chck) && (isset($booktrial['extended_validity_order_id']))){
+											$add_chck = null;
+										}
 										$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
+										if(isset($booktrial['extended_validity_order_id'])) {
+											if(isset($resp1) && isset($resp1['sub_header_1'])){
+												unset($resp1['sub_header_1']);
+											}
+											if(isset($resp1) && isset($resp1['sub_header_2'])){
+												unset($resp1['sub_header_2']);
+											}
+										}
 										array_push($attended,$resp1);
 									}
 									else array_push($un_updated,$value['_id']);

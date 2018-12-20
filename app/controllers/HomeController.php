@@ -1026,6 +1026,7 @@ class HomeController extends BaseController {
             $schedule_slot  =   (isset($itemData['schedule_slot']) && $itemData['schedule_slot'] != "") ? $itemData['schedule_slot'] : "";
             $service_duration = (isset($itemData['service_duration_purchase']) && $itemData['service_duration_purchase'] != "") ? $itemData['service_duration_purchase'] : "";
             $preferred_starting_date = (isset($itemData['preferred_starting_date'])) ? $itemData['preferred_starting_date'] : "";
+            $serviceDurArr = array_map('trim',explode(",",$service_duration));
 
             $header     =   "Congratulations!";
             $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61094444 and we will resolve it immediately";
@@ -1074,6 +1075,10 @@ class HomeController extends BaseController {
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
+
+                if(isset($item['extended_validity_order_id'])){
+                    unset($response['streak']);
+                }
 
                 if(!empty($finder) && isset($finder['brand_id'])){
                     $response['brand_id'] = !empty($finder['brand_id']);
@@ -1479,6 +1484,8 @@ class HomeController extends BaseController {
             $position = 0;
 
             $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
+            
+            $booking_details_data["validity"] = ['field'=>'VALIDITY','value'=>$serviceDurArr[1],'position'=>$position++];
 
             if(in_array($type,["healthytiffintrail","healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"])){
                 $booking_details_data["finder_name_location"] = ['field'=>'MEMBERSHIP BOUGHT AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
@@ -1491,7 +1498,7 @@ class HomeController extends BaseController {
             $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service_name,'position'=>$position++];
 
             $booking_details_data["service_duration"] = ['field'=>'SERVICE DURATION','value'=>$service_duration,'position'=>$position++];
-
+            
             $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'-','position'=>$position++];
 
             $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
@@ -1750,6 +1757,11 @@ class HomeController extends BaseController {
 
                 $header = "Membership Confirmed";
                 $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
+
+                if(isset($item['extended_validity_order_id'])){
+                    $header = "Session Pack Confirmed";
+                    $subline = "Hi <b>".$item['customer_name']."</b>, your ".$serviceDurArr[0]." pack (valid for ".$serviceDurArr[1].") for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed by paying ".$booking_details_data['amount_paid']['value'].". We have also sent you a confirmation Email and SMS";
+                }
 
                 if(isset($item['booking_for_others']) && $item['booking_for_others']){
 

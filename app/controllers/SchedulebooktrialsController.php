@@ -7070,7 +7070,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $post_trial_status_updated_by_fitcode = time();
                 $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
-                if($booktrial_update){
+                if($booktrial_update && (!isset($booktrial['extended_validity_order_id']))){
 
                     Log::info("Adding trial fitcash");
 
@@ -7091,10 +7091,9 @@ class SchedulebooktrialsController extends \BaseController {
                     );
                     
                     $this->utilities->walletTransaction($req);
+                    
+                    $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
                 }
-                
-                $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
-
             }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done) && !isset($booktrial->post_trial_status_updated_by_lostfitcode)){
 
                 $post_trial_status_updated_by_fitcode = time();
@@ -7104,8 +7103,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                     Log::info("Adding pps fitcash");
                     
-                    $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
-                
+                    if(!isset($booktrial['extended_validity_order_id'])){
+                        $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+                    }
                     $req = array(
                         "customer_id"=>$booktrial['customer_id'],
                         "trial_id"=>$booktrial['_id'],
@@ -7136,10 +7136,10 @@ class SchedulebooktrialsController extends \BaseController {
                         
                     $this->deleteTrialCommunication($booktrial);
                             
-
-                    $this->utilities->walletTransaction($req);
-
-                    $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Valid for 21 days";
+                    if(!isset($booktrial['extended_validity_order_id'])){
+                        $this->utilities->walletTransaction($req);
+                        $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Valid for 21 days";
+                    }
                 }
                 
             }
@@ -7224,7 +7224,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $update = Booktrial::where('_id',$booktrial['_id'])->where('post_trial_status_updated_by_lostfitcode', 'exists', false)->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_lostfitcode'=>time()]);
 
-                if($update){
+                if($update && !isset($booktrial['extended_validity_order_id'])){
                     $req = array(
                             "customer_id"=>$booktrial['customer_id'],
                             "trial_id"=>$booktrial['_id'],
@@ -7259,7 +7259,10 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
             $booktrial->post_trial_status_date = time();
             
-            $message = 'Hi, '.ucwords($booktrial['customer_name']).'! Thanks for your update. Rs. '.$fitcash_amount.' will be added into your Fitternity wallet within 48 hours';
+            $message = 'Hi, '.ucwords($booktrial['customer_name']).'! Thanks for your update.';
+            if(!isset($booktrial['extended_validity_order_id'])){
+                $message = 'Hi, '.ucwords($booktrial['customer_name']).'! Thanks for your update. Rs. '.$fitcash_amount.' will be added into your Fitternity wallet within 48 hours';
+            }
             
             if($reason_message){
                 $message = $reason_message;
