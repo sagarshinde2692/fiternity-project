@@ -20,9 +20,9 @@ return array(
 
     'finder_banner_app'=>[
         'image' => 'https://b.fitn.in/non-validity/success-page/Mobile%20Responsive%20EVM%20.png',
-        'title' => 'What is Extended Validity Membership?',
+        'title' => 'EXTENDED VALIDITY',
         'title_color' => '#53b7b7',
-        'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">Extended validity membership gives you the flexibility of paying for a session pack with a longer validity period than</p>
+        'description' => "<p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b>&#8226; What is Extended Validity Membership?</b></p><p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">Extended validity membership gives you the flexibility of paying for a session pack with a longer validity period than</p>
             <p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b>&#8226; Example</b></p>
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\">__membership_months month membership at Rs. &lt; __membership_price &gt; | Avail it within __membership_months month</p>
             
