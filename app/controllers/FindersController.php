@@ -6266,7 +6266,7 @@ class FindersController extends \BaseController {
                         }else{
                             $ratecard['ext_validity'] = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
                         }
-                        $ratecard['duration_type'] = $ratecard['duration_type'].'\n('.$ratecard['ext_validity'].')';
+                        $ratecard['duration_type'] = $ratecard['duration_type']."\n(".$ratecard['ext_validity'].')';
                         $ratecard['price'] = $price;
                         $ratecard['special_price'] = 0;
                         // unset($ratecard['validity']);
@@ -6355,7 +6355,7 @@ class FindersController extends \BaseController {
                             $ext_validity = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
                         }
                         $data['finder']['services'][$key][$ratecard_key][$key1]['ext_validity'] = $ext_validity;
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $service[$ratecard_key][$key1]['duration_type'].'\n('.$ext_validity.')';
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $service[$ratecard_key][$key1]['duration_type']."\n(".$ext_validity.')';
                         $data['finder']['services'][$key][$ratecard_key][$key1]['price'] = $price;                        
                         $data['finder']['services'][$key][$ratecard_key][$key1]['special_price'] = 0;
                         // unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity']);
@@ -6371,7 +6371,7 @@ class FindersController extends \BaseController {
                 
                 $service['non_validity'] = $this->getNonValidityBanner();
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
-                $service[$service_name_key] = $service[$service_name_key]."New - Years Offer";
+                $service[$service_name_key] = $service[$service_name_key]." New - Years Offer";
                 $service[$ratecard_key] = array_merge(array_values($no_validity_ratecards))[0];
                 $service['type'] = 'extended validity';
 				

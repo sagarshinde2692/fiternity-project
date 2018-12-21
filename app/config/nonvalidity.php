@@ -37,7 +37,7 @@ return array(
         'text_color'=>'#cc0000'
     ],
     'session_pack_duration_map'=>[
-        "30"=>30,
+        "30"=>90,
         "90"=>180,
         "360"=>720,
     ],
