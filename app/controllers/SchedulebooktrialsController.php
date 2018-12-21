@@ -5247,11 +5247,14 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if($booktrial['type'] == 'workout-session'){
+            if(!isset($booktrial['extended_validity_order_id'])){
+                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
 
-            $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
-
-            $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
-
+                $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
+            }
+            else {
+                $booktrial['fitcode_message'] = 'Punch the code to mark your attendance.';
+            }
         }else{
 
             $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';
@@ -7114,6 +7117,9 @@ class SchedulebooktrialsController extends \BaseController {
                     
                     $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
                 }
+                else{
+                    $message = "Thank you, your attendance has been marked.";
+                }
             }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done) && !isset($booktrial->post_trial_status_updated_by_lostfitcode)){
 
                 $post_trial_status_updated_by_fitcode = time();
@@ -7161,8 +7167,10 @@ class SchedulebooktrialsController extends \BaseController {
                         $this->utilities->walletTransaction($req);
                         $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Valid for 21 days";
                     }
+                    else{
+                        $message = "Thank you, your attendance has been marked.";
+                    }
                 }
-                
             }
 
             $booktrial->post_trial_status = 'attended';
