@@ -7150,10 +7150,11 @@ class SchedulebooktrialsController extends \BaseController {
 
                     
                     $temp=$booktrial->send_communication;
-                    if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
-                        $temp['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
-                    else $temp['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
-                        
+                    if(!isset($booktrial['extended_validity_order_id'])){
+                        if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
+                            $temp['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
+                        else $temp['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
+                    }
                     $this->deleteTrialCommunication($booktrial);
                             
                     if(!isset($booktrial['extended_validity_order_id'])){
