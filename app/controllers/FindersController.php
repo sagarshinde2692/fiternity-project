@@ -4309,7 +4309,10 @@ class FindersController extends \BaseController {
 						'Limited slots',
 						'EMI option available'
 					];
-                    $data['finder']['other_offers']['non_validity_ratecard'] = $this->getNonValidityBanner();
+
+                    if(!empty($getCalloutOffer['type']) && $getCalloutOffer['type'] == 'extended validity'){
+                        $data['finder']['other_offers']['non_validity_ratecard'] = $this->getNonValidityBanner();
+                    }
 
 					unset($data['finder']['other_offers']['callout']);
 				}
@@ -5847,6 +5850,10 @@ class FindersController extends \BaseController {
 					$return['type'] = $ratecard['type'];
 
 					$return['amount'] = $ratecard['offers'][0]['price'];
+
+                    if(!empty($ratecard['non_validity_ratecard'])){
+                        $return['non_validity_ratecard'] = $ratecard['non_validity_ratecard'];
+                    }
 
 					if(in_array($ratecard['type'],["membership","packages"])){
 						$return['button_text'] = "Buy";
