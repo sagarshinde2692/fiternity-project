@@ -2975,7 +2975,7 @@ class TransactionController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
         }
-
+        $data['ratecard_amount'] = $data['amount'];
         if(!empty($data['customer_quantity'])){
             
             $data['ratecard_amount'] = $data['amount'];
