@@ -6264,7 +6264,7 @@ class FindersController extends \BaseController {
                         $ratecard['special_price'] = 0;
                         // unset($ratecard['validity']);
                         
-                        $ratecard['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
+                        $ratecard['non_validity_ratecard'] = $this->getNonValidityBanner();
                         // unset($ratecard['validity_type']);
 						array_push($no_validity_ratecards[$duration_day], $ratecard) ;
 					}
@@ -6376,9 +6376,9 @@ class FindersController extends \BaseController {
 
     public function getNonValidityBanner(){
         if(in_array($this->device_type, ['android', 'ios'])){
-            return Config::get('nonvalidity.finder_banner');
-        }else{
             return Config::get('nonvalidity.finder_banner_app');
+        }else{
+            return Config::get('nonvalidity.finder_banner');
         }
     }
 	
