@@ -1791,14 +1791,21 @@ class HomeController extends BaseController {
                 }
 
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
-                
-                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id', 'validity']);
-                
+                    if(!isset($item['extended_validity'])){
+                        $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id', 'validity']);
+                    }
+                    else{
+                        $booking_details_data = array_only($booking_details_data, ['booking_id','address','poc', 'group_id', 'validity']);
+                    }
                 }else{
-                    
-                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'validity']);
-                
+                    if(!isset($item['extended_validity'])){
+                        $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'validity']);
+                    }
+                    else{
+                        $booking_details_data = array_only($booking_details_data, ['booking_id','address','poc', 'validity']);
+                    }
                 }
+                return $booking_details_data;
 
             }
 
