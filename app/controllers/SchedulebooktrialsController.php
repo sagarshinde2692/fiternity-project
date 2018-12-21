@@ -5247,11 +5247,11 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if($booktrial['type'] == 'workout-session'){
+            if(!isset($booktrial['extended_validity_order_id'])){
+                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
 
-            $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
-
-            $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
-
+                $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
+            }
         }else{
 
             $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';

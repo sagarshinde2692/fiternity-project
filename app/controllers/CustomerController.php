@@ -3432,13 +3432,15 @@ class CustomerController extends \BaseController {
 
 
 							if($data['type'] == 'Workout-session'){
-								$data['unlock'] = [
-									// 'header'=>'Unlock Level '.$workout_session_level_data['next_session']['level'].'!',
-									'sub_header_2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions',
-									'image'=>'https://b.fitn.in/paypersession/unlock-icon.png'
-								];
-								if(strtotime($data['schedule_date_time']) < time()){
-									$data['unlock']['sub_header_2'] = 'Let us know if you attended this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions';
+								if(!isset($data['extended_validity_order_id'])) {
+									$data['unlock'] = [
+										// 'header'=>'Unlock Level '.$workout_session_level_data['next_session']['level'].'!',
+										'sub_header_2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions',
+										'image'=>'https://b.fitn.in/paypersession/unlock-icon.png'
+									];
+									if(strtotime($data['schedule_date_time']) < time()){
+										$data['unlock']['sub_header_2'] = 'Let us know if you attended this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions';
+									}
 								}
 								$data['current_level'] = $workout_session_level_data['current_level']['level'];
 
@@ -3447,7 +3449,7 @@ class CustomerController extends \BaseController {
 								// 	'data'=>$this->utilities->getStreakImages($data['current_level'])
 								// ];	
 								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session";
-								
+							
 							}else{
 
                                 $data['unlock'] = [
