@@ -6297,7 +6297,20 @@ class FindersController extends \BaseController {
                                     $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
                                     $ratecard['button_text'] = 'Continue';
                                     $ratecard['title'] = $ratecard['validity'].' '.$ratecard['validity_type'];
-                                    $ratecard['button_text'] = 'BUY';
+                                    $ratecard['validity'] = 0;
+
+                                    if(!empty($ratecard['campaign_offer'])){
+                                        unset($ratecard['campaign_offer']);
+                                    }
+                                    if(!empty($ratecard["remarks"])){
+                                        unset($ratecard['remarks']);
+                                    }
+                                    if(!empty($ratecard['offers'])){
+                                        unset($ratecard['offers']);
+                                    }
+                                    
+                                    $ratecard['price'] = $price;
+                                    $ratecard['special_price'] = 0;
                                     $ratecard['validity'] = 0;
                                     $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
                                         'header'=>'Want to SAVE MORE?',
@@ -6309,27 +6322,7 @@ class FindersController extends \BaseController {
                                             'header'=>'Save more by buying Session Packs',
                                             'ratecards'=>[$duration_value[0]],
                                         ],
-                                        'section3'=>[
-                                            'header' => 'How it works', 
-                                            'text' => 'All you need to do is book your slot everytime you want to workout',
-                                            'data' => [
-                                                [
-                                                    'header' => 'Easy/One Click Booking', 
-                                                    'text' => 'Book before your workout through the QR code at gym/ studio or your profile', 
-                                                    'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
-                                                ],
-                                                [
-                                                    'header' => 'Keep an eye on Session counter', 
-                                                    'text' => 'View session details under My Session Packs in your profile', 
-                                                    'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%202.png'
-                                                ],
-                                                [
-                                                    'header' => 'Easy cancellation', 
-                                                    'text' => 'Don\'t lose out on your workouts with easy cancellations through your profile', 
-                                                    'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%203.png'
-                                                ]
-                                            ]
-                                        ]
+                                        'section3'=>Config::get('nonvalidity.success_page')
                                         // 'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
                                         // 'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\nYou are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
                                         // 'ratecards'=>$duration_value,
@@ -6355,6 +6348,15 @@ class FindersController extends \BaseController {
                         $data['finder']['services'][$key][$ratecard_key][$key1]['validity'] = 0;
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
                         $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
+
+                        // $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard']['description'] = strtr($data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'], [
+                        //     "__membership_months"=>
+                        //     "__membership_price"=>
+                        //     "__membership_months"=>
+                        //     "__extended_sessions_count"=>
+                        //     "__extended_sessions_price"=>
+                        //     "__sessions_validity_months"=>
+                        // ]);
                         // return $service[$ratecard_key][$key1];
                     }
 				}
@@ -6367,8 +6369,8 @@ class FindersController extends \BaseController {
 				
 				// $data['finder']['services'][$key]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
 
+                array_push($data['finder']['services'], $service);
             }
-            array_push($data['finder']['services'], $service);
         }
 
         return $data['finder']['services'];
