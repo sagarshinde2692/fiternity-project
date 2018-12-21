@@ -1805,7 +1805,6 @@ class HomeController extends BaseController {
                         $booking_details_data = array_only($booking_details_data, ['booking_id','address','poc', 'validity']);
                     }
                 }
-                return $booking_details_data;
 
             }
 
