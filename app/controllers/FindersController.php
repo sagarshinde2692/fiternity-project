@@ -6263,6 +6263,7 @@ class FindersController extends \BaseController {
                         $ratecard['special_price'] = 0;
                         // unset($ratecard['validity']);
                         $ratecard['validity'] = 0;
+                        $ratecard['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
                         unset($ratecard['validity_type']);
 						array_push($no_validity_ratecards[$duration_day], $ratecard) ;
 					}
@@ -6310,11 +6311,12 @@ class FindersController extends \BaseController {
                         }else{
                             $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $service[$ratecard_key][$key1]['duration_type']."\n(Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'].')';
                         }
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['price'] = $price;
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['price'] = $price;                        
                         $data['finder']['services'][$key][$ratecard_key][$key1]['special_price'] = 0;
                         // unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity']);
                         $data['finder']['services'][$key][$ratecard_key][$key1]['validity'] = 0;
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
                         // return $service[$ratecard_key][$key1];
                     }
 				}
@@ -6325,7 +6327,7 @@ class FindersController extends \BaseController {
                 $service[$ratecard_key] = array_merge(array_values($no_validity_ratecards))[0];
                 $service['type'] = 'extended validity';
 				
-				$data['finder']['services'][$key]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
+				// $data['finder']['services'][$key]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
 
             }
             array_push($data['finder']['services'], $service);

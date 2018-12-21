@@ -25,6 +25,7 @@ return array(
         "30"=>30,
         "90"=>180,
         "360"=>720,
-    ]
+    ],
+    'slots_header'=>'Select a slot'
 );
 ?>
