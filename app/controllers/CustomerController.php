@@ -7955,10 +7955,16 @@ class CustomerController extends \BaseController {
 										$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
 										if(isset($booktrial['extended_validity_order_id'])) {
 											if(isset($resp1) && isset($resp1['sub_header_1'])){
-												unset($resp1['sub_header_1']);
+												$resp1['sub_header_1'] = '';
 											}
 											if(isset($resp1) && isset($resp1['sub_header_2'])){
-												unset($resp1['sub_header_2']);
+												$resp1['sub_header_2'] = '';
+											}
+											if(isset($resp1) && isset($resp1['description'])){
+												$resp1['description'] = '';
+											}
+											if(isset($resp1) && isset($resp1['image'])){
+												$resp1['image'] = '';
 											}
 										}
 										array_push($attended, $resp1);
@@ -7967,6 +7973,15 @@ class CustomerController extends \BaseController {
 								}
 								else  {
 									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+									if(isset($resp1) && isset($resp1['sub_header_1'])){
+										$resp1['sub_header_1'] = '';
+									}
+									if(isset($resp1) && isset($resp1['sub_header_2'])){
+										$resp1['sub_header_2'] = '';
+									}
+									if(isset($resp1) && isset($resp1['description'])){
+										$resp1['description'] = '';
+									}
 									array_push($not_attended,$resp1);
 								}
 								
@@ -8010,10 +8025,16 @@ class CustomerController extends \BaseController {
 										$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
 										if(isset($booktrial['extended_validity_order_id'])) {
 											if(isset($resp1) && isset($resp1['sub_header_1'])){
-												unset($resp1['sub_header_1']);
+												$resp1['sub_header_1'] = '';
 											}
 											if(isset($resp1) && isset($resp1['sub_header_2'])){
-												unset($resp1['sub_header_2']);
+												$resp1['sub_header_2'] = '';
+											}
+											if(isset($resp1) && isset($resp1['description'])){
+												$resp1['description'] = '';
+											}
+											if(isset($resp1) && isset($resp1['image'])){
+												$resp1['image'] = '';
 											}
 										}
 										array_push($attended,$resp1);
@@ -8022,11 +8043,36 @@ class CustomerController extends \BaseController {
 								}
 								if($booktrial_update&&!empty($value['mark'])){
 									$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+									if(isset($booktrial['extended_validity_order_id'])) {
+										if(isset($resp1) && isset($resp1['sub_header_1'])){
+											$resp1['sub_header_1'] = '';
+										}
+										if(isset($resp1) && isset($resp1['sub_header_2'])){
+											$resp1['sub_header_2'] = '';
+										}
+										if(isset($resp1) && isset($resp1['description'])){
+											$resp1['description'] = '';
+										}
+										if(isset($resp1) && isset($resp1['image'])){
+											$resp1['image'] = '';
+										}
+									}
 									array_push($attended,$resp1);
 								}
 								else  {
 									
 									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+									if(isset($booktrial['extended_validity_order_id'])) {
+										if(isset($resp1) && isset($resp1['sub_header_1'])){
+											$resp1['sub_header_1'] = '';
+										}
+										if(isset($resp1) && isset($resp1['sub_header_2'])){
+											$resp1['sub_header_2'] = '';
+										}
+										if(isset($resp1) && isset($resp1['description'])){
+											$resp1['description'] = '';
+										}
+									}
 									array_push($not_attended,$resp1);
 									
 								}
