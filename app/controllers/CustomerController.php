@@ -7704,6 +7704,9 @@ class CustomerController extends \BaseController {
 					$finderarr = Finder::active()->where('_id',intval($data['vendor_id']))
 					->with(array('services'=>function($query){$query->active()->where('trial','!=','disable')->where('status','=','1')->select('*')->orderBy('ordering', 'ASC');}))
 					->with('location')->first();
+                    $extended_validity_orders = $this->utilities->getExtendedValidityOrderFinder(['customer_email'=>$customer->email, 'finder_id'=>$finderarr['_id']]);
+
+                    $extended_validity_service_ids = array_column($extended_validity_orders->toArray(), 'service_id');
 
 					$pnd_pymnt=$this->utilities->hasPendingPayments();
 					
@@ -7750,7 +7753,8 @@ class CustomerController extends \BaseController {
 										$price = !empty($workouts['special_price']) ? $workouts['special_price'] : $workouts['price'];
 										Log::info('$price');
 										Log::info($price);
-										$paymentmode_selected=($pnd_pymnt || $data['wallet_balance'] >= $price)?[]:['paymentmode_selected'=>"pay_later"];
+
+										$paymentmode_selected=($pnd_pymnt || $data['wallet_balance'] >= $price || in_array($service['_id'], $extended_validity_service_ids))?[]:['paymentmode_selected'=>"pay_later"];
 										$wallet_pass=(!empty($paymentmode_selected)&&!empty($paymentmode_selected['paymentmode_selected']))?["wallet"=>true]:[];
 
 										if($data['wallet_balance']>= $price){

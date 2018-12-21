@@ -7366,6 +7366,26 @@ Class Utilities {
         return null;
     }
 
+    public function getExtendedValidityOrderFinder($data){
+
+
+        if(!empty($data['order_customer_email'])){
+            $data['customer_email'] = $data['order_customer_email'];
+        }
+
+        $orders = Order::active()->where('finder_id', $data['finder_id'])->where('start_date', '<=', new DateTime())->where('end_date', '>=', new DateTime())->where('sessions_left', '>', 0);
+
+        if(!empty($data['customer_email'])){
+            return $orders->where('customer_email', $data['customer_email'])->get(['service_id']);
+        }
+
+        if(!empty($data['customer_id'])){
+            return $orders->where('customer_id', $data['customer_id'])->get(['service_id']);
+        }
+
+        return null;
+    }
+
     
             
 
