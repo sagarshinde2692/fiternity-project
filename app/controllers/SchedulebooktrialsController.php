@@ -7420,6 +7420,10 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = " Fitcash is added in your wallet. Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price.";;
                 }
 
+                if(isset($booktrial['extended_validity_order_id'])){
+                    $response['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
+                }
+
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 

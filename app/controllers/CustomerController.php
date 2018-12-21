@@ -7964,7 +7964,7 @@ class CustomerController extends \BaseController {
 												$resp1['description'] = '';
 											}
 											if(isset($resp1) && isset($resp1['image'])){
-												$resp1['image'] = '';
+												$resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
 											}
 										}
 										array_push($attended, $resp1);
@@ -8034,7 +8034,7 @@ class CustomerController extends \BaseController {
 												$resp1['description'] = '';
 											}
 											if(isset($resp1) && isset($resp1['image'])){
-												$resp1['image'] = '';
+												$resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
 											}
 										}
 										array_push($attended,$resp1);
@@ -8054,7 +8054,7 @@ class CustomerController extends \BaseController {
 											$resp1['description'] = '';
 										}
 										if(isset($resp1) && isset($resp1['image'])){
-											$resp1['image'] = '';
+											$resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
 										}
 									}
 									array_push($attended,$resp1);
