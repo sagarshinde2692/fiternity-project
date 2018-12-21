@@ -43,16 +43,6 @@ return array(
     ],
     'slots_header'=>'Select a slot',
     'success_page'=>[
-        'header'=>'Want to SAVE MORE?',
-        'section1'=>[
-            'header'=>'You are currently buying',
-            'ratecards'=>[$ratecard],
-        ],
-        'section2'=>[
-            'header'=>'Save more by buying Session Packs',
-            'ratecards'=>[$duration_value[0]],
-        ],
-        'section3'=>[
             'header' => 'How it works', 
             'text' => 'All you need to do is book your slot everytime you want to workout',
             'data' => [
@@ -72,7 +62,6 @@ return array(
                     'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%203.png'
                 ]
             ]
-        ]
     ],
 );
 ?>
