@@ -7167,9 +7167,9 @@ class SchedulebooktrialsController extends \BaseController {
                         $this->utilities->walletTransaction($req);
                         $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Valid for 21 days";
                     }
-                }
-                else{
-                    $message = "Thank you, your attendance has been marked.";
+                    else{
+                        $message = "Thank you, your attendance has been marked.";
+                    }
                 }
             }
 
