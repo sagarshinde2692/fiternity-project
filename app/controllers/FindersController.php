@@ -6264,7 +6264,7 @@ class FindersController extends \BaseController {
                         // unset($ratecard['validity']);
                         $ratecard['validity'] = 0;
                         $ratecard['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
-                        unset($ratecard['validity_type']);
+                        // unset($ratecard['validity_type']);
 						array_push($no_validity_ratecards[$duration_day], $ratecard) ;
 					}
 				}
@@ -6285,17 +6285,46 @@ class FindersController extends \BaseController {
                                     $unlimited_validity = false;
                                     foreach($duration_value as &$rc){
                                         $rc['knowmore'] =  false;
-										$unlimited_validity = $unlimited_validity || !empty($ratecard['flags']['unlimited_validity']);
-										$rc['remarks'] = !empty($ratecard['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']);
+										$unlimited_validity = $unlimited_validity || !empty($rc['flags']['unlimited_validity']);
+										$rc['remarks'] = !empty($rc['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$rc['validity'].' '.ucwords($rc['validity_type']);
                                     }
                                     $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
                                     
                                     $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
                                         'header'=>'Want to SAVE MORE?',
-                                        'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
-                                        'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\nYou are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
-                                        'ratecards'=>$duration_value,
-                                        'continue_text'=>"Continue with ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' at Rs.'.$price
+                                        'section1'=>[
+                                            'header'=>'You are currently buying',
+                                            'ratecards'=>[$ratecard],
+                                        ],
+                                        'section2'=>[
+                                            'header'=>'You are currently buying',
+                                            'ratecards'=>[$duration_value],
+                                        ],
+                                        'section3'=>[
+                                            'header' => 'How it works', 
+                                            'text' => 'All you need to do is book your slot everytime you want to workout',
+                                            'data' => [
+                                                [
+                                                    'header' => 'Easy/One Click Booking', 
+                                                    'text' => 'Book before your workout through the QR code at gym/ studio or your profile', 
+                                                    'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
+                                                ],
+                                                [
+                                                    'header' => 'Keep an eye on Session counter', 
+                                                    'text' => 'View session details under My Session Packs in your profile', 
+                                                    'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%202.png'
+                                                ],
+                                                [
+                                                    'header' => 'Easy cancellation', 
+                                                    'text' => 'Don\'t lose out on your workouts with easy cancellations through your profile', 
+                                                    'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%203.png'
+                                                ]
+                                            ]
+                                        ]
+                                        // 'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
+                                        // 'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\nYou are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
+                                        // 'ratecards'=>$duration_value,
+                                        // 'continue_text'=>"Continue with ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' at Rs.'.$price
                                     ];
                                     break;
                                 
