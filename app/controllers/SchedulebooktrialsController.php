@@ -4550,10 +4550,14 @@ class SchedulebooktrialsController extends \BaseController {
 
         array_set($bookdata, 'cancel_by', $source_flag);
         $trialbooked        = 	$booktrial->update($bookdata);
-
+        
         if(!empty($booktrial['extended_validity_order_id'])){
             $order = Order::find($booktrial['extended_validity_order_id']);
-            if($order['end_date'] >= time() && $order['sessions_left'] < $order['no_of_session']){
+            if(
+                strtotime($order['end_date']) >= time() 
+                && 
+                $order['sessions_left'] < $order['no_of_sessions']
+            ){
                 $order->sessions_left = $order->sessions_left+1;
                 $order->update();
             }

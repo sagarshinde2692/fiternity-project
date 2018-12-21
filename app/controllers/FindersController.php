@@ -4252,7 +4252,7 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
 
-                    $data['finder']['services']  = $this->applyNonValidity($data, 'app');
+                    return $data['finder']['services']  = $this->applyNonValidity($data, 'app');
 
 					$device_type = ['ios','android'];
 
@@ -6231,7 +6231,7 @@ class FindersController extends \BaseController {
 	}
 
     public function applyNonValidity($data, $source = 'web'){
-
+        $extended_services = [];
         $ratecard_key = 'ratecard';
 		$service_name_key = 'service_name';
 
@@ -6253,7 +6253,8 @@ class FindersController extends \BaseController {
                         if(empty($no_validity_ratecards[$duration_day])){
                             $no_validity_ratecards[$duration_day] = [];
                         }
-                        $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+						$price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+						$ratecard['duration_type_copy'] = $ratecard['duration_type'];
                         if(!empty($ratecard['flags']['unlimited_validity'])){
                             $ratecard['duration_type'] = $ratecard['duration_type']."\n( Unlimited Validity)";
                         }else{
@@ -6262,9 +6263,9 @@ class FindersController extends \BaseController {
                         $ratecard['price'] = $price;
                         $ratecard['special_price'] = 0;
                         // unset($ratecard['validity']);
-                        $ratecard['validity'] = 0;
-                        $ratecard['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
-                        unset($ratecard['validity_type']);
+                        
+                        $ratecard['non_validity_ratecard'] = $this->getNonValidityBanner();
+                        // unset($ratecard['validity_type']);
 						array_push($no_validity_ratecards[$duration_day], $ratecard) ;
 					}
 				}
@@ -6284,18 +6285,48 @@ class FindersController extends \BaseController {
                                 if(intval($duration_key) == $session_pack_duration_map[strval($duration_day)]){
                                     $unlimited_validity = false;
                                     foreach($duration_value as &$rc){
+                                        // return $rc;
                                         $rc['knowmore'] =  false;
-										$unlimited_validity = $unlimited_validity || !empty($ratecard['flags']['unlimited_validity']);
-										$rc['remarks'] = !empty($ratecard['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']);
+										$unlimited_validity = $unlimited_validity || !empty($rc['flags']['unlimited_validity']);
+										$rc['remarks'] = !empty($rc['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$rc['validity'].' '.ucwords($rc['validity_type']);
+										$rc['title'] = $rc['duration'].' '.$rc['duration_type_copy'];
+										$rc['sub_title'] = $rc['remarks'];
+										$rc['button_text'] = 'BUY';
+                                        $rc['validity'] = 0;
                                     }
                                     $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+                                    $ratecard['button_text'] = 'Continue';
+                                    $ratecard['title'] = $ratecard['validity'].' '.$ratecard['validity_type'];
+                                    $ratecard['validity'] = 0;
+
+                                    if(!empty($ratecard['campaign_offer'])){
+                                        unset($ratecard['campaign_offer']);
+                                    }
+                                    if(!empty($ratecard["remarks"])){
+                                        unset($ratecard['remarks']);
+                                    }
+                                    if(!empty($ratecard['offers'])){
+                                        unset($ratecard['offers']);
+                                    }
                                     
+                                    $ratecard['price'] = $price;
+                                    $ratecard['special_price'] = 0;
+                                    $ratecard['validity'] = 0;
                                     $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
                                         'header'=>'Want to SAVE MORE?',
-                                        'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
-                                        'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\nYou are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
-                                        'ratecards'=>$duration_value,
-                                        'continue_text'=>"Continue with ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' at Rs.'.$price
+                                        'section1'=>[
+                                            'header'=>'You are currently buying',
+                                            'ratecards'=>[$ratecard],
+                                        ],
+                                        'section2'=>[
+                                            'header'=>'Save more by buying Session Packs',
+                                            'ratecards'=>[$duration_value[0]],
+                                        ],
+                                        'section3'=>Config::get('nonvalidity.success_page')
+                                        // 'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
+                                        // 'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\nYou are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
+                                        // 'ratecards'=>$duration_value,
+                                        // 'continue_text'=>"Continue with ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' at Rs.'.$price
                                     ];
                                     break;
                                 
@@ -6316,12 +6347,21 @@ class FindersController extends \BaseController {
                         // unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity']);
                         $data['finder']['services'][$key][$ratecard_key][$key1]['validity'] = 0;
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
+
+                        // $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard']['description'] = strtr($data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'], [
+                        //     "__membership_months"=>
+                        //     "__membership_price"=>
+                        //     "__membership_months"=>
+                        //     "__extended_sessions_count"=>
+                        //     "__extended_sessions_price"=>
+                        //     "__sessions_validity_months"=>
+                        // ]);
                         // return $service[$ratecard_key][$key1];
                     }
 				}
 
-                $service['non_validity'] = Config::get('nonvalidity.finder_banner');
+                $service['non_validity'] = $this->getNonValidityBanner();
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service[$service_name_key] = $service[$service_name_key]."New - Years Offer";
                 $service[$ratecard_key] = array_merge(array_values($no_validity_ratecards))[0];
@@ -6329,11 +6369,34 @@ class FindersController extends \BaseController {
 				
 				// $data['finder']['services'][$key]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
 
+                array_push($extended_services, $service);
+                // array_splice( $return , $key, 0, $service );
             }
-            array_push($data['finder']['services'], $service);
+        }
+
+        $return = $data['finder']['services'];
+        $pushed = 0;
+        // return $extended_services;
+        foreach($extended_services as $es){
+            foreach($return as $r_k => $r){
+                // return $r;
+                if($es['_id'] == $r['_id']){
+                    // return $data['finder']['services'];
+                    array_splice( $data['finder']['services'] , $r_k+$pushed, 0, [$es] );
+                    $pushed++;
+                }
+            }
         }
 
         return $data['finder']['services'];
+    }
+
+    public function getNonValidityBanner(){
+        if(in_array($this->device_type, ['android', 'ios'])){
+            return Config::get('nonvalidity.finder_banner_app');
+        }else{
+            return Config::get('nonvalidity.finder_banner');
+        }
     }
 	
 }
