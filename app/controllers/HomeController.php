@@ -1117,9 +1117,6 @@ class HomeController extends BaseController {
                     $response['subline'] = 'Your payment for '.$service_name.' session at '.$finder_name.' for '.$schedule_date.' at '.$schedule_slot.' is successful. Keep booking, reach milestones & earn rewards';
                 }
                 
-                // if(isset($booktrial['extended_validity_order_id'])){
-                //     $resp['ext_val_img'] = "https://b.fitn.in/gamification/reward/cashback2.jpg";
-                // }
 
                 return $response;
             }
@@ -2151,10 +2148,7 @@ class HomeController extends BaseController {
                 ];
             }
 
-            // if(isset($booktrial['extended_validity_order_id'])){
-            //     $resp['ext_val_img'] = "https://b.fitn.in/gamification/reward/cashback2.jpg";
-            // }
-
+            
             if($this->vendor_token){
 
                 if(in_array($item['type'],[/*"workout-session",*/"booktrials"])){

@@ -6826,24 +6826,25 @@ class SchedulebooktrialsController extends \BaseController {
                 else
                 {
                 	try {
-                		
-                		$fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
-                		
-                		$req = array(
-                				"customer_id"=>$booktrial['customer_id'],
-                				"trial_id"=>$booktrial['_id'],
-                				"amount"=> $fitcash,
-                				"amount_fitcash" => 0,
-                				"amount_fitcash_plus" => $fitcash,
-                				"type"=>'CREDIT',
-                				'entry'=>'credit',
-                                'for'=>'locate_trial',
-                				'validity'=>time()+(86400*7),
-                				'description'=>"Added FitCash+ on Trial Attendance, Expires On : ".date('d-m-Y',time()+(86400*7))
-                		);
-                		
-                		$this->utilities->walletTransaction($req);
-                		
+                        $fitcash = 0;
+                        if(!isset($booktrial['extended_validity_order_id'])){
+                            $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+                            
+                            $req = array(
+                                    "customer_id"=>$booktrial['customer_id'],
+                                    "trial_id"=>$booktrial['_id'],
+                                    "amount"=> $fitcash,
+                                    "amount_fitcash" => 0,
+                                    "amount_fitcash_plus" => $fitcash,
+                                    "type"=>'CREDIT',
+                                    'entry'=>'credit',
+                                    'for'=>'locate_trial',
+                                    'validity'=>time()+(86400*7),
+                                    'description'=>"Added FitCash+ on Trial Attendance, Expires On : ".date('d-m-Y',time()+(86400*7))
+                            );
+                            
+                            $this->utilities->walletTransaction($req);
+                        }
                 		
                 		Log::info(" info fitcash  ".print_r($fitcash,true));
                 		$booktrial->pps_pending_amount=$booktrial->amount;
@@ -6857,13 +6858,14 @@ class SchedulebooktrialsController extends \BaseController {
                         if(!empty($booktrial->category) && !empty($booktrial->category->name) && !empty($booktrial->city) &&!empty($booktrial->city->name)){
                             $booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city->name.'/'.newcategorymapping($booktrial->category->name);
                         }
-                			
+                        
+                        if(!isset($booktrial['extended_validity_order_id'])){
                 			if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
                 				$booktrial->send_communication['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
                 				else $booktrial->send_communication['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
-                				
+                        }		
                 				$this->deleteTrialCommunication($booktrial);
-                				
+                        
                 	} catch (Exception $e) {
                 		
                 		Log::error(" Error [ locateTrial ] ".$e->getMessage());
@@ -7422,6 +7424,10 @@ class SchedulebooktrialsController extends \BaseController {
                 if($booktrial['type'] == 'booktrials'){
                     unset($response['sub_header_1']);
                     $response['sub_header_2'] = " Fitcash is added in your wallet. Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price.";;
+                }
+
+                if(isset($booktrial['extended_validity_order_id'])){
+                    $response['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
                 }
 
                 Log::info("removing n+2 communication");
