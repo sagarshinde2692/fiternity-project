@@ -4310,10 +4310,6 @@ class FindersController extends \BaseController {
 						'EMI option available'
 					];
 
-                    if(!empty($getCalloutOffer['type']) && $getCalloutOffer['type'] == 'extended validity'){
-                        $data['finder']['other_offers']['non_validity_ratecard'] = $this->getNonValidityBanner();
-                    }
-
 					unset($data['finder']['other_offers']['callout']);
 				}
 
