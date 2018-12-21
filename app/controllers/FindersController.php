@@ -6253,7 +6253,8 @@ class FindersController extends \BaseController {
                         if(empty($no_validity_ratecards[$duration_day])){
                             $no_validity_ratecards[$duration_day] = [];
                         }
-                        $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+						$price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+						$ratecard['duration_type_copy'] = $ratecard['duration_type'];
                         if(!empty($ratecard['flags']['unlimited_validity'])){
                             $ratecard['duration_type'] = $ratecard['duration_type']."\n( Unlimited Validity)";
                         }else{
@@ -6262,7 +6263,7 @@ class FindersController extends \BaseController {
                         $ratecard['price'] = $price;
                         $ratecard['special_price'] = 0;
                         // unset($ratecard['validity']);
-                        $ratecard['validity'] = 0;
+                        
                         $ratecard['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
                         // unset($ratecard['validity_type']);
 						array_push($no_validity_ratecards[$duration_day], $ratecard) ;
@@ -6284,12 +6285,20 @@ class FindersController extends \BaseController {
                                 if(intval($duration_key) == $session_pack_duration_map[strval($duration_day)]){
                                     $unlimited_validity = false;
                                     foreach($duration_value as &$rc){
+                                        // return $rc;
                                         $rc['knowmore'] =  false;
 										$unlimited_validity = $unlimited_validity || !empty($rc['flags']['unlimited_validity']);
 										$rc['remarks'] = !empty($rc['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$rc['validity'].' '.ucwords($rc['validity_type']);
+										$rc['title'] = $rc['duration'].' '.$rc['duration_type_copy'];
+										$rc['sub_title'] = $rc['remarks'];
+										$rc['button_text'] = 'BUY';
+                                        $rc['validity'] = 0;
                                     }
                                     $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
-                                    
+                                    $ratecard['button_text'] = 'Continue';
+                                    $ratecard['title'] = $ratecard['duration'].' '.$ratecard['duration_type_copy'];
+                                    $ratecard['button_text'] = 'BUY';
+                                    $ratecard['validity'] = 0;
                                     $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
                                         'header'=>'Want to SAVE MORE?',
                                         'section1'=>[
@@ -6298,7 +6307,7 @@ class FindersController extends \BaseController {
                                         ],
                                         'section2'=>[
                                             'header'=>'You are currently buying',
-                                            'ratecards'=>[$duration_value],
+                                            'ratecards'=>$duration_value,
                                         ],
                                         'section3'=>[
                                             'header' => 'How it works', 
