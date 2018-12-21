@@ -6296,7 +6296,7 @@ class FindersController extends \BaseController {
                                     }
                                     $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
                                     $ratecard['button_text'] = 'Continue';
-                                    $ratecard['title'] = $ratecard['duration'].' '.$ratecard['duration_type_copy'];
+                                    $ratecard['title'] = $ratecard['validity'].' '.$ratecard['validity_type'];
                                     $ratecard['button_text'] = 'BUY';
                                     $ratecard['validity'] = 0;
                                     $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
