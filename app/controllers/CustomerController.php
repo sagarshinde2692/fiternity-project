@@ -9094,11 +9094,13 @@ class CustomerController extends \BaseController {
 
     public function formatSessionPack($order){
         
+        $order['active'] = true;
         if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
             $order['button_title'] = 'Book a Session';
             $order['button_type'] = 'book';
 
         }else{
+            $order['active'] = false;
             $order['button_title'] = 'Renew Pack';
             $order['button_type'] = 'renew';
         }
