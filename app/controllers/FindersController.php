@@ -4252,7 +4252,7 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
 
-                    $data['finder']['services']  = $this->applyNonValidity($data, 'app');
+                    return $data['finder']['services']  = $this->applyNonValidity($data, 'app');
 
 					$device_type = ['ios','android'];
 
@@ -6231,7 +6231,7 @@ class FindersController extends \BaseController {
 	}
 
     public function applyNonValidity($data, $source = 'web'){
-
+        $extended_services = [];
         $ratecard_key = 'ratecard';
 		$service_name_key = 'service_name';
 
@@ -6369,7 +6369,22 @@ class FindersController extends \BaseController {
 				
 				// $data['finder']['services'][$key]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
 
-                array_push($data['finder']['services'], $service);
+                array_push($extended_services, $service);
+                // array_splice( $return , $key, 0, $service );
+            }
+        }
+
+        $return = $data['finder']['services'];
+        $pushed = 0;
+        // return $extended_services;
+        foreach($extended_services as $es){
+            foreach($return as $r_k => $r){
+                // return $r;
+                if($es['_id'] == $r['_id']){
+                    // return $data['finder']['services'];
+                    array_splice( $data['finder']['services'] , $r_k+$pushed, 0, [$es] );
+                    $pushed++;
+                }
             }
         }
 
