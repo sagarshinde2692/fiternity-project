@@ -3933,6 +3933,13 @@ Class Utilities {
 
     public function getDurationDay($ratecard){
 
+        if(!empty($ratecard['validity_type_copy'])){
+            $ratecard['validity_type'] = $ratecard['validity_type_copy'];
+        }
+        if(!empty($ratecard['validity_copy'])){
+            $ratecard['validity'] = $ratecard['validity_copy'];
+        }
+
         switch ($ratecard['validity_type']){
             case 'days': 
                 $duration_day = (int)$ratecard['validity'];break;
