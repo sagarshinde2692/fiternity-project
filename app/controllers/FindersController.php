@@ -6257,12 +6257,13 @@ class FindersController extends \BaseController {
                         }
 						$price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
 						$ratecard['duration_type_copy'] = $ratecard['duration_type'];
+
                         if(!empty($ratecard['flags']['unlimited_validity'])){
-                            $ratecard['duration_type'] = $ratecard['duration_type']."\n( Unlimited Validity)";
+                            $ratecard['ext_validity'] = "Unlimited Validity";
                         }else{
-                            $ratecard['duration_type'] = $ratecard['duration_type']."\n(Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'].')';
+                            $ratecard['ext_validity'] = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
                         }
-                        
+                        $ratecard['duration_type'] = $ratecard['duration_type'].'\n('.$ratecard['ext_validity'].')';
                         $ratecard['price'] = $price;
                         $ratecard['special_price'] = 0;
                         // unset($ratecard['validity']);
@@ -6395,7 +6396,7 @@ class FindersController extends \BaseController {
        $session_pack_duration_map_flip = array_flip($session_pack_duration_map);
 
         foreach($data['finder']['services'] as &$s){
-            if(empty($s['type']) || $s['type'] != 'extended validity'){
+            // if(empty($s['type']) || $s['type'] != 'extended validity'){
                 foreach($s['ratecard'] as &$r){
                     // return $r;
                     if($r['type'] == 'extended validity'){
@@ -6421,6 +6422,14 @@ class FindersController extends \BaseController {
                         }
 
                     }
+                }
+            // }
+        }
+
+        foreach($data['finder']['services'] as &$ser){
+            foreach($ser['ratecard'] as $rate_c){
+                if(!empty($rate_c['non_validity_ratecard'])){
+                    $ser['non_validity'] = $rate_c['non_validity_ratecard'];
                 }
             }
         }
