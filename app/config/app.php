@@ -5,10 +5,10 @@ return array(
 
 	//local
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
-	'url' => 'http://fitapi.com/',
+	'url' => 'http://fitapi.com',
 	'admin_url' => 'http://fitadmin.com',
-	'website' => 'https://apistage.fitn.in:8888',
-	'sidekiq_url' => 'http://localhost:3000', // 'http://kick.fitn.in/', 
+	'website' => 'http://apistage.fitn.in:8888',
+	'sidekiq_url' => 'http://kick.fitn.in/', 
 	'queue' => 'booktrial',
 	'vendor_communication' => false,
 	'env' => 'stage',
