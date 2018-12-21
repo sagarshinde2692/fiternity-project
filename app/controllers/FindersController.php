@@ -6400,7 +6400,7 @@ class FindersController extends \BaseController {
 
         foreach($data['finder']['services'] as &$s){
             // if(empty($s['type']) || $s['type'] != 'extended validity'){
-                foreach($s['ratecard'] as &$r){
+                foreach($s[$ratecard_key] as &$r){
                     // return $r;
                     if($r['type'] == 'extended validity'){
                         
@@ -6430,7 +6430,7 @@ class FindersController extends \BaseController {
         }
 
         foreach($data['finder']['services'] as &$ser){
-            foreach($ser['ratecard'] as $rate_c){
+            foreach($ser[$ratecard_key] as $rate_c){
                 if(!empty($rate_c['non_validity_ratecard'])){
                     $ser['non_validity'] = $rate_c['non_validity_ratecard'];
                 }
