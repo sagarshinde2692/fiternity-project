@@ -5358,6 +5358,12 @@ class TransactionController extends \BaseController {
                     'field' => 'Membership Amount',
                     'value' => 'Rs. '.$data['ratecard_amount']
                 );  
+                if(!empty($data['extended_validity'])){
+                    $amount_summary[0] = array(
+                        'field' => 'Session Pack Amount',
+                        'value' => 'Rs. '.$data['ratecard_amount']
+                    ); 
+                }
             }
             // $amount_summary[] = array(
             //     'field' => 'Quantity',
