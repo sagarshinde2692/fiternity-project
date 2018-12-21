@@ -2147,12 +2147,12 @@ class TransactionController extends \BaseController {
             }
 
             if(!empty($order['extended_validity'])){
-                Finder::$withoutAppends = true;
-                $finder = Finder::find($order['finder_id'], ['flags']);
+                // Ratecard::$withoutAppends = true;
+                $ratecard = Ratecard::find($order['ratecard_id'], ['flags']);
             }
 
             $snap_block = in_array($order['finder_id'], Config::get('app.snap_bangalore_finder_ids')) && $order['type'] == 'memberships';
-            $extended_validity_block = !empty($order['extended_validity']) && empty($finder['flags']['enable_vendor_novalidity_comm']);
+            $extended_validity_block = !empty($order['extended_validity']) && empty($ratecard['flags']['enable_vendor_novalidity_comm']);
 
             if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
 
@@ -3046,7 +3046,7 @@ class TransactionController extends \BaseController {
                 $data['extended_validity_order_id'] = $extended_validity_order['_id'];
                 $data['session_pack_discount'] = $data['ratecard_amount'];
                 $amount = $data['amount'] - $data['session_pack_discount'];
-                if(!empty($data['finder_flags']['enable_vendor_novalidity_comm'])){
+                if(!empty($data['ratecard']['enable_vendor_novalidity_comm'])){
                     $data['amount_finder'] = 0;
                     $data['vendor_price'] = 0;
                 }
