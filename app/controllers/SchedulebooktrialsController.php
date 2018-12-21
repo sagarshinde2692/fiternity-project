@@ -4509,11 +4509,11 @@ class SchedulebooktrialsController extends \BaseController {
         $bookdata 	       = 	array();
         $booktrial 	       = 	Booktrial::findOrFail($id);
 
-        // if(isset($booktrial->final_lead_stage) && $booktrial->final_lead_stage == 'cancel_stage'){
+        if(isset($booktrial->final_lead_stage) && $booktrial->final_lead_stage == 'cancel_stage'){
 
-        //     $resp 	= 	array('status' => 200, 'message' => "Trial Canceled Repeat");
-        //     return Response::json($resp,200);
-        // }
+            $resp 	= 	array('status' => 200, 'message' => "Trial Canceled Repeat");
+            return Response::json($resp,200);
+        }
 
         /*if(isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600)){
 

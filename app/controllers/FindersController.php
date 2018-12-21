@@ -6307,7 +6307,7 @@ class FindersController extends \BaseController {
                                         ],
                                         'section2'=>[
                                             'header'=>'You are currently buying',
-                                            'ratecards'=>$duration_value,
+                                            'ratecards'=>[$duration_value[0]],
                                         ],
                                         'section3'=>[
                                             'header' => 'How it works', 
@@ -6354,12 +6354,12 @@ class FindersController extends \BaseController {
                         // unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity']);
                         $data['finder']['services'][$key][$ratecard_key][$key1]['validity'] = 0;
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
                         // return $service[$ratecard_key][$key1];
                     }
 				}
 
-                $service['non_validity'] = Config::get('nonvalidity.finder_banner');
+                $service['non_validity'] = $this->getNonValidityBanner();
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service[$service_name_key] = $service[$service_name_key]."New - Years Offer";
                 $service[$ratecard_key] = array_merge(array_values($no_validity_ratecards))[0];
@@ -6372,6 +6372,14 @@ class FindersController extends \BaseController {
         }
 
         return $data['finder']['services'];
+    }
+
+    public function getNonValidityBanner(){
+        if(in_array($this->device_type, ['android', 'ios'])){
+            return Config::get('nonvalidity.finder_banner');
+        }else{
+            return Config::get('nonvalidity.finder_banner_app');
+        }
     }
 	
 }
