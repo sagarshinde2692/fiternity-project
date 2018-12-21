@@ -5372,7 +5372,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if(!empty($order['session_pack_discount'])){
+        if(!empty($data['session_pack_discount'])){
              $amount_summary[] = array(
                     'field' => 'Session pack discount',
                     'value' => 'Rs. '.$data['session_pack_discount']
@@ -6322,14 +6322,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if($data['type'] == 'workout session' && !empty($data['customer_email']) && !((!empty($data['customer_quantity']) && $data['customer_quantity'] > 1) || (!empty($order['customer_quantity']) && $order['customer_quantity'] > 1)) ){
-
-                $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
-
-                if($extended_validity_order){
-
-                }
-            }
+            
 
             if($data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
             {
@@ -6388,6 +6381,19 @@ class TransactionController extends \BaseController {
                     'value' => '+Rs. '.(string)$data['convinience_fee'],
                     /*"info" => "Convenience fees is applicable for exclusive offers on online payments & Cash on delivery."*/
                 ];
+            }
+
+            if($data['type'] == 'workout session' && !empty($data['customer_email']) && !((!empty($data['customer_quantity']) && $data['customer_quantity'] > 1) || (!empty($order['customer_quantity']) && $order['customer_quantity'] > 1)) ){
+
+                $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
+
+                if($extended_validity_order){
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Session Pack Discount',
+                        'value' => 'Rs. '.(string)number_format($data['amount'])
+                    ];
+                    $data['amount_payable'] = 0;
+                }
             }
 
 

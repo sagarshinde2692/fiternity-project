@@ -4252,7 +4252,7 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
 
-                    return $data['finder']['services']  = $this->applyNonValidity($data, 'app');
+                    $data['finder']['services']  = $this->applyNonValidity($data, 'app');
 
 					$device_type = ['ios','android'];
 
