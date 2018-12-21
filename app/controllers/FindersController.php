@@ -6243,6 +6243,7 @@ class FindersController extends \BaseController {
         $session_pack_duration_map =  Config::get('nonvalidity.session_pack_duration_map');
         foreach($data['finder']['services'] as $key => $service){
 			$no_validity_ratecards = [];
+            $memberships = [];
 			if(!empty($service[$ratecard_key])){
 				foreach($service[$ratecard_key] as $rate_key => $ratecard){
                     $duration_day = $this->utilities->getDurationDay($ratecard);
@@ -6274,10 +6275,15 @@ class FindersController extends \BaseController {
 
 				foreach($service[$ratecard_key] as $key1 => $ratecard){
                     if($ratecard['type'] == 'membership'){
+
                         $duration_day = $this->utilities->getDurationDay($ratecard);
                         // print_r($session_pack_duration_map);
                         // exit();
-                        
+                        if(empty($memberships[$duration_day])){
+                            $memberships[$duration_day] = [];
+                        }
+						array_push($memberships[$duration_day], $ratecard) ;
+
                         if(!empty($session_pack_duration_map[strval($duration_day)])){
                             // return $ratecard;
                             foreach($no_validity_ratecards as $duration_key => $duration_value){
@@ -6335,13 +6341,14 @@ class FindersController extends \BaseController {
                         }
                     }
                     if($ratecard['type'] == 'extended validity'){
-                        // return $ratecard;
+                        $duration_day = $this->utilities->getDurationDay($ratecard);
                         $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
                         if(!empty($ratecard['flags']['unlimited_validity'])){
-                            $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $service[$ratecard_key][$key1]['duration_type']."\n( Unlimited Validity)";
+                            $ext_validity =$service[$ratecard_key][$key1]['duration_type']."\n( Unlimited Validity)";
                         }else{
-                            $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $service[$ratecard_key][$key1]['duration_type']."\n(Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'].')';
+                            $ext_validity = $service[$ratecard_key][$key1]['duration_type']."\n(Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'].')';
                         }
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $ext_validity;
                         $data['finder']['services'][$key][$ratecard_key][$key1]['price'] = $price;                        
                         $data['finder']['services'][$key][$ratecard_key][$key1]['special_price'] = 0;
                         // unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity']);
@@ -6349,15 +6356,23 @@ class FindersController extends \BaseController {
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
                         $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
 
-                        // $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard']['description'] = strtr($data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'], [
-                        //     "__membership_months"=>
-                        //     "__membership_price"=>
-                        //     "__membership_months"=>
-                        //     "__extended_sessions_count"=>
-                        //     "__extended_sessions_price"=>
-                        //     "__sessions_validity_months"=>
-                        // ]);
-                        // return $service[$ratecard_key][$key1];
+                        foreach($session_pack_duration_map as $sp_k => $sp_v){
+                            if($sp_v == $duration_day){
+                                if(!empty($memberships[$sp_k])){
+                                    $ex_ratecard = $memberships[$sp_k][0];
+                                    $ex_ratecard_price = !empty($ex_ratecard['offers'][0]['price']) ? $ex_ratecard['offers'][0]['price'] : (!empty($ex_ratecard['special_price']) ? $ex_ratecard['special_price'] : $ex_ratecard['price']);
+                                }
+                            }
+                        }
+
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard']['description'] = strtr($data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'], [
+                            "__membership_price"=>$ex_ratecard_price,
+                            "__membership_months"=>$ex_ratecard['validity'],
+                            "__extended_sessions_count"=>$service[$ratecard_key][$key1]['duration'],
+                            "__extended_sessions_price"=>$price,
+                            "__sessions_validity_months"=>$ext_validity
+                        ]);
+                        
                     }
 				}
 
