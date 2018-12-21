@@ -5252,6 +5252,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
             }
+            else {
+                $booktrial['fitcode_message'] = 'Punch the code to mark your attendance.';
+            }
         }else{
 
             $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';
