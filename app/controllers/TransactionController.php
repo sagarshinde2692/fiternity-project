@@ -5361,7 +5361,7 @@ class TransactionController extends \BaseController {
                 if(!empty($data['extended_validity'])){
                     $amount_summary[0] = array(
                         'field' => 'Session Pack Amount',
-                        'value' => 'Rs. '.$data['ratecard_amount']
+                        'value' => '-Rs. '.$data['ratecard_amount']
                     ); 
                 }
             }
