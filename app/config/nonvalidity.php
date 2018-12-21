@@ -3,7 +3,7 @@
 return array(
 
     'finder_banner'=>[
-        'image' => 'http:\imageKaUrl.com',
+        'image' => 'https://b.fitn.in/non-validity/success-page/Mobile%20Responsive%20EVM%20.png',
         'title' => 'What is Extended Validity Membership?',
         'title_color' => '#53b7b7',
         'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">Extended validity membership gives you the flexibility of paying for a session pack with a longer validity period than</p>
@@ -19,7 +19,7 @@ return array(
     ],
 
     'finder_banner_app'=>[
-        'image' => 'http:\imageKaUrl.com',
+        'image' => 'https://b.fitn.in/non-validity/success-page/Mobile%20Responsive%20EVM%20.png',
         'title' => 'What is Extended Validity Membership?',
         'title_color' => '#53b7b7',
         'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">Extended validity membership gives you the flexibility of paying for a session pack with a longer validity period than</p>

@@ -6302,11 +6302,11 @@ class FindersController extends \BaseController {
                                     $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
                                         'header'=>'Want to SAVE MORE?',
                                         'section1'=>[
-                                            'header'=>'Save more by buying Session Packs',
+                                            'header'=>'You are currently buying',
                                             'ratecards'=>[$ratecard],
                                         ],
                                         'section2'=>[
-                                            'header'=>'You are currently buying',
+                                            'header'=>'Save more by buying Session Packs',
                                             'ratecards'=>[$duration_value[0]],
                                         ],
                                         'section3'=>[
