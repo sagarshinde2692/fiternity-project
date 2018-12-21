@@ -14,6 +14,10 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'VipTrial-Instant-Customer';
 		}
 
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
+			$label = 'AutoTrial-Instant-Customer-abg';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
@@ -40,6 +44,10 @@ Class CustomerSms extends VersionNextSms{
 	protected function bookTrialReminderBefore12Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
+
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
+			$label = 'AutoTrial-ReminderBefore12Hour-Customer-abg';
+		}
 
 		$to = $data['customer_phone'];
 
@@ -68,6 +76,10 @@ Class CustomerSms extends VersionNextSms{
 
 		$label = 'AutoTrial-ReminderBefore3Hour-Customer';
 		
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
+			$label = 'AutoTrial-ReminderBefore3Hour-Customer-abg';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data,$delay);
@@ -88,6 +100,10 @@ Class CustomerSms extends VersionNextSms{
 
 		$label = 'Cancel-Trial-Customer';
 		
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
+			$label = 'Cancel-Trial-Customer-abg';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
@@ -1085,6 +1101,10 @@ Class CustomerSms extends VersionNextSms{
 		
 		$label = 'BookTrialReminderBefore10Min-Customer';
 		
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
+			$label = 'BookTrialReminderBefore10Min-Customer-abg';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data,$delay);
@@ -1164,9 +1184,19 @@ Class CustomerSms extends VersionNextSms{
 			return "";
 		}
 
+		Log::info('orderDetails: ', $data);
+
 		$template = \Template::where('label',$label)->first();
 
 		$to = array($to);
+
+		$sender = null;
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])){
+			$sender = 'ABCPRO';
+			if(Config::get('app.env') == 'stage'){
+				$to = ['9619240452'];
+			}
+		}
 
 		$message = $this->bladeCompile($template->sms_text,$data);
 
@@ -1176,7 +1206,7 @@ Class CustomerSms extends VersionNextSms{
 			$otp = true;
 		}
 
-		return $this->sendToWorker($to, $message, $label, $delay, $otp);
+		return $this->sendToWorker($to, $message, $label, $delay, $otp, $sender);
 	}
 
 	public function bladeCompile($value, array $args = array())

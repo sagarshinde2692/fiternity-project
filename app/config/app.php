@@ -1,24 +1,24 @@
 <?php
-
+// phpinfo();
 
 return array(
 
 	//local
-	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://fitapi.com',
-	// 'admin_url' => 'http://fitadmin.com',
-	// 'website' => 'https://www.fitternity.com',
-	// 'sidekiq_url' => 'http://kick.fitn.in/', 
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
-	// 'metropolis' => 'http://localhost:3030',
-	// 'amazonpay_isSandbox' => 'true',
-	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	// 'website_deeplink' =>'https://ftrnty.com',
-	// 'mobikwik_sandbox'=>true,
-	// 'paytm_sandbox'=>true,
+	'new_search_url' =>'http://apistage.fitn.in:5000/',
+	'url' => 'http://fitapi.com/',
+	'admin_url' => 'http://fitadmin.com',
+	'website' => 'https://apistage.fitn.in:8888',
+	'sidekiq_url' => 'http://localhost:3000', // 'http://kick.fitn.in/', 
+	'queue' => 'booktrial',
+	'vendor_communication' => false,
+	'env' => 'stage',
+	'debug' => TRUE,
+	'metropolis' => 'http://localhost:3030',
+	'amazonpay_isSandbox' => 'true',
+	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	'website_deeplink' =>'https://ftrnty.com',
+	'mobikwik_sandbox'=>true,
+	'paytm_sandbox'=>true,
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -55,21 +55,21 @@ return array(
 	// 'paytm_sandbox'=>true,
 
 	//live
-	'new_search_url' =>'http://c1.fitternity.com/',
-	'url' => 'https://a1.fitternity.com',
-	'admin_url' => 'https://fitn.in',
-	'website' => 'https://www.fitternity.com',
-	'sidekiq_url' => 'http://nw.fitn.in/',
-	'queue' => 'booktrial',
-	'vendor_communication' => true,
-	'env' => 'production',
-	'debug' => false,
-	'metropolis' => 'https://c1.fitternity.com',
-	'amazonpay_isSandbox' => 'false',
-	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
-	'website_deeplink' =>'https://ftrnty.com',
-	'mobikwik_sandbox'=>false,
-	'paytm_sandbox'=>false,
+	// 'new_search_url' =>'http://c1.fitternity.com/',
+	// 'url' => 'https://a1.fitternity.com',
+	// 'admin_url' => 'https://fitn.in',
+	// 'website' => 'https://www.fitternity.com',
+	// 'sidekiq_url' => 'http://nw.fitn.in/',
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => true,
+	// 'env' => 'production',
+	// 'debug' => false,
+	// 'metropolis' => 'https://c1.fitternity.com',
+	// 'amazonpay_isSandbox' => 'false',
+	// 'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
+	// 'mobikwik_sandbox'=>false,
+	// 'paytm_sandbox'=>false,
 
 	"core_key"=> "FITITRNTY",
 	'non_peak_hours' => ["off"=>0.6,"non_peak_title1"=>"Look for this sign to book a slot for ", "non_peak_title"=>"NON RUSH HOUR (40% OFF)", "gym"=>["off"=>0.6,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.6]],
@@ -749,7 +749,7 @@ return array(
 
 	'fitternity_personal_trainers' => 'Personal Training at Home by Fitternity',
 
-	'delay_methods' =>["bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "postTrialStatusUpdate", "bookTrialReminderAfter2Hour", "bookTrialReminderBefore10Min", "bookTrialReminderBefore3Hour", 'bookTrialReminderBefore20Min', 'offhoursConfirmation'],
+	'delay_methods' =>["bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "postTrialStatusUpdate", "bookTrialReminderAfter2Hour", "bookTrialReminderBefore10Min", "bookTrialReminderBefore3Hour", 'bookTrialReminderBefore20Min', 'offhoursConfirmation', "bookTrialReminderBefore12Hour-abg", "bookTrialReminderAfter2Hour-abg", "bookTrialReminderBefore10Min-abg", "bookTrialReminderBefore3Hour-abg"],
 
 
 	'my_fitness_party_slug' => ['mfp','mfp-mumbai','mfp-delhi'],

@@ -256,7 +256,7 @@ abstract Class VersionNextSms {
 
     }*/
 
-    public function sendToWorker($to, $message, $label = 'label', $delay = 0, $otp = false){
+    public function sendToWorker($to, $message, $label = 'label', $delay = 0, $otp = false, $sender = null){
 
         $arrayLabel = [
             'PurchaseAfter10Days-Customer',
@@ -288,11 +288,20 @@ abstract Class VersionNextSms {
         }
 
         $payload = array('to'=>$to,'message'=>$message,'delay'=>$delay,'label' => $label);
-        
+
         $route  = 'sms';
 
         if($otp){
             $route = 'otp';
+        }
+
+        if(!empty($sender)){
+            $payload['sender'] = $sender;
+            $route  = 'smstp';
+
+            if($otp){
+                $route = 'otptp';
+            }
         }
 
         $result  = $sidekiq->sendToQueue($payload,$route);
