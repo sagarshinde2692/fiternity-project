@@ -9096,7 +9096,7 @@ class CustomerController extends \BaseController {
         
         $order['active'] = true;
         if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
-            $order['button_title'] = 'Book a Session';
+            $order['button_title'] = 'Book your next Session';
             $order['button_type'] = 'book';
 
         }else{
