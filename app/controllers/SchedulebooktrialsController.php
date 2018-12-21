@@ -7117,6 +7117,9 @@ class SchedulebooktrialsController extends \BaseController {
                     
                     $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
                 }
+                else{
+                    $message = "Thank you, your attendance has been marked.";
+                }
             }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done) && !isset($booktrial->post_trial_status_updated_by_lostfitcode)){
 
                 $post_trial_status_updated_by_fitcode = time();
@@ -7165,7 +7168,9 @@ class SchedulebooktrialsController extends \BaseController {
                         $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Valid for 21 days";
                     }
                 }
-                
+                else{
+                    $message = "Thank you, your attendance has been marked.";
+                }
             }
 
             $booktrial->post_trial_status = 'attended';
