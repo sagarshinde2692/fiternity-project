@@ -1323,6 +1323,5 @@ Route::get('addvoucherimages','DebugController@addvoucherimages');
 Route::post('getumarkedmfpattendance','TransactionController@getUmarkedMfpAttendance');
 Route::post('markmfpattendance','TransactionController@markMfpAttendance');
 
-Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
 
 Route::post('sendcommvendorthirdparty','ThirdPartyController@sendClockUserDaySMS');

@@ -552,14 +552,6 @@ class TransactionController extends \BaseController {
     
                 $data = array_merge($data,$ratecardDetail['data']);
     
-                if(isset($data['customer_quantity'])){
-                    
-                    $data['ratecard_amount'] = $data['amount'];
-                    $data['amount'] = $data['customer_quantity'] * $data['amount'];
-                    $data['amount_finder'] = $data['customer_quantity'] * $data['amount_finder'];
-                    
-                }
-    
             }
             
             if(!empty($data['third_party']))
