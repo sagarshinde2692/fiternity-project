@@ -898,18 +898,7 @@ class FindersController extends \BaseController {
 				unset($finder['callout']);
 				unset($finder['callout_ratecard_id']);
 
-				$callOutObj= $this->getCalloutOffer($finder['services']);
-
-				if(!empty($callOutObj)){
-
-					if(!empty($callOutObj['callout'])){
-						$finder['callout'] = $callOutObj['callout'];
-					}
-
-					if(!empty($callOutObj['ratecard_id'])){
-						$finder['callout_ratecard_id'] = $callOutObj['ratecard_id'];
-					}						
-				}
+				
 				
 // 				}
 				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
@@ -1265,6 +1254,23 @@ class FindersController extends \BaseController {
 				}
 
 				$response['finder']['services']  = $this->applyNonValidity($response, 'web');
+
+                $callOutObj= $this->getCalloutOffer($response['finder']['services']);
+
+				if(!empty($callOutObj)){
+
+					if(!empty($callOutObj['callout'])){
+						$response['finder']['callout'] = $callOutObj['callout'];
+					}
+
+					if(!empty($callOutObj['ratecard_id'])){
+						$response['finder']['callout_ratecard_id'] = $callOutObj['ratecard_id'];
+					}
+
+                    if(!empty($callOutObj['non_validity_ratecard'])){
+						$response['finder']['non_validity_ratecard'] = $callOutObj['non_validity_ratecard'];
+					}						
+				}
 
 				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
 
@@ -4561,8 +4567,33 @@ class FindersController extends \BaseController {
 					if($_GET['app_version'] > '5.1.3'){
 						if($pps_stripe = $this->addPPSStripe($finderData['finder'])){
                             $finderData['finder']['services'] = $pps_stripe;
-                            $finderData['fit_ex_title'] = "Now working out at ".$finderData['finder']['title']." is possible without buying a membership";
-                            $finderData['fit_ex_sub_title'] = "Use Fitternity's Pay-Per-Session to workout here and pay session by session";
+                            $finderData['fit_ex'] =[
+                                'title'=>"Now working out at ".$finderData['finder']['title']." is possible without buying a membership",
+                                'subtitle'=>"Use Fitternity's Pay-Per-Session to workout here and pay session by session",
+                                'image'=>'https://b.fitn.in/non-validity/finderpage/pps_intro_fit_exclusive.png',
+                                'data'=>[
+                                    [
+                                        'title'=>"Now working out at ".$finderData['finder']['title']." is possible without buying a membership",
+                                        'subtitle'=>"Use Fitternity's Pay-Per-Session to workout here and pay session by session",
+                                        'image'=>'https://b.fitn.in/non-validity/finderpage/pps_intro_fit_exclusive.png'
+                                    ],
+                                    [
+                                        'title'=>"Now working out at ".$finderData['finder']['title']." is possible without buying a membership",
+                                        'subtitle'=>"Use Fitternity's Pay-Per-Session to workout here and pay session by session",
+                                        'image'=>'https://b.fitn.in/non-validity/finderpage/pps_intro_fit_exclusive.png'
+                                    ],
+                                    [
+                                        'title'=>"Now working out at ".$finderData['finder']['title']." is possible without buying a membership",
+                                        'subtitle'=>"Use Fitternity's Pay-Per-Session to workout here and pay session by session",
+                                        'image'=>'https://b.fitn.in/non-validity/finderpage/pps_intro_fit_exclusive.png'
+                                    ],
+                                    [
+                                        'title'=>"Now working out at ".$finderData['finder']['title']." is possible without buying a membership",
+                                        'subtitle'=>"Use Fitternity's Pay-Per-Session to workout here and pay session by session",
+                                        'image'=>'https://b.fitn.in/non-validity/finderpage/pps_intro_fit_exclusive.png'
+                                    ],
+                                ]
+                            ];
                         }
 					}
 				}
@@ -6398,7 +6429,7 @@ class FindersController extends \BaseController {
 
         $data['finder']['services'] = array_merge($extended_services, $data['finder']['services']);
 
-       $session_pack_duration_map_flip = array_flip($session_pack_duration_map);
+        $session_pack_duration_map_flip = array_flip($session_pack_duration_map);
 
         foreach($data['finder']['services'] as &$s){
             // if(empty($s['type']) || $s['type'] != 'extended validity'){

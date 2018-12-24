@@ -6249,7 +6249,8 @@ class TransactionController extends \BaseController {
             ],
             'full_wallet_payment' => false,
             'register_loyalty'=>false,
-            'free_trial_available'=>false
+            'free_trial_available'=>false,
+            'extended_validity'=>false
         ];
 
         $ratecard_id = null;
@@ -6398,6 +6399,8 @@ class TransactionController extends \BaseController {
                         'field' => 'Session Pack Discount',
                         'value' => 'Rs. '.(string)number_format($data['amount'])
                     ];
+
+                    $result['extended_validity'] = true;
                     $data['amount_payable'] = 0;
                 }
             }
