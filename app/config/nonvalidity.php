@@ -14,8 +14,7 @@ return array(
             <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"30%\">
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\"><br>Extended validity membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p>
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;\"></p>
-            <hr color=\"#767676\" style=\"height: 1px;\" width=\"90%\">
-            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\">11 people have already bought an extended validity membership</p>",
+            <hr color=\"#767676\" style=\"height: 1px;\" width=\"90%\">",
     ],
 
     'finder_banner_app'=>[
@@ -29,8 +28,7 @@ return array(
             <div style=\"text-align:center\">vs</div>
             
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\"><br>Extended validity membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p>
-            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;\"></p>
-            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\">11 people have already bought an extended validity membership</p>",
+            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;\"></p>",
     ],
     'recommnded_block'=>[
         'text'=>'Recommended',

@@ -6299,7 +6299,10 @@ class FindersController extends \BaseController {
                         }
                         $ratecard['duration_type'] = $ratecard['duration_type']."\n(".$ratecard['ext_validity'].')';
                         $ratecard['price'] = $price;
-                        $ratecard['special_price'] = 0;
+						$ratecard['special_price'] = 0;
+						$ratecard['validity_type_copy'] = $ratecard['validity_type'];
+						$ratecard['validity_copy'] = $ratecard['validity'];
+						$ratecard['validity_type'] = 0;
                         // unset($ratecard['validity']);
                         
                         // $ratecard['non_validity_ratecard'] = $this->getNonValidityBanner();
@@ -6381,7 +6384,7 @@ class FindersController extends \BaseController {
                         $duration_day = $this->utilities->getDurationDay($ratecard);
                         $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
                         if(!empty($ratecard['flags']['unlimited_validity'])){
-                            $ext_validity = "Unlimited Validity)";
+                            $ext_validity = "Unlimited Validity";
                         }else{
                             $ext_validity = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
                         }
