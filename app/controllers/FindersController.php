@@ -6401,6 +6401,9 @@ class FindersController extends \BaseController {
                         $data['finder']['services'][$key][$ratecard_key][$key1]['validity'] = 0;
                         $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type'];
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
+						if(!empty($data['finder']['services'][$key][$ratecard_key][$key1]['offers'])){
+							unset($data['finder']['services'][$key][$ratecard_key][$key1]['offers']);
+						}
                         // $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
 
                         
