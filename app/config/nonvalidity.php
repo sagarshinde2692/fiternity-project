@@ -54,7 +54,7 @@ return array(
                 [
                     'header' => 'Keep an eye on Session counter', 
                     'text' => 'View session details under My Session Packs in your profile', 
-                    'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%202.png'
+                    'image' => 'https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png'
                 ],
                 [
                     'header' => 'Easy cancellation', 

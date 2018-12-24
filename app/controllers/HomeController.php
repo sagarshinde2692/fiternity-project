@@ -2138,23 +2138,7 @@ class HomeController extends BaseController {
                 $resp['session_pack'] = [
                     'header' => 'Session Pack Activated', 
                     'text' => 'All you need to do is book your slot everytime you want to workout',
-                    'data' => [
-                        [
-                            'header' => 'Easy/One Click Booking', 
-                            'text' => 'Book before your workout through the QR code at gym/ studio or your profile', 
-                            'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
-                        ],
-                        [
-                            'header' => 'Keep an eye on Session counter', 
-                            'text' => 'View session details under My Session Packs in your profile', 
-                            'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%202.png'
-                        ],
-                        [
-                            'header' => 'Easy cancellation', 
-                            'text' => 'Don\'t lose out on your workouts with easy cancellations through your profile', 
-                            'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%203.png'
-                        ]
-                    ]
+                    'data' => Config::get('nonvalidity.success_page.data')
                 ];
             }
 
