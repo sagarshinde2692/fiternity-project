@@ -6271,7 +6271,7 @@ class FindersController extends \BaseController {
                         $ratecard['special_price'] = 0;
                         // unset($ratecard['validity']);
                         
-                        $ratecard['non_validity_ratecard'] = $this->getNonValidityBanner();
+                        // $ratecard['non_validity_ratecard'] = $this->getNonValidityBanner();
                         // unset($ratecard['validity_type']);
 						array_push($no_validity_ratecards[$duration_day], $ratecard) ;
 					}
@@ -6363,13 +6363,13 @@ class FindersController extends \BaseController {
                         $data['finder']['services'][$key][$ratecard_key][$key1]['validity'] = 0;
                         $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type'];
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
+                        // $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
 
                         
                     }
 				}
                 
-                $service['non_validity'] = $this->getNonValidityBanner();
+                // $service['non_validity'] = $this->getNonValidityBanner();
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service[$service_name_key] = $service[$service_name_key]." New - Years Offer";
                 $service[$ratecard_key] = array_merge(array_values($no_validity_ratecards))[0];
