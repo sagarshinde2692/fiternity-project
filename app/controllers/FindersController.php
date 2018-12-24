@@ -6465,7 +6465,7 @@ class FindersController extends \BaseController {
                                 "__extended_sessions_price"=>$r['price'],
                                 "__sessions_validity_months"=>$r['ext_validity']
 							]);
-							
+							$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
 							$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
 							$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
 							$r['non_validity_ratecard']  = $getNonValidityBanner;
@@ -6478,10 +6478,11 @@ class FindersController extends \BaseController {
         }
 
         foreach($data['finder']['services'] as &$ser){
-            foreach($ser[$ratecard_key] as $rate_c){
+            foreach($ser[$ratecard_key] as &$rate_c){
                 if(!empty($rate_c['non_validity_ratecard']) && !empty($ser['type']) && $ser['type'] == 'extended validity'){
-                    $ser['non_validity'] = $rate_c['non_validity_ratecard'];
-                }
+                    $ser['non_validity'] = $rate_c['non_validity_ratecard_copy'];
+				}
+				unset($rate_c['non_validity_ratecard_copy']);
             }
         }
 
