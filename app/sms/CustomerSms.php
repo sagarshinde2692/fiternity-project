@@ -190,7 +190,7 @@ Class CustomerSms extends VersionNextSms{
 		}
 		
         if(!empty($data['extended_validity'])){
-			$label = 'ExtendedValidity-Customer';
+			$label = 'ExtendedValidityInstant-Customer';
 		}
 		
 		$to = $data['customer_phone'];
