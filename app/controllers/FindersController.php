@@ -5880,6 +5880,8 @@ class FindersController extends \BaseController {
 
                     if(!empty($ratecard['non_validity_ratecard'])){
                         $return['non_validity_ratecard'] = $ratecard['non_validity_ratecard'];
+						$return['non_validity_ratecard']['description'] = $return['non_validity_ratecard']['description'].Config::get('nonvalidity.how_works');
+						$return['non_validity_ratecard']['description'] = strtr($return['non_validity_ratecard']['description'], ['no_of_sessions'=>$ratecard['duration']]);
                     }
 
 					if(in_array($ratecard['type'],["membership","packages"])){
