@@ -949,7 +949,7 @@ class ServiceController extends \BaseController {
                         if(!empty($jwt_token)){
                             $decoded = decode_customer_token();
                             $customer_email = $decoded->customer->email;
-                            $extended_validity_order =  $this->utilities->getExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id']]);
+                            $extended_validity_order =  $this->utilities->getExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
                             $service['extended_validity'] = !empty($extended_validity_order);
                         }
 
