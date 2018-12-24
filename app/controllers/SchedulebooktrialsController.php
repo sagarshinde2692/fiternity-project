@@ -2653,7 +2653,9 @@ class SchedulebooktrialsController extends \BaseController {
 
             }else{
 
-                $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
+                if (!isset($booktrialdata['third_party_details'])){
+                    $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
+                }
                 
                 if(!empty($booktrialdata)&&!empty($booktrialdata['type'])&&$booktrialdata['type']=='workout-session'&&!empty($booktrialdata['customer_id'])&&!empty($booktrialdata['_id']))
                 {   
@@ -2784,8 +2786,8 @@ class SchedulebooktrialsController extends \BaseController {
                 }
                 else {
                     $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
+                    $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
                 }
-                $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
             }
 
             if($currentScheduleDateDiffMin >= (10)){
@@ -2820,8 +2822,8 @@ class SchedulebooktrialsController extends \BaseController {
                 }
                 else {
                     $send_communication["customer_sms_before10Min"] = $this->customersms->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
+                    $send_communication["customer_email_before10Min"] = $this->customermailer->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
                 }
-                $send_communication["customer_email_before10Min"] = $this->customermailer->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
                 
                 // $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
 
