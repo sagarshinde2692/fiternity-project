@@ -6334,9 +6334,9 @@ class FindersController extends \BaseController {
                                         // return $rc;
                                         $rc['knowmore'] =  false;
 										$unlimited_validity = $unlimited_validity || !empty($rc['flags']['unlimited_validity']);
-										$rc['remarks'] = !empty($rc['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$rc['validity'].' '.ucwords($rc['validity_type']);
+										$rc['sub_title'] = !empty($rc['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$rc['validity_copy'].' '.ucwords($rc['validity_type']);
 										$rc['title'] = $rc['duration'].' '.$rc['duration_type_copy'];
-										$rc['sub_title'] = $rc['remarks'];
+										// $rc['sub_title'] = $rc['remarks'];
 										$rc['button_text'] = 'BUY';
                                         $rc['validity'] = 0;
                                     }
