@@ -6,7 +6,7 @@ return array(
         'image' => 'https://b.fitn.in/non-validity/success-page/Mobile%20Responsive%20EVM%20.png',
         'title' => 'What is Extended Validity Membership?',
         'title_color' => '#53b7b7',
-        'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\"> <Extended Validity Membership> gives you the ability to workout at vendor_name for a longer validity period by buying               a workout session pack of your choice.</p>
+        'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\"> Extended Validity Membership gives you the ability to workout at __vendor_name for a longer validity period by buying               a workout session pack of your choice.</p>
             <p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b> Example</b></p>
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\">__membership_months month membership at Rs. __membership_price | Avail it within __membership_months month</p>
             <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"30%\">	
@@ -14,8 +14,7 @@ return array(
             <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"30%\">
             <p style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; margin-bottom: 5px; margin-top: 0px; text-align: center;\"><br>Extended validity membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p>
             <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"100%\">
-            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;\">
-            You will get sessions added in your Fitternity account- all you need to do is book it everytime you want to workout. </p>",
+            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;\">",
     ],
 
     'finder_banner_app'=>[

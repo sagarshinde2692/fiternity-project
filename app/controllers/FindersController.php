@@ -6468,7 +6468,8 @@ class FindersController extends \BaseController {
                                 "__membership_months"=>$mem_ratecard_duration_day/30,
                                 "__extended_sessions_count"=>$r['duration'],
                                 "__extended_sessions_price"=>$r['price'],
-                                "__sessions_validity_months"=>$r['ext_validity']
+                                "__sessions_validity_months"=>$r['ext_validity'],
+                                "__vendor_name"=>$data['finder']['title']
 							]);
 							$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
 							$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
