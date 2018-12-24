@@ -69,7 +69,7 @@ class CommunicationsController extends \BaseController {
 												->where("communication_keys.$sender_class-$label", intval($key))
 												->first();
 
-				if(empty($transaction_data['surprise_fit_cash'])){
+				if(empty($transaction_data['surprise_fit_cash']) && !(isset($transaction_data['third_party_details']))){
 					
 					$transaction_data->surprise_fit_cash = $this->utilities->getFitcash($transaction_data->toArray());
 				}
