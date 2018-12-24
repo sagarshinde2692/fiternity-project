@@ -3247,17 +3247,17 @@ class FindersController extends \BaseController {
 				}
 			}
 
-			$extra_info[0] = array(
-				'title'=>'Avg. Calorie Burn',
-				'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
-				'description'=>$category_calorie_burn.' Kcal'
-			);
+			// $extra_info[0] = array(
+			// 	'title'=>'Avg. Calorie Burn',
+			// 	'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
+			// 	'description'=>$category_calorie_burn.' Kcal'
+			// );
 
-			$extra_info[1] = array(
-				'title'=>'Results',
-				'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
-				'description'=>'Burn Fat | Super Cardio'
-			);
+			// $extra_info[1] = array(
+			// 	'title'=>'Results',
+			// 	'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
+			// 	'description'=>'Burn Fat | Super Cardio'
+			// );
 			
 			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 			
@@ -6382,19 +6382,21 @@ class FindersController extends \BaseController {
             }
         }
 
-        $return = $data['finder']['services'];
-        $pushed = 0;
-        // return $extended_services;
-        foreach($extended_services as $es){
-            foreach($return as $r_k => $r){
-                // return $r;
-                if($es['_id'] == $r['_id']){
-                    // return $data['finder']['services'];
-                    array_splice( $data['finder']['services'] , $r_k+$pushed, 0, [$es] );
-                    $pushed++;
-                }
-            }
-        }
+        // $return = $data['finder']['services'];
+        // $pushed = 0;
+        // // return $extended_services;
+        // foreach($extended_services as $es){
+        //     foreach($return as $r_k => $r){
+        //         // return $r;
+        //         if($es['_id'] == $r['_id']){
+        //             // return $data['finder']['services'];
+        //             array_splice( $data['finder']['services'] , $r_k+$pushed, 0, [$es] );
+        //             $pushed++;
+        //         }
+        //     }
+        // }
+
+        $data['finder']['services'] = array_merge($extended_services, $data['finder']['services']);
 
        $session_pack_duration_map_flip = array_flip($session_pack_duration_map);
 

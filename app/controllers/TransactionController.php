@@ -675,7 +675,7 @@ class TransactionController extends \BaseController {
 
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
 	
-            return $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+            $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
 
             // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
 
@@ -3041,7 +3041,7 @@ class TransactionController extends \BaseController {
 
         if($data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
             Order::$withoutAppends = true;
-            return $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
+            $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
             if($extended_validity_order){
                 $data['extended_validity_order_id'] = $extended_validity_order['_id'];
                 $data['session_pack_discount'] = $data['ratecard_amount'];
