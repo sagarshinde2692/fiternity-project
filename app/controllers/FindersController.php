@@ -5857,6 +5857,10 @@ class FindersController extends \BaseController {
 
 			foreach($service[$key] as $ratecard){
 
+				if(!empty($ratecard['offers_copy'])){
+					$ratecard['offers'] = $ratecard['offers_copy'];
+				}
+
 				if(!empty($ratecard['offers']) && !empty($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 
 					$return['callout'] = $service[$service_name]." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'].". ";
@@ -6403,6 +6407,7 @@ class FindersController extends \BaseController {
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
 						if(!empty($data['finder']['services'][$key][$ratecard_key][$key1]['offers'])){
 							unset($data['finder']['services'][$key][$ratecard_key][$key1]['offers']);
+							$data['finder']['services'][$key][$ratecard_key][$key1]['offers_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['offers'];
 						}
                         // $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
 
