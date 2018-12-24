@@ -6461,8 +6461,12 @@ class FindersController extends \BaseController {
                                 "__extended_sessions_count"=>$r['duration'],
                                 "__extended_sessions_price"=>$r['price'],
                                 "__sessions_validity_months"=>$r['ext_validity']
-                            ]);
-                            $r['non_validity_ratecard']  = $getNonValidityBanner;
+							]);
+							
+							$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
+							$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
+							$r['non_validity_ratecard']  = $getNonValidityBanner;
+							
                         }
 
                     }
