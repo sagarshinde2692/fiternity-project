@@ -6303,7 +6303,9 @@ class FindersController extends \BaseController {
 						$ratecard['validity_type_copy'] = $ratecard['validity_type'];
 						$ratecard['validity_copy'] = $ratecard['validity'];
 						$ratecard['validity'] = 0;
-                        // unset($ratecard['validity']);
+						if(!empty($ratecard['offers'])){
+							unset($ratecard['offers']);
+						}
                         
                         // $ratecard['non_validity_ratecard'] = $this->getNonValidityBanner();
                         // unset($ratecard['validity_type']);
