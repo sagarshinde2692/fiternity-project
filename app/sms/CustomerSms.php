@@ -90,11 +90,27 @@ Class CustomerSms extends VersionNextSms{
 
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 		
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
+			$label = 'AutoTrial-ReminderAfter2Hour-Customer-abg';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data,$delay);
 	}
 
+	protected function bookTrialReminderAfter30Mins ($data, $delay){
+
+		$label = 'AutoTrial-ReminderAfter30Mins-Customer';
+		
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
+			$label = 'AutoTrial-ReminderAfter30Mins-Customer-abg';
+		}
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
+	}
 
 	protected function cancelBookTrial ($data){
 
