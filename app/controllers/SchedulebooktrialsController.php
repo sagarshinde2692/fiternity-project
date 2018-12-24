@@ -2354,14 +2354,16 @@ class SchedulebooktrialsController extends \BaseController {
                 $this->utilities->walletTransaction($walletData);
             }
 
-            $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
+            if(!isset($booktrialdata['third_party_details'])){
+                $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
 
-            $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrialdata);
+                $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrialdata);
 
-            $this->utilities->demonetisation($order);
+                $this->utilities->demonetisation($order);
 
-            $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
-            
+                $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+            }
+
             if(isset($order->booktrial_id)){
 
                 if(isset($order->finder_slug) && isset($order->service_id) && isset($order->booktrial_id) ){
@@ -2692,8 +2694,9 @@ class SchedulebooktrialsController extends \BaseController {
             // if($booktrialdata['type'] == 'workout-session'){
 
             $trailBefore10min = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(10);
-            $send_communication["customer_notification_before10min"] = $this->customernotification->bookTrialReminderBefore10Min($booktrialdata, $trailBefore10min);
-
+            if(!isset($booktrialdata['third_party_details'])){
+                $send_communication["customer_notification_before10min"] = $this->customernotification->bookTrialReminderBefore10Min($booktrialdata, $trailBefore10min);
+            }
             // $afterTwoDays = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addDays(2);
             
             // $send_communication["customer_notification_after2days"] = $this->customernotification->reviewReminder($booktrialdata, $afterTwoDays);

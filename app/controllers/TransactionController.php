@@ -482,7 +482,7 @@ class TransactionController extends \BaseController {
                             }
             
                         }
-
+                        $data['amount_customer'] = 0; // discussed with Utkarsh
 	            		$order_id = Order::max('_id') + 1;
 	            		$order = new Order($data);
 	            		$order->_id = $order_id;
