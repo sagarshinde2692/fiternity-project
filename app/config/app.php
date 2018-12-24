@@ -7,12 +7,8 @@ return array(
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
 	'url' => 'http://fitapi.com',
 	'admin_url' => 'http://fitadmin.com',
-<<<<<<< HEAD
 	'website' => 'http://apistage.fitn.in:8888',
-=======
-	'website' => 'https://apistage.fitn.in:8888',
->>>>>>> adityabirlagroup
-	'sidekiq_url' => 'http://kick.fitn.in/', 
+	'sidekiq_url' => 'http://kick.fitn.in/',
 	'queue' => 'booktrial',
 	'vendor_communication' => false,
 	'env' => 'stage',
