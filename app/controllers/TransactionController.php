@@ -6397,7 +6397,7 @@ class TransactionController extends \BaseController {
                 if($extended_validity_order){
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Session Pack Discount',
-                        'value' => 'Rs. '.(string)number_format($data['amount'])
+                        'value' => '-Rs. '.(string)number_format($data['amount'])
                     ];
 
                     $result['extended_validity'] = true;
