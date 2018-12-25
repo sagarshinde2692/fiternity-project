@@ -1323,3 +1323,5 @@ Route::get('addvoucherimages','DebugController@addvoucherimages');
 Route::post('getumarkedmfpattendance','TransactionController@getUmarkedMfpAttendance');
 Route::post('markmfpattendance','TransactionController@markMfpAttendance');
 
+
+Route::post('sendcommvendorthirdparty','ThirdPartyController@sendClockUserDaySMS');

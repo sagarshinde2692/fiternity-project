@@ -1,6 +1,13 @@
 <?php
 
 return array(
+    'thirdp' => array(
+		'key' => 'fitternitythirdp', //secret key to encode token
+		'iat' => time(), // time when token is created
+		'nbf' => time(), // time when token can be used from
+		'exp' => time()+(86400*365), // time when token gets expired (1 year)
+		'alg' => 'HS256',
+	),
 	'web' => array(
 		'key' => 'fitternityweb', //secret key to encode token
 		'iat' => time(), // time when token is created

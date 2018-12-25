@@ -2220,6 +2220,13 @@ class SchedulebooktrialsController extends \BaseController {
                 'ask_review'                    =>      true,
             );
 
+            if(!empty($data['third_party'])) {
+                $booktrialdata['third_party'] = $data['third_party'];
+                // $booktrialdata['third_party_used_sessions'] = $data['third_party_used_sessions'];
+                // $booktrialdata['third_party_token_id'] = $data['third_party_token_id'];
+                // $booktrialdata['third_party_id'] = $data['third_party_id'];
+                $booktrialdata['third_party_details'] = $data['third_party_details'];
+            }
             $session_count = Booktrial::where('customer_id',$customer_id)->count();
 
             if($session_count == 0){
@@ -2351,13 +2358,15 @@ class SchedulebooktrialsController extends \BaseController {
                 $this->utilities->walletTransaction($walletData);
             }
 
-            $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
+            if(!isset($booktrialdata['third_party_details'])){
+                $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
 
-            $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrialdata);
+                $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrialdata);
 
-            $this->utilities->demonetisation($order);
+                $this->utilities->demonetisation($order);
 
-            $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+                $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+            }
 
             if(isset($order->booktrial_id)){
 
@@ -2650,7 +2659,9 @@ class SchedulebooktrialsController extends \BaseController {
 
             }else{
 
-                $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
+                if (!isset($booktrialdata['third_party_details'])){
+                    $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
+                }
                 
                 if(!empty($booktrialdata)&&!empty($booktrialdata['type'])&&$booktrialdata['type']=='workout-session'&&!empty($booktrialdata['customer_id'])&&!empty($booktrialdata['_id']))
                 {   
@@ -2670,8 +2681,16 @@ class SchedulebooktrialsController extends \BaseController {
                 		$booktrialdata=$booktrial->toArray();
                 		Log::info(" booktrialdata 23 ".print_r($booktrialdata,true));
                 }
-                
-                $send_communication["customer_sms_instant"] = $this->customersms->bookTrial($booktrialdata);
+                // abg check needed
+                Log::info('before abg check', [$booktrialdata]);
+                if  (isset($booktrialdata['third_party_details'])){
+                    Log::info('$booktrialdata->third_party_details is set', [$booktrialdata['third_party_details']]);
+                    $send_communication["customer_sms_instant_abg"] = $this->customersms->bookTrial($booktrialdata);    
+                }
+                else {
+                    Log::info('$booktrialdata->third_party_details is not set');
+                    $send_communication["customer_sms_instant"] = $this->customersms->bookTrial($booktrialdata);
+                }
                 $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrialdata);
                 $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrialdata);
             }
@@ -2679,8 +2698,9 @@ class SchedulebooktrialsController extends \BaseController {
             // if($booktrialdata['type'] == 'workout-session'){
 
             $trailBefore10min = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(10);
-            $send_communication["customer_notification_before10min"] = $this->customernotification->bookTrialReminderBefore10Min($booktrialdata, $trailBefore10min);
-
+            if(!isset($booktrialdata['third_party_details'])){
+                $send_communication["customer_notification_before10min"] = $this->customernotification->bookTrialReminderBefore10Min($booktrialdata, $trailBefore10min);
+            }
             // $afterTwoDays = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addDays(2);
             
             // $send_communication["customer_notification_after2days"] = $this->customernotification->reviewReminder($booktrialdata, $afterTwoDays);
@@ -2722,9 +2742,18 @@ class SchedulebooktrialsController extends \BaseController {
                 } */
                 
                 
-            $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);     
-            $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
-            $send_communication["customer_sms_before12hour"] = $this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
+                if(isset($booktrialdata['third_party_details'])){
+                    Log::info('$booktrialdata->third_party_details is set customer_email_before12hour_abg: ', [$booktrialdata['third_party_details']]);
+                    // $send_communication["customer_sms_before12hour_abg"] = $this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
+                }
+                else {
+                    Log::info('$booktrialdata->third_party_details is not set');
+                    $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);     
+                    
+                    $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
+                    
+                    $send_communication["customer_sms_before12hour"] = $this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
+                }
             }
 
 
@@ -2758,9 +2787,14 @@ class SchedulebooktrialsController extends \BaseController {
                 	$before3HourDateTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60);
                 	// as it is
                }
-
-                $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
-                $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
+                if(isset($booktrialdata['third_party_details'])){
+                    Log::info('$booktrialdata->third_party_details is set customer_email_before3hour_abg: ', [$booktrialdata['third_party_details']]);
+                    $send_communication["customer_sms_before3hour_abg"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
+                }
+                else {
+                    $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
+                    $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
+                }
             }
 
             if($currentScheduleDateDiffMin >= (10)){
@@ -2789,8 +2823,14 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $delayReminderTimeBefore10Min=    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(10);
 
-                $send_communication["customer_sms_before10Min"] = $this->customersms->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
-                $send_communication["customer_email_before10Min"] = $this->customermailer->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
+                if(isset($booktrialdata['third_party_details'])){
+                    Log::info('$booktrialdata->third_party_details is set customer_sms_before10Min_abg: ', [$booktrialdata['third_party_details']]);
+                    $send_communication["customer_sms_before10Min_abg"] = $this->customersms->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
+                }
+                else {
+                    $send_communication["customer_sms_before10Min"] = $this->customersms->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
+                    $send_communication["customer_email_before10Min"] = $this->customermailer->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
+                }
                 
                 // $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
 
@@ -2805,8 +2845,15 @@ class SchedulebooktrialsController extends \BaseController {
 
             	$delayReminderTimeAfter2Hrs      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*2);
 
-            	$send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
-                
+                if(isset($booktrialdata['third_party_details'])){
+                    $delayReminderTimeAfter30Mins      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(30);
+                    Log::info('$booktrialdata->third_party_details is set customer_sms_after2hour_abg: ', [$booktrialdata['third_party_details']]);
+                    $send_communication["customer_sms_after2hour_abg"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
+                    $send_communication["customer_sms_after30mins_abg"] = $this->customersms->bookTrialReminderAfter30Mins($booktrialdata, $delayReminderTimeAfter30Mins);
+                }
+                else {
+            	    $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
+                }
                 $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter6Hrs);
 
                 $promoData = [
@@ -2824,9 +2871,25 @@ class SchedulebooktrialsController extends \BaseController {
             }
             else 
             {
-            	
-            	$delayReminderTimeAfter24Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*24);
-            	$send_communication["customer_sms_after24hour"] = $this->customersms->bookTrialReminderAfter24Hour($booktrialdata, $delayReminderTimeAfter24Hour);
+                
+                if(isset($booktrialdata['third_party_details'])){
+                    $delayReminderTimeAfter2Hrs      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*2);
+                    $delayReminderTimeAfter30Mins      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(30);
+
+                    Log::info('$booktrialdata->third_party_details is set customer_sms_after2hour_abg: ', [$booktrialdata['third_party_details']]);
+                    
+                    $send_communication["customer_sms_after2hour_abg"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
+                    $send_communication["customer_sms_after30mins_abg"] = $this->customersms->bookTrialReminderAfter30Mins($booktrialdata, $delayReminderTimeAfter30Mins);
+                }
+
+                $delayReminderTimeAfter24Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*24);
+                if(isset($booktrialdata['third_party_details'])){
+                    Log::info('$booktrialdata->third_party_details is set customer_sms_after24hour_abg: ', [$booktrialdata['third_party_details']]);
+                    // $send_communication["customer_sms_after24hour_abg"] = $this->customersms->bookTrialReminderAfter24Hour($booktrialdata, $delayReminderTimeAfter24Hour);
+                }
+                else {
+                    $send_communication["customer_sms_after24hour"] = $this->customersms->bookTrialReminderAfter24Hour($booktrialdata, $delayReminderTimeAfter24Hour);
+                }
             }  
             
             
@@ -2895,7 +2958,14 @@ class SchedulebooktrialsController extends \BaseController {
         	"customer_email_before10Min",
         	"customer_email_instant_workoutlevelstart",
             "customer_notification_block_screen",
-            "customer_sms_offhours_confirmation"
+            "customer_sms_offhours_confirmation",
+            "customer_sms_instant_abg",
+            "customer_sms_before12hour_abg",
+            "customer_sms_before3hour_abg",
+            "customer_sms_before10Min_abg",
+            "customer_sms_after2hour_abg",
+            "customer_sms_after30mins_abg",
+            "customer_sms_after24hour_abg",
         ];
 
         foreach ($array as $value) {
@@ -3602,6 +3672,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delayReminderTimeBefore5Hour       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
             $delayReminderTimeBefore12Hour       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
             $delayReminderTimeAfter2Hour       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(120);
+            $delayReminderTimeAfter30Mins      =    \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(30);
             $delayReminderTimeAfter50Hour       =   \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 50);
             $reminderTimeAfter1Hour 	       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(60);
             $oneHourDiff 				       = 	$currentDateTime->diffInHours($scheduleDateTime, false);
@@ -4131,6 +4202,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'oneHourDiffInMin'=>$oneHourDiffInMin,
                 'delayReminderTimeBefore1Hour'=>$delayReminderTimeBefore1Hour,
                 'delayReminderTimeAfter2Hour'=>$delayReminderTimeAfter2Hour,
+                'delayReminderTimeAfter30Mins' => $delayReminderTimeAfter30Mins,
                 'delayReminderTimeAfter50Hour'=>$delayReminderTimeAfter50Hour,
                 'reminderTimeAfter1Hour'=> $reminderTimeAfter1Hour,
                 'finder'=>$finder,
@@ -4185,6 +4257,7 @@ class SchedulebooktrialsController extends \BaseController {
             $oneHourDiffInMin = $data['oneHourDiffInMin'];
             $delayReminderTimeBefore1Hour = $data['delayReminderTimeBefore1Hour'];
             $delayReminderTimeAfter2Hour = $data['delayReminderTimeAfter2Hour'];
+            $delayReminderTimeAfter30Mins = $data['delayReminderTimeAfter30Mins'];
             $delayReminderTimeAfter50Hour = $data['delayReminderTimeAfter50Hour'];
             $reminderTimeAfter1Hour = $data['reminderTimeAfter1Hour'];
             $finder = $data['finder'];
@@ -4543,6 +4616,16 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->update(array('cancel_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
+
+            if(!empty($booktrial['third_party_details'])){
+                $cust = Customer::find($booktrial['customer_id']);
+                Log::info('cust:::: ', [$cust]);
+                if($cust['total_sessions_used']>0)
+                    $cust['total_sessions_used'] -= 1;
+                $cust->update();
+                $resp['booktrial_id'] = $booktrial['_id'];
+            }
+            
             return Response::json($resp,200);
 
         }else{
@@ -4816,7 +4899,15 @@ class SchedulebooktrialsController extends \BaseController {
                 'booktrial_link'                =>      $booktrial_link
             );
             // return $booktrialdata;
-            $emaildata['paid']= $this->refundSessionAmount($booktrialdata);
+            Log::info('before refund');
+            if(!isset($booktrial['third_party_details'])){
+                Log::info('call refund');
+                $emaildata['paid']= $this->refundSessionAmount($booktrialdata);
+            }
+            else {
+                $emaildata['third_party_details'] = $booktrial['third_party_details'];
+            }
+            Log::info('after refund');
             if($booktrialdata->source_flag == 'vendor'){
                 $this->customermailer->cancelBookTrial($emaildata);
                 $this->findermailer->cancelBookTrial($emaildata);
@@ -4828,7 +4919,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $this->findersms->cancelBookTrial($emaildata);
 
                 if(isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip'){
-                    $this->customermailer->cancelBookTrial($emaildata);
+                    if(!isset($booktrial['third_party_details'])){
+                        $this->customermailer->cancelBookTrial($emaildata);
+                    }
+                    Log::info('sending sms');
                     $this->customersms->cancelBookTrial($emaildata);
                     if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
                         $this->customernotification->cancelBookTrial($emaildata);
@@ -7196,6 +7290,9 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($_GET['reason'])){
                 $key = intval($_GET['reason']) - 1;
                 $lostcode_reasons_array = ["not_interested_in_fitcash","lost_fitcode","didnt_get_fitcode"];
+                if(isset($booktrial['third_party_details'])){
+                    $lostcode_reasons_array = array_merge($lostcode_reasons_array, ["i_didn't_get_the_fitcode_from_the_fitness_centre","the_fitcode_given_is_invalid","i_am_getting_an_error_while_submitting_the_fitcode"]);
+                }
                 $reason = $lostcode_reasons_array[$key];
                 $lostfitcode->$reason = time();
                 $reason_message = (isset($reason_message_array[$key])) ? $reason_message_array[$key] : null;
@@ -7208,7 +7305,10 @@ class SchedulebooktrialsController extends \BaseController {
             
             $booktrial->lostfitcode = $lostfitcode;
             
-            $fitcash_amount = $this->utilities->getFitcash($booktrial);
+            $fitcash_amount = 0;
+            if(!isset($booktrial['third_party_details'])){
+                $fitcash_amount = $this->utilities->getFitcash($booktrial);
+            }
 
             $device_type = Request::header('Device-Type');
             // if(in_array($device_type, ['ios', 'android']) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
@@ -7216,7 +7316,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $update = Booktrial::where('_id',$booktrial['_id'])->where('post_trial_status_updated_by_lostfitcode', 'exists', false)->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_lostfitcode'=>time()]);
 
-                if($update){
+                if($update && !(isset($booktrial['third_party_details']))){
                     $req = array(
                             "customer_id"=>$booktrial['customer_id'],
                             "trial_id"=>$booktrial['_id'],
@@ -7256,7 +7356,14 @@ class SchedulebooktrialsController extends \BaseController {
             if($reason_message){
                 $message = $reason_message;
             }
-            
+            $finderName = ucwords($booktrial['finder_name']);
+            if(!empty($_GET['thirdparty'])){
+                $message = ucwords($booktrial['customer_name']).", Lost Fitcode to mark your active day for Multiply free session booking at "
+                .$finderName."? Don't worry. We'll verify your session attendance with ".$finderName
+                ." and process your active day shortly. For quick assistance call Fitternity - 02261094444. "
+                ."Team Aditya Birla Wellness.";
+            }
+
             $booktrial->update();
 
             $response = [

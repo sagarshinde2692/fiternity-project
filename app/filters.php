@@ -134,12 +134,16 @@ Route::filter('jwt',function(){
             try{
                 JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
             }catch(DomainException $e){
+                Log::info('DomainException: ',[$e]);
                 return Response::json(array('status' => 400),400);
             }catch(ExpiredException $e){
+                Log::info('ExpiredException: ',[$e]);
                 return Response::json(array('status' => 401),401);
             }catch(SignatureInvalidException $e){
+                Log::info('SignatureInvalidException: ',[$e]);
                 return Response::json(array('status' => 402),402);
             }catch(Exception $e){
+                Log::info('Exception: ',[$e]);
                 return Response::json(array('status' => 403),403);
             }
         }else{
