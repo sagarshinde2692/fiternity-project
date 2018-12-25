@@ -1,6 +1,8 @@
 order allow,deny
 deny from 43.250.165.159
 deny from 173.193.200.124
+deny from 43.241.144.166
+deny from 103.251.215.186
 allow from all
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
