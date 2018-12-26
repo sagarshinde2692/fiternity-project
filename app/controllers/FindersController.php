@@ -6475,7 +6475,7 @@ class FindersController extends \BaseController {
                 // $service['non_validity'] = $this->getNonValidityBanner();
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service['service_name_display'] = $service[$service_name_key];
-                $service[$service_name_key] = $service[$service_name_key].(!empty($no_validity_exists) ? "No" : "Extednded")." Validity";
+                $service[$service_name_key] = $service[$service_name_key]."-".(!empty($no_validity_exists) ? "No" : "Extednded")." Validity";
                 $service[$ratecard_key] = array_merge(array_values($no_validity_ratecards))[0];
                 $service['type'] = 'extended validity';
 				
