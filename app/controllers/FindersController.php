@@ -6345,10 +6345,10 @@ class FindersController extends \BaseController {
                         if(!empty($ratecard['flags']['unlimited_validity'])){
                             $no_validity_exists = true;
                             $ratecard['ext_validity'] = "Unlimited Validity";
-                            $ratecard['remarks'] = "Recommended: Extended validity membership";
-                        }else{
-                            $ratecard['ext_validity'] = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
                             $ratecard['remarks'] = "Recommended: No validity membership";
+                        }else{
+                            $ratecard['remarks'] = "Recommended: Extended validity membership";
+                            $ratecard['ext_validity'] = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
                         }
                         $ratecard['duration_type'] = $ratecard['duration_type']."\n(".$ratecard['ext_validity'].')';
                         $ratecard['price'] = $price;
@@ -6443,11 +6443,11 @@ class FindersController extends \BaseController {
                         $duration_day = $this->utilities->getDurationDay($ratecard);
                         $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
                         if(!empty($ratecard['flags']['unlimited_validity'])){
-                            $ext_validity = "Unlimited Validity";
-                            $data['finder']['services'][$key][$ratecard_key][$key1]['remarks'] = "Recommended: Extended validity membership";
-                        }else{
-                            $ext_validity = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
                             $data['finder']['services'][$key][$ratecard_key][$key1]['remarks'] = "Recommended: No validity membership";
+                            $ext_validity = "Unlimited Validity";
+                        }else{
+                            $data['finder']['services'][$key][$ratecard_key][$key1]['remarks'] = "Recommended: Extended validity membership";
+                            $ext_validity = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
                         }
                         // print_r( json_encode($data['finder']['services'][$key][$ratecard_key][$key1]));
                         // exit();
