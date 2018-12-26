@@ -12,9 +12,7 @@ return array(
             <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"30%\">	
             <span style=\"font-family: Rubik;font-size: 15px; color: #767676; margin-bottom: 0px; display: inline-block; text-align: center;\">vs</span>
             <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"30%\">
-            <p style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; margin-bottom: 5px; margin-top: 0px; text-align: center;\"><br>Extended validity membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p>
-            <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"100%\">
-            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;\">",
+            <p style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; margin-bottom: 5px; margin-top: 0px; text-align: center;\"><br>Extended validity membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p>",
     ],
 
     'finder_banner_app'=>[

@@ -1255,6 +1255,8 @@ class FindersController extends \BaseController {
 
 				$response['finder']  = $this->applyNonValidity($response, 'web');
 
+                $response['finder'] = $this->applyTopService($response);
+
                 $callOutObj= $this->getCalloutOffer($response['finder']['services']);
 
 				if(!empty($callOutObj)){
@@ -4260,6 +4262,8 @@ class FindersController extends \BaseController {
 
                     $data['finder']  = $this->applyNonValidity($data, 'app');
 
+                    $data['finder'] = $this->applyTopService($data);
+
 					$device_type = ['ios','android'];
 
 					if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
@@ -6537,6 +6541,41 @@ class FindersController extends \BaseController {
         }else{
             return Config::get('nonvalidity.finder_banner');
         }
+    }
+
+    public function applyTopService($data, $source = 'web'){
+        
+        $ratecard_key = 'ratecard';
+		$service_name_key = 'service_name';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+			$service_name_key = 'name';
+		}
+
+
+        $pushed_rc = [];
+
+        $service = null;
+
+        foreach($data['finder']['services'] as $ser){
+            foreach($ser[$ratecard_key] as $rc){
+                if((empty($ser['type']) || $ser['type'] != "extended validity") && !empty($rc['flags']['top_service']) && !in_array($rc['_id'], $pushed_rc)){
+                    if(empty($service)){
+                        $service = $ser;
+                        $service[$service_name_key] = "New Year Offer";
+                        $service['_id'] = 100000;
+                        $service[$ratecard_key] = [];
+                    }
+
+                    array_push($service[$ratecard_key], $rc);
+                }
+            }
+        }
+        array_unshift($data['finder']['services'], $service);
+
+        return $data['finder'];
+    
     }
 
 }
