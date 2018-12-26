@@ -4269,7 +4269,7 @@ class FindersController extends \BaseController {
 
                     $data['finder']  = $this->applyNonValidity($data, 'app');
 
-                    $data['finder'] = $this->applyTopService($data);
+                    $data['finder'] = $this->applyTopService($data, 'app');
 
 					$device_type = ['ios','android'];
 
