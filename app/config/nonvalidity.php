@@ -4,28 +4,28 @@ return array(
 
     'finder_banner'=>[
         'image' => 'https://b.fitn.in/non-validity/success-page/Mobile%20Responsive%20EVM%20.png',
-        'title' => 'What is Extended Validity Membership?',
+        'title' => 'What is __ext_validity_type Membership?',
         'title_color' => '#53b7b7',
-        'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\"> Extended Validity Membership gives you the ability to workout at __vendor_name for a longer validity period by buying               a workout session pack of your choice.</p>
+        'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\"> __ext_validity_type Membership gives you the ability to workout at __vendor_name for a longer validity period by buying               a workout session pack of your choice.</p>
             <p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b> Example</b></p>
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\">__membership_months month membership at Rs. __membership_price | Avail it within __membership_months month</p>
             <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"30%\">	
             <span style=\"font-family: Rubik;font-size: 15px; color: #767676; margin-bottom: 0px; display: inline-block; text-align: center;\">vs</span>
             <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"30%\">
-            <p style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; margin-bottom: 5px; margin-top: 0px; text-align: center;\"><br>Extended validity membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p>",
+            <p style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; margin-bottom: 5px; margin-top: 0px; text-align: center;\"><br>__ext_validity_type membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p>",
     ],
 
     'finder_banner_app'=>[
         'image' => 'https://b.fitn.in/non-validity/success-page/Mobile%20Responsive%20EVM%20.png',
-        'title' => 'EXTENDED VALIDITY',
+        'title' => '__ext_validity_type',
         'title_color' => '#53b7b7',
-        'description' => "<p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b>&#8226; What is Extended Validity Membership?</b></p><p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">Extended validity membership gives you the flexibility of paying for a session pack with a longer validity period than</p>
+        'description' => "<p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b>&#8226; What is __ext_validity_type Membership?</b></p><p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">__ext_validity_type membership gives you the flexibility of paying for a session pack with a longer validity period than</p>
             <p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b>&#8226; Example</b></p>
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\">__membership_months month membership at Rs. __membership_price | Avail it within __membership_months month</p>
             
             <div style=\"text-align:center\">vs</div>
             
-            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\"><br>Extended validity membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p>
+            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\"><br>__ext_validity_type membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p>
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;\"></p>",
     ],
     'recommnded_block'=>[
