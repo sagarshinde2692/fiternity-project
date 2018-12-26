@@ -1240,6 +1240,13 @@ class FindersController extends \BaseController {
 					}
 				// }
 				unset($response['finder']['info']['stripe']);
+
+                $response['vendor_stripe_data']	=	[
+							'text'=> "Introducing No Validity Memberships at ".$response['finder']['title']." + 50% off on FitMania",
+							'background-color'=> "",
+							'text_color'=> '$fff',
+							'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                ];
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
 					unset($response['finder']['payment_options']);
@@ -6565,6 +6572,7 @@ class FindersController extends \BaseController {
                         $service = $ser;
                         $service[$service_name_key] = "New Year Offer";
                         $service['_id'] = 100000;
+                        $service['top_service'] = true;
                         $service[$ratecard_key] = [];
                     }
 
