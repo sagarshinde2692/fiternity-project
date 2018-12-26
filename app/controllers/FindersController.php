@@ -1253,7 +1253,7 @@ class FindersController extends \BaseController {
 					unset($response['finder']['payment_options']);
 				}
 
-				$response['finder']['services']  = $this->applyNonValidity($response, 'web');
+				$response['finder']  = $this->applyNonValidity($response, 'web');
 
                 $callOutObj= $this->getCalloutOffer($response['finder']['services']);
 
@@ -4258,7 +4258,7 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
 
-                    $data['finder']['services']  = $this->applyNonValidity($data, 'app');
+                    $data['finder']  = $this->applyNonValidity($data, 'app');
 
 					$device_type = ['ios','android'];
 
@@ -4564,9 +4564,41 @@ class FindersController extends \BaseController {
 						$finderData['finder']['pay_per_session'] = false;
 					}
 
+					// if($_GET['app_version'] > '5.1.3'){
+					// 	if($pps_stripe = $this->addPPSStripe($finderData['finder'])){
+                    //         $finderData['finder']['services'] = $pps_stripe;
+                    //         $finderData['fit_ex'] =[
+                    //             'title'=>"Now work out at ".$finderData['finder']['title']."  at your own pace",
+                    //             'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
+                    //             'image'=>'https://b.fitn.in/non-validity/finderpage/NO%20VALIDITY%20MOBILE.png',
+                    //             'data'=>[
+                    //                 [
+                    //                     'title'=>"Money Saver",
+                    //                     'subtitle'=>"Pay only for the days you workout",
+                    //                     'image'=>'https://b.fitn.in/non-validity/finderpage/MONEY%20SAVER%20MOBILE.png'
+                    //                 ],
+                    //                 [
+                    //                     'title'=>"Super Easy One-Click Booking",
+                    //                     'subtitle'=>"Book before your workout through the QR code at gym/studio or your profile.",
+                    //                     'image'=>'https://b.fitn.in/non-validity/finderpage/ONE%20CLICK%20MOBILE.png'
+                    //                 ],
+                    //                 [
+                    //                     'title'=>"Track Your Workouts & Map Usage",
+                    //                     'subtitle'=>"View session details under My Session Packs in your profile",
+                    //                     'image'=>'https://b.fitn.in/non-validity/finderpage/TRACK%20YOUR%20WORKOUT%20MOBILE.png'
+                    //                 ],
+                    //                 [
+                    //                     'title'=>"Easy Re-scheduling & Cancellations",
+                    //                     'subtitle'=>"Don’t lose out on your workouts with easy cancellations through your profile",
+                    //                     'image'=>'https://b.fitn.in/non-validity/finderpage/RESCHEDULE%20MOBILE.png'
+                    //                 ],
+                    //             ]
+                    //         ];
+                    //     }
+					// }
 					if($_GET['app_version'] > '5.1.3'){
-						if($pps_stripe = $this->addPPSStripe($finderData['finder'])){
-                            $finderData['finder']['services'] = $pps_stripe;
+						if(!empty($finderData['finder']['extended_validity'])){
+                            // $finderData['finder']['services'] = $pps_stripe;
                             $finderData['fit_ex'] =[
                                 'title'=>"Now work out at ".$finderData['finder']['title']."  at your own pace",
                                 'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
@@ -6321,6 +6353,8 @@ class FindersController extends \BaseController {
 			}
             if(!empty($no_validity_ratecards)){
 
+                $data['finder']['extended_validity'] = true;
+
 				foreach($service[$ratecard_key] as $key1 => $ratecard){
                     if($ratecard['type'] == 'membership'){
 
@@ -6452,9 +6486,8 @@ class FindersController extends \BaseController {
                 foreach($s[$ratecard_key] as &$r){
                     // return $r;
                     if($r['type'] == 'extended validity'){
-                        
                         $duration_day = $this->utilities->getDurationDay($r);
-                        if(!empty($memberships[strval($s['_id'])][$session_pack_duration_map_flip[$duration_day]])){
+                        if(!empty($session_pack_duration_map_flip[$duration_day]) && !empty($memberships[strval($s['_id'])][$session_pack_duration_map_flip[$duration_day]])){
                             
                             $mem_ratecard = $memberships[strval($s['_id'])][$session_pack_duration_map_flip[$duration_day]][0];
 
@@ -6492,7 +6525,7 @@ class FindersController extends \BaseController {
             }
         }
 
-        return $data['finder']['services'];
+        return $data['finder'];
     }
 
     public function getNonValidityBanner(){
@@ -6502,5 +6535,5 @@ class FindersController extends \BaseController {
             return Config::get('nonvalidity.finder_banner');
         }
     }
-	
+
 }

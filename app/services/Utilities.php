@@ -3939,7 +3939,9 @@ Class Utilities {
         if(!empty($ratecard['validity_copy'])){
             $ratecard['validity'] = $ratecard['validity_copy'];
         }
-
+        
+        empty($ratecard['validity_type']) ? $ratecard['validity_type'] = "days" : null;
+        
         switch ($ratecard['validity_type']){
             case 'days': 
                 $duration_day = (int)$ratecard['validity'];break;
