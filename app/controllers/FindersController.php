@@ -6342,7 +6342,8 @@ class FindersController extends \BaseController {
 						$ratecard['validity_copy'] = $ratecard['validity'];
 						$ratecard['validity'] = 0;
 						if(!empty($ratecard['offers'])){
-							unset($ratecard['offers']);
+							// unset($ratecard['offers']);
+                            $ratecard['offers'] = [];
 						}
                         
                         // $ratecard['non_validity_ratecard'] = $this->getNonValidityBanner();
@@ -6394,7 +6395,8 @@ class FindersController extends \BaseController {
                                         unset($ratecard['remarks']);
                                     }
                                     if(!empty($ratecard['offers'])){
-                                        unset($ratecard['offers']);
+                                        // unset($ratecard['offers']);
+                                        $ratecard['offers'] = [];
                                     }
                                     
                                     $ratecard['price'] = $price;
@@ -6441,7 +6443,8 @@ class FindersController extends \BaseController {
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
 						if(!empty($data['finder']['services'][$key][$ratecard_key][$key1]['offers'])){
 							$data['finder']['services'][$key][$ratecard_key][$key1]['offers_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['offers'];
-							unset($data['finder']['services'][$key][$ratecard_key][$key1]['offers']);
+							// unset($data['finder']['services'][$key][$ratecard_key][$key1]['offers'])
+                            $data['finder']['services'][$key][$ratecard_key][$key1]['offers'] = [];
 						}
                         // $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
 
