@@ -6463,7 +6463,7 @@ class FindersController extends \BaseController {
                                         ],
                                         'section2'=>[
                                             'header'=>'Save more by buying Session Packs',
-                                            'ratecards'=>[$duration_value[0]],
+                                            'ratecards'=>$duration_value,
                                         ],
                                         'section3'=>$section3
                                         // 'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
