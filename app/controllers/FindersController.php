@@ -6580,7 +6580,7 @@ class FindersController extends \BaseController {
                 if(!empty($ser['unlimited_validity'])){
 
                     if(!empty($rate_c['flags']['unlimited_validity']) && !empty($rate_c['non_validity_ratecard']) && !empty($ser['type']) && $ser['type'] == 'extended validity'){
-                        $ser['non_validity'] = $rate_c['non_validity_ratecard_copy'];
+                        $ser['non_validity'] = $rate_c['non_validity_ratecard_copy'].Config::get('nonvalidity.service_footer');
                         break;
                     }
                 }else{
