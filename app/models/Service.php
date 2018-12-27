@@ -394,7 +394,7 @@ class Service extends \Basemodel{
 				// 	$value['campaign_offer'] = "(Women - Get additional 30% off)";
 				// 	$value['campaign_color'] = "#FA5295";
 				// }		
-                if($value['type'] == 'extended validity' && !empty($value['campaign_offer'])){
+                if(!empty($value['campaign_offer'])){
                     unset($value['campaign_offer']);
                     if(!empty($value['campaign_color'])){
                         unset($value['campaign_color']);

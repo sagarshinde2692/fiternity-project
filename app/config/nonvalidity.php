@@ -73,6 +73,6 @@ return array(
                 <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; \"><b> Track Your Usage</b></div>
                 </div> 
                 </div>",
-    "service_footer"=>" <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;    padding-top: 10px;\">You will get sessions in your Fitternity account - all you need to do is book it everytime you want to workout </p"
+    "service_footer"=>" <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: left;    padding-top: 10px;\">You will get sessions in your Fitternity account - all you need to do is book it everytime you want to workout </p"
 );
 ?>

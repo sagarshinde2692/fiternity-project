@@ -6486,18 +6486,18 @@ class FindersController extends \BaseController {
                         $data['finder']['services'][$key][$ratecard_key][$key1]['ext_validity'] = $ext_validity;
                         $data['finder']['services'][$key]['unlimited_validity'] = !empty($data['finder']['services'][$key]['unlimited_validity']) || !empty($ratecard['flags']['unlimited_validity']);
                         $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $service[$ratecard_key][$key1]['duration_type']."\n(".$ext_validity.')';
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['price'] = $price;                        
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['special_price'] = 0;
+                        // $data['finder']['services'][$key][$ratecard_key][$key1]['price'] = $price;                        
+                        // $data['finder']['services'][$key][$ratecard_key][$key1]['special_price'] = 0;
                         // unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity']);
                         $data['finder']['services'][$key][$ratecard_key][$key1]['validity_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['validity'];
                         $data['finder']['services'][$key][$ratecard_key][$key1]['validity'] = 0;
                         $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type'];
                         unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
-						if(!empty($data['finder']['services'][$key][$ratecard_key][$key1]['offers'])){
-							$data['finder']['services'][$key][$ratecard_key][$key1]['offers_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['offers'];
+						// if(!empty($data['finder']['services'][$key][$ratecard_key][$key1]['offers'])){
+							// $data['finder']['services'][$key][$ratecard_key][$key1]['offers_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['offers'];
 							// unset($data['finder']['services'][$key][$ratecard_key][$key1]['offers'])
-                            $data['finder']['services'][$key][$ratecard_key][$key1]['offers'] = [];
-						}
+                            // $data['finder']['services'][$key][$ratecard_key][$key1]['offers'] = [];
+						// }
                         // $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
 
                         
