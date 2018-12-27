@@ -1241,12 +1241,6 @@ class FindersController extends \BaseController {
 				// }
 				unset($response['finder']['info']['stripe']);
 
-                $response['vendor_stripe_data']	=	[
-							'text'=> "Introducing No Validity Memberships at ".$response['finder']['title']." + 50% off on FitMania",
-							'background-color'=> "",
-							'text_color'=> '$fff',
-							'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
-                ];
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
 					unset($response['finder']['payment_options']);
@@ -1261,6 +1255,26 @@ class FindersController extends \BaseController {
 				}
 
 				$response['finder']  = $this->applyNonValidity($response, 'web');
+
+                if(!empty($response['finder']['extended_validity'])){
+
+                    $response['vendor_stripe_data']	=	[
+                                'text'=> "Introducing No Validity Memberships at ".$response['finder']['title']." + 50% off on FitMania",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                    ];
+                
+                }else{
+                   
+                    $response['vendor_stripe_data']	=	[
+                                'text'=> $response['finder']['title']." Lowest Offer Of The Year on FitMania | Flat 50% OFF",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                    ];
+                }
+
 
                 $response['finder'] = $this->applyTopService($response);
 
@@ -1278,7 +1292,15 @@ class FindersController extends \BaseController {
 
                     if(!empty($callOutObj['non_validity_ratecard'])){
 						$response['finder']['non_validity_ratecard'] = $callOutObj['non_validity_ratecard'];
-					}						
+					}	
+                    
+                    if(!empty($callOutObj['callout_extended'])){
+						$response['finder']['callout_extended'] = $callOutObj['callout_extended'];
+					}	
+                    
+                    $response['finder']['callout_header'] = "New Year Offer";
+
+
 				}
 
 				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
@@ -5935,6 +5957,16 @@ class FindersController extends \BaseController {
 						$return['button_text'] = "Buy";
 					}
 
+                    if(!empty($ratecard['flags']['unlimited_validity'])){
+                    
+                        $return['callout_extended'] = "No";
+                    
+                    }else{
+                    
+                        $return['callout_extended'] = "Extended";
+                    
+                    }
+
 					break;
 				}
 			}	
@@ -6595,6 +6627,7 @@ class FindersController extends \BaseController {
                         $service[$service_name_key] = "New Year Offer";
                         $service['_id'] = 100000;
                         $service['top_service'] = true;
+                        $service['short_description'] = "<p>We have curated the best new year offers for you </p>";
                         $service[$ratecard_key] = [];
                     }
 
