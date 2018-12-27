@@ -1259,9 +1259,10 @@ class FindersController extends \BaseController {
                 if(!empty($response['finder']['extended_validity'])){
 
                     $response['vendor_stripe_data']	=	[
-                                'text1'=> "Introducing Unlimited validity Memberships at ",
+                                'text1'=> "Introducing Unlimited validity Membership",
                                 'text2'=>$response['finder']['title'],
-                                'text3'=>" | Flat 50% off on FitMania",
+                                'text2'=>"",
+                                'text3'=>" | Flat 50% off",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
                                 'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
@@ -1271,8 +1272,9 @@ class FindersController extends \BaseController {
                    
                     $response['vendor_stripe_data']	=	[
                                 'text1'=>"",
-                                'text2'=>$response['finder']['title']."'s",
-                                'text3'=>" Lowest Offer Of The Year on FitMania | Flat 50% OFF",
+                                // 'text2'=>$response['finder']['title'].":",
+                                'text2'=>"",
+                                'text3'=>"Lowest Offer Of The Year | Flat 50% OFF",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
                                 'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
