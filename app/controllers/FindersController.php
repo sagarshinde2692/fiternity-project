@@ -6371,7 +6371,6 @@ class FindersController extends \BaseController {
                         if(empty($no_validity_ratecards[$duration_day])){
                             $no_validity_ratecards[$duration_day] = [];
                         }
-						$price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
 						$ratecard['duration_type_copy'] = $ratecard['duration_type'];
 
                         if(!empty($ratecard['flags']['unlimited_validity'])){
@@ -6383,8 +6382,9 @@ class FindersController extends \BaseController {
                             $ratecard['ext_validity'] = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
                         }
                         $ratecard['duration_type'] = $ratecard['duration_type']."\n(".$ratecard['ext_validity'].')';
-                        $ratecard['price'] = $price;
-						$ratecard['special_price'] = 0;
+						// $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+                        // $ratecard['price'] = $price;
+						// $ratecard['special_price'] = 0;
 						$ratecard['validity_type_copy'] = $ratecard['validity_type'];
 						$ratecard['validity_copy'] = $ratecard['validity'];
 						$ratecard['validity'] = 0;
@@ -6429,6 +6429,9 @@ class FindersController extends \BaseController {
 										// $rc['sub_title'] = $rc['remarks'];
 										$rc['button_text'] = 'BUY';
                                         $rc['validity'] = 0;
+                                        $price = !empty($rc['offers'][0]['price']) ? $rc['offers'][0]['price'] : (!empty($rc['special_price']) ? $rc['special_price'] : $rc['price']);
+                                        $rc['price'] = $price;
+						                $rc['special_price'] = 0;
                                     }
                                     $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
                                     $ratecard['button_text'] = 'Continue';
