@@ -3593,7 +3593,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = false){
+	public function finderDetailApp($slug, $cache = true){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -4295,7 +4295,7 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
 
-                    $data['finder']  = $this->applyNonValidity($data, 'app');
+                    // $data['finder']  = $this->applyNonValidity($data, 'app');
 
                     $data['finder'] = $this->applyTopService($data, 'app');
 
@@ -4400,10 +4400,6 @@ class FindersController extends \BaseController {
 				$data['finder']['review_url'] = Config::get('app.url').'/finderreviewdata/'.$data['finder']['_id'];
                 $data['show_membership_bargain'] = false;
 				
-
-
-                 
-                // return $data; 
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
 			}

@@ -771,7 +771,7 @@ class HomeController extends BaseController {
 
             if (in_array($type, $orderItemArr)) {
 
-                $itemData = Order::active()->find(intval($id));
+                $itemData = Order::find(intval($id));
 
                 if(empty($itemData)){
                     return ['status'=>400];
