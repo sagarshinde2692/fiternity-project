@@ -6558,10 +6558,10 @@ class FindersController extends \BaseController {
                                 "__extended_sessions_price"=>$r['price'],
                                 "__sessions_validity_months"=>$r['ext_validity'],
                                 "__vendor_name"=>$data['finder']['title'],
-                                "__ext_validity_type"=>!empty($r['flags']['unlimited_validity']) ? "NO Validity" : "Extended Validity"
+                                "__ext_validity_type"=>!empty($r['flags']['unlimited_validity']) ? "No" : "Extended"
 							]);
 
-                            $getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>(!empty($r['flags']['unlimited_validity']) ? "NO Validity" : "Extended Validity")]);
+                            $getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>(!empty($r['flags']['unlimited_validity']) ? "No Validity" : "Extended Validity")]);
 							$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
 							$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
 							$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
