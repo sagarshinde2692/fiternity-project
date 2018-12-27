@@ -6519,7 +6519,7 @@ class FindersController extends \BaseController {
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service['service_name_display'] = $service[$service_name_key];
 				$service[$service_name_key] = $service[$service_name_key]." - ".(!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity";
-				
+				$service['unlimited_validity'] = $no_validity_exists;
 				$no_validity_ratecards_service = [];
 
 				foreach(array_values($no_validity_ratecards) as $nvc){
