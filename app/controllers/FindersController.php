@@ -6380,9 +6380,9 @@ class FindersController extends \BaseController {
                         if(!empty($ratecard['flags']['unlimited_validity'])){
                             $no_validity_exists = true;
                             $ratecard['ext_validity'] = "Unlimited Validity";
-                            $ratecard['remarks'] = "Recommended: Unlimited validity membership";
+                            // $ratecard['remarks'] = "Recommended: Unlimited validity membership";
                         }else{
-                            $ratecard['remarks'] = "Recommended: Extended validity membership";
+                            // $ratecard['remarks'] = "Recommended: Extended validity membership";
                             $ratecard['ext_validity'] = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
                         }
                         $ratecard['duration_type'] = $ratecard['duration_type']."\n(".$ratecard['ext_validity'].')';
@@ -6392,10 +6392,10 @@ class FindersController extends \BaseController {
 						$ratecard['validity_type_copy'] = $ratecard['validity_type'];
 						$ratecard['validity_copy'] = $ratecard['validity'];
 						$ratecard['validity'] = 0;
-						if(!empty($ratecard['offers'])){
-							// unset($ratecard['offers']);
-                            $ratecard['offers'] = [];
-						}
+						// if(!empty($ratecard['offers'])){
+						// 	// unset($ratecard['offers']);
+                        //     $ratecard['offers'] = [];
+						// }
                         
                         // $ratecard['non_validity_ratecard'] = $this->getNonValidityBanner();
                         // unset($ratecard['validity_type']);
