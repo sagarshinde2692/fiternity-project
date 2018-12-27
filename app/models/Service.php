@@ -400,6 +400,10 @@ class Service extends \Basemodel{
                 //         unset($value['campaign_color']);
                 //     };
                 // }
+
+                if(!empty($value['duration']) && $value['duration'] > 1 && !empty($value['duration_type']) && $value['duration_type'] == 'session'){
+                    $value['duration_type'] = 'sessions';
+                }
 				unset($value['flags']['convinience_fee_applicable']);
 				array_push($ratecards, $value);
 			}

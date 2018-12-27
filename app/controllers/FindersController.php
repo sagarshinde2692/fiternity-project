@@ -6482,10 +6482,10 @@ class FindersController extends \BaseController {
                         $duration_day = $this->utilities->getDurationDay($ratecard);
                         $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
                         if(!empty($ratecard['flags']['unlimited_validity'])){
-                            $remarks = "Recommended: Unlimited validity membership";
+                            // $remarks = "Recommended: Unlimited validity membership";
                             $ext_validity = "Unlimited Validity";
                         }else{
-                            $remarks = "Recommended: Extended validity membership";
+                            // $remarks = "Recommended: Extended validity membership";
                             $ext_validity = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
                         }
                         // print_r( json_encode($data['finder']['services'][$key][$ratecard_key][$key1]));
@@ -6506,11 +6506,11 @@ class FindersController extends \BaseController {
                             // $data['finder']['services'][$key][$ratecard_key][$key1]['offers'] = [];
 						// }
                         // $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['remarks'] = $remarks;
+                        // $data['finder']['services'][$key][$ratecard_key][$key1]['remarks'] = $remarks;
 
-                        if(!empty($data['finder']['services'][$key][$ratecard_key][$key1]['offers'][0]['remarks'])){
-                            $data['finder']['services'][$key][$ratecard_key][$key1]['offers'][0]['remarks'] = $remarks;
-                        }
+                        // if(!empty($data['finder']['services'][$key][$ratecard_key][$key1]['offers'][0]['remarks'])){
+                        //     $data['finder']['services'][$key][$ratecard_key][$key1]['offers'][0]['remarks'] = $remarks;
+                        // }
                         
                     }
 				}
