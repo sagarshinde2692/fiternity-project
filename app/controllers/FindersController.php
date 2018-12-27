@@ -1259,7 +1259,9 @@ class FindersController extends \BaseController {
                 if(!empty($response['finder']['extended_validity'])){
 
                     $response['vendor_stripe_data']	=	[
-                                'text'=> "Introducing No Validity Memberships at ".$response['finder']['title']." + 50% off on FitMania",
+                                'text1'=> "Introducing Unlimited validity Memberships at ",
+                                'text2'=>$response['finder']['title'],
+                                'text3'=>" + 50% off on FitMania",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
                                 'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
@@ -1268,7 +1270,9 @@ class FindersController extends \BaseController {
                 }else{
                    
                     $response['vendor_stripe_data']	=	[
-                                'text'=> $response['finder']['title']." Lowest Offer Of The Year on FitMania | Flat 50% OFF",
+                                'text1'=>"",
+                                'text2'=>$response['finder']['title'],
+                                'text3'=>" Lowest Offer Of The Year on FitMania | Flat 50% OFF",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
                                 'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
@@ -6376,7 +6380,7 @@ class FindersController extends \BaseController {
                         if(!empty($ratecard['flags']['unlimited_validity'])){
                             $no_validity_exists = true;
                             $ratecard['ext_validity'] = "Unlimited Validity";
-                            $ratecard['remarks'] = "Recommended: No validity membership";
+                            $ratecard['remarks'] = "Recommended: Unlimited validity membership";
                         }else{
                             $ratecard['remarks'] = "Recommended: Extended validity membership";
                             $ratecard['ext_validity'] = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
@@ -6478,7 +6482,7 @@ class FindersController extends \BaseController {
                         $duration_day = $this->utilities->getDurationDay($ratecard);
                         $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
                         if(!empty($ratecard['flags']['unlimited_validity'])){
-                            $remarks = "Recommended: No validity membership";
+                            $remarks = "Recommended: Unlimited validity membership";
                             $ext_validity = "Unlimited Validity";
                         }else{
                             $remarks = "Recommended: Extended validity membership";
@@ -6564,7 +6568,7 @@ class FindersController extends \BaseController {
                             // return $r;
                             $mem_ratecard_duration_day = $this->utilities->getDurationDay($mem_ratecard);
                             $mem_ratecard_price = !empty($mem_ratecard['offers'][0]['price']) ? $mem_ratecard['offers'][0]['price'] : (!empty($mem_ratecard['special_price']) ? $mem_ratecard['special_price'] : $mem_ratecard['price']);
-
+							$price = !empty($r['offers'][0]['price']) ? $r['offers'][0]['price'] : (!empty($r['special_price']) ? $r['special_price'] : $r['price']);
                             $getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
                                 "__membership_price"=>$mem_ratecard_price,
                                 "__membership_months"=>$mem_ratecard_duration_day/30,
@@ -6572,10 +6576,10 @@ class FindersController extends \BaseController {
                                 "__extended_sessions_price"=>$r['price'],
                                 "__sessions_validity_months"=>$r['ext_validity'],
                                 "__vendor_name"=>$data['finder']['title'],
-                                "__ext_validity_type"=>!empty($r['flags']['unlimited_validity']) ? "No" : "Extended"
+                                "__ext_validity_type"=>!empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity"
 							]);
 
-                            $getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>(!empty($r['flags']['unlimited_validity']) ? "No Validity" : "Extended Validity")]);
+                            $getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>(!empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity")]);
 							$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
 							$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
 							$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
@@ -6640,10 +6644,10 @@ class FindersController extends \BaseController {
                 if((empty($ser['type']) || $ser['type'] != "extended validity") && !empty($rc['flags']['top_service']) && !in_array($rc['_id'], $pushed_rc)){
                     if(empty($service)){
                         $service = $ser;
-                        $service[$service_name_key] = "New Year Offer";
+                        $service[$service_name_key] = "New year offer - best price of the year";
                         $service['_id'] = 100000;
                         $service['top_service'] = true;
-                        $service['short_description'] = "<p>We have curated the best new year offers for you </p>";
+                        $service['short_description'] = "<p>We have curated the best offers for you to kickstart a fit 2019 at ".$data['finder']['title'].". These are exclusively available on Fitternity for a limited period.</p>";
                         $service[$ratecard_key] = [];
                     }
 
