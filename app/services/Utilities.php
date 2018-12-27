@@ -3944,10 +3944,13 @@ Class Utilities {
         
         switch ($ratecard['validity_type']){
             case 'days': 
+            case 'day': 
                 $duration_day = (int)$ratecard['validity'];break;
             case 'months': 
+            case 'month': 
                 $duration_day = (int)($ratecard['validity'] * 30) ; break;
             case 'year': 
+            case 'years': 
                 $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
             default : $duration_day =  $ratecard['validity']; break;
         }
