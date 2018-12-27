@@ -670,7 +670,7 @@ class ServiceController extends \BaseController {
         // $type                   =   'workout-session';
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
-		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id');
+		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id','flags');
 		Service::$withoutAppends=true;
 		 Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
 		
@@ -953,7 +953,7 @@ class ServiceController extends \BaseController {
                             $service['extended_validity'] = !empty($extended_validity_order);
                         }
 
-                        if($finder['category_id'] != 47 && empty($service['extended_validity'])){
+                        if($finder['category_id'] != 47 && empty($service['extended_validity']) && empty($item['flags']['disable_dynamic_pricing'])){
 
 						    $ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
 

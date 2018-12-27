@@ -650,7 +650,7 @@ class TransactionController extends \BaseController {
         $data['amount_final'] = $data["amount_finder"];
 
         //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
-        if((isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment']) || (empty($_GET['device_type'])) || $_GET['device_type'] == 'website'){
+        if(empty($data['service_flags']['disable_dynamic_pricing']) && (isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment']) || (empty($_GET['device_type'])) || $_GET['device_type'] == 'website'){
             if($data['type'] == 'workout-session')
              {
              try {
@@ -4115,6 +4115,9 @@ class TransactionController extends \BaseController {
         (isset($service['diet_inclusive'])) ? $data['diet_inclusive'] = $service['diet_inclusive'] : null;
         $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
         $data['servicecategory_id'] = (isset($service['servicecategory_id'])) ? $service['servicecategory_id'] : 0;
+        if(!empty($service['flags'])){
+            $data['service_flags'] = $service['flags'];
+        }
         
         
         return array('status' => 200,'data' =>$data);
@@ -6329,9 +6332,28 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            if(isset($data['service_id'])){
+                $service_id = (int) $data['service_id'];
+                
+                // Service::$setAppends = array_merge(array_values(Service::getArrayableAppends()), ['freeTrialRatecards']);
+                // Service::$withoutAppends = true;
+
+                $serviceDetail = $this->getServiceDetail($service_id);
+    
+                $data = array_merge($data,$serviceDetail['data']);
+                if(isset($data['type']) && in_array($data['type'],  ['workout-session', 'workout session', 'booktrials', 'booktrial']) && $data['servicecategory_id'] == 65){
+                    $data['service_name'] = $this->utilities->getGymServiceNamePPS();
+                }
+
+                if($serviceDetail['status'] != 200){
+                    return Response::json($serviceDetail,$this->error_status);
+                }
+
+            }
+
             
 
-            if($data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
+            if(empty($data['service_flags']['disable_dynamic_pricing']) && $data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
             {
                 $start_time = explode('-', $data['slot']['slot_time'])[0];
                 $end_time = explode('-', $data['slot']['slot_time'])[1];
@@ -6542,24 +6564,7 @@ class TransactionController extends \BaseController {
     
             $data = array_merge($data,$finderDetail['data']);
     
-            if(isset($data['service_id'])){
-                $service_id = (int) $data['service_id'];
-                
-                // Service::$setAppends = array_merge(array_values(Service::getArrayableAppends()), ['freeTrialRatecards']);
-                // Service::$withoutAppends = true;
-
-                $serviceDetail = $this->getServiceDetail($service_id);
-    
-                $data = array_merge($data,$serviceDetail['data']);
-                if(isset($data['type']) && in_array($data['type'],  ['workout-session', 'workout session', 'booktrials', 'booktrial']) && $data['servicecategory_id'] == 65){
-                    $data['service_name'] = $this->utilities->getGymServiceNamePPS();
-                }
-
-                if($serviceDetail['status'] != 200){
-                    return Response::json($serviceDetail,$this->error_status);
-                }
-
-            }
+            
 
             $result['order_details'] = [
                 "studio_name"=>[
