@@ -6452,7 +6452,8 @@ class FindersController extends \BaseController {
                                         // unset($ratecard['offers']);
                                         $ratecard['offers'] = [];
                                     }
-                                    
+									$section3 = Config::get('nonvalidity.success_page');
+									$section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name'=>$data['finder']['title']]);
                                     $ratecard['price'] = $price;
                                     $ratecard['special_price'] = 0;
                                     $ratecard['validity'] = 0;
@@ -6466,12 +6467,13 @@ class FindersController extends \BaseController {
                                             'header'=>'Save more by buying Session Packs',
                                             'ratecards'=>[$duration_value[0]],
                                         ],
-                                        'section3'=>Config::get('nonvalidity.success_page')
+                                        'section3'=>$section3
                                         // 'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
                                         // 'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\nYou are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
                                         // 'ratecards'=>$duration_value,
                                         // 'continue_text'=>"Continue with ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' at Rs.'.$price
-                                    ];
+									];
+									
                                     break;
                                 
                                 }

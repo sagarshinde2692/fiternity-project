@@ -45,7 +45,7 @@ return array(
             'data' => [
                 [
                     'header' => 'Easy/One Click Booking', 
-                    'text' => 'Book before your workout through the QR code at gym/ studio or your profile', 
+                    'text' => 'Book before you want to workout through the app (from your user profile or going directly on __vendor_name listing. You can also scan the QR code available at the location & get the session auto-booked when you reach', 
                     'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
                 ],
                 [
@@ -55,7 +55,7 @@ return array(
                 ],
                 [
                     'header' => 'Easy cancellation', 
-                    'text' => 'Don\'t lose out on your workouts with easy cancellations through your profile', 
+                    'text' => 'Don\'t lose out on your workout with easy a cancellation process - 60 mins prior to your session time', 
                     'image' => 'https://b.fitn.in/non-validity/success-page/mob%20icon%203.png'
                 ]
             ]

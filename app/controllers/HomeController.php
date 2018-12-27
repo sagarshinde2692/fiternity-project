@@ -1494,7 +1494,7 @@ class HomeController extends BaseController {
             $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
             
             if(isset($item['extended_validity']) && $item['extended_validity']){ 
-                $booking_details_data["validity"] = ['field'=>'VALIDITY','value'=>$serviceDurArr[1],'position'=>$position++];
+                $booking_details_data["validity"] = ['field'=>'VALIDITY','value'=>(!empty($item['ratecard_flags']['unlimited_validity']) ? "Unlimited Validity" :  $serviceDurArr[1]),'position'=>$position++];
             }
 
             if(in_array($type,["healthytiffintrail","healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"])){
@@ -2138,11 +2138,14 @@ class HomeController extends BaseController {
 
             }
 
+            $section3 = Config::get('nonvalidity.success_page');
+            $section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name'=>$itemData['finder_name']]);
+
             if(isset($item['extended_validity']) && $item['extended_validity']){  
                 $resp['session_pack'] = [
                     'header' => 'Session Pack Activated', 
                     'text' => 'All you need to do is book your slot everytime you want to workout',
-                    'data' => Config::get('nonvalidity.success_page.data')
+                    'data' => $section3['data']
                 ];
             }
 
