@@ -1261,7 +1261,7 @@ class FindersController extends \BaseController {
                     $response['vendor_stripe_data']	=	[
                                 'text1'=> "Introducing Unlimited validity Memberships at ",
                                 'text2'=>$response['finder']['title'],
-                                'text3'=>" + 50% off on FitMania",
+                                'text3'=>" | Falt 50% off on FitMania",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
                                 'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
@@ -5963,11 +5963,11 @@ class FindersController extends \BaseController {
 
                     if(!empty($ratecard['flags']['unlimited_validity'])){
                     
-                        $return['callout_extended'] = "No";
+                        $return['callout_extended'] = "Unlimited Validity Membership";
                     
                     }else{
                     
-                        $return['callout_extended'] = "Extended";
+                        $return['callout_extended'] = "Extended Validity Membership";
                     
                     }
 
@@ -6518,7 +6518,7 @@ class FindersController extends \BaseController {
                 // $service['non_validity'] = $this->getNonValidityBanner();
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service['service_name_display'] = $service[$service_name_key];
-				$service[$service_name_key] = $service[$service_name_key]."-".(!empty($no_validity_exists) ? "No" : "Extednded")." Validity";
+				$service[$service_name_key] = $service[$service_name_key]."-".(!empty($no_validity_exists) ? "Unlimited" : "Extednded")." Validity";
 				
 				$no_validity_ratecards_service = [];
 
@@ -6573,7 +6573,7 @@ class FindersController extends \BaseController {
                                 "__membership_price"=>$mem_ratecard_price,
                                 "__membership_months"=>$mem_ratecard_duration_day/30,
                                 "__extended_sessions_count"=>$r['duration'],
-                                "__extended_sessions_price"=>$r['price'],
+                                "__extended_sessions_price"=>$price,
                                 "__sessions_validity_months"=>$r['ext_validity'],
                                 "__vendor_name"=>$data['finder']['title'],
                                 "__ext_validity_type"=>!empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity"
