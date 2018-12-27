@@ -36,6 +36,7 @@ return array(
     'session_pack_duration_map'=>[
         "30"=>90,
         "90"=>180,
+        "180"=>360,
         "360"=>720,
     ],
     'slots_header'=>'Select a slot',
