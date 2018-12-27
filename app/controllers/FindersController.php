@@ -1261,7 +1261,7 @@ class FindersController extends \BaseController {
                     $response['vendor_stripe_data']	=	[
                                 'text1'=> "Introducing Unlimited validity Memberships at ",
                                 'text2'=>$response['finder']['title'],
-                                'text3'=>" | Falt 50% off on FitMania",
+                                'text3'=>" | Flat 50% off on FitMania",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
                                 'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
@@ -1271,7 +1271,7 @@ class FindersController extends \BaseController {
                    
                     $response['vendor_stripe_data']	=	[
                                 'text1'=>"",
-                                'text2'=>$response['finder']['title'],
+                                'text2'=>$response['finder']['title']."'s",
                                 'text3'=>" Lowest Offer Of The Year on FitMania | Flat 50% OFF",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -6518,7 +6518,7 @@ class FindersController extends \BaseController {
                 // $service['non_validity'] = $this->getNonValidityBanner();
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service['service_name_display'] = $service[$service_name_key];
-				$service[$service_name_key] = $service[$service_name_key]."-".(!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity";
+				$service[$service_name_key] = $service[$service_name_key]." - ".(!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity";
 				
 				$no_validity_ratecards_service = [];
 

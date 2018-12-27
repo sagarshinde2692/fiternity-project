@@ -5,6 +5,7 @@ return array(
     'finder_banner'=>[
         'image' => 'https://b.fitn.in/non-validity/success-page/Mobile%20Responsive%20EVM%20.png',
         'title' => 'What is __ext_validity_type Membership?',
+        'title1' => '__ext_validity_type Membership',
         'title_color' => '#53b7b7',
         'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">__ext_validity_type Membership gives you the ability to workout at __vendor_name for a longer validity period by buying a workout session pack of your choice.</p>
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;padding-top: 20px;\">__membership_months month standard membership at Rs. __membership_price | Avail it within __membership_months month</p>
@@ -73,6 +74,6 @@ return array(
                 <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; \"><b> Track Your Usage</b></div>
                 </div> 
                 </div>",
-    "service_footer"=>" <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: left;    padding-top: 10px;\">You will get sessions in your Fitternity account - all you need to do is book it everytime you want to workout </p"
+    "service_footer"=>" <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: left;    padding-top: 10px;\">You will get sessions in your Fitternity account - all you need to do is book it everytime you want to workout. </p"
 );
 ?>
