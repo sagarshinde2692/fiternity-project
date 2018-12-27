@@ -6,13 +6,14 @@ return array(
         'image' => 'https://b.fitn.in/non-validity/success-page/Mobile%20Responsive%20EVM%20.png',
         'title' => 'What is __ext_validity_type Membership?',
         'title_color' => '#53b7b7',
-        'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\"> __ext_validity_type Membership gives you the ability to workout at __vendor_name for a longer validity period by buying               a workout session pack of your choice.</p>
-            <p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b> Example</b></p>
-            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\">__membership_months month membership at Rs. __membership_price | Avail it within __membership_months month</p>
+        'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">__ext_validity_type Validity Membership gives you the ability to workout at __vendor_name for a longer validity period by buying a workout session pack of your choice.</p>
+            <p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left;padding-top: 5px;\"><b style=\"padding-left: 15px;\"> Example</b></p>
+            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\">__membership_months month standard membership at Rs. __membership_price | Avail it within __membership_months month</p>
             <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"30%\">	
             <span style=\"font-family: Rubik;font-size: 15px; color: #767676; margin-bottom: 0px; display: inline-block; text-align: center;\">vs</span>
             <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"30%\">
-            <p style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; margin-bottom: 5px; margin-top: 0px; text-align: center;\"><br>__ext_validity_type membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p>",
+            <p style=\"font-family: Rubik; font-size: 15px; color: #ed3024; margin-bottom: 5px; margin-top: 0px; text-align: center;font-weight: 550;line-height: 12px;\"><br>__ext_validity_type Validity membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p><hr color=\"#767676\" style=\"height: 1px;\" width=\"90%\">"
+          
     ],
 
     'finder_banner_app'=>[
@@ -59,20 +60,19 @@ return array(
                 ]
             ]
     ],
-    'how_works'=>"<hr color=\"#767676\" style=\"height: 1px;\" width=\"90%\">
-    <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;\">How it works? You will get no_of_sessions sessions in your Fitternity account - all you need to do is book it everytime 
-    you want to workout </p><div style=\"width: 100%;\"><div style=\"width: 33%;height: 100px; float: left; text-align: center \" >
-        <div><img style=\"margin-bottom: 10px;width: 30px\" src=\"https://b.fitn.in/non-validity/finderpage/ONE%20CLICK%20MOBILE.png\"></div>
-        <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; \"><b>Super Easy One-Click Booking</b></div>
-        </div> 
-        <div style=\"width: 33%;height: 100px; float: left; text-align:center; \" >
-        <div><img style=\" margin-bottom: 10px;width: 30px;\" src=\"https://b.fitn.in/non-validity/finderpage/TRACK%20YOUR%20WORKOUT%20MOBILE.png\"></div>
-        <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; \"><b>Track Your Workouts & Map Usage</b></div>
-        </div>
-        <div style=\"width: 33%;height: 100px; float: left; text-align: center \" >
-        <div><img style=\" margin-bottom: 10px; width: 30px\" src=\"https://b.fitn.in/non-validity/finderpage/RESCHEDULE%20MOBILE.png\"></div>
-        <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; \"><b> Easy Re-scheduling & Cancellations</b></div>
-        </div> 
-        </div>"
+    'how_works'=>"  <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;    padding-top: 10px;\">How it works? You will get __extended_sessions_count sessions in your Fitternity account - all you need to do is book it everytime 
+            you want to workout </p><div style=\"width: 100%;\"><div style=\"width: 33%;height: 100px; float: left; text-align: center \">
+                <div><img style=\"margin-bottom: 10px;width: 30px\" src=\"https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png\"></div>
+                <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; \"><b>Money Saver</b></div>
+                </div> 
+                <div style=\"width: 33%;height: 100px; float: left; text-align:center; \">
+                <div><img style=\" margin-bottom: 10px;width: 30px;\" src=\"https://b.fitn.in/non-validity/success-page/mob%20icon%201.png\"></div>
+                <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; \"><b>Easy To Book</b></div>
+                </div>
+                <div style=\"width: 33%;height: 100px; float: left; text-align: center \">
+                <div><img style=\" margin-bottom: 10px; width: 30px\" src=\"https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png\"></div>
+                <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; \"><b> Track Your Usage</b></div>
+                </div> 
+                </div>"
 );
 ?>
