@@ -6585,7 +6585,7 @@ class FindersController extends \BaseController {
                     }
                 }else{
                     if(!empty($rate_c['non_validity_ratecard']) && !empty($ser['type']) && $ser['type'] == 'extended validity'){
-                        $ser['non_validity'] = $rate_c['non_validity_ratecard_copy'];
+                        $ser['non_validity'] = $rate_c['non_validity_ratecard_copy'].Config::get('nonvalidity.service_footer');
                         break;
                     }
                 }
