@@ -6643,8 +6643,11 @@ class FindersController extends \BaseController {
                     array_push($service[$ratecard_key], $rc);
                 }
             }
-        }
-        array_unshift($data['finder']['services'], $service);
+		}
+		
+		if(!empty($service)){
+			array_unshift($data['finder']['services'], $service);
+		}
 
         return $data['finder'];
     
