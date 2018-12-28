@@ -7706,7 +7706,7 @@ class CustomerController extends \BaseController {
 					$finderarr = Finder::active()->where('_id',intval($data['vendor_id']))
 					->with(array('services'=>function($query){$query->active()->where('trial','!=','disable')->where('status','=','1')->select('*')->orderBy('ordering', 'ASC');}))
 					->with('location')->first();
-                    $extended_validity_orders = $this->utilities->getExtendedValidityOrderFinder(['customer_email'=>$customer->email, 'finder_id'=>$finderarr['_id']]);
+                    $extended_validity_orders = $this->utilities->getExtendedValidityOrderFinder(['customer_email'=>$customer->email, 'finder_id'=>$finderarr['_id'], 'schedule_date'=>date('d-m-Y', time())]);
 
                     $extended_validity_service_ids = array_column($extended_validity_orders->toArray(), 'service_id');
 
