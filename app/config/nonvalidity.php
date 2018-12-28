@@ -61,20 +61,6 @@ return array(
                 ]
             ]
     ],
-    'how_works'=>"  <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;    padding-top: 10px;\">How it works? You will get no_of_sessions sessions in your Fitternity account - all you need to do is book it everytime 
-            you want to workout </p><div style=\"width: 100%;\"><div style=\"width: 33%;height: 100px; float: left; text-align: center \">
-                <div><img style=\"margin-bottom: 10px;width: 30px\" src=\"https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png\"></div>
-                <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; \"><b>Money Saver</b></div>
-                </div> 
-                <div style=\"width: 33%;height: 100px; float: left; text-align:center; \">
-                <div><img style=\" margin-bottom: 10px;width: 30px;\" src=\"https://b.fitn.in/non-validity/success-page/mob%20icon%201.png\"></div>
-                <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; \"><b>Easy To Book</b></div>
-                </div>
-                <div style=\"width: 33%;height: 100px; float: left; text-align: center \">
-                <div><img style=\" margin-bottom: 10px; width: 30px\" src=\"https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png\"></div>
-                <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA; \"><b> Track Your Usage</b></div>
-                </div> 
-                </div>",
-    "service_footer"=>" <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: left;    padding-top: 10px;\">You will get sessions in your Fitternity account - all you need to do is book it everytime you want to workout. </p"
+    'how_works'=>""
 );
 ?>
