@@ -62,7 +62,7 @@ return array(
             ]
     ],
     'how_works'=>"  <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;    padding-top: 10px;\">How it works? You will get no_of_sessions sessions in your Fitternity account - all you need to do is book it everytime 
-            you want to workout </p><div style=\"width: 100%;\"><div style=\"width: 33%;height: 100px; float: left; text-align: center \">",
+            you want to workout </p>",
     "service_footer"=>" <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: left;    padding-top: 10px;\">You will get sessions in your Fitternity account - all you need to do is book it everytime you want to workout. </p"
 );
 ?>
