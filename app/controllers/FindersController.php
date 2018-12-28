@@ -4296,8 +4296,10 @@ class FindersController extends \BaseController {
 					}
 
                     // $data['finder']  = $this->applyNonValidity($data, 'app');
-
-                    $data['finder'] = $this->applyTopService($data, 'app');
+                    
+                    if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android'])){
+                        $data['finder'] = $this->applyTopService($data, 'app');
+                    }
 
 					$device_type = ['ios','android'];
 
@@ -6652,6 +6654,9 @@ class FindersController extends \BaseController {
                         $service['top_service'] = true;
                         $service['short_description'] = "<p>We have curated the best offers for you to kickstart a fit 2019 at ".$data['finder']['title'].". These are exclusively available on Fitternity for a limited period.</p>";
                         $service[$ratecard_key] = [];
+                        if(!empty($service['batches'])){
+                            unset($service['batches']);
+                        }
                     }
 
                     array_push($service[$ratecard_key], $rc);
