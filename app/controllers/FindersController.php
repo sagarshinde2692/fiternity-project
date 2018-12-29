@@ -4295,11 +4295,9 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
 
-                    // $data['finder']  = $this->applyNonValidity($data, 'app');
+                    $data['finder']  = $this->applyNonValidity($data, 'app');
                     
-                    if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android'])){
-                        $data['finder'] = $this->applyTopService($data, 'app');
-                    }
+                    $data['finder'] = $this->applyTopService($data, 'app');
 
 					$device_type = ['ios','android'];
 
