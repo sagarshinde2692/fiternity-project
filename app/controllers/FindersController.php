@@ -3289,20 +3289,22 @@ class FindersController extends \BaseController {
 					$category_calorie_burn = $sericecategorysCalorieArr[$service_category_id];
 				}
 			}
+            if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.5'){
 
-			// $extra_info[0] = array(
-			// 	'title'=>'Avg. Calorie Burn',
-			// 	'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
-			// 	'description'=>$category_calorie_burn.' Kcal'
-			// );
+                $extra_info[0] = array(
+                	'title'=>'Avg. Calorie Burn',
+                	'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
+                	'description'=>$category_calorie_burn.' Kcal'
+                );
 
-			// $extra_info[1] = array(
-			// 	'title'=>'Results',
-			// 	'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
-			// 	'description'=>'Burn Fat | Super Cardio'
-			// );
+                $extra_info[1] = array(
+                	'title'=>'Results',
+                	'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
+                	'description'=>'Burn Fat | Super Cardio'
+                );
+            }
 			
-			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
+			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
 			
 				$extra_info[] = array(
 					'title'=>'Description',
@@ -3669,6 +3671,10 @@ class FindersController extends \BaseController {
 
 		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '4.42'){
 			$cache_name = "finder_detail_android_4_4_3";
+		}
+
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.1.4'){
+			$cache_name = "finder_detail_android_5_1_4";
 		}
 		Log::info($cache_name);
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
