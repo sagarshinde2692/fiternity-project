@@ -6531,7 +6531,12 @@ class FindersController extends \BaseController {
                 // $service['non_validity'] = $this->getNonValidityBanner();
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service['service_name_display'] = $service[$service_name_key];
-				$service[$service_name_key] = $service[$service_name_key]." - ".(!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity";
+                $post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
+                if(!empty($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
+				    $service[$service_name_key] = $service[$service_name_key]." - ".$post_name;
+                }else{
+                    $service['post_name'] = $post_name;
+                }
 				$service['unlimited_validity'] = $no_validity_exists;
 				$no_validity_ratecards_service = [];
 
@@ -6668,6 +6673,7 @@ class FindersController extends \BaseController {
                         if(!empty($service['batches'])){
                             unset($service['batches']);
                         }
+                        $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                     }
 
                     array_push($service[$ratecard_key], $rc);
