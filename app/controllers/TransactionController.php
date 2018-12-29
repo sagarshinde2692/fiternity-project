@@ -6392,6 +6392,9 @@ class TransactionController extends \BaseController {
 
             if(!empty($data['slot']['date']) || $data['type'] == 'workout session' && !empty($data['customer_email']) && !((!empty($data['customer_quantity']) && $data['customer_quantity'] > 1) || (!empty($order['customer_quantity']) && $order['customer_quantity'] > 1)) ){
                 $data['schedule_date'] = $data['slot']['date'];
+                if(!empty($order['customer_email'])){
+                    $data['customer_email'] = $order['customer_email'];
+                }
                 $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
 
                 if($extended_validity_order){
