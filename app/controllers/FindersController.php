@@ -1282,7 +1282,7 @@ class FindersController extends \BaseController {
                 }
 
 
-                if(!in_array($response['finder']['_id'], [])){
+                if(!in_array($response['finder']['_id'], Config::get('app.eoys_excluded_vendor_ids'))){
                     $response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3']." | Addn Flat 10% off. Code: EOYS *T&C";
                 }
 
