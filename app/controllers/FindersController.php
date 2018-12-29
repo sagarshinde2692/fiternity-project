@@ -1282,6 +1282,11 @@ class FindersController extends \BaseController {
                 }
 
 
+                if(!in_array($response['finder']['_id'], [])){
+                    $response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3']." | Addn Flat 10% off. Code: EOYS *T&C";
+                }
+
+
                 $response['finder'] = $this->applyTopService($response);
 
                 $callOutObj= $this->getCalloutOffer($response['finder']['services']);
@@ -3289,20 +3294,22 @@ class FindersController extends \BaseController {
 					$category_calorie_burn = $sericecategorysCalorieArr[$service_category_id];
 				}
 			}
+            if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.6'){
 
-			// $extra_info[0] = array(
-			// 	'title'=>'Avg. Calorie Burn',
-			// 	'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
-			// 	'description'=>$category_calorie_burn.' Kcal'
-			// );
+                $extra_info[0] = array(
+                	'title'=>'Avg. Calorie Burn',
+                	'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
+                	'description'=>$category_calorie_burn.' Kcal'
+                );
 
-			// $extra_info[1] = array(
-			// 	'title'=>'Results',
-			// 	'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
-			// 	'description'=>'Burn Fat | Super Cardio'
-			// );
+                $extra_info[1] = array(
+                	'title'=>'Results',
+                	'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
+                	'description'=>'Burn Fat | Super Cardio'
+                );
+            }
 			
-			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
+			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6')){
 			
 				$extra_info[] = array(
 					'title'=>'Description',
@@ -3669,6 +3676,10 @@ class FindersController extends \BaseController {
 
 		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '4.42'){
 			$cache_name = "finder_detail_android_4_4_3";
+		}
+
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.1.5'){
+			$cache_name = "finder_detail_android_5_1_6";
 		}
 		Log::info($cache_name);
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
@@ -4296,8 +4307,10 @@ class FindersController extends \BaseController {
 					}
 
                     // $data['finder']  = $this->applyNonValidity($data, 'app');
-
-                    $data['finder'] = $this->applyTopService($data, 'app');
+                    
+                    if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android'])){
+                        $data['finder'] = $this->applyTopService($data, 'app');
+                    }
 
 					$device_type = ['ios','android'];
 
@@ -6518,7 +6531,12 @@ class FindersController extends \BaseController {
                 // $service['non_validity'] = $this->getNonValidityBanner();
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service['service_name_display'] = $service[$service_name_key];
-				$service[$service_name_key] = $service[$service_name_key]." - ".(!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity";
+                $post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
+                if(!empty($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
+				    $service[$service_name_key] = $service[$service_name_key]." - ".$post_name;
+                }else{
+                    $service['post_name'] = $post_name;
+                }
 				$service['unlimited_validity'] = $no_validity_exists;
 				$no_validity_ratecards_service = [];
 
@@ -6652,6 +6670,10 @@ class FindersController extends \BaseController {
                         $service['top_service'] = true;
                         $service['short_description'] = "<p>We have curated the best offers for you to kickstart a fit 2019 at ".$data['finder']['title'].". These are exclusively available on Fitternity for a limited period.</p>";
                         $service[$ratecard_key] = [];
+                        if(!empty($service['batches'])){
+                            unset($service['batches']);
+                        }
+                        $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                     }
 
                     array_push($service[$ratecard_key], $rc);
