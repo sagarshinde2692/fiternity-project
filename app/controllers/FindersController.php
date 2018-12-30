@@ -3693,11 +3693,11 @@ class FindersController extends \BaseController {
 		}
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.1.4'){
-			$cache_name = "finder_detail_android_5_1_5";
+			$cache_name = "finder_detail_ios_5_1_5";
 		}
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.1.5'){
-			$cache_name = "finder_detail_android_5_1_6";
+			$cache_name = "finder_detail_ios_5_1_6";
 		}
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.17'){
