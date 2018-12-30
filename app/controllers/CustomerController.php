@@ -9161,6 +9161,8 @@ class CustomerController extends \BaseController {
         }
 
         $order['start_date'] = strtotime($order['start_date']);
+        $order['starting_date'] = date('d M, Y', strtotime($order['start_date']));
+        $order['starting_text'] = "Starts from: ";
         $order['valid_text'] = 'Valid till: ';
         $order['valid_date'] = date('d M, Y', strtotime($order['end_date']));
         $order['subscription_text'] = "Subscription code: ";
