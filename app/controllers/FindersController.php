@@ -3692,9 +3692,14 @@ class FindersController extends \BaseController {
 			$cache_name = "finder_detail_android_4_4_3";
 		}
 
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.1.4'){
+			$cache_name = "finder_detail_android_5_1_5";
+		}
+
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.1.5'){
 			$cache_name = "finder_detail_android_5_1_6";
 		}
+
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.17'){
 			$cache_name = "finder_detail_android_5_1_8";
 		}
@@ -4322,11 +4327,11 @@ class FindersController extends \BaseController {
 					if(in_array($finder['category_id'],$dispaly_map_abandunt_catyegory)){
 						$data['finder']['dispaly_map'] = false;
 					}
-                    if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6')){
+                    if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
                         $data['finder']  = $this->applyNonValidity($data, 'app');
                     }
                     
-                    if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android'])) || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6')){
+                    if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android'])) || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
                         $data['finder'] = $this->applyTopService($data, 'app');
                     }
 
