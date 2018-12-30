@@ -3302,16 +3302,25 @@ class FindersController extends \BaseController {
             if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.6'){
 
                 $extra_info[0] = array(
-                	'title'=>'Avg. Calorie Burn',
-                	'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
-                	'description'=>$category_calorie_burn.' Kcal'
+                    'title'=>'Description',
+                    'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+                    'description'=> (isset($item['short_description']) && count($item['short_description']) > 0) ? strip_tags($item['short_description']) : ""
                 );
+                if(!empty($item['short_description'])){
+                    unset($item['short_description']);
+                }
 
-                $extra_info[1] = array(
-                	'title'=>'Results',
-                	'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
-                	'description'=>'Burn Fat | Super Cardio'
-                );
+                // $extra_info[0] = array(
+                // 	'title'=>'Avg. Calorie Burn',
+                // 	'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
+                // 	'description'=>$category_calorie_burn.' Kcal'
+                // );
+
+                // $extra_info[1] = array(
+                // 	'title'=>'Results',
+                // 	'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
+                // 	'description'=>'Burn Fat | Super Cardio'
+                // );
             }
 			
 			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6')){
