@@ -6682,13 +6682,16 @@ class FindersController extends \BaseController {
                         $service['top_service'] = true;
 
                         if(!empty($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
-                            $service['extra_info'][0] = [
+                            
+							$service['extra_info'][0] = [
                                 'title'=>'Description',
                                 'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
-                                'description'=> (isset($item['short_description']) && count($item['short_description']) > 0) ? strip_tags($item['short_description']) : ""
+                                'description'=> "<p>We have curated the best offers for you to kickstart a fit 2019 at ".$data['finder']['title'].". These are exclusively available on Fitternity for a limited period.</p>"
                             ];
-                        }else{
-                            $service['short_description'] = "<p>We have curated the best offers for you to kickstart a fit 2019 at ".$data['finder']['title'].". These are exclusively available on Fitternity for a limited period.</p>";
+                        
+						}else{
+                            
+							$service['short_description'] = "<p>We have curated the best offers for you to kickstart a fit 2019 at ".$data['finder']['title'].". These are exclusively available on Fitternity for a limited period.</p>";
 
                         }
 
