@@ -9132,7 +9132,7 @@ class CustomerController extends \BaseController {
 
         }
 
-        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id']);
+        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags']);
 
         $orders = $this->formatSessionPackList($orders);
 
@@ -9203,7 +9203,7 @@ class CustomerController extends \BaseController {
                 ->with(['service'=>function($query){
                     $query->select('slug');
                 }])
-                ->find($id, ['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id']);
+                ->find($id, ['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags']);
 
 
         return $this->formatSessionPack($order);
