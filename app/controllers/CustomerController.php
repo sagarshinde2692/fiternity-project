@@ -3591,9 +3591,9 @@ class CustomerController extends \BaseController {
 		}
         // if($this->app_version > '')
         try{
-            if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
+            // if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
                 $active_session_packs = $this->getSessionPacks(null, null, true, $customer_id)['data'];
-            }
+            // }
 
         }catch(Exception $e){
 
