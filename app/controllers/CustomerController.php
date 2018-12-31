@@ -9167,6 +9167,9 @@ class CustomerController extends \BaseController {
         $order['starting_text'] = "Starts from: ";
         $order['valid_text'] = 'Valid till: ';
         $order['valid_date'] = date('d M, Y', strtotime($order['end_date']));
+        if(!empty($order['ratecard_flags']['unlimited_validity'])){
+            $order['valid_date'] = "Unlimited validity";
+        }
         $order['subscription_text'] = "Subscription code: ";
         $order['subscription_code'] = strval($order['_id']);
         $order['sessions_left'] = strval($order['sessions_left']);
