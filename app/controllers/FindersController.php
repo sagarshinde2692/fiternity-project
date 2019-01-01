@@ -1289,6 +1289,8 @@ class FindersController extends \BaseController {
                         // }
                     
                     }
+                }else if(!empty($response['vendor_stripe_data']['text'])){
+                    $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
                 }
 
 
