@@ -5285,6 +5285,10 @@ Class Utilities {
                 ->where('type','membership')
                 ->orderBy('order', 'desc')
                 ->first();
+
+                if(!$ratecard){
+                    return;
+                }
                 
                 $ratecard_id = $ratecard->_id;
                 
