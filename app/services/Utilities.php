@@ -5285,7 +5285,9 @@ Class Utilities {
                 ->where('type','membership')
                 ->orderBy('order', 'desc')
                 ->first();
-                
+                if(empty($ratecard)){
+                    return;
+                }
                 $ratecard_id = $ratecard->_id;
                 
                 $offer = \Offer::active()
