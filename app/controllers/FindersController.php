@@ -690,7 +690,12 @@ class FindersController extends \BaseController {
 										$final_price = $service['serviceratecard'][$ratekey]['price'] = $rateval['price'] - $discount_amount;
 									}
 									if(in_array($rateval['type'], ['workout session']) && isset($rateval['peak_price'])){
-										if(in_array($service["trial"],["manual","diable", "manualauto"]) || in_array($finder["trial"],["manual","diable", "manualauto"]) || in_array($finder["category_id"],[47])){
+										if(
+                                            (!empty($service["trial"]) && in_array($service["trial"],["manual","diable", "manualauto"]) )
+                                            || 
+                                            (!empty($finder["trial"]) && in_array($finder["trial"],["manual","diable", "manualauto"])) 
+                                            || 
+                                            in_array($finder["category_id"],[47])){
 											$service['serviceratecard'][$ratekey]['special_price'] = $rateval['peak_price'];
 											// return $service['serviceratecard'][$ratekey];
 										}
