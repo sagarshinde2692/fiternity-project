@@ -1260,39 +1260,42 @@ class FindersController extends \BaseController {
 				}
 
 				$response['finder']  = $this->applyNonValidity($response, 'web');
+                if(empty($response['vendor_stripe_data']['text'])){
+                    if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
 
-                if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
+                        if(!empty($response['finder']['extended_validity'])){
 
-                    if(!empty($response['finder']['extended_validity'])){
+                            $response['vendor_stripe_data']	=	[
+                                        'text1'=> "Introducing Unlimited validity Membership",
+                                        'text2'=>$response['finder']['title'],
+                                        'text2'=>"",
+                                        'text3'=>" | Flat 50% off",
+                                        'background-color'=> "",
+                                        'text_color'=> '$fff',
+                                        'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                            ];
+                        
+                        }else{
+                        
+                            $response['vendor_stripe_data']	=	[
+                                        'text1'=>"",
+                                        // 'text2'=>$response['finder']['title'].":",
+                                        'text2'=>"",
+                                        'text3'=>"Lowest Offer Of The Year | Flat 50% OFF",
+                                        'background-color'=> "",
+                                        'text_color'=> '$fff',
+                                        'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                            ];
+                        }
 
-                        $response['vendor_stripe_data']	=	[
-                                    'text1'=> "Introducing Unlimited validity Membership",
-                                    'text2'=>$response['finder']['title'],
-                                    'text2'=>"",
-                                    'text3'=>" | Flat 50% off",
-                                    'background-color'=> "",
-                                    'text_color'=> '$fff',
-                                    'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
-                        ];
+
+                        // if(!in_array($response['finder']['_id'], Config::get('app.eoys_excluded_vendor_ids'))){
+                        //     $response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3']." | Addn Flat 10% off. Code: EOYS *T&C";
+                        // }
                     
-                    }else{
-                    
-                        $response['vendor_stripe_data']	=	[
-                                    'text1'=>"",
-                                    // 'text2'=>$response['finder']['title'].":",
-                                    'text2'=>"",
-                                    'text3'=>"Lowest Offer Of The Year | Flat 50% OFF",
-                                    'background-color'=> "",
-                                    'text_color'=> '$fff',
-                                    'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
-                        ];
                     }
-
-
-                    // if(!in_array($response['finder']['_id'], Config::get('app.eoys_excluded_vendor_ids'))){
-                    //     $response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3']." | Addn Flat 10% off. Code: EOYS *T&C";
-                    // }
-                
+                }else if(!empty($response['vendor_stripe_data']['text'])){
+                    $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
                 }
 
 
