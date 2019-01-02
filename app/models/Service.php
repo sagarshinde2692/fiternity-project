@@ -404,6 +404,15 @@ class Service extends \Basemodel{
                 if(!empty($value['duration']) && $value['duration'] > 1 && !empty($value['duration_type']) && $value['duration_type'] == 'session'){
                     $value['duration_type'] = 'sessions';
                 }
+
+                if(!empty($value['type']) && $value['type'] == "workout session"){
+                    if(!empty($value['offers'][0]['remarks'])){
+                        $value['offers'][0]['remarks'] = "Book multiple sessions starting at this price";
+                    }else{
+                        $value['remarks'] = "Book multiple sessions starting at this price";
+                    }
+                }
+
 				unset($value['flags']['convinience_fee_applicable']);
 				array_push($ratecards, $value);
 			}
