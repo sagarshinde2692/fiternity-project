@@ -1260,6 +1260,15 @@ class FindersController extends \BaseController {
 				}
 
 				$response['finder']  = $this->applyNonValidity($response, 'web');
+
+                $this->insertWSNonValidtiy($response, 'web');
+
+                $response['finder'] = $this->applyTopService($response);
+
+                if(!empty($cheapest_price)){
+                    $this->insertWSRatecardTopService($response, $cheapest_price);
+                }
+                
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
 
@@ -1299,8 +1308,6 @@ class FindersController extends \BaseController {
                 }
 
 
-
-                $response['finder'] = $this->applyTopService($response);
 
                 /********** Flash Offer Section Start**********/
 
@@ -6746,6 +6753,59 @@ class FindersController extends \BaseController {
 
         return $data['finder'];
     
+    }
+
+    public function insertWSNonValidtiy(&$data, $source = null){
+
+        $ratecard_key = 'ratecard';
+		$service_name_key = 'service_name';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
+
+        $services = $data['finder']['services'];
+        $sessions = [];
+        foreach($services as $service){
+            if(!(!empty($service['type']) && $service['type'] == 'extended validity')){
+                foreach($service[$ratecard_key] as $ratecard){
+                    if($ratecard['type'] == 'workout session'){
+                        if(empty($sessions[$service['_id']])){
+                            $sessions[$service['_id']] = [];
+                        }
+                        array_push( $sessions[$service['_id']], $ratecard);
+                    }
+                }
+            }
+        }
+
+        foreach($services as &$service){
+            if(!empty($service['type']) && $service['type'] == 'extended validity' && !empty($sessions[$service['_id']])){
+                $service[$ratecard_key] = array_merge($sessions[$service['_id']], $service[$ratecard_key]);
+            }
+        }
+
+        $data['finder']['services'] = $services;
+    }
+
+    public function insertWSRatecardTopService(&$data, $source = null){
+        $ratecard_key = 'ratecard';
+		$service_name_key = 'service_name';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
+
+        $services = $data['finder']['services'];
+
+
+        foreach($services as &$service){
+            if(!empty($service['top_service'])){
+                array_unshift($service[$ratecard_key], $ws_rc);
+                break;
+            }
+        }
+        $services = $data['finder']['services'];
     }
 
 }
