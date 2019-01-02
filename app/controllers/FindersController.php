@@ -1299,30 +1299,36 @@ class FindersController extends \BaseController {
 
                 $response['finder'] = $this->applyTopService($response);
 
-                $callOutObj= $this->getCalloutOffer($response['finder']['services']);
+                /********** Flash Offer Section Start**********/
 
-				if(!empty($callOutObj)){
 
-					if(!empty($callOutObj['callout'])){
-						$response['finder']['callout'] = $callOutObj['callout'];
-					}
+                // $callOutObj= $this->getCalloutOffer($response['finder']['services']);
 
-					if(!empty($callOutObj['ratecard_id'])){
-						$response['finder']['callout_ratecard_id'] = $callOutObj['ratecard_id'];
-					}
+				// if(!empty($callOutObj)){
 
-                    if(!empty($callOutObj['non_validity_ratecard'])){
-						$response['finder']['non_validity_ratecard'] = $callOutObj['non_validity_ratecard'];
-					}	
+				// 	if(!empty($callOutObj['callout'])){
+				// 		$response['finder']['callout'] = $callOutObj['callout'];
+				// 	}
+
+				// 	if(!empty($callOutObj['ratecard_id'])){
+				// 		$response['finder']['callout_ratecard_id'] = $callOutObj['ratecard_id'];
+				// 	}
+
+                //     if(!empty($callOutObj['non_validity_ratecard'])){
+				// 		$response['finder']['non_validity_ratecard'] = $callOutObj['non_validity_ratecard'];
+				// 	}	
                     
-                    if(!empty($callOutObj['callout_extended'])){
-						$response['finder']['callout_extended'] = $callOutObj['callout_extended'];
-					}	
+                //     if(!empty($callOutObj['callout_extended'])){
+				// 		$response['finder']['callout_extended'] = $callOutObj['callout_extended'];
+				// 	}	
                     
-                    $response['finder']['callout_header'] = "New Year Offer";
+                //     $response['finder']['callout_header'] = "New Year Offer";
 
 
-				}
+				// }
+
+                /********** Flash Offer Section End**********/
+
 
 				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
 
@@ -4381,23 +4387,30 @@ class FindersController extends \BaseController {
 
 				$data['finder']['other_offers'] = null;
 
-				$getCalloutOffer = $this->getCalloutOffer($data['finder']['services'],'app');
 
-				if(!empty($getCalloutOffer['callout'])){
+                /********** Flash Offer Section Start**********/
 
-					$data['finder']['other_offers'] = $getCalloutOffer;
+				// $getCalloutOffer = $this->getCalloutOffer($data['finder']['services'],'app');
 
-					$data['finder']['other_offers']['icon'] = "https://b.fitn.in/global/fitness-flash-sale-logo.png";
-					$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
-					$data['finder']['other_offers']['header'] = "Flash Offer";
-					$data['finder']['other_offers']['features'] = [
-						'Lowest Price Guarantee',
-						'Limited slots',
-						'EMI option available'
-					];
+				// if(!empty($getCalloutOffer['callout'])){
 
-					unset($data['finder']['other_offers']['callout']);
-				}
+				// 	$data['finder']['other_offers'] = $getCalloutOffer;
+
+				// 	$data['finder']['other_offers']['icon'] = "https://b.fitn.in/global/fitness-flash-sale-logo.png";
+				// 	$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
+				// 	$data['finder']['other_offers']['header'] = "Flash Offer";
+				// 	$data['finder']['other_offers']['features'] = [
+				// 		'Lowest Price Guarantee',
+				// 		'Limited slots',
+				// 		'EMI option available'
+				// 	];
+
+				// 	unset($data['finder']['other_offers']['callout']);
+				// }
+
+                /********** Flash Offer Section Start**********/
+
+                
 
 				$nearby_other_category_request = [
                     "offset" => 0,
