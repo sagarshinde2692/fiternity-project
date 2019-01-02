@@ -6788,7 +6788,7 @@ class FindersController extends \BaseController {
         $data['finder']['services'] = $services;
     }
 
-    public function insertWSRatecardTopService(&$data, $source = null){
+    public function insertWSRatecardTopService(&$data, $cheapest_price, $source = null){
         $ratecard_key = 'ratecard';
 		$service_name_key = 'service_name';
 
@@ -6801,11 +6801,20 @@ class FindersController extends \BaseController {
 
         foreach($services as &$service){
             if(!empty($service['top_service'])){
+
+                $ws_rc = [
+                    "type"=>'workout session',
+                    "top_service"=>true,
+                    "price"=>$cheapest_price,
+                    "remarks"=>"Book multiple sessions starting at this price"
+                ];
+
+
                 array_unshift($service[$ratecard_key], $ws_rc);
                 break;
             }
         }
-        $services = $data['finder']['services'];
+        $data['finder']['services'] = $services;
     }
 
 }
