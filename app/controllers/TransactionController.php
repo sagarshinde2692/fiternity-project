@@ -626,7 +626,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(isset($data['coupon_code']) && $data['coupon_code'] != ""){
+            if(isset($data['coupon_code']) && $data['coupon_code'] != "" && !(!empty($data['event_type']) && $data['event_type'] == 'TOI')){
                 $data['coupon_code'] = strtolower($data['coupon_code']);
                 $already_applied_coupon = Customer::where('_id',$data['customer_id'])->whereIn('applied_promotion_codes',[$data['coupon_code']])->count();
             
@@ -5900,7 +5900,7 @@ class TransactionController extends \BaseController {
             if(!empty($resp['data']['discount']))
         		$resp['coupon_description']="Rs. ".$resp['data']['discount']. " off Applied.";
 
-            if(isset($data['event_id']) && isset($data['customer_email']) && !(!empty($data['event_type']) && $data['event_type'] == "TOI")){
+            if(isset($data['event_id']) && isset($data['customer_email']) && !(!empty($data['event_type']) && $data['event_type'] == 'TOI')){
                                 
                 $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
             
