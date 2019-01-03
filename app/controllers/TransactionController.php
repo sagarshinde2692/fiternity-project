@@ -3005,6 +3005,11 @@ class TransactionController extends \BaseController {
         
         }
 
+        if(!empty($data['finder_flags']['enable_commission_discount'])){
+            $commission = getVendorCommision(['finder_id'=>$data['finder_id']]);
+            $data['amount'] = $data['amount_customer'] = round($data['amount']  * (100 - $commission + Config::get('app.pg_charge'))/100); 
+        }
+
         $amount = $data['amount_customer'] = $data['amount'];
 
         $convinience_fee = 0;
@@ -6306,6 +6311,24 @@ class TransactionController extends \BaseController {
 
             $data = array_merge($data,$ratecardDetail['data']);
             
+            $finder_id = (int) $data['finder_id'];
+            
+            $finderDetail = $this->getFinderDetail($finder_id);
+    
+            if($finderDetail['status'] != 200){
+                return Response::json($finderDetail,$this->error_status);
+            }
+    
+            $data = array_merge($data,$finderDetail['data']);
+            
+            if(!empty($data['finder_flags']['enable_commission_discount'])){
+                $commission = getVendorCommision(['finder_id'=>$finder['_id']]);
+
+                if(!empty($commission)){
+                        $data['amount'] = round($data['amount'] * (100 - $commission + Config::get('app.pg_charge'))/100);
+                }
+            }
+            
             $data['amount_payable'] = $data['amount'];
 
             $jwt_token = Request::header('Authorization');
@@ -6534,16 +6557,6 @@ class TransactionController extends \BaseController {
             if($data['amount_payable'] == 0){
                 $result['full_wallet_payment'] = true;
             }
-            
-            $finder_id = (int) $data['finder_id'];
-            
-            $finderDetail = $this->getFinderDetail($finder_id);
-    
-            if($finderDetail['status'] != 200){
-                return Response::json($finderDetail,$this->error_status);
-            }
-    
-            $data = array_merge($data,$finderDetail['data']);
     
             if(isset($data['service_id'])){
                 $service_id = (int) $data['service_id'];

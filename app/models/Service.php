@@ -178,6 +178,12 @@ class Service extends \Basemodel{
 		$second_max_validity_ids = [];
 		$ratecardsarr = null;
         $finder = $this->finder;
+
+
+        if(!empty($finder['flags']['enable_commission_discount'])){
+            $commission = getVendorCommision(['finder_id'=>$finder['_id']]);
+        }
+        
 		if(!empty($this->_id) && isset($this->_id)){
 
             if(!empty($finder->brand_id) && $finder->brand_id == 130){
@@ -341,6 +347,18 @@ class Service extends \Basemodel{
                             $value["special_price"] = intval($value["price"] * Config::get('app.non_peak_hours.off', 0.6)) ;
                         }
                     }	
+                }
+
+                if($value['type'] == 'membership' && !empty($commission)){
+                    if(!empty($value["special_price"] )){
+                        
+                        $value["special_price"] = round($value["special_price"] * (100 - $commission + Config::get('app.pg_charge'))/100);
+                        
+                    }else if($value["price"] ){
+                        
+                        $value["price"] = round($value["price"] * (100 - $commission + Config::get('app.pg_charge'))/100);
+                        
+                    }
                 }
 				
 				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;
