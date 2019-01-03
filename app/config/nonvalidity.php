@@ -39,6 +39,26 @@ return array(
         "180"=>360,
         "360"=>720,
     ],
+
+    'duration_session_map'=>[
+        "30"=>[
+            'high'=>20,
+            'low'=>6,
+        ],
+        "90"=>[
+            'high'=>72,
+            'low'=>20,
+        ],
+        "180"=>[
+            'high'=>100,
+            'low'=>72,
+        ],
+        "360"=>[
+            'high'=>200,
+            'low'=>100,
+        ],
+    ],
+    'cross_sell_diff'=>20,
     'slots_header'=>'Select a slot',
     'success_page'=>[
             'header' => 'How it works', 
