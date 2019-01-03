@@ -7768,7 +7768,8 @@ class CustomerController extends \BaseController {
 											$wallet_pass = ["wallet"=>true];
 										}
 										
-										if((strpos($workoutData['schedules'][0]['cost'], "Free") === false)&&!empty($workoutData['schedules'][0]['direct_payment_enable']))
+										//(strpos($workoutData['schedules'][0]['cost'], "Free") === false)&&
+										if(!empty($workoutData['schedules'][0]['direct_payment_enable']))
 											$wsschedules=$this->utilities->getCoreSlotsView($workoutData['schedules'][0]['slots'],$service,$workouts['_id'],$workoutData['schedules'][0]['cost'],'workout-session',$service['servicecategory_id'],$cust,$device_type,$paymentmode_selected,date("Y-m-d"),$wallet_pass,!empty($workoutData['schedules'][0]['price_qr_special'])?$workoutData['schedules'][0]['price_qr_special']:null,!empty($workoutData['schedules'][0]['price_qr'])?$workoutData['schedules'][0]['price_qr']:null,!empty($workoutData['schedules'][0]['city_id'])?$workoutData['schedules'][0]['city_id']:null);
 									}
 								}
