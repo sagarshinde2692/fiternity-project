@@ -6511,8 +6511,8 @@ class FindersController extends \BaseController {
                                     // $cs_ratecard['sub_title'] = $cs_ratecard['remarks'];
                                     $cs_ratecard['button_text'] = 'BUY';
                                     $cs_ratecard['validity'] = 0;
-                                    $price = !empty($cs_ratecard['offers'][0]['price']) ? $cs_ratecard['offers'][0]['price'] : (!empty($cs_ratecard['special_price']) ? $cs_ratecard['special_price'] : $cs_ratecard['price']);
-                                    $cs_ratecard['price'] = $price;
+                                    // $price = !empty($cs_ratecard['offers'][0]['price']) ? $cs_ratecard['offers'][0]['price'] : (!empty($cs_ratecard['special_price']) ? $cs_ratecard['special_price'] : $cs_ratecard['price']);
+                                    $cs_ratecard['price'] = $cs_ratecard_price;
                                     $cs_ratecard['special_price'] = 0;
 
                                     $ratecard['button_text'] = 'Continue';
