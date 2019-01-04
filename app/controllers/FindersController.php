@@ -642,7 +642,7 @@ class FindersController extends \BaseController {
 								}
 
 							}
-
+                            
 
 							if(count($service['serviceratecard']) > 0){
 
@@ -652,7 +652,7 @@ class FindersController extends \BaseController {
 										unset($service['serviceratecard'][$ratekey]);
 										continue;
 									}
-
+                                    
 									// if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
 									if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
 										$campaign_offer = true;
@@ -690,7 +690,12 @@ class FindersController extends \BaseController {
 										$final_price = $service['serviceratecard'][$ratekey]['price'] = $rateval['price'] - $discount_amount;
 									}
 									if(in_array($rateval['type'], ['workout session']) && isset($rateval['peak_price'])){
-										if(in_array($service["trial"],["manual","diable", "manualauto"]) || in_array($finder["trial"],["manual","diable", "manualauto"]) || in_array($finder["category_id"],[47])){
+										if(
+                                            (!empty($service["trial"]) && in_array($service["trial"],["manual","diable", "manualauto"]) )
+                                            || 
+                                            (!empty($finder["trial"]) && in_array($finder["trial"],["manual","diable", "manualauto"])) 
+                                            || 
+                                            in_array($finder["category_id"],[47])){
 											$service['serviceratecard'][$ratekey]['special_price'] = $rateval['peak_price'];
 											// return $service['serviceratecard'][$ratekey];
 										}
@@ -780,6 +785,11 @@ class FindersController extends \BaseController {
 
 					
 				}
+
+                $no_validity_ratecard_exists = false;
+                $no_validity_service = false;
+
+                
 
 				if(isset($finder['pay_per_session']) && $finder['pay_per_session']){
 
@@ -893,18 +903,7 @@ class FindersController extends \BaseController {
 				unset($finder['callout']);
 				unset($finder['callout_ratecard_id']);
 
-				$callOutObj= $this->getCalloutOffer($finder['services']);
-
-				if(!empty($callOutObj)){
-
-					if(!empty($callOutObj['callout'])){
-						$finder['callout'] = $callOutObj['callout'];
-					}
-
-					if(!empty($callOutObj['ratecard_id'])){
-						$finder['callout_ratecard_id'] = $callOutObj['ratecard_id'];
-					}						
-				}
+				
 				
 // 				}
 				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
@@ -1246,18 +1245,100 @@ class FindersController extends \BaseController {
 					}
 				// }
 				unset($response['finder']['info']['stripe']);
+
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
 					unset($response['finder']['payment_options']);
 				}
 
-				if(isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'],['closed','temporarily_shut'])){
+				if(isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'],['closed', 'temporarily_shut'])){
 
 					$response['finder']['membership'] = "disable";
 					$response['finder']['trial'] = "disable";
 
 					unset($response['finder']['payment_options']);
 				}
+
+				$response['finder']  = $this->applyNonValidity($response, 'web');
+
+                $this->insertWSNonValidtiy($response, 'web');
+
+                $response['finder'] = $this->applyTopService($response);
+
+                if(!empty($cheapest_price)){
+                    $this->insertWSRatecardTopService($response, $cheapest_price);
+                }
+                
+                if(empty($response['vendor_stripe_data']['text'])){
+                    if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
+
+                        if(!empty($response['finder']['extended_validity'])){
+
+                            $response['vendor_stripe_data']	=	[
+                                        'text1'=> "Introducing Unlimited validity Membership",
+                                        'text2'=>$response['finder']['title'],
+                                        'text2'=>"",
+                                        'text3'=>" | Flat 50% off",
+                                        'background-color'=> "",
+                                        'text_color'=> '$fff',
+                                        'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                            ];
+                        
+                        }else{
+                        
+                            $response['vendor_stripe_data']	=	[
+                                        'text1'=>"",
+                                        // 'text2'=>$response['finder']['title'].":",
+                                        'text2'=>"",
+                                        'text3'=>"Lowest Offer Of The Year | Flat 50% OFF",
+                                        'background-color'=> "",
+                                        'text_color'=> '$fff',
+                                        'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                            ];
+                        }
+
+
+                        // if(!in_array($response['finder']['_id'], Config::get('app.eoys_excluded_vendor_ids'))){
+                        //     $response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3']." | Addn Flat 10% off. Code: EOYS *T&C";
+                        // }
+                    
+                    }
+                }else if(!empty($response['vendor_stripe_data']['text'])){
+                    $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
+                }
+
+
+
+                /********** Flash Offer Section Start**********/
+
+
+                // $callOutObj= $this->getCalloutOffer($response['finder']['services']);
+
+				// if(!empty($callOutObj)){
+
+				// 	if(!empty($callOutObj['callout'])){
+				// 		$response['finder']['callout'] = $callOutObj['callout'];
+				// 	}
+
+				// 	if(!empty($callOutObj['ratecard_id'])){
+				// 		$response['finder']['callout_ratecard_id'] = $callOutObj['ratecard_id'];
+				// 	}
+
+                //     if(!empty($callOutObj['non_validity_ratecard'])){
+				// 		$response['finder']['non_validity_ratecard'] = $callOutObj['non_validity_ratecard'];
+				// 	}	
+                    
+                //     if(!empty($callOutObj['callout_extended'])){
+				// 		$response['finder']['callout_extended'] = $callOutObj['callout_extended'];
+				// 	}	
+                    
+                //     $response['finder']['callout_header'] = "New Year Offer";
+
+
+				// }
+
+                /********** Flash Offer Section End**********/
+
 
 				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
 
@@ -1292,6 +1373,7 @@ class FindersController extends \BaseController {
             $response['register_loyalty'] = !empty($customer['loyalty']);
 			$response['trials_detials']              =      $customer_trials_with_vendors;
 			$response['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
+            $response['session_pack']                =      !empty($this->utilities->getAllExtendedValidityOrders(['customer_email'=>$customer_email]));
 		}else{
             $response['register_loyalty'] = false;
 			$response['trials_detials']              =      [];
@@ -3198,8 +3280,8 @@ class FindersController extends \BaseController {
 		}else{
 			$items = $finder["services"];
 
-			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn', 'slug', 'location'));
-
+			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn', 'slug', 'location','non_validity'));
+			
 		}
 
 		if(!$items){
@@ -3238,20 +3320,31 @@ class FindersController extends \BaseController {
 					$category_calorie_burn = $sericecategorysCalorieArr[$service_category_id];
 				}
 			}
+            if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.6'){
 
-			$extra_info[0] = array(
-				'title'=>'Avg. Calorie Burn',
-				'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
-				'description'=>$category_calorie_burn.' Kcal'
-			);
+                $extra_info[0] = array(
+                    'title'=>'Description',
+                    'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+                    'description'=> (isset($item['short_description']) && count($item['short_description']) > 0) ? strip_tags($item['short_description']) : ""
+                );
+                if(!empty($item['short_description'])){
+                    unset($item['short_description']);
+                }
 
-			$extra_info[1] = array(
-				'title'=>'Results',
-				'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
-				'description'=>'Burn Fat | Super Cardio'
-			);
+                // $extra_info[0] = array(
+                // 	'title'=>'Avg. Calorie Burn',
+                // 	'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
+                // 	'description'=>$category_calorie_burn.' Kcal'
+                // );
+
+                // $extra_info[1] = array(
+                // 	'title'=>'Results',
+                // 	'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
+                // 	'description'=>'Burn Fat | Super Cardio'
+                // );
+            }
 			
-			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
+			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6')){
 			
 				$extra_info[] = array(
 					'title'=>'Description',
@@ -3619,6 +3712,18 @@ class FindersController extends \BaseController {
 		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '4.42'){
 			$cache_name = "finder_detail_android_4_4_3";
 		}
+
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.1.4'){
+			$cache_name = "finder_detail_ios_5_1_5";
+		}
+
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.1.5'){
+			$cache_name = "finder_detail_ios_5_1_6";
+		}
+
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.17'){
+			$cache_name = "finder_detail_android_5_1_8";
+		}
 		Log::info($cache_name);
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
 
@@ -3869,8 +3974,6 @@ class FindersController extends \BaseController {
 				array_set($finder, 'locationtags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))))));
 				array_set($finder, 'offerings', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))))));
 				array_set($finder, 'facilities', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['facilities'] , array('name') ))))));
-				
-
 
 				try {
 					if(isset($finder['info']['service']) && $finder['info']['service'] != ""){
@@ -4245,6 +4348,13 @@ class FindersController extends \BaseController {
 					if(in_array($finder['category_id'],$dispaly_map_abandunt_catyegory)){
 						$data['finder']['dispaly_map'] = false;
 					}
+                    if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
+                        $data['finder']  = $this->applyNonValidity($data, 'app');
+                    }
+                    
+                    if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android'])) || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
+                        $data['finder'] = $this->applyTopService($data, 'app');
+                    }
 
 					$device_type = ['ios','android'];
 
@@ -4287,23 +4397,30 @@ class FindersController extends \BaseController {
 
 				$data['finder']['other_offers'] = null;
 
-				$getCalloutOffer = $this->getCalloutOffer($data['finder']['services'],'app');
 
-				if(!empty($getCalloutOffer['callout'])){
+                /********** Flash Offer Section Start**********/
 
-					$data['finder']['other_offers'] = $getCalloutOffer;
+				// $getCalloutOffer = $this->getCalloutOffer($data['finder']['services'],'app');
 
-					$data['finder']['other_offers']['icon'] = "https://b.fitn.in/global/fitness-flash-sale-logo.png";
-					$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
-					$data['finder']['other_offers']['header'] = "Flash Offer";
-					$data['finder']['other_offers']['features'] = [
-						'Lowest Price Guarantee',
-						'Limited slots',
-						'EMI option available'
-					];
+				// if(!empty($getCalloutOffer['callout'])){
 
-					unset($data['finder']['other_offers']['callout']);
-				}
+				// 	$data['finder']['other_offers'] = $getCalloutOffer;
+
+				// 	$data['finder']['other_offers']['icon'] = "https://b.fitn.in/global/fitness-flash-sale-logo.png";
+				// 	$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
+				// 	$data['finder']['other_offers']['header'] = "Flash Offer";
+				// 	$data['finder']['other_offers']['features'] = [
+				// 		'Lowest Price Guarantee',
+				// 		'Limited slots',
+				// 		'EMI option available'
+				// 	];
+
+				// 	unset($data['finder']['other_offers']['callout']);
+				// }
+
+                /********** Flash Offer Section Start**********/
+
+                
 
 				$nearby_other_category_request = [
                     "offset" => 0,
@@ -4546,11 +4663,68 @@ class FindersController extends \BaseController {
 						$finderData['finder']['pay_per_session'] = false;
 					}
 
+					// if($_GET['app_version'] > '5.1.3'){
+					// 	if($pps_stripe = $this->addPPSStripe($finderData['finder'])){
+                    //         $finderData['finder']['services'] = $pps_stripe;
+                    //         $finderData['fit_ex'] =[
+                    //             'title'=>"Now work out at ".$finderData['finder']['title']."  at your own pace",
+                    //             'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
+                    //             'image'=>'https://b.fitn.in/non-validity/finderpage/NO%20VALIDITY%20MOBILE.png',
+                    //             'data'=>[
+                    //                 [
+                    //                     'title'=>"Money Saver",
+                    //                     'subtitle'=>"Pay only for the days you workout",
+                    //                     'image'=>'https://b.fitn.in/non-validity/finderpage/MONEY%20SAVER%20MOBILE.png'
+                    //                 ],
+                    //                 [
+                    //                     'title'=>"Super Easy One-Click Booking",
+                    //                     'subtitle'=>"Book before your workout through the QR code at gym/studio or your profile.",
+                    //                     'image'=>'https://b.fitn.in/non-validity/finderpage/ONE%20CLICK%20MOBILE.png'
+                    //                 ],
+                    //                 [
+                    //                     'title'=>"Track Your Workouts & Map Usage",
+                    //                     'subtitle'=>"View session details under My Session Packs in your profile",
+                    //                     'image'=>'https://b.fitn.in/non-validity/finderpage/TRACK%20YOUR%20WORKOUT%20MOBILE.png'
+                    //                 ],
+                    //                 [
+                    //                     'title'=>"Easy Re-scheduling & Cancellations",
+                    //                     'subtitle'=>"Don’t lose out on your workouts with easy cancellations through your profile",
+                    //                     'image'=>'https://b.fitn.in/non-validity/finderpage/RESCHEDULE%20MOBILE.png'
+                    //                 ],
+                    //             ]
+                    //         ];
+                    //     }
+					// }
 					if($_GET['app_version'] > '5.1.3'){
-						if($pps_stripe = $this->addPPSStripe($finderData['finder'])){
-                            $finderData['finder']['services'] = $pps_stripe;
-                            $finderData['fit_ex_title'] = "Now working out at ".$finderData['finder']['title']." is possible without buying a membership";
-                            $finderData['fit_ex_sub_title'] = "Use Fitternity's Pay-Per-Session to workout here and pay session by session";
+						if(!empty($finderData['finder']['extended_validity'])){
+                            // $finderData['finder']['services'] = $pps_stripe;
+                            $finderData['fit_ex'] =[
+                                'title'=>"Now work out at ".$finderData['finder']['title']."  at your own pace",
+                                'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
+                                'image'=>'https://b.fitn.in/non-validity/finderpage/NO%20VALIDITY%20MOBILE.png',
+                                'data'=>[
+                                    [
+                                        'title'=>"Money Saver",
+                                        'subtitle'=>"Pay only for the days you workout",
+                                        'image'=>'https://b.fitn.in/non-validity/finderpage/MONEY%20SAVER%20MOBILE.png'
+                                    ],
+                                    [
+                                        'title'=>"Super Easy One-Click Booking",
+                                        'subtitle'=>"Book before your workout through the QR code at gym/studio or your profile.",
+                                        'image'=>'https://b.fitn.in/non-validity/finderpage/ONE%20CLICK%20MOBILE.png'
+                                    ],
+                                    [
+                                        'title'=>"Track Your Workouts & Map Usage",
+                                        'subtitle'=>"View session details under My Session Packs in your profile",
+                                        'image'=>'https://b.fitn.in/non-validity/finderpage/TRACK%20YOUR%20WORKOUT%20MOBILE.png'
+                                    ],
+                                    [
+                                        'title'=>"Easy Re-scheduling & Cancellations",
+                                        'subtitle'=>"Don’t lose out on your workouts with easy cancellations through your profile",
+                                        'image'=>'https://b.fitn.in/non-validity/finderpage/RESCHEDULE%20MOBILE.png'
+                                    ],
+                                ]
+                            ];
                         }
 					}
 				}
@@ -4689,7 +4863,7 @@ class FindersController extends \BaseController {
 				// return $finderservice['ratecard'];
 				// exit;
 				foreach ($finderservice['ratecard'] as $ratecard){
-
+                    Log::info($ratecard);
 					if(in_array($ratecard["type"],["workout session", "trial"])){
 
 						if($type == "workout session" && in_array($ratecard["type"],["trial"])){
@@ -5814,6 +5988,10 @@ class FindersController extends \BaseController {
 
 			foreach($service[$key] as $ratecard){
 
+				if(!empty($ratecard['offers_copy'])){
+					$ratecard['offers'] = $ratecard['offers_copy'];
+				}
+
 				if(!empty($ratecard['offers']) && !empty($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 
 					$return['callout'] = $service[$service_name]." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'].". ";
@@ -5835,9 +6013,25 @@ class FindersController extends \BaseController {
 
 					$return['amount'] = $ratecard['offers'][0]['price'];
 
+                    if(!empty($ratecard['non_validity_ratecard'])){
+                        $return['non_validity_ratecard'] = $ratecard['non_validity_ratecard'];
+						// $return['non_validity_ratecard']['description'] = $return['non_validity_ratecard']['description'].Config::get('nonvalidity.how_works');
+						$return['non_validity_ratecard']['description'] = strtr($return['non_validity_ratecard']['description'], ['no_of_sessions'=>$ratecard['duration']]);
+                    }
+
 					if(in_array($ratecard['type'],["membership","packages"])){
 						$return['button_text'] = "Buy";
 					}
+
+                    if(!empty($ratecard['flags']['unlimited_validity'])){
+                    
+                        $return['callout_extended'] = "Unlimited Validity Membership";
+                    
+                    }else{
+                    
+                        $return['callout_extended'] = "Extended Validity Membership";
+                    
+                    }
 
 					break;
 				}
@@ -6217,5 +6411,485 @@ class FindersController extends \BaseController {
         }
         return $finders;
 	}
-	
+
+    public function applyNonValidity($data, $source = 'web'){
+        $extended_services = [];
+        $ratecard_key = 'ratecard';
+		$service_name_key = 'service_name';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+			$service_name_key = 'name';
+		}
+
+        $memberships = [];
+        $session_pack_duration_map =  Config::get('nonvalidity.session_pack_duration_map');
+        $duration_session_map =  Config::get('nonvalidity.duration_session_map');
+
+        function cmpSessions($a, $b)
+        {
+            return $a['validity_copy'] <= $b['validity_copy'];
+        }
+        foreach($data['finder']['services'] as $key => $service){
+            $no_validity_exists = false;
+			$no_validity_ratecards = [];
+            $no_validity_ratecards_all = [];
+			if(!empty($service[$ratecard_key])){
+				foreach($service[$ratecard_key] as $rate_key => $ratecard){
+                    $duration_day = $this->utilities->getDurationDay($ratecard);
+					if($ratecard['type'] == 'extended validity'){
+                       
+                        $service[$ratecard_key][$rate_key]['recommended'] = Config::get('nonvalidity.recommnded_block');
+                        $extended_validity_exists = true;
+                       
+						$ratecard['duration_type_copy'] = $ratecard['duration_type'];
+
+                        if(!empty($ratecard['flags']['unlimited_validity'])){
+                            $no_validity_exists = true;
+                            $ratecard['ext_validity'] = "Unlimited Validity";
+                            // $ratecard['remarks'] = "Recommended: Unlimited validity membership";
+                        }else{
+                            // $ratecard['remarks'] = "Recommended: Extended validity membership";
+                            $ratecard['ext_validity'] = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
+                        }
+                        $ratecard['duration_type'] = $ratecard['duration_type']."\n(".$ratecard['ext_validity'].')';
+						// $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+                        // $ratecard['price'] = $price;
+						// $ratecard['special_price'] = 0;
+						$ratecard['validity_type_copy'] = $ratecard['validity_type'];
+						$ratecard['validity_copy'] = $ratecard['validity'];
+						$ratecard['validity'] = 0;
+						// if(!empty($ratecard['offers'])){
+						// 	// unset($ratecard['offers']);
+                        //     $ratecard['offers'] = [];
+						// }
+                        
+                        // $ratecard['non_validity_ratecard'] = $this->getNonValidityBanner();
+                        // unset($ratecard['validity_type']);
+
+
+                        if(empty($no_validity_ratecards[$duration_day])){
+                            $no_validity_ratecards[$duration_day] = [];
+                        }
+						array_push($no_validity_ratecards[$duration_day], $ratecard) ;
+						array_push($no_validity_ratecards_all, $ratecard) ;
+					}
+				}
+			}
+
+            
+            usort($no_validity_ratecards_all, "cmpSessions");
+
+            if(!empty($no_validity_ratecards)){
+
+                $data['finder']['extended_validity'] = true;
+
+				foreach($service[$ratecard_key] as $key1 => $ratecard){
+                    if($ratecard['type'] == 'membership'){
+
+                        $duration_day = $this->utilities->getDurationDay($ratecard);
+
+                        $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+                        
+                        if(empty($memberships[$service['_id']][$duration_day])){
+                             $memberships[$service['_id']][$duration_day] = [];
+                        }
+						array_push($memberships[$service['_id']][$duration_day], $ratecard) ;
+
+                        if(!empty($duration_session_map[strval($duration_day)])){
+                            
+                            $sessions_range = $duration_session_map[strval($duration_day)];
+                            // print_r(json_encode($sessions_range));
+                            // exit();
+                            foreach($no_validity_ratecards_all as $cs_ratecard){
+                                $cs_ratecard_price = !empty($cs_ratecard['offers'][0]['price']) ? $cs_ratecard['offers'][0]['price'] : (!empty($cs_ratecard['special_price']) ? $cs_ratecard['special_price'] : $cs_ratecard['price']);
+                                if($cs_ratecard['duration'] > $sessions_range['low'] && $cs_ratecard['duration'] <= $sessions_range['high'] && $cs_ratecard_price <= $price * 1.2){
+                                    $cs_ratecard['knowmore'] =  false;
+                                    // $unlimited_validity = !empty($cs_ratecard['flags']['unlimited_validity']);
+                                    $cs_ratecard['sub_title'] = !empty($cs_ratecard['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$cs_ratecard['validity_copy'].' '.ucwords($cs_ratecard['validity_type']);
+                                    $cs_ratecard['title'] = $cs_ratecard['duration'].' '.$cs_ratecard['duration_type_copy'];
+                                    // $cs_ratecard['sub_title'] = $cs_ratecard['remarks'];
+                                    $cs_ratecard['button_text'] = 'BUY';
+                                    $cs_ratecard['validity'] = 0;
+                                    // $price = !empty($cs_ratecard['offers'][0]['price']) ? $cs_ratecard['offers'][0]['price'] : (!empty($cs_ratecard['special_price']) ? $cs_ratecard['special_price'] : $cs_ratecard['price']);
+                                    $cs_ratecard['price'] = $cs_ratecard_price;
+                                    $cs_ratecard['special_price'] = 0;
+
+                                    $ratecard['button_text'] = 'Continue';
+                                    $ratecard['title'] = $ratecard['validity'].' '.$ratecard['validity_type'];
+                                    $ratecard['validity'] = 0;
+
+                                    if(!empty($ratecard['campaign_offer'])){
+                                        unset($ratecard['campaign_offer']);
+                                    }
+                                    if(!empty($ratecard["remarks"])){
+                                        unset($ratecard['remarks']);
+                                    }
+                                    if(!empty($ratecard['offers'])){
+                                        // unset($ratecard['offers']);
+                                        $ratecard['offers'] = [];
+                                    }
+									$section3 = Config::get('nonvalidity.success_page');
+									$section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name'=>$data['finder']['title']]);
+                                    $ratecard['price'] = $price;
+                                    $ratecard['special_price'] = 0;
+                                    $ratecard['validity'] = 0;
+                                    $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
+                                        'header'=>'Want to SAVE MORE?',
+                                        'section1'=>[
+                                            'header'=>'You are currently buying',
+                                            'ratecards'=>[$ratecard],
+                                        ],
+                                        'section2'=>[
+                                            'header'=>'Save more by buying Session Packs',
+                                            'ratecards'=>[$cs_ratecard],
+                                        ],
+                                        'section3'=>$section3
+                                        // 'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
+                                        // 'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\nYou are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
+                                        // 'ratecards'=>$duration_value,
+                                        // 'continue_text'=>"Continue with ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' at Rs.'.$price
+									];
+                                    break;
+                                }
+                            }
+                        }
+
+                        // if(!empty($session_pack_duration_map[strval($duration_day)])){
+                        //     // return $ratecard;
+                        //     foreach($no_validity_ratecards as $duration_key => $duration_value){
+
+                        //         if(intval($duration_key) == $session_pack_duration_map[strval($duration_day)]){
+                        //             $unlimited_validity = false;
+                        //             foreach($duration_value as &$rc){
+                        //                 // return $rc;
+                        //                 $rc['knowmore'] =  false;
+						// 				$unlimited_validity = $unlimited_validity || !empty($rc['flags']['unlimited_validity']);
+						// 				$rc['sub_title'] = !empty($rc['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$rc['validity_copy'].' '.ucwords($rc['validity_type']);
+						// 				$rc['title'] = $rc['duration'].' '.$rc['duration_type_copy'];
+						// 				// $rc['sub_title'] = $rc['remarks'];
+						// 				$rc['button_text'] = 'BUY';
+                        //                 $rc['validity'] = 0;
+                        //                 $price = !empty($rc['offers'][0]['price']) ? $rc['offers'][0]['price'] : (!empty($rc['special_price']) ? $rc['special_price'] : $rc['price']);
+                        //                 $rc['price'] = $price;
+						//                 $rc['special_price'] = 0;
+                        //             }
+                        //             $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+                        //             $ratecard['button_text'] = 'Continue';
+                        //             $ratecard['title'] = $ratecard['validity'].' '.$ratecard['validity_type'];
+                        //             $ratecard['validity'] = 0;
+
+                        //             if(!empty($ratecard['campaign_offer'])){
+                        //                 unset($ratecard['campaign_offer']);
+                        //             }
+                        //             if(!empty($ratecard["remarks"])){
+                        //                 unset($ratecard['remarks']);
+                        //             }
+                        //             if(!empty($ratecard['offers'])){
+                        //                 // unset($ratecard['offers']);
+                        //                 $ratecard['offers'] = [];
+                        //             }
+						// 			$section3 = Config::get('nonvalidity.success_page');
+						// 			$section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name'=>$data['finder']['title']]);
+                        //             $ratecard['price'] = $price;
+                        //             $ratecard['special_price'] = 0;
+                        //             $ratecard['validity'] = 0;
+                        //             $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
+                        //                 'header'=>'Want to SAVE MORE?',
+                        //                 'section1'=>[
+                        //                     'header'=>'You are currently buying',
+                        //                     'ratecards'=>[$ratecard],
+                        //                 ],
+                        //                 'section2'=>[
+                        //                     'header'=>'Save more by buying Session Packs',
+                        //                     'ratecards'=>$duration_value,
+                        //                 ],
+                        //                 'section3'=>$section3
+                        //                 // 'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
+                        //                 // 'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\nYou are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
+                        //                 // 'ratecards'=>$duration_value,
+                        //                 // 'continue_text'=>"Continue with ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' at Rs.'.$price
+						// 			];
+									
+                        //             break;
+                                
+                        //         }
+                        //     }
+                        // }
+                    }
+                    if($ratecard['type'] == 'extended validity'){
+                        $duration_day = $this->utilities->getDurationDay($ratecard);
+                        $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+                        if(!empty($ratecard['flags']['unlimited_validity'])){
+                            // $remarks = "Recommended: Unlimited validity membership";
+                            $ext_validity = "Unlimited Validity";
+                        }else{
+                            // $remarks = "Recommended: Extended validity membership";
+                            $ext_validity = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
+                        }
+                        // print_r( json_encode($data['finder']['services'][$key][$ratecard_key][$key1]));
+                        // exit();
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['ext_validity'] = $ext_validity;
+                        $data['finder']['services'][$key]['unlimited_validity'] = !empty($data['finder']['services'][$key]['unlimited_validity']) || !empty($ratecard['flags']['unlimited_validity']);
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $service[$ratecard_key][$key1]['duration_type']."\n(".$ext_validity.')';
+                        // $data['finder']['services'][$key][$ratecard_key][$key1]['price'] = $price;                        
+                        // $data['finder']['services'][$key][$ratecard_key][$key1]['special_price'] = 0;
+                        // unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity']);
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['validity_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['validity'];
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['validity'] = 0;
+                        $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type'];
+                        unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
+						// if(!empty($data['finder']['services'][$key][$ratecard_key][$key1]['offers'])){
+							// $data['finder']['services'][$key][$ratecard_key][$key1]['offers_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['offers'];
+							// unset($data['finder']['services'][$key][$ratecard_key][$key1]['offers'])
+                            // $data['finder']['services'][$key][$ratecard_key][$key1]['offers'] = [];
+						// }
+                        // $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
+                        // $data['finder']['services'][$key][$ratecard_key][$key1]['remarks'] = $remarks;
+
+                        // if(!empty($data['finder']['services'][$key][$ratecard_key][$key1]['offers'][0]['remarks'])){
+                        //     $data['finder']['services'][$key][$ratecard_key][$key1]['offers'][0]['remarks'] = $remarks;
+                        // }
+                        
+                    }
+				}
+                
+                // $service['non_validity'] = $this->getNonValidityBanner();
+                $service['recommended'] = Config::get('nonvalidity.recommnded_block');
+                $service['service_name_display'] = $service[$service_name_key];
+                $post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
+                if(!empty($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
+				    $service[$service_name_key] = $service[$service_name_key]." - ".$post_name;
+                }else{
+                    $service['post_name'] = $post_name;
+                }
+				$service['unlimited_validity'] = $no_validity_exists;
+				$no_validity_ratecards_service = [];
+
+				foreach(array_values($no_validity_ratecards) as $nvc){
+					$no_validity_ratecards_service = array_merge($no_validity_ratecards_service, $nvc);
+				}
+
+                $service[$ratecard_key] = $no_validity_ratecards_service;
+                $service['type'] = 'extended validity';
+				
+				// $data['finder']['services'][$key]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
+
+                array_push($extended_services, $service);
+                // array_splice( $return , $key, 0, $service );
+            }
+        }
+
+        // $return = $data['finder']['services'];
+        // $pushed = 0;
+        // // return $extended_services;
+        // foreach($extended_services as $es){
+        //     foreach($return as $r_k => $r){
+        //         // return $r;
+        //         if($es['_id'] == $r['_id']){
+        //             // return $data['finder']['services'];
+        //             array_splice( $data['finder']['services'] , $r_k+$pushed, 0, [$es] );
+        //             $pushed++;
+        //         }
+        //     }
+        // }
+
+        $data['finder']['services'] = array_merge($extended_services, $data['finder']['services']);
+
+        $session_pack_duration_map_flip = array_flip($session_pack_duration_map);
+
+        foreach($data['finder']['services'] as &$s){
+            // if(empty($s['type']) || $s['type'] != 'extended validity'){
+                foreach($s[$ratecard_key] as &$r){
+                    // return $r;
+                    if($r['type'] == 'extended validity'){
+                        $duration_day = $this->utilities->getDurationDay($r);
+                        if(!empty($session_pack_duration_map_flip[$duration_day]) && !empty($memberships[strval($s['_id'])][$session_pack_duration_map_flip[$duration_day]])){
+                            
+                            $mem_ratecard = $memberships[strval($s['_id'])][$session_pack_duration_map_flip[$duration_day]][0];
+
+                            $getNonValidityBanner = $this->getNonValidityBanner();
+                            // return $r;
+                            $mem_ratecard_duration_day = $this->utilities->getDurationDay($mem_ratecard);
+                            $mem_ratecard_price = !empty($mem_ratecard['offers'][0]['price']) ? $mem_ratecard['offers'][0]['price'] : (!empty($mem_ratecard['special_price']) ? $mem_ratecard['special_price'] : $mem_ratecard['price']);
+							$price = !empty($r['offers'][0]['price']) ? $r['offers'][0]['price'] : (!empty($r['special_price']) ? $r['special_price'] : $r['price']);
+                            $getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
+                                "__membership_price"=>$mem_ratecard_price,
+                                "__membership_months"=>$mem_ratecard_duration_day/30,
+                                "__extended_sessions_count"=>$r['duration'],
+                                "__extended_sessions_price"=>$price,
+                                "__sessions_validity_months"=>$r['ext_validity'],
+                                "__vendor_name"=>$data['finder']['title'],
+                                "__ext_validity_type"=>!empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity"
+							]);
+
+                            $getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>(!empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity")]);
+                            if(!empty($getNonValidityBanner['title1'])){
+                                $getNonValidityBanner['title1'] = strtr($getNonValidityBanner['title1'], ['__ext_validity_type'=>(!empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity")]);
+                            }
+							$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+							$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
+							$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
+							$r['non_validity_ratecard']  = $getNonValidityBanner;
+							
+                        }
+
+                    }
+                }
+            // }
+        }
+
+        foreach($data['finder']['services'] as &$ser){
+            foreach($ser[$ratecard_key] as &$rate_c){
+
+                if(!empty($ser['unlimited_validity'])){
+
+                    if(!empty($rate_c['flags']['unlimited_validity']) && !empty($rate_c['non_validity_ratecard']) && !empty($ser['type']) && $ser['type'] == 'extended validity'){
+                        $ser['non_validity'] = $rate_c['non_validity_ratecard_copy'];
+                        $ser['non_validity']['description'] = $ser['non_validity']['description'].Config::get('nonvalidity.service_footer');
+                        break;
+                    }
+                }else{
+                    if(!empty($rate_c['non_validity_ratecard']) && !empty($ser['type']) && $ser['type'] == 'extended validity'){
+                        $ser['non_validity'] = $rate_c['non_validity_ratecard_copy'];
+                        $ser['non_validity']['description'] = $ser['non_validity']['description'].Config::get('nonvalidity.service_footer');
+                        break;
+                    }
+                }
+				unset($rate_c['non_validity_ratecard_copy']);
+            }
+        }
+
+        return $data['finder'];
+    }
+
+    public function getNonValidityBanner(){
+        if(in_array($this->device_type, ['android', 'ios'])){
+            return Config::get('nonvalidity.finder_banner_app');
+        }else{
+            return Config::get('nonvalidity.finder_banner');
+        }
+    }
+
+    public function applyTopService($data, $source = 'web'){
+        
+        $ratecard_key = 'ratecard';
+		$service_name_key = 'service_name';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+			$service_name_key = 'name';
+		}
+
+
+        $pushed_rc = [];
+
+        $service = null;
+
+        foreach($data['finder']['services'] as $ser){
+            foreach($ser[$ratecard_key] as $rc){
+                if((empty($ser['type']) || $ser['type'] != "extended validity") && !empty($rc['flags']['top_service']) && !in_array($rc['_id'], $pushed_rc)){
+                    if(empty($service)){
+                        $service = $ser;
+                        $service[$service_name_key] = "New year offer - best price of the year";
+                        $service['_id'] = 100000;
+                        $service['top_service'] = true;
+
+                        if(!empty($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
+                            
+							$service['extra_info'][0] = [
+                                'title'=>'Description',
+                                'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+                                'description'=> "<p>We have curated the best offers for you to kickstart a fit 2019 at ".$data['finder']['title'].". These are exclusively available on Fitternity for a limited period.</p>"
+                            ];
+                        
+						}else{
+                            
+							$service['short_description'] = "<p>We have curated the best offers for you to kickstart a fit 2019 at ".$data['finder']['title'].". These are exclusively available on Fitternity for a limited period.</p>";
+
+                        }
+
+
+                        $service[$ratecard_key] = [];
+                        if(!empty($service['batches'])){
+                            unset($service['batches']);
+                        }
+                        $service['recommended'] = Config::get('nonvalidity.recommnded_block');
+                    }
+
+                    array_push($service[$ratecard_key], $rc);
+                }
+            }
+		}
+		
+		if(!empty($service)){
+			array_unshift($data['finder']['services'], $service);
+		}
+
+        return $data['finder'];
+    
+    }
+
+    public function insertWSNonValidtiy(&$data, $source = null){
+
+        $ratecard_key = 'ratecard';
+		$service_name_key = 'service_name';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
+
+        $services = $data['finder']['services'];
+        $sessions = [];
+        foreach($services as $service){
+            if(!(!empty($service['type']) && $service['type'] == 'extended validity')){
+                foreach($service[$ratecard_key] as $ratecard){
+                    if($ratecard['type'] == 'workout session'){
+                        if(empty($sessions[$service['_id']])){
+                            $sessions[$service['_id']] = [];
+                        }
+                        array_push( $sessions[$service['_id']], $ratecard);
+                    }
+                }
+            }
+        }
+
+        foreach($services as &$service){
+            if(!empty($service['type']) && $service['type'] == 'extended validity' && !empty($sessions[$service['_id']])){
+                $service[$ratecard_key] = array_merge($sessions[$service['_id']], $service[$ratecard_key]);
+            }
+        }
+
+        $data['finder']['services'] = $services;
+    }
+
+    public function insertWSRatecardTopService(&$data, $cheapest_price, $source = null){
+        $ratecard_key = 'ratecard';
+		$service_name_key = 'service_name';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
+
+        $services = $data['finder']['services'];
+
+
+        foreach($services as &$service){
+            if(!empty($service['top_service'])){
+
+                $ws_rc = [
+                    "type"=>'workout session',
+                    "top_service"=>true,
+                    "price"=>$cheapest_price,
+                    "remarks"=>"Book multiple sessions starting at this price"
+                ];
+
+
+                array_unshift($service[$ratecard_key], $ws_rc);
+                break;
+            }
+        }
+        $data['finder']['services'] = $services;
+    }
+
 }

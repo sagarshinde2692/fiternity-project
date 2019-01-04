@@ -772,6 +772,10 @@ class HomeController extends BaseController {
             if (in_array($type, $orderItemArr)) {
 
                 $itemData = Order::find(intval($id));
+
+                if(empty($itemData)){
+                    return ['status'=>400];
+                }
                 
                 
                 
@@ -1026,6 +1030,7 @@ class HomeController extends BaseController {
             $schedule_slot  =   (isset($itemData['schedule_slot']) && $itemData['schedule_slot'] != "") ? $itemData['schedule_slot'] : "";
             $service_duration = (isset($itemData['service_duration_purchase']) && $itemData['service_duration_purchase'] != "") ? $itemData['service_duration_purchase'] : "";
             $preferred_starting_date = (isset($itemData['preferred_starting_date'])) ? $itemData['preferred_starting_date'] : "";
+            $serviceDurArr = array_map('trim',explode("-",$service_duration));
 
             $header     =   "Congratulations!";
             $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61094444 and we will resolve it immediately";
@@ -1057,7 +1062,7 @@ class HomeController extends BaseController {
                     array_push($streak_items, ['title'=>$value['cashback'].'%', 'value'=>$value['number'].' Sessions']);
 
                 }
-
+                 
                 $streak = [
                     'header'=>'Attend More Earn More',
                     'items'=>$streak_items
@@ -1074,6 +1079,14 @@ class HomeController extends BaseController {
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
+
+                if(isset($item['extended_validity_order_id']) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
+                    $response['streak']['header'] = '';
+                    $response['streak']['items'] = [];
+                }
+                if(isset($item['extended_validity_order_id']) && (($device_type=='android' && $app_version > '5.17') || ($device_type=='ios' && $app_version > '5.1.4'))){
+                    unset($response['streak']);
+                }
 
                 if(!empty($finder) && isset($finder['brand_id'])){
                     $response['brand_id'] = !empty($finder['brand_id']);
@@ -1479,6 +1492,10 @@ class HomeController extends BaseController {
             $position = 0;
 
             $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
+            
+            if(isset($item['extended_validity']) && $item['extended_validity']){ 
+                $booking_details_data["validity"] = ['field'=>'VALIDITY','value'=>(!empty($item['ratecard_flags']['unlimited_validity']) ? "Unlimited Validity" :  $serviceDurArr[1]),'position'=>$position++];
+            }
 
             if(in_array($type,["healthytiffintrail","healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"])){
                 $booking_details_data["finder_name_location"] = ['field'=>'MEMBERSHIP BOUGHT AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
@@ -1491,22 +1508,22 @@ class HomeController extends BaseController {
             $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service_name,'position'=>$position++];
 
             $booking_details_data["service_duration"] = ['field'=>'SERVICE DURATION','value'=>$service_duration,'position'=>$position++];
-
+            
             $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'-','position'=>$position++];
 
             $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
 
             if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
 
-                 $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free','position'=>$position++];
+                $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free','position'=>$position++];
 
             }else{
 
                 $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free Via Fitternity','position'=>$position++];
             }
 
-            $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
-
+            $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];            
+            
             $booking_details_data["amount_paid"] = ['field'=>'AMOUNT PAID','value'=>'','position'=>$position++];
 
             if($poc != ""){ 
@@ -1747,9 +1764,18 @@ class HomeController extends BaseController {
 
             
             if(in_array($type,["membershipwithpg","membershipwithoutpg","healthytiffinmembership"])){
-
+                
                 $header = "Membership Confirmed";
                 $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
+
+                if(isset($item['extended_validity']) && $item['extended_validity']){  
+                    $header = "Session Pack Confirmed";
+                    $duration = "unlimited validity";
+                    if(!isset($item['ratecard_flags']['unlimited_validity']) || (!$item['ratecard_flags']['unlimited_validity'])){
+                        $duration = "valid for ".$serviceDurArr[1];
+                    }
+                    $subline = "Hi <b>".$item['customer_name']."</b>, your ".$serviceDurArr[0]." pack (".$duration.") for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed by paying Rs. ".(string)$item['amount_customer'].". We have also sent you a confirmation Email and SMS";
+                }
 
                 if(isset($item['booking_for_others']) && $item['booking_for_others']){
 
@@ -1773,13 +1799,19 @@ class HomeController extends BaseController {
                 }
 
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
-                
-                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id']);
-                
+                    if(!isset($item['extended_validity'])){
+                        $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id', 'validity']);
+                    }
+                    else{
+                        $booking_details_data = array_only($booking_details_data, ['booking_id','address','poc', 'group_id', 'validity']);
+                    }
                 }else{
-                    
-                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc']);
-                
+                    if(!isset($item['extended_validity'])){
+                        $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'validity']);
+                    }
+                    else{
+                        $booking_details_data = array_only($booking_details_data, ['booking_id','address','poc', 'validity']);
+                    }
                 }
 
             }
@@ -1803,7 +1835,7 @@ class HomeController extends BaseController {
                     $subline = "You have booked a session for ".ucwords($item['customer_name'])." for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value'].". We have also sent a confirmation Email and SMS.";
                 }
 
-                $booking_details_data = array_only($booking_details_data, ['booking_id','start_date','address','poc','start_time']);
+                $booking_details_data = array_only($booking_details_data, ['booking_id','start_date','address','poc','start_time', 'validity']);
 
                 $booking_details_data['start_date']['value'] = $booking_details_data['start_date']['value'].", ".$booking_details_data['start_time']['value'];
                 $booking_details_data['start_date']['field'] = "DATE & TIME";
@@ -2106,6 +2138,18 @@ class HomeController extends BaseController {
 
             }
 
+            $section3 = Config::get('nonvalidity.success_page');
+            $section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name'=>$itemData['finder_name']]);
+
+            if(isset($item['extended_validity']) && $item['extended_validity']){  
+                $resp['session_pack'] = [
+                    'header' => 'Session Pack Activated', 
+                    'text' => 'All you need to do is book your slot everytime you want to workout',
+                    'data' => $section3['data']
+                ];
+            }
+
+            
             if($this->vendor_token){
 
                 if(in_array($item['type'],[/*"workout-session",*/"booktrials"])){

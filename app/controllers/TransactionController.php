@@ -785,7 +785,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(isset($data['coupon_code']) && $data['coupon_code'] != ""){
+            if(isset($data['coupon_code']) && $data['coupon_code'] != "" && !(!empty($data['event_type']) && $data['event_type'] == 'TOI')){
                 $data['coupon_code'] = strtolower($data['coupon_code']);
                 $already_applied_coupon = Customer::where('_id',$data['customer_id'])->whereIn('applied_promotion_codes',[$data['coupon_code']])->count();
             
@@ -1221,7 +1221,7 @@ class TransactionController extends \BaseController {
             }
         }
         
-        if(empty($data['session_payment'])){
+        if(empty($data['session_payment']) && empty($data['session_pack_discount'])){
             
             if(in_array($order['type'], ['booktrials', 'workout-session'])){
                 $resp['data']["quantity_details"] = [
@@ -2305,7 +2305,13 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            if(!empty($order['extended_validity'])){
+                // Ratecard::$withoutAppends = true;
+                $ratecard = Ratecard::find($order['ratecard_id'], ['flags']);
+            }
+
             $snap_block = in_array($order['finder_id'], Config::get('app.snap_bangalore_finder_ids')) && $order['type'] == 'memberships';
+            $extended_validity_block = !empty($order['extended_validity']) && empty($ratecard['flags']['enable_vendor_novalidity_comm']);
 
             if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
 
@@ -2328,7 +2334,7 @@ class TransactionController extends \BaseController {
                     }
                 }
 
-                if(!(!empty($order->duration_day) && $order->duration_day == 30  && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block)){
+                if(!(!empty($order->duration_day) && $order->duration_day == 30  && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block) && empty($extended_validity_block)){
 
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                         if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -2518,7 +2524,7 @@ class TransactionController extends \BaseController {
                 }
 
                 //no sms to Healthy Snacks Beverages and Healthy Tiffins
-                if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block)){
+                if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block) && empty($extended_validity_block)){
                     
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                         if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -3139,7 +3145,7 @@ class TransactionController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
         }
-
+        $data['ratecard_amount'] = $data['amount'];
         if(!empty($data['customer_quantity'])){
             
             $data['ratecard_amount'] = $data['amount'];
@@ -3201,9 +3207,23 @@ class TransactionController extends \BaseController {
                 $amount  =  $data['amount'];
     
             }
-        }            
+        }    
+
+        if($data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
+            Order::$withoutAppends = true;
+            $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
+            if($extended_validity_order){
+                $data['extended_validity_order_id'] = $extended_validity_order['_id'];
+                $data['session_pack_discount'] = $data['ratecard_amount'];
+                $amount = $data['amount'] - $data['session_pack_discount'];
+                if(!empty($data['ratecard']['enable_vendor_novalidity_comm'])){
+                    $data['amount_finder'] = 0;
+                    $data['vendor_price'] = 0;
+                }
+            }
+        }        
         
-        if(((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
+        if(empty($data['session_pack_discount']) && empty($order['session_pack_discount']) && ((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
             $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
 
@@ -3996,6 +4016,8 @@ class TransactionController extends \BaseController {
         $data['ratecard_remarks']  = (isset($ratecard['remarks'])) ? $ratecard['remarks'] : "";
         $data['duration'] = (isset($ratecard['duration'])) ? $ratecard['duration'] : "";
         $data['duration_type'] = (isset($ratecard['duration_type'])) ? $ratecard['duration_type'] : "";
+        $data['validity'] = (isset($ratecard['validity'])) ? $ratecard['validity'] : "";
+        $data['validity_type'] = (isset($ratecard['validity_type'])) ? $ratecard['validity_type'] : "";
 
         if($ratecard['type'] == 'workout session' && !empty($ratecard['vendor_price'])){
             $data['vendor_price'] = $ratecard['vendor_price'];
@@ -4005,9 +4027,6 @@ class TransactionController extends \BaseController {
             $data['type'] = $ratecard['type'];
         }
 
-        // if($ratecard['type'] == 'workout session'){
-        //     $data['type'] = 'workout-session';
-        // }
         
 
         if($ratecard['finder_id'] == 8892 && $ratecard['type'] == 'workout session'){
@@ -4101,9 +4120,14 @@ class TransactionController extends \BaseController {
         	}
         }
         
-        
-        
         $data['amount'] = $data['amount_finder'];
+
+        if($ratecard['type'] == 'extended validity'){
+            $data['type'] = 'memberships';
+            $data['no_of_sessions'] = $data['sessions_left'] = $ratecard['duration'];
+            $data['extended_validity'] = true;
+            $data['amount_finder'] = 0;
+        }
 
        /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
         $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
@@ -5504,6 +5528,12 @@ class TransactionController extends \BaseController {
                     'field' => 'Membership Amount',
                     'value' => 'Rs. '.$data['ratecard_amount']
                 );  
+                if(!empty($data['extended_validity'])){
+                    $amount_summary[0] = array(
+                        'field' => 'Session Pack Amount',
+                        'value' => 'Rs. '.$data['ratecard_amount']
+                    ); 
+                }
             }
             // $amount_summary[] = array(
             //     'field' => 'Quantity',
@@ -5516,6 +5546,13 @@ class TransactionController extends \BaseController {
                     'value' => 'Rs. '.$data['amount_customer']
                 );
             }
+        }
+
+        if(!empty($data['session_pack_discount'])){
+             $amount_summary[] = array(
+                    'field' => 'Session pack discount',
+                    'value' => '-Rs. '.$data['session_pack_discount']
+            );
         }
 
         $amount_payable = [];
@@ -6033,7 +6070,7 @@ class TransactionController extends \BaseController {
             if(!empty($resp['data']['discount']))
         		$resp['coupon_description']="Rs. ".$resp['data']['discount']. " off Applied.";
 
-            if(isset($data['event_id']) && isset($data['customer_email'])){
+            if(isset($data['event_id']) && isset($data['customer_email']) && !(!empty($data['event_type']) && $data['event_type'] == 'TOI')){
                                 
                 $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
             
@@ -6382,7 +6419,8 @@ class TransactionController extends \BaseController {
             ],
             'full_wallet_payment' => false,
             'register_loyalty'=>false,
-            'free_trial_available'=>false
+            'free_trial_available'=>false,
+            'extended_validity'=>false
         ];
 
         $ratecard_id = null;
@@ -6439,6 +6477,29 @@ class TransactionController extends \BaseController {
             $data = array_merge($data,$ratecardDetail['data']);
             
             $data['amount_payable'] = $data['amount'];
+
+            $jwt_token = Request::header('Authorization');
+
+            if(!empty($data['customer_email'])){
+                $data['order_customer_email'] = $data['customer_email'];
+            }
+            
+            Log::info('jwt_token checkout summary: '.$jwt_token);
+
+            if(!empty($jwt_token) && $jwt_token != 'null'){
+                
+                $decoded = customerTokenDecode($jwt_token);
+
+                if(empty($data['customer_email'])){
+                    $data['customer_email'] = $decoded->customer->email;
+
+                    if(!empty($decoded->customer->contact_no)){
+                        $data['customer_phone'] = $decoded->customer->contact_no;
+                    }
+                }
+            }
+
+            
 
             if($data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
             {
@@ -6499,20 +6560,21 @@ class TransactionController extends \BaseController {
                 ];
             }
 
-            $jwt_token = Request::header('Authorization');
-            
-            Log::info('jwt_token checkout summary: '.$jwt_token);
+            if(!empty($data['slot']['date']) || $data['type'] == 'workout session' && !empty($data['customer_email']) && !((!empty($data['customer_quantity']) && $data['customer_quantity'] > 1) || (!empty($order['customer_quantity']) && $order['customer_quantity'] > 1)) ){
+                $data['schedule_date'] = $data['slot']['date'];
+                if(!empty($order['customer_email'])){
+                    $data['customer_email'] = $order['customer_email'];
+                }
+                $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
 
-            if(!empty($jwt_token) && $jwt_token != 'null'){
-                
-                $decoded = customerTokenDecode($jwt_token);
+                if($extended_validity_order){
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Session Pack Discount',
+                        'value' => '-Rs. '.(string)number_format($data['amount'])
+                    ];
 
-                if(empty($data['customer_email'])){
-                    $data['customer_email'] = $decoded->customer->email;
-
-                    if(!empty($decoded->customer->contact_no)){
-                        $data['customer_phone'] = $decoded->customer->contact_no;
-                    }
+                    $result['extended_validity'] = true;
+                    $data['amount_payable'] = 0;
                 }
             }
 

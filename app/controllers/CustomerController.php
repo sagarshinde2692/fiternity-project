@@ -1728,7 +1728,7 @@ class CustomerController extends \BaseController {
 		$orders 			=  	[];
 		$membership_types 		= Config::get('app.membership_types');
 
-		$orderData 			= 	Order::where(function($query){$query->where('status', '1')->orWhere('cod_otp', 'exists', true)->orWhere(function($q1){$q1->where("payment_mode", "at the studio")->where("customer_source","website");});})->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+		$orderData 			= 	Order::where('extended_validity', '!=', true)->where(function($query){$query->where('status', '1')->orWhere('cod_otp', 'exists', true)->orWhere(function($q1){$q1->where("payment_mode", "at the studio")->where("customer_source","website");});})->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
 
 		if(count($orderData) > 0){
@@ -3432,13 +3432,15 @@ class CustomerController extends \BaseController {
 
 
 							if($data['type'] == 'Workout-session'){
-								$data['unlock'] = [
-									// 'header'=>'Unlock Level '.$workout_session_level_data['next_session']['level'].'!',
-									'sub_header_2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions',
-									'image'=>'https://b.fitn.in/paypersession/unlock-icon.png'
-								];
-								if(strtotime($data['schedule_date_time']) < time()){
-									$data['unlock']['sub_header_2'] = 'Let us know if you attended this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions';
+								if(!isset($data['extended_validity_order_id'])) {
+									$data['unlock'] = [
+										// 'header'=>'Unlock Level '.$workout_session_level_data['next_session']['level'].'!',
+										'sub_header_2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions',
+										'image'=>'https://b.fitn.in/paypersession/unlock-icon.png'
+									];
+									if(strtotime($data['schedule_date_time']) < time()){
+										$data['unlock']['sub_header_2'] = 'Let us know if you attended this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions';
+									}
 								}
 								$data['current_level'] = $workout_session_level_data['current_level']['level'];
 
@@ -3447,7 +3449,7 @@ class CustomerController extends \BaseController {
 								// 	'data'=>$this->utilities->getStreakImages($data['current_level'])
 								// ];	
 								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session";
-								
+							
 							}else{
 
                                 $data['unlock'] = [
@@ -3587,6 +3589,18 @@ class CustomerController extends \BaseController {
 			}
 			
 		}
+        // if($this->app_version > '')
+        try{
+            $active_session_packs = [];
+            if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
+                $active_session_packs = $this->getSessionPacks(null, null, true, $customer_id)['data'];
+            }
+
+        }catch(Exception $e){
+
+            $active_session_packs = [];
+        
+        }
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
 			if(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 4.2)){
@@ -3685,6 +3699,7 @@ class CustomerController extends \BaseController {
 		}
 		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
+        $result['session_packs'] = $active_session_packs;
 		// $result['campaign'] =  new \stdClass();
 		// $result['campaign'] = array(
 		// 	'image'=>'http://b.fitn.in/iconsv1/womens-day/women_banner_app_50.png',
@@ -4889,7 +4904,7 @@ class CustomerController extends \BaseController {
 
 		$order_id = (int) $order_id;
 
-		$order = Order::find($order_id);
+		$order = Order::with(['service'=>function($query){$query->select('slug');}])->find($order_id);
 
 	    if(!$order){
 
@@ -4902,9 +4917,15 @@ class CustomerController extends \BaseController {
 	        return Response::json($resp,$resp["status"]);
 	    }*/
 
+        // if(!empty($order['extended_validity'])){
+        //     return $this->sessionPackDetail($order_id);
+        // }
+
 	    $finder = Finder::find((int)$order->finder_id);
 
 	    $data = [];
+        $data['finder_slug'] = $finder['slug'];
+        $data['service_slug'] = $order['service']['slug'];
 	    $data['order_id'] = $order_id;
 	    $data['start_date'] = strtotime($order->start_date);
 
@@ -5136,6 +5157,36 @@ class CustomerController extends \BaseController {
 			'upgrade_membership'=>null,
 			'feedback'=>null,
 		];
+
+
+        if(!empty($order['extended_validity'])){
+			$action['book_session'] = $this->sessionPackDetail($order['_id']);
+			$action['book_session']['sessions_left'] = $action['book_session']['sessions_left'].' sessions left';
+            //  if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
+            //     $action['book_session'] = [
+            //         "button_text"=>"Book a session",
+            //         "activity"=>"book",
+            //         "color"=>"#26ADE5",
+            //         "info" => "Book a workout session",
+            //     ];
+
+            // }else{
+            //     $action['renew_membership'] =[
+            //         "button_text"=>"Renew",
+            //         "activity"=>"renew_membership",
+            //         "color"=>"#EF1C26",
+            //         "info" => "Renew your membership with the lowest price and assured rewards",
+            //         "popup" =>[
+            //             "title"=>"",
+            //             "message"=>"Renew your membership with the lowest price and assured rewards"
+            //         ]
+            //     ];
+                
+            // }   
+
+            return $action;    
+        }
+
 
 		$change_start_date = true;
 		$renew_membership = true;
@@ -7657,6 +7708,9 @@ class CustomerController extends \BaseController {
 					$finderarr = Finder::active()->where('_id',intval($data['vendor_id']))
 					->with(array('services'=>function($query){$query->active()->where('trial','!=','disable')->where('status','=','1')->select('*')->orderBy('ordering', 'ASC');}))
 					->with('location')->first();
+                    $extended_validity_orders = $this->utilities->getExtendedValidityOrderFinder(['customer_email'=>$customer->email, 'finder_id'=>$finderarr['_id'], 'schedule_date'=>date('d-m-Y', time())]);
+
+                    $extended_validity_service_ids = array_column($extended_validity_orders->toArray(), 'service_id');
 
 					$pnd_pymnt=$this->utilities->hasPendingPayments();
 					
@@ -7703,14 +7757,19 @@ class CustomerController extends \BaseController {
 										$price = !empty($workouts['special_price']) ? $workouts['special_price'] : $workouts['price'];
 										Log::info('$price');
 										Log::info($price);
-										$paymentmode_selected=($pnd_pymnt || $data['wallet_balance'] >= $price)?[]:['paymentmode_selected'=>"pay_later"];
+
+										$paymentmode_selected=($pnd_pymnt || $data['wallet_balance'] >= $price || in_array($service['_id'], $extended_validity_service_ids))?[]:['paymentmode_selected'=>"pay_later"];
 										$wallet_pass=(!empty($paymentmode_selected)&&!empty($paymentmode_selected['paymentmode_selected']))?["wallet"=>true]:[];
 
 										if($data['wallet_balance']>= $price){
 											$wallet_pass = ["wallet"=>true];
 										}
+										if(in_array($service['_id'], $extended_validity_service_ids)){
+											$wallet_pass = ["wallet"=>true];
+										}
 										
-										if((strpos($workoutData['schedules'][0]['cost'], "Free") === false)&&!empty($workoutData['schedules'][0]['direct_payment_enable']))
+										//(strpos($workoutData['schedules'][0]['cost'], "Free") === false)&&
+										if(!empty($workoutData['schedules'][0]['direct_payment_enable']))
 											$wsschedules=$this->utilities->getCoreSlotsView($workoutData['schedules'][0]['slots'],$service,$workouts['_id'],$workoutData['schedules'][0]['cost'],'workout-session',$service['servicecategory_id'],$cust,$device_type,$paymentmode_selected,date("Y-m-d"),$wallet_pass,!empty($workoutData['schedules'][0]['price_qr_special'])?$workoutData['schedules'][0]['price_qr_special']:null,!empty($workoutData['schedules'][0]['price_qr'])?$workoutData['schedules'][0]['price_qr']:null,!empty($workoutData['schedules'][0]['city_id'])?$workoutData['schedules'][0]['city_id']:null);
 									}
 								}
@@ -7876,29 +7935,61 @@ class CustomerController extends \BaseController {
 								$booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status_updated_by_qrcode'=>$post_trial_status_updated_by_qrcode]);
 								else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status'=>'no show']);
 								
-								
+
 								if($booktrial_update&&!empty($value['mark']))
 								{
-									$fitcash = $this->utilities->getFitcash($booktrial->toArray());
-									$req = array(
-											"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,
-											"type"=>'CREDIT','entry'=>'credit','validity'=>time()+(86400*21),
-											'description'=>"Added FitCash+ on Trial Attendance By QrCode Scan, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
-											"valid_finder_id"=>intval($booktrial['finder_id']),"finder_id"=>intval($booktrial['finder_id']),"qrcodescan"=>true);
-									$add_chck=$this->utilities->walletTransaction($req);
+									if(!isset($booktrial['extended_validity_order_id'])){
+										$fitcash = $this->utilities->getFitcash($booktrial->toArray());
+										$req = array(
+												"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,
+												"type"=>'CREDIT','entry'=>'credit','validity'=>time()+(86400*21),
+												'description'=>"Added FitCash+ on Trial Attendance By QrCode Scan, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+												"valid_finder_id"=>intval($booktrial['finder_id']),"finder_id"=>intval($booktrial['finder_id']),"qrcodescan"=>true);
+										$add_chck=$this->utilities->walletTransaction($req);
+									}
+									else {
+										$fitcash = 0;
+									}
 									
-									if(!empty($add_chck)&&$add_chck['status']==200)
+									if((!empty($add_chck)&&$add_chck['status']==200) || (isset($booktrial['extended_validity_order_id'])))
 									{
 										$total_fitcash=$total_fitcash+$fitcash;
+										if(!isset($add_chck) && (isset($booktrial['extended_validity_order_id']))){
+											$add_chck = null;
+										}
 										$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
+										if(isset($booktrial['extended_validity_order_id'])) {
+											if(isset($resp1) && isset($resp1['sub_header_1'])){
+												$resp1['sub_header_1'] = '';
+											}
+											if(isset($resp1) && isset($resp1['sub_header_2'])){
+												$resp1['sub_header_2'] = '';
+											}
+											if(isset($resp1) && isset($resp1['description'])){
+												$resp1['description'] = '';
+											}
+											if(isset($resp1) && isset($resp1['image'])){
+												$resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
+											}
+										}
 										array_push($attended, $resp1);
 									}
 									else array_push($un_updated,$value['_id']);
 								}
 								else  {
 									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+									if(isset($resp1) && isset($resp1['sub_header_1'])){
+										$resp1['sub_header_1'] = '';
+									}
+									if(isset($resp1) && isset($resp1['sub_header_2'])){
+										$resp1['sub_header_2'] = '';
+									}
+									if(isset($resp1) && isset($resp1['description'])){
+										$resp1['description'] = '';
+									}
 									array_push($not_attended,$resp1);
 								}
+								
 						}
 						else array_push($already_attended,$value['_id']);
 					}
@@ -7914,32 +8005,79 @@ class CustomerController extends \BaseController {
 								
 								if($booktrial_update&&!empty($value['mark'])&& !empty($booktrial->payment_done)){
 									
-									$fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
-									$req = array(
-											"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
-											"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
-											'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan","qrcodescan"=>true
-									);
+									if(!isset($booktrial['extended_validity_order_id'])){
+										$fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+										$req = array(
+												"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
+												"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
+												'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan","qrcodescan"=>true
+										);
+										
+										$booktrial->pps_fitcash=$fitcash;
+										$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
+										$add_chck=$this->utilities->walletTransaction($req);
+									}
+									else {
+										$fitcash = 0;
+									}
 									
-									$booktrial->pps_fitcash=$fitcash;
-									$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
-									$add_chck=$this->utilities->walletTransaction($req);
-									
-									if(!empty($add_chck)&&$add_chck['status']==200)
+									if((!empty($add_chck)&&$add_chck['status']==200) || (isset($booktrial['extended_validity_order_id'])))
 									{
 										$total_fitcash=$total_fitcash+$fitcash;
+										if(!isset($add_chck) && (isset($booktrial['extended_validity_order_id']))){
+											$add_chck = null;
+										}
 										$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
+										if(isset($booktrial['extended_validity_order_id'])) {
+											if(isset($resp1) && isset($resp1['sub_header_1'])){
+												$resp1['sub_header_1'] = '';
+											}
+											if(isset($resp1) && isset($resp1['sub_header_2'])){
+												$resp1['sub_header_2'] = '';
+											}
+											if(isset($resp1) && isset($resp1['description'])){
+												$resp1['description'] = '';
+											}
+											if(isset($resp1) && isset($resp1['image'])){
+												$resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
+											}
+										}
 										array_push($attended,$resp1);
 									}
 									else array_push($un_updated,$value['_id']);
 								}
 								if($booktrial_update&&!empty($value['mark'])){
 									$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+									if(isset($booktrial['extended_validity_order_id'])) {
+										if(isset($resp1) && isset($resp1['sub_header_1'])){
+											$resp1['sub_header_1'] = '';
+										}
+										if(isset($resp1) && isset($resp1['sub_header_2'])){
+											$resp1['sub_header_2'] = '';
+										}
+										if(isset($resp1) && isset($resp1['description'])){
+											$resp1['description'] = '';
+										}
+										if(isset($resp1) && isset($resp1['image'])){
+											$resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
+										}
+									}
 									array_push($attended,$resp1);
 								}
 								else  {
 									
 									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+									if(isset($booktrial['extended_validity_order_id'])) {
+										if(isset($resp1) && isset($resp1['sub_header_1'])){
+											$resp1['sub_header_1'] = '';
+										}
+										if(isset($resp1) && isset($resp1['sub_header_2'])){
+											$resp1['sub_header_2'] = '';
+										}
+										if(isset($resp1) && isset($resp1['description'])){
+											$resp1['description'] = '';
+										}
+									}
 									array_push($not_attended,$resp1);
 									
 								}
@@ -8955,5 +9093,121 @@ class CustomerController extends \BaseController {
         $customer = Customer::where('email', strtolower($customer_email))->first();
         return $this->createToken($customer);
     }
-	
+
+    public function getSessionPacks($offset = 0, $limit = 10, $active = false, $customer_id = null){
+    
+        $jwt_token = Request::header('Authorization');
+
+		if(!empty($jwt_token)){
+			
+            $decoded = decode_customer_token($jwt_token);
+			$customer_id = $decoded->customer->_id;
+        
+        }else{
+            return ['status'=>400, 'message'=>'No customer found'];
+        }
+        $offset 			=	intval($offset);
+        $limit 				=	intval($limit);
+
+        $orders 			=  	[];
+        Finder::$withoutAppends = true;
+        Service::$withoutAppends = true;
+        
+        $orders = Order::active()
+                ->where('customer_id', $customer_id)
+                ->where('extended_validity', true)
+                ->with(['finder'=>function($query){
+                    $query->select('slug');
+                }])
+                ->with(['service'=>function($query){
+                    $query->select('slug');
+                }])
+                ->skip($offset)
+                ->take($limit)
+                ->orderBy('_id', 'desc');
+
+        if(!empty($active)){
+
+            $orders->where('start_date', '<=', new DateTime())
+                    ->where('end_date', '>=', new DateTime());
+
+        }
+
+        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags']);
+
+        $orders = $this->formatSessionPackList($orders);
+
+        return ['status'=>200, 'data'=>$orders];          
+		
+    }
+
+    public function formatSessionPackList($orders){
+        foreach($orders as &$order){
+           
+            $order = $this->formatSessionPack($order);
+            
+        }
+        return $orders;
+    }
+
+    public function formatSessionPack($order){
+        
+        $order['active'] = true;
+        if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
+            $order['button_title'] = 'Book your next Session';
+            $order['button_type'] = 'book';
+
+        }else{
+            $order['active'] = false;
+            $order['button_title'] = 'Renew Pack';
+            $order['button_type'] = 'renew';
+        }
+
+        $order['start_date'] = strtotime($order['start_date']);
+        $order['starting_date'] = date('d M, Y', strtotime($order['start_date']));
+        $order['starting_text'] = "Starts from: ";
+        $order['valid_text'] = 'Valid till: ';
+        $order['valid_date'] = date('d M, Y', strtotime($order['end_date']));
+        if(!empty($order['ratecard_flags']['unlimited_validity'])){
+            $order['valid_date'] = "Unlimited validity";
+        }
+        $order['subscription_text'] = "Subscription code: ";
+        $order['subscription_code'] = strval($order['_id']);
+        $order['sessions_left'] = strval($order['sessions_left']);
+        $order['title'] = $order['finder_name'].' - '.$order['service_name'];
+        $order['detail_text'] = "VIEW DETAILS";
+        $order['total_session_text'] = $order['no_of_sessions']." Session pack";
+        $order['left_text'] = "left";
+        $order['session_active'] = "SESSION PACK ACTIVE";
+        if(strtotime($order['start_date']) >= time()){
+            $order['before_start_message'] = "Your session pack start from ".date('d M, Y', strtotime($order['start_date'])).". Session pack will not be applied to bookings before the start date";
+        }
+        if(!empty($order['finder']['slug'])){
+            $order['finder_slug'] = $order['finder']['slug'];
+        }
+        if(!empty($order['service']['slug'])){
+            $order['service_slug'] = $order['service']['slug'];
+        }
+
+
+
+        return $order;
+
+    }
+
+    public function sessionPackDetail($id){
+        Service::$withoutAppends = true;
+		Finder::$withoutAppends = true;
+        $order = Order::with(['finder'=>function($query){
+                    $query->select('slug');
+                }])
+                ->with(['service'=>function($query){
+                    $query->select('slug');
+                }])
+                ->find($id, ['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags']);
+
+
+        return $this->formatSessionPack($order);
+    }
+
 }
