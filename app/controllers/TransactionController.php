@@ -5361,7 +5361,7 @@ class TransactionController extends \BaseController {
             if(!empty($data['type']) && in_array($data['type'], ['memberships', 'membership'])){
                 $amount_summary[0] = array(
                     'field' => 'Membership Amount',
-                    'value' => 'Rs. '.(!empty($data['amount_customer']) ? $data['amount_customer'] : $data['ratecard_amount'])
+                    'value' => 'Rs. '.(!empty($data['amount_customer']) ? $data['amount_customer'] - (!empty($data['convinience_fee']) ? $data['convinience_fee'] : 0) : $data['ratecard_amount'])
                 );  
                 if(!empty($data['extended_validity'])){
                     $amount_summary[0] = array(
