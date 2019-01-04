@@ -3720,9 +3720,13 @@ class FindersController extends \BaseController {
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.1.5'){
 			$cache_name = "finder_detail_ios_5_1_6";
 		}
-
+        
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.17'){
 			$cache_name = "finder_detail_android_5_1_8";
+		}
+        
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.18'){
+			$cache_name = "finder_detail_android_5_1_9";
 		}
 		Log::info($cache_name);
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
@@ -4350,10 +4354,16 @@ class FindersController extends \BaseController {
 					}
                     if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
                         $data['finder']  = $this->applyNonValidity($data, 'app');
+                        $this->insertWSNonValidtiy($data, 'app');
                     }
                     
                     if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android'])) || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
                         $data['finder'] = $this->applyTopService($data, 'app');
+
+                        $cheapest_price = $this->getCheapestWorkoutSession($data['finder']['services'], 'app');
+                        if(!empty($cheapest_price)){
+                            $this->insertWSRatecardTopService($data, $cheapest_price, 'app');
+                        }
                     }
 
 					$device_type = ['ios','android'];
@@ -4362,6 +4372,8 @@ class FindersController extends \BaseController {
 						
 						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial', $data['finder']['trial']);
 						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session');
+
+                        
 						
 					}
 					// return $data['finder']['flags'];
@@ -4699,29 +4711,29 @@ class FindersController extends \BaseController {
 						if(!empty($finderData['finder']['extended_validity'])){
                             // $finderData['finder']['services'] = $pps_stripe;
                             $finderData['fit_ex'] =[
-                                'title'=>"Now work out at ".$finderData['finder']['title']."  at your own pace",
+                                'title'=>"Most effective way to workout at ".$finderData['finder']['title']." is here!",
                                 'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
                                 'image'=>'https://b.fitn.in/non-validity/finderpage/NO%20VALIDITY%20MOBILE.png',
                                 'data'=>[
                                     [
+                                        'title'=>"Unlimited Validity Membership",
+                                        'subtitle'=>"Buy a sessions pack and use it over a longer duration",
+                                        'image'=>'https://b.fitn.in/global/web%20NVM%403x.png'
+                                    ],
+                                    [
                                         'title'=>"Money Saver",
                                         'subtitle'=>"Pay only for the days you workout",
-                                        'image'=>'https://b.fitn.in/non-validity/finderpage/MONEY%20SAVER%20MOBILE.png'
+                                        'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
                                     ],
                                     [
-                                        'title'=>"Super Easy One-Click Booking",
-                                        'subtitle'=>"Book before your workout through the QR code at gym/studio or your profile.",
-                                        'image'=>'https://b.fitn.in/non-validity/finderpage/ONE%20CLICK%20MOBILE.png'
+                                        'title'=>"Easy to Book",
+                                        'subtitle'=>"Book your workout through the app or scan QR code at gym/studio",
+                                        'image'=>'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
                                     ],
                                     [
-                                        'title'=>"Track Your Workouts & Map Usage",
-                                        'subtitle'=>"View session details under My Session Packs in your profile",
-                                        'image'=>'https://b.fitn.in/non-validity/finderpage/TRACK%20YOUR%20WORKOUT%20MOBILE.png'
-                                    ],
-                                    [
-                                        'title'=>"Easy Re-scheduling & Cancellations",
-                                        'subtitle'=>"Don’t lose out on your workouts with easy cancellations through your profile",
-                                        'image'=>'https://b.fitn.in/non-validity/finderpage/RESCHEDULE%20MOBILE.png'
+                                        'title'=>"Track Your Usage",
+                                        'subtitle'=>"Check the workout counter in your Fitternity profile",
+                                        'image'=>'https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png'
                                     ],
                                 ]
                             ];
@@ -6658,7 +6670,7 @@ class FindersController extends \BaseController {
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service['service_name_display'] = $service[$service_name_key];
                 $post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
-                if(!empty($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
+                if(!empty($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] < '5.19') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.6'))){
 				    $service[$service_name_key] = $service[$service_name_key]." - ".$post_name;
                 }else{
                     $service['post_name'] = $post_name;
@@ -6702,7 +6714,7 @@ class FindersController extends \BaseController {
             // if(empty($s['type']) || $s['type'] != 'extended validity'){
                 foreach($s[$ratecard_key] as &$r){
                     // return $r;
-                    if($r['type'] == 'extended validity'){
+                    if($r['type'] == 'extended validity' && !(!empty($s['type']) && $s['type'] == 'extended validity')){
                         $duration_day = $this->utilities->getDurationDay($r);
                         if(!empty($session_pack_duration_map_flip[$duration_day]) && !empty($memberships[strval($s['_id'])][$session_pack_duration_map_flip[$duration_day]])){
                             
