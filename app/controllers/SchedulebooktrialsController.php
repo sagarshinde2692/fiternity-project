@@ -1827,6 +1827,16 @@ class SchedulebooktrialsController extends \BaseController {
                 
             }
 
+            if(!empty($order['extended_validity_order_id'])){
+                $extended_validity_order = $this->utilities->getExtendedValidityOrder($order);
+                if(!$extended_validity_order){
+                    $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
+                    return  Response::json($resp, 400);
+                }
+                $extended_validity_order->sessions_left = $extended_validity_order->sessions_left - 1;
+                $extended_validity_order->update();
+            }
+
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
 
             if($count > 0){
@@ -2220,6 +2230,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'ask_review'                    =>      true,
             );
 
+<<<<<<< HEAD
             if(!empty($data['third_party'])) {
                 $booktrialdata['third_party'] = $data['third_party'];
                 // $booktrialdata['third_party_used_sessions'] = $data['third_party_used_sessions'];
@@ -2227,6 +2238,12 @@ class SchedulebooktrialsController extends \BaseController {
                 // $booktrialdata['third_party_id'] = $data['third_party_id'];
                 $booktrialdata['third_party_details'] = $data['third_party_details'];
             }
+=======
+            if(!empty($extended_validity_order['_id'])){
+                $booktrialdata['extended_validity_order_id'] = $extended_validity_order['_id'];
+            }
+
+>>>>>>> master-abh-copy
             $session_count = Booktrial::where('customer_id',$customer_id)->count();
 
             if($session_count == 0){
@@ -4609,6 +4626,18 @@ class SchedulebooktrialsController extends \BaseController {
 
         array_set($bookdata, 'cancel_by', $source_flag);
         $trialbooked        = 	$booktrial->update($bookdata);
+        
+        if(!empty($booktrial['extended_validity_order_id'])){
+            $order = Order::find($booktrial['extended_validity_order_id']);
+            if(
+                strtotime($order['end_date']) >= time() 
+                && 
+                $order['sessions_left'] < $order['no_of_sessions']
+            ){
+                $order->sessions_left = $order->sessions_left+1;
+                $order->update();
+            }
+        }
 
         if($trialbooked == true ){
 
@@ -5315,11 +5344,14 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if($booktrial['type'] == 'workout-session'){
+            if(!isset($booktrial['extended_validity_order_id'])){
+                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
 
-            $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
-
-            $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
-
+                $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
+            }
+            else {
+                $booktrial['fitcode_message'] = 'Punch the code to mark your attendance.';
+            }
         }else{
 
             $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';
@@ -6894,24 +6926,25 @@ class SchedulebooktrialsController extends \BaseController {
                 else
                 {
                 	try {
-                		
-                		$fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
-                		
-                		$req = array(
-                				"customer_id"=>$booktrial['customer_id'],
-                				"trial_id"=>$booktrial['_id'],
-                				"amount"=> $fitcash,
-                				"amount_fitcash" => 0,
-                				"amount_fitcash_plus" => $fitcash,
-                				"type"=>'CREDIT',
-                				'entry'=>'credit',
-                                'for'=>'locate_trial',
-                				'validity'=>time()+(86400*7),
-                				'description'=>"Added FitCash+ on Trial Attendance, Expires On : ".date('d-m-Y',time()+(86400*7))
-                		);
-                		
-                		$this->utilities->walletTransaction($req);
-                		
+                        $fitcash = 0;
+                        if(!isset($booktrial['extended_validity_order_id'])){
+                            $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+                            
+                            $req = array(
+                                    "customer_id"=>$booktrial['customer_id'],
+                                    "trial_id"=>$booktrial['_id'],
+                                    "amount"=> $fitcash,
+                                    "amount_fitcash" => 0,
+                                    "amount_fitcash_plus" => $fitcash,
+                                    "type"=>'CREDIT',
+                                    'entry'=>'credit',
+                                    'for'=>'locate_trial',
+                                    'validity'=>time()+(86400*7),
+                                    'description'=>"Added FitCash+ on Trial Attendance, Expires On : ".date('d-m-Y',time()+(86400*7))
+                            );
+                            
+                            $this->utilities->walletTransaction($req);
+                        }
                 		
                 		Log::info(" info fitcash  ".print_r($fitcash,true));
                 		$booktrial->pps_pending_amount=$booktrial->amount;
@@ -6925,13 +6958,14 @@ class SchedulebooktrialsController extends \BaseController {
                         if(!empty($booktrial->category) && !empty($booktrial->category->name) && !empty($booktrial->city) &&!empty($booktrial->city->name)){
                             $booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city->name.'/'.newcategorymapping($booktrial->category->name);
                         }
-                			
+                        
+                        if(!isset($booktrial['extended_validity_order_id'])){
                 			if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
                 				$booktrial->send_communication['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
                 				else $booktrial->send_communication['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
-                				
+                        }		
                 				$this->deleteTrialCommunication($booktrial);
-                				
+                        
                 	} catch (Exception $e) {
                 		
                 		Log::error(" Error [ locateTrial ] ".$e->getMessage());
@@ -7156,7 +7190,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $post_trial_status_updated_by_fitcode = time();
                 $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
-                if($booktrial_update){
+                if($booktrial_update && (!isset($booktrial['extended_validity_order_id']))){
 
                     Log::info("Adding trial fitcash");
 
@@ -7177,10 +7211,12 @@ class SchedulebooktrialsController extends \BaseController {
                     );
                     
                     $this->utilities->walletTransaction($req);
+                    
+                    $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
                 }
-                
-                $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
-
+                else{
+                    $message = "Thank you, your attendance has been marked.";
+                }
             }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done) && !isset($booktrial->post_trial_status_updated_by_lostfitcode)){
 
                 $post_trial_status_updated_by_fitcode = time();
@@ -7190,8 +7226,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                     Log::info("Adding pps fitcash");
                     
-                    $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
-                
+                    if(!isset($booktrial['extended_validity_order_id'])){
+                        $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+                    }
                     $req = array(
                         "customer_id"=>$booktrial['customer_id'],
                         "trial_id"=>$booktrial['_id'],
@@ -7216,18 +7253,21 @@ class SchedulebooktrialsController extends \BaseController {
 
                     
                     $temp=$booktrial->send_communication;
-                    if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
-                        $temp['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
-                    else $temp['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
-                        
+                    if(!isset($booktrial['extended_validity_order_id'])){
+                        if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
+                            $temp['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
+                        else $temp['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
+                    }
                     $this->deleteTrialCommunication($booktrial);
                             
-
-                    $this->utilities->walletTransaction($req);
-
-                    $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Valid for 21 days";
+                    if(!isset($booktrial['extended_validity_order_id'])){
+                        $this->utilities->walletTransaction($req);
+                        $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Valid for 21 days";
+                    }
+                    else{
+                        $message = "Thank you, your attendance has been marked.";
+                    }
                 }
-                
             }
 
             $booktrial->post_trial_status = 'attended';
@@ -7316,7 +7356,11 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $update = Booktrial::where('_id',$booktrial['_id'])->where('post_trial_status_updated_by_lostfitcode', 'exists', false)->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_lostfitcode'=>time()]);
 
+<<<<<<< HEAD
                 if($update && !(isset($booktrial['third_party_details']))){
+=======
+                if($update && !isset($booktrial['extended_validity_order_id'])){
+>>>>>>> master-abh-copy
                     $req = array(
                             "customer_id"=>$booktrial['customer_id'],
                             "trial_id"=>$booktrial['_id'],
@@ -7351,7 +7395,10 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
             $booktrial->post_trial_status_date = time();
             
-            $message = 'Hi, '.ucwords($booktrial['customer_name']).'! Thanks for your update. Rs. '.$fitcash_amount.' will be added into your Fitternity wallet within 48 hours';
+            $message = 'Hi, '.ucwords($booktrial['customer_name']).'! Thanks for your update.';
+            if(!isset($booktrial['extended_validity_order_id'])){
+                $message = 'Hi, '.ucwords($booktrial['customer_name']).'! Thanks for your update. Rs. '.$fitcash_amount.' will be added into your Fitternity wallet within 48 hours';
+            }
             
             if($reason_message){
                 $message = $reason_message;
@@ -7502,6 +7549,10 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = " Fitcash is added in your wallet. Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price.";;
                 }
 
+                if(isset($booktrial['extended_validity_order_id'])){
+                    $response['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
+                }
+
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
@@ -7644,6 +7695,12 @@ class SchedulebooktrialsController extends \BaseController {
         //     $booktrial_update = Booktrial::where('_id', $booktrial['_id'])->update(['loyalty_registration'=>true]);
         //     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
         // }
+
+        if(isset($booktrial['extended_validity_order_id'])){
+            $response['description'] = '';
+            $response['sub_header_1'] = '';
+            $response['sub_header_2'] = '';
+        }
 
         return Response::json($response);
 

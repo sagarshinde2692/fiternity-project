@@ -3941,12 +3941,24 @@ Class Utilities {
 
     public function getDurationDay($ratecard){
 
+        if(!empty($ratecard['validity_type_copy'])){
+            $ratecard['validity_type'] = $ratecard['validity_type_copy'];
+        }
+        if(!empty($ratecard['validity_copy'])){
+            $ratecard['validity'] = $ratecard['validity_copy'];
+        }
+        
+        empty($ratecard['validity_type']) ? $ratecard['validity_type'] = "days" : null;
+        
         switch ($ratecard['validity_type']){
             case 'days': 
+            case 'day': 
                 $duration_day = (int)$ratecard['validity'];break;
             case 'months': 
+            case 'month': 
                 $duration_day = (int)($ratecard['validity'] * 30) ; break;
             case 'year': 
+            case 'years': 
                 $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
             default : $duration_day =  $ratecard['validity']; break;
         }
@@ -5281,7 +5293,9 @@ Class Utilities {
                 ->where('type','membership')
                 ->orderBy('order', 'desc')
                 ->first();
-                
+                if(empty($ratecard)){
+                    return;
+                }
                 $ratecard_id = $ratecard->_id;
                 
                 $offer = \Offer::active()
@@ -7326,6 +7340,76 @@ Class Utilities {
         Order::where('_id', $order['_id'])->update(['event_customers'=>$event_customers]);
 
     }
+
+    public function getExtendedValidityOrder($data){
+
+
+        if(!empty($data['order_customer_email'])){
+            $data['customer_email'] = $data['order_customer_email'];
+        }
+
+        if(!empty($data['customer_email'])){
+            return Order::active()->where('customer_email', $data['customer_email'])->where('service_id', $data['service_id'])->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))->where('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])))->where('sessions_left', '>', 0)->first();
+        }
+
+        if(!empty($data['customer_id'])){
+            return Order::active()->where('customer_id', $data['customer_id'])->where('service_id', $data['service_id'])->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))->where('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])))->where('sessions_left', '>', 0)->first();
+        }
+
+        return null;
+    }
+
+
+    public function getAllExtendedValidityOrders($data){
+
+
+        if(!empty($data['order_customer_email'])){
+            $data['customer_email'] = $data['order_customer_email'];
+        }
+
+        if(!empty($data['customer_email'])){
+            return Order::active()
+                ->where('customer_email', $data['customer_email'])
+                ->where('start_date', '<=', new DateTime())
+                ->where('end_date', '>=', new DateTime())
+                ->where('sessions_left', '>', 0)
+                ->first();
+        }
+
+        if(!empty($data['customer_id'])){
+            return Order::active()
+                ->where('customer_id', $data['customer_id'])
+                ->where('start_date', '<=', new DateTime())
+                ->where('end_date', '>=', new DateTime())
+                ->where('sessions_left', '>', 0)
+                ->first();
+        }
+
+        return null;
+    }
+
+    public function getExtendedValidityOrderFinder($data){
+
+
+        if(!empty($data['order_customer_email'])){
+            $data['customer_email'] = $data['order_customer_email'];
+        }
+
+        $orders = Order::active()->where('finder_id', $data['finder_id'])->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))->where('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])))->where('sessions_left', '>', 0);
+
+        if(!empty($data['customer_email'])){
+            return $orders->where('customer_email', $data['customer_email'])->get(['service_id']);
+        }
+
+        if(!empty($data['customer_id'])){
+            return $orders->where('customer_id', $data['customer_id'])->get(['service_id']);
+        }
+
+        return null;
+    }
+
+    
+            
 
 }
 

@@ -221,6 +221,10 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'MusicRun-Customer';
 		}
 		
+        if(!empty($data['extended_validity'])){
+			$label = 'ExtendedValidityInstant-Customer';
+		}
+		
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);

@@ -129,6 +129,10 @@ class BrandsController extends \BaseController {
 
                 unset($data['brand']['vendor_stripe']);
 
+                if(!empty($data['stripe_data']['text'])){
+                    $data['stripe_data']['text1'] = $data['stripe_data']['text'];
+                }
+                
                 if(isset($data["stripe_data"])){
                     $data['brand']['stripe_data'] = $data["stripe_data"];
                 }
@@ -136,6 +140,7 @@ class BrandsController extends \BaseController {
                 if(in_array("$slug-$city", Config::get('app.no_patti_brands_slugs'))){
                     $data['stripe_data'] = "no-patti";
                 }
+
                 
                 if(empty($finders) || empty($finders['metadata']['total_records'])){
                     Log::info("Not caching brand");

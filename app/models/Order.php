@@ -60,6 +60,10 @@ class Order extends \Basemodel {
 		return $this->belongsTo('Finder');
 	}
 
+    public function service(){
+		return $this->belongsTo('Service');
+	}
+
 	public function serviceoffer(){
 		return $this->belongsTo('Serviceoffer');
 	}

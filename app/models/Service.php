@@ -370,6 +370,11 @@ class Service extends \Basemodel{
 
                 	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
 
+                    if($offf_percentage < 50){
+                        $value['price'] = 2*$value['special_price'];
+                        $offf_percentage = 50;
+                    }
+
                 	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
 					$value['campaign_color'] = "#43a047";
                 }
@@ -388,7 +393,26 @@ class Service extends \Basemodel{
 				// if(isset($value['type']) && in_array($value['type'], ['membership', 'packages']) && isset($value['flags']) && isset($value['flags']['campaign_offer']) && $value['flags']['campaign_offer']){
 				// 	$value['campaign_offer'] = "(Women - Get additional 30% off)";
 				// 	$value['campaign_color'] = "#FA5295";
-				// }				
+				// }		
+                // if(!empty($value['campaign_offer'])){
+                //     unset($value['campaign_offer']);
+                //     if(!empty($value['campaign_color'])){
+                //         unset($value['campaign_color']);
+                //     };
+                // }
+
+                if(!empty($value['duration']) && $value['duration'] > 1 && !empty($value['duration_type']) && $value['duration_type'] == 'session'){
+                    $value['duration_type'] = 'sessions';
+                }
+
+                if(!empty($value['type']) && $value['type'] == "workout session"){
+                    if(!empty($value['offers'][0]['remarks'])){
+                        $value['offers'][0]['remarks'] = "Book multiple sessions starting at this price";
+                    }else{
+                        $value['remarks'] = "Book multiple sessions starting at this price";
+                    }
+                }
+
 				unset($value['flags']['convinience_fee_applicable']);
 				array_push($ratecards, $value);
 			}
