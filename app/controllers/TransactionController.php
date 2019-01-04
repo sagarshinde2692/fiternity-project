@@ -6322,7 +6322,7 @@ class TransactionController extends \BaseController {
             $data = array_merge($data,$finderDetail['data']);
             
             if(!empty($data['finder_flags']['enable_commission_discount'])){
-                $commission = getVendorCommision(['finder_id'=>$finder['_id']]);
+                $commission = getVendorCommision(['finder_id'=>$data['finder_id']]);
 
                 if(!empty($commission)){
                         $data['amount'] = round($data['amount'] * (100 - $commission + Config::get('app.pg_charge'))/100);
