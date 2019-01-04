@@ -1201,7 +1201,7 @@ Class CustomerSms extends VersionNextSms{
 		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])){
 			$sender = 'ABCPRO';
 			if(Config::get('app.env') == 'stage'){
-				$to = ['9619240452'];
+				$to = ['9920150108']; //9619240452
 			}
 		}
 
