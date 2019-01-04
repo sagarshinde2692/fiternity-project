@@ -6901,6 +6901,8 @@ class FindersController extends \BaseController {
                     "duration"=> 1,
                     "duration_type"=> "session",
                     "offers"=> [],
+					"validity"=> 0,
+                    "duration_type"=> "",
                 ];
 
 
