@@ -6893,7 +6893,14 @@ class FindersController extends \BaseController {
                     "type"=>'workout session',
                     "top_service"=>true,
                     "price"=>$cheapest_price,
-                    "remarks"=>"Book multiple sessions starting at this price"
+                    "remarks"=>"Book multiple sessions starting at this price",
+                    "_id"=> 1,
+                    "finder_id"=> 1,
+                    "direct_payment_enable"=> "1",
+                    "order"=> 1,
+                    "duration"=> 1,
+                    "duration_type"=> "session",
+                    "offers"=> [],
                 ];
 
 
