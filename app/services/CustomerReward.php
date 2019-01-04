@@ -1131,7 +1131,7 @@ Class CustomerReward {
         if($amount > 50000){
             $setAlgo = array('cashback'=>0,'fitcash'=>0,'discount'=>0);
         }
-        $finder = Finder::where('_id', $data['finder_id'])->first();
+        $finder = Finder::where('_id', $finder_id)->first();
         if(in_array($finder_id, Config::get('app.mixed_reward_finders')) || in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
             $mixedreward_content = \MixedRewardContent::where('finder_id', $finder_id)->orWhere('brand_id', $finder['brand_id'])->first();
             if(!empty($mixedreward_content)){
