@@ -6913,6 +6913,7 @@ class FindersController extends \BaseController {
                     "offers"=> [],
 					"validity"=> 0,
                     "duration_type"=> "",
+                    "button_color"=> Config::get('app.ratecard_button_color'),
                 ];
 
 
