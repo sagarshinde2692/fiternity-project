@@ -179,9 +179,14 @@ class Service extends \Basemodel{
 		$ratecardsarr = null;
         $finder = $this->finder;
 
+        if(!empty($GLOBALS['finder_commission'])){
+            Log::info("Commission");
+            Log::info($GLOBALS['finder_commission']);
+        }
+        if(!empty($finder['flags']['enable_commission_discount']) && empty($GLOBALS['finder_commission'])){
 
-        if(!empty($finder['flags']['enable_commission_discount'])){
-            $commission = getVendorCommision(['finder_id'=>$finder['_id']]);
+            Log::info("Commission not defined");
+            $GLOBALS['finder_commission'] = getVendorCommision(['finder_id'=>$finder['_id']]);
         }
         
 		if(!empty($this->_id) && isset($this->_id)){
@@ -349,15 +354,17 @@ class Service extends \Basemodel{
                     }	
                 }
 
-                if($value['type'] == 'membership' && !empty($commission)){
+                if($value['type'] == 'membership' && !empty($GLOBALS['finder_commission'])){
                     if(!empty($value["special_price"] )){
-                        
-                        $value["special_price"] = round($value["special_price"] * (100 - $commission + Config::get('app.pg_charge'))/100);
+                        $commission_discounted_price = $value["special_price"] = round($value["special_price"] * (100 - $GLOBALS['finder_commission'] + Config::get('app.pg_charge'))/100);
                         
                     }else if($value["price"] ){
+                        $commission_discounted_price = $value["price"] = round($value["price"] * (100 - $GLOBALS['finder_commission'] + Config::get('app.pg_charge'))/100);
                         
-                        $value["price"] = round($value["price"] * (100 - $commission + Config::get('app.pg_charge'))/100);
-                        
+                    }
+
+                    if(!empty($value['offers'][0]['price']) && !empty($commission_discounted_price)){
+                        $value['offers'][0]['price'] = $commission_discounted_price;
                     }
                 }
 				
