@@ -2230,7 +2230,6 @@ class SchedulebooktrialsController extends \BaseController {
                 'ask_review'                    =>      true,
             );
 
-<<<<<<< HEAD
             if(!empty($data['third_party'])) {
                 $booktrialdata['third_party'] = $data['third_party'];
                 // $booktrialdata['third_party_used_sessions'] = $data['third_party_used_sessions'];
@@ -2238,12 +2237,10 @@ class SchedulebooktrialsController extends \BaseController {
                 // $booktrialdata['third_party_id'] = $data['third_party_id'];
                 $booktrialdata['third_party_details'] = $data['third_party_details'];
             }
-=======
             if(!empty($extended_validity_order['_id'])){
                 $booktrialdata['extended_validity_order_id'] = $extended_validity_order['_id'];
             }
 
->>>>>>> master-abh-copy
             $session_count = Booktrial::where('customer_id',$customer_id)->count();
 
             if($session_count == 0){
@@ -7356,11 +7353,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $update = Booktrial::where('_id',$booktrial['_id'])->where('post_trial_status_updated_by_lostfitcode', 'exists', false)->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_lostfitcode'=>time()]);
 
-<<<<<<< HEAD
-                if($update && !(isset($booktrial['third_party_details']))){
-=======
-                if($update && !isset($booktrial['extended_validity_order_id'])){
->>>>>>> master-abh-copy
+                if($update && !(isset($booktrial['third_party_details'])) && !isset($booktrial['extended_validity_order_id'])){
                     $req = array(
                             "customer_id"=>$booktrial['customer_id'],
                             "trial_id"=>$booktrial['_id'],
