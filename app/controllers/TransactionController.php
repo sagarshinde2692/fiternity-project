@@ -3005,7 +3005,7 @@ class TransactionController extends \BaseController {
         
         }
 
-        if(!empty($data['finder_flags']['enable_commission_discount'])){
+        if(!empty($data['amount'] ) && !empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'memberships') && empty($data['extended_validity'])){
             $commission = getVendorCommision(['finder_id'=>$data['finder_id']]);
             $data['amount'] = $data['amount_customer'] = round($data['amount']  * (100 - $commission + Config::get('app.pg_charge'))/100); 
         }
@@ -3044,7 +3044,7 @@ class TransactionController extends \BaseController {
             }
         }    
 
-        if($data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
+        if(!empty($data['amount'] ) && $data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
             Order::$withoutAppends = true;
             $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
             if($extended_validity_order){
@@ -6321,7 +6321,7 @@ class TransactionController extends \BaseController {
     
             $data = array_merge($data,$finderDetail['data']);
             
-            if(!empty($data['finder_flags']['enable_commission_discount'])){
+            if(!empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'memberhsip')){
                 $commission = getVendorCommision(['finder_id'=>$data['finder_id']]);
 
                 if(!empty($commission)){
