@@ -4713,7 +4713,7 @@ class FindersController extends \BaseController {
                             $finderData['fit_ex'] =[
                                 'title'=>"Most effective way to workout at ".$finderData['finder']['title']." is here!",
                                 'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
-                                'image'=>'https://b.fitn.in/non-validity/finderpage/NO%20VALIDITY%20MOBILE.png',
+                                'image'=>'https://b.fitn.in/global/fitex-logo.png',
                                 'data'=>[
                                     [
                                         'title'=>"Unlimited Validity Membership",
