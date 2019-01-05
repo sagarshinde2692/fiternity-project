@@ -2478,7 +2478,7 @@ class TransactionController extends \BaseController {
                     }
 
                     //no email to Healthy Snacks Beverages and Healthy Tiffins
-                    if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin") ) ){
+                    if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin") ) && empty($snap_block) && empty($extended_validity_block)){
                         
                         if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                             if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -3216,10 +3216,10 @@ class TransactionController extends \BaseController {
                 $data['extended_validity_order_id'] = $extended_validity_order['_id'];
                 $data['session_pack_discount'] = $data['ratecard_amount'];
                 $amount = $data['amount'] - $data['session_pack_discount'];
-                if(!empty($data['ratecard']['enable_vendor_novalidity_comm'])){
-                    $data['amount_finder'] = 0;
-                    $data['vendor_price'] = 0;
-                }
+                // if(!empty($data['ratecard']['enable_vendor_novalidity_comm'])){
+                    // $data['amount_finder'] = 0;
+                    // $data['vendor_price'] = 0;
+                // }
             }
         }        
         
@@ -4126,7 +4126,7 @@ class TransactionController extends \BaseController {
             $data['type'] = 'memberships';
             $data['no_of_sessions'] = $data['sessions_left'] = $ratecard['duration'];
             $data['extended_validity'] = true;
-            $data['amount_finder'] = 0;
+            // $data['amount_finder'] = 0;
         }
 
        /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
