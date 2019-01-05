@@ -86,12 +86,117 @@ class TransactionController extends \BaseController {
 
     }
 
+    public function saveTPMemberDetails($orderData) {
+        try{
+            $tpoDetails = null;
+            $tpoId = null;
+            if(!empty($orderData['tpo_details']) && !empty($orderData['tpo_details']['tpo_id'])){
+                $tpoDetails = $orderData['tpo_details'];
+                $tpoId = $tpoDetails['tpo_id'];
+                Log::info('tpo_id: ', [$tpoDetails['tpo_id']]);
+                Log::info('member_details: ', [$tpoDetails['memberDetails']]);
+            } else if (isset($orderData['order_id'])) {
+                $tpoId = $orderData['order_id'];
+            }
+            else {
+                Log::info('both order id and tpo details are not available!');
+                return ['err' => 'order id and (tpo details or tpo id) are not available'];
+            }
+            $_env = $orderData['env'];
+            Log::info('env: ', [$_env]);
+            
+            $tpoRec = ThirdPartyOrder::where('_id', $tpoId)->first();
+            if(!empty($tpoDetails)){
+                $_tempDtls = [];
+                foreach ($tpoDetails['memberDetails'] as $rec) {
+                    $_tpoRec = [];
+                    $_tpoRec['dob'] = $rec['dob'].' 00:00:00'; //new MongoDate(strtotime(date($rec['dob'].' 00:00:00')));
+                    $_tpoRec['email_id'] = $rec['emailId'];
+                    $_tpoRec['extension'] = $rec['extension'];
+                    if(isset($rec['titleCode']))
+                        $_tpoRec['title_code'] = $rec['titleCode'];
+                    $_tpoRec['first_name'] = $rec['firstName'];
+                    $_tpoRec['middle_name'] = $rec['middleName'];
+                    $_tpoRec['last_name'] = $rec['lastName'];
+                    $_tpoRec['mobile_no'] = $rec['mobileNo'];
+                    $_tpoRec['address_line_1'] = $rec['addressLine1'];
+                    $_tpoRec['address_line_2'] = $rec['addressLine2'];
+                    $_tpoRec['city'] = $rec['addressCity'];
+                    $_tpoRec['state'] = $rec['addressState'];
+                    $_tpoRec['country'] = "IND";//$rec['addressCountry'];
+                    $stateCityDetails = PincodeMaster::where('pincode', $rec['addressPincode'])->where('fit_city_id','exists',true)->first();
+                    Log::info('stateCityDetails: ', [$stateCityDetails]);
+                    if(empty($stateCityDetails)){
+                        return ['err' => "We do not serve in this city."];
+                    }
+                    $_tpoRec['city'] = $stateCityDetails['city_name'];
+                    $_tpoRec['state'] = $stateCityDetails['state_code'];
+                    $_tpoRec['pincode'] = $rec['addressPincode'];
+                    $_tpoRec['marital_status'] = $rec['maritalStatus'];
+                    $_tpoRec['nationality'] = "INDIAN";//$rec['nationality'];
+                    if(isset($rec['campaignCode']))
+                        $_tpoRec['campaign_code'] = $rec['campaignCode'];
+                    $_tpoRec['program_code'] = $rec['programCode'];
+                    $_tpoRec['gender'] = $rec['gender'];
+                    $_tpoRec['agent_code'] = $rec['agentCode'];
+                    $_tpoRec['role'] = $rec['role'];
+                    $_tpoRec['relationship'] = $rec['relationship'];
+                    $_tpoRec['emp_group_offering_cd'] = $rec['empGroupOfferingCd'];
+                    array_push($_tempDtls, $_tpoRec);
+                }
+                $tpoRec->member_details = $_tempDtls;
+            }
+            else {
+                $tpoRec->pg_payment_mode_selected = $orderData['pg_payment_mode_selected'];
+                $tpoRec->repitition = $orderData['repitition'];
+                $tpoRec->wallet = $orderData['wallet'];
+                $tpoRec->type = $orderData['type'];
+                $tpoRec->customer_name = $orderData['customer_name'];
+                $tpoRec->customer_phone = $orderData['customer_phone'];
+                $tpoRec->customer_source = $orderData['customer_source'];
+                $tpoRec->customer_email = $orderData['customer_email'];
+                $tpoRec->amount = $orderData['amount'];
+            }
+            $tpoRec->env = $_env;
+            $_txnid = 'TPFIT'.$tpoId;
+            if(!isset($tpoRec->txnid)){
+                $tpoRec->txnid = $_txnid;
+            }
+            else{
+                $tpoRec->repetition_count = (isset($tpoRec->repetition_count)?$tpoRec->repetition_count+1:1);
+                $tpoRec->txnid = $_txnid.'-R'.$tpoRec->repetition_count;
+            }
+            Log::info('$tpoRec->member_details', $tpoRec->member_details);
+            $tpoRec->save();
+            $dtls = $tpoRec->member_details;
+            Log::info('lets see', [$dtls]);
+            return ['txnid' => $tpoRec->txnid];
+        }catch(Exception $e) {
+            Log::info('Exception in saveTPMemberDetails: ', [$e]);
+            return ['err' => 'Something went wrong...'];
+        }
+    }
+
     public function capture($data = null){
 
         $data = $data ? $data : Input::json()->all();
 
         Log::info($_SERVER['REQUEST_URI']);
         Log::info('------------transactionCapture---------------',$data);
+
+        if(!empty($data['tpo_details']) || (isset($data['type']) && $data['type']=='thirdparty')){
+            $tpMemberDetailsResp = $this->saveTPMemberDetails($data);
+            Log::info('$tpMemberDetailsResp: ', [$tpMemberDetailsResp]);
+            if(isset($tpMemberDetailsResp['err'])){
+                Log::info('error: ', [$tpMemberDetailsResp['err']]);
+                return Response::json(['status' => 500, 'message' => $tpMemberDetailsResp['err']], 500);    
+            }
+            $orderData = $this->getThirdPartyOrderDetails($tpMemberDetailsResp['txnid']);
+            if(empty($orderData)){
+                return Response::json(['status' => 500, 'message' => 'order details not found'], 500);
+            }
+            return Response::json(['data' => $orderData], 200);
+        }
 
         foreach ($data as $key => $value) {
 
@@ -194,6 +299,7 @@ class TransactionController extends \BaseController {
 
         if(empty($data['service_id']) && !empty($data['ratecard_id']))
         {
+            
         	Ratecard::$withoutAppends=true;
         	$servId=Ratecard::find(intval($data['ratecard_id']))->first(['service_id']);
         	(!empty($servId))?$data['service_id']=$servId->service_id:"";
@@ -446,6 +552,59 @@ class TransactionController extends \BaseController {
     
                 $data = array_merge($data,$ratecardDetail['data']);
     
+            }
+            
+            if(!empty($data['third_party']))
+            {
+                $acronym = $data['third_party_acronym'];
+                unset($data['third_party_acronym']);
+                // Log::info('$data["total_sessions_used"]: ', $data['total_sessions_used']);
+                Log::info('$data: ', $data);
+            	if(isset($data['total_sessions_used']))
+            	{
+            		if(intval($data['total_sessions'])>intval($data['total_sessions_used']))
+            		{
+	            		$data['total_sessions_used']=intval($data['total_sessions_used'])+1;
+                        $data['total_sessions']=intval($data['total_sessions']);
+                        
+                        $data['third_party_details'][$acronym]['third_party_used_sessions'] = $data['total_sessions_used'];
+                        if(!empty($data['service_id'])){
+
+                            $service = Service::find((int)$data['service_id']);
+            
+                            if($service){
+            
+                                $data['service_name'] = $service['name'];
+                                $data['service_category_id'] = (int)$service['servicecategory_id'];
+                            }
+            
+                        }
+                        $data['amount_customer'] = 0; // discussed with Utkarsh
+	            		$order_id = Order::max('_id') + 1;
+	            		$order = new Order($data);
+	            		$order->_id = $order_id;
+// 	            		verify
+	            		$order->save();
+	            		
+	            		$cust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
+	            		$cust->total_sessions=intval($data['total_sessions']);
+	            		$cust->total_sessions_used=intval($data['total_sessions_used']);
+	            		// $cust->third_party_token_id=$data['third_party_token_id'];
+                        $cust->third_party_details=$data['third_party_details'];
+                        $cust->save();
+                        
+                        $createWorkoutRes = $this->utilities->createWorkoutSession($order->_id, true);
+                        $booktrialData = json_decode($createWorkoutRes->getContent(), true);
+                        if($booktrialData['status']==200){
+	            		    return Response::json(['status'=>200,"message"=>"Successfully Generated and maintained Workout session.", 'booktrial_id' => $booktrialData['booktrialid']]);
+                        }
+                        else {
+                            return Response::json(['status'=>$booktrialData['status'],"message"=>$booktrialData['message']]);
+                        }
+            		}
+            		else return Response::json(['status'=>400,"message"=>"Total sessions already crossed. "]);
+            	}
+            	else return Response::json(['status'=>400,"message"=>"Total sessions used not present. "]);
             }
 
             if(isset($data['manual_order']) && $data['manual_order']){
@@ -2319,7 +2478,7 @@ class TransactionController extends \BaseController {
                     }
 
                     //no email to Healthy Snacks Beverages and Healthy Tiffins
-                    if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin") ) ){
+                    if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin") ) && empty($snap_block) && empty($extended_validity_block)){
                         
                         if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                             if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -2603,6 +2762,17 @@ class TransactionController extends \BaseController {
             setVerifiedContact($customer_id, $data['customer_phone']);
         }
         
+        if(!empty($data['third_party']) && $data['third_party'] &&!empty($customer->third_party_details->{$data['third_party_acronym']}->third_party_token_id)) {
+         	$data['total_sessions']=$customer->total_sessions;
+        	$data['total_sessions_used']=$customer->total_sessions_used;
+        	$data['third_party_token_id']=$customer->third_party_details->{$data['third_party_acronym']}->third_party_token_id;
+        }
+        else if(!empty($data['third_party']) && $data['third_party']) {
+            // $data['total_sessions'] = $data['third_party_total_sessions'];
+        	$data['total_sessions_used'] = $data['third_party_details'][$data['third_party_acronym']]['third_party_used_sessions'];
+        	$data['third_party_details'] = $data['third_party_details'];
+        }
+
         $device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
         $gcm_reg_id = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 
@@ -3046,10 +3216,10 @@ class TransactionController extends \BaseController {
                 $data['extended_validity_order_id'] = $extended_validity_order['_id'];
                 $data['session_pack_discount'] = $data['ratecard_amount'];
                 $amount = $data['amount'] - $data['session_pack_discount'];
-                if(!empty($data['ratecard']['enable_vendor_novalidity_comm'])){
-                    $data['amount_finder'] = 0;
-                    $data['vendor_price'] = 0;
-                }
+                // if(!empty($data['ratecard']['enable_vendor_novalidity_comm'])){
+                    // $data['amount_finder'] = 0;
+                    // $data['vendor_price'] = 0;
+                // }
             }
         }        
         
@@ -3956,7 +4126,7 @@ class TransactionController extends \BaseController {
             $data['type'] = 'memberships';
             $data['no_of_sessions'] = $data['sessions_left'] = $ratecard['duration'];
             $data['extended_validity'] = true;
-            $data['amount_finder'] = 0;
+            // $data['amount_finder'] = 0;
         }
 
        /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
@@ -6050,7 +6220,11 @@ class TransactionController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $data['customer_email'] = $decoded->customer->email;
             $data['customer_name'] = $decoded->customer->name;
-            $data['customer_phone'] = $decoded->customer->contact_no;
+            if(!empty($decoded->customer->contact_no)){
+                $data['customer_phone'] = $decoded->customer->contact_no;
+            }else{
+                $data['customer_phone'] = "";
+            }
         }else{
             return Response::json(array("message"=>"Empty token or token should be string","status"=>401));
         }
@@ -8072,22 +8246,89 @@ class TransactionController extends \BaseController {
             
     }
 
+    public function getThirdPartyOrderDetails($txnid) {
+        Log::info('inside getThirdPartyOrderDetails: $txnid: ', [$txnid]);
+        $orderData = [];
+        $tpoRec = ThirdPartyOrder::where('txnid', $txnid)->first();
+        Log::info('$tpoRec: ', [$tpoRec]);
+        if(!empty($tpoRec)) {
+            Log::info('Third party order record found for txnid: ', [$txnid]);
+            $principalMember = array_filter($tpoRec['member_details'], function($member) {
+                return $member['role']=='principal';
+            });
+            if(!empty($principalMember)){
+                $orderData['_id'] = $tpoRec['_id'];
+                $orderData['third_party_order'] = true;
+                $orderData['type'] = 'thirdparty';
+                $orderData['logged_in_customer_id'] = $tpoRec['customer_id'];
+                $orderData['txnid'] = $tpoRec['txnid'];
+                $orderData['amount'] = $tpoRec['fee_details']['total_price'];
+                $orderData['firstname'] = $principalMember[0]['first_name'];
+                $orderData['email'] = $principalMember[0]['email_id'];
+                $orderData['phone'] = $principalMember[0]['mobile_no'];
+                $orderData['orderid'] = $tpoRec['_id'];
+                $orderData['service_name'] = $tpoRec['plan_code'];
+                $orderData['finder_name'] = $tpoRec['thirdparty']['acronym'];
+                $orderData['productinfo'] = $orderData['service_name'].' - '.$orderData['finder_name'];
+                $orderData['env'] = $tpoRec['env'];
+
+                $orderData['customer_name'] = (isset($tpoRec['customer_name']))?($tpoRec['customer_name']):($principalMember[0]['first_name'].' '.$principalMember[0]['last_name']);
+                $orderData['customer_email'] = (isset($tpoRec['customer_email']))?($tpoRec['customer_email']):($principalMember[0]['email_id']);
+                $orderData['gender'] = $principalMember[0]['gender']=='M'?'male':'female';
+                $orderData['customer_phone'] = (isset($tpoRec['customer_phone']))?($tpoRec['customer_phone']):($principalMember[0]['mobile_no']);
+                $orderData['dob'] = $principalMember[0]['dob']; // date('Y-m-d', $principalMember[0]['dob']->sec).' 00:00:00';
+                $orderData['customer_address'] = [$principalMember[0]['address_line_1'], $principalMember[0]['address_line_2']];
+
+                if(empty($orderData['logged_in_customer_id'])){
+                    Log::info('registering customer');
+                    $orderData['logged_in_customer_id'] = autoRegisterCustomer($orderData);
+                    $tpoRec['customer_id'] = $orderData['logged_in_customer_id'];
+                    Log::info('customer registered: ', [$orderData['logged_in_customer_id']]);
+                    $tpoRec->save();
+                }
+
+                Log::info('$orderData before getHash(): ', $orderData);
+                $orderData["with_hash_params"] = "checkout";
+                $orderData = getHash($orderData);
+                $orderData['hash'] = $orderData['payment_hash'];
+                Log::info('$orderData after getHash(): ', $orderData);
+                return ($orderData);
+            } else {
+                Log::info('principal member not found');
+                // principal member not found
+                return null;
+            }
+        } else {
+            Log::info('order not found based on txn id');
+            // order not found based on txn id
+            return null;
+        }
+    }
+
     public function webcheckout(){
         $data = Input::json()->all();
         $rules = array(
             'txnId'=>'required',
         );
-        $validator = Validator::make($data,$rules);
-        $jwt_token = Request::header('Authorization');
-        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-            $decoded = customerTokenDecode($jwt_token);
-            // $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
+        $orderWithHash = null;
+        $isThirdParty = substr($data["txnId"], 0, 2)==="TP";
+        if(!$isThirdParty){
+            $validator = Validator::make($data,$rules);
+            $jwt_token = Request::header('Authorization');
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                $decoded = customerTokenDecode($jwt_token);
+                // $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
+            }
         }
-        $order = Order::where("txnid",$data["txnId"])->first();
-        $order["with_hash_params"] = "checkout";
-        $orderWithHash = getHash($order);
-        return $orderWithHash; 
-        
+        if(!!$data["txnId"] && $isThirdParty){
+            $orderWithHash = $this -> getThirdPartyOrderDetails($data["txnId"]);
+        }
+        else {
+            $order = Order::where("txnid",$data["txnId"])->first();
+            $order["with_hash_params"] = "checkout";
+            $orderWithHash = getHash($order);
+        }
+        return $orderWithHash;
     }
 
     public function getUmarkedMfpAttendance(){

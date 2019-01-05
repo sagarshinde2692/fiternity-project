@@ -3172,7 +3172,7 @@ Class Utilities {
 
     }
 
-    public function createWorkoutSession($order_id){
+    public function createWorkoutSession($order_id, $isThirdP=false){
         
         $order = \Order::find($order_id);
 
@@ -3187,6 +3187,14 @@ Class Utilities {
         $data['finder_id'] = (int)$order['finder_id'];
         $data['service_name'] = $order['service_name'];
         $data['type'] = $order['type'];
+
+        if($isThirdP) {
+            $data['third_party'] = $order['third_party'];
+            // $data['third_party_used_sessions'] = $order['third_party_used_sessions'];
+            // $data['third_party_token_id'] = $order['third_party_token_id'];
+            // $data['third_party_id'] = $order['third_party_id'];
+            $data['third_party_details'] = $order['third_party_details'];
+        }
 
         /*if(isset($order->pay_later) && $order->pay_later){
             $data['premium_session'] = true;
@@ -3226,8 +3234,8 @@ Class Utilities {
         }
 
         $fitapi = new Fitapi();
-
-        $storeBooktrial = $fitapi->storeBooktrial($data);
+        Log::info('before storeBookTrial: ', [$isThirdP]);
+        $storeBooktrial = $fitapi->storeBooktrial($data, $isThirdP);
 
         if($storeBooktrial['status'] == 200){
 

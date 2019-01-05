@@ -69,7 +69,7 @@ class CommunicationsController extends \BaseController {
 												->where("communication_keys.$sender_class-$label", intval($key))
 												->first();
 
-				if(empty($transaction_data['surprise_fit_cash'])){
+				if(empty($transaction_data['surprise_fit_cash']) && !(isset($transaction_data['third_party_details']))){
 					
 					$transaction_data->surprise_fit_cash = $this->utilities->getFitcash($transaction_data->toArray());
 				}
@@ -127,8 +127,21 @@ class CommunicationsController extends \BaseController {
 					return "no sms sent";
 				}
 			}*/
-
-			$response = $this->$class->$label($data, 0);
+			if(isset($data['third_party_details'])){
+				// bookTrialReminderAfter30Mins was added for third party (Aditya Birla)
+				if($label=='bookTrialReminderAfter30Mins' && (!isset($data['post_trial_status']) || ($data['post_trial_status']!='attended')) && (!isset($data['post_trial_status_updated_by_lostfitcode']))){
+					$response = $this->$class->$label($data, 0);
+				}
+				else if($label!='bookTrialReminderAfter30Mins') {
+					$response = $this->$class->$label($data, 0);
+				}
+				else{
+					$response = 0;
+				}
+			}
+			else {
+				$response = $this->$class->$label($data, 0);
+			}
 
 			return $response;
 			

@@ -167,7 +167,7 @@ class FindersController extends \BaseController {
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
-				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
+				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug', 'description');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
 				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->where('description', '!=', "")->orderBy('updated_at', 'DESC')->limit(5);}))
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
@@ -4784,7 +4784,7 @@ class FindersController extends \BaseController {
 					'title'=>'Calling to book a trial at '.$finderData['finder']['title'],
 					'description'=>'Book online for faster experience when it comes to your fitness choices!',
 					'button_text'=>'Book Trial Online',
-					'chat_enable'=>true,
+					'chat_enable'=>false,
 					'call_enable'=>true
 				];
 
