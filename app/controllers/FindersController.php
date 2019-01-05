@@ -6669,11 +6669,13 @@ class FindersController extends \BaseController {
                 // $service['non_validity'] = $this->getNonValidityBanner();
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service['service_name_display'] = $service[$service_name_key];
-                $post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
+				$post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
+				$post_name = " - ".$post_name;
                 if(!empty($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] < '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.6'))){
-				    $service[$service_name_key] = $service[$service_name_key]." - ".$post_name;
+				    $service[$service_name_key] = $service[$service_name_key].$post_name;
                 }else{
                     $service['post_name'] = $post_name;
+                    $service['post_name_color'] = Config::get('app.ratecard_button_color');
                 }
 				$service['unlimited_validity'] = $no_validity_exists;
 				$no_validity_ratecards_service = [];
@@ -6714,7 +6716,7 @@ class FindersController extends \BaseController {
             // if(empty($s['type']) || $s['type'] != 'extended validity'){
                 foreach($s[$ratecard_key] as &$r){
                     // return $r;
-                    if($r['type'] == 'extended validity' ){
+                    if($r['type'] == 'extended validity'){
                         $duration_day = $this->utilities->getDurationDay($r);
                         if(!empty($session_pack_duration_map_flip[$duration_day]) && !empty($memberships[strval($s['_id'])][$session_pack_duration_map_flip[$duration_day]])){
                             
@@ -6734,6 +6736,10 @@ class FindersController extends \BaseController {
                                 "__vendor_name"=>$data['finder']['title'],
                                 "__ext_validity_type"=>!empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity"
 							]);
+
+							if(!empty($getNonValidityBanner['how_it_works'])){
+								$getNonValidityBanner['how_it_works']['description'] = strtr($getNonValidityBanner['how_it_works']['description'], ['__vendor_name'=>$data['finder']['title']]);
+							}
 
                             $getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>(!empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity")]);
                             if(!empty($getNonValidityBanner['title1'])){
@@ -6768,16 +6774,17 @@ class FindersController extends \BaseController {
                         break;
                     }
                 }
-				unset($rate_c['non_validity_ratecard_copy']);
+				
                 
             }
         }
 
         foreach($data['finder']['services'] as &$ser1){
             foreach($ser1[$ratecard_key] as &$rate_c1){
-                if(!(!empty($ser1['type']) && $ser1['type'] == 'extended validity')){
+                if(!empty($ser1['type']) && $ser1['type'] == 'extended validity'){
     				unset($rate_c1['non_validity_ratecard']);
-                }
+				}
+				unset($rate_c1['non_validity_ratecard_copy']);
             }
         }
 
