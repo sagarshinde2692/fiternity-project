@@ -6914,6 +6914,7 @@ class FindersController extends \BaseController {
 					"validity"=> 0,
                     "duration_type"=> "",
                     "button_color"=> Config::get('app.ratecard_button_color'),
+                    'pps_know_more'=>true
                 ];
 
 

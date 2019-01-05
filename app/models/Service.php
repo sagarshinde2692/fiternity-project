@@ -344,7 +344,7 @@ class Service extends \Basemodel{
                 }
                 if($value["type"] == "workout session"){
                    $value[ "button_color"] = Config::get('app.ratecard_button_color');
-                   $value[ "pps_know_more"] = Config::get('app.ratecard_button_color');
+                   $value[ "pps_know_more"] = true;
                 }
 				
 				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;
