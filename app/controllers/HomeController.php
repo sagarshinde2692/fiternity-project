@@ -2671,7 +2671,7 @@ class HomeController extends BaseController {
     }
 
     public function getCityLocation($city = 'mumbai',$cache = true){
-
+        $device_type = Request::header('source');
         $location_by_city = $cache ? Cache::tags('location_by_city')->has($city) : false;
         if(!$location_by_city){
             $categorytags = $locations  =	array();
@@ -2684,9 +2684,89 @@ class HomeController extends BaseController {
                 $city_name 		= 	$citydata['name'];
                 $city_id		= 	(int) $citydata['_id'];
 
-                $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
+                if(!empty($device_type) && (in_array($device_type, ['web']))){
+                    $locations = Location::raw(function($collection) use ($city_id){
+                        $aggregate = [];
+
+                        $match = [
+                            'cities' => [ '$in' => [$city_id]],
+                            'status' => '1'
+                        ];
+
+                        $lookup = [
+                            'from' => 'locations',
+                            'localField' => 'parent_id',
+                            'foreignField' => '_id',
+                            'as' => 'parentLoc'
+                        ];
+
+                        $sort = [ 'name' => 1 ];
+                        
+                        $project = [
+                            'name' => 1,
+                            '_id' => 1,
+                            'slug' => 1,
+                            'location_group' => 1,
+                            'lat' => 1,
+                            'lon' => 1,
+                            'parent_name' => [ '$arrayElemAt' => ['$parentLoc.name', 0] ]
+                        ];
+
+                        $aggregate = [
+                            ['$match' => $match],
+                            ['$lookup' => $lookup],
+                            ['$sort' => $sort],
+                            ['$project' => $project]
+                        ];
+
+                        return $collection->aggregate($aggregate);
+                    });
+                }
+                else {
+                    $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
+                }
+
             }else{
-                $locations				= 	Location::active()->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'))->toArray();
+                if(!empty($device_type) && (in_array($device_type, ['web']))){
+                    $locations = Location::raw(function($collection) use ($city_id){
+                        $aggregate = [];
+
+                        $match = [
+                            'status' => '1',
+                        ];
+
+                        $lookup = [
+                            'from' => 'locations',
+                            'localField' => 'parent_id',
+                            'foreignField' => '_id',
+                            'as' => 'parentLoc'
+                        ];
+
+                        $sort = [ 'name' => 1 ];
+                        
+                        $project = [
+                            'name' => 1,
+                            '_id' => 1,
+                            'slug' => 1,
+                            'location_group' => 1,
+                            'lat' => 1,
+                            'lon' => 1,
+                            'parent_name' => [ '$arrayElemAt' => ['$parentLoc.name', 0] ]
+                        ];
+
+                        $aggregate = [
+                            ['$match' => $match],
+                            ['$lookup' => $lookup],
+                            ['$sort' => $sort],
+                            ['$project' => $project]
+                        ];
+
+                        return $collection->aggregate($aggregate);
+                    });
+                }
+                else{
+                    $locations				= 	Location::active()->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'))->toArray();
+                }
                 $locations_cluster				= 	Locationcluster::active()->orderBy('name')->get(array('name','_id','slug','lat','lon'))->toArray();
                 $locations = array_merge($locations,$locations_cluster);
             }
