@@ -1267,7 +1267,11 @@ class FindersController extends \BaseController {
 
                 if(!empty($cheapest_price)){
                     $this->insertWSRatecardTopService($response, $cheapest_price);
-                }
+				}
+
+				$this->addNonValidityLink($response);
+				
+				$this->removeNonValidity($response, 'web');
                 
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
@@ -6533,7 +6537,10 @@ class FindersController extends \BaseController {
 									$section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name'=>$data['finder']['title']]);
                                     $ratecard['price'] = $price;
                                     $ratecard['special_price'] = 0;
-                                    $ratecard['validity'] = 0;
+									$ratecard['validity'] = 0;
+									if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios'])){
+										$section3['text'] = "You will get workout sessions in your wallet on Fitternity & can book this whenever you wish to workout. It gives you the ability to manage your usage & pay only for the workouts you end up doing.";
+									}
                                     $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
                                         'header'=>'Want to SAVE MORE?',
                                         'section1'=>[
@@ -6758,8 +6765,8 @@ class FindersController extends \BaseController {
                 }
 				unset($rate_c['non_validity_ratecard_copy']);
             }
-        }
-
+		}
+	
         return $data['finder'];
     }
 
@@ -6890,6 +6897,51 @@ class FindersController extends \BaseController {
             }
         }
         $data['finder']['services'] = $services;
-    }
+	} 
+
+	public function removeNonValidity(&$data, $source = null){
+		$ratecard_key = 'ratecard';
+		$service_name_key = 'service_name';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
+
+		$services = $data['finder']['services'];
+		
+		foreach($services as $key => $value){
+			$ratecards = [];
+			foreach($value[$ratecard_key] as $rate_key => $ratecard){
+				if($ratecard['type'] == 'extended validity' && empty($value['type']) && empty($value['top_service'])){
+					// unset($services[$key][$ratecard_key][$rate_key]);
+					continue;
+				}else{
+					array_push($ratecards, $ratecard);
+				}
+			}
+			$services[$key][$ratecard_key] = $ratecards;
+		}
+
+		$data['finder']['services'] = $services;
+	}
+
+	public function addNonValidityLink(&$data){
+		foreach($data['finder']['services'] as &$service){
+			if(empty($service['type']) && empty($service['top_service'])){
+
+				foreach($service['serviceratecard'] as $ratecard){
+					if($ratecard['type'] == 'extended validity'){
+						$service['non_validity_link'] = [
+							"text" => "Check out Unlimited Validity Memberships available on this service",
+							"service_id"=>$service['_id']
+						];
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+
 
 }
