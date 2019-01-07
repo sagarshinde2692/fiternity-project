@@ -26,6 +26,7 @@ class Service extends \Basemodel{
 
     public static $setAppends = [];
 	
+	public static $isThirdParty = false;
 
 	protected function getArrayableAppends()
 	{
@@ -178,7 +179,12 @@ class Service extends \Basemodel{
 		$second_max_validity_ids = [];
 		$ratecardsarr = null;
 		if(!empty($this->_id) && isset($this->_id)){
-			$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
+			if(self::$isThirdParty){
+				$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->where('type','!=','extended validity')->orderBy('order', 'asc')->get()->toArray();
+			}
+			else {
+				$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
+			}
 		}
 
 		
