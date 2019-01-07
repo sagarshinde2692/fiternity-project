@@ -2821,7 +2821,7 @@ if (!function_exists(('getReversehash'))){
         $amount = $data['amount'].".00";
         $productinfo = $service_name." - ".$finder_name;
         $productinfo = $data['productinfo'] = trim(strtolower(substr($productinfo,0,100)));
-        $firstname = strtolower($data['customer_name']);
+        $firstname = trim(strtolower($data['customer_name']));
         $email = strtolower($data['customer_email']);
         $udf1 = "";
         $udf2 = "";
@@ -2870,7 +2870,7 @@ if (!function_exists(('getHash'))){
         $amount = $data['amount'];
         $productinfo = $service_name." - ".$finder_name;
         $productinfo = $data['productinfo'] = trim(strtolower(substr($productinfo,0,100)));
-        $firstname = strtolower($data['customer_name']);
+        $firstname = trim(strtolower($data['customer_name']));
         $email = strtolower($data['customer_email']);
         $udf1 = "";
         $udf2 = "";
