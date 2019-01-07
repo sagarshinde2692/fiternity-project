@@ -180,7 +180,7 @@ class Service extends \Basemodel{
 		$ratecardsarr = null;
 		if(!empty($this->_id) && isset($this->_id)){
 			if(self::$isThirdParty){
-				$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->where('type','!=','extended validity')->orderBy('order', 'asc')->get()->toArray();
+				$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->where('type','=','workout session')->orderBy('order', 'asc')->get()->toArray();
 			}
 			else {
 				$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
