@@ -6537,7 +6537,10 @@ class FindersController extends \BaseController {
 									$section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name'=>$data['finder']['title']]);
                                     $ratecard['price'] = $price;
                                     $ratecard['special_price'] = 0;
-                                    $ratecard['validity'] = 0;
+									$ratecard['validity'] = 0;
+									if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios'])){
+										$section3['text'] = "You will get workout sessions in your wallet on Fitternity & can book this whenever you wish to workout. It gives you the ability to manage your usage & pay only for the workouts you end up doing.";
+									}
                                     $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
                                         'header'=>'Want to SAVE MORE?',
                                         'section1'=>[
