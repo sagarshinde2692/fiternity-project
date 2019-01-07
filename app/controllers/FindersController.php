@@ -1267,7 +1267,11 @@ class FindersController extends \BaseController {
 
                 if(!empty($cheapest_price)){
                     $this->insertWSRatecardTopService($response, $cheapest_price);
-                }
+				}
+
+				$this->addNonValidityLink($response);
+				
+				$this->removeNonValidity($response, 'web');
                 
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
@@ -6758,8 +6762,8 @@ class FindersController extends \BaseController {
                 }
 				unset($rate_c['non_validity_ratecard_copy']);
             }
-        }
-
+		}
+	
         return $data['finder'];
     }
 
@@ -6890,6 +6894,51 @@ class FindersController extends \BaseController {
             }
         }
         $data['finder']['services'] = $services;
-    }
+	} 
+
+	public function removeNonValidity(&$data, $source = null){
+		$ratecard_key = 'ratecard';
+		$service_name_key = 'service_name';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
+
+		$services = $data['finder']['services'];
+		
+		foreach($services as $key => $value){
+			$ratecards = [];
+			foreach($value[$ratecard_key] as $rate_key => $ratecard){
+				if($ratecard['type'] == 'extended validity' && empty($service['type'])){
+					// unset($services[$key][$ratecard_key][$rate_key]);
+					continue;
+				}else{
+					array_push($ratecards, $ratecard);
+				}
+			}
+			$services[$key][$ratecard_key] = $ratecards;
+		}
+
+		$data['finder']['services'] = $services;
+	}
+
+	public function addNonValidityLink(&$data){
+		foreach($data['finder']['services'] as &$service){
+			if(empty($service['type']) && empty($service['top_service'])){
+
+				foreach($service['serviceratecard'] as $ratecard){
+					if($ratecard['type'] == 'extended validity'){
+						$service['non_validity_link'] = [
+							"text" => "Check out Unlimited Validity Memberships available on this service",
+							"service_id"=>$service['_id']
+						];
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+
 
 }
