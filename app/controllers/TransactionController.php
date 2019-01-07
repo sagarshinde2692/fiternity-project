@@ -1883,7 +1883,9 @@ class TransactionController extends \BaseController {
 
         if($order->status == "1"){
 
-            return Response::json(['status' => 400, "message" => "Already Status Successfull"],$status);
+            return Response::json(	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)"));
+
+            // return Response::json(['status' => 400, "message" => "Already Status Successfull"],$status);
         }
 
         if($this->vendor_token){
