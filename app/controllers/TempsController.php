@@ -514,7 +514,12 @@ class TempsController extends \BaseController {
                 
                 if ($temp['source'] != 'kiosk'){
                     
-                    $customer_data['all_accounts'] = $this->getAllCustomersByPhone($temp);
+                    $all_accounts = $this->getAllCustomersByPhone($temp);
+                    if(!empty($all_accounts)){
+                        $customer_data = $all_accounts[0];
+                        $customerToken = $customer_data['customerToken'];
+                    }
+                    $customer_data['all_accounts'] = $all_accounts;
                 
                 }
                 
