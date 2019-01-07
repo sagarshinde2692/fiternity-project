@@ -6909,7 +6909,7 @@ class FindersController extends \BaseController {
 		foreach($services as $key => $value){
 			$ratecards = [];
 			foreach($value[$ratecard_key] as $rate_key => $ratecard){
-				if($ratecard['type'] == 'extended validity' && empty($service['type'])){
+				if($ratecard['type'] == 'extended validity' && empty($value['type']) && empty($value['top_service'])){
 					// unset($services[$key][$ratecard_key][$rate_key]);
 					continue;
 				}else{
