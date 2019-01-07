@@ -3442,11 +3442,13 @@ class HomeController extends BaseController {
                 $offerings = array();
 
                 foreach ($value['offerings'] as $offerings_key => $offerings_value){
-
                     $offerings_value['key'] = $offerings_value['name'];
-
+                    // $temp_name =  strtolower($offerings_value['name']);
+                    // $offerings_value['slug'] = str_replace(' ', '-', $temp_name);
+                    $temp_name =  strtolower($offerings_value['slug']);
+                    $temp_name1 = $value['slug'] . '-';
+                    $offerings_value['slug'] = str_replace($temp_name1, '', $temp_name);
                     $offerings[] = $offerings_value;
-
                 }
 
                 $categorytag_offerings[$key]['key'] = $value['name'];
