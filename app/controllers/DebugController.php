@@ -8605,7 +8605,61 @@ public function yes($msg){
         return "DOne";
 
 
-    }
+	}
+	
+	public function checkinFrequency(){
+		Customer::$withoutAppends = true;
+
+		$customers = Customer::where('loyalty.brand_loyalty', 135)->lists('_id');
+
+
+		$aggregate = Checkin::raw(function($collection) use ($customers){
+			$aggregate = [
+				[
+					'$match'=>[
+						'customer_id'=>['$in'=>$customers]
+					]
+				],
+				[
+					'$group'=>[
+						'_id'=>'$customer_id',
+						'total_checkins'=>['$sum'=>1], 
+						'start_date'=>['$first'=>'$created_at']
+					]
+				],
+				[
+					'$sort'=>[
+						'total_checkins'=>-1
+					]
+				]
+
+			];
+			return $collection->aggregate($aggregate);
+		});
+		$result = $aggregate['result'];
+		
+		$customer_ids = array_column($result, '_id');
+
+		$customer_data = [];
+		$customers = Customer::whereIn('_id', $customer_ids)->get(['email', 'loyalty.start_date']);
+		
+		foreach($customers as $c){
+			$customer_data[$c['_id']]=$c;
+		}
+
+		foreach($result as &$r){
+			$r['customer'] = $customer_data[$r['_id']];
+			$r['checkin_start'] = date('d/m/Y',$r['start_date']->sec);
+			$r['register'] = date('d/m/Y',$r['customer']['loyalty']['start_date']->sec);
+			$r['email'] = $r['customer']['email'];
+			unset($r['customer']);
+			unset($r['start_date']);
+		}
+
+		return $result;
+
+
+	}
 
 }
 
