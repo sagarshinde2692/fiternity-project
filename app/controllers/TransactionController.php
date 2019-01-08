@@ -2313,7 +2313,7 @@ class TransactionController extends \BaseController {
             }
 
             $snap_block = in_array($order['finder_id'], Config::get('app.snap_bangalore_finder_ids')) && $order['type'] == 'memberships';
-            $extended_validity_block = !empty($order['extended_validity']) && empty($ratecard['flags']['enable_vendor_novalidity_comm']);
+            $extended_validity_block = !empty($order['extended_validity']) && empty($ratecard['flags']['enable_vendor_ext_validity_comm']);
 
             if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
 
