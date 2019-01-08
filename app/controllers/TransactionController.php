@@ -6321,7 +6321,7 @@ class TransactionController extends \BaseController {
     
             $data = array_merge($data,$finderDetail['data']);
             
-            if(!empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'memberhsip')){
+            if(!empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'membership')){
                 $commission = getVendorCommision(['finder_id'=>$data['finder_id']]);
 
                 if(!empty($commission)){
