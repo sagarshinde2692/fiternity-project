@@ -178,6 +178,17 @@ class Service extends \Basemodel{
 		$second_max_validity_ids = [];
 		$ratecardsarr = null;
         $finder = $this->finder;
+
+        if(!empty($GLOBALS['finder_commission'])){
+            Log::info("Commission");
+            Log::info($GLOBALS['finder_commission']);
+        }
+        if(!empty($finder['flags']['enable_commission_discount']) && empty($GLOBALS['finder_commission'])){
+
+            Log::info("Commission not defined");
+            $GLOBALS['finder_commission'] = getVendorCommision(['finder_id'=>$finder['_id']]);
+        }
+        
 		if(!empty($this->_id) && isset($this->_id)){
 
             if(!empty($finder->brand_id) && $finder->brand_id == 130){
@@ -344,7 +355,21 @@ class Service extends \Basemodel{
                 }
                 if($value["type"] == "workout session"){
                    $value[ "button_color"] = Config::get('app.ratecard_button_color');
-                   $value[ "pps_know_more"] = true;
+				   $value[ "pps_know_more"] = true;
+				}
+
+                if($value['type'] == 'membership' && !empty($GLOBALS['finder_commission'])){
+                    if(!empty($value["special_price"] )){
+                        $commission_discounted_price = $value["special_price"] = round($value["special_price"] * (100 - $GLOBALS['finder_commission'] + Config::get('app.pg_charge'))/100);
+                        
+                    }else if($value["price"] ){
+                        $commission_discounted_price = $value["price"] = round($value["price"] * (100 - $GLOBALS['finder_commission'] + Config::get('app.pg_charge'))/100);
+                        
+                    }
+
+                    if(!empty($value['offers'][0]['price']) && !empty($commission_discounted_price)){
+                        $value['offers'][0]['price'] = $commission_discounted_price;
+                    }
                 }
 				
 				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;

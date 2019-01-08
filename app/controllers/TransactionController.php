@@ -3177,6 +3177,11 @@ class TransactionController extends \BaseController {
         
         }
 
+        if(!empty($data['amount'] ) && !empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'memberships') && empty($data['extended_validity'])){
+            $commission = getVendorCommision(['finder_id'=>$data['finder_id']]);
+            $data['amount'] = $data['amount_customer'] = round($data['amount']  * (100 - $commission + Config::get('app.pg_charge'))/100); 
+        }
+
         $amount = $data['amount_customer'] = $data['amount'];
 
         $convinience_fee = 0;
@@ -3211,7 +3216,7 @@ class TransactionController extends \BaseController {
             }
         }    
 
-        if($data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
+        if(!empty($data['amount'] ) && $data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
             Order::$withoutAppends = true;
             $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
             if($extended_validity_order){
@@ -5528,7 +5533,7 @@ class TransactionController extends \BaseController {
             if(!empty($data['type']) && in_array($data['type'], ['memberships', 'membership'])){
                 $amount_summary[0] = array(
                     'field' => 'Membership Amount',
-                    'value' => 'Rs. '.$data['ratecard_amount']
+                    'value' => 'Rs. '.(!empty($data['amount_customer']) ? $data['amount_customer'] - (!empty($data['convinience_fee']) ? $data['convinience_fee'] : 0) : $data['ratecard_amount'])
                 );  
                 if(!empty($data['extended_validity'])){
                     $amount_summary[0] = array(
@@ -6482,6 +6487,24 @@ class TransactionController extends \BaseController {
 
             $data = array_merge($data,$ratecardDetail['data']);
             
+            $finder_id = (int) $data['finder_id'];
+            
+            $finderDetail = $this->getFinderDetail($finder_id);
+    
+            if($finderDetail['status'] != 200){
+                return Response::json($finderDetail,$this->error_status);
+            }
+    
+            $data = array_merge($data,$finderDetail['data']);
+            
+            if(!empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'membership')){
+                $commission = getVendorCommision(['finder_id'=>$data['finder_id']]);
+
+                if(!empty($commission)){
+                        $data['amount'] = round($data['amount'] * (100 - $commission + Config::get('app.pg_charge'))/100);
+                }
+            }
+            
             $data['amount_payable'] = $data['amount'];
 
             $jwt_token = Request::header('Authorization');
@@ -6710,16 +6733,6 @@ class TransactionController extends \BaseController {
             if($data['amount_payable'] == 0){
                 $result['full_wallet_payment'] = true;
             }
-            
-            $finder_id = (int) $data['finder_id'];
-            
-            $finderDetail = $this->getFinderDetail($finder_id);
-    
-            if($finderDetail['status'] != 200){
-                return Response::json($finderDetail,$this->error_status);
-            }
-    
-            $data = array_merge($data,$finderDetail['data']);
     
             if(isset($data['service_id'])){
                 $service_id = (int) $data['service_id'];

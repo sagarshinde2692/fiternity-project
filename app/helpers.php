@@ -4063,6 +4063,33 @@ if (!function_exists('bladeCompile')) {
 	}
 
 }
+if (!function_exists('getVendorCommision')) {
+
+    function getVendorCommision($data)
+	{
+	    $finder_id = (int)$data['finder_id'];
+
+        $vendorCommercial = \VendorCommercial::where('vendor_id',$finder_id)->orderBy('_id','desc')->first();
+
+        $commision = 15;
+
+        if($vendorCommercial){
+
+            if(isset($vendorCommercial['contract_end_date']) && $vendorCommercial['contract_end_date'] != "" && isset($vendorCommercial['commision']) && $vendorCommercial['commision'] != ""){
+
+                $contract_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($vendorCommercial['contract_end_date'])));
+
+                if($contract_end_date > time()){
+                    $commision = (float) preg_replace("/[^0-9.]/","",$vendorCommercial['commision']);
+                }
+            }
+            
+        }
+
+        return $commision;
+	}
+
+}
 
 
 ?>
