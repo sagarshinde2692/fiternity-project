@@ -835,15 +835,15 @@ class TransactionController extends \BaseController {
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
 	
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
-
+            
             // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
-
+            
             if($cashbackRewardWallet['status'] != 200){
                 return Response::json($cashbackRewardWallet,$this->error_status);
             }
-
-            $data = array_merge($data,$cashbackRewardWallet['data']);
             
+            $data = array_merge($data,$cashbackRewardWallet['data']);
+
         }
 
         if(!empty($data['donation_amount']) && is_numeric($data['donation_amount'])){
@@ -903,7 +903,7 @@ class TransactionController extends \BaseController {
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
 
                 if($this->utilities->isConvinienceFeeApplicable($data)){
-                    
+
                     $convinience_fee_percent = Config::get('app.convinience_fee');
 
                     $convinience_fee = round($part_payment_data['amount_finder']*$convinience_fee_percent/100);
@@ -948,22 +948,26 @@ class TransactionController extends \BaseController {
 
         }
 
-        $data['convinience_fee'] = 0;
 
-        if($this->utilities->isConvinienceFeeApplicable($data)){
-            
-            $convinience_fee_percent = Config::get('app.convinience_fee');
+        if(empty($data['convinience_fee'])){
 
-            $convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
-
-            $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
-
-            $data['convinience_fee'] = $convinience_fee;
-
-            if(!empty($data['customer_quantity'])){
-                $data['convinience_fee'] = $data['convinience_fee'] * $data['customer_quantity'];
+            $data['convinience_fee'] = 0;
+    
+            if($this->utilities->isConvinienceFeeApplicable($data)){
+                
+                $convinience_fee_percent = Config::get('app.convinience_fee');
+    
+                $convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
+    
+                $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
+    
+                $data['convinience_fee'] = $convinience_fee;
+    
+                if(!empty($data['customer_quantity'])){
+                    $data['convinience_fee'] = $data['convinience_fee'] * $data['customer_quantity'];
+                }
+    
             }
-
         }
 
         if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
