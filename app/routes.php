@@ -931,7 +931,7 @@ Route::post('transaction/capture',array('as' => 'transaction.capture','uses' => 
 Route::get('transaction/dcos',array('as' => 'transaction.dcos','uses' => 'TransactionController@deleteCommunicationOfSuccess'));
 
 Route::get('getfindercategories/{city?}', 'DebugController@cacheFinderCategoryTags');
-
+Route::post('getfindercategories/{city?}', 'DebugController@cacheFinderCategoryTags');
 Route::get('getofferingscategories/{categorySlug?}', 'DebugController@getOfferingsCategoriesSlug');
 
 Route::get('getfinderlocations', 'DebugController@cacheLocations');

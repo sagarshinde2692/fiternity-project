@@ -3511,7 +3511,91 @@ public function yes($msg){
 			}
 			Cache::tags('findercount_locationwise_city')->put($city, $finderCategoryTags, Config::get('cache.three_day_cache'));
 		}
-		
+		$data = Input::json()->all();
+		Log::info($data);
+        if(!empty($data) && (!empty($data["from"]) || !empty($data["city"])) ){
+            Log::info("-----from the from section ---- ");
+            $category = Vendor::raw(function($collection) use($data) {
+                
+                $aggregate = [];
+				if(!empty($data['from'])){
+                    $geoNear = array(
+						'$geoNear' => array(
+							'near' => array(
+								'type' => 'Point',
+								'coordinates' => $data['from']// [ 19.1136 , 72.8697 ]
+							),
+							"query" => array("hidden" => false),
+							'distanceField' => "dist.calculated",
+							'maxDistance' => 2000,
+							'spherical'=> true
+						)
+					);
+
+					$aggregate[] = $geoNear;
+
+                }else{
+                    $citydata 		=	City::where('slug', '=', $data["city"])->first(array('name','slug'));
+					if(!$citydata){
+						return $this->responseNotFound('City does not exist');
+					}
+
+					$city_name 				= 	$citydata['name'];
+					$city_id				= 	(int) $citydata['_id'];
+                    $match = array(
+                        '$match' => array(
+                            'city_id' => $city_id
+                        )
+                    );
+                    $aggregate[] = $match;
+                }
+
+                $group = array(
+                        '$group' => array(
+                            "_id" => '$vendorcategory.primary',
+                            'count' => array('$sum' => 1)
+                        )
+
+                );
+                $aggregate[] = $group;
+                
+                $unwind = array('$unwind' => '$_id');
+
+                $aggregate[] = $unwind;
+                
+                $group = array(
+                    '$group' => array('_id' => '$_id', 'count' => array('$sum' => '$count'))
+                );
+    
+                $aggregate[] = $group;
+    
+                return $collection->aggregate($aggregate);
+    
+            });
+            
+			$temp = $finderCategoryTags;
+			$totalCount = 0;
+			$retArr = [];
+            foreach($temp as $key => $value) {
+				if( !in_array($value["slug"],["healthy-tiffins", "luxury-hotels"]) ){
+					$tmp_data=array_filter($category["result"],function ($e) use ($value) {return $value['_id']== $e['_id'];});
+					if(!empty($tmp_data)){
+						$temp[$key]["count"] = reset($tmp_data)["count"];
+						$totalCount += $temp[$key]["count"];
+					}else{
+						$temp[$key]["count"] = 0;
+					}
+					array_push($retArr, $temp[$key]);
+				}else{
+					unset($temp[$key]);
+				}
+			}
+			$retArr[0]["count"] = $totalCount;
+            return $retArr;
+        }else{
+            Log::info("from the non-from section");
+            return $finderCategoryTags;
+        }
 		return $finderCategoryTags;
 
 	}
