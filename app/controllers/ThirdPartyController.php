@@ -1,7 +1,7 @@
 <?PHP
 
 use App\Sms\FinderSms as FinderSms;
-use Log;
+use \Log;
 
 class ThirdPartyController extends \BaseController {
 

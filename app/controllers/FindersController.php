@@ -93,7 +93,10 @@ class FindersController extends \BaseController {
 
 	public function finderdetail($slug, $cache = true){
 
-		
+		$thirdPartySector = Request::header('sector');
+		$isThirdParty = (isset($thirdPartySector) && in_array($thirdPartySector, ['multiply', 'health']));
+
+
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
 
@@ -115,6 +118,10 @@ class FindersController extends \BaseController {
 			// Log::info("Category exists");
 			$category_slug = $_GET['category_slug'];
 			$cache_key  = $tslug.'-'.$category_slug;
+		}
+
+		if($isThirdParty){
+			$cache_key = $cache_key.'-thirdp';
 		}
 
 		$customer_email = null;
@@ -153,6 +160,7 @@ class FindersController extends \BaseController {
 			//Log::info("Not cached in detail");
 			Finder::$withoutAppends=true;
 			Service::$withoutAppends=true;
+			Service::$isThirdParty = $isThirdParty;
 			Service::$setAppends=['active_weekdays','serviceratecard'];
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))

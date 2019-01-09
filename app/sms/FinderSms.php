@@ -307,6 +307,9 @@ Class FinderSms extends VersionNextSms{
 		if(!Config::get('app.vendor_communication') && $label=="ClockDayVendor"){
 			$to = array('9619240452', '9920150108'); //Nilesh's number ('9096794779') added, later changed (Hemant called) - Aditya Birla
 		}
+		else if(!empty($data['third_party_details'])){
+			$to = array('9619240452');
+		}
 		else if(!Config::get('app.vendor_communication')){
 
 			$to = array('7506026203');
