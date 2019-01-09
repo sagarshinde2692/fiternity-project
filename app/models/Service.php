@@ -26,6 +26,7 @@ class Service extends \Basemodel{
 
     public static $setAppends = [];
 	
+	public static $isThirdParty = false;
 
 	protected function getArrayableAppends()
 	{
@@ -190,12 +191,16 @@ class Service extends \Basemodel{
         }
         
 		if(!empty($this->_id) && isset($this->_id)){
-
-            if(!empty($finder->brand_id) && $finder->brand_id == 130){
-			    $ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
-            }else{
-			    $ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->where('type', '!=', 'trial')->orderBy('order', 'asc')->get()->toArray();
-            }
+			if(self::$isThirdParty){
+				$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->where('type','=','workout session')->orderBy('order', 'asc')->get()->toArray();
+			}
+			else {
+				if(!empty($finder->brand_id) && $finder->brand_id == 130){
+					$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
+				}else{
+					$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->where('type', '!=', 'trial')->orderBy('order', 'asc')->get()->toArray();
+				}
+			}
 		}
 
 		

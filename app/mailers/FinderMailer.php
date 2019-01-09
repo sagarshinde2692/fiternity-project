@@ -1194,6 +1194,9 @@ Class FinderMailer extends Mailer {
 
 			$message_data['user_email'] = array('sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com');
 		}
+		else if (!empty($data['third_party_details'])){
+			$message_data['user_email'] = array('akhilkulkarni@fitternity.com', 'dhruvsarawagi@fitternity.com');
+		}
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
 
