@@ -835,6 +835,7 @@ class MigrationReverseController extends \BaseController {
             Log::info("before flush");
 
             $this->cacheapi->flushTagKey('finder_detail',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail',($entity->slug).'-thirdp');
 
             Log::info("after flush");
             

@@ -2440,6 +2440,13 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->ishulluser = 1;
                         $customer->old_customer = false;
                         $customer->demonetisation = time();
+
+                        if(!empty($data['third_party_details'])){
+                            $acronym = $data['third_party_acronym'];
+                            $data['third_party_details'][$acronym]['third_party_new_user'] = true;
+                            $customer->third_party_details = $data['third_party_details'];
+                        }
+
                         $customer->save();
                         $cart_id=getCartOfCustomer(intval($inserted_id));
                         if(!empty($cart_id))
