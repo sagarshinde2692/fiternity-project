@@ -20,7 +20,7 @@ return array(
         'image' => 'https://b.fitn.in/non-validity/success-page/Mobile%20Responsive%20EVM%20.png',
         'title' => '__ext_validity_type',
         'title_color' => '#53b7b7',
-        'description' => "<p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b>&#8226; What is __ext_validity_type Membership?</b></p><p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">__ext_validity_type membership gives you the flexibility of paying for a session pack with a longer validity period than</p>
+        'description' => "<p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b>&#8226; What is __ext_validity_type Membership?</b></p><p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">__ext_validity_type Membership gives you the ability to workout at __vendor_name for a longer validity period by buying a workout session pack of your choice.</p>
             <p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b>&#8226; Example</b></p>
             <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\">__membership_months month membership at Rs. __membership_price | Avail it within __membership_months month</p>
             
@@ -31,11 +31,11 @@ return array(
         "how_it_works"=>[
             'title' => 'How it works',
             'title_color' => '#53b7b7',
-            'description' => "<p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: left; padding-top: 10px;\">All
+            'description' => "<div style=\"height:400px;\"><p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: left; padding-top: 10px;\">All
             you need to do is book your slot everytime you want to workout</p>
         <div style=\"width: 100%;\">
-            <div style=\"width: 100%; float: left; text-align: left ;margin-bottom:10px;height:33%\">
-                <div style=\" float: left; margin-right: 10px;height:100%\"><img style=\"margin-bottom: 10px;width: 30px\" src=\"https://b.fitn.in/non-validity/success-page/mob%20icon%201.png\"></div>
+            <div style=\"width: 100%; float: left; text-align: left ;margin-bottom:10px;height:fit-content\">
+                <div style=\" float: left; margin-right: 10px;height:100%\"><img style=\"margin-bottom: 10px;width: 30px;\" src=\"https://b.fitn.in/non-validity/success-page/mob%20icon%201.png\"></div>
                 <div>
                     <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA;\"><b>Easy/One Click Booking</b> </div>
                     <div>Book before you want to workout through the app (from your user profile or going directly on
@@ -43,22 +43,22 @@ return array(
                         auto-booked when you reach</div>
                 </div>
             </div>
-            <div style=\"width: 100%; float: left; text-align: left;margin-bottom:10px;height:33%\">
-                <div style=\" float: left; margin-right: 10px;height:100%\"><img style=\"margin-bottom: 10px;width: 30px\" src=\"https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png\"></div>
+            <div style=\"width: 100%; float: left; text-align: left;margin-bottom:10px;height:fit-content\">
+                <div style=\" float: left; margin-right: 10px;height:100%\"><img style=\"margin-bottom: 10px;width: 30px;\" src=\"https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png\"></div>
                 <div>
                     <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA;\"><b>Keep an eye on Session counter</b>
                     </div>
                     <div>View session details under My Session Packs in your profile</div>
                 </div>
             </div>
-            <div style=\"width: 100%; float: left; text-align: left;margin-bottom:10px;height:33%\">
-                <div style=\" float: left; margin-right: 10px;height:100%\"><img style=\"margin-bottom: 10px;width: 30px\" src=\"https://b.fitn.in/non-validity/success-page/mob%20icon%203.png\"></div>
+            <div style=\"width: 100%; float: left; text-align: left;margin-bottom:10px;height:fit-content\">
+                <div style=\" float: left; margin-right: 10px;height:100%\"><img style=\"margin-bottom: 10px;width: 30px;\" src=\"https://b.fitn.in/non-validity/success-page/mob%20icon%203.png\"></div>
                 <div>
                     <div style=\"font-family: Rubik; font-size: 15px; color: #5CBBBA;\"><b>Easy cancellation</b> </div>
                     <div>Don't lose out on your workout with easy a cancellation process - 60 mins prior to your session time</div>
                 </div>
             </div>
-        </div>>"
+        </div></div>"
             ],
     ],
     'recommnded_block'=>[
