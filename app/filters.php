@@ -19,7 +19,11 @@ App::before(function($request)
 
 App::after(function($request, $response)
 {
-    //
+    $reqClient = Request::all();
+    Log::info('$reqClient: ', [$reqClient]);
+    if(!(isset($reqClient) && isset($reqClient['third_party']) && $reqClient['third_party'])) {
+        refreshToken($response);
+    }
 });
 
 /*

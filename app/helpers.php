@@ -3018,7 +3018,7 @@ if (!function_exists(('customerTokenDecode'))){
         try{
             
             Log::info(Request::header('Authorization'));
-            
+
             if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
                 Log::info("Yes1");
                 return Response::json(array('status' => 400,'message' => 'User logged out'),400);
@@ -4087,6 +4087,41 @@ if (!function_exists('getVendorCommision')) {
         }
 
         return $commision;
+    }
+}
+
+if (!function_exists('refreshToken')) {
+
+    function refreshToken($response)
+	{
+
+        $jwt_token = Request::header('Authorization');
+        
+        if(!empty($jwt_token)){
+
+            $jwt_key = Config::get('app.jwt.key');
+            $jwt_alg = Config::get('app.jwt.alg');
+
+            try{
+                
+                $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+            }catch(ExpiredException $e){
+                try{
+                    Log::info("Refreshing token");
+                    JWT::$leeway = (86400*565);
+                    $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+                    $newToken = createCustomerToken($decodedToken->customer->_id);
+                    $response->headers->set('token',$newToken);
+                }catch(Exception $e){
+                    Log::info("error refreshing token");
+        			// Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+                }
+            }catch(Exception $e){
+                // Log::info("Yes6");
+            }
+        }
+	    
 	}
 
 }
