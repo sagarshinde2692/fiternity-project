@@ -815,9 +815,9 @@ class CustomerController extends \BaseController {
 
 					$this->addCustomerRegId($data);
 				}
-				if(!empty($response['extra'])){
-					$response['extra']['popup'] = $response['extra'];
-				}
+				// if(!empty($response['extra'])){
+				// 	$response['extra']['popup'] = $response['extra'];
+				// }
 				return Response::json($response,$response['status']);
 			}else{
 				return Response::json(array('status' => 400,'message' => 'The identity is incorrect'),400);
