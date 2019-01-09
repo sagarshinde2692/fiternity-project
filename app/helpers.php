@@ -4109,7 +4109,7 @@ if (!function_exists('refreshToken')) {
             }catch(ExpiredException $e){
                 try{
                     Log::info("Refreshing token");
-                    JWT::$leeway = (86400*565);
+                    JWT::$leeway = (86400*2000);
                     $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
                     $newToken = createCustomerToken($decodedToken->customer->_id);
                     $response->headers->set('token',$newToken);
