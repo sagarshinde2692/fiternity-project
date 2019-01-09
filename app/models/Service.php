@@ -342,17 +342,17 @@ class Service extends \Basemodel{
 
 				}
                 
-                if($value["type"] == "workout session" && $finder->category_id != 47){
-                    if($value["special_price"] > 0){
-                        $value["peak_price"] = intval($value["special_price"]);
-                        $value["special_price"] = $value["special_price1"] = intval($value["special_price"] * Config::get('app.non_peak_hours.off', 0.6)) ;
-                    }else{
-                        if($value["price"] > 0){
-                            $value["peak_price"] = intval($value["price"]) ;
-                            $value["special_price"] = intval($value["price"] * Config::get('app.non_peak_hours.off', 0.6)) ;
-                        }
-                    }	
-                }
+                // if($value["type"] == "workout session" && $finder->category_id != 47){
+                //     if($value["special_price"] > 0){
+                //         $value["peak_price"] = intval($value["special_price"]);
+                //         $value["special_price"] = $value["special_price1"] = intval($value["special_price"] * Config::get('app.non_peak_hours.off', 0.6)) ;
+                //     }else{
+                //         if($value["price"] > 0){
+                //             $value["peak_price"] = intval($value["price"]) ;
+                //             $value["special_price"] = intval($value["price"] * Config::get('app.non_peak_hours.off', 0.6)) ;
+                //         }
+                //     }	
+                // }
                 if($value["type"] == "workout session"){
                    $value[ "button_color"] = Config::get('app.ratecard_button_color');
 				   $value[ "pps_know_more"] = true;
@@ -436,9 +436,9 @@ class Service extends \Basemodel{
 
                 if(!empty($value['type']) && $value['type'] == "workout session"){
                     if(!empty($value['offers'][0]['remarks'])){
-                        $value['offers'][0]['remarks'] = "Book multiple sessions starting at this price";
+                        $value['offers'][0]['remarks'] = "Book multiple sessions at this price";
                     }else{
-                        $value['remarks'] = "Book multiple sessions starting at this price";
+                        $value['remarks'] = "Book multiple sessions at this price";
                     }
                 }
 
