@@ -6353,7 +6353,7 @@ class TransactionController extends \BaseController {
                 "amount_fitcash_plus" => $order['amount'],
                 "type"=>'CREDIT',
                 'entry'=>'credit',
-                'description'=>"Fitcash wallet recharge",
+                'description'=>"Fitcash wallet recharge (Applicable on all transactions)",
                 'duplicate_allowed'=>true
             );
             Log::info($req);
@@ -6371,7 +6371,7 @@ class TransactionController extends \BaseController {
                 "amount_fitcash_plus" => $order['additional_fitcash'],
                 "type"=>'CREDIT',
                 'entry'=>'credit',
-                'description'=>"Fitcash wallet recharge (Applicable only on workout sessions)",
+                'description'=>"10% additional bonus on wallet recharge (Applicable only on Workout Sessions)",
                 'order_type'=>['workout-session', 'workout session'],
                 'duplicate_allowed'=>true
             );
