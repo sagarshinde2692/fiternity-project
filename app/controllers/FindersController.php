@@ -6917,7 +6917,7 @@ class FindersController extends \BaseController {
                     "top_service"=>true,
                     "price"=>$cheapest_price,
                     "special_price"=>0,
-                    "remarks"=>"Book multiple sessions starting at this price",
+                    "remarks"=>"Book multiple sessions at this price",
                     "_id"=> 1,
                     "finder_id"=> 1,
                     "direct_payment_enable"=> "1",
