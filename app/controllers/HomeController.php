@@ -2672,7 +2672,11 @@ class HomeController extends BaseController {
 
     public function getCityLocation($city = 'mumbai',$cache = true){
         $device_type = Request::header('source');
-        $location_by_city = $cache ? Cache::tags('location_by_city')->has($city) : false;
+        $cacheKey = $city;
+        if(!empty($device_type) && (in_array($device_type, ['web']))){
+            $cacheKey = $city.'-web';
+        }
+        $location_by_city = $cache ? Cache::tags('location_by_city')->has($cacheKey) : false;
         if(!$location_by_city){
             $categorytags = $locations  =	array();
             if($city != "all"){
@@ -2773,10 +2777,10 @@ class HomeController extends BaseController {
 
             $homedata 				= 	array('locations' => $locations );
 
-            Cache::tags('location_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
+            Cache::tags('location_by_city')->put($cacheKey,$homedata,Config::get('cache.cache_time'));
         }
 
-        return Response::json(Cache::tags('location_by_city')->get($city));
+        return Response::json(Cache::tags('location_by_city')->get($cacheKey));
     }
 
 
