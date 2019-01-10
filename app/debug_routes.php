@@ -2712,3 +2712,4 @@ Route::get('verifyCheckinsFromReceipts','DebugController@verifyCheckinsFromRecei
 Route::get('createtokenbycustomerid/{customer_email}','CustomerController@createtokenbycustomerid');
 Route::get('assignGoldLoyalty','DebugController@assignGoldLoyalty');
 Route::get('addLoyaltyVouherAll','DebugController@addLoyaltyVouherAll');
+Route::get('brandLoyaltySplit','DebugController@brandLoyaltySplit');

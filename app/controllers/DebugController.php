@@ -8745,5 +8745,101 @@ public function yes($msg){
 
 	}
 
+	private function hasMoreThanOne($varToCheck) {
+		return (!empty($varToCheck) && gettype($varToCheck)=='array' && count($varToCheck)>1);
+	}
+
+	private function splitByBrand($recToSplit) {
+		Log::info('----- inside splitByBrand -----');
+		Log::info('$recToSplit brand count: ', [count($recToSplit['brand_id'])]);
+		$splitRecToReturn = [];
+		$brandList = $recToSplit['brand_id'];
+		$cnt = 0;
+		foreach( $brandList as $brand) {
+			$_rec = array_merge([], $recToSplit);
+			$_rec['brand_id'] = $brand;
+			if($cnt!=0){
+				unset($_rec['_id']);
+			}
+			$cnt++;
+			array_push($splitRecToReturn, $_rec);
+		}
+		return $splitRecToReturn;
+	}
+	
+	private function splitByDuration($recArrToSplit) {
+		Log::info('----- inside splitByDuration -----');
+		Log::info('$recArrToSplit count: ', [count($recArrToSplit)]);
+		$splitRecToReturn = [];
+		foreach($recArrToSplit as $recToSplit){
+			$durationList = $recToSplit['duration'];
+			$durationSplitRec = [];
+			$cnt = 0;
+			foreach($durationList as $duration) {
+				$_rec = array_merge([], $recToSplit);
+				$_rec['duration'] = $duration;
+				if($cnt!=0){
+					unset($_rec['_id']);
+				}
+				$cnt++;
+				array_push($durationSplitRec, $_rec);
+			}
+			$splitRecToReturn = array_merge($splitRecToReturn, $durationSplitRec);
+		}
+		return $splitRecToReturn;
+	}
+
+	public function brandLoyaltySplit() {
+		Log::info('----- inside brandLoyaltySplit -----');
+		$existingGrid = VoucherCategory::where('brand_id', 'exists', true)->orderBy('milestone', 'asc')->get()->toArray();
+		$newGrid = [];
+		$i = 1;
+		foreach ($existingGrid as $rec) {
+			Log::info('$i: ', [$i]);
+			$i++;
+			$needToSplitBrands = $this->hasMoreThanOne($rec['brand_id']);
+			$needToSplitDuration = $this->hasMoreThanOne($rec['duration']);
+			Log::info('$rec[\'_id\']:: ', [$rec['_id']]);
+			Log::info('$needToSplitBrands:: ', [$needToSplitBrands]);
+			Log::info('$needToSplitDuration:: ', [$needToSplitDuration]);
+			if($needToSplitBrands || $needToSplitDuration){
+				$recSplitByBrand = [];
+				$recSplitByBrandAndDuration = [];
+				if($needToSplitBrands){
+					$recSplitByBrand = $this->splitByBrand($rec);
+				}
+				else {
+					if((!empty($rec['brand_id'])) && gettype($rec['brand_id'])=="array"){
+						$rec['brand_id'] = $rec['brand_id'][0];
+					}
+					$recSplitByBrand = [$rec];
+				}
+				if($needToSplitDuration){
+					$recSplitByBrandAndDuration = array_merge($recSplitByBrandAndDuration, $this->splitByDuration($recSplitByBrand));
+				}
+				else {
+					for($i=0; $i<count($recSplitByBrand); $i++){
+						if((!empty($recSplitByBrand[$i]['duration'])) && gettype($recSplitByBrand[$i]['duration'])=="array"){
+							$recSplitByBrand[$i]['duration'] = $recSplitByBrand[$i]['duration'][0];
+						}
+					}
+					$recSplitByBrandAndDuration = $recSplitByBrand;
+				}
+				$newGrid = array_merge($newGrid, $recSplitByBrandAndDuration);
+			}
+			else {
+				if((!empty($rec['brand_id'])) && gettype($rec['brand_id'])=="array"){
+					$rec['brand_id'] = $rec['brand_id'][0];
+				}
+				if((!empty($rec['duration'])) && gettype($rec['duration'])=="array"){
+					$rec['duration'] = $rec['duration'][0];
+				}
+				array_push($newGrid, $rec);
+			}
+		}
+		Log::info('returning $newGrid with length:: ', [count($newGrid)]);
+		return $newGrid;
+	}
+
 }
 

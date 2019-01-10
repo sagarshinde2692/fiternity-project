@@ -8160,13 +8160,14 @@ class CustomerController extends \BaseController {
 			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', 'exists', true)->first();
             $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
             $brand_loyalty_city = !empty($customer->loyalty['brand_loyalty_city']) ? $customer->loyalty['brand_loyalty_city'] : null;
-            $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
+			$brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
+			$brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
 			if($customer){
 				$post = true;
 			}
 		}
 		
-        $voucher_categories = VoucherCategory::raw(function($collection) use($brand_loyalty, $brand_loyalty_duration, $brand_loyalty_city){
+        $voucher_categories = VoucherCategory::raw(function($collection) use($brand_loyalty, $brand_loyalty_duration, $brand_loyalty_city, $brand_version){
 				
             $match = [
                 '$match'=>[
@@ -8178,12 +8179,17 @@ class CustomerController extends \BaseController {
             if(!empty($brand_loyalty) && !empty($brand_loyalty_duration) && !empty($brand_loyalty_city)){
                 $match['$match']['brand_id'] = $brand_loyalty;
                 $match['$match']['duration'] = $brand_loyalty_duration;
-                $match['$match']['city'] = $brand_loyalty_city;
+				$match['$match']['city'] = $brand_loyalty_city;
             }else{
                 $match['$match']['brand_id'] =['$exists'=>false];
                 $match['$match']['duration'] =['$exists'=>false];
                 $match['$match']['city'] =['$exists'=>false];
-            }
+			}
+			if(!empty($brand_version)){
+				$match['$match']['loyalty'] = [
+					'brand_version' => $brand_version
+				];
+			}
 
             $sort =[
                 '$sort'=>[
