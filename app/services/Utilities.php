@@ -1936,6 +1936,11 @@ Class Utilities {
 
                 $wallet->service_id = $request['service_id'];
             }
+            
+            if(isset($request['duration']) && $request['duration'] != ""){
+
+                $wallet->duration = $request['duration'];
+            }
 
             if(isset($request['valid_service_id']) && $request['valid_service_id'] != ""){
 
@@ -2001,7 +2006,7 @@ Class Utilities {
 
             $query =  $this->getWalletQuery($request);
 
-            $allWallets  = $query->OrderBy('_id','asc')->get();
+            $allWallets  = $query->OrderBy('restricted','desc')->OrderBy('_id','asc')->get();
 
             if(count($allWallets) > 0){
 
@@ -2648,6 +2653,14 @@ Class Utilities {
         }else{
 
             $query->where('valid_finder_id','exists',false);
+        }
+
+        if(!empty($request['service_id'])){
+            $query->where(function($query) use($request) {$query->orWhere('service_id','exists',false)->orWhere('service_id', $request['service_id']);});
+        }
+        
+        if(!empty($request['duration_day'])){
+            $query->where(function($query) use($request) {$query->orWhere('duration_day','exists',false)->orWhere('duration_day', $request['duration_day']);});
         }
 
         Log::info("wallet debit query");
@@ -7406,6 +7419,33 @@ Class Utilities {
         }
 
         return null;
+    }
+
+    public function giveFitcashforUpgrade($order){
+
+        if(!empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], Config::get('app.upgrade.service_cat', [65, 111])) && in_array($order['duration_day'], Config::get('app.upgrade.duration', [30]))){
+
+            $fitcash_amount = $order['amount_customer'];
+
+            $request = $walletData = array(
+                "customer_id"=> $order->customer_id,
+                "amount"=> $fitcash_amount,
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $fitcash_amount,
+                "type"=>'FITCASHPLUS',
+                'description'=>"Added FitCash+ for upgrading 1 month ".ucwords($order['service_name'])." to 1 Year only at ".$order['finder_name'],
+                'entry'=>'credit',
+                'valid_finder_id'=>$order['finder_id'],
+                'service_id'=>$order['service_id'],
+                'remove_wallet_limit'=>true,
+                'validity'=>strtotime($order['start_date'])+(86400*20),
+                'duration'=>360,
+                'restricted'=>1,
+            );
+            
+            $this->walletTransactionNew($request);
+
+        }
     }
 
     
