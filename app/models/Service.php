@@ -346,6 +346,12 @@ class Service extends \Basemodel{
                     }
 
 				}
+
+				$days = getDurationDay($value);
+				
+				if(isFinderIntegrated($finder) && isServiceIntegrated($this) && in_array($this->servicecategory_id, Config::get('app.upgrade.service_cat')) && in_array($days, Config::get('app.upgrade.duration')) && !empty($value['direct_payment_enable'])){
+					$value['upgrade'] = true;
+				}
                 
                 // if($value["type"] == "workout session" && $finder->category_id != 47){
                 //     if($value["special_price"] > 0){

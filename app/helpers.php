@@ -4156,6 +4156,37 @@ if (!function_exists('refreshToken')) {
 	}
 
 }
+if (!function_exists('getDurationDay')) {
+
+    function getDurationDay($ratecard){
+
+        if(!empty($ratecard['validity_type_copy'])){
+            $ratecard['validity_type'] = $ratecard['validity_type_copy'];
+        }
+        if(!empty($ratecard['validity_copy'])){
+            $ratecard['validity'] = $ratecard['validity_copy'];
+        }
+        
+        empty($ratecard['validity_type']) ? $ratecard['validity_type'] = "days" : null;
+        
+        switch ($ratecard['validity_type']){
+            case 'days': 
+            case 'day': 
+                $duration_day = (int)$ratecard['validity'];break;
+            case 'months': 
+            case 'month': 
+                $duration_day = (int)($ratecard['validity'] * 30) ; break;
+            case 'year': 
+            case 'years': 
+                $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+            default : $duration_day =  $ratecard['validity']; break;
+        }
+
+        return $duration_day;
+
+    }
+
+}
 
 
 ?>
