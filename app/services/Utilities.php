@@ -6127,7 +6127,7 @@ Class Utilities {
             $new_voucher = \LoyaltyVoucher::active()
                 ->where('voucher_category', $voucher_category->_id)
                 ->where('customer_id', null)
-                ->where('expiry_date', '>', new \DateTime())
+                // ->where('expiry_date', '>', new \DateTime())
                 ->orderBy('_id', 'asc')
                 ->first();
             
