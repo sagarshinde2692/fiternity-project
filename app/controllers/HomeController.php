@@ -2671,7 +2671,13 @@ class HomeController extends BaseController {
     }
 
     public function getCityLocation($city = 'mumbai',$cache = true){
-        $device_type = Request::header('source');
+        $device_type = Input::all();
+        if(!empty($device_type['source'])){
+            $device_type = $device_type['source'];
+        }
+        else {
+            $device_type = null;
+        }
         $cacheKey = $city;
         if(!empty($device_type) && (in_array($device_type, ['web']))){
             $cacheKey = $city.'-web';
