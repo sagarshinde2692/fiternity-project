@@ -3905,10 +3905,10 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
                 $ids = [65, 19, 1, 3, 5, 2, 4];
                 break;		
             case 'faridabad':
-                $ids = [65, 19, 1, 3, 5, 2, 4];
+                $ids = [65, 1, 123, 2];
                 break;		    
             case 'all':
-                $ids = [65, 1, 123, 2];
+                $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
                 break;
             default:
                 $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
