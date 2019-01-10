@@ -8745,5 +8745,40 @@ public function yes($msg){
 
 	}
 
+	public function addVoucherCategory(){
+		
+		$result = VoucherCategory::raw(function($collection){
+			$aggregate = [
+				[
+					'$group'=>[
+						'_id'=>'$name',
+						'ids'=>['$push'=>'$_id']
+					]
+				]
+			];
+			return $collection->aggregate($aggregate);
+		});
+
+		$result = $result['result'];
+
+		function id_to_string($x){
+			return $x->{'$id'};
+		}
+		$groups = [];
+		
+		 foreach($result as $r){
+			// return $r['ids'];
+			array_push($groups, array_map('id_to_string', $r['ids']));
+			// return $categories = array_column($r['ids'], '$id');
+		}
+
+		foreach($groups as $g){
+			if(count($g) > 1){
+				LoyaltyVoucher::whereIn('voucher_category', $g)->update(['voucher_category'=>$g]);
+			}
+		}
+		return $groups;
+	}
+
 }
 
