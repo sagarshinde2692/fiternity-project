@@ -6485,6 +6485,10 @@ class TransactionController extends \BaseController {
                 $ticket_id = $order->ticket_id;
             
             }
+
+            $data['duration_day'] = !empty($order['duration_day']) ? $order['duration_day'] : null;
+            $data['service_id'] = !empty($order['service_id']) ? $order['service_id'] : null;
+            $data['finder_is'] = !empty($order['finder_is']) ? $order['finder_is'] : null;
         
         }elseif(isset($data['ticket_id'])){
 			$ticket_id = intval($data['ticket_id']);
@@ -6706,7 +6710,9 @@ class TransactionController extends \BaseController {
                 }else{
                     $getWalletBalanceData = [
                         'finder_id'=>$ratecard['finder_id'],
-                        'order_type'=>$ratecard['type']
+                        'order_type'=>$ratecard['type'],
+                        'service_id'=>!empty($data['service_id']) ? $data['service_id'] : null,
+                        'duration_day'=>!empty($data['duration_day']) ? $data['duration_day'] : null
                     ];
                     if(isset($ratecard) && isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] == True){
                         $data['wallet_balance'] = 0;
@@ -6773,8 +6779,8 @@ class TransactionController extends \BaseController {
             if($data['amount_payable'] == 0){
                 $result['full_wallet_payment'] = true;
             }
-    
-            
+
+
 
             $result['order_details'] = [
                 "studio_name"=>[

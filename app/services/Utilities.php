@@ -2313,6 +2313,12 @@ Class Utilities {
         if(!empty($data['order_type'])){
             $query->where(function($query) use ($data){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $data['order_type']);});
         }
+        if(!empty($data['service_id'])){
+            $query->where(function($query) use ($data){$query->orwhere('service_id', 'exists', false)->orWhere('service_id', $data['service_id']);});
+        }
+        if(!empty($data['duration_day'])){
+            $query->where(function($query) use ($data){$query->orwhere('duration_day', 'exists', false)->orWhere('duration_day', $data['duration_day']);});
+        }
 
         $wallet_balance = $query->sum('balance');
 
