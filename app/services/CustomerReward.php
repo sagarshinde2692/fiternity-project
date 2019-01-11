@@ -997,7 +997,7 @@ Class CustomerReward {
         }*/
     }
 
-   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false,$data=null){
+   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false,$order_data=null){
 
         $current_wallet_balance = 0;
         $wallet = 0;
@@ -1028,12 +1028,12 @@ Class CustomerReward {
                $request['order_type'] = $order_type;
             }
 
-            if(!empty($data['service_id'])){
-               $request['service_id'] = $data['service_id'];
+            if(!empty($order_data['service_id'])){
+               $request['service_id'] = $order_data['service_id'];
             }
             
-            if(!empty($data['duration_day'])){
-               $request['duration_day'] = $data['duration_day'];
+            if(!empty($order_data['duration_day'])){
+               $request['duration_day'] = $order_data['duration_day'];
             }
 
             $query = $utilities->getWalletQuery($request);

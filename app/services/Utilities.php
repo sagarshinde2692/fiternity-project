@@ -2099,15 +2099,18 @@ Class Utilities {
                         $value->balance = intval($value->balance - $walletTransactionData['amount']);
                         $value->update();
 
-                        $walletTransactionDebit[] =  [
+                        $walletTransactionDebitEntry = [
                             'wallet_id' => $value->_id,
                             'wallet_transaction_id' => $walletTransaction->_id,
                             'amount' => $walletTransactionData['amount']
                         ];
-
+                        
                         if(!empty($value['restricted_for']) && $value['restricted_for'] == 'upgrade'){
-                            $walletTransactionDebit['upgraded_order_id'] = $value['order_id'];
+                            $walletTransactionDebitEntry['upgraded_order_id'] = $value['order_id'];
                         }
+                        
+                        $walletTransactionDebit[] =  $walletTransactionDebitEntry;
+
 
                         if($amount_used == $amount){
                             break;
@@ -7462,6 +7465,7 @@ Class Utilities {
                 'duration_day'=>360,
                 'restricted_for'=>'upgrade',
                 'restricted'=>1,
+                'order_id'=>$order['_id'],
             );
             
             $this->walletTransactionNew($request);
