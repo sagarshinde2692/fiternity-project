@@ -7439,7 +7439,7 @@ Class Utilities {
                 'service_id'=>$order['service_id'],
                 'remove_wallet_limit'=>true,
                 'validity'=>strtotime($order['start_date'])+(86400*20),
-                'duration'=>360,
+                'duration_day'=>360,
                 'restricted'=>1,
             );
             
