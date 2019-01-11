@@ -591,7 +591,7 @@ class TransactionController extends \BaseController {
 	            		$cust->total_sessions_used=intval($data['total_sessions_used']);
 	            		// $cust->third_party_token_id=$data['third_party_token_id'];
                         $newUser = false;
-                        if(!empty($cust->third_party_details)){
+                        if(!empty($cust->third_party_details) && !empty($cust->third_party_details[$acronym]) && !empty($cust->third_party_details[$acronym]['third_party_new_user'])){
                             Log::info('cust->third_party_details:: ', [$cust->third_party_details[$acronym]['third_party_new_user']]);
                             $newUser = $cust->third_party_details[$acronym]['third_party_new_user'];
                         }
