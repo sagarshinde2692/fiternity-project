@@ -2198,6 +2198,13 @@ class TransactionController extends \BaseController {
 
                 $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
+                if(!empty($order['wallet_transaction_debit']['wallet_transaction'])){
+                    
+                    $upgraded_wallet = array_filter($order['wallet_transaction_debit']['wallet_transaction'], function($e){return !empty($e['upgraded_order_id']);});
+                    $upgraded_order_ids = array_column($upgraded_wallet, 'upgraded_order_id');
+                    $this->setUpgradedOrderRedundant($order, $upgraded_order_ids);
+                }
+
                 if(!empty($order['upgrade_fitcash'])){
                     array_set($data, 'upgrade_fitcash', true);
                 }
@@ -8417,6 +8424,10 @@ class TransactionController extends \BaseController {
 
         return ['status'=>200, 'message'=>'Attendance Marked'];
             
+    }
+
+    public function setUpgradedOrderRedundant($order, $order_ids){
+        Order::whereIn('_id', $order_ids)->update(['status'=>'0', 'upgraded_order'=>$order['_id']]);
     }
 
     

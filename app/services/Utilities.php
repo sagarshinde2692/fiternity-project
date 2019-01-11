@@ -1951,6 +1951,14 @@ Class Utilities {
 
                 $wallet->order_type = $request['order_type'];
             }
+            if(!empty($request['restricted'])){
+
+                $wallet->restricted = $request['restricted'];
+            }
+            if(!empty($request['restricted_for'])){
+
+                $wallet->restricted_for = $request['restricted_for'];
+            }
 
             $wallet->save();
 
@@ -2096,6 +2104,10 @@ Class Utilities {
                             'wallet_transaction_id' => $walletTransaction->_id,
                             'amount' => $walletTransactionData['amount']
                         ];
+
+                        if(!empty($value['restricted_for']) && $value['restricted_for'] == 'upgrade'){
+                            $walletTransactionDebit['upgraded_order_id'] = $value['order_id'];
+                        }
 
                         if($amount_used == $amount){
                             break;
@@ -7433,19 +7445,22 @@ Class Utilities {
 
             $fitcash_amount = $order['amount_customer'];
 
+            $no_of_days = Config::get('upgrade_membership.fitcash_days');
+
             $request = $walletData = array(
                 "customer_id"=> $order->customer_id,
                 "amount"=> $fitcash_amount,
                 "amount_fitcash" => 0,
                 "amount_fitcash_plus" => $fitcash_amount,
                 "type"=>'FITCASHPLUS',
-                'description'=>"Added FitCash+ for upgrading 1 month ".ucwords($order['service_name'])." to 1 Year only at ".$order['finder_name'],
+                'description'=>"Added FitCash+ for upgrading 1 month ".ucwords($order['service_name'])." to 1 Year only at ".$order['finder_name'].", Expires On : ".date('d-m-Y',time()+(86400*$no_of_days)),
                 'entry'=>'credit',
                 'valid_finder_id'=>$order['finder_id'],
                 'service_id'=>$order['service_id'],
                 'remove_wallet_limit'=>true,
-                'validity'=>strtotime($order['start_date'])+(86400*20),
+                'validity'=>strtotime($order['start_date'])+(86400*$no_of_days),
                 'duration_day'=>360,
+                'restricted_for'=>'upgrade',
                 'restricted'=>1,
             );
             
