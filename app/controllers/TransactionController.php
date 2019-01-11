@@ -2169,8 +2169,8 @@ class TransactionController extends \BaseController {
         //     return Response::json($resp,401);
         // }
       
-        // $hash_verified = $this->utilities->verifyOrder($data,$order);
-        $hash_verified = true;
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
+        // $hash_verified = true;
 
         if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
