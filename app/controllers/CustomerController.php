@@ -8186,9 +8186,7 @@ class CustomerController extends \BaseController {
                 $match['$match']['city'] =['$exists'=>false];
 			}
 			if(!empty($brand_version)){
-				$match['$match']['loyalty'] = [
-					'brand_version' => $brand_version
-				];
+				$match['$match']['brand_version'] = $brand_version;
 			}
 
             $sort =[
