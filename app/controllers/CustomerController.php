@@ -8188,6 +8188,9 @@ class CustomerController extends \BaseController {
 			if(!empty($brand_version)){
 				$match['$match']['brand_version'] = $brand_version;
 			}
+			else {
+				$match['$match']['brand_version'] = 1;
+			}
 
             $sort =[
                 '$sort'=>[
