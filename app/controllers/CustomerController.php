@@ -8186,11 +8186,13 @@ class CustomerController extends \BaseController {
                 $match['$match']['duration'] =['$exists'=>false];
                 $match['$match']['city'] =['$exists'=>false];
 			}
-			if(!empty($brand_version)){
-				$match['$match']['brand_version'] = $brand_version;
-			}
-			else {
-				$match['$match']['brand_version'] = 1;
+			if(!empty($brand_loyalty)) {
+				if(!empty($brand_version)){
+					$match['$match']['brand_version'] = $brand_version;
+				}
+				else {
+					$match['$match']['brand_version'] = 1;
+				}
 			}
 
             $sort =[

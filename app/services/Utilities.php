@@ -6180,11 +6180,16 @@ Class Utilities {
         
         if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
             if(!$brand_milestones){
-                if(!empty($brand_version)){
-                    $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', $brand_version)->first();
+                if(!empty($brand_loyalty)) {
+                    if(!empty($brand_version)){
+                        $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', $brand_version)->first();
+                    }
+                    else {
+                        $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', 1)->first();
+                    }
                 }
                 else {
-                    $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', 1)->first();
+                    $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
                 }
             }
 
