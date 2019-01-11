@@ -2198,6 +2198,10 @@ class TransactionController extends \BaseController {
 
                 $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
+                if(!empty($order['upgrade_fitcash'])){
+                    array_set($data, 'upgrade_fitcash', true);
+                }
+
                 $updated_order = Order::where('_id', $order->_id)->first();
 
                 if($updated_order && !empty($updated_order->reward_content)){
