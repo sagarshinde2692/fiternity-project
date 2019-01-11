@@ -350,7 +350,7 @@ class Service extends \Basemodel{
 				$days = getDurationDay($value);
 				
 				if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['ios', 'android'])){
-					if(isFinderIntegrated($finder) && isServiceIntegrated($this) && in_array($this->servicecategory_id, Config::get('app.upgrade.service_cat', [65, 111])) && in_array($days, Config::get('app.upgrade.duration', [30])) && !empty($value['direct_payment_enable'])){
+					if($value['type'] == 'membership' && isFinderIntegrated($finder) && isServiceIntegrated($this) && in_array($this->servicecategory_id, Config::get('app.upgrade.service_cat', [65, 111])) && in_array($days, Config::get('app.upgrade.duration', [30])) && !empty($value['direct_payment_enable'])){
 						$value['upgrade_popup'] = Config::get('upgrade_membership.ratecard_popup');
 					}
 				}

@@ -6,12 +6,21 @@ return array(
         'header'=>'GET EXCLUSIVE ACCESSTU UPGRADE YOUR MEMBERSHIP',
         'title'=>'Here is how it works:',
         'data'=>[
-            'Get 100% instant cashback as Fitcash in your Fitternity wallet to upgrade your 1 month membership to 1 year.',
+            'Get 100% instant cashback in your Fitternity wallet to upgrade your 1 month membership to 1 year.',
             'The Fitcash will get automatically applied on upgrading to a 1 year membership at Vendor Name, Location: Service > hassle free.',
             'The Fitcash is valid for 20 days from the start date of your membership.'
         ]
-    ]
+    ],
 
+    'success_page'=>[
+        'header'=>'100% cashback has been added to your Fitternity wallet! You have an exclusive privilege to upgrade your 1 month membership!',
+        'title'=>'Here is how it works:',
+        'data'=>[
+            '100% Cashback has been added in your Fitternity wallet to upgrade your 1 month membership to 1 year.',
+            'The Fitcash bonus will get automatically applied on upgrading to a 1 year membership at <Vendor Name,Location: Service> hassle free.',
+            'The Fitcash bonus is valid for 15 days from the start date of your membership.'
+        ]
+    ],
     
 );
 ?>
