@@ -4187,6 +4187,59 @@ if (!function_exists('getDurationDay')) {
     }
 
 }
+if (!function_exists('getUpgradeMembershipSection')) {
+
+    function getUpgradeMembershipSection($data, $key='ratecard_popup'){
+
+        $section = Config::get('upgrade_membership.'.$key);
+
+        $values = [
+            '__finder_name'=>'',
+            '__finder_location'=>'',
+            '__service_name'=>'',
+        ];
+        // print_r($data);
+        // exit();
+        // if($key == 'ratecard_popup'){
+
+
+        //     if(!empty($data['name'])){
+        //         $values['__service_name'] = $data['name'];
+        //     }
+
+        //     if(!empty($data['finder']['location_id']['name'])){
+        //         $values['__finder_location'] = $data['finder']['location_id']['name'];
+        //     }
+        //     if(!empty($data['finder']['title'])){
+        //         $values['__finder_name'] = $data['finder']['title'];
+        //     }
+
+        // }else{
+            
+            if(!empty($data['finder_name'])){
+                $values['__finder_name'] = $data['finder_name'];
+            }
+            
+            if(!empty($data['finder_location'])){
+                $values['__finder_location'] = $data['finder_location'];
+            }
+            
+            if(!empty($data['service_name'])){
+                $values['__service_name'] = $data['service_name'];
+            }
+        // }
+
+
+        foreach($section['data'] as &$row){
+        
+            $row = strtr($row, $values);
+        
+        }
+
+        return $section;
+    }
+
+}
 
 
 ?>
