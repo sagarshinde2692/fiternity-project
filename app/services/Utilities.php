@@ -1937,9 +1937,9 @@ Class Utilities {
                 $wallet->service_id = $request['service_id'];
             }
             
-            if(isset($request['duration']) && $request['duration'] != ""){
+            if(isset($request['duration_day']) && $request['duration_day'] != ""){
 
-                $wallet->duration = $request['duration'];
+                $wallet->duration_day = $request['duration_day'];
             }
 
             if(isset($request['valid_service_id']) && $request['valid_service_id'] != ""){
