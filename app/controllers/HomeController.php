@@ -2149,7 +2149,7 @@ class HomeController extends BaseController {
                 ];
             }
             
-            if(!empty($item['upgrade_popup'])){  
+            if(!empty($item['upgrade_fitcash'])){  
                 $resp['upgrade_popup'] = Config::get('upgrade_membership.success_page');
             }
 
