@@ -1271,11 +1271,11 @@ class FindersController extends \BaseController {
 
                 $this->insertWSNonValidtiy($response, 'web');
 
-                $response['finder'] = $this->applyTopService($response);
+                // $response['finder'] = $this->applyTopService($response);
 
-                if(!empty($cheapest_price)){
-                    $this->insertWSRatecardTopService($response, $cheapest_price);
-				}
+                // if(!empty($cheapest_price)){
+                //     $this->insertWSRatecardTopService($response, $cheapest_price);
+				// }
 
 				$this->addNonValidityLink($response);
 				
@@ -4369,14 +4369,14 @@ class FindersController extends \BaseController {
                         $this->insertWSNonValidtiy($data, 'app');
                     }
                     
-                    if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android'])) || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
-                        $data['finder'] = $this->applyTopService($data, 'app');
+                    // if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android'])) || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
+                    //     $data['finder'] = $this->applyTopService($data, 'app');
 
-                        $cheapest_price = $this->getCheapestWorkoutSession($data['finder']['services'], 'app');
-                        if(!empty($cheapest_price)){
-                            $this->insertWSRatecardTopService($data, $cheapest_price, 'app');
-                        }
-                    }
+                    //     $cheapest_price = $this->getCheapestWorkoutSession($data['finder']['services'], 'app');
+                    //     if(!empty($cheapest_price)){
+                    //         $this->insertWSRatecardTopService($data, $cheapest_price, 'app');
+                    //     }
+                    // }
 
 					$device_type = ['ios','android'];
 
