@@ -4259,12 +4259,12 @@ class CustomerController extends \BaseController {
 		}
 
 		$current_version_android = 5.0;
-		$current_version_ios = '5.1.4';
+		$current_version_ios = '5.1.6';
 
 		$last_stable_version_android = 5.16;
 
+		Log::info('forceupdate::: ', [$data["app_version"]]);
 		if($data["device_type"] == "android"){
-            Log::info('forceupdate::: ', [floatval($data["app_version"])]);
 			$result_android = array(
 				//"message" => "Version ".$current_version_android." is available on Play Store",
 				"message" => "Update is available on Play Store",
