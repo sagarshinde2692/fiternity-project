@@ -6174,12 +6174,23 @@ Class Utilities {
         $milestone_no = count($customer_milestones);
         $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
         $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
+        $brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
 
         $checkin_limit = Config::get('loyalty_constants.checkin_limit');
         
         if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
             if(!$brand_milestones){
-               $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
+                if(!empty($brand_loyalty)) {
+                    if(!empty($brand_version)){
+                        $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', $brand_version)->first();
+                    }
+                    else {
+                        $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', 1)->first();
+                    }
+                }
+                else {
+                    $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
+                }
             }
 
             if($brand_milestones){
@@ -6868,6 +6879,16 @@ Class Utilities {
                     $loyalty['brand_loyalty'] = $finder['brand_id'];
                     $loyalty['brand_loyalty_duration'] = $duration;
                     $loyalty['brand_loyalty_city'] = $data['city_id'];
+
+                    if($loyalty['brand_loyalty'] == 135){
+                        if($loyalty['brand_loyalty_duration'] == 180){
+                            $loyalty['brand_version'] = 1;
+                        }else{
+                            $loyalty['brand_version'] = 2;
+                        }
+                    }else{
+                        $loyalty['brand_version'] = 1;
+                    }
                 }
             }
 
