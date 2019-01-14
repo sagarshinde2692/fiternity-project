@@ -2561,7 +2561,7 @@ class TransactionController extends \BaseController {
                     
                 }
 
-                if(!empty(!$order['upgrade_fitcash'])){
+                if(!empty($order['upgrade_fitcash'])){
                     $data['upgrade_sms_instant'] = $this->customersms->upgradeMembershipInstant($order->toArray());
                 }
 
