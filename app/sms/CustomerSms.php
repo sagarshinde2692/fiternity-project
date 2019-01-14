@@ -1198,6 +1198,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);	
 	}
 	
+	public function upgradeMembershipInstant($data){
+		
+		$label = 'UpgradeMembershipInstant-Customer';
+		
+		$to = $data['invitee']['phone'];
+		
+		return $this->common($label,$to,$data);	
+	}
+	
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
