@@ -129,6 +129,13 @@ class CustomerController extends \BaseController {
 
 			if($slot_datetime_pass_status){
 
+				$trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
+				try{
+					$trial['fitcash_text'] = "Enter your Fitcode to get  Rs.".$this->utilities->getFitcash($trial)." Fitcash.";
+				}catch(Exception $e){
+					Log::info($e);
+				}
+
 				array_push($passedtrials, $trial);
 
 				$passed_trials_date_array[] = strtotime($trial['created_at']);
