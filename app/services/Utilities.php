@@ -6886,6 +6886,8 @@ Class Utilities {
                         }else{
                             $loyalty['brand_version'] = 2;
                         }
+                    }else{
+                        $loyalty['brand_version'] = 1;
                     }
                 }
             }
