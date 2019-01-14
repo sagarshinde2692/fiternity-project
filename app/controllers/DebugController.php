@@ -8774,7 +8774,7 @@ public function yes($msg){
 
 		foreach($groups as $g){
 			if(count($g) > 1){
-				LoyaltyVoucher::whereIn('voucher_category', $g)->where('customer_id', 'exists', false)->update(['voucher_category'=>$g]);
+				LoyaltyVoucher::whereIn('voucher_category', $g)->where('customer_id', 'exists', false)->update(['voucher_category1'=>$g]);
 			}
 		}
 		return $groups;
