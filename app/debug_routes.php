@@ -2713,3 +2713,5 @@ Route::get('createtokenbycustomerid/{customer_email}','CustomerController@create
 Route::get('assignGoldLoyalty','DebugController@assignGoldLoyalty');
 Route::get('addLoyaltyVouherAll','DebugController@addLoyaltyVouherAll');
 Route::get('brandLoyaltySplit','DebugController@brandLoyaltySplit');
+
+Route::get('addVoucherCategory','DebugController@addVoucherCategory');
