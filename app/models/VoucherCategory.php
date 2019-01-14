@@ -2,7 +2,7 @@
 
 class VoucherCategory extends \Basemodel {
 
-	protected $collection = "vouchercategories_latest";
+	protected $collection = "vouchercategories";
 
 	public function setIdAttribute($value){
 		
