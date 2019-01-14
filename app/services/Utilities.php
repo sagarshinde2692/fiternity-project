@@ -6879,6 +6879,14 @@ Class Utilities {
                     $loyalty['brand_loyalty'] = $finder['brand_id'];
                     $loyalty['brand_loyalty_duration'] = $duration;
                     $loyalty['brand_loyalty_city'] = $data['city_id'];
+
+                    if($loyalty['brand_loyalty'] == 135){
+                        if($loyalty['brand_loyalty_duration'] == 180){
+                            $loyalty['brand_version'] = 1;
+                        }else{
+                            $loyalty['brand_version'] = 2;
+                        }
+                    }
                 }
             }
 
