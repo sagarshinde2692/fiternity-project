@@ -1279,7 +1279,7 @@ class FindersController extends \BaseController {
 
 				$this->addNonValidityLink($response);
 				
-				// $this->removeNonValidity($response, 'web');
+				$this->removeNonValidity($response, 'web');
                 
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
@@ -6961,11 +6961,9 @@ class FindersController extends \BaseController {
 			$ratecards = [];
 			foreach($value[$ratecard_key] as $rate_key => $ratecard){
 				if($ratecard['type'] == 'extended validity' && empty($value['type']) && empty($value['top_service'])){
-					// unset($services[$key][$ratecard_key][$rate_key]);
-					continue;
-				}else{
-					array_push($ratecards, $ratecard);
+					$ratecard['hidden'] = true;
 				}
+				array_push($ratecards, $ratecard);
 			}
 			$services[$key][$ratecard_key] = $ratecards;
 		}
