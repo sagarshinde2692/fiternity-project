@@ -994,6 +994,9 @@ if (!function_exists(('get_elastic_autosuggest_doc'))) {
             'inputservicecat'               =>      '',
             'infrastructure_type'           =>      isset($data['business_type']) ? $data['business_type'] : ''
             );
+        if($data['city_id'] == 10 || $data['city_id'] == 9){
+            Log::info($postfields_data);
+        }
 
 return $postfields_data;
 }

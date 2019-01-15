@@ -475,6 +475,7 @@ class GlobalPushController extends \BaseController
 
       $user = es_curl_request($request);
        Log::info('finder entry in index........'.$data['_id']);
+       Log::info($user);
 
        Log::info('done vendors of city ',array($city_id));
 
