@@ -13,6 +13,7 @@ return array(
     ],
 
     'success_page'=>[
+        'head'=>'HURRAY!',
         'header'=>'100% cashback has been added to your Fitternity wallet! You have an exclusive privilege to upgrade your 1 month membership!',
         'title'=>'Here is how it works:',
         'data'=>[
