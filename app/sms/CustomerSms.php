@@ -1202,7 +1202,7 @@ Class CustomerSms extends VersionNextSms{
 		
 		$label = 'UpgradeMembershipInstant-Customer';
 		
-		$to = $data['invitee']['phone'];
+		$to = $data['customer_phone'];
 		
 		return $this->common($label,$to,$data);	
 	}
