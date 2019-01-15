@@ -1960,7 +1960,11 @@ Class CustomerReward {
                 }
             }
 
-            if(isset($coupon['type']) && $coupon['type'] == 'syncron' && !empty($customer_email)){
+            if(isset($coupon['type']) && $coupon['type'] == 'syncron'){
+
+                // if(empty($customer_email)){
+                //     $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Invalid Coupon");
+                // }
 
                 if($coupon['total_used'] >= $coupon['total_available']){
                     
@@ -1977,10 +1981,11 @@ Class CustomerReward {
 
                     return $resp;
                 }
-
-                // $decoded = $this->customerTokenDecode($jwt_token);
-                
-                // $customer_email = $decoded->customer->email;
+                if(empty($customer_email)){
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    
+                    $customer_email = $decoded->customer->email;
+                }
 
                 if(isset($coupon['customer_emails']) && is_array($coupon['customer_emails'])){
                     if(!in_array(strtolower($customer_email), $coupon['customer_emails'])){
@@ -2000,7 +2005,7 @@ Class CustomerReward {
 
                     return $resp;
                 }
-
+               
                 if($price <= $coupon['price_limit']){
                     $coupon["discount_amount"] = 0;
                 }
