@@ -404,10 +404,10 @@ class Service extends \Basemodel{
 
                 	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
 
-                    if($offf_percentage < 50){
-                        $value['price'] = 2*$value['special_price'];
-                        $offf_percentage = 50;
-                    }
+                    // if($offf_percentage < 50){
+                    //     $value['price'] = 2*$value['special_price'];
+                    //     $offf_percentage = 50;
+                    // }
 
                 	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
 					$value['campaign_color'] = "#43a047";

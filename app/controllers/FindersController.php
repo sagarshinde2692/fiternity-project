@@ -1290,7 +1290,7 @@ class FindersController extends \BaseController {
                                         'text1'=> "Introducing Unlimited validity Membership",
                                         'text2'=>$response['finder']['title'],
                                         'text2'=>"",
-                                        'text3'=>" | Flat 50% off",
+                                        'text3'=>" | Lowest Prices",
                                         'background-color'=> "",
                                         'text_color'=> '$fff',
                                         'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
@@ -1302,7 +1302,7 @@ class FindersController extends \BaseController {
                                         'text1'=>"",
                                         // 'text2'=>$response['finder']['title'].":",
                                         'text2'=>"",
-                                        'text3'=>"Lowest Offer Of The Year | Flat 50% OFF",
+                                        'text3'=>"Lowest Offer Of The Year | Lowest Prices",
                                         'background-color'=> "",
                                         'text_color'=> '$fff',
                                         'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
@@ -6685,9 +6685,9 @@ class FindersController extends \BaseController {
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service['service_name_display'] = $service[$service_name_key];
 				$post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
-				$post_name = " - ".$post_name;
+				
                 if(!empty($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] < '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.6'))){
-				    $service[$service_name_key] = $service[$service_name_key].$post_name;
+				    $service[$service_name_key] = $service[$service_name_key]." - ".$post_name;
                 }else{
                     $service['post_name'] = $post_name;
                     $service['post_name_color'] = Config::get('app.ratecard_button_color');
