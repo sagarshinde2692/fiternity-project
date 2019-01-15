@@ -6685,13 +6685,19 @@ class FindersController extends \BaseController {
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service['service_name_display'] = $service[$service_name_key];
 				$post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
-				$post_name = " - ".$post_name;
+						
                 if(!empty($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] < '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.6'))){
-				    $service[$service_name_key] = $service[$service_name_key].$post_name;
-                }else{
-                    $service['post_name'] = $post_name;
+				    $service[$service_name_key] = $service[$service_name_key]." - ".$post_name;
+                }else{	
+					if(!empty($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
+						$service['post_name'] = " - ".$post_name;
+					}else{
+						$service['post_name'] = $post_name;
+					}
+
                     $service['post_name_color'] = Config::get('app.ratecard_button_color');
-                }
+				
+				}
 				$service['unlimited_validity'] = $no_validity_exists;
 				$no_validity_ratecards_service = [];
 
