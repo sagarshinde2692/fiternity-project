@@ -8382,7 +8382,7 @@ public function yes($msg){
         Log::info("Creating coupons");
         
         if(!$data){
-            $ata = Input::all();
+            $data = Input::all();
         }
 
         $rules = [
