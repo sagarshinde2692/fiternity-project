@@ -4570,11 +4570,10 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json($resp,200);
         }
 
-        /*if(isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600)){
-
-            $resp   =   array('status' => 200, 'message' => "This Trial Cannot be Cancel");
-            return Response::json($resp,200);
-        }*/
+        if((!empty($booktrial['third_party_details'])) && (isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600))){
+            $resp   =   array('status' => 400, 'message' => "This session cannot be cancelled");
+            return Response::json($resp,400);
+        }
 
         array_set($bookdata, 'going_status', 2);
         array_set($bookdata, 'going_status_txt', 'cancel');
