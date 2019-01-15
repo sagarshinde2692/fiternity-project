@@ -1960,7 +1960,7 @@ Class CustomerReward {
                 }
             }
 
-            if(isset($coupon['type']) && $coupon['type'] == 'syncron'){
+            if(isset($coupon['type']) && $coupon['type'] == 'syncron' && !empty($customer_email)){
 
                 if($coupon['total_used'] >= $coupon['total_available']){
                     
@@ -1978,9 +1978,9 @@ Class CustomerReward {
                     return $resp;
                 }
 
-                $decoded = $this->customerTokenDecode($jwt_token);
+                // $decoded = $this->customerTokenDecode($jwt_token);
                 
-                $customer_email = $decoded->customer->email;
+                // $customer_email = $decoded->customer->email;
 
                 if(isset($coupon['customer_emails']) && is_array($coupon['customer_emails'])){
                     if(!in_array(strtolower($customer_email), $coupon['customer_emails'])){
