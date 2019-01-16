@@ -6031,7 +6031,7 @@ class CustomerController extends \BaseController {
 			
 		}catch(Exception $e){
 			Log::info($e);
-			return array('status'=>500, 'message'=>'Something went wrong');
+			return array('status'=>500, 'message'=>'Something went wrong, Please try again later');
 		}
 	}
 	public function referFriend(){	
@@ -7500,7 +7500,8 @@ class CustomerController extends \BaseController {
 				
 		} catch (Exception $e) {
 			$e->getTrace();
-			return Response::json(array('status' => 400,'message' => $e->getMessage()." on line :: ".$e->getLine()." in file :: ".$e->getFile()),400);
+			return Response::json(array('status' => 400,'message' => 'Something went wrong, Please try again later. '),400);
+			// return Response::json(array('status' => 400,'message' => $e->getMessage()." on line :: ".$e->getLine()." in file :: ".$e->getFile()),400);
 		}
 		
 	}
@@ -7885,7 +7886,7 @@ class CustomerController extends \BaseController {
 			}
 		} 
 		catch (Exception $e) {
-			return ['status'=>400,'message'=>'Something went wrong'];
+			return ['status'=>400,'message'=>'Something went wrong, Please try again later'];
 			// return ['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()];
 		}
 		return $resp;
@@ -8147,7 +8148,7 @@ class CustomerController extends \BaseController {
 	}
 	catch (Exception $e) {
 	    Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
-		return ['status'=>400,'message'=>'Something went wrong'];
+		return ['status'=>400,'message'=>'Something went wrong, Please try again later'];
 		// return ['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()];
 	}
 	return $resp;
