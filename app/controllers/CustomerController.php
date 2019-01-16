@@ -7885,7 +7885,8 @@ class CustomerController extends \BaseController {
 			}
 		} 
 		catch (Exception $e) {
-			return ['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()];
+			return ['status'=>400,'message'=>'Something went wrong'];
+			// return ['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()];
 		}
 		return $resp;
 	}
@@ -8146,7 +8147,8 @@ class CustomerController extends \BaseController {
 	}
 	catch (Exception $e) {
 	    Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
-		return ['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()];
+		return ['status'=>400,'message'=>'Something went wrong'];
+		// return ['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()];
 	}
 	return $resp;
 	}
