@@ -7475,6 +7475,22 @@ Class Utilities {
         }
     }
 
+    public function getCustomerFromToken(){
+        
+        $token = Request::header('Authorization');
+        
+        if(empty($token)){
+            return;
+        }
+        
+        $token_decoded = customerTokenDecode($token);
+
+        $customer = $token_decoded->customer;
+
+        return json_decode(json_encode($customer), true);
+
+    }
+
     
             
 
