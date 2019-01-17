@@ -22,7 +22,9 @@ return array(
             'The Fitcash bonus is valid for 20 days from the start date of your membership.'
         ]
     ],
-    'fitcash_days'=>20
+    'fitcash_days'=>20,
+    'service_cat'=>[65, 111, 5],
+    'duration'=>[30]
     
 );
 ?>
