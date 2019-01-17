@@ -1995,15 +1995,19 @@ Class CustomerReward {
                     }
                 }
 
-                \Booktrial::$withoutAppends = true;
+                if(!empty($coupon['once_per_day'])){
 
-                $booktrial_count = \Booktrial::where('customer_email',$customer_email)->where('created_at','>=',new \MongoDate(strtotime(date('Y-m-d 00:00:00'))))->where('created_at','<=',new \MongoDate(strtotime(date('Y-m-d 23:59:59'))))->count();
-
-                if($booktrial_count > 0){
-
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User can book only one session per day","user_login_error"=>true);
-
-                    return $resp;
+                    \Booktrial::$withoutAppends = true;
+    
+                    $booktrial_count = \Booktrial::where('customer_email',$customer_email)->where('created_at','>=',new \MongoDate(strtotime(date('Y-m-d 00:00:00'))))->where('created_at','<=',new \MongoDate(strtotime(date('Y-m-d 23:59:59'))))->count();
+    
+                    if($booktrial_count > 0){
+    
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User can book only one session per day","user_login_error"=>true);
+    
+                        return $resp;
+                    }
+                
                 }
                
                 if(!empty($coupon['price_limit']) && $price <= $coupon['price_limit']){
