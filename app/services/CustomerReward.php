@@ -1961,10 +1961,11 @@ Class CustomerReward {
             }
 
             if(isset($coupon['type']) && $coupon['type'] == 'syncron'){
-
-                // if(empty($customer_email)){
-                //     $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Invalid Coupon");
-                // }
+                
+                if(empty($customer_email)){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Invalid code");
+                    return $resp;
+                }
 
                 if($coupon['total_used'] >= $coupon['total_available']){
                     
