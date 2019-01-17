@@ -6501,7 +6501,7 @@ class TransactionController extends \BaseController {
             $data['service_id'] = !empty($order['service_id']) ? $order['service_id'] : null;
             $data['finder_id'] = !empty($order['finder_id']) ? $order['finder_id'] : null;
             
-            if(!empt($order->customer_email)){
+            if(!empty($order->customer_email)){
                 $data['customer_email'] = $order->customer_email;
             }
         
