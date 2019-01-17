@@ -2006,8 +2006,14 @@ Class CustomerReward {
                     return $resp;
                 }
                
-                if($price <= $coupon['price_limit']){
+                if(!empty($coupon['price_limit']) && $price <= $coupon['price_limit']){
                     $coupon["discount_amount"] = 0;
+                }
+
+                if(!empty($coupon['price_upto']) && $price > $coupon['price_upto']){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Valid for session upto Rs.".$coupon['price_upto']);
+
+                    return $resp;
                 }
             }
 
