@@ -3185,10 +3185,8 @@ Class Utilities {
 
         if($isThirdP) {
             $data['third_party'] = $order['third_party'];
-            // $data['third_party_used_sessions'] = $order['third_party_used_sessions'];
-            // $data['third_party_token_id'] = $order['third_party_token_id'];
-            // $data['third_party_id'] = $order['third_party_id'];
             $data['third_party_details'] = $order['third_party_details'];
+            $data['third_party_acronym'] = $order['third_party_acronym'];
         }
 
         /*if(isset($order->pay_later) && $order->pay_later){

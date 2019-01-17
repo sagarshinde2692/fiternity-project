@@ -2222,10 +2222,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(!empty($data['third_party'])) {
                 $booktrialdata['third_party'] = $data['third_party'];
-                // $booktrialdata['third_party_used_sessions'] = $data['third_party_used_sessions'];
-                // $booktrialdata['third_party_token_id'] = $data['third_party_token_id'];
-                // $booktrialdata['third_party_id'] = $data['third_party_id'];
                 $booktrialdata['third_party_details'] = $data['third_party_details'];
+                $booktrialdata['third_party_acronym'] = $data['third_party_acronym'];
             }
             $session_count = Booktrial::where('customer_id',$customer_id)->count();
 
@@ -4619,9 +4617,14 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(!empty($booktrial['third_party_details'])){
                 $cust = Customer::find($booktrial['customer_id']);
+                $thirdPartyAcronym = !empty($cust['third_party_acronym'])?$cust['third_party_acronym']:'abg';
                 Log::info('cust:::: ', [$cust]);
-                if($cust['total_sessions_used']>0)
+                if($cust['total_sessions_used']>0){
                     $cust['total_sessions_used'] -= 1;
+                }
+                if($cust['third_party_details'][$thirdPartyAcronym]['third_party_used_sessions']>0){
+                    $cust['third_party_details'][$thirdPartyAcronym]['third_party_used_sessions'] -= 1;
+                }
                 $cust->update();
                 $resp['booktrial_id'] = $booktrial['_id'];
             }
