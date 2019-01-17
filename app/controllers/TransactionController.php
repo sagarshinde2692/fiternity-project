@@ -6499,7 +6499,7 @@ class TransactionController extends \BaseController {
 
             $data['duration_day'] = !empty($order['duration_day']) ? $order['duration_day'] : null;
             $data['service_id'] = !empty($order['service_id']) ? $order['service_id'] : null;
-            $data['finder_is'] = !empty($order['finder_is']) ? $order['finder_is'] : null;
+            $data['finder_id'] = !empty($order['finder_id']) ? $order['finder_id'] : null;
         
         }elseif(isset($data['ticket_id'])){
 			$ticket_id = intval($data['ticket_id']);
