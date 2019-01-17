@@ -2657,25 +2657,27 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if (!isset($booktrialdata['third_party_details'])){
                     $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
-                }
                 
-                if(!empty($booktrialdata)&&!empty($booktrialdata['type'])&&$booktrialdata['type']=='workout-session'&&!empty($booktrialdata['customer_id'])&&!empty($booktrialdata['_id']))
-                {   
-                    
-                	$alreadyWorkoutTaken=Order::where("booktrial_id","!=",(int)$booktrialdata['_id'])->where("type","=",'workout-session')->where("status","=","1")->where("created_at",">=",new DateTime("2018/04/23"))->where("customer_id","=",(int)$booktrialdata['customer_id'])->first();
-                	Log::info(" alreadyWorkoutTaken ".print_r($alreadyWorkoutTaken,true));
-                	if(empty($alreadyWorkoutTaken))
-                		$send_communication["customer_email_instant_workoutlevelstart"] = $this->customermailer->workoutSessionInstantWorkoutLevelStart($booktrialdata);
-                }
-                if(isset($booktrialdata['is_tab_active'])&&$booktrialdata['is_tab_active']!=""&&$booktrialdata['is_tab_active']==true&&$booktrialdata['type']=='workout-session')
-                {
-                	
-                	Log::info(" booktrialdata 1222".print_r($booktrialdata,true));
-                	$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrialdata['customer_id'])['current_level']['cashback'];
-                	if(isset($booktrial->pps_cashback)&&$booktrial->pps_cashback!="")
-                		$booktrial->pps_fitcash=(((int)$booktrial->pps_cashback/100)*$booktrial->amount);
-                		$booktrialdata=$booktrial->toArray();
-                		Log::info(" booktrialdata 23 ".print_r($booktrialdata,true));
+                
+                    if(!empty($booktrialdata)&&!empty($booktrialdata['type'])&&$booktrialdata['type']=='workout-session'&&!empty($booktrialdata['customer_id'])&&!empty($booktrialdata['_id']))
+                    {   
+                        
+                        $alreadyWorkoutTaken=Order::where("booktrial_id","!=",(int)$booktrialdata['_id'])->where("type","=",'workout-session')->where("status","=","1")->where("created_at",">=",new DateTime("2018/04/23"))->where("customer_id","=",(int)$booktrialdata['customer_id'])->first();
+                        Log::info(" alreadyWorkoutTaken ".print_r($alreadyWorkoutTaken,true));
+                        if(empty($alreadyWorkoutTaken))
+                            $send_communication["customer_email_instant_workoutlevelstart"] = $this->customermailer->workoutSessionInstantWorkoutLevelStart($booktrialdata);
+                    }
+                
+                    if(isset($booktrialdata['is_tab_active'])&&$booktrialdata['is_tab_active']!=""&&$booktrialdata['is_tab_active']==true&&$booktrialdata['type']=='workout-session')
+                    {
+                        
+                        Log::info(" booktrialdata 1222".print_r($booktrialdata,true));
+                        $booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrialdata['customer_id'])['current_level']['cashback'];
+                        if(isset($booktrial->pps_cashback)&&$booktrial->pps_cashback!="")
+                            $booktrial->pps_fitcash=(((int)$booktrial->pps_cashback/100)*$booktrial->amount);
+                            $booktrialdata=$booktrial->toArray();
+                            Log::info(" booktrialdata 23 ".print_r($booktrialdata,true));
+                    }
                 }
                 // abg check needed
                 Log::info('before abg check', [$booktrialdata]);
@@ -2848,9 +2850,10 @@ class SchedulebooktrialsController extends \BaseController {
                     $send_communication["customer_sms_after30mins_abg"] = $this->customersms->bookTrialReminderAfter30Mins($booktrialdata, $delayReminderTimeAfter30Mins);
                 }
                 else {
-            	    $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
+                    $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
+                    $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter6Hrs);
                 }
-                $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter6Hrs);
+                
 
                 $promoData = [
                     'customer_id'=>$booktrialdata['customer_id'],
@@ -2859,7 +2862,9 @@ class SchedulebooktrialsController extends \BaseController {
                     'title'=>'Claim Your Fitcash'
                 ];
 
-                $send_communication["customer_notification_block_screen"] = $this->utilities->sendPromotionalNotification($promoData);
+                if(!isset($booktrialdata['third_party_details'])){
+                    $send_communication["customer_notification_block_screen"] = $this->utilities->sendPromotionalNotification($promoData);
+                }
 
             	if(isset($booktrial->type)&&$booktrial->type!='workout-session'){
             		$send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
@@ -2890,7 +2895,7 @@ class SchedulebooktrialsController extends \BaseController {
             
             
 
-            if($booktrialdata['type'] == "booktrials" && isset($booktrialdata['amount']) && $booktrialdata['amount'] != "" && $booktrialdata['amount'] > 0){
+            if((!isset($booktrialdata['third_party_details'])) && $booktrialdata['type'] == "booktrials" && isset($booktrialdata['amount']) && $booktrialdata['amount'] != "" && $booktrialdata['amount'] > 0){
                 $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
             }
 
