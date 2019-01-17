@@ -6500,6 +6500,10 @@ class TransactionController extends \BaseController {
             $data['duration_day'] = !empty($order['duration_day']) ? $order['duration_day'] : null;
             $data['service_id'] = !empty($order['service_id']) ? $order['service_id'] : null;
             $data['finder_id'] = !empty($order['finder_id']) ? $order['finder_id'] : null;
+            
+            if(!empt($order->customer_email)){
+                $data['customer_email'] = $order->customer_email;
+            }
         
         }elseif(isset($data['ticket_id'])){
 			$ticket_id = intval($data['ticket_id']);
@@ -6758,8 +6762,9 @@ class TransactionController extends \BaseController {
 
             if(isset($data['coupon'])){
                 $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
+                $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
 
-                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id_for_coupon, null, null, null, $data['amount']);
+                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email);
 
                 if($resp["coupon_applied"]){
                     
