@@ -2500,6 +2500,13 @@ class TransactionController extends \BaseController {
                         }
                     }
 
+                    Log::info('---- checking sendPgOrderMail --- 17 Jan');
+                    Log::info('!in_array($finder->category_id, $abundant_category): ', [!in_array($finder->category_id, $abundant_category)]);
+                    Log::info('$order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != "diet_plan": ', [$order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan']);
+                    Log::info('!(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")): ',[!(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin"))]);
+                    Log::info('empty($snap_block): ', [empty($snap_block)]);
+                    Log::info('empty($extended_validity_block)', [empty($extended_validity_block)]);
+
                     //no email to Healthy Snacks Beverages and Healthy Tiffins
                     if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin") ) && empty($snap_block) && empty($extended_validity_block)){
                         
@@ -2545,6 +2552,13 @@ class TransactionController extends \BaseController {
                         $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
                     }
                 }
+
+                Log::info('---- checking sendPgOrderMail --- 17 Jan');
+                Log::info('!in_array($finder->category_id, $abundant_category): ', [!in_array($finder->category_id, $abundant_category)]);
+                Log::info('$order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != "diet_plan": ', [$order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan']);
+                Log::info('!(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")): ',[!(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin"))]);
+                Log::info('empty($snap_block): ', [empty($snap_block)]);
+                Log::info('empty($extended_validity_block)', [empty($extended_validity_block)]);
 
                 //no sms to Healthy Snacks Beverages and Healthy Tiffins
                 if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block) && empty($extended_validity_block)){
