@@ -4188,6 +4188,90 @@ if (!function_exists('refreshToken')) {
 	}
 
 }
+if (!function_exists('getDurationDay')) {
+
+    function getDurationDay($ratecard){
+
+        if(!empty($ratecard['validity_type_copy'])){
+            $ratecard['validity_type'] = $ratecard['validity_type_copy'];
+        }
+        if(!empty($ratecard['validity_copy'])){
+            $ratecard['validity'] = $ratecard['validity_copy'];
+        }
+        
+        empty($ratecard['validity_type']) ? $ratecard['validity_type'] = "days" : null;
+        
+        switch ($ratecard['validity_type']){
+            case 'days': 
+            case 'day': 
+                $duration_day = (int)$ratecard['validity'];break;
+            case 'months': 
+            case 'month': 
+                $duration_day = (int)($ratecard['validity'] * 30) ; break;
+            case 'year': 
+            case 'years': 
+                $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+            default : $duration_day =  $ratecard['validity']; break;
+        }
+
+        return $duration_day;
+
+    }
+
+}
+if (!function_exists('getUpgradeMembershipSection')) {
+
+    function getUpgradeMembershipSection($data, $key='ratecard_popup'){
+
+        $section = Config::get('upgrade_membership.'.$key);
+
+        $values = [
+            '__finder_name'=>'',
+            '__finder_location'=>'',
+            '__service_name'=>'',
+        ];
+        // print_r($data);
+        // exit();
+        // if($key == 'ratecard_popup'){
+
+
+        //     if(!empty($data['name'])){
+        //         $values['__service_name'] = $data['name'];
+        //     }
+
+        //     if(!empty($data['finder']['location_id']['name'])){
+        //         $values['__finder_location'] = $data['finder']['location_id']['name'];
+        //     }
+        //     if(!empty($data['finder']['title'])){
+        //         $values['__finder_name'] = $data['finder']['title'];
+        //     }
+
+        // }else{
+            
+            if(!empty($data['finder_name'])){
+                $values['__finder_name'] = $data['finder_name'];
+            }
+            
+            if(!empty($data['finder_location'])){
+                $values['__finder_location'] = $data['finder_location'];
+            }
+            
+            if(!empty($data['service_name'])){
+                $values['__service_name'] = $data['service_name'];
+            }
+        // }
+
+
+        foreach($section['data'] as &$row){
+        
+            $row = strtr($row, $values);
+        
+        }
+
+        return $section;
+    }
+
+}
 
 
 ?>
