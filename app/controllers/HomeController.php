@@ -2148,8 +2148,11 @@ class HomeController extends BaseController {
                     'data' => $section3['data']
                 ];
             }
-
             
+            if(!empty($item['upgrade_fitcash'])){  
+                $resp['upgrade_popup'] = getUpgradeMembershipSection($item, 'success_page');
+            }
+
             if($this->vendor_token){
 
                 if(in_array($item['type'],[/*"workout-session",*/"booktrials"])){

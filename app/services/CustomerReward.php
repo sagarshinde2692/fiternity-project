@@ -772,6 +772,7 @@ Class CustomerReward {
                 $utilities->setPPSReferralData($order->toArray());
             }
 
+            $utilities->giveFitcashforUpgrade($order);
             
             
         }
@@ -996,7 +997,7 @@ Class CustomerReward {
         }*/
     }
 
-   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false){
+   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false,$order_data=null){
 
         $current_wallet_balance = 0;
         $wallet = 0;
@@ -1025,6 +1026,14 @@ Class CustomerReward {
 
             if($order_type){
                $request['order_type'] = $order_type;
+            }
+
+            if(!empty($order_data['service_id'])){
+               $request['service_id'] = $order_data['service_id'];
+            }
+            
+            if(!empty($order_data['duration_day'])){
+               $request['duration_day'] = $order_data['duration_day'];
             }
 
             $query = $utilities->getWalletQuery($request);
@@ -1426,7 +1435,7 @@ Class CustomerReward {
     }
 
 
-    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false){
+    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false, $data=null){
 
         $jwt_token = Request::header('Authorization');
 
@@ -1436,7 +1445,7 @@ Class CustomerReward {
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
         }
-        return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee,$order_type);
+        return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee,$order_type,$data);
         // $customer = \Customer::find($customer_id);
         
         // if(isset($customer->demonetisation)){
@@ -1445,7 +1454,7 @@ Class CustomerReward {
 
         // }
 
-        return $this->purchaseGameOld($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee,$order_type);
+        return $this->purchaseGameOld($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee,$order_type,$data);
 
     }
 

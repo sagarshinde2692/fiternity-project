@@ -1936,6 +1936,11 @@ Class Utilities {
 
                 $wallet->service_id = $request['service_id'];
             }
+            
+            if(isset($request['duration_day']) && $request['duration_day'] != ""){
+
+                $wallet->duration_day = $request['duration_day'];
+            }
 
             if(isset($request['valid_service_id']) && $request['valid_service_id'] != ""){
 
@@ -1945,6 +1950,14 @@ Class Utilities {
             if(!empty($request['order_type'])){
 
                 $wallet->order_type = $request['order_type'];
+            }
+            if(!empty($request['restricted'])){
+
+                $wallet->restricted = $request['restricted'];
+            }
+            if(!empty($request['restricted_for'])){
+
+                $wallet->restricted_for = $request['restricted_for'];
             }
 
             $wallet->save();
@@ -2001,7 +2014,7 @@ Class Utilities {
 
             $query =  $this->getWalletQuery($request);
 
-            $allWallets  = $query->OrderBy('_id','asc')->get();
+            $allWallets  = $query->OrderBy('restricted','desc')->OrderBy('_id','asc')->get();
 
             if(count($allWallets) > 0){
 
@@ -2086,11 +2099,18 @@ Class Utilities {
                         $value->balance = intval($value->balance - $walletTransactionData['amount']);
                         $value->update();
 
-                        $walletTransactionDebit[] =  [
+                        $walletTransactionDebitEntry = [
                             'wallet_id' => $value->_id,
                             'wallet_transaction_id' => $walletTransaction->_id,
                             'amount' => $walletTransactionData['amount']
                         ];
+                        
+                        if(!empty($value['restricted_for']) && $value['restricted_for'] == 'upgrade'){
+                            $walletTransactionDebitEntry['upgraded_order_id'] = $value['order_id'];
+                        }
+                        
+                        $walletTransactionDebit[] =  $walletTransactionDebitEntry;
+
 
                         if($amount_used == $amount){
                             break;
@@ -2307,6 +2327,12 @@ Class Utilities {
 
         if(!empty($data['order_type'])){
             $query->where(function($query) use ($data){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $data['order_type']);});
+        }
+        if(!empty($data['service_id'])){
+            $query->where(function($query) use ($data){$query->orwhere('service_id', 'exists', false)->orWhere('service_id', $data['service_id']);});
+        }
+        if(!empty($data['duration_day'])){
+            $query->where(function($query) use ($data){$query->orwhere('duration_day', 'exists', false)->orWhere('duration_day', $data['duration_day']);});
         }
 
         $wallet_balance = $query->sum('balance');
@@ -2648,6 +2674,14 @@ Class Utilities {
         }else{
 
             $query->where('valid_finder_id','exists',false);
+        }
+
+        if(!empty($request['service_id'])){
+            $query->where(function($query) use($request) {$query->orWhere('service_id','exists',false)->orWhere('service_id', $request['service_id']);});
+        }
+        
+        if(!empty($request['duration_day'])){
+            $query->where(function($query) use($request) {$query->orWhere('duration_day','exists',false)->orWhere('duration_day', $request['duration_day']);});
         }
 
         Log::info("wallet debit query");
@@ -7427,6 +7461,55 @@ Class Utilities {
         }
 
         return null;
+    }
+
+    public function giveFitcashforUpgrade($order){
+
+        if(!empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], Config::get('upgrade_membership.service_cat', [65, 111])) && in_array($order['duration_day'], Config::get('upgrade_membership.duration', [30]))){
+
+            $fitcash_amount = $order['amount_customer'];
+
+            $no_of_days = Config::get('upgrade_membership.fitcash_days');
+
+            $request = $walletData = array(
+                "customer_id"=> $order->customer_id,
+                "amount"=> $fitcash_amount,
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $fitcash_amount,
+                "type"=>'FITCASHPLUS',
+                'description'=>"Added FitCash+ for upgrading 1 month ".ucwords($order['service_name'])." to 1 Year only at ".$order['finder_name'].", Expires On : ".date('d-m-Y',time()+(86400*$no_of_days)),
+                'entry'=>'credit',
+                'valid_finder_id'=>$order['finder_id'],
+                'service_id'=>$order['service_id'],
+                'remove_wallet_limit'=>true,
+                'validity'=>strtotime($order['start_date'])+(86400*$no_of_days),
+                'duration_day'=>360,
+                'restricted_for'=>'upgrade',
+                'restricted'=>1,
+                'order_id'=>$order['_id'],
+            );
+            
+            $this->walletTransactionNew($request);
+            
+            $order->upgrade_fitcash = true;
+
+        }
+    }
+
+    public function getCustomerFromToken(){
+        
+        $token = Request::header('Authorization');
+        
+        if(empty($token)){
+            return;
+        }
+        
+        $token_decoded = customerTokenDecode($token);
+
+        $customer = $token_decoded->customer;
+
+        return json_decode(json_encode($customer), true);
+
     }
 
     

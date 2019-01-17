@@ -199,7 +199,7 @@ class FindersController extends \BaseController {
 						$initial_reviews = array_merge($initial_reviews, $reviews->toArray());
 						$finderarr['reviews'] = $initial_reviews;
 					}
-				}
+				}			
 				if(isset($finderarr['commercial_type']) && $finderarr['commercial_type']==0){
 					if(isset($finderarr['budget'])){
 						if($finderarr['budget'] < 1000){

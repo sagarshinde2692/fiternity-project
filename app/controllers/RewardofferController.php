@@ -1216,6 +1216,8 @@ class RewardofferController extends BaseController {
         if(!empty($gold_mixed)){
             $cashback = null;
         }
+        
+        $upgradeMembership = $this->addUpgradeMembership($data, $ratecard);
 
         $data = array(
             'renewal_cashback'          =>   $renewal_cashback,
@@ -1226,6 +1228,11 @@ class RewardofferController extends BaseController {
             'message'                   =>  "Rewards offers",
             'amount'                    =>  $amount
         );
+
+        if(!empty($upgradeMembership) && !empty($upgradeMembership['start_date'])){
+            $data['upgrade_membership'] = true;
+            $data['start_date'] = $upgradeMembership['start_date'];
+        }
 
         if(empty($calculation['algo']['cashback'])){
             $data['cashback'] = null;
@@ -1263,6 +1270,38 @@ class RewardofferController extends BaseController {
         $data['max_date'] = $max_date;
 
         return  Response::json($data, 200);
+
+    }
+
+    public function addUpgradeMembership($data, $ratecard){
+        
+        if(empty($ratecard)){
+            return;
+        }
+        
+        $duration_day = $this->utilities->getDurationDay($ratecard);
+
+        if($duration_day == 360){
+
+            $customer = $this->utilities->getCustomerFromToken();
+    
+            if(empty($customer)){
+                return;
+            }
+            
+            $customer_id = $customer['_id'];
+
+            $wallet = Wallet::active()->where('balance', '>', 0)->where('customer_id', $customer_id)->where('service_id', $ratecard['service_id'])->where('restricted_for', 'upgrade')->where('duration_day', $duration_day)->first();
+
+            if(!empty($wallet)){
+                $order = Order::find($wallet['order_id'], ['start_date']);
+            }
+
+            if(!empty($order)){
+                return ['start_date'=>date('d-m-Y', strtotime($order['start_date']))];
+            }
+        
+        }
 
     }
 

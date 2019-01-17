@@ -2122,7 +2122,7 @@ class TransactionController extends \BaseController {
     }
 
     public function success($data = null){
-
+        
         if($data){
             $data['internal_success'] = true;
         }else{
@@ -2196,6 +2196,17 @@ class TransactionController extends \BaseController {
                 }
 
                 $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+
+                if(!empty($order['wallet_transaction_debit']['wallet_transaction'])){
+
+                    $upgraded_wallet = array_filter($order['wallet_transaction_debit']['wallet_transaction'], function($e){return !empty($e['upgraded_order_id']);});
+                    $upgraded_order_ids = array_column($upgraded_wallet, 'upgraded_order_id');
+                    $this->setUpgradedOrderRedundant($order, $upgraded_order_ids);
+                }
+
+                if(!empty($order['upgrade_fitcash'])){
+                    array_set($data, 'upgrade_fitcash', true);
+                }
 
                 $updated_order = Order::where('_id', $order->_id)->first();
 
@@ -2549,6 +2560,11 @@ class TransactionController extends \BaseController {
                     }
                     
                 }
+
+                if(!empty($order['upgrade_fitcash'])){
+                    $data['upgrade_sms_instant'] = $this->customersms->upgradeMembershipInstant($order->toArray());
+                }
+
             }
 
             $this->utilities->sendCorporateMail($order->toArray());
@@ -3274,7 +3290,7 @@ class TransactionController extends \BaseController {
             $amount -= $data['customer_discount_amount'];
 
             
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type']);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type'],$data);
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $amount -= $data['cashback_detail']['amount_discounted'];
@@ -3426,7 +3442,7 @@ class TransactionController extends \BaseController {
 
                     }
 
-                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type']);
+                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type'], $data);
 
                     if(isset($data['cashback']) && $data['cashback'] == true){
                         $amount -= $data['cashback_detail']['amount_discounted'];
@@ -4068,10 +4084,13 @@ class TransactionController extends \BaseController {
 
             switch ($ratecard['validity_type']){
                 case 'days': 
+                case 'day': 
                     $data['duration_day'] = $duration_day = (int)$ratecard['validity'];break;
                 case 'months': 
+                case 'month': 
                     $data['duration_day'] = $duration_day = (int)($ratecard['validity'] * 30) ; break;
                 case 'year': 
+                case 'years': 
                     $data['duration_day'] = $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
                 default : $data['duration_day'] = $duration_day =  $ratecard['validity']; break;
             }
@@ -6477,6 +6496,10 @@ class TransactionController extends \BaseController {
                 $ticket_id = $order->ticket_id;
             
             }
+
+            $data['duration_day'] = !empty($order['duration_day']) ? $order['duration_day'] : null;
+            $data['service_id'] = !empty($order['service_id']) ? $order['service_id'] : null;
+            $data['finder_is'] = !empty($order['finder_is']) ? $order['finder_is'] : null;
         
         }elseif(isset($data['ticket_id'])){
 			$ticket_id = intval($data['ticket_id']);
@@ -6698,7 +6721,9 @@ class TransactionController extends \BaseController {
                 }else{
                     $getWalletBalanceData = [
                         'finder_id'=>$ratecard['finder_id'],
-                        'order_type'=>$ratecard['type']
+                        'order_type'=>$ratecard['type'],
+                        'service_id'=>!empty($data['service_id']) ? $data['service_id'] : null,
+                        'duration_day'=>!empty($data['duration_day']) ? $data['duration_day'] : null
                     ];
                     if(isset($ratecard) && isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] == True){
                         $data['wallet_balance'] = 0;
@@ -6765,8 +6790,8 @@ class TransactionController extends \BaseController {
             if($data['amount_payable'] == 0){
                 $result['full_wallet_payment'] = true;
             }
-    
-            
+
+
 
             $result['order_details'] = [
                 "studio_name"=>[
@@ -8403,6 +8428,10 @@ class TransactionController extends \BaseController {
 
         return ['status'=>200, 'message'=>'Attendance Marked'];
             
+    }
+
+    public function setUpgradedOrderRedundant($order, $order_ids){
+        Order::whereIn('_id', $order_ids)->update(['status'=>'0', 'upgraded_order'=>$order['_id']]);
     }
 
     
