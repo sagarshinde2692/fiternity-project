@@ -511,7 +511,9 @@ class TransactionController extends \BaseController {
 
                             $updatedCust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
                             $updatedCust->total_sessions_used = $usedSessionsCount;
-                            $updatedCust->third_party_details[$acronym]['third_party_used_sessions'] = $usedSessionsCount;
+                            $tpdtls = $updatedCust->third_party_details;
+                            $tpdtls[$acronym]['third_party_used_sessions'] = $usedSessionsCount;
+                            $updatedCust->third_party_details = $tpdtls;
                             $updatedCust->save();
 
 	            		    return Response::json([
