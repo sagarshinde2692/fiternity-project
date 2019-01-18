@@ -8817,13 +8817,18 @@ class CustomerController extends \BaseController {
         $milestone_no = count($customer_milestones);
         $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
         $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
+		$brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
         // $checkins = 52;
         $brand_milestones = Config::get('loyalty_constants');
         $milestones = $brand_milestones['milestones'];
-        $checkin_limit = $brand_milestones['checkin_limit'];
+		$checkin_limit = $brand_milestones['checkin_limit'];
         
         if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
-            $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
+			if(!empty($brand_version)){
+				$brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', $brand_version)->first();
+			}else{
+				$brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
+			}
             if($brand_milestones){
                 $milestones = $brand_milestones['milestones'];
                 $checkin_limit = $brand_milestones['checkin_limit'];
@@ -9036,7 +9041,7 @@ class CustomerController extends \BaseController {
 
             }
 
-            $post_reward_template['description'] = ($milestone_claim_count == count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s)");
+            $post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s)");
             $post_register_rewards_data[] = $post_reward_template;
             
         }
