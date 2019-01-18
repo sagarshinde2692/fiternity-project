@@ -21,7 +21,7 @@ use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
 
 use App\Services\Jwtauth as Jwtauth;
-
+use App\Services\Metropolis as Metropolis;
 
 
 class SchedulebooktrialsController extends \BaseController {
@@ -4560,7 +4560,7 @@ class SchedulebooktrialsController extends \BaseController {
      * @param $id
      * @return mixed
      */
-    public function cancel($id, $source_flag='customer', $reason=''){
+    public function cancel($id, $source_flag='customer', $reason='', $isBackendReq = false){
 
 
         $id 		       = 	(int) $id;
@@ -4575,7 +4575,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if((!empty($booktrial['third_party_details'])) && (isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600))){
             $resp   =   array('status' => 400, 'message' => "This session cannot be cancelled");
-            return Response::json($resp,400);
+            return Response::json($resp,200);
         }
 
         array_set($bookdata, 'going_status', 2);
@@ -4622,11 +4622,18 @@ class SchedulebooktrialsController extends \BaseController {
                 if($cust['total_sessions_used']>0){
                     $cust['total_sessions_used'] -= 1;
                 }
+                $_temp = $cust['third_party_details'];
                 if($cust['third_party_details'][$thirdPartyAcronym]['third_party_used_sessions']>0){
-                    $cust['third_party_details'][$thirdPartyAcronym]['third_party_used_sessions'] -= 1;
+                    $_temp[$thirdPartyAcronym]['third_party_used_sessions'] -= 1;
+                    $cust['third_party_details'] = $_temp;
                 }
                 $cust->update();
                 $resp['booktrial_id'] = $booktrial['_id'];
+                if($isBackendReq) {
+                    Log::info("it is a backend request");
+                    $metropolis = new Metropolis();
+                    $metropolis->cancelThirdPartySession($cust['third_party_details'][$thirdPartyAcronym]['third_party_token_id'], $booktrial['_id'], $resp['message']);
+                }
             }
             
             return Response::json($resp,200);
@@ -7759,13 +7766,16 @@ class SchedulebooktrialsController extends \BaseController {
                 return "Trial Confirmed Successfully";
 
             }else if($action == 'cancel'){
-                return $this->cancel($_id, $source);
+                $query = Input::all();
+                return $this->cancel($_id, $source, '', $query['isBackendReq']);
             }
         }else{
             $booktrial = Booktrial::find(intval($_id));
             $this->unsetEmptyDates($booktrial);
             $booktrial_data = $booktrial->toArray();
-            $action_link = Config::get('app.url').'/updatetrialstatus/'.$_id.'/'.$source.'/'.$action.'/1';
+            $query = Input::all();
+            $isBackendReq = (isset($query['isBackendReq']))?$query['isBackendReq']:false;
+            $action_link = Config::get('app.url').'/updatetrialstatus/'.$_id.'/'.$source.'/'.$action.'/1?isBackendReq='.$isBackendReq;
             $cities 	=	City::orderBy('name')->lists('name', '_id');
             
             return View::make('trialconfirm', compact('booktrial_data', 'action_link', 'action', 'cities'));
