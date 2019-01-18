@@ -184,6 +184,10 @@ class TransactionController extends \BaseController {
         Log::info($_SERVER['REQUEST_URI']);
         Log::info('------------transactionCapture---------------',$data);
 
+        if(!empty($data['coupon_code']) && strtoupper($data['coupon_code']) == "APPLY COUPON"){
+            unset($data['coupon_code']);
+        }
+
         if(!empty($data['tpo_details']) || (isset($data['type']) && $data['type']=='thirdparty')){
             $tpMemberDetailsResp = $this->saveTPMemberDetails($data);
             Log::info('$tpMemberDetailsResp: ', [$tpMemberDetailsResp]);
