@@ -2738,12 +2738,7 @@ class SchedulebooktrialsController extends \BaseController {
                 } */
                 
                 
-                if(isset($booktrialdata['third_party_details'])){
-                    Log::info('$booktrialdata->third_party_details is set customer_email_before12hour_abg: ', [$booktrialdata['third_party_details']]);
-                    // $send_communication["customer_sms_before12hour_abg"] = $this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
-                }
-                else {
-                    Log::info('$booktrialdata->third_party_details is not set');
+                if(!isset($booktrialdata['third_party_details'])){
                     $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);     
                     
                     $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
@@ -2850,22 +2845,19 @@ class SchedulebooktrialsController extends \BaseController {
                 else {
                     $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
                     $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter6Hrs);
-                }
                 
+                    $promoData = [
+                        'customer_id'=>$booktrialdata['customer_id'],
+                        'delay'=>$delayReminderTimeAfter2Hrs,
+                        'text'=>'Punch the Fitcode now & get instant Cashback',
+                        'title'=>'Claim Your Fitcash'
+                    ];
 
-                $promoData = [
-                    'customer_id'=>$booktrialdata['customer_id'],
-                    'delay'=>$delayReminderTimeAfter2Hrs,
-                    'text'=>'Punch the Fitcode now & get instant Cashback',
-                    'title'=>'Claim Your Fitcash'
-                ];
-
-                if(!isset($booktrialdata['third_party_details'])){
                     $send_communication["customer_notification_block_screen"] = $this->utilities->sendPromotionalNotification($promoData);
-                }
 
-            	if(isset($booktrial->type)&&$booktrial->type!='workout-session'){
-            		$send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
+                    if(isset($booktrial->type)&&$booktrial->type!='workout-session'){
+                        $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
+                    }
                 }
             }
             else 
@@ -2880,13 +2872,8 @@ class SchedulebooktrialsController extends \BaseController {
                     $send_communication["customer_sms_after2hour_abg"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
                     $send_communication["customer_sms_after30mins_abg"] = $this->customersms->bookTrialReminderAfter30Mins($booktrialdata, $delayReminderTimeAfter30Mins);
                 }
-
-                $delayReminderTimeAfter24Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*24);
-                if(isset($booktrialdata['third_party_details'])){
-                    Log::info('$booktrialdata->third_party_details is set customer_sms_after24hour_abg: ', [$booktrialdata['third_party_details']]);
-                    // $send_communication["customer_sms_after24hour_abg"] = $this->customersms->bookTrialReminderAfter24Hour($booktrialdata, $delayReminderTimeAfter24Hour);
-                }
-                else {
+                else{
+                    $delayReminderTimeAfter24Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*24);
                     $send_communication["customer_sms_after24hour"] = $this->customersms->bookTrialReminderAfter24Hour($booktrialdata, $delayReminderTimeAfter24Hour);
                 }
             }  
