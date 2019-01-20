@@ -4268,7 +4268,7 @@ class CustomerController extends \BaseController {
 		$current_version_android = 5.0;
 		$current_version_ios = '5.1.6';
 
-		$last_stable_version_android = 5.16;
+		$last_stable_version_android = 5.22;
 
 		Log::info('forceupdate::: ', [$data["app_version"]]);
 		if($data["device_type"] == "android"){
