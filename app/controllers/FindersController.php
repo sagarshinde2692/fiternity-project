@@ -6076,6 +6076,7 @@ class FindersController extends \BaseController {
 			$orderEndDatetime = date("Y-m-d",strtotime($data["end_date"]));	
 		}
 		$vendors = [];
+		$vendor_ids = [];
 		if(isset($data["vendors"]) && count($data["vendors"])){
 
 			$vendors = Finder::whereIn("_id", $data["vendors"])->get(["slug", "_id"]);
