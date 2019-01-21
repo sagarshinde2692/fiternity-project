@@ -2207,12 +2207,13 @@ class TransactionController extends \BaseController {
                     $upgraded_order_ids = array_column($upgraded_wallet, 'upgraded_order_id');
                     $this->setUpgradedOrderRedundant($order, $upgraded_order_ids);
                 }
+                $updated_order = Order::where('_id', $order->_id)->first();
 
                 if(!empty($order['upgrade_fitcash'])){
                     array_set($data, 'upgrade_fitcash', true);
+                    $updated_order->upgrade_fitcash = true;
                 }
 
-                $updated_order = Order::where('_id', $order->_id)->first();
 
                 if($updated_order && !empty($updated_order->reward_content)){
                     $order->reward_content = $updated_order->reward_content;
