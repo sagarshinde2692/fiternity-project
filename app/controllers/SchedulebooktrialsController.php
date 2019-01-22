@@ -8065,7 +8065,7 @@ class SchedulebooktrialsController extends \BaseController {
     public function updateCorporateCoupons($booktrial){
 
         if(!empty($booktrial->coupon_code) && !empty($booktrial->coupon_discount_amount) && in_array(strtolower($booktrial->coupon_code), Config::get('app.corporate_coupons'))){
-            $coupon_update = Coupon::where('code', strtolower($booktrial->coupon_code))->decrement('used');
+            $coupon_update = Coupon::where('code', strtolower($booktrial->coupon_code))->decrement('total_used');
         }
     }
 
