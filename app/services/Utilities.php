@@ -7397,21 +7397,35 @@ Class Utilities {
     }
 
     public function getExtendedValidityOrder($data){
-
-
+        
         if(!empty($data['order_customer_email'])){
             $data['customer_email'] = $data['order_customer_email'];
         }
 
+        if(empty($data['customer_id']) && empty($data['customer_email'])){
+            return;
+        }
+
+        $query = Order::active();
+        
         if(!empty($data['customer_email'])){
-            return Order::active()->where('customer_email', $data['customer_email'])->where('service_id', $data['service_id'])->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))->where('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])))->where('sessions_left', '>', 0)->first();
+            $query->where('customer_email', $data['customer_email']);
         }
 
         if(!empty($data['customer_id'])){
-            return Order::active()->where('customer_id', $data['customer_id'])->where('service_id', $data['service_id'])->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))->where('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])))->where('sessions_left', '>', 0)->first();
+            $query->where('customer_id', $data['customer_id']);
         }
 
-        return null;
+        if(!empty($data['schedule_date'])){
+            $query
+                ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
+                ->where('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])));
+        }
+
+        return $query
+            ->where(function($query) use ($data){ $query->orWhere('service_id', $data['service_id'])->orWhere('all_service_id', $data['service_id']);})
+            ->where('sessions_left', '>', 0)
+            ->first();;
     }
 
 
@@ -7510,6 +7524,23 @@ Class Utilities {
 
         return json_decode(json_encode($customer), true);
 
+    }
+
+    public function sessionPackMultiServiceDiscount($ratecard, $customer_email, $amount){
+        
+         if(empty($customer_email)){
+            
+            $customer = $this->getCustomerFromToken();
+            
+            if(empty($customer)){
+                return;
+            }
+
+            $customer_email = $customer['email'];
+        }
+
+        return $extended_validity_order = Order::active()->where('customer_email', $data['customer_email'])->where('all_service_id', $data['ratercard']['service_id'])->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))->where('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])))->where('sessions_left', '>', 0)->first();
+        
     }
 
     
