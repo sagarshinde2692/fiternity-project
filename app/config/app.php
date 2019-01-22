@@ -897,5 +897,6 @@ return array(
 	'upgrade'=>[
 		'service_cat'=>[65, 111],
 		'duration'=>[30]
-	]
+	],
+	'corporate_coupons'=>['mckinsey', 'syncron']
 );
