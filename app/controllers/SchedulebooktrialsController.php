@@ -2278,6 +2278,11 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($order['first_session_free'])){
                 $booktrialdata['first_session_free'] = $order['first_session_free'];
             }
+            
+            if(!empty($order['coupon_code']) && !empty($order['coupon_discount_amount'])){
+                $booktrialdata['coupon_code'] = $order['coupon_code'];
+                $booktrialdata['coupon_discount_amount'] = $order['coupon_discount_amount'];
+            }
 
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
@@ -4955,6 +4960,8 @@ class SchedulebooktrialsController extends \BaseController {
                     }
                 }
             }
+
+            $updateCorporateCoupons = $this->updateCorporateCoupons($booktrial);
 
         }catch(\Exception $exception){
 
@@ -8053,6 +8060,13 @@ class SchedulebooktrialsController extends \BaseController {
                 'wallet_balance' => $customer_balance
             ),200
         );
+    }
+
+    public function updateCorporateCoupons($booktrial){
+
+        if(!empty($booktrial->coupon_code) && !empty($booktrial->coupon_discount_amount) && in_array(strtolower($booktrial->coupon_code), Config::get('app.corporate_coupons'))){
+            $coupon_update = Coupon::where('code', strtolower($booktrial->coupon_code))->decrement('used');
+        }
     }
 
 }
