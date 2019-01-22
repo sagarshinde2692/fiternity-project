@@ -7724,7 +7724,7 @@ class CustomerController extends \BaseController {
 					
 					$extended_validity_service_ids_multiple = array_column($extended_validity_orders->toArray(), 'all_service_id');
 
-					$extended_validity_service_ids = array_merge($extended_validity_service_ids, $$extended_validity_service_ids_multiple);
+					$extended_validity_service_ids = array_merge($extended_validity_service_ids, $extended_validity_service_ids_multiple);
 
 					$pnd_pymnt=$this->utilities->hasPendingPayments();
 					

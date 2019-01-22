@@ -1641,22 +1641,22 @@ Class CustomerReward {
         Log::info( (new \DateTime())->format("d-m-Y H:i:s"));
 
         
-        $logged_in_customer = $utilities->getCustomerFromToken();
-        if((strtolower(trim($couponCode)) == 'sessionpack') && (!empty($ratecard['type']) && $ratecard['type'] == 'workout session') && !empty($ratecard['service_id']) && (!empty($customer_email) || (!empty($logged_in_customer) && !empty($logged_in_customer['email'])))){
-            $data = [
-                'customer_email'=>!empty($customer_email) ? $customer_email : $logged_in_customer['email'],
-                'service_id'=>$ratecard['service_id']
-            ];
+        // $logged_in_customer = $utilities->getCustomerFromToken();
+        // if((strtolower(trim($couponCode)) == 'sessionpack') && (!empty($ratecard['type']) && $ratecard['type'] == 'workout session') && !empty($ratecard['service_id']) && (!empty($customer_email) || (!empty($logged_in_customer) && !empty($logged_in_customer['email'])))){
+        //     $data = [
+        //         'customer_email'=>!empty($customer_email) ? $customer_email : $logged_in_customer['email'],
+        //         'service_id'=>$ratecard['service_id']
+        //     ];
 
-            $extended_validity_order =  $utilities->getExtendedValidityOrder($data);
+        //     $extended_validity_order =  $utilities->getExtendedValidityOrder($data);
 
-            if(empty($extended_validity_order)){
-                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired","user_login_error"=>true);
+        //     if(empty($extended_validity_order)){
+        //         $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired","user_login_error"=>true);
 
-                return $resp;
-            }
-            return array("data"=>array("discount" => $price, "final_amount" => 0, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => true,  "vendor_coupon"=>false, "vendor_routed_coupon" => false);
-        }
+        //         return $resp;
+        //     }
+        //     return array("data"=>array("discount" => $price, "final_amount" => 0, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => true,  "vendor_coupon"=>false, "vendor_routed_coupon" => false);
+        // }
 
 
         $query = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime());
@@ -2141,7 +2141,8 @@ Class CustomerReward {
                 }
                 
                 $jwt_token = Request::header('Authorization');
-                $logged_in_customer = null;
+                // $logged_in_customer = null;
+                $logged_in_customer = [];
                 if(!empty($jwt_token)){
 
                     $decoded = $this->customerTokenDecode($jwt_token);
