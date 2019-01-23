@@ -8962,8 +8962,10 @@ class CustomerController extends \BaseController {
                         $post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$post_reward_data_template['_id'];
                         unset($vc['finder_ids']);
                         $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
-                        $post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
-                        
+						$post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
+						if($milestone_claim_count > 1){
+							$post_reward_data_template['claim_message'] = "Are you sure you want to claim this reward?";
+						}
                         if($milestone_no >= $milestone['milestone'] ){
 
                             $post_reward_data_template['claim_enabled'] = true;
