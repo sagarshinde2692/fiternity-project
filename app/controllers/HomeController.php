@@ -2731,6 +2731,9 @@ class HomeController extends BaseController {
 
                         return $collection->aggregate($aggregate);
                     });
+                    if(!empty($locations)){
+                        $locations = $locations['result'];
+                    }
                 }
                 else {
                     $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
@@ -2773,6 +2776,9 @@ class HomeController extends BaseController {
 
                         return $collection->aggregate($aggregate);
                     });
+                    if(!empty($locations)){
+                        $locations = $locations['result'];
+                    }
                 }
                 else{
                     $locations				= 	Location::active()->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'))->toArray();
