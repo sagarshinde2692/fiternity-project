@@ -2029,7 +2029,7 @@ Class CustomerReward {
 
                     \Booktrial::$withoutAppends = true;
     
-                    $booktrial_count = \Booktrial::where('customer_email',$customer_email)->where('going_status_txt','!=','cancel')->where('created_at','>=',new \MongoDate(strtotime(date('Y-m-d 00:00:00'))))->where('created_at','<=',new \MongoDate(strtotime(date('Y-m-d 23:59:59'))))->count();
+                    $booktrial_count = \Booktrial::where('customer_email',$customer_email)->where('coupon_code','like',strtolower($couponCode))->where('going_status_txt','!=','cancel')->where('created_at','>=',new \MongoDate(strtotime(date('Y-m-d 00:00:00'))))->where('created_at','<=',new \MongoDate(strtotime(date('Y-m-d 23:59:59'))))->count();
     
                     if($booktrial_count > 0){
     
