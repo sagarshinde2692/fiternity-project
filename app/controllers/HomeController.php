@@ -2738,7 +2738,7 @@ class HomeController extends BaseController {
 
             }else{
                 if(!empty($device_type) && (in_array($device_type, ['web']))){
-                    $locations = Location::raw(function($collection) use ($city_id){
+                    $locations = Location::raw(function($collection){
                         $aggregate = [];
 
                         $match = [
