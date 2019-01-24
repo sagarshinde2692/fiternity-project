@@ -469,17 +469,41 @@ class TransactionController extends \BaseController {
                         $data['total_sessions'] = intval($data['total_sessions']);
                         
                         $data['third_party_details'][$acronym]['third_party_used_sessions'] = $data['total_sessions_used'];
-                        if(!empty($data['service_id'])){
-
-                            $service = Service::find((int)$data['service_id']);
-            
-                            if($service){
-            
-                                $data['service_name'] = $service['name'];
-                                $data['service_category_id'] = (int)$service['servicecategory_id'];
-                            }
-            
+                        
+                        $finder_id = (int) $data['finder_id'];
+    
+                        $finderDetail = $this->getFinderDetail($finder_id);
+                
+                        if($finderDetail['status'] != 200){
+                            return Response::json($finderDetail,$this->error_status);
                         }
+                        
+                        if(isset($data['service_id'])){
+                            $service_id = (int) $data['service_id'];
+                            
+                            $serviceDetail = $this->getServiceDetail($service_id);
+            
+                            if($serviceDetail['status'] != 200){
+                                return Response::json($serviceDetail,$this->error_status);
+                            }
+                            
+                            $data = array_merge($data,$serviceDetail['data']);
+                            if(isset($data['type']) && $data['type'] == 'workout-session' && $data['servicecategory_id'] == 65){
+                                $data['service_name'] = $this->utilities->getGymServiceNamePPS();
+                            }
+                        }
+
+                        // if(!empty($data['service_id'])){
+
+                        //     $service = Service::find((int)$data['service_id']);
+            
+                        //     if($service){
+            
+                        //         $data['service_name'] = $service['name'];
+                        //         $data['service_category_id'] = (int)$service['servicecategory_id'];
+                        //     }
+            
+                        // }
                         $data['amount_customer'] = 0; // discussed with Utkarsh
 	            		$order_id = Order::max('_id') + 1;
 	            		$order = new Order($data);
@@ -515,6 +539,8 @@ class TransactionController extends \BaseController {
                             $tpdtls[$acronym]['third_party_used_sessions'] = $usedSessionsCount;
                             $updatedCust->third_party_details = $tpdtls;
                             $updatedCust->save();
+
+                            $this->utilities->financeUpdate($order);
 
 	            		    return Response::json([
                                 'status'=>200,
