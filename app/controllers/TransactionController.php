@@ -477,6 +477,10 @@ class TransactionController extends \BaseController {
                         if($finderDetail['status'] != 200){
                             return Response::json($finderDetail,$this->error_status);
                         }
+
+                        $orderfinderdetail = $finderDetail;
+                        $data = array_merge($data,$orderfinderdetail['data']);
+                        unset($orderfinderdetail["data"]["finder_flags"]);
                         
                         if(isset($data['service_id'])){
                             $service_id = (int) $data['service_id'];
