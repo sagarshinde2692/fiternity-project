@@ -4583,7 +4583,7 @@ class FindersController extends \BaseController {
 					$finderData['finder']['services'] = [];
 				}
 			}	
-
+			
 			if(isset($finderData['finder']['trial']) && $finderData['finder']['trial'] == "disable" ){
 				$finderData['call_for_action_button'] = "";
 				$finderData['finder']['pay_per_session'] = false;
@@ -4756,6 +4756,12 @@ class FindersController extends \BaseController {
 					$finderData['finder']['trial'] = "disable";
 					$finderData['finder']['membership'] = "disable";
 				}
+
+				if(isset($finderData['finder']['trial']) && $finderData['finder']['trial'] == "disable" ){
+					$finderData['call_for_action_button'] = "";
+					$finderData['finder']['pay_per_session'] = false;
+				}
+	
 
 				if(isset($_GET['notification_id']) && $_GET['notification_id'] != ''){
 					$finderData['finder']['contact']['phone'] = Config::get('app.followup_customer_number');
