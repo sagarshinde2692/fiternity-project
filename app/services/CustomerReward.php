@@ -2297,6 +2297,25 @@ Class CustomerReward {
 
                 return $resp;
             }
+
+            if(!empty($coupon['finder_level']) && !empty($ratecard['finder_id']) ){
+                
+                if(in_array($ratecard['finder_id'], Config::get('app.finder_0_discount', []))){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Not applicable on this Gym / Studio");
+
+                    return $resp;   
+                }
+                
+                if(in_array($ratecard['finder_id'], Config::get('app.finder_10_discount', []))){
+
+                    $coupon["discount_percent"] = 10;
+                    $coupon["discount_max"] = 2500;
+
+                }else{
+                    $coupon["discount_percent"] = 5;
+                    $coupon["discount_max"] = 1250;
+                }
+            }
     
             
             if($amount){
