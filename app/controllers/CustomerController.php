@@ -606,138 +606,177 @@ class CustomerController extends \BaseController {
 
 		}else{
 
-			$customer = Customer::active()->where('email','=',$data['email'])->where('identity','!=','email')->first();
+			$customerNoEmail = Customer::active()->where('contact_no','LIKE','%'.substr($data['contact_no'], -10).'%')
+			->where('email','exists',false)
+			// ->where(function($query) use($data) {
+			// 	$query->orWhere('email', 'exists', false)->orWhere('email','=','');
+			// })
+			->first();
 
-			/*if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
+			if(!empty($customerNoEmail)){
+				Log::info('in no email customer register section...');
+				$customerNoEmail->name = ucwords($data['name']);
+				if(isset($data['password'])){
+					$customerNoEmail->password = md5($data['password']);
+				}
+				$customerNoEmail->isnoemailreg = true;
+				$customerNoEmail->referral_code = generateReferralCode($customerNoEmail->name);
+				$customerNoEmail->old_customer = true;
+				$customerNoEmail->email = $data['email'];
+				$customerNoEmail->identity = $data['identity'];
+				$customerNoEmail->update();
+				$customer_data = array('name'=>ucwords($customerNoEmail['name']),'email'=>$customerNoEmail['email']);
+				if(isset($data['password'])){
+					$customer_data['password'] = $customerNoEmail['password'];
+				}
 
-				$customer = Customer::where('email','=',$data['email'])->first();
-			}*/
-			
-			if(empty($customer)){
+				Log::info('Customer Register : '.json_encode(array('customer_details' => $customerNoEmail)));
 
-				$ishullcustomer = Customer::active()->where('email','=',$data['email'])->where('ishulluser',1)->first();
+				$response = $this->createToken($customerNoEmail);
+				$resp = $this->checkIfpopPup($customerNoEmail,$data);
+				if($resp["show_popup"] == "true")
+					$response["extra"] = $resp;
+				
 
-				if(empty($ishullcustomer)){
+				$customer_id = $customerNoEmail->_id;
 
-					$new_validator = Validator::make($data, Customer::$rules);
+				$customer = $customerNoEmail;
+			}
+			else {
+				Log::info('customerNoEmail: ', [$customerNoEmail]);
+				$customer = Customer::active()->where('email','=',$data['email'])->where('identity','!=','email')->first();
 
-					if ($new_validator->fails()) {
+				/*if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
 
-						return Response::json(array('status' => 401,'message' => $this->errorMessage($new_validator->errors())),$this->error_status);
+					$customer = Customer::where('email','=',$data['email'])->first();
+				}*/
+				
+				if(empty($customer)){
+
+					$ishullcustomer = Customer::active()->where('email','=',$data['email'])->where('ishulluser',1)->first();
+
+					if(empty($ishullcustomer)){
+
+						$new_validator = Validator::make($data, Customer::$rules);
+
+						if ($new_validator->fails()) {
+
+							return Response::json(array('status' => 401,'message' => $this->errorMessage($new_validator->errors())),$this->error_status);
+
+						}else{
+
+							$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+							$account_link[$data['identity']] = 1;
+							$customer = new Customer();
+							$customer->_id = $inserted_id;
+							$customer->name = ucwords($data['name']) ;
+							$customer->email = $data['email'];
+							isset($data['dob']) ? $customer->dob = $data['dob'] : null;
+							isset($data['gender']) ? $customer->gender = $data['gender'] : null;
+							isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
+							$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
+							if(isset($data['password'])){
+								$customer->password = md5($data['password']);
+							}
+							if(isset($data['contact_no'])){
+								$customer->contact_no = $data['contact_no'];
+							}
+							$customer->identity = $data['identity'];
+							
+							$customer->account_link = $account_link;
+							$customer->status = "1";
+							$customer->demonetisation = time();
+							$customer->referral_code = generateReferralCode($customer->name);
+							$customer->old_customer = false;
+							$customer->save();
+							$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email']);
+
+							if(isset($data['password'])){
+								$customer_data['password'] = $data['password'];
+							}
+							// $this->customermailer->register($customer_data);
+
+							Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
+
+							$response = $this->createToken($customer);
+								$resp = $this->checkIfpopPup($customer,$data);	
+								if($resp["show_popup"] == "true")
+									$response["extra"] = $resp;
+						
+							
+							$customer_id = $customer->_id;
+						}
 
 					}else{
 
-						$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
-						$account_link[$data['identity']] = 1;
-						$customer = new Customer();
-						$customer->_id = $inserted_id;
-						$customer->name = ucwords($data['name']) ;
-						$customer->email = $data['email'];
-						isset($data['dob']) ? $customer->dob = $data['dob'] : null;
-						isset($data['gender']) ? $customer->gender = $data['gender'] : null;
-						isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
-						$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
+						$ishullcustomer->name = ucwords($data['name']);
 						if(isset($data['password'])){
-							$customer->password = md5($data['password']);
+							$ishullcustomer->password = md5($data['password']);
 						}
-						if(isset($data['contact_no'])){
-							$customer->contact_no = $data['contact_no'];
-						}
-						$customer->identity = $data['identity'];
-						
-						$customer->account_link = $account_link;
-						$customer->status = "1";
-						$customer->demonetisation = time();
-						$customer->referral_code = generateReferralCode($customer->name);
-						$customer->old_customer = false;
-						$customer->save();
-						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email']);
-
+						$ishullcustomer->ishulluser = 0;
+						$ishullcustomer->referral_code = generateReferralCode($ishullcustomer->name);
+						$ishullcustomer->old_customer = true;
+						$ishullcustomer->update();
+						$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email']);
 						if(isset($data['password'])){
-							$customer_data['password'] = $data['password'];
+							$customer_data['password'] = $ishullcustomer['password'];
 						}
-						// $this->customermailer->register($customer_data);
 
-						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
+						Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
 
-						   $response = $this->createToken($customer);
-							$resp = $this->checkIfpopPup($customer,$data);	
+							$response = $this->createToken($ishullcustomer);
+							$resp = $this->checkIfpopPup($ishullcustomer,$data);
 							if($resp["show_popup"] == "true")
 								$response["extra"] = $resp;
-					
 						
-						$customer_id = $customer->_id;
+	// 						Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
+
+						$customer_id = $ishullcustomer->_id;
+
+						$customer = $ishullcustomer;
+						
 					}
 
 				}else{
 
-					$ishullcustomer->name = ucwords($data['name']);
+					$account_link= $customer['account_link'];
+					$account_link[$data['identity']] = 1;
+					$customer->name = ucwords($data['name']) ;
+					$customer->email = $data['email'];
+					isset($data['dob']) ? $customer->dob = $data['dob'] : null;
+					isset($data['gender']) ? $customer->gender = $data['gender'] : null;
+					isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
+					$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 					if(isset($data['password'])){
-						$ishullcustomer->password = md5($data['password']);
+						$customer->password = md5($data['password']);
 					}
-					$ishullcustomer->ishulluser = 0;
-					$ishullcustomer->referral_code = generateReferralCode($ishullcustomer->name);
-					$ishullcustomer->old_customer = true;
-					$ishullcustomer->update();
-					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email']);
+					if(isset($data['contact_no'])){
+						$customer->contact_no = $data['contact_no'];
+					}
+					$customer->account_link = $account_link;
+					$customer->status = "1";
+					
+						$customer->update();
+
+					$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email']);
+
 					if(isset($data['password'])){
-						$customer_data['password'] = $ishullcustomer['password'];
+						$customer_data['password'] = $data['password'];
 					}
+					$this->customermailer->register($customer_data);
 
-					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
-
-						$response = $this->createToken($ishullcustomer);
-						$resp = $this->checkIfpopPup($ishullcustomer,$data);
+					Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
+					
+						$response = $this->createToken($customer);
+						$resp = $this->checkIfpopPup($customer);
 						if($resp["show_popup"] == "true")
 							$response["extra"] = $resp;
 					
-// 						Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
+	// 					Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
 
-					$customer_id = $ishullcustomer->_id;
+					$customer_id = $customer->_id;
 
-					$customer = $ishullcustomer;
-					
 				}
-
-			}else{
-
-				$account_link= $customer['account_link'];
-				$account_link[$data['identity']] = 1;
-				$customer->name = ucwords($data['name']) ;
-				$customer->email = $data['email'];
-				isset($data['dob']) ? $customer->dob = $data['dob'] : null;
-				isset($data['gender']) ? $customer->gender = $data['gender'] : null;
-				isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
-				$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-				if(isset($data['password'])){
-					$customer->password = md5($data['password']);
-				}
-				if(isset($data['contact_no'])){
-					$customer->contact_no = $data['contact_no'];
-				}
-				$customer->account_link = $account_link;
-				$customer->status = "1";
-				
-					$customer->update();
-
-				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email']);
-
-				if(isset($data['password'])){
-					$customer_data['password'] = $data['password'];
-				}
-				$this->customermailer->register($customer_data);
-
-				Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
-				
-					$response = $this->createToken($customer);
-					$resp = $this->checkIfpopPup($customer);
-					if($resp["show_popup"] == "true")
-						$response["extra"] = $resp;
-				
-// 					Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
-
-				$customer_id = $customer->_id;
-				
 			}
 
 			$data["customer_id"] = (int)$customer_id;
