@@ -613,33 +613,41 @@ class CustomerController extends \BaseController {
 			->first();
 
 			if(!empty($customerNoEmail)){
-				Log::info('in no email customer register section...');
-				$customerNoEmail->name = ucwords($data['name']);
-				if(isset($data['password'])){
-					$customerNoEmail->password = md5($data['password']);
+				$checkIfEmailExists = Customer::active()
+				->where('email',$data['email'])
+				->first();
+				if(empty($checkIfEmailExists)){
+					Log::info('in no email customer register section...');
+					$customerNoEmail->name = ucwords($data['name']);
+					if(isset($data['password'])){
+						$customerNoEmail->password = md5($data['password']);
+					}
+					$customerNoEmail->isnoemailreg = true;
+					$customerNoEmail->referral_code = generateReferralCode($customerNoEmail->name);
+					$customerNoEmail->old_customer = true;
+					$customerNoEmail->email = $data['email'];
+					$customerNoEmail->identity = $data['identity'];
+					$customerNoEmail->update();
+					$customer_data = array('name'=>ucwords($customerNoEmail['name']),'email'=>$customerNoEmail['email']);
+					if(isset($data['password'])){
+						$customer_data['password'] = $customerNoEmail['password'];
+					}
+
+					Log::info('Customer Register : '.json_encode(array('customer_details' => $customerNoEmail)));
+
+					$response = $this->createToken($customerNoEmail);
+					$resp = $this->checkIfpopPup($customerNoEmail,$data);
+					if($resp["show_popup"] == "true")
+						$response["extra"] = $resp;
+					
+
+					$customer_id = $customerNoEmail->_id;
+
+					$customer = $customerNoEmail;
 				}
-				$customerNoEmail->isnoemailreg = true;
-				$customerNoEmail->referral_code = generateReferralCode($customerNoEmail->name);
-				$customerNoEmail->old_customer = true;
-				$customerNoEmail->email = $data['email'];
-				$customerNoEmail->identity = $data['identity'];
-				$customerNoEmail->update();
-				$customer_data = array('name'=>ucwords($customerNoEmail['name']),'email'=>$customerNoEmail['email']);
-				if(isset($data['password'])){
-					$customer_data['password'] = $customerNoEmail['password'];
+				else {
+					return Response::json(array('status' => 400,'message' => 'The email-id is already registered'),400);
 				}
-
-				Log::info('Customer Register : '.json_encode(array('customer_details' => $customerNoEmail)));
-
-				$response = $this->createToken($customerNoEmail);
-				$resp = $this->checkIfpopPup($customerNoEmail,$data);
-				if($resp["show_popup"] == "true")
-					$response["extra"] = $resp;
-				
-
-				$customer_id = $customerNoEmail->_id;
-
-				$customer = $customerNoEmail;
 			}
 			else {
 				Log::info('customerNoEmail: ', [$customerNoEmail]);
