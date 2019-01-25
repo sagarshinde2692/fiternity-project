@@ -1310,9 +1310,9 @@ class FindersController extends \BaseController {
 						}
 						if(empty($finder['flags']['end_sale_0'])){
 							if(!empty($finder['flags']['end_sale_10'])){
-								$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addn Flat 10% off. Code: JFIT *T&C';
+								$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addnl Flat 10% off. Code: JFIT *T&C';
 							}else{
-								$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addn Flat 5% off. Code: JFIT *T&C';
+								$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addnl Flat 5% off. Code: JFIT *T&C';
 							}
 						}
 

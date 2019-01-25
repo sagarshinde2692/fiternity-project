@@ -6572,10 +6572,10 @@ class TransactionController extends \BaseController {
             
             if(!empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'membership')){
                 $commission = getVendorCommision(['finder_id'=>$data['finder_id']]);
+                
                 if(!empty($commission)){
                     $data['amount'] = round($data['amount'] * (100 - $commission + Config::get('app.pg_charge'))/100);
                 }
-                return $data['amount'];
             }
             
             $data['amount_payable'] = $data['amount'];
@@ -6796,7 +6796,7 @@ class TransactionController extends \BaseController {
             if(isset($data['coupon'])){
                 $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
                 $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
-                // return $data['amount'];
+
                 $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email);
 
                 if($resp["coupon_applied"]){
