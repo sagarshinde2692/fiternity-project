@@ -3020,6 +3020,9 @@ Class Utilities {
         if(!empty($data['type']) && $data['type'] == 'events'){
             return false;
         }
+        if(!empty($finder['brand_id']) && $finder['brand_id'] == 88 && $finder['city_id'] == 2){
+            return false;
+        }
         
         // if((!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"]))||(isset($finder) && $finder["commercial_type"] != 0)) {
         //     Log::info("returning true");
