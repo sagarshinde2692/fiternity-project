@@ -520,7 +520,9 @@ class TempsController extends \BaseController {
                         $customerToken = $customer_data['customerToken'];
                     }
                     $customer_data['all_accounts'] = $all_accounts;
-                
+                    if($all_accounts==-1){
+                        $customer_data = [];
+                    }
                 }
                 
                 $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified');
@@ -1207,7 +1209,7 @@ class TempsController extends \BaseController {
             Log::info('$customersGold:: ', [$customersGold]);
 
             if(!empty($customersGold) && count($customersGold)>0){
-                return [];
+                return -1;
             }
 
         }
