@@ -522,6 +522,9 @@ class TempsController extends \BaseController {
                     $customer_data['all_accounts'] = $all_accounts;
                     if($all_accounts==-1){
                         $customer_data = [];
+                        $customer_data['all_accounts'] = [];
+                        $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified', 'cashback' => null, 'popup' => null);        
+                        return Response::json($return,200);
                     }
                 }
                 
