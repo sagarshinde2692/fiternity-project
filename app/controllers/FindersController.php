@@ -1307,8 +1307,14 @@ class FindersController extends \BaseController {
                                         'text_color'=> '$fff',
                                         'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
                             ];
-                        }
-
+						}
+						if(empty($finder['flags']['end_sale_0'])){
+							if(!empty($finder['flags']['end_sale_10'])){
+								$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addn Flat 10% off. Code: JFIT *T&C';
+							}else{
+								$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addn Flat 5% off. Code: JFIT *T&C';
+							}
+						}
 
                         // if(!in_array($response['finder']['_id'], Config::get('app.eoys_excluded_vendor_ids'))){
                         //     $response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3']." | Addn Flat 10% off. Code: EOYS *T&C";
