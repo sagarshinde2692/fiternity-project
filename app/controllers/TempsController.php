@@ -474,7 +474,7 @@ class TempsController extends \BaseController {
 
                     $customer->update();
 
-                    if($customerToken == ""){
+                    if($customerToken == "" && isset($customer->email)){
 
                         $customerToken = createCustomerToken((int)$customer->_id);
                     }
