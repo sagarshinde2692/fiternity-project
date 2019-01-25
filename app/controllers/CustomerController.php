@@ -607,10 +607,9 @@ class CustomerController extends \BaseController {
 		}else{
 
 			$customerNoEmail = Customer::active()->where('contact_no','LIKE','%'.substr($data['contact_no'], -10).'%')
-			->where('email','exists',false)
-			// ->where(function($query) use($data) {
-			// 	$query->orWhere('email', 'exists', false)->orWhere('email','=','');
-			// })
+			->where(function($query) use($data) {
+				$query->orWhere('email', 'exists', false)->orWhere('email','=','');
+			})
 			->first();
 
 			if(!empty($customerNoEmail)){
