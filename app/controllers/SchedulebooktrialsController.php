@@ -4921,7 +4921,7 @@ class SchedulebooktrialsController extends \BaseController {
                     }
                     Log::info('sending sms');
                     $this->customersms->cancelBookTrial($emaildata);
-                    if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
+                    if(!isset($booktrial['third_party_details']) && $emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
                         $this->customernotification->cancelBookTrial($emaildata);
                     }
                 }
