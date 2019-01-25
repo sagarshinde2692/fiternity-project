@@ -3020,7 +3020,7 @@ Class Utilities {
         if(!empty($data['type']) && $data['type'] == 'events'){
             return false;
         }
-        if($finder['brand_id'] == 88 && $finder['city_id'] == 2){
+        if(!empty($finder['brand_id']) && $finder['brand_id'] == 88 && $finder['city_id'] == 2){
             return false;
         }
         
