@@ -898,5 +898,9 @@ return array(
 		'service_cat'=>[65, 111],
 		'duration'=>[30]
 	],
-	'corporate_coupons'=>['mckinsey', 'syncron']
+	'corporate_coupons'=>['mckinsey', 'syncron'],
+
+	'finder_0_discount'=>[579],
+	
+	'finder_10_discount'=>[9932]
 );
