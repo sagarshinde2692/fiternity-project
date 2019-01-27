@@ -474,7 +474,7 @@ class TempsController extends \BaseController {
 
                     $customer->update();
 
-                    if($customerToken == ""){
+                    if($customerToken == "" && isset($customer->email)){
 
                         $customerToken = createCustomerToken((int)$customer->_id);
                     }
@@ -520,7 +520,12 @@ class TempsController extends \BaseController {
                         $customerToken = $customer_data['customerToken'];
                     }
                     $customer_data['all_accounts'] = $all_accounts;
-                
+                    if($all_accounts==-1){
+                        $customer_data = [];
+                        $customer_data['all_accounts'] = [];
+                        $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified', 'cashback' => null, 'popup' => null);        
+                        return Response::json($return,200);
+                    }
                 }
                 
                 $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified');
@@ -1175,27 +1180,41 @@ class TempsController extends \BaseController {
         Log::info("Customers by primary contact no");
         Log::info($customers);
 
-        
-        if(count($customers) != 1){
-            $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->where('default_account', true)->orderBy('_id','desc')->get();
+        if(!empty($customers) && count($customers)>0){
+            if(count($customers) != 1){
+                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->where('default_account', true)->orderBy('_id','desc')->get();
 
-            Log::info("Customers by primary contact no default");
-            Log::info($defaultCustomer);
-            
-            if(count($defaultCustomer) == 0){
-                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_verified_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
-            }
-
-            Log::info("Customers by primary secondary contact no");
-            Log::info($defaultCustomer);
-            
-            if(count($defaultCustomer) == 1){
+                Log::info("Customers by primary contact no default");
+                Log::info($defaultCustomer);
                 
-                $customers = $defaultCustomer;
+                if(count($defaultCustomer) == 0){
+                    $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_verified_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
+                }
 
-                $customers[0]['contact_no'] = substr($data['customer_phone'], -10);
+                Log::info("Customers by primary secondary contact no");
+                Log::info($defaultCustomer);
+                
+                if(count($defaultCustomer) == 1){
+                    
+                    $customers = $defaultCustomer;
 
+                    $customers[0]['contact_no'] = substr($data['customer_phone'], -10);
+
+                }
             }
+        }
+        else {
+            // golds-fitcash
+            Log::info('golds fitcash condition');
+
+            $customersGold = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', false)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
+
+            Log::info('$customersGold:: ', [$customersGold]);
+
+            if(!empty($customersGold) && count($customersGold)>0){
+                return -1;
+            }
+
         }
         
         foreach($customers as $customer) {
