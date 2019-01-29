@@ -600,6 +600,10 @@ class CustomerController extends \BaseController {
 
 		$data['email'] = strtolower($data['email']);
 
+		if(!isset($data['contact_no']) && isset($data['mobile'])){
+			$data['contact_no'] = $data['mobile'];
+		}
+
 		if ($validator->fails()) {
 
 			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
