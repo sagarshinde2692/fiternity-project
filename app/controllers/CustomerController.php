@@ -4569,6 +4569,12 @@ class CustomerController extends \BaseController {
 			$decoded          				=       decode_customer_token();
 			$customer_id 					= 		intval($decoded->customer->_id);
 			$customer_email 				= 		$decoded->customer->email;
+
+			$customer_phone 				= 		null;
+
+			if(!empty($decoded->customer->contact_no)){
+				$customer_phone = $decoded->customer->contact_no;
+			}
 			
 			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
 
@@ -4601,6 +4607,14 @@ class CustomerController extends \BaseController {
 			if (is_array($fitcashcode->customer_emails)) {
 				
 				if(!in_array(strtolower($customer_email), $fitcashcode->customer_emails)){
+					$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
+					return Response::json($resp,404);
+				}
+			}
+
+			if (is_array($fitcashcode->customer_phones)) {
+				
+				if(empty($customer_phone) && !in_array(strtolower($customer_phone), $fitcashcode->customer_phones)){
 					$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
 					return Response::json($resp,404);
 				}
@@ -4676,6 +4690,13 @@ class CustomerController extends \BaseController {
 						$walletData["validity"] = $fitcashcode["valid_till"];
 						$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount.". Expires On : ".date('d-m-Y', strtotime('-1 day',$walletData["validity"]));
 					}
+				}
+
+				if((!empty($fitcashcode['valid_finder_id']))){
+
+					$walletData["valid_finder_id"] = $fitcashcode['valid_finder_id'];
+					$walletData["finder_id"] = $fitcashcode['valid_finder_id'];
+				
 				}
 
 				$this->utilities->walletTransaction($walletData);
