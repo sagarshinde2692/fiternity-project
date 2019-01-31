@@ -4611,10 +4611,10 @@ class CustomerController extends \BaseController {
 					return Response::json($resp,404);
 				}
 			}
-
+		
 			if (is_array($fitcashcode->customer_phones)) {
 				
-				if(empty($customer_phone) && !in_array(strtolower($customer_phone), $fitcashcode->customer_phones)){
+				if(empty($customer_phone) || !in_array(strtolower($customer_phone), $fitcashcode->customer_phones)){
 					$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
 					return Response::json($resp,404);
 				}
@@ -4694,8 +4694,8 @@ class CustomerController extends \BaseController {
 
 				if((!empty($fitcashcode['valid_finder_id']))){
 
-					$walletData["valid_finder_id"] = $fitcashcode['valid_finder_id'];
-					$walletData["finder_id"] = $fitcashcode['valid_finder_id'];
+					$walletData["valid_finder_id"] = intval($fitcashcode['valid_finder_id']);
+					$walletData["finder_id"] = intval($fitcashcode['valid_finder_id']);
 				
 				}
 
