@@ -3334,7 +3334,7 @@ class CustomerController extends \BaseController {
 
 				}else{
 					
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id','amount')->get();
+					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id','amount','third_party_details')->get();
 				}
 				
 				$activate = [];
@@ -3426,50 +3426,51 @@ class CustomerController extends \BaseController {
 							$data['trial_id'] = $data['_id'];
 							Log::info(strtotime($data['schedule_date_time']));
 							Log::info(time());
+							if(!isset($data['third_party_details'])){
+								if((!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""]))  ){
+									Log::info("inside block");
 
-							if((!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""]))  ){
-								Log::info("inside block");
+									if(time() >= strtotime('-10 minutes ', strtotime($data['schedule_date_time']))){
 
-								if(time() >= strtotime('-10 minutes ', strtotime($data['schedule_date_time']))){
-
-									if(time() < (strtotime($data['schedule_date_time'])+6*60*60) && !(isset($data['kiosk_block_shown']) && $data['kiosk_block_shown'])){
-										$data['block_screen'] = [
-											'type'=>'activate_session',
-											'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session',
-											'time'=>'n-10m'
-										];
-									}else if(time() < (strtotime($data['schedule_date_time'])+3*24*60*60)){
-										$data['block_screen'] = [
-											'type'=>'let_us_know',
-											'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know',
-											'time'=>'n+2'
-										];
+										if(time() < (strtotime($data['schedule_date_time'])+6*60*60) && !(isset($data['kiosk_block_shown']) && $data['kiosk_block_shown'])){
+											$data['block_screen'] = [
+												'type'=>'activate_session',
+												'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session',
+												'time'=>'n-10m'
+											];
+										}else if(time() < (strtotime($data['schedule_date_time'])+3*24*60*60)){
+											$data['block_screen'] = [
+												'type'=>'let_us_know',
+												'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know',
+												'time'=>'n+2'
+											];
+										}
+									
+									}else{
+										$data['activation_url'] = Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session';
 									}
-								
-								}else{
-									$data['activation_url'] = Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session';
+									
+
+									
+								}else if(!((isset($data['has_reviewed']) && $data['has_reviewed']) || (isset($data['skip_review']) && $data['skip_review'])) && strtotime($data['schedule_date_time']) < strtotime('-1 hour')){
+
+									if($this->app_version >= 5){
+
+										$data['block_screen'] = [
+											'type'=>'review',
+											// 'review_data'=>$this->notificationDataByTrialId($data['_id'], 'review'),
+											'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/review'
+										];	
+									}else{
+										if($this->device_type == 'android'){
+											$data['block_screen'] = [
+												'type'=>'let_us_know',
+												'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know',
+												'time'=>'n+2'
+											];
+										}
+									}
 								}
-								
-
-								
-							}else if(!((isset($data['has_reviewed']) && $data['has_reviewed']) || (isset($data['skip_review']) && $data['skip_review'])) && strtotime($data['schedule_date_time']) < strtotime('-1 hour')){
-
-                                if($this->app_version >= 5){
-
-                                    $data['block_screen'] = [
-                                        'type'=>'review',
-                                        // 'review_data'=>$this->notificationDataByTrialId($data['_id'], 'review'),
-                                        'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/review'
-                                    ];	
-                                }else{
-                                    if($this->device_type == 'android'){
-                                        $data['block_screen'] = [
-                                            'type'=>'let_us_know',
-                                            'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know',
-                                            'time'=>'n+2'
-                                        ];
-                                    }
-                                }
 							}
 
 							$data['current_time'] = date('Y-m-d H:i:s', time());
