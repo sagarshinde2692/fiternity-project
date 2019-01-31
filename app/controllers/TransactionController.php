@@ -5840,22 +5840,22 @@ class TransactionController extends \BaseController {
             'options'=>[
                     [
                             'title' => 'Paytm',
-                            'subtitle' => 'Paytm',
+                            // 'subtitle' => 'Paytm',
                             'value' => 'paytm'
                     ],
                     [
                             'title' => 'AmazonPay',
-                            'subtitle' => 'AmazonPay',
+                            // 'subtitle' => 'AmazonPay',
                             'value' => 'amazonpay'
                     ],
                     [
                             'title' => 'Mobikwik',
-                            'subtitle' => 'Mobikwik',
+                            // 'subtitle' => 'Mobikwik',
                             'value' => 'mobikwik'
                     ],
                     [
                             'title' => 'PayU',
-                            'subtitle' => 'PayU',
+                            // 'subtitle' => 'PayU',
                             'value' => 'payu'
                     ]
             ]
@@ -5866,17 +5866,17 @@ class TransactionController extends \BaseController {
             $payment_options['wallet']['options'] = [
                     [
                             'title' => 'Paytm',
-                            'subtitle' => 'Paytm',
+                            // 'subtitle' => 'Paytm',
                             'value' => 'paytm'
                     ],
                     [
                             'title' => 'Mobikwik',
-                            'subtitle' => 'Mobikwik',
+                            // 'subtitle' => 'Mobikwik',
                             'value' => 'mobikwik'
                     ],
                     [
                             'title' => 'PayU',
-                            'subtitle' => 'PayU',
+                            // 'subtitle' => 'PayU',
                             'value' => 'payu'
                     ]
             ];
