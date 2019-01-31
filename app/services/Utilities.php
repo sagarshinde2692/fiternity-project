@@ -6296,7 +6296,7 @@ Class Utilities {
         if($type == 'order'){
             $data['order_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
-        }else if($type == 'booktrial'){
+        }else if($type == 'booktrial' && !isset($data['third_party_details'])){
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
             if(!empty($data['qrcodepayment']) && empty($data['checkin'])){
