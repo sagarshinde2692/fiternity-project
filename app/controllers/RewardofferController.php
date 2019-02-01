@@ -1232,6 +1232,7 @@ class RewardofferController extends BaseController {
         if(!empty($upgradeMembership) && !empty($upgradeMembership['start_date'])){
             $data['upgrade_membership'] = true;
             $data['start_date'] = $upgradeMembership['start_date'];
+            $data['title_text'] = "Upgrade membership";
         }
 
         if(empty($calculation['algo']['cashback'])){
