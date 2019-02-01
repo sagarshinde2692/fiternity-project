@@ -4273,5 +4273,74 @@ if (!function_exists('getUpgradeMembershipSection')) {
 
 }
 
+if (!function_exists('appendUpgradeData')) {
 
+    function appendUpgradeData(&$value, $service){
+
+        if(isRatecardUpgradable($value, $service)){
+            $pop_up_data = ['finder_name'=>$service->finder['title'], 'service_name'=>$service->name, 'finder_location'=>$service->location['name']];
+            $value['upgrade_popup'] = getUpgradeMembershipSection($pop_up_data, 'ratecard_popup');
+        }
+    }
+
+}
+
+if (!function_exists('isRatecardUpgradable')) {
+
+    function isRatecardUpgradable(&$value, $service)
+    {
+        
+        if (true
+            ) {
+            if (requestFromWeb()
+                &&  isFinderIntegrated($service->finder)
+                &&  isServiceIntegrated($service)
+                &&            
+                    (
+                        upgradeMembershipCondition($value, $service)
+                        || upgradeSessionPackCondtion($value, $service)
+                    )
+                
+                && !empty($value['direct_payment_enable'])
+            ) {
+                return true;
+            }
+
+        }
+
+        return false;
+
+    }
+
+}
+if (!function_exists('requestFromWeb')) {
+
+    function requestFromWeb()
+    {
+       return (empty($_GET['device_type']) || !in_array($_GET['device_type'], ['ios', 'android']));
+    }
+
+}
+if (!function_exists('upgradeMembershipCondition')) {
+
+    function upgradeMembershipCondition($value, $service)
+    {
+
+        print_r(Config::get('upgrade_membership.service_cat', [65, 111]));
+        // exit();
+        $days = getDurationDay($value);
+        return $value['type'] == 'membership' 
+        && in_array($days, Config::get('upgrade_membership.duration', [30]) 
+        && in_array($service->servicecategory_id, Config::get('upgrade_membership.service_cat', [65, 111])))
+        ;
+    }
+}
+if (!function_exists('upgradeSessionPackCondtion')) {
+
+    function upgradeSessionPackCondtion($value, $service)
+    {
+        return $value['type'] == 'extended validity' && in_array($service->finder['_id'], Config::get('app.upgrade_session_finder_id', []));
+    }
+
+}
 ?>

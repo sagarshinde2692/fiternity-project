@@ -7511,6 +7511,34 @@ Class Utilities {
             $order->upgrade_fitcash = true;
 
         }
+
+        if(!empty($order['extended_validity']) && in_array($order['finder_id'], Config::get('app.upgrade_session_finder_id', []))){
+            $fitcash_amount = $order['amount_customer'];
+
+            $no_of_days = Config::get('upgrade_membership.fitcash_days');
+
+            $request = $walletData = array(
+                "customer_id"=> $order->customer_id,
+                "amount"=> $fitcash_amount,
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $fitcash_amount,
+                "type"=>'FITCASHPLUS',
+                'description'=>"Added FitCash+ for upgrading ".ucwords($order['service_name'])." session pack to a membership only at ".$order['finder_name'].", Expires On : ".date('d-m-Y',time()+(86400*$no_of_days)),
+                'entry'=>'credit',
+                'valid_finder_id'=>$order['finder_id'],
+                'remove_wallet_limit'=>true,
+                'validity'=>strtotime($order['start_date'])+(86400*$no_of_days),
+                'duration_day'=>360,
+                'restricted_for'=>'upgrade',
+                'restricted'=>1,
+                'order_id'=>$order['_id'],
+                'order_type'=>['membership', 'memberships']
+            );
+            
+            $this->walletTransactionNew($request);
+            
+            $order->upgrade_fitcash = true;
+        }
     }
 
     public function getCustomerFromToken(){
