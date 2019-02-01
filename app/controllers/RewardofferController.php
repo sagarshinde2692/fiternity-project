@@ -1280,29 +1280,25 @@ class RewardofferController extends BaseController {
         }
         
         $duration_day = $this->utilities->getDurationDay($ratecard);
-
-        if($duration_day == 360){
-
-            $customer = $this->utilities->getCustomerFromToken();
-    
-            if(empty($customer)){
-                return;
-            }
-            
-            $customer_id = $customer['_id'];
-
-            $wallet = Wallet::active()->where('balance', '>', 0)->where('customer_id', $customer_id)->where('service_id', $ratecard['service_id'])->where('restricted_for', 'upgrade')->where('duration_day', $duration_day)->first();
-
-            if(!empty($wallet)){
-                $order = Order::find($wallet['order_id'], ['start_date']);
-            }
-
-            if(!empty($order)){
-                return ['start_date'=>date('d-m-Y', strtotime($order['start_date']))];
-            }
         
+        $customer = $this->utilities->getCustomerFromToken();
+        
+        if(empty($customer)){
+            return;
+        }
+        
+        $customer_id = $customer['_id'];
+        
+        $wallet = Wallet::active()->where('balance', '>', 0)->where('customer_id', $customer_id)->whereIn('service_id', [null, $ratecard['service_id']])->where('valid_finder_id', $ratecard['finder_id'])->where('restricted_for', 'upgrade')->whereIn('duration_day', [null, $duration_day])->first();
+
+        if(!empty($wallet)){
+            $order = Order::find($wallet['order_id'], ['start_date']);
         }
 
+        if(!empty($order)){
+            return ['start_date'=>date('d-m-Y', strtotime($order['start_date']))];
+        }
+        
     }
 
         
