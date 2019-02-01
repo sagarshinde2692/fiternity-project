@@ -16,7 +16,7 @@ return array(
         'title'=>'How it works:',
         'data'=>[
             'Get 100% instant cashback in your Fitternity wallet to upgrade your membership to higher duration.',
-            'Fitcash will get automatically applied on upgrading to a 1 year membership for __service_name at __finder_name, __finder_location .',
+            'Fitcash will get automatically applied on upgrading your membership for any service at __finder_name, __finder_location .',
             'This instant Fitcash is valid for 20 days from the start date of your membership.'
         ]
     ],
@@ -37,13 +37,14 @@ return array(
         'title'=>'How it works:',
         'data'=>[
             '100% Cashback has been added in your Fitternity wallet to upgrade your membership to higher duration.',
-            'The Fitcash bonus will get automatically applied on upgrading to a 1 year membership at __finder_name, __finder_location: __service_name hassle free.',
+            'Fitcash will get automatically applied on upgrading your membership for any service at __finder_name, __finder_location hassle free.',
             'The Fitcash bonus is valid for 20 days from the start date of your membership.'
         ]
     ],
     'fitcash_days'=>20,
     'service_cat'=>[65, 111, 5],
-    'duration'=>[30]
+    'duration'=>[30],
+    'upgrade_session_duration'=>[90, 180, 360]
     
 );
 ?>

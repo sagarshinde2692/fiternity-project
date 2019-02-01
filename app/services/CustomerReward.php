@@ -1035,6 +1035,9 @@ Class CustomerReward {
             if(!empty($order_data['duration_day'])){
                $request['duration_day'] = $order_data['duration_day'];
             }
+            if(!empty($order_data['extended_validity'])){
+               $request['extended_validity'] = $order_data['extended_validity'];
+            }
 
             $query = $utilities->getWalletQuery($request);
             

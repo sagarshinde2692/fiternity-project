@@ -2014,7 +2014,11 @@ Class Utilities {
 
             $query =  $this->getWalletQuery($request);
 
-            $allWallets  = $query->OrderBy('restricted','desc')->OrderBy('_id','asc')->get();
+            // if(empty($request['extended_validity'])){
+                $allWallets  = $query->OrderBy('restricted','desc')->OrderBy('_id','asc')->get();
+            // }else{
+            //     $allWallets  = $query->OrderBy('restricted','desc')->OrderBy('_id','asc')->get();
+            // }
 
             if(count($allWallets) > 0){
 
@@ -2607,6 +2611,10 @@ Class Utilities {
         Log::info('---------------request-------------------',$request);
 
         $query = Wallet::active()->where('customer_id',(int)$request['customer_id'])->where('balance','>',0);
+
+        if(!empty($request['extended_validity'])){
+            $query->where('restricted_for', '!=', 'upgrade');
+        }
 
         if(isset($request['finder_id']) && $request['finder_id'] != ""){
 
@@ -7531,7 +7539,8 @@ Class Utilities {
                 'restricted_for'=>'upgrade',
                 'restricted'=>1,
                 'order_id'=>$order['_id'],
-                'order_type'=>['membership', 'memberships']
+                'order_type'=>['membership', 'memberships'],
+                'duration_day'=>Config::get('upgrade_membership.upgrade_session_duration', [90, 180, 360]),
             );
             
             $this->walletTransactionNew($request);

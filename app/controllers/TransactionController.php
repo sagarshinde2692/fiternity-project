@@ -3335,7 +3335,8 @@ class TransactionController extends \BaseController {
                         'entry'=>'debit',
                         'description'=> $this->utilities->getDescription($data),
                         'finder_id'=>$data['finder_id'],
-                        'order_type'=>$data['type']
+                        'order_type'=>$data['type'],
+                        'extended_validity'=>!empty($data['extended_validity']) || !empty($order['extended_validity'])
                     );
 
                     $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
@@ -3414,7 +3415,8 @@ class TransactionController extends \BaseController {
                                 'entry'=>'debit',
                                 'description'=> $this->utilities->getDescription($data),
                                 'finder_id'=>$data['finder_id'],
-                                'order_type'=>$data['type']
+                                'order_type'=>$data['type'],
+                                'extended_validity'=>!empty($data['extended_validity']) || !empty($order['extended_validity'])
                             );
                             $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
 
