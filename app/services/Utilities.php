@@ -7528,7 +7528,6 @@ Class Utilities {
                 'valid_finder_id'=>$order['finder_id'],
                 'remove_wallet_limit'=>true,
                 'validity'=>strtotime($order['start_date'])+(86400*$no_of_days),
-                'duration_day'=>360,
                 'restricted_for'=>'upgrade',
                 'restricted'=>1,
                 'order_id'=>$order['_id'],
