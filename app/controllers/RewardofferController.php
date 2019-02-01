@@ -1289,7 +1289,7 @@ class RewardofferController extends BaseController {
         
         $customer_id = $customer['_id'];
         
-        $wallet = Wallet::active()->where('balance', '>', 0)->where('customer_id', $customer_id)->whereIn('service_id', [null, $ratecard['service_id']])->where('valid_finder_id', $ratecard['finder_id'])->where('restricted_for', 'upgrade')->whereIn('duration_day', [null, $duration_day])->first();
+        $wallet = Wallet::active()->where('balance', '>', 0)->where('total_used', 0)->where('customer_id', $customer_id)->whereIn('service_id', [null, $ratecard['service_id']])->where('valid_finder_id', $ratecard['finder_id'])->where('restricted_for', 'upgrade')->whereIn('duration_day', [null, $duration_day])->first();
 
         if(!empty($wallet)){
             $order = Order::find($wallet['order_id'], ['start_date']);
