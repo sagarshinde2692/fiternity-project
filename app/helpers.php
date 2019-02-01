@@ -4222,7 +4222,7 @@ if (!function_exists('getDurationDay')) {
 if (!function_exists('getUpgradeMembershipSection')) {
 
     function getUpgradeMembershipSection($data, $key='ratecard_popup'){
-        if((!empty($data['ratecard']['type']) && $data['type'] == 'extended validity') || !empty($data['extended_validity'])){
+        if((!empty($data['ratecard']['type']) && $data['ratecard']['type'] == 'extended validity') || !empty($data['extended_validity'])){
             $section = Config::get('upgrade_membership.'.$key.'_session_pack');
         }else{
             $section = Config::get('upgrade_membership.'.$key);
