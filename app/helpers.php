@@ -4222,44 +4222,31 @@ if (!function_exists('getDurationDay')) {
 if (!function_exists('getUpgradeMembershipSection')) {
 
     function getUpgradeMembershipSection($data, $key='ratecard_popup'){
-
-        $section = Config::get('upgrade_membership.'.$key);
+        if((!empty($data['ratecard']['type']) && $data['type'] == 'extended validity') || !empty($data['extended_validity'])){
+            $section = Config::get('upgrade_membership.'.$key.'_session_pack');
+        }else{
+            $section = Config::get('upgrade_membership.'.$key);
+        }
 
         $values = [
             '__finder_name'=>'',
             '__finder_location'=>'',
             '__service_name'=>'',
         ];
-        // print_r($data);
-        // exit();
-        // if($key == 'ratecard_popup'){
-
-
-        //     if(!empty($data['name'])){
-        //         $values['__service_name'] = $data['name'];
-        //     }
-
-        //     if(!empty($data['finder']['location_id']['name'])){
-        //         $values['__finder_location'] = $data['finder']['location_id']['name'];
-        //     }
-        //     if(!empty($data['finder']['title'])){
-        //         $values['__finder_name'] = $data['finder']['title'];
-        //     }
-
-        // }else{
+        
             
-            if(!empty($data['finder_name'])){
-                $values['__finder_name'] = $data['finder_name'];
-            }
-            
-            if(!empty($data['finder_location'])){
-                $values['__finder_location'] = $data['finder_location'];
-            }
-            
-            if(!empty($data['service_name'])){
-                $values['__service_name'] = $data['service_name'];
-            }
-        // }
+        if(!empty($data['finder_name'])){
+            $values['__finder_name'] = $data['finder_name'];
+        }
+        
+        if(!empty($data['finder_location'])){
+            $values['__finder_location'] = $data['finder_location'];
+        }
+        
+        if(!empty($data['service_name'])){
+            $values['__service_name'] = $data['service_name'];
+        }
+        
 
 
         foreach($section['data'] as &$row){
@@ -4278,7 +4265,7 @@ if (!function_exists('appendUpgradeData')) {
     function appendUpgradeData(&$value, $service){
 
         if(isRatecardUpgradable($value, $service)){
-            $pop_up_data = ['finder_name'=>$service->finder['title'], 'service_name'=>$service->name, 'finder_location'=>$service->location['name']];
+            $pop_up_data = ['finder_name'=>$service->finder['title'], 'service_name'=>$service->name, 'finder_location'=>$service->location['name'], 'ratecard'=>$value];
             $value['upgrade_popup'] = getUpgradeMembershipSection($pop_up_data, 'ratecard_popup');
         }
     }
