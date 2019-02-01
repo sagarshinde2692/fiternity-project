@@ -4326,13 +4326,10 @@ if (!function_exists('upgradeMembershipCondition')) {
     function upgradeMembershipCondition($value, $service)
     {
 
-        print_r(Config::get('upgrade_membership.service_cat', [65, 111]));
-        // exit();
         $days = getDurationDay($value);
         return $value['type'] == 'membership' 
-        && in_array($days, Config::get('upgrade_membership.duration', [30]) 
-        && in_array($service->servicecategory_id, Config::get('upgrade_membership.service_cat', [65, 111])))
-        ;
+        && in_array($days, Config::get('upgrade_membership.duration', [30])) 
+        && in_array($service->servicecategory_id, Config::get('upgrade_membership.service_cat', [65, 111]));
     }
 }
 if (!function_exists('upgradeSessionPackCondtion')) {
