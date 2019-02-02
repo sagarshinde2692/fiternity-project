@@ -1046,11 +1046,12 @@ class RewardofferController extends BaseController {
         || (in_array($finder['_id'], Config::get('app.upgrade_session_finder_id')) && $ratecard['type'] == 'extended validity')){
                 
             $rewardObj = Reward::where('quantity_type','mixed')->first();
-                
-            $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();
-			if(in_array($finder['brand_id'], [135, 166, 88])){
+            
+			if(in_array($finder['brand_id'], [135, 166, 88]) && $ratecard['type'] != 'extended validity'){
 				$mixedreward_content = MixedRewardContent::where('brand_id', $finder['brand_id'])->where("duration",$duration_day)->first();
-			}
+			}else{
+                $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();    
+            }
             if(!empty($mixedreward_content)){
                 $gold_mixed = true;
 				if($rewardObj && $mixedreward_content){
