@@ -2,6 +2,7 @@
 
 use Config,Mail;
 use App\Services\Utilities as Utilities;
+use Log;
 
 Class CustomerMailer extends Mailer {
 
@@ -148,8 +149,8 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['customer_name']
 		);
 
-		Log::info("orderpgmail");
-		Log::info($data);
+		\Log::info("orderpgmail");
+		\Log::info($data);
 
 		return $this->common($label,$data,$message_data);
 	}
