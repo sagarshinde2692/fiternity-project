@@ -902,5 +902,8 @@ return array(
 
 	'finder_0_discount'=>[579],
 	
-	'finder_10_discount'=>[9932]
+	'finder_10_discount'=>[9932],
+
+	'upgrade_session_finder_id'=>[13968, 13968, 13968]
+
 );
