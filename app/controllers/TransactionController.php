@@ -2207,17 +2207,17 @@ class TransactionController extends \BaseController {
                     $upgraded_order_ids = array_column($upgraded_wallet, 'upgraded_order_id');
                     $this->setUpgradedOrderRedundant($order, $upgraded_order_ids);
                 }
-                $updated_order = Order::where('_id', $order->_id)->first();
+                $order = Order::where('_id', $order->_id)->first();
 
                 if(!empty($order['upgrade_fitcash'])){
                     array_set($data, 'upgrade_fitcash', true);
-                    $updated_order->upgrade_fitcash = true;
+                    // $updated_order->upgrade_fitcash = true;
                 }
 
 
-                if($updated_order && !empty($updated_order->reward_content)){
-                    $order->reward_content = $updated_order->reward_content;
-                }
+                // if($updated_order && !empty($updated_order->reward_content)){
+                //     $order->reward_content = $updated_order->reward_content;
+                // }
 
                 if(isset($order->reward_ids) && !empty($order->reward_ids)){
 
@@ -2462,7 +2462,7 @@ class TransactionController extends \BaseController {
 
                     if(!in_array($finder->category_id, $abundant_category)){
                         $emailData      =   [];
-                        $emailData      =   $updated_order->toArray();
+                        $emailData      =   $order->toArray();
                         if($emailData['type'] == 'events'){
                             if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
                                 $emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
