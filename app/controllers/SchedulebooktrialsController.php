@@ -4921,7 +4921,7 @@ class SchedulebooktrialsController extends \BaseController {
                     }
                     Log::info('sending sms');
                     if(isset($booktrial['third_party_details'])){
-                        $emaildata['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
+                        $emaildata['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$emaildata['customer_email']);
                         if(isset($booktrial['third_party_details']['abg'])){
                             $emaildata['profile_link'] = "http://onelink.to/abmultiply";
                         }
