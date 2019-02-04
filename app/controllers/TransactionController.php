@@ -6041,7 +6041,7 @@ class TransactionController extends \BaseController {
         $amount = 0;
         $offer_id = false;
         $finder_id = false;
-
+        $amount_without_fitcash = null;
         if(isset($data['ratecard_id'])){
 
             $ratecard = Ratecard::find($data['ratecard_id']);
