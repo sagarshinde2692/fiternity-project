@@ -2608,6 +2608,10 @@ Class Utilities {
 
         $query = Wallet::active()->where('customer_id',(int)$request['customer_id'])->where('balance','>',0);
 
+        if(!empty($request['extended_validity'])){
+            $query->where('restricted_for', '!=', 'upgrade');
+        }
+
         if(isset($request['finder_id']) && $request['finder_id'] != ""){
 
             $finder_id = (int)$request['finder_id'];
@@ -7484,7 +7488,7 @@ Class Utilities {
 
         if(!empty($order['duration_day']) && !empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], Config::get('upgrade_membership.service_cat', [65, 111])) && in_array($order['duration_day'], Config::get('upgrade_membership.duration', [30])) && empty($order['extended_validity'])){
 
-            $fitcash_amount = $order['amount_customer'];
+            $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
 
             $no_of_days = Config::get('upgrade_membership.fitcash_days');
 
@@ -7510,6 +7514,34 @@ Class Utilities {
             
             $order->upgrade_fitcash = true;
 
+        }
+
+        if(!empty($order['extended_validity']) && in_array($order['finder_id'], Config::get('app.upgrade_session_finder_id', []))){
+            $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
+
+            $no_of_days = Config::get('upgrade_membership.fitcash_days');
+
+            $request = $walletData = array(
+                "customer_id"=> $order->customer_id,
+                "amount"=> $fitcash_amount,
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $fitcash_amount,
+                "type"=>'FITCASHPLUS',
+                'description'=>"Added FitCash+ for upgrading ".ucwords($order['service_name'])." session pack to a membership only at ".$order['finder_name'].", Expires On : ".date('d-m-Y',time()+(86400*$no_of_days)),
+                'entry'=>'credit',
+                'valid_finder_id'=>$order['finder_id'],
+                'remove_wallet_limit'=>true,
+                'validity'=>strtotime($order['start_date'])+(86400*$no_of_days),
+                'restricted_for'=>'upgrade',
+                'restricted'=>1,
+                'order_id'=>$order['_id'],
+                'order_type'=>['membership', 'memberships'],
+                'duration_day'=>Config::get('upgrade_membership.upgrade_session_duration', [90, 180, 360]),
+            );
+            
+            $this->walletTransactionNew($request);
+            
+            $order->upgrade_fitcash = true;
         }
     }
 

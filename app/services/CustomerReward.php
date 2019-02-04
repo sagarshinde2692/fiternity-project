@@ -359,7 +359,11 @@ Class CustomerReward {
                         
                         $no_of_sessions = (!empty($no_of_sessions) ? ($no_of_sessions == 1 ? '1 person' : $no_of_sessions.' people') : '1 person');
                         $finder = Finder::where('_id', $data['finder_id'])->first();
-                        $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->orWhere('brand_id',$finder['brand_id'])->first();
+                        if(!empty($data['extended_validity'])){
+                            $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->first();
+                        }else{
+                            $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->orWhere('brand_id',$finder['brand_id'])->first();
+                        }
                         if(!empty($mixedreward_content)){
 							$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
@@ -1034,6 +1038,9 @@ Class CustomerReward {
             
             if(!empty($order_data['duration_day'])){
                $request['duration_day'] = $order_data['duration_day'];
+            }
+            if(!empty($order_data['extended_validity'])){
+               $request['extended_validity'] = $order_data['extended_validity'];
             }
 
             $query = $utilities->getWalletQuery($request);

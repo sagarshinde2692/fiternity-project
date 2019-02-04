@@ -1041,16 +1041,19 @@ class RewardofferController extends BaseController {
 
         // if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
         
-        if((in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360) || (in_array($finder['brand_id'], [135,166,88]) && in_array($duration_day, [180, 360]))){
+        if((in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360) 
+        || (in_array($finder['brand_id'], [135,166,88]) && in_array($duration_day, [180, 360])) 
+        || (in_array($finder['_id'], Config::get('app.upgrade_session_finder_id')) && $ratecard['type'] == 'extended validity')){
                 
             $rewardObj = Reward::where('quantity_type','mixed')->first();
-                
-            $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();
-			if(in_array($finder['brand_id'], [135, 166, 88])){
+            
+			if(in_array($finder['brand_id'], [135, 166, 88]) && $ratecard['type'] != 'extended validity'){
 				$mixedreward_content = MixedRewardContent::where('brand_id', $finder['brand_id'])->where("duration",$duration_day)->first();
-                $gold_mixed = true;
-			}
+			}else{
+                $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();    
+            }
             if(!empty($mixedreward_content)){
+                $gold_mixed = true;
 				if($rewardObj && $mixedreward_content){
                     
 					$rewards = [];
@@ -1232,6 +1235,7 @@ class RewardofferController extends BaseController {
         if(!empty($upgradeMembership) && !empty($upgradeMembership['start_date'])){
             $data['upgrade_membership'] = true;
             $data['start_date'] = $upgradeMembership['start_date'];
+            $data['title_text'] = "Upgrading your membership to higher a duration ";
         }
 
         if(empty($calculation['algo']['cashback'])){
@@ -1280,29 +1284,25 @@ class RewardofferController extends BaseController {
         }
         
         $duration_day = $this->utilities->getDurationDay($ratecard);
-
-        if($duration_day == 360){
-
-            $customer = $this->utilities->getCustomerFromToken();
-    
-            if(empty($customer)){
-                return;
-            }
-            
-            $customer_id = $customer['_id'];
-
-            $wallet = Wallet::active()->where('balance', '>', 0)->where('customer_id', $customer_id)->where('service_id', $ratecard['service_id'])->where('restricted_for', 'upgrade')->where('duration_day', $duration_day)->first();
-
-            if(!empty($wallet)){
-                $order = Order::find($wallet['order_id'], ['start_date']);
-            }
-
-            if(!empty($order)){
-                return ['start_date'=>date('d-m-Y', strtotime($order['start_date']))];
-            }
         
+        $customer = $this->utilities->getCustomerFromToken();
+        
+        if(empty($customer)){
+            return;
+        }
+        
+        $customer_id = $customer['_id'];
+        
+        $wallet = Wallet::active()->where('balance', '>', 0)->where('used', 0)->where('customer_id', $customer_id)->whereIn('service_id', [null, $ratecard['service_id']])->where('valid_finder_id', $ratecard['finder_id'])->where('restricted_for', 'upgrade')->whereIn('duration_day', [null, $duration_day])->whereIn('order_type', [null, $ratecard['type']])->first();
+
+        if(!empty($wallet)){
+            $order = Order::find($wallet['order_id'], ['start_date']);
         }
 
+        if(!empty($order)){
+            return ['start_date'=>date('d-m-Y', strtotime($order['start_date']))];
+        }
+        
     }
 
         
