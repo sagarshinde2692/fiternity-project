@@ -117,7 +117,8 @@ Class FinderMailer extends Mailer {
 
 			$common = [
 				'kinnarijariwala@fitternity.com',
-				'siddharthshah@fitternity.com'
+				'siddharthshah@fitternity.com',
+				'dharmindersingh@fitternity.com'
 			];
 
 			$user_email = array_merge($user_email,$common);
@@ -388,7 +389,8 @@ Class FinderMailer extends Mailer {
 
 		$common = [
 			'kinnarijariwala@fitternity.com',
-			'siddharthshah@fitternity.com'
+			'siddharthshah@fitternity.com',
+			'dharmindersingh@fitternity.com'
 		];
 
 		$user_email = array_merge($user_email,$common);
