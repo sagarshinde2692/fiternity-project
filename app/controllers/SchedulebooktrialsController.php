@@ -1837,7 +1837,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $extended_validity_order->update();
                 $extended_validity_no_of_sessions = $extended_validity_order->no_of_sessions;
                 $extended_validity_sessions_booked = $extended_validity_order->no_of_sessions - $extended_validity_order->sessions_left;
-                $session_pack_comm = $extended_validity_order->ratecard_flags['enable_vendor_ext_validity_comm'];
+                $session_pack_comm = !empty($extended_validity_order->ratecard_flags['enable_vendor_ext_validity_comm']);
             }
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
 
