@@ -4920,6 +4920,12 @@ class SchedulebooktrialsController extends \BaseController {
                         $this->customermailer->cancelBookTrial($emaildata);
                     }
                     Log::info('sending sms');
+                    if(isset($booktrial['third_party_details'])){
+                        $emaildata['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
+                        if(isset($booktrial['third_party_details']['abg'])){
+                            $emaildata['profile_link'] = "http://onelink.to/abmultiply";
+                        }
+                    }
                     $this->customersms->cancelBookTrial($emaildata);
                     if(!isset($booktrial['third_party_details']) && $emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
                         $this->customernotification->cancelBookTrial($emaildata);
