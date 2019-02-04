@@ -1279,7 +1279,9 @@ class FindersController extends \BaseController {
 
 				$this->addNonValidityLink($response);
 				
-				$this->removeNonValidity($response, 'web');
+				if(!in_array($finder['_id'], Config::get('app.upgrade_session_finder_id'))){
+					$this->removeNonValidity($response, 'web');
+				}
                 
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
