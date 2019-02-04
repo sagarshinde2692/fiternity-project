@@ -8644,10 +8644,13 @@ public function yes($msg){
     }
 
     private function assignGoldLoyalty(){
-        $ids = [219103,220255,220256,220782,220783];
+		$ids = [
+			// 272056,
+    268973
+	];
         $orders = Order::whereIn('_id', $ids)->orderBy('_id', 'asc')->get();
         foreach($orders as $data){
-            $customer = Customer::where('loyalty.brand_loyalty', null)->where('_id', $data['customer_id'])->first();
+            $customer = Customer::where('loyalty.brand_version', '!=', 2)->where('_id', $data['customer_id'])->first();
             if(empty($customer)){
                 continue;
             }
@@ -8658,12 +8661,15 @@ public function yes($msg){
                 Finder::$withoutAppends = true;
                 $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
                 if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
+                    $loyalty['order_id'] = $data['_id'];
                     $loyalty['brand_loyalty'] = $finder['brand_id'];
                     $loyalty['brand_loyalty_duration'] = $data['duration_day'];
                     if($data['duration_day'] == 720){
                         $loyalty['brand_loyalty_duration'] = 360;
                     }
                     $loyalty['brand_loyalty_city'] = $data['city_id'];
+                    $loyalty['brand_version'] = 2;
+                    $loyalty['brand_version_by_script'] = '03-02-2019-1';
                 }
             }
             $customer->loyalty = $loyalty;
