@@ -1190,10 +1190,7 @@ Class FinderMailer extends Mailer {
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
 		$email_subject = 	$this->bladeCompile($template->email_subject,$data);
 
-		if (!empty($data['third_party_details'])){
-			$message_data['user_email'] = array('akhilkulkarni@fitternity.com', 'dhruvsarawagi@fitternity.com');
-		}
-		else if(!Config::get('app.vendor_communication')){
+		if(!Config::get('app.vendor_communication')){
 
 			$message_data['user_email'] = array('sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'akhilkulkarni@fitternity.com');
 		}
