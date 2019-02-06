@@ -9107,14 +9107,15 @@ class CustomerController extends \BaseController {
                                                 // 'bookings'=>['$sum'=>1],
                                                 'booking_amount'=>['$sum'=>'$amount_customer']
                                             ]
-                                        ];
+										];
+										$aggregate[] = $group;
 
                                         return $collection->aggregate($aggregate);
                                     
                                     });  
 
 									$orders = $orders_aggregate['result'];
-									
+
                                     if(!(!empty($orders[0]) && !empty($orders[0]['booking_amount']) && $orders[0]['booking_amount'] >=$milestone['booking_amount'])){
                                         $post_reward_data_template['block_message'] = strtr(Config::get('loyalty_screens.bookings_block_message'), $milestone);
                                     }
