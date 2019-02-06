@@ -9064,39 +9064,42 @@ class CustomerController extends \BaseController {
                                 if(!empty($milestone['bookings']) && !empty($milestone['booking_amount']) && isset($customer_milestones[$milestone['milestone']-1]['receipt_index'])){
                                     // return $milestone;
                                     // return $customer->_id;
-                                    $orders_aggregate = Booktrial::raw(function($collection) use ($customer){
+                                    $orders_aggregate = Order::raw(function($collection) use ($customer){
                                         $match = [
                                             '$match'=>[
                                                 '$and'=>[
                                                     [
-                                                        'customer_id'=>$customer->_id,
-                                                        'type'=>'workout-session',
-                                                        'going_status_txt'=>['$nin'=>['cancel']],
-                                                        'payment_done'=>['$ne'=>false]
+														'customer_id'=>$customer->_id,
+														'status'=>'1'
+                                                        // 'type'=>['$in'=>['workout-session', 'membershi']],
+                                                        // 'going_status_txt'=>['$nin'=>['cancel']],
+                                                        // 'payment_done'=>['$ne'=>false]
                                                     ]
                                                 ]
                                             ]
-                                        ];
+										];
+										
+										
 
-                                        $lookup = [
-                                            '$lookup'=>[
-                                                'from'=>'orders',
-                                                'localField'=>'order_id',
-                                                'foreignField'=>'_id',
-                                                'as'=>'order'
-                                            ]
-                                        ];
+                                        // $lookup = [
+                                        //     '$lookup'=>[
+                                        //         'from'=>'orders',
+                                        //         'localField'=>'order_id',
+                                        //         'foreignField'=>'_id',
+                                        //         'as'=>'order'
+                                        //     ]
+                                        // ];
 
-                                        $project = [
-                                            '$project'=>[
-                                                'order'=>['$arrayElemAt'=>['$order', 0]]
-                                            ]
-                                        ];
+                                        // $project = [
+                                        //     '$project'=>[
+                                        //         'order'=>['$arrayElemAt'=>['$order', 0]]
+                                        //     ]
+                                        // ];
                                         $group = [
                                             '$group'=>[
                                                 '_id'=>null,
-                                                'bookings'=>['$sum'=>1],
-                                                'booking_amount'=>['$sum'=>'$order.amount_customer']
+                                                // 'bookings'=>['$sum'=>1],
+                                                'booking_amount'=>['$sum'=>'$amount_customer']
                                             ]
                                         ];
 

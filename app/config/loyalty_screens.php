@@ -141,6 +141,6 @@ return array(
     ],
     'receipt_message'=>'Please upload the membership receipt to claim your reward',
     'receipt_verification_message'=>'Your membership receipt is under verification. We will notify you post verification.',
-    'bookings_block_message'=>'To claim this reward, you have to book at least bookings workout session of worth Rs. booking_amount'
+    'bookings_block_message'=>'To claim this reward, you need to have transactions on Fitternity app / website worth at least Rs. booking_amount'
 );
 ?>
