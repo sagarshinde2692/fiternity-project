@@ -9109,7 +9109,7 @@ class CustomerController extends \BaseController {
 
                                     $orders = $orders_aggregate['result'];
 
-                                    if(!(!empty($orders[0]) && !empty($orders[0]['bookings']) && !empty($orders[0]['booking_amount']) && $orders[0]['bookings'] >=$milestone['bookings'] && $orders[0]['booking_amount'] >=$milestone['booking_amount'])){
+                                    if(!(!empty($orders[0]) && !empty($orders[0]['booking_amount']) && $orders[0]['booking_amount'] >=$milestone['booking_amount'])){
                                         $post_reward_data_template['block_message'] = strtr(Config::get('loyalty_screens.bookings_block_message'), $milestone);
                                     }
                                 
