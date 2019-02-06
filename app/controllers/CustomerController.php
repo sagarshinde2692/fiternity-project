@@ -9061,10 +9061,12 @@ class CustomerController extends \BaseController {
                             
                             }else{
 
-                                if(!empty($milestone['bookings']) && !empty($milestone['booking_amount']) && isset($customer_milestones[$milestone['milestone']-1]['receipt_index'])){
+                                if(!empty($milestone['bookings']) && !empty($milestone['booking_amount'])){
                                     // return $milestone;
                                     // return $customer->_id;
                                     $orders_aggregate = Order::raw(function($collection) use ($customer){
+
+										$aggregate = [];
                                         $match = [
                                             '$match'=>[
                                                 '$and'=>[
@@ -9079,7 +9081,7 @@ class CustomerController extends \BaseController {
                                             ]
 										];
 										
-										
+										$aggregate[] = $match;
 
                                         // $lookup = [
                                         //     '$lookup'=>[
@@ -9088,13 +9090,17 @@ class CustomerController extends \BaseController {
                                         //         'foreignField'=>'_id',
                                         //         'as'=>'order'
                                         //     ]
-                                        // ];
+										// ];
+										// $aggregate[] = $lookup;
 
                                         // $project = [
                                         //     '$project'=>[
                                         //         'order'=>['$arrayElemAt'=>['$order', 0]]
                                         //     ]
-                                        // ];
+										// ];
+										
+										// $aggregate[] = $project;
+
                                         $group = [
                                             '$group'=>[
                                                 '_id'=>null,
@@ -9103,12 +9109,12 @@ class CustomerController extends \BaseController {
                                             ]
                                         ];
 
-                                        return $collection->aggregate([$match, $lookup, $project, $group]);
+                                        return $collection->aggregate($aggregate);
                                     
                                     });  
 
-                                    $orders = $orders_aggregate['result'];
-
+									$orders = $orders_aggregate['result'];
+									
                                     if(!(!empty($orders[0]) && !empty($orders[0]['booking_amount']) && $orders[0]['booking_amount'] >=$milestone['booking_amount'])){
                                         $post_reward_data_template['block_message'] = strtr(Config::get('loyalty_screens.bookings_block_message'), $milestone);
                                     }
