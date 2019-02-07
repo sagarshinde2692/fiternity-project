@@ -1961,6 +1961,8 @@ class HomeController extends BaseController {
 
                     if(isset($reward->image) && $reward->image != ""){
                         $reward_details['image'] = $reward->image;
+                    }else{
+                        $reward_details['image'] = "";
                     }
 
                     if(in_array($reward['reward_type'],["sessions","swimming_sessions"])){
