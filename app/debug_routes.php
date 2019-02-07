@@ -2715,3 +2715,5 @@ Route::get('addLoyaltyVouherAll','DebugController@addLoyaltyVouherAll');
 Route::get('brandLoyaltySplit','DebugController@brandLoyaltySplit');
 
 Route::get('addVoucherCategory','DebugController@addVoucherCategory');
+
+Route::get('ppsTOMembershipConversion','DebugController@ppsTOMembershipConversion');

@@ -8881,5 +8881,152 @@ public function yes($msg){
 		return $groups;
 	}
 
+
+	public function ppsTOMembershipConversion(){
+		Order::$withoutAppends = true;
+		$pps_orders_minus_session_pack = Order::raw(function($collection){
+
+			$match = [
+				'$match'=>[
+					'$and'=>[
+						['type'=>'workout-session', 'extended_validity_order_id'=>['$exists'=>false], 'created_at'=>['$gt'=>new MongoDate(strtotime('01-05-2018')), '$lt'=>new MongoDate(strtotime('01-02-2019'))]],
+						['$or'=>[['status'=>'1'], ['pay_later'=>true]]],
+					]
+				]
+			];
+
+			$aggregate[] = $match;
+
+			$sort = [
+				'$sort'=>['_id'=>1]
+			];
+			$aggregate[] = $sort;
+
+			$group = [
+				'$group'=>[
+					'_id'=>'$customer_id',
+					'dates'=>['$push'=>'$created_at']
+				]
+			];
+
+			$aggregate[] = $group;
+
+			// $limit=[
+			// 	'$limit'=>10
+			// ];
+			
+			// $aggregate[] = $limit;
+
+			return $collection->aggregate($aggregate, [ "cursor" => [ "batchSize" => 100000 ] ]);
+
+		});
+
+		$pps_orders_minus_session_pack = $pps_orders_minus_session_pack['cursor']['firstBatch'];
+
+		$customer_ids = array_column($pps_orders_minus_session_pack, '_id')	;
+
+		$customer_memberships = Order::raw(function($collection) use ($customer_ids){
+
+			$match = [
+				'$match'=>[
+					'$and'=>[
+						['type'=>'memberships', 'customer_id'=>['$in'=>$customer_ids], 'status'=>'1']
+					]
+				]
+			];
+
+			$aggregate[] = $match;
+
+			$sort = [
+				'$sort'=>['_id'=>-1]
+			];
+			$aggregate[] = $sort;
+
+			$project = [
+				'$project'=>[
+					'extended_validity'=>1,
+					'success_date'=>1,
+				]
+			];
+			$group = [
+				'$group'=>[
+					'_id'=>'$customer_id',
+					'last_membership_date'=>['$last'=>'$success_date'],
+					'last_membership_id'=>['$last'=>'$_id'],
+					'last_membership_type'=>['$last'=>'$extended_validity']
+				]
+			];
+
+			$aggregate[] = $group;
+
+			return $collection->aggregate($aggregate, [ "cursor" => [ "batchSize" => 100000 ] ]);
+
+		});
+
+		$customer_memberships = $customer_memberships['cursor']['firstBatch'];
+
+		$customer_memberships_map = [];
+
+		foreach($customer_memberships as $x){
+			$customer_memberships_map[$x['_id']] = $x;
+		}
+
+		// return $customer_memberships_map;
+
+
+		$result = [
+			'total_pps'=>0,
+			'repeat_pps'=>0,
+			'total_pps_to_mem'=>0,
+			'total_pps_to_sp'=>0,
+			'repeat_pps_mem'=>0,
+			'repeat_pps_sp'=>0,
+		];
+
+
+		foreach($pps_orders_minus_session_pack as $x){
+				
+			$result['total_pps']++;
+			
+			if(count($x['dates']) > 1){
+				$result['repeat_pps']++;
+			}
+			
+			if(!empty($customer_memberships_map[strval($x['_id'])])){
+				
+				$mem = $customer_memberships_map[strval($x['_id'])];
+				
+				if(count($x['dates']) > 1){
+					
+					if(!empty($mem['last_membership_date']->sec) && !empty($x['dates'][1]->sec) && $mem['last_membership_date']->sec > $x['dates'][1]->sec){
+						if(!empty($mem['last_membership_type'])){
+							$result['repeat_pps_sp']++;
+							$result['total_pps_to_sp']++;
+						}else{
+							$result['repeat_pps_mem']++;
+							$result['total_pps_to_mem']++;
+						}
+
+
+					}
+				
+				}elseif(count($x['dates']) == 1){
+					if(!empty($mem['last_membership_date']->sec) && !empty($x['dates'][0]->sec) && $mem['last_membership_date']->sec > $x['dates'][0]->sec){
+						if(!empty($mem['last_membership_type'])){
+							$result['total_pps_to_sp']++;
+						}else{
+							$result['total_pps_to_mem']++;
+						}
+					}
+				}
+			
+			}
+		}
+
+
+		return $result;
+	
+	}
+
 }
 
