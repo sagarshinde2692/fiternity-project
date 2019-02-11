@@ -3925,6 +3925,7 @@ class SchedulebooktrialsController extends \BaseController {
             $scheduleDateTime 			       =	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(1);
             $delayReminderTimeBefore1Min        =	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(1);
             $delayReminderTimeBefore1Hour        =	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
+            $delayReminderTimeAfter30Mins      =    Carbon::createFromFormat('Y-m-d H:i:s', $schedule_date_starttime)->addMinutes(30);
             $delayReminderTimeBefore12Hour       =	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
             $delayReminderTimeAfter2Hour       =	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(120);
             $delayReminderTimeAfter50Hour       =   Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 50);
