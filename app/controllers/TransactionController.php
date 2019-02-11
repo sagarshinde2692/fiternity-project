@@ -558,42 +558,67 @@ class TransactionController extends \BaseController {
     
             }
             
-            if(!empty($data['third_party']))
-            {
+            if(!empty($data['third_party'])) {
                 $acronym = $data['third_party_acronym'];
-                unset($data['third_party_acronym']);
-                // Log::info('$data["total_sessions_used"]: ', $data['total_sessions_used']);
+                // unset($data['third_party_acronym']);
                 Log::info('$data: ', $data);
             	if(isset($data['total_sessions_used']))
             	{
             		if(intval($data['total_sessions'])>intval($data['total_sessions_used']))
             		{
-	            		$data['total_sessions_used']=intval($data['total_sessions_used'])+1;
-                        $data['total_sessions']=intval($data['total_sessions']);
+	            		$data['total_sessions_used'] = intval($data['total_sessions_used']);
+                        $data['total_sessions'] = intval($data['total_sessions']);
                         
                         $data['third_party_details'][$acronym]['third_party_used_sessions'] = $data['total_sessions_used'];
-                        if(!empty($data['service_id'])){
-
-                            $service = Service::find((int)$data['service_id']);
-            
-                            if($service){
-            
-                                $data['service_name'] = $service['name'];
-                                $data['service_category_id'] = (int)$service['servicecategory_id'];
-                            }
-            
+                        
+                        $finder_id = (int) $data['finder_id'];
+    
+                        $finderDetail = $this->getFinderDetail($finder_id);
+                
+                        if($finderDetail['status'] != 200){
+                            return Response::json($finderDetail,$this->error_status);
                         }
+
+                        $orderfinderdetail = $finderDetail;
+                        $data = array_merge($data,$orderfinderdetail['data']);
+                        unset($orderfinderdetail["data"]["finder_flags"]);
+                        
+                        if(isset($data['service_id'])){
+                            $service_id = (int) $data['service_id'];
+                            
+                            $serviceDetail = $this->getServiceDetail($service_id);
+            
+                            if($serviceDetail['status'] != 200){
+                                return Response::json($serviceDetail,$this->error_status);
+                            }
+                            
+                            $data = array_merge($data,$serviceDetail['data']);
+                            if(isset($data['type']) && $data['type'] == 'workout-session' && $data['servicecategory_id'] == 65){
+                                $data['service_name'] = $this->utilities->getGymServiceNamePPS();
+                            }
+                        }
+
+                        // if(!empty($data['service_id'])){
+
+                        //     $service = Service::find((int)$data['service_id']);
+            
+                        //     if($service){
+            
+                        //         $data['service_name'] = $service['name'];
+                        //         $data['service_category_id'] = (int)$service['servicecategory_id'];
+                        //     }
+            
+                        // }
                         $data['amount_customer'] = 0; // discussed with Utkarsh
 	            		$order_id = Order::max('_id') + 1;
 	            		$order = new Order($data);
 	            		$order->_id = $order_id;
-// 	            		verify
 	            		$order->save();
 	            		
 	            		$cust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
 	            		$cust->total_sessions=intval($data['total_sessions']);
 	            		$cust->total_sessions_used=intval($data['total_sessions_used']);
-	            		// $cust->third_party_token_id=$data['third_party_token_id'];
+
                         $newUser = false;
                         if(!empty($cust->third_party_details) && !empty($cust->third_party_details[$acronym]) && !empty($cust->third_party_details[$acronym]['third_party_new_user'])){
                             Log::info('cust->third_party_details:: ', [$cust->third_party_details[$acronym]['third_party_new_user']]);
@@ -601,20 +626,44 @@ class TransactionController extends \BaseController {
                         }
                         $data['third_party_details'][$acronym]['third_party_new_user'] = $newUser;
                         $cust->third_party_details=$data['third_party_details'];
+                        $cust->third_party_acronym=$acronym;
                         $cust->save();
                         
                         $createWorkoutRes = $this->utilities->createWorkoutSession($order->_id, true);
                         $booktrialData = json_decode($createWorkoutRes->getContent(), true);
                         if($booktrialData['status']==200){
-	            		    return Response::json(['status'=>200,"message"=>"Successfully Generated and maintained Workout session.", 'booktrial_id' => $booktrialData['booktrialid']]);
+
+                            $usedSessionsCount = (intval($data['total_sessions_used'])+1);
+
+                            $updatedOrder = Order::findOrFail($order->_id);
+                            $updatedOrder->update(["total_sessions_used" => $usedSessionsCount]);
+
+                            $updatedCust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
+                            $updatedCust->total_sessions_used = $usedSessionsCount;
+                            $tpdtls = $updatedCust->third_party_details;
+                            $tpdtls[$acronym]['third_party_used_sessions'] = $usedSessionsCount;
+                            $updatedCust->third_party_details = $tpdtls;
+                            $updatedCust->save();
+
+                            $this->utilities->financeUpdate($order);
+
+	            		    return Response::json([
+                                'status'=>200,
+                                "message"=>"Successfully Generated and maintained Workout session.",
+                                'booktrial_id' => $booktrialData['booktrialid']
+                            ]);
                         }
                         else {
                             return Response::json(['status'=>$booktrialData['status'],"message"=>$booktrialData['message']]);
                         }
             		}
-            		else return Response::json(['status'=>400,"message"=>"Total sessions already crossed. "]);
+            		else {
+                        return Response::json(['status'=>400,"message"=>"Total sessions already crossed. "]);
+                    }
             	}
-            	else return Response::json(['status'=>400,"message"=>"Total sessions used not present. "]);
+            	else {
+                    return Response::json(['status'=>400,"message"=>"Total sessions used not present. "]);
+                }
             }
 
             if(isset($data['manual_order']) && $data['manual_order']){

@@ -55,6 +55,43 @@ Class Metropolis {
         }
 
     }
+
+    public function cancelThirdPartySession($tokenId, $booktrialId, $msg) {
+        try {
+            $response = json_decode(
+                $this->client->post("/thirdp/cancelBookingFromBackend", [
+                    'json' => [
+                        'token_id' => $tokenId,
+                        'booktrial_id' => $booktrialId,
+                        'msg' => $msg,
+                    ],
+                    'headers' => [
+                        'sector' => 'multiply'
+                    ]
+                ])->getBody()->getContents()
+            );
+
+            $return  = [
+                'status' => 200,
+                'data' => $response
+            ];
+            return $return;
+        }catch (RequestException $e) {
+            \Log::info($e);
+            $response = $e->getResponse();
+            $error = [
+                'status'=>$response->getStatusCode(),
+                'reason'=>$response->getReasonPhrase()
+            ];
+            return $error;
+        }catch (Exception $e) {
+            $error = [
+                'status'=>400,
+                'reason'=>'Error'
+            ];
+            return $error;
+        }
+    }
   
 
 }                                       
