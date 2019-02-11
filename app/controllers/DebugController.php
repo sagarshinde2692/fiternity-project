@@ -9028,5 +9028,20 @@ public function yes($msg){
 	
 	}
 
+	public function multifitFitcash(){
+		$utilities = new Utilities();
+		$order_ids = [
+		278820,278235,277510,277467,277451,277195,276902 
+		];
+		
+		$orders = Order::whereIn('_id', $order_ids)->get();
+		foreach($orders as $order){
+			$utilities->giveFitcashforUpgrade($order);
+			$order->upgrade_fitcash_by_script = date('d-m-Y', time());
+			$order->update();
+		}
+		return "do";
+	}
+
 }
 

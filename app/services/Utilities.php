@@ -7486,6 +7486,10 @@ Class Utilities {
 
     public function giveFitcashforUpgrade($order){
 
+        if(!empty($order['upgrade_fitcash'])){
+            return;
+        }
+
         if(!empty($order['duration_day']) && !empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], Config::get('upgrade_membership.service_cat', [65, 111])) && in_array($order['duration_day'], Config::get('upgrade_membership.duration', [30])) && empty($order['extended_validity'])){
 
             $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
@@ -7514,9 +7518,7 @@ Class Utilities {
             
             $order->upgrade_fitcash = true;
 
-        }
-
-        if(!empty($order['extended_validity']) && in_array($order['finder_id'], Config::get('app.upgrade_session_finder_id', []))){
+        }elseif(!empty($order['extended_validity']) && in_array($order['finder_id'], Config::get('app.upgrade_session_finder_id', []))){
             $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
 
             $no_of_days = Config::get('upgrade_membership.fitcash_days');
