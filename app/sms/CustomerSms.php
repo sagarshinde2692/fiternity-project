@@ -36,6 +36,10 @@ Class CustomerSms extends VersionNextSms{
 
 		$label = 'RescheduleTrial-Instant-Customer';
 		
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
+			$label = 'RescheduleTrial-Instant-Customer-abg';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
@@ -1223,7 +1227,7 @@ Class CustomerSms extends VersionNextSms{
 		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])){
 			$sender = 'ABCPRO';
 			if(Config::get('app.env') == 'stage'){
-				$to = ['9619240452'];
+				$to = ['9920150108','7506262489','9619240452']; //9619240452
 			}
 		}
 

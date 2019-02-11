@@ -313,7 +313,7 @@ Class FinderSms extends VersionNextSms{
 		}
 		else if(!Config::get('app.vendor_communication')){
 
-			$to = array('7506026203');
+			$to = array('7506026203','9619240452');
 		}
 		
 		return $this->sendToWorker($to, $message, $label, $delay);

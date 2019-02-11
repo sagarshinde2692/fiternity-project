@@ -175,7 +175,12 @@ class FindersController extends \BaseController {
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
-				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug', 'description');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
+				->with(array('services'=>function($query) use ($isThirdParty){
+					if($isThirdParty){
+						$query->where('workoutsessionschedules.0','exists',true)->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
+					}
+					$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug', 'description');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');
+				}))
 
 				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->where('description', '!=', "")->orderBy('updated_at', 'DESC')->limit(5);}))
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))

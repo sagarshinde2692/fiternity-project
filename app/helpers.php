@@ -3621,8 +3621,9 @@ if (!function_exists('registerMail')) {
         try{
             Log::info("inside register====================");
             $customerData = Customer::find($customer_id);
-            
-            if(!isset($customerData->welcome_mail_sent) || !$customerData->welcome_mail_sent){
+
+            $notAThirdPartyCond = (!empty($customerData['third_party_details']));
+            if((!$notAThirdPartyCond) && (!isset($customerData->welcome_mail_sent) || !$customerData->welcome_mail_sent)){
                 $customermailer = new CustomerMailer();
                 $utilities = new Utilities();
                 
