@@ -4923,7 +4923,7 @@ class SchedulebooktrialsController extends \BaseController {
                     if(isset($booktrial['third_party_details'])){
                         $emaildata['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$emaildata['customer_email']);
                         if(isset($booktrial['third_party_details']['abg'])){
-                            $emaildata['profile_link'] = "http://onelink.to/abmultiply";
+                            $emaildata['profile_link'] = Config::get('app.multiply_app_download_link');
                         }
                     }
                     $this->customersms->cancelBookTrial($emaildata);

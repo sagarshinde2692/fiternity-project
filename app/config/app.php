@@ -889,5 +889,7 @@ return array(
 	],
 	'slotAllowance' =>['vendors'=>[1584],'services'=>[17626],'types'=>['workout-session','booktrials']],
 	'add_wallet_extra'=>10,
-    'renewal_ids'=>[]
+	'renewal_ids'=>[],
+	
+	'multiply_app_download_link' => 'http://onelink.to/abmultiply'
 );
