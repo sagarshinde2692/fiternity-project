@@ -36,6 +36,10 @@ Class CustomerSms extends VersionNextSms{
 
 		$label = 'RescheduleTrial-Instant-Customer';
 		
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
+			$label = 'RescheduleTrial-Instant-Customer-abg';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);

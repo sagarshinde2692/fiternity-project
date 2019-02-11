@@ -2645,8 +2645,9 @@ class SchedulebooktrialsController extends \BaseController {
             $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finder_sms_messageids  =  $customer_notification_messageids  =  array();
 
             if($booktrial->going_status_txt == "rescheduled"){
-
-                $send_communication["customer_email_instant"] = $this->customermailer->rescheduledBookTrial($booktrialdata);
+                if (!isset($booktrialdata['third_party_details'])){
+                    $send_communication["customer_email_instant"] = $this->customermailer->rescheduledBookTrial($booktrialdata);
+                }
                 $send_communication["customer_sms_instant"] = $this->customersms->rescheduledBookTrial($booktrialdata);
                 $send_communication["finder_email_instant"] = $this->findermailer->rescheduledBookTrial($booktrialdata);
                 $send_communication["finder_sms_instant"] = $this->findersms->rescheduledBookTrial($booktrialdata);
@@ -4148,7 +4149,7 @@ class SchedulebooktrialsController extends \BaseController {
                 array_set($booktrialdata, 'code',random_numbers(5));
             }
 
-            if(!isset($booktrial['surprise_fit_cash'])){
+            if(!isset($booktrial['surprise_fit_cash']) && !empty($booktrial['third_party_details'])){
                 $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrial->toArray());
             }
 
