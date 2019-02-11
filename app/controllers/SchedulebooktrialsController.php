@@ -4906,7 +4906,9 @@ class SchedulebooktrialsController extends \BaseController {
             }
             Log::info('after refund');
             if($booktrialdata->source_flag == 'vendor'){
-                $this->customermailer->cancelBookTrial($emaildata);
+                if(!isset($booktrial['third_party_details'])){
+                    $this->customermailer->cancelBookTrial($emaildata);
+                }
                 $this->findermailer->cancelBookTrial($emaildata);
                 $this->findersms->cancelBookTrial($emaildata);
                 $this->customersms->cancelBookTrial($emaildata);
