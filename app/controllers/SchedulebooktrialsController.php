@@ -7785,7 +7785,7 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function publishConfirmationAlert($booktrial_data){
         
-
+        return;
         Log::info("publishing trial alert");
         $pubnub = new \Pubnub\Pubnub(Config::get('app.pubnub_publish'), Config::get('app.pubnub_sub'));
         $booktrial_data = array_only($booktrial_data, ['_id', 'finder_name', 'schedule_date_time','finder_location','customer_name', 'city_id']);
