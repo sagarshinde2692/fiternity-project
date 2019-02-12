@@ -2163,8 +2163,8 @@ class ServiceController extends \BaseController {
                 ,'keys'=>['name', 'slug', 'location', 'coverimage', 'vendor_name','vendor_slug','average_rating', 'total_rating_count']
                 ]);
                 
-                if(isset($search_resp['metadata']['ppsData']) && isset($search_resp['metadata']['ppsData']['count'])){
-                    $data['nearby_options']['header'] = "There are ".$search_resp['metadata']['ppsData']['count']." sessions happening near you in the next 4 hours";
+                if(isset($search_resp['metadata']) && isset($search_resp['metadata']['totalSessions'])){
+                    $data['nearby_options']['header'] = "There are ".$search_resp['metadata']['totalSessions']." sessions happening near you in the next 4 hours";
                     $data['nearby_options']['view_all_link'] = Config::get('app.website')."/pay-per-session/".$city."/fitness?day=within-4-hours";
                     $data['nearby_options']['results'] = $search_resp['results'];
                 }
