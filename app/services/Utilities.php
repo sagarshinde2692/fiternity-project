@@ -6288,6 +6288,7 @@ Class Utilities {
             $customer = Customer::where('_id', $customer_id)->where('loyalty.start_date', 'exists', true)->first(['loyalty']);
             $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
             $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
+            $brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
 
 
 
@@ -6330,7 +6331,13 @@ Class Utilities {
             $milestones = Config::get('loyalty_constants.milestones', []);
 
             if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
-                $finder_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
+                if(!empty($brand_version)){
+                    $finder_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', $brand_version)->first();
+                }
+                else {
+                    $finder_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', 1)->first();
+                }
+                // $finder_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
                 if($finder_milestones){
                     $milestones = $finder_milestones['milestones'];
                     $checkin->unverified = false;
