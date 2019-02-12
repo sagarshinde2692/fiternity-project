@@ -2058,7 +2058,7 @@ class ServiceController extends \BaseController {
 	}
 
 	public function workoutServiceCategorys($city='mumbai',$slotsCountCache=true){
-		Log::info($_GET);
+		Log::info($_SERVER['REQUEST_URI']);
 		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
 
 		$order = [65, 5, 19, 1, 123, 3, 4, 2, 114, 86];
@@ -2174,6 +2174,37 @@ class ServiceController extends \BaseController {
 
 		}catch(Exception $e){
 			Log::info($e);
+		}
+
+        try{
+
+			if(empty($this->app_version) ){
+                $search_resp = $this->utilities->getPPSSearchResult(['city'=>$city
+                ,'keys'=>['name', 'slug', 'location', 'coverimage', 'vendor_name','vendor_slug','average_rating', 'total_rating_count']
+                ]);
+                
+                if(isset($search_resp['metadata']) && isset($search_resp['metadata']['totalSessions'])){
+                    $data['nearby_options']['header'] = "There are ".$search_resp['metadata']['totalSessions']." sessions happening near you in the next 4 hours";
+                    $data['nearby_options']['view_all_link'] = Config::get('app.website')."/pay-per-session/".$city."/fitness?day=within-4-hours";
+                    $data['nearby_options']['results'] = $search_resp['results'];
+                }
+			}					
+
+
+		}catch(Exception $e){
+			Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+		}
+
+         try{
+
+			if(empty($this->app_version) ){
+               $data['feedback'] = Config::get('paypersession.home_feedback');
+			}			
+
+
+		}catch(Exception $e){
+			Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+			
 		}
 		// return DB::getQueryLog();
 
