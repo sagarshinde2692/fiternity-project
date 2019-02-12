@@ -1,0 +1,22 @@
+$scope.reward_typeArray = [
+{ id:1, name:"Instant Reward"},
+{ id:2, name:"Instance Reward + Fit Squad "},
+{ id:3, name:"Instance Reward + 100 Cashback"},
+{ id:4, name:"Instant Reward + Fit Squad + 100 Cashback"},
+{ id:5, name:"100% Cashback"}
+];
+$scope.reward_type = 2; 
+$scope.cashback_typeArray =[
+{id: 1, value: "50%, 75%, 120% Type-1"},
+{id: 2, value: "75%, 100%, 120% Type-2"},
+{id: 3, value: "50%, 75%, 100% Type-3"}
+]
+REWARD_TYPE: {
+1:"Instant Reward",
+2:"Instance Reward + Fit Squad ",
+3:"Instance Reward + 100 Cashback",
+4:"Instant Reward + Fit Squad + 100 Cashback",
+5:"100% Cashback"},
+CASHBACK_TYPE:[0,1,2,3],
+reward_type:{ type: Number, enum: Object.keys(constants.AppConstant.VENDOR.REWARD_TYPE), default: 2},
+cashback_type:{ type: Number, enum: constants.AppConstant.VENDOR.CASHBACK_TYPE, default: 0 },

@@ -8239,7 +8239,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function loyaltyProfile(){
-    
+		return Config::get('app.reward_type');
 		Log::info("asdas");
 		$post = false;
 		$jwt_token = Request::header('Authorization');
@@ -8893,8 +8893,6 @@ class CustomerController extends \BaseController {
 
     public function postLoyaltyRegistration($customer, $voucher_categories_map){
 
-        // return $voucher_categories_map;
-
         $post_register = Config::get('loyalty_screens.post_register');
         $checkins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
         $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
@@ -8902,29 +8900,32 @@ class CustomerController extends \BaseController {
         $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
         $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
 		$brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
-        // $checkins = 52;
         $brand_milestones = Config::get('loyalty_constants');
         $milestones = $brand_milestones['milestones'];
 		$checkin_limit = $brand_milestones['checkin_limit'];
-        
-        if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
+        $reward_type = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
+        $cashback_type = !empty($customer->loyalty['cashback_type']) ? $customer->loyalty['cashback_type'] : null;
+		
+		if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
 			if(!empty($brand_version)){
 				$brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', $brand_version)->first();
 			}else{
 				$brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
 			}
             if($brand_milestones){
-                $milestones = $brand_milestones['milestones'];
-                $checkin_limit = $brand_milestones['checkin_limit'];
+				$milestones = $brand_milestones['milestones'];
+				$checkin_limit = $brand_milestones['checkin_limit'];
             }
-        }
+		
+		}
+
         $milestones_data = $this->utilities->getMilestoneSection($customer, $brand_milestones);
         $post_register['milestones']['data'] = $milestones_data['data'];
-
+		
         // foreach($post_register['milestones']['data'] as &$milestone){
-            
-        // 	if(!empty($milestone['next_count'])){
-                
+			
+			// 	if(!empty($milestone['next_count'])){
+				
         // 		if($milestone['milestone'] < $milestone_no){
         // 			$milestone['enabled'] = true;
         // 			$milestone['progress'] = 100;
