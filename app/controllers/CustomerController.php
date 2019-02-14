@@ -8239,7 +8239,6 @@ class CustomerController extends \BaseController {
 	}
 
 	public function loyaltyProfile(){
-		return Config::get('app.reward_type');
 		Log::info("asdas");
 		$post = false;
 		$jwt_token = Request::header('Authorization');
@@ -8905,6 +8904,9 @@ class CustomerController extends \BaseController {
 		$checkin_limit = $brand_milestones['checkin_limit'];
         $reward_type = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
         $cashback_type = !empty($customer->loyalty['cashback_type']) ? $customer->loyalty['cashback_type'] : null;
+
+
+        return $this->utilities->getFinderMilestones($customer);
 		
 		if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
 			if(!empty($brand_version)){

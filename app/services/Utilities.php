@@ -7572,7 +7572,7 @@ Class Utilities {
     }
 
     public function getFinderMilestones($customer, $brand_milestones = null){
-       
+        
         if(!empty($brand_milestones)){
             return $brand_milestones;
         }
@@ -7612,7 +7612,7 @@ Class Utilities {
         
         }else{
             
-            $brand_milestones = Config::get('loyalty_screens.milestones');
+            $brand_milestones = Config::get('loyalty_constants');
         
         }
         
