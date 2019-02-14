@@ -7593,42 +7593,37 @@ Class Utilities {
             return $brand_milestones;
         }
         
+        $filter = $this->getMilestoneFilterData($customer);
         
-        $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
-        $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
-        $brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
-        $reward_type = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
-        $cashback_type = !empty($customer->loyalty['cashback_type']) ? $customer->loyalty['cashback_type'] : null;
-        
-        if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
+        if(is_numeric($filter['brand_loyalty']) && is_numeric($filter['brand_loyalty_duration'])){
             
             if(!$brand_milestones){
-                if(!empty($brand_loyalty)) {
-                    if(!empty($brand_version)){
-                        $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', $brand_version)->first();
+                if(!empty($filter['brand_loyalty'])) {
+                    if(!empty($filter['brand_version'])){
+                        $brand_milestones = FinderMilestone::where('brand_id', $filter['brand_loyalty'])->where('duration', $filter['brand_loyalty_duration'])->where('brand_version', $filter['brand_version'])->first();
                     }
                     else {
-                        $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', 1)->first();
+                        $brand_milestones = FinderMilestone::where('brand_id', $filter['brand_loyalty'])->where('duration', $filter['brand_loyalty_duration'])->where('brand_version', 1)->first();
                     }
                 }
                 else {
-                    $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
+                    $brand_milestones = FinderMilestone::where('brand_id', $filter['brand_loyalty'])->where('duration', $filter['brand_loyalty_duration'])->first();
                 }
             }
 
-        }else if(!empty($reward_type)){
+        }else if(!empty($filter['reward_type'])){
 
-			$brand_milestones = FinderMilestone::where('reward_type', $reward_type);
+			$brand_milestones = FinderMilestone::where('reward_type', $filter['reward_type']);
 
-			if(in_array($reward_type, [3, 4, 5]) && !empty($cashback_type)){
-				$brand_milestones = $brand_milestones->where('cashback_type', $cashback_type);
+			if(in_array($filter['reward_type'], [3, 4, 5]) && !empty($filter['cashback_type'])){
+				$brand_milestones = $brand_milestones->where('cashback_type', $filter['cashback_type']);
 			}
 			
 			$brand_milestones = $brand_milestones->first();
         
         }else{
             
-            $brand_milestones = Config::get('loyalty_constants');
+            $brand_milestones = $this->getDefaultMilestones();
         
         }
         
@@ -7702,7 +7697,15 @@ Class Utilities {
         });
     
     }
-            
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultMilestones()
+    {
+        return Config::get('loyalty_constants');
+    }
+
 
 }
 

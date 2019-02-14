@@ -8430,7 +8430,7 @@ class CustomerController extends \BaseController {
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
 			$customer = Customer::find($customer_id);
-			$milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
+			$milestones = $this->getCustomerMilestones($customer);
 
 
             if(!empty($_GET['milestone']) && !empty($milestones[intval($_GET['milestone'])-1]['voucher'])){
@@ -8838,21 +8838,17 @@ class CustomerController extends \BaseController {
 
     public function postLoyaltyRegistration($customer, $voucher_categories_map){
 
-        $post_register = Config::get('loyalty_screens.post_register');
-        $checkins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
-        $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
+        $checkins = $this->getCustomerCheckins($customer);
+        $customer_milestones = $this->getCustomerMilestones($customer);
         $milestone_no = count($customer_milestones);
-        $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
-        $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
-		$brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
         $brand_milestones = Config::get('loyalty_constants');
         $milestones = $brand_milestones['milestones'];
 		$checkin_limit = $brand_milestones['checkin_limit'];
-        $reward_type = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
-        $cashback_type = !empty($customer->loyalty['cashback_type']) ? $customer->loyalty['cashback_type'] : null;
+        
+        
+        $post_register = Config::get('loyalty_screens.post_register');
 
-
-        return $this->utilities->getFinderMilestones($customer);
+        $this->utilities->getFinderMilestones($customer);
 		
 		
         $milestones_data = $this->utilities->getMilestoneSection($customer, $brand_milestones);
@@ -9251,6 +9247,24 @@ class CustomerController extends \BaseController {
 
 
         return $this->formatSessionPack($order);
+    }
+
+    /**
+     * @param $customer
+     * @return int
+     */
+    public function getCustomerCheckins($customer)
+    {
+        return !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
+    }
+
+    /**
+     * @param $customer
+     * @return array
+     */
+    public function getCustomerMilestones($customer)
+    {
+        return !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
     }
 
 }
