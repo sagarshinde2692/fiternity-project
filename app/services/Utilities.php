@@ -7554,6 +7554,22 @@ Class Utilities {
 
     }
 
+    public function getCustomerFromTokenAsObject(){
+        
+        $token = Request::header('Authorization');
+        
+        if(empty($token)){
+            return;
+        }
+        
+        $token_decoded = customerTokenDecode($token);
+
+        $customer = $token_decoded->customer;
+
+        return $customer;
+
+    }
+
     public function sessionPackMultiServiceDiscount($ratecard, $customer_email, $amount){
         
          if(empty($customer_email)){
@@ -7617,6 +7633,73 @@ Class Utilities {
         }
         
         return $brand_milestones;
+    
+    }
+
+    public function getMilestoneFilterData($customer){
+        $filter = [];
+        $filter['brand_loyalty'] = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
+        $filter['brand_loyalty_city'] = !empty($customer->loyalty['brand_loyalty_city']) ? $customer->loyalty['brand_loyalty_city'] : null;
+        $filter['brand_loyalty_duration'] = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
+        $filter['brand_version'] = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
+        $filter['reward_type'] = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
+        $filter['cashback_type'] = !empty($customer->loyalty['$cashback_type']) ? $customer->loyalty['$cashback_type'] : null;
+        return $filter;
+    }
+
+    public function getVoucherCategoriesAggregate($filter){
+        
+        return $voucher_categories = \VoucherCategory::raw(function($collection) use($filter){
+				
+            $match = [
+                '$match'=>[
+                    'status'=>'1',
+                ]
+                
+            ];
+            
+            if(!empty($filter['brand_loyalty']) && !empty($filter['brand_loyalty_duration']) && !empty($filter['brand_loyalty_city'])){
+                $match['$match']['brand_id'] = $filter['brand_loyalty'];
+                $match['$match']['duration'] = $filter['brand_loyalty_duration'];
+				$match['$match']['city'] = $filter['brand_loyalty_city'];
+            }else{
+                $match['$match']['brand_id'] =['$exists'=>false];
+                $match['$match']['duration'] =['$exists'=>false];
+                $match['$match']['city'] =['$exists'=>false];
+			}
+			if(!empty($filter['brand_loyalty'])) {
+				if(!empty($filter['brand_version'])){
+					$match['$match']['brand_version'] = $filter['brand_version'];
+				}
+				else {
+					$match['$match']['brand_version'] = 1;
+				}
+			}
+
+            $sort =[
+                '$sort'=>[
+                    'order'=>1
+                ]
+            ];
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$milestone',
+                    'vouchers'=>['$push'=>'$$ROOT'],
+                    'amount'=>['$max'=>'$amount']
+                ]
+            ];
+
+            $sort1 = [
+                '$sort'=>[
+                    '_id'=>1
+                ]
+            ];
+            $aggregate = [$match, $sort, $group, $sort1];
+            Log::info($aggregate);
+            // exit();
+            return $collection->aggregate($aggregate);
+        });
     
     }
             
