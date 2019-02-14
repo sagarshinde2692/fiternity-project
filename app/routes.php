@@ -1326,4 +1326,5 @@ Route::post('markmfpattendance','TransactionController@markMfpAttendance');
 
 Route::post('sendcommvendorthirdparty','ThirdPartyController@sendClockUserDaySMS');
 Route::get('customer/getsessionpacks/{offset?}/{limit?}','CustomerController@getSessionPacks');
+Route::post('addServiceMultipleSessionPack','DebugController@addServiceMultipleSessionPack');
 

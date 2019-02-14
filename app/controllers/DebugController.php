@@ -9041,6 +9041,29 @@ public function yes($msg){
 			$order->update();
 		}
 		return "do";
+    }
+    
+    public function addServiceMultipleSessionPack(){
+
+        $map = Input::get('map');
+        Log::info($map);
+        // return $map;
+		$update = [];
+
+		foreach($map as $x){
+			array_push($update, [
+                "q"=>['_id'=> $x['order_id']],
+                "u"=>[
+                    '$set'=>[
+                        'all_service_id'=>$x['all_service_id']
+                    ]
+                ],
+                'multi' => false
+
+            ]);
+        }
+		return $this->batchUpdate('mongodb','orders',$update);
+		return $update;
 	}
 
 }
