@@ -916,5 +916,5 @@ return array(
     
     'no_instant_reward_types'=>[5],
     
-    'no_fitsquad_reg_msg'=>[3, 5]
+    'no_fitsquad_reg_msg'=>[1, 3, 5]
 );
