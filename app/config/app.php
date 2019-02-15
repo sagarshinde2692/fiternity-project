@@ -928,4 +928,13 @@ return array(
         7=>'G',
         0=>NULL,
     ],
+
+    'routed_commission_reward_type_map'=>[
+        1=>2.5,
+        2=>3.5,
+        3=>5.5,
+        4=>7,
+        5=>5,
+        6=>6
+    ],
 );

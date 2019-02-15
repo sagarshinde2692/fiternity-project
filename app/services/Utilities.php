@@ -4049,6 +4049,15 @@ Class Utilities {
             }
             
         }
+                
+        if(isset($data['routed_order']) && $data['routed_order'] == "1"){
+            
+            $finder = \Finder::find($finder_id);
+            $routed_commission_reward_type_map = Config::get('app.routed_commission_reward_type_map');
+            if(!empty($finder['flags']['reward_type']) && !empty($routed_commission_reward_type_map[$finder['flags']['reward_type']])){
+                $commision = $routed_commission_reward_type_map[$finder['flags']['reward_type']];
+            }
+        }
 
         Log::info('commision : '.$commision);
         return $commision;
