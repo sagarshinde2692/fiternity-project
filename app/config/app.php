@@ -916,5 +916,16 @@ return array(
     
     'no_instant_reward_types'=>[5],
     
-    'no_fitsquad_reg_msg'=>[1, 3, 5]
+    'no_fitsquad_reg_msg'=>[1, 3, 5],
+
+    'cashback_type_map'=>[
+        1=>'A',
+        2=>'B',
+        3=>'C',
+        4=>'D',
+        5=>'E',
+        6=>'F',
+        7=>'G',
+        0=>NULL,
+    ],
 );
