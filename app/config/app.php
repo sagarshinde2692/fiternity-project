@@ -912,5 +912,7 @@ return array(
 		3 => "Instance Reward + 100% Cashback",
 		4 => "Instant Reward + Fit Squad + 100% Cashback",
 		5 => "100% Cashback"
-	],
+    ],
+    
+    'no_instant_reward_types'=>[5]
 );

@@ -1327,6 +1327,20 @@ class FindersController extends \BaseController {
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
                 }
 
+                $cashback_type_map = [
+                    1=>'A',
+                    2=>'B',
+                    3=>'C',
+                    4=>'D',
+                    5=>'E',
+                    6=>'F',
+                    7=>'G',
+                    0=>NULL,
+                ];
+
+                $response['finder']['type'] = !empty($finder['flags']['reward_type']) ?  $finder['flags']['reward_type'] : 2;
+                $response['finder']['sub_type'] = !empty($finder['flags']['cashback_type']) ?  $cashback_type_map[strval($finder['flags']['cashback_type'])] : null;
+
 
 
                 /********** Flash Offer Section Start**********/

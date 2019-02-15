@@ -1209,6 +1209,12 @@ class RewardofferController extends BaseController {
             $rewards = [];
             $cashback = null;
         }
+
+        if(!empty($finder['flags']['reward_type']) && in_array($finder['flags']['reward_type'], Config::get('app.no_instant_reward_types'))){
+            $rewards = [];
+            $cashback = null;
+        }
+        
         if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
             $cashback = null;
         }
