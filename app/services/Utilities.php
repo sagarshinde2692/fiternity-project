@@ -6918,7 +6918,7 @@ Class Utilities {
                         $loyalty['brand_version'] = 1;
                     }
                 }
-            }else if(!empty($data['finder_flags']['reward_type'])){
+            }else if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
                 
                 $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
                 if(!empty($data['finder_flags']['cashback_type'])){
