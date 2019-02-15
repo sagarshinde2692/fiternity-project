@@ -6896,6 +6896,15 @@ Class Utilities {
     
     public function autoRegisterCustomerLoyalty($data){
         try{
+            Finder::$withoutAppends = true;
+            $post_data = \Input::all();
+            
+            if(!empty($post_data['order_success_flag']) && $post_data['order_success_flag'] == 'admin'){
+                
+                $order_finder = Finder::find($data['finder_id']);
+                $data['finder_flags'] = !empty($order_finder['flags']) ? $order_finder['flags'] : [];
+            }
+            
             $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
             if(!$customer){
                 return ['status'=>400, 'Customer already registered'];
@@ -6914,10 +6923,11 @@ Class Utilities {
             $loyalty = array_merge($loyalty, $fields_to_add);
             $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
             $duration = $duration > 180 ? 360 : $duration;
+            
             if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
-                Finder::$withoutAppends = true;
                 $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
                 if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
+                    $brand_loyalty = true;
                     $loyalty['brand_loyalty'] = $finder['brand_id'];
                     $loyalty['brand_loyalty_duration'] = $duration;
                     $loyalty['brand_loyalty_city'] = $data['city_id'];
@@ -6932,7 +6942,10 @@ Class Utilities {
                         $loyalty['brand_version'] = 1;
                     }
                 }
-            }else if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
+            }
+            
+            
+            if(empty($brand_loyalty) && !empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
                 
                 $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
                 if(!empty($data['finder_flags']['cashback_type'])){
