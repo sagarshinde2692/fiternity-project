@@ -8837,19 +8837,19 @@ class CustomerController extends \BaseController {
     }
 
     public function postLoyaltyRegistration($customer, $voucher_categories_map){
-
+    
         $checkins = $this->getCustomerCheckins($customer);
         $customer_milestones = $this->getCustomerMilestones($customer);
         $milestone_no = count($customer_milestones);
         $brand_milestones = Config::get('loyalty_constants');
         $milestones = $brand_milestones['milestones'];
-		$checkin_limit = $brand_milestones['checkin_limit'];
         
         
         $post_register = Config::get('loyalty_screens.post_register');
-
-        $this->utilities->getFinderMilestones($customer);
+        
+        $brand_milestones = $this->utilities->getFinderMilestones($customer);
 		
+		$checkin_limit = $brand_milestones['checkin_limit'];
 		
         $milestones_data = $this->utilities->getMilestoneSection($customer, $brand_milestones);
         $post_register['milestones']['data'] = $milestones_data['data'];

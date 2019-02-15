@@ -7594,6 +7594,8 @@ Class Utilities {
         }
         
         $filter = $this->getMilestoneFilterData($customer);
+
+        
         
         if(is_numeric($filter['brand_loyalty']) && is_numeric($filter['brand_loyalty_duration'])){
             
@@ -7619,10 +7621,12 @@ Class Utilities {
 				$brand_milestones = $brand_milestones->where('cashback_type', $filter['cashback_type']);
 			}
 			
-			$brand_milestones = $brand_milestones->first();
-        
-        }else{
+            $brand_milestones = $brand_milestones->first();
             
+        }
+        
+        if(empty($brand_milestones)){
+
             $brand_milestones = $this->getDefaultMilestones();
         
         }
@@ -7638,7 +7642,7 @@ Class Utilities {
         $filter['brand_loyalty_duration'] = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
         $filter['brand_version'] = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
         $filter['reward_type'] = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
-        $filter['cashback_type'] = !empty($customer->loyalty['$cashback_type']) ? $customer->loyalty['$cashback_type'] : null;
+        $filter['cashback_type'] = !empty($customer->loyalty['cashback_type']) ? $customer->loyalty['cashback_type'] : null;
         return $filter;
     }
 
@@ -7670,6 +7674,21 @@ Class Utilities {
 					$match['$match']['brand_version'] = 1;
 				}
 			}
+
+            if(!empty($filter['reward_type']) ){
+                $match['$match']['reward_type'] = $filter['reward_type'];
+            }else{
+                $match['$match']['reward_type'] =['$exists'=>false];
+            }
+
+            if(!empty($filter['cashback_type']) ){
+                $match['$match']['cashback_type'] = $filter['cashback_type'];
+            }else{
+                $match['$match']['cashback_type'] =['$exists'=>false];
+            }
+
+            // print_r($match);
+            // exit();
 
             $sort =[
                 '$sort'=>[
