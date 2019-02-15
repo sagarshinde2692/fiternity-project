@@ -1102,7 +1102,7 @@ class HomeController extends BaseController {
                     
                 }
                 
-                if(!empty($item['loyalty_registration'])){
+                if(!empty($item['loyalty_registration']) && !empty($item['finder_flags']['reward_type']) && in_array($item['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg_msg'))){
                     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
                 }
                 

@@ -914,5 +914,7 @@ return array(
 		5 => "100% Cashback"
     ],
     
-    'no_instant_reward_types'=>[5]
+    'no_instant_reward_types'=>[5],
+    
+    'no_fitsquad_reg_msg'=>[3, 5]
 );
