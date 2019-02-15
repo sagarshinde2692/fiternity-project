@@ -6896,6 +6896,11 @@ Class Utilities {
                 'start_date'=>new \MongoDate(strtotime('midnight')),
                 'start_date_time'=>new \MongoDate()
             ];
+
+            if(!empty($data['start_date'])){
+                $loyalty['start_date'] = new \MongoDate(strtotime('midnight', strtotime($data['start_date'])));
+                $loyalty['start_date_time'] = new \MongoDate(strtotime($data['start_date']));
+            }
             $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name','customer_membership']);
             $loyalty = array_merge($loyalty, $fields_to_add);
             $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
