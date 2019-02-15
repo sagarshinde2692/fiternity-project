@@ -8842,13 +8842,13 @@ class CustomerController extends \BaseController {
         $customer_milestones = $this->getCustomerMilestones($customer);
         $milestone_no = count($customer_milestones);
         $brand_milestones = Config::get('loyalty_constants');
-        $milestones = $brand_milestones['milestones'];
-        
-        
         $post_register = Config::get('loyalty_screens.post_register');
+        
+        
         
         $brand_milestones = $this->utilities->getFinderMilestones($customer);
 		
+        $milestones = $brand_milestones['milestones'];
 		$checkin_limit = $brand_milestones['checkin_limit'];
 		
         $milestones_data = $this->utilities->getMilestoneSection($customer, $brand_milestones);
