@@ -7776,9 +7776,9 @@ Class Utilities {
 
     public function getLoyaltyEmailContent($order){
         
-        if(empty($order['loyalty_registration'])){
-            return "";
-        }
+        // if(empty($order['loyalty_registration'])){
+        //     return "";
+        // }
         $cashback = 100;
 
         if(empty($order['finder_flags']['reward_type'])){

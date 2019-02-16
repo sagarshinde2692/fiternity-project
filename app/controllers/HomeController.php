@@ -1819,7 +1819,7 @@ class HomeController extends BaseController {
                 }
 
                 if(!empty($item['loyalty_email_content'])){
-                    $subline = $subline." ".$item['loyalty_email_content'];
+                    $subline = $subline."\n".$item['loyalty_email_content'];
                 }
 
             }
@@ -2119,10 +2119,11 @@ class HomeController extends BaseController {
             if(!empty($item['loyalty_registration']) && !(!empty($item['finder_flags']['reward_type']) && in_array($item['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg_msg')))){
                 $resp['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
                 $cashback_type_map = Config::get('app.cashback_type_map');
-                $resp['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 2;
-                $resp['fitsquad_sub_type'] = !empty($item['finder_flags']['cashback_type']) ?  $cashback_type_map[strval($item['finder_flags']['cashback_type'])] : null;
             }
-
+            
+            $resp['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 1;
+            $resp['fitsquad_sub_type'] = !empty($item['finder_flags']['cashback_type']) ?  $cashback_type_map[strval($item['finder_flags']['cashback_type'])] : null;
+            
             if(!empty($finder) && isset($finder['brand_id'])){
                 $resp['brand_id'] = $finder['brand_id'];
             }
