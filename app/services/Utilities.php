@@ -7789,12 +7789,10 @@ Class Utilities {
         // }
         $cashback = 100;
 
-        if(empty($order['finder_flags']['reward_type'])){
-            $reward_type = 1;
-        }
-        if(empty($order['finder_flags']['cashback_type'])){
-            $cashback_type = 0;
-        }
+        
+        $reward_type =!empty($order['finder_flags']['reward_type']) ? $order['finder_flags']['reward_type'] :  1;
+        $cashback_type = !empty($order['finder_flags']['cashback_type']);
+        
 
         switch($cashback_type){
             case 1:
