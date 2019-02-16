@@ -6896,23 +6896,23 @@ Class Utilities {
     
     public function autoRegisterCustomerLoyalty($data){
         try{
-            Finder::$withoutAppends = true;
-            $post_data = \Input::all();
+            $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
+            if(!$customer){
+                return ['status'=>400, 'Customer already registered'];
+            }
             
-            if(!empty($post_data['order_success_flag']) && $post_data['order_success_flag'] == 'admin'){
+            if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
                 
-                $order_finder = Finder::find($data['finder_id']);
-                $data['finder_flags'] = !empty($order_finder['flags']) ? $order_finder['flags'] : [];
+                Finder::$withoutAppends = true;
+                $finder = Finder::find($data['finder_id']);
+                $data['finder_flags'] = !empty($finder['flags']) ? $finder['flags'] : [];
+            
             }
 
             if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1]))){
                 return ['status'=>400, 'message'=>'No fitsquad for vendor'];
             }
             
-            $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
-            if(!$customer){
-                return ['status'=>400, 'Customer already registered'];
-            }
             
             $loyalty = [
                 'start_date'=>new \MongoDate(strtotime('midnight')),
@@ -6929,7 +6929,10 @@ Class Utilities {
             $duration = $duration > 180 ? 360 : $duration;
             
             if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
-                $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+                if(empty($finder)){
+                    Finder::$withoutAppends = true;
+                    $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+                }
                 if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
                     $brand_loyalty = true;
                     $loyalty['brand_loyalty'] = $finder['brand_id'];
