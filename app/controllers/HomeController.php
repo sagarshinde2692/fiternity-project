@@ -1817,9 +1817,10 @@ class HomeController extends BaseController {
                         $booking_details_data = array_only($booking_details_data, ['booking_id','address','poc', 'validity']);
                     }
                 }
-
-                if(!empty($item['loyalty_email_content'])){
-                    $subline = $subline."\n".$item['loyalty_email_content'];
+                if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
+                    if(!empty($item['loyalty_email_content'])){
+                        $subline = $subline."\n".$item['loyalty_email_content'];
+                    }
                 }
 
             }
