@@ -4048,6 +4048,15 @@ Class Utilities {
             }
             
         }
+                
+        if(isset($data['routed_order']) && $data['routed_order'] == "1"){
+            
+            $finder = \Finder::find($finder_id);
+            $routed_commission_reward_type_map = Config::get('app.routed_commission_reward_type_map');
+            if(!empty($finder['flags']['reward_type']) && !empty($routed_commission_reward_type_map[$finder['flags']['reward_type']])){
+                $commision = $routed_commission_reward_type_map[$finder['flags']['reward_type']];
+            }
+        }
 
         Log::info('commision : '.$commision);
         return $commision;
@@ -6207,7 +6216,7 @@ Class Utilities {
             return ['data'=>[]];
         }
         
-        $post_register_milestones = Config::get('loyalty_screens.milestones');
+        
         $milestone_no = 1;
         $check_ins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
         $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
@@ -6215,28 +6224,15 @@ Class Utilities {
         $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
         $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
         $brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
-
+        
+        $post_register_milestones = Config::get('loyalty_screens.milestones');
         $checkin_limit = Config::get('loyalty_constants.checkin_limit');
         
-        if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
-            if(!$brand_milestones){
-                if(!empty($brand_loyalty)) {
-                    if(!empty($brand_version)){
-                        $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', $brand_version)->first();
-                    }
-                    else {
-                        $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', 1)->first();
-                    }
-                }
-                else {
-                    $brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
-                }
-            }
+        $finder_milestones = $this->getFinderMilestones($customer, $brand_milestones);
 
-            if($brand_milestones){
-                $post_register_milestones['data'] = $brand_milestones['milestones'];
-                $checkin_limit = $brand_milestones['checkin_limit'];
-            }
+        if(!empty($finder_milestones)){
+            $post_register_milestones['data'] = $finder_milestones['milestones'];
+            $checkin_limit = $finder_milestones['checkin_limit'];
         }
 
         foreach($post_register_milestones['data'] as &$milestone){
@@ -6911,18 +6907,40 @@ Class Utilities {
                 return ['status'=>400, 'Customer already registered'];
             }
             
+            if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
+                
+                Finder::$withoutAppends = true;
+                $finder = Finder::find($data['finder_id']);
+                $data['finder_flags'] = !empty($finder['flags']) ? $finder['flags'] : [];
+            
+            }
+
+            if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1]))){
+                return ['status'=>400, 'message'=>'No fitsquad for vendor'];
+            }
+            
+            
             $loyalty = [
                 'start_date'=>new \MongoDate(strtotime('midnight')),
                 'start_date_time'=>new \MongoDate()
             ];
+
+            if(!empty($data['start_date'])){
+                $loyalty['start_date'] = new \MongoDate(strtotime('midnight', strtotime($data['start_date'])));
+                $loyalty['start_date_time'] = new \MongoDate(strtotime($data['start_date']));
+            }
             $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name','customer_membership']);
             $loyalty = array_merge($loyalty, $fields_to_add);
             $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
             $duration = $duration > 180 ? 360 : $duration;
+            
             if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
-                Finder::$withoutAppends = true;
-                $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+                if(empty($finder)){
+                    Finder::$withoutAppends = true;
+                    $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+                }
                 if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
+                    $brand_loyalty = true;
                     $loyalty['brand_loyalty'] = $finder['brand_id'];
                     $loyalty['brand_loyalty_duration'] = $duration;
                     $loyalty['brand_loyalty_city'] = $data['city_id'];
@@ -6938,12 +6956,27 @@ Class Utilities {
                     }
                 }
             }
+            
+            
+            if(empty($brand_loyalty) && !empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
+                
+                $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
+                if(!empty($data['finder_flags']['cashback_type'])){
+                    $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
+                }
+            }
 
             $update_data = [
                 'loyalty'=>$loyalty 
             ];
             $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update($update_data);
-            if($customer_update){
+
+            if($customer_update && $this->sendLoyaltyCommunication($data)){
+
+                $customermailer = new CustomerMailer();
+
+                $customermailer->loyaltyRegister($customer->toArray());
+
                 return ['status'=>200];
             }else{
                 return ['status'=>400, 'message'=>'Customer already registered'];
@@ -7569,6 +7602,22 @@ Class Utilities {
 
     }
 
+    public function getCustomerFromTokenAsObject(){
+        
+        $token = Request::header('Authorization');
+        
+        if(empty($token)){
+            return;
+        }
+        
+        $token_decoded = customerTokenDecode($token);
+
+        $customer = $token_decoded->customer;
+
+        return $customer;
+
+    }
+
     public function sessionPackMultiServiceDiscount($ratecard, $customer_email, $amount){
         
          if(empty($customer_email)){
@@ -7586,82 +7635,270 @@ Class Utilities {
         
     }
 
-    
-            
-    public function getPPSSearchResult($data){
-        $payload = [
-            'category' =>!empty($data['localName']) && !empty($data['name']) ? 
-                [
-                    [
-                        'localName' => !empty($data['localName']) ? $data['localName'] : '',
-                        'name' => !empty($data['name']) ? $data['name'] : '',
-                        'subcategory' =>
-                            [],
-                    ],
-            ] : [],
-            'time_tag' => !empty($data['time_tag']) ? $data['time_tag'] : '',
-            'keys' =>!empty($data['keys']) ? $data['keys'] :
-                [
-                'id',
-                'address',
-                'average_rating',
-                'category',
-                'commercial_type',
-                'geolocation',
-                'location',
-                'name',
-                'slug',
-                'total_rating_count',
-                'slots',
-                'vendor_name',
-                'price',
-                'coverimage',
-                'total_slots',
-                'next_slot',
-                'vendor_slug',
-                'overlayimage',
-                'trial_header',
-                'membership_header',
-            ],
-            'location' =>
-                [
-                'city' => !empty($data['city']) ? $data['city'] : 'mumbai',
-                'geo' =>
-                    [
-                    'lat' => !empty($data['lat']) ? $data['lat'] : null,
-                    'lon' => !empty($data['lon']) ? $data['lon'] : null,
-                    'radius' => !empty($data['radius']) ? $data['radius'] : null,
-                ],
-                'regions'=>!empty($data['regions']) ? $data['regions'] : [],
-            ],
-            'offset' =>
-                [
-                'from' => 0,
-                'number_of_records' => !empty($data['number_of_records']) ? $data['number_of_records'] : "4",
-            ],
-            'price_range' => '',
-            'skipTimings' => false,
-            'sort' =>
-                [
-                'order' => 'desc',
-                'sortField' => 'popularity',
-            ],
-        ];
-
-        $url = "search/paypersession";
-
-        $finder = [];
-
-        try {
-            $client = new Client( ['debug' => false, 'base_uri' =>Config::get('app.new_search_url')."/"] );
-            $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
-            return $response;
-        }catch(Exception $e){
-            Log::info($e);
-            return null;
+    public function getFinderMilestones($customer, $brand_milestones = null){
+        
+        if(!empty($brand_milestones)){
+            return $brand_milestones;
         }
+        
+        $filter = $this->getMilestoneFilterData($customer);
+
+        
+        
+        if(is_numeric($filter['brand_loyalty']) && is_numeric($filter['brand_loyalty_duration'])){
+            
+            if(!$brand_milestones){
+                if(!empty($filter['brand_loyalty'])) {
+                    if(!empty($filter['brand_version'])){
+                        $brand_milestones = FinderMilestone::where('brand_id', $filter['brand_loyalty'])->where('duration', $filter['brand_loyalty_duration'])->where('brand_version', $filter['brand_version'])->first();
+                    }
+                    else {
+                        $brand_milestones = FinderMilestone::where('brand_id', $filter['brand_loyalty'])->where('duration', $filter['brand_loyalty_duration'])->where('brand_version', 1)->first();
+                    }
+                }
+                else {
+                    $brand_milestones = FinderMilestone::where('brand_id', $filter['brand_loyalty'])->where('duration', $filter['brand_loyalty_duration'])->first();
+                }
+            }
+
+        }else if(!empty($filter['reward_type'])){
+
+			$brand_milestones = FinderMilestone::where('reward_type', $filter['reward_type']);
+
+			if(in_array($filter['reward_type'], [3, 4, 5]) && !empty($filter['cashback_type'])){
+				$brand_milestones = $brand_milestones->where('cashback_type', $filter['cashback_type']);
+			}
+			
+            $brand_milestones = $brand_milestones->first();
+            
+        }
+        
+        if(empty($brand_milestones)){
+
+            $brand_milestones = $this->getDefaultMilestones();
+        
+        }
+        
+        return $brand_milestones;
+    
     }
 
+    public function getMilestoneFilterData($customer){
+        $filter = [];
+        $filter['brand_loyalty'] = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
+        $filter['brand_loyalty_city'] = !empty($customer->loyalty['brand_loyalty_city']) ? $customer->loyalty['brand_loyalty_city'] : null;
+        $filter['brand_loyalty_duration'] = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
+        $filter['brand_version'] = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
+        $filter['reward_type'] = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
+        $filter['cashback_type'] = !empty($customer->loyalty['cashback_type']) ? $customer->loyalty['cashback_type'] : null;
+        return $filter;
+    }
+
+    public function getVoucherCategoriesAggregate($filter){
+        
+        return $voucher_categories = \VoucherCategory::raw(function($collection) use($filter){
+				
+            $match = [
+                '$match'=>[
+                    'status'=>'1',
+                ]
+                
+            ];
+            
+            if(!empty($filter['brand_loyalty']) && !empty($filter['brand_loyalty_duration']) && !empty($filter['brand_loyalty_city'])){
+                $match['$match']['brand_id'] = $filter['brand_loyalty'];
+                $match['$match']['duration'] = $filter['brand_loyalty_duration'];
+				$match['$match']['city'] = $filter['brand_loyalty_city'];
+            }else{
+                $match['$match']['brand_id'] =['$exists'=>false];
+                $match['$match']['duration'] =['$exists'=>false];
+                $match['$match']['city'] =['$exists'=>false];
+			}
+			if(!empty($filter['brand_loyalty'])) {
+				if(!empty($filter['brand_version'])){
+					$match['$match']['brand_version'] = $filter['brand_version'];
+				}
+				else {
+					$match['$match']['brand_version'] = 1;
+				}
+			}
+
+            if(!empty($filter['reward_type']) ){
+                $match['$match']['reward_type'] = $filter['reward_type'];
+            }else{
+                $match['$match']['reward_type'] =['$exists'=>false];
+            }
+
+            if(!empty($filter['cashback_type']) ){
+                $match['$match']['cashback_type'] = $filter['cashback_type'];
+            }else{
+                $match['$match']['cashback_type'] =['$exists'=>false];
+            }
+
+            // print_r($match);
+            // exit();
+
+            $sort =[
+                '$sort'=>[
+                    'order'=>1
+                ]
+            ];
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$milestone',
+                    'vouchers'=>['$push'=>'$$ROOT'],
+                    'amount'=>['$max'=>'$amount']
+                ]
+            ];
+
+            $sort1 = [
+                '$sort'=>[
+                    '_id'=>1
+                ]
+            ];
+            $aggregate = [$match, $sort, $group, $sort1];
+            Log::info($aggregate);
+            // exit();
+            return $collection->aggregate($aggregate);
+        });
+    
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultMilestones()
+    {
+        return Config::get('loyalty_constants');
+    }
+
+    public function sendLoyaltyCommunication($item){
+        
+        if(!empty($item['finder_flags']['reward_type']) && in_array($item['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg_msg'))){
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getLoyaltyEmailContent($order){
+        
+        // if(empty($order['loyalty_registration'])){
+        //     return "";
+        // }
+        $cashback = 100;
+
+        if(empty($order['finder_flags']['reward_type'])){
+            $order['finder_flags']['reward_type'] = 1;
+        }
+        if(empty($order['finder_flags']['cashback_type'])){
+            $order['finder_flags']['cashback_type'] = 0;
+        }
+
+        switch($order['finder_flags']['cashback_type']){
+            case 1:
+            case 2:
+                $cashback = 120;
+        }
+        $msg = "";
+        switch($order['finder_flags']['reward_type']){
+            case 1:
+            break;
+            case 2:
+            break;
+            case 3:
+                $msg = "Congratulations! You have got an exclusive access to earn ".$cashback."% cashback on your membership amount. Please download the Fitternity app , look for Fitsquad option and start check-in for your workout at ".$order['finder_name'];
+            break;
+            case 4:
+                $msg = "Congratulations! You have got an exclusive access to earn exciting rewards & ".$cashback."% cashback on your membership amount. Please download the Fitternity app , look for Fitsquad option and start check-in for your workout at ".$order['finder_name'];
+            break;
+            case 5:
+                $msg  = "Congratulations! You have got an exclusive access to earn ".$cashback."% cashback on your membership amount. Please download the Fitternity app , look for Fitsquad option and start check-in for your workout at ".$order['finder_name'];
+            break;
+            case 6:
+                $msg  = "Congratulations! You have got an exclusive access to earn exciting rewards & ".$cashback."% cashback on your membership amount. Please download the Fitternity app , look for Fitsquad option and start check-in for your workout at ".$order['finder_name'];
+            break;
+        }
+
+        return $msg;
+
+    }
+
+
+public function getPPSSearchResult($data){
+    $payload = [
+        'category' =>!empty($data['localName']) && !empty($data['name']) ? 
+            [
+                [
+                    'localName' => !empty($data['localName']) ? $data['localName'] : '',
+                    'name' => !empty($data['name']) ? $data['name'] : '',
+                    'subcategory' =>
+                        [],
+                ],
+        ] : [],
+        'time_tag' => !empty($data['time_tag']) ? $data['time_tag'] : '',
+        'keys' =>!empty($data['keys']) ? $data['keys'] :
+            [
+            'id',
+            'address',
+            'average_rating',
+            'category',
+            'commercial_type',
+            'geolocation',
+            'location',
+            'name',
+            'slug',
+            'total_rating_count',
+            'slots',
+            'vendor_name',
+            'price',
+            'coverimage',
+            'total_slots',
+            'next_slot',
+            'vendor_slug',
+            'overlayimage',
+            'trial_header',
+            'membership_header',
+        ],
+        'location' =>
+            [
+            'city' => !empty($data['city']) ? $data['city'] : 'mumbai',
+            'geo' =>
+                [
+                'lat' => !empty($data['lat']) ? $data['lat'] : null,
+                'lon' => !empty($data['lon']) ? $data['lon'] : null,
+                'radius' => !empty($data['radius']) ? $data['radius'] : null,
+            ],
+            'regions'=>!empty($data['regions']) ? $data['regions'] : [],
+        ],
+        'offset' =>
+            [
+            'from' => 0,
+            'number_of_records' => !empty($data['number_of_records']) ? $data['number_of_records'] : "4",
+        ],
+        'price_range' => '',
+        'skipTimings' => false,
+        'sort' =>
+            [
+            'order' => 'desc',
+            'sortField' => 'popularity',
+        ],
+    ];
+
+    $url = "search/paypersession";
+
+    $finder = [];
+
+    try {
+        $client = new Client( ['debug' => false, 'base_uri' =>Config::get('app.new_search_url')."/"] );
+        $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+        return $response;
+    }catch(Exception $e){
+        Log::info($e);
+        return null;
+    }
 }
+
 
 

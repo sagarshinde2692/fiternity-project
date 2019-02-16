@@ -8240,81 +8240,26 @@ class CustomerController extends \BaseController {
 	}
 
 	public function loyaltyProfile(){
-    
 		Log::info("asdas");
 		$post = false;
 		$jwt_token = Request::header('Authorization');
 		$customer = null;
-        $brand_loyalty = null;
-        $brand_loyalty_duration = null;
-		$brand_loyalty_city = null;
-		$brand_version = null;
-		if(!empty($jwt_token)){
+        $filter = [];
+        
+        $customer = $this->utilities->getCustomerFromTokenAsObject();
 
-			$decoded = decode_customer_token($jwt_token);
-			$customer_id = $decoded->customer->_id;
-			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', 'exists', true)->first();
-            $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
-            $brand_loyalty_city = !empty($customer->loyalty['brand_loyalty_city']) ? $customer->loyalty['brand_loyalty_city'] : null;
-			$brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
-			$brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
+        if(!empty($customer->_id)){
+
+            $customer = Customer::active()->where('_id', $customer->_id)->where('loyalty', 'exists', true)->first();
+            $filter = $this->utilities->getMilestoneFilterData($customer);
+
 			if($customer){
 				$post = true;
 			}
-		}
+        }
+        
+        $voucher_categories = $this->utilities->getVoucherCategoriesAggregate($filter);
 		
-        $voucher_categories = VoucherCategory::raw(function($collection) use($brand_loyalty, $brand_loyalty_duration, $brand_loyalty_city, $brand_version){
-				
-            $match = [
-                '$match'=>[
-                    'status'=>'1',
-                ]
-                
-            ];
-            
-            if(!empty($brand_loyalty) && !empty($brand_loyalty_duration) && !empty($brand_loyalty_city)){
-                $match['$match']['brand_id'] = $brand_loyalty;
-                $match['$match']['duration'] = $brand_loyalty_duration;
-				$match['$match']['city'] = $brand_loyalty_city;
-            }else{
-                $match['$match']['brand_id'] =['$exists'=>false];
-                $match['$match']['duration'] =['$exists'=>false];
-                $match['$match']['city'] =['$exists'=>false];
-			}
-			if(!empty($brand_loyalty)) {
-				if(!empty($brand_version)){
-					$match['$match']['brand_version'] = $brand_version;
-				}
-				else {
-					$match['$match']['brand_version'] = 1;
-				}
-			}
-
-            $sort =[
-                '$sort'=>[
-                    'order'=>1
-                ]
-            ];
-
-            $group = [
-                '$group'=>[
-                    '_id'=>'$milestone',
-                    'vouchers'=>['$push'=>'$$ROOT'],
-                    'amount'=>['$max'=>'$amount']
-                ]
-            ];
-
-            $sort1 = [
-                '$sort'=>[
-                    '_id'=>1
-                ]
-            ];
-            $aggregate = [$match, $sort, $group, $sort1];
-            Log::info($aggregate);
-            // exit();
-            return $collection->aggregate($aggregate);
-        });
-	
         $voucher_categories_map = [];
 	
         foreach($voucher_categories['result'] as $vc){
@@ -8486,7 +8431,7 @@ class CustomerController extends \BaseController {
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
 			$customer = Customer::find($customer_id);
-			$milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
+			$milestones = $this->getCustomerMilestones($customer);
 
 
             if(!empty($_GET['milestone']) && !empty($milestones[intval($_GET['milestone'])-1]['voucher'])){
@@ -8893,52 +8838,23 @@ class CustomerController extends \BaseController {
     }
 
     public function postLoyaltyRegistration($customer, $voucher_categories_map){
-
-        // return $voucher_categories_map;
-
-        $post_register = Config::get('loyalty_screens.post_register');
-        $checkins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
-        $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
+    
+        $checkins = $this->getCustomerCheckins($customer);
+        $customer_milestones = $this->getCustomerMilestones($customer);
         $milestone_no = count($customer_milestones);
-        $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
-        $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
-		$brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
-        // $checkins = 52;
         $brand_milestones = Config::get('loyalty_constants');
+        $post_register = Config::get('loyalty_screens.post_register');
+        
+        
+        
+        $brand_milestones = $this->utilities->getFinderMilestones($customer);
+		
         $milestones = $brand_milestones['milestones'];
 		$checkin_limit = $brand_milestones['checkin_limit'];
-        
-        if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
-			if(!empty($brand_version)){
-				$brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', $brand_version)->first();
-			}else{
-				$brand_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->first();
-			}
-            if($brand_milestones){
-                $milestones = $brand_milestones['milestones'];
-                $checkin_limit = $brand_milestones['checkin_limit'];
-            }
-        }
+		
         $milestones_data = $this->utilities->getMilestoneSection($customer, $brand_milestones);
         $post_register['milestones']['data'] = $milestones_data['data'];
-
-        // foreach($post_register['milestones']['data'] as &$milestone){
-            
-        // 	if(!empty($milestone['next_count'])){
-                
-        // 		if($milestone['milestone'] < $milestone_no){
-        // 			$milestone['enabled'] = true;
-        // 			$milestone['progress'] = 100;
-        // 		}else{
-        // 			$milestone['enabled'] = true;
-        // 			$milestone['progress'] = round(($checkins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
-        // 			break;
-        // 		}
-        // 	}
-        // }
-        // unset($milestone);
-        // return $post_register['milestones']['data'];
-        // return $milestone_next_count-$check_ins;
+		
         $next_milestone_checkins = !empty($milestones[$milestone_no]['next_count']) ? $milestones[$milestone_no]['next_count'] : 225;
         
         $milestone_text = '';
@@ -9332,6 +9248,24 @@ class CustomerController extends \BaseController {
 
 
         return $this->formatSessionPack($order);
+    }
+
+    /**
+     * @param $customer
+     * @return int
+     */
+    public function getCustomerCheckins($customer)
+    {
+        return !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
+    }
+
+    /**
+     * @param $customer
+     * @return array
+     */
+    public function getCustomerMilestones($customer)
+    {
+        return !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
     }
 
 }
