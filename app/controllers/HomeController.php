@@ -2116,11 +2116,11 @@ class HomeController extends BaseController {
 
             }
 
-            if(!empty($item['loyalty_registration']) && !(!empty($item['finder_flags']['reward_type']) && in_array($item['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg_msg')))){
+            if(!empty($item['loyalty_registration']) && $this->utilities->sendLoyaltyCommunication($item)){
                 $resp['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
-                $cashback_type_map = Config::get('app.cashback_type_map');
             }
             
+            $cashback_type_map = Config::get('app.cashback_type_map');
             $resp['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 1;
             $resp['fitsquad_sub_type'] = !empty($item['finder_flags']['cashback_type']) ?  $cashback_type_map[strval($item['finder_flags']['cashback_type'])] : null;
             
