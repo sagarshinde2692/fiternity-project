@@ -908,8 +908,8 @@ return array(
 
 	'reward_type'=>[
 		1 => "Instant Reward",
-		2 => "Instance Reward + Fit Squad ",
-		3 => "Instance Reward + 100% Cashback",
+		2 => "Instant Reward + Fit Squad ",
+		3 => "Instant Reward + 100% Cashback",
 		4 => "Instant Reward + Fit Squad + 100% Cashback",
 		5 => "100% Cashback"
     ],
@@ -917,6 +917,8 @@ return array(
     'no_instant_reward_types'=>[5,6],
     
     'no_fitsquad_reg_msg'=>[1, 3, 5],
+    
+    'no_fitsquad_reg'=>[1],
 
     'cashback_type_map'=>[
         1=>'A',

@@ -6904,6 +6904,10 @@ Class Utilities {
                 $order_finder = Finder::find($data['finder_id']);
                 $data['finder_flags'] = !empty($order_finder['flags']) ? $order_finder['flags'] : [];
             }
+
+            if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1]))){
+                return ['status'=>400, 'message'=>'No fitsquad for vendor'];
+            }
             
             $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
             if(!$customer){
