@@ -1102,8 +1102,12 @@ class HomeController extends BaseController {
                     
                 }
                 
-                if(!empty($item['loyalty_registration'])){
+                
+                if(!empty($item['loyalty_registration']) && $this->utilities->sendLoyaltyCommunication($item)){
                     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
+                    $cashback_type_map = Config::get('app.cashback_type_map');
+                    $response['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 2;
+                    $response['fitsquad_sub_type'] = !empty($item['finder_flags']['cashback_type']) ?  $cashback_type_map[strval($item['finder_flags']['cashback_type'])] : null;
                 }
                 
                 if(!empty($item['qrcodepayment'])){
@@ -1813,6 +1817,11 @@ class HomeController extends BaseController {
                         $booking_details_data = array_only($booking_details_data, ['booking_id','address','poc', 'validity']);
                     }
                 }
+                if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
+                    if(!empty($item['loyalty_email_content'])){
+                        $subline = $subline."\n".$item['loyalty_email_content'];
+                    }
+                }
 
             }
 
@@ -2108,10 +2117,14 @@ class HomeController extends BaseController {
 
             }
 
-            if(!empty($item['loyalty_registration'])){
+            if(!empty($item['loyalty_registration']) && $this->utilities->sendLoyaltyCommunication($item)){
                 $resp['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
             }
-
+            
+            $cashback_type_map = Config::get('app.cashback_type_map');
+            $resp['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 1;
+            $resp['fitsquad_sub_type'] = !empty($item['finder_flags']['cashback_type']) ?  $cashback_type_map[strval($item['finder_flags']['cashback_type'])] : null;
+            
             if(!empty($finder) && isset($finder['brand_id'])){
                 $resp['brand_id'] = $finder['brand_id'];
             }

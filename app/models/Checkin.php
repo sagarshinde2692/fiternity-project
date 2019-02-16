@@ -12,5 +12,15 @@ class Checkin extends  \Basemodel {
     public function getFinderAttribute(){
       Finder::$withoutAppends = true;
 		  return Finder::where('_id', intval($this->finder_id))->first(['title']);
-	  }
+    }
+    
+    public function newQuery($excludeDeleted = true){
+        
+        $query = parent::newQuery($excludeDeleted);
+
+        $query->where('status', '!=', '0');
+
+        return $query;
+    
+    }
 }

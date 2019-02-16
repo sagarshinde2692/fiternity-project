@@ -905,5 +905,39 @@ return array(
 	'finder_10_discount'=>[9932],
 
 	'upgrade_session_finder_id'=>[13968, 15431, 15980],
-	'multiply_app_download_link' => 'http://onelink.to/abmultiply'
+	'multiply_app_download_link' => 'http://onelink.to/abmultiply',
+
+	'reward_type'=>[
+		1 => "Instant Reward",
+		2 => "Instant Reward + Fit Squad ",
+		3 => "Instant Reward + 100% Cashback",
+		4 => "Instant Reward + Fit Squad + 100% Cashback",
+		5 => "100% Cashback"
+    ],
+    
+    'no_instant_reward_types'=>[5,6],
+    
+    'no_fitsquad_reg_msg'=>[1, 3, 5],
+    
+    'no_fitsquad_reg'=>[1],
+
+    'cashback_type_map'=>[
+        1=>'A',
+        2=>'B',
+        3=>'C',
+        4=>'D',
+        5=>'E',
+        6=>'F',
+        7=>'G',
+        0=>NULL,
+    ],
+
+    'routed_commission_reward_type_map'=>[
+        1=>2.5,
+        2=>3.5,
+        3=>5.5,
+        4=>7,
+        5=>5,
+        6=>6
+    ],
 );
