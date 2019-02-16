@@ -2450,7 +2450,10 @@ class TransactionController extends \BaseController {
 
             $data['membership_cancel_request_url'] = Config::get('app.website')."/membership?capture_type=membership_cancel_request&order_token=".$order_token;
 
-            $data['loyalty_email_content'] = $this->utilities->getLoyaltyEmailContent($order);
+
+            if(!empty($data['type']) && $data['type'] == 'memberships'){
+                $data['loyalty_email_content'] = $this->utilities->getLoyaltyEmailContent($order);
+            }
 
             $order->update($data);
 
