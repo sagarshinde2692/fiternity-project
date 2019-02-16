@@ -7782,7 +7782,7 @@ Class Utilities {
         $cashback = 100;
 
         if(empty($order['finder_flags']['reward_type'])){
-            $order['finder_flags']['reward_type'] = 2;
+            $order['finder_flags']['reward_type'] = 1;
         }
         if(empty($order['finder_flags']['cashback_type'])){
             $order['finder_flags']['cashback_type'] = 0;

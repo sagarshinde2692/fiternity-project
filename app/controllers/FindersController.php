@@ -1286,37 +1286,26 @@ class FindersController extends \BaseController {
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
 
-                        if(!empty($response['finder']['extended_validity'])){
+                        if(!empty($finder['flags']['cashback_type'])){
+
+                            $text1 = $this->getVendorStripeCashbackText($finder);
 
                             $response['vendor_stripe_data']	=	[
-                                        'text1'=> "Introducing Unlimited validity Membership",
-                                        'text2'=>$response['finder']['title'],
-                                        'text2'=>"",
-                                        'text3'=>" | Upto 50% off",
+                                        'text1'=> $text1,
+                                        'text3'=>"",
                                         'background-color'=> "",
                                         'text_color'=> '$fff',
                                         'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
                             ];
                         
-                        }else{
-                        
-                            $response['vendor_stripe_data']	=	[
-                                        'text1'=>"",
-                                        // 'text2'=>$response['finder']['title'].":",
-                                        'text2'=>"",
-                                        'text3'=>"Lowest Offer Of The Year | Upto 50% off",
-                                        'background-color'=> "",
-                                        'text_color'=> '$fff',
-                                        'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
-                            ];
-						}
-						if(empty($finder['flags']['end_sale_0'])){
-							if(!empty($finder['flags']['end_sale_10'])){
-								$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addnl Flat 10% off. Code: JFIT *T&C';
-							}else{
-								$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addnl Flat 5% off. Code: JFIT *T&C';
-							}
-						}
+                        }
+						// if(empty($finder['flags']['end_sale_0'])){
+						// 	if(!empty($finder['flags']['end_sale_10'])){
+						// 		$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addnl Flat 10% off. Code: JFIT *T&C';
+						// 	}else{
+						// 		$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addnl Flat 5% off. Code: JFIT *T&C';
+						// 	}
+						// }
 
                         // if(!in_array($response['finder']['_id'], Config::get('app.eoys_excluded_vendor_ids'))){
                         //     $response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3']." | Addn Flat 10% off. Code: EOYS *T&C";
@@ -7041,7 +7030,42 @@ class FindersController extends \BaseController {
 			}
 		}
 	}
-	
+    
+    public function getVendorStripeCashbackText($finder){
+        
+        if(empty($finder['flags']['reward_type'])){
+            $finder['flags']['reward_type'] = 1;
+        }
+        if(empty($finder['flags']['cashback_type'])){
+            $finder['flags']['cashback_type'] = 0;
+        }
+        $cashback = 100;
+        switch($finder['flags']['cashback_type']){
+            case 1:
+            case 2:
+                $cashback = 120;
+        }
+        $msg = "";
+        switch($finder['flags']['reward_type']){
+            case 1:
+            break;
+            case 2:
+            break;
+            case 3:
+                $msg = "BEST OFFER : GET ".$cashback."% CASHBACK & INSTANT REWARDS";
+            break;
+            case 4:
+            case 6:
+                $msg = "BEST OFFER : GET ".$cashback."% CASHBACK & REWARDS WORTH RS 20,000";
+            break;
+            case 5:
+                $msg  = "BEST OFFER : GET ".$cashback."% CASHBACK ON MEMBERSHIP AMOUNT";
+            break;
+        }
+
+        return $msg;
+
+    }
 
 
 }

@@ -1818,6 +1818,10 @@ class HomeController extends BaseController {
                     }
                 }
 
+                if(!empty($item['loyalty_email_content'])){
+                    $subline = $subline." ".$item['loyalty_email_content'];
+                }
+
             }
 
             if( isset($item['type']) &&  in_array($item['type'],["booktrials","workout-session"])){
