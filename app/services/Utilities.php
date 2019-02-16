@@ -6964,7 +6964,13 @@ Class Utilities {
                 'loyalty'=>$loyalty 
             ];
             $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update($update_data);
-            if($customer_update){
+
+            if($customer_update && $this->sendLoyaltyCommunication($data)){
+
+                $customermailer = new CustomerMailer();
+
+                $customermailer->loyaltyRegister($customer->toArray());
+
                 return ['status'=>200];
             }else{
                 return ['status'=>400, 'message'=>'Customer already registered'];
@@ -7757,6 +7763,58 @@ Class Utilities {
     public function getDefaultMilestones()
     {
         return Config::get('loyalty_constants');
+    }
+
+    public function sendLoyaltyCommunication($item){
+        
+        if(!empty($item['finder_flags']['reward_type']) && in_array($item['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg_msg'))){
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getLoyaltyEmailContent($order){
+        
+        if(empty($order['loyalty_registration'])){
+            return "";
+        }
+        $cashback = 100;
+
+        if(empty($order['finder_flags']['reward_type'])){
+            $order['finder_flags']['reward_type'] = 2;
+        }
+        if(empty($order['finder_flags']['cashback_type'])){
+            $order['finder_flags']['cashback_type'] = 0;
+        }
+
+        switch($order['finder_flags']['cashback_type']){
+            case 1:
+            case 2:
+                $cashback = 120;
+        }
+        $msg = "";
+        switch($order['finder_flags']['reward_type']){
+            case 1:
+            break;
+            case 2:
+            break;
+            case 3:
+                $msg = "Congratulations! You have got an exclusive access to earn ".$cashback."% cashback on your membership amount. Please download the Fitternity app , look for Fitsquad option and start check-in for your workout at ".$order['finder_name'];
+            break;
+            case 4:
+                $msg = "Congratulations! You have got an exclusive access to earn exciting rewards & ".$cashback."% cashback on your membership amount. Please download the Fitternity app , look for Fitsquad option and start check-in for your workout at ".$order['finder_name'];
+            break;
+            case 5:
+                $msg  = "Congratulations! You have got an exclusive access to earn ".$cashback."% cashback on your membership amount. Please download the Fitternity app , look for Fitsquad option and start check-in for your workout at ".$order['finder_name'];
+            break;
+            case 6:
+                $msg  = "Congratulations! You have got an exclusive access to earn exciting rewards & ".$cashback."% cashback on your membership amount. Please download the Fitternity app , look for Fitsquad option and start check-in for your workout at ".$order['finder_name'];
+            break;
+        }
+
+        return $msg;
+
     }
 
 
