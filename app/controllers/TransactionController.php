@@ -2542,7 +2542,7 @@ class TransactionController extends \BaseController {
                                     $emailData['bbcustomer_name'] = $emailData['customer_name'];
                                     $emailData['customer_email'] = $c['customer_email'];
                                     $emailData['customer_name'] = $c['customer_name'];
-                                    $emailData['jockey_code'] = $c['jockey_code'];
+                                    $emailData['jockey_code'] = !empty($c['jockey_code']) ? $c['jockey_code'] :'';
                                     $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
                                 }
                             
