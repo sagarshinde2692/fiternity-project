@@ -1,15 +1,15 @@
 <?php
 
 //local
-$host = "localhost";
-$username = "";
-$password = "";
+// $host = "localhost";
+// $username = "";
+// $password = "";
 
 //stage
-// $host = "apistage.fitn.in";
-// $username = "admin";
-// $password = "fit123";
-// $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
+$host = "apistage.fitn.in";
+$username = "admin";
+$password = "fit123";
+$options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
 
 //production
 

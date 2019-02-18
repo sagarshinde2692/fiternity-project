@@ -1119,7 +1119,7 @@ class RewardofferController extends BaseController {
                     unset($rewards[$reward_key]);
                 }
 
-                if(in_array($finder_id,$multifit_qym) & $reward_value['reward_type'] == 'diet_plan'){
+                if(!empty($multifit_qym) && in_array($finder_id,$multifit_qym) & $reward_value['reward_type'] == 'diet_plan'){
                     unset($rewards[$reward_key]);
                 }
 
