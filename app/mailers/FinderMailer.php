@@ -290,9 +290,9 @@ Class FinderMailer extends Mailer {
 			$user_email 	= 	array(Config::get('mail.to_mailus'));
 		}
 
-        if(!empty($data['finder_id']) && !empty($data['type']) && in_array($data['finder_id'], Config::get('app.snap_bangalore_finder_ids')) && $data['type'] == 'memberships'){
-            $user_email = [];
-        }
+        // if(!empty($data['finder_id']) && !empty($data['type']) && in_array($data['finder_id'], Config::get('app.snap_bangalore_finder_ids')) && $data['type'] == 'memberships'){
+        //     $user_email = [];
+        // }
 
 		$user_name = ucwords($data['finder_name']);
 
