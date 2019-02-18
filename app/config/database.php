@@ -1,9 +1,9 @@
 <?php
 
 //local
-// $host = "localhost";
-// $username = "";
-// $password = "";
+$host = "localhost";
+$username = "";
+$password = "";
 
 //stage
 // $host = "apistage.fitn.in";
@@ -13,9 +13,9 @@
 
 //production
 
-$host = "54.179.134.14"; 
-$username = ""; 
-$password = ""; 
+// $host = "54.179.134.14"; 
+// $username = ""; 
+// $password = ""; 
 
 return array(
 
@@ -71,7 +71,7 @@ return array(
 			'database' => 'fitadmin', 
 		    'username' => $username, 
 		    'password' => $password, 
-			// 'options' => $options
+			'options' => $options
 			// 'options' => [
 			// 		'db' => 'admin' // sets the authentication database required by mongo 3
 			// 	]
@@ -84,7 +84,7 @@ return array(
 			'database' => 'fitapi', 
 			'username' => $username, 
 			'password' => $password, 
-			// 'options' => $options
+			'options' => $options
 			// 'options' => [
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]
@@ -97,7 +97,7 @@ return array(
 			'database' => 'fitcheckins', 
 			'username' => $username, 
 			'password' => $password, 
-			// 'options' => $options
+			'options' => $options
 			// 'options' => [
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]
