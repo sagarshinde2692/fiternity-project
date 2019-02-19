@@ -20,6 +20,7 @@ use App\AmazonPay\PWAINBackendSDK as PWAINBackendSDK;
 use App\AmazonPaynon\PWAINBackendSDK as PWAINBackendSDKNon;
 use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
+use Aws\CloudFront\Exception\Exception;
 
 class TransactionController extends \BaseController {
 
@@ -2313,8 +2314,16 @@ class TransactionController extends \BaseController {
                 }
 
                 if($order->type == "memberships"){
-                    
-                    $after_booking_response = $this->utilities->afterTranSuccess($order->toArray(), 'order');
+                    try{
+            
+                        $after_booking_response = $this->utilities->afterTranSuccess($order->toArray(), 'order');
+
+                    }catch(Exception $e){
+            
+                        $after_booking_response = [];
+                        Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+                        
+                    }
                     
                     if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
                         $order->loyalty_registration = true;
