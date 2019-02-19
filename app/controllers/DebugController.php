@@ -9066,5 +9066,34 @@ public function yes($msg){
 		return $update;
 	}
 
+
+	public function orderOldSuccessDateToNew(){
+
+		$destinationPath = public_path();
+		$fileName = "order_old_new_start_success_date.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if(!empty($value['order_id']) && !empty($value['new_success_date'])){
+
+					$order = Order::find((int) $value['order_id']);
+					
+					if($order){
+
+						$order->success_date = date('Y-m-d H:i:s',strtotime($value['new_success_date']));
+                		$order->update();
+					}
+				}
+			}
+		}
+
+		echo "done";	
+	}
+
 }
 
