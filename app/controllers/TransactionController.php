@@ -7204,23 +7204,23 @@ class TransactionController extends \BaseController {
 
             }
 
-            if(isset($data['reward_ids'])){
+            // if(isset($data['reward_ids'])){
                 
-                $reward = Reward::find(intval($data['reward_ids'][0]));
+            //     $reward = Reward::find(intval($data['reward_ids'][0]));
 
-                if($reward){
-                    $reward_title = $reward['title'];
-                    $reward_amount = $reward['payload']['amount'];
+            //     if($reward){
+            //         $reward_title = $reward['title'];
+            //         $reward_amount = $reward['payload']['amount'];
                     
-                    $result['order_details']['reward'] = [
-                        'field' => "REWARD ($reward_title)",
-                        'value' =>  ""
-                    ];
+            //         $result['order_details']['reward'] = [
+            //             'field' => "REWARD ($reward_title)",
+            //             'value' =>  ""
+            //         ];
 
-                    $data['you_save'] += $reward_amount;
+            //         $data['you_save'] += $reward_amount;
                 
-                }
-            }
+            //     }
+            // }
 
             if(isset($data['cashback'])){
                 
