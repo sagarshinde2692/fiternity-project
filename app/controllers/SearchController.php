@@ -1271,10 +1271,13 @@ public function locationCity($value){
 
 	if(count($location) > 0){
 		foreach ($location as $key => $value) {
+            if(in_array($value['cities'][0], [7])){
+                continue;
+            }
 			foreach ($value->cities as $city_id) {
 				$hesh = array();
-
-				$city = City::find((int) $city_id);
+                
+                $city = City::find((int) $city_id);
 
 				$hesh['locality'] = ucwords($value->name);
 				$hesh['city'] = ucwords($city->name);
