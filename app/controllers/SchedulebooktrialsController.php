@@ -2429,28 +2429,28 @@ class SchedulebooktrialsController extends \BaseController {
                 Log::info('$trialbooked : '.json_encode($trialbooked));
             }
 
-            if((isset($order['pay_later']) && $order['pay_later'])){
+            // if((isset($order['pay_later']) && $order['pay_later'])){
                 
-                $previous_pay_later_session = Paylater::where('customer_id', $booktrial->customer_id)->first();
+            //     $previous_pay_later_session = Paylater::where('customer_id', $booktrial->customer_id)->first();
 
-                if($previous_pay_later_session){
+            //     if($previous_pay_later_session){
                     
-                    $trial_ids = $previous_pay_later_session->trial_ids;
-                    array_push($trial_ids, $booktrial->_id);
-                    $previous_pay_later_session->trial_ids = $trial_ids;
-                    $previous_pay_later_session->save();
+            //         $trial_ids = $previous_pay_later_session->trial_ids;
+            //         array_push($trial_ids, $booktrial->_id);
+            //         $previous_pay_later_session->trial_ids = $trial_ids;
+            //         $previous_pay_later_session->save();
                 
-                }else{
+            //     }else{
 
-                    $pay_later = new Paylater();
-                    $pay_later->customer_id = $booktrial->customer_id;
-                    $pay_later->trial_ids = [$booktrial->_id];
-                    $pay_later->save();
+            //         $pay_later = new Paylater();
+            //         $pay_later->customer_id = $booktrial->customer_id;
+            //         $pay_later->trial_ids = [$booktrial->_id];
+            //         $pay_later->save();
 
-                }
+            //     }
 
 
-            }
+            // }
 
             if(!empty($order['qrcodepayment'])){
                 $booktrial['qrcodepayment'] = true;
@@ -7155,15 +7155,15 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial->update();
 
-        $pay_later = Paylater::where('customer_id', $booktrial->customer_id)->first();
+        // $pay_later = Paylater::where('customer_id', $booktrial->customer_id)->first();
 
-        if($pay_later){
-            Log::info("Updating pay later entry");
+        // if($pay_later){
+        //     Log::info("Updating pay later entry");
             // $trial_ids = $pay_later->trial_ids;
     
             // if(count($trial_ids) == 1){
                 
-                Paylater::destroy($pay_later->_id);
+                // Paylater::destroy($pay_later->_id);
             
             // }else{
     
@@ -7175,7 +7175,7 @@ class SchedulebooktrialsController extends \BaseController {
         
             //     $pay_later->update();
             // }
-        }
+        // }
 
         // $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 
