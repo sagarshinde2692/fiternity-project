@@ -6749,7 +6749,7 @@ class FindersController extends \BaseController {
         //     }
         // }
 
-        $data['finder']['services'] = array_merge($extended_services, $data['finder']['services']);
+        $data['finder']['services'] = array_merge($data['finder']['services'], $extended_services);
 
         $session_pack_duration_map_flip = array_flip($session_pack_duration_map);
 
