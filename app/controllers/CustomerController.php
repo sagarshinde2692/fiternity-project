@@ -3420,7 +3420,11 @@ class CustomerController extends \BaseController {
 						->where('booktrial_type','auto')
 						->where(function($query){
 							$query->orWhere('schedule_date_time','>=',new DateTime())
-							->orWhere('payment_done', false)
+							->orWhere(function($query){
+								$query->where('payment_done', false)
+								->where('post_trial_verified_status', '!=', 'no')
+								->where('going_status_txt','!=','cancel');
+							})
 							->orWhere(function($query){
 									$query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))
 											->whereIn('post_trial_status', [null, '', 'unavailable']);	
