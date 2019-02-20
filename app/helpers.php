@@ -96,6 +96,7 @@ if (!function_exists('sorting_array')) {
 if(!function_exists('citywise_category')){
     function citywise_categories($city){
             $city = getmy_city($city);
+            
             $category_slug = [
                 "gyms",
                 "yoga",

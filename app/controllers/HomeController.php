@@ -2675,7 +2675,7 @@ class HomeController extends BaseController {
         $array = array();
         $app_device = Request::header('Device-Type');
         if(isset($app_device) && in_array($app_device, ['ios', 'android'])){
-            $cites		= 	City::active()->orderBy('order')->whereNotIn('_id',$array)->orderBy("order")->remember(Config::get('app.cachetime'), 'getcitiesapp')->get(array('name','_id','slug'));
+            $cites		= 	City::active()->where('hide_on_home', '!=', true)->orderBy('order')->whereNotIn('_id',$array)->orderBy("order")->remember(Config::get('app.cachetime'), 'getcitiesapp')->get(array('name','_id','slug'));
             // $cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->orderBy("order")->get(array('name','_id','slug'));
         }else{
             $cites		= 	City::orderBy('order')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'), 'getcities')->get(array('name','_id','slug'));
