@@ -1810,9 +1810,8 @@ class SchedulebooktrialsController extends \BaseController {
                 //     Log::info($hashreverse['reverse_hash']);
                 //     return  Response::json($resp, 400);
                 // }
-                 $hash_verified = $this->utilities->verifyOrder($data,$order);
-                 // return $order;
-                  // return $hash_verified ? "s":"d";
+                $hash_verified = $this->utilities->verifyOrder($data,$order);
+                
                 if(!$hash_verified){
                     $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 400);
@@ -2488,10 +2487,16 @@ class SchedulebooktrialsController extends \BaseController {
                 }
                 
             }
-           
-            $this->utilities->updateCoupon($order);
-            $after_booking_response = $this->utilities->afterTranSuccess($booktrial->toArray(), 'booktrial');
-
+            
+             
+            $after_booking_response = [];
+            
+            try{
+                $after_booking_response = $this->utilities->afterTranSuccess($booktrial->toArray(), 'booktrial');
+            }catch(Exception $e){
+                Log::info("afterTranSuccess error");
+            }    
+                
             Log::info("after_booking_response");
             Log::info($after_booking_response);
 
@@ -2930,7 +2935,13 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $order = Order::find((int) $booktrial->order_id);
 
+                
                 if($order){
+                    try{
+                        $this->utilities->updateCoupon($order);
+                    }catch(Exception $e){
+                        Log::info("updateCoupon error");
+                    }   
                     $this->utilities->setRedundant($order);
                 }
             }
