@@ -2672,7 +2672,7 @@ class HomeController extends BaseController {
 
     public function getCities(){
 
-        $array = array();
+        $array = array(7);
         $app_device = Request::header('Device-Type');
         if(isset($app_device) && in_array($app_device, ['ios', 'android'])){
             $cites		= 	City::active()->where('hide_on_home', '!=', true)->orderBy('order')->whereNotIn('_id',$array)->orderBy("order")->remember(Config::get('app.cachetime'), 'getcitiesapp')->get(array('name','_id','slug'));
@@ -2680,6 +2680,10 @@ class HomeController extends BaseController {
         }else{
             $cites		= 	City::orderBy('order')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'), 'getcities')->get(array('name','_id','slug'));
             // $cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->get(array('name','_id','slug'));
+        }
+        if(!empty($cites)){
+            Log::info("getCities");
+            Log::info($cites);
         }
         if($this->device_type == 'android' && $this->app_version >= '5.14'){
             return Response::json(['data'=>$cites],200);
@@ -3718,6 +3722,8 @@ class HomeController extends BaseController {
     }
 
     public function ifcity($city){
+        Log::info("ifcity");
+        Log::info($city);
         $response = ifCityPresent($city);
         $jwt_token = Request::header('Authorization');
         if(!$response['found']){
