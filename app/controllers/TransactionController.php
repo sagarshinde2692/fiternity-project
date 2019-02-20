@@ -20,7 +20,6 @@ use App\AmazonPay\PWAINBackendSDK as PWAINBackendSDK;
 use App\AmazonPaynon\PWAINBackendSDK as PWAINBackendSDKNon;
 use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
-use Aws\CloudFront\Exception\Exception;
 
 class TransactionController extends \BaseController {
 
