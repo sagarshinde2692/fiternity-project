@@ -2791,7 +2791,8 @@ class TransactionController extends \BaseController {
                 $resp   =   array('status' => 200,"message" => "Transaction Successful");
             }
             $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>0),Config::get('app.queue'));
-
+            Log::info("successCommon returned");
+            Log::info($order['_id']);
             return Response::json($resp);
 
         }else{
