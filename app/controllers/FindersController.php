@@ -6755,18 +6755,16 @@ class FindersController extends \BaseController {
             $extended_services_map[$ext_ser['_id']] = $ext_ser;
         }
         // return $extended_services_map;
-        $normal_services = $data['finder']['services'] ;
-        
-        // = array_merge($data['finder']['services'], $extended_services);
-        $inserted = 0;
+        $merged_services = [];
         
         foreach($data['finder']['services'] as $ser_key => $ser_value){
+            array_push($merged_services, $ser_value);
             if(!empty($extended_services_map[$ser_value['_id']])){
-                array_splice($normal_services, $ser_key+$inserted, 0, [$extended_services_map[$ser_value['_id']]]);
+                array_push($merged_services, $extended_services_map[$ser_value['_id']]);
             }
         }
 
-        $data['finder']['services'] = $normal_services;
+        $data['finder']['services'] = $merged_services;
 
         $session_pack_duration_map_flip = array_flip($session_pack_duration_map);
 
