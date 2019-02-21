@@ -6970,7 +6970,12 @@ Class Utilities {
                 'loyalty'=>$loyalty 
             ];
             $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update($update_data);
-            return ['status'=>200];
+
+            if($customer_update){
+                return ['status'=>200];
+            }else{
+                return ['status'=>400, 'message'=>'Customer already registered'];
+            }
             // if($customer_update && $this->sendLoyaltyCommunication($data)){
 
             //     $customermailer = new CustomerMailer();
