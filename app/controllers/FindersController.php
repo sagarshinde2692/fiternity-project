@@ -154,7 +154,7 @@ class FindersController extends \BaseController {
 			}
 		}
 
-		$finder_detail = false;//$cache ? Cache::tags('finder_detail')->has($cache_key) : false;
+		$finder_detail = $cache ? Cache::tags('finder_detail')->has($cache_key) : false;
 		if(!$finder_detail){
 			$campaign_offer = false;
 			//Log::info("Not cached in detail");
