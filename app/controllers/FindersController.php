@@ -162,6 +162,10 @@ class FindersController extends \BaseController {
 			Service::$withoutAppends=true;
 			Service::$isThirdParty = $isThirdParty;
 			Service::$setAppends=['active_weekdays','serviceratecard'];
+			$brand_id = Finder::active()->where('slug', $tslug)->get(['brand_id'])->first();
+			if(!empty($brand_id) && !empty($brand_id['brand_id'])){
+				$brand_id = $brand_id['brand_id'];
+			}
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
@@ -175,9 +179,17 @@ class FindersController extends \BaseController {
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
-				->with(array('services'=>function($query) use ($isThirdParty){
+				->with(array('services'=>function($query) use ($isThirdParty, $brand_id){
 					if($isThirdParty){
-						$query->where('workoutsessionschedules.0','exists',true)->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
+						if(!empty($brand_id) && $brand_id==130){
+							$query->where(function($q1){
+								$q1->where('workoutsessionschedules.0','exists',true)
+								->orWhere('trialschedules.0','exists',true);
+							})->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
+						}
+						else {
+							$query->where('workoutsessionschedules.0','exists',true)->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
+						}
 					}
 					$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug', 'description');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');
 				}))
