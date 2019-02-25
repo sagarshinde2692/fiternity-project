@@ -8099,22 +8099,26 @@ public function yes($msg){
         foreach ($rows as $row) {
             $csv[] = array_combine($header, $row);
         }
-
+        // return $csv;
         // $data = Input::all();
 
         $orders = $csv;
         
 	    $order_ids = array_column($orders, 'order_id');
 
-        $already_added_order_ids = Wallet::whereIn('membership_order_id', $order_ids)->lists('membership_order_id');
+        // $already_added_order_ids = Wallet::whereIn('membership_order_id', $order_ids)->lists('membership_order_id');
+
+        $already_added_order_ids = [];
 
         $utilities = new Utilities();
         
         foreach ($orders as $order){
             
-            $o = Order::where('_id', $order['order_id'])->whereNotIn('_id', $already_added_order_ids)->where('converting_membership_to_pps', '!=', true)->first();
-
-            if(!$order){
+            $o = Order::where('_id', $order['order_id'])->whereNotIn('_id', $already_added_order_ids)
+            // ->where('converting_membership_to_pps', '!=', true)
+            ->first();
+            // return $o;
+            if(empty($o)){
                 continue;
             }
 

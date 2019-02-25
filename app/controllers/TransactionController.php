@@ -8540,6 +8540,37 @@ class TransactionController extends \BaseController {
         Order::whereIn('_id', $order_ids)->update(['status'=>'0', 'upgraded_order'=>$order['_id']]);
     }
 
-    
+    public function generateComplimentarySessionPack(){
+
+        $data = $this->getAllPostData();
+
+
+        $rules = $this->utilities->validateInput('generateComplimentarySessionPack', $data);
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+        return false;
+
+        Order::$withoutAppends = true;
+
+        $order = Order::where('free_session_pack_avble', true)->find($dat['order_id']);
+
+
+
+        $this->capture($data);
+
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAllPostData()
+    {
+        return Input::json()->all();
+    }
 
 }

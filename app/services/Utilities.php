@@ -7829,79 +7829,90 @@ Class Utilities {
     }
 
 
-public function getPPSSearchResult($data){
-    $payload = [
-        'category' =>!empty($data['localName']) && !empty($data['name']) ? 
-            [
+    public function getPPSSearchResult($data){
+        $payload = [
+            'category' =>!empty($data['localName']) && !empty($data['name']) ?
                 [
-                    'localName' => !empty($data['localName']) ? $data['localName'] : '',
-                    'name' => !empty($data['name']) ? $data['name'] : '',
-                    'subcategory' =>
-                        [],
-                ],
-        ] : [],
-        'time_tag' => !empty($data['time_tag']) ? $data['time_tag'] : '',
-        'keys' =>!empty($data['keys']) ? $data['keys'] :
-            [
-            'id',
-            'address',
-            'average_rating',
-            'category',
-            'commercial_type',
-            'geolocation',
-            'location',
-            'name',
-            'slug',
-            'total_rating_count',
-            'slots',
-            'vendor_name',
-            'price',
-            'coverimage',
-            'total_slots',
-            'next_slot',
-            'vendor_slug',
-            'overlayimage',
-            'trial_header',
-            'membership_header',
-        ],
-        'location' =>
-            [
-            'city' => !empty($data['city']) ? $data['city'] : 'mumbai',
-            'geo' =>
+                    [
+                        'localName' => !empty($data['localName']) ? $data['localName'] : '',
+                        'name' => !empty($data['name']) ? $data['name'] : '',
+                        'subcategory' =>
+                            [],
+                    ],
+            ] : [],
+            'time_tag' => !empty($data['time_tag']) ? $data['time_tag'] : '',
+            'keys' =>!empty($data['keys']) ? $data['keys'] :
                 [
-                'lat' => !empty($data['lat']) ? $data['lat'] : null,
-                'lon' => !empty($data['lon']) ? $data['lon'] : null,
-                'radius' => !empty($data['radius']) ? $data['radius'] : null,
+                'id',
+                'address',
+                'average_rating',
+                'category',
+                'commercial_type',
+                'geolocation',
+                'location',
+                'name',
+                'slug',
+                'total_rating_count',
+                'slots',
+                'vendor_name',
+                'price',
+                'coverimage',
+                'total_slots',
+                'next_slot',
+                'vendor_slug',
+                'overlayimage',
+                'trial_header',
+                'membership_header',
             ],
-            'regions'=>!empty($data['regions']) ? $data['regions'] : [],
-        ],
-        'offset' =>
-            [
-            'from' => 0,
-            'number_of_records' => !empty($data['number_of_records']) ? $data['number_of_records'] : "4",
-        ],
-        'price_range' => '',
-        'skipTimings' => false,
-        'sort' =>
-            [
-            'order' => 'desc',
-            'sortField' => 'popularity',
-        ],
-    ];
+            'location' =>
+                [
+                'city' => !empty($data['city']) ? $data['city'] : 'mumbai',
+                'geo' =>
+                    [
+                    'lat' => !empty($data['lat']) ? $data['lat'] : null,
+                    'lon' => !empty($data['lon']) ? $data['lon'] : null,
+                    'radius' => !empty($data['radius']) ? $data['radius'] : null,
+                ],
+                'regions'=>!empty($data['regions']) ? $data['regions'] : [],
+            ],
+            'offset' =>
+                [
+                'from' => 0,
+                'number_of_records' => !empty($data['number_of_records']) ? $data['number_of_records'] : "4",
+            ],
+            'price_range' => '',
+            'skipTimings' => false,
+            'sort' =>
+                [
+                'order' => 'desc',
+                'sortField' => 'popularity',
+            ],
+        ];
 
-    $url = "search/paypersession";
+        $url = "search/paypersession";
 
-    $finder = [];
+        $finder = [];
 
-    try {
-        $client = new Client( ['debug' => false, 'base_uri' =>Config::get('app.new_search_url')."/"] );
-        $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
-        return $response;
-    }catch(Exception $e){
-        Log::info($e);
-        return null;
+        try {
+            $client = new Client( ['debug' => false, 'base_uri' =>Config::get('app.new_search_url')."/"] );
+            $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+            return $response;
+        }catch(Exception $e){
+            Log::info($e);
+            return null;
+        }
     }
-}
+
+    public function validateInput($functionName, $data){
+    
+        $rules = [
+            'customer_name'=>'required',
+            'customer_email'=>'required|email',
+            'customer_phone'=>'required',
+            'order_id'=>'required|integer'
+        ];
+
+    }
 }
 
 
