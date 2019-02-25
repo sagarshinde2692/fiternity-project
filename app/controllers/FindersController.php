@@ -154,7 +154,7 @@ class FindersController extends \BaseController {
 			}
 		}
 
-		$finder_detail = $cache ? Cache::tags('finder_detail')->has($cache_key) : false;
+		$finder_detail = false;//$cache ? Cache::tags('finder_detail')->has($cache_key) : false;
 		if(!$finder_detail){
 			$campaign_offer = false;
 			//Log::info("Not cached in detail");
@@ -182,7 +182,10 @@ class FindersController extends \BaseController {
 				->with(array('services'=>function($query) use ($isThirdParty, $brand_id){
 					if($isThirdParty){
 						if(!empty($brand_id) && $brand_id==130){
-							$query->where('trialschedules.0','exists',true)->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
+							$query->where(function($q1){
+								$q1->where('workoutsessionschedules.0','exists',true)
+								->orWhere('trialschedules.0','exists',true);
+							})->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
 						}
 						else {
 							$query->where('workoutsessionschedules.0','exists',true)->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
