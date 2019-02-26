@@ -8544,24 +8544,29 @@ class TransactionController extends \BaseController {
 
         $data = $this->getAllPostData();
 
+        $dataValidation = $this->utilities->validateInput('generateComplimentarySessionPack', $data);
 
-        $rules = $this->utilities->validateInput('generateComplimentarySessionPack', $data);
-
-        $validator = Validator::make($data,$rules);
-
-        if ($validator->fails()) {
-            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        if(!(!empty($dataValidation['status']) && $dataValidation['status'] == 200)){
+            if(!empty($dataValidation['message'])){
+                return [status=>400, 'message'=>$dataValidation['message']];
+            }else{
+                return [status=>400, 'message'=>'Please try after sometime'];
+            }
         }
-        return false;
 
-        Order::$withoutAppends = true;
+        $order = $this->getParentOrder($data);
 
-        $order = Order::where('free_session_pack_avble', true)->find($dat['order_id']);
+        $captureData = $this->getCompimentaryOrderData($order);
 
+        $captureResponse = $this->capture($captureData);
 
+        if(!empty($captureResponse['status']) && $captureResponse['status'] == 200){
+            $successResponse= $this->successCommon($captureResponse['order']);
+        }
 
-        $this->capture($data);
-
+        if(!empty($successResponse['status']) && $successResponse['status'] == 200){
+            return ['status'=>200, 'message'=>'Transaction successful'];
+        }
 
     }
 
@@ -8571,6 +8576,18 @@ class TransactionController extends \BaseController {
     public function getAllPostData()
     {
         return Input::json()->all();
+    }
+
+    /**
+     * @param $data
+     * @return mixed
+     */
+    public function getParentOrder($data)
+    {
+        Order::$withoutAppends = true;
+
+        $order = Order::where('free_session_pack_avble', true)->find($data['order_id']);
+        return $order;
     }
 
 }

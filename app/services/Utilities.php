@@ -7904,13 +7904,24 @@ Class Utilities {
     }
 
     public function validateInput($functionName, $data){
-    
-        $rules = [
-            'customer_name'=>'required',
-            'customer_email'=>'required|email',
-            'customer_phone'=>'required',
-            'order_id'=>'required|integer'
-        ];
+
+        switch($functionName){
+            case 'generateComplimentarySessionPack':
+            $rules = [
+                'customer_name'=>'required',
+                'customer_email'=>'required|email',
+                'customer_phone'=>'required',
+                'order_id'=>'required|integer'
+            ];
+        }
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return ['status' => 404,'message' => error_message($validator->errors())];
+        }else{
+            return ['status'=>200];
+        }
 
     }
 }
