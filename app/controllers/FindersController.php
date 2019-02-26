@@ -166,6 +166,9 @@ class FindersController extends \BaseController {
 			if(!empty($brand_id) && !empty($brand_id['brand_id'])){
 				$brand_id = $brand_id['brand_id'];
 			}
+			else {
+				$brand_id = null;
+			}
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
