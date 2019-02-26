@@ -70,6 +70,7 @@ Class FinderMailer extends Mailer {
 					case 4 : 
 					case 8 : 
 					case 9 :
+					case 10 :
 						$fitternity_email = [
 							'vikramkhanna@fitternity.com',
 						    'niveditasomani@fitternity.com',
@@ -339,7 +340,8 @@ Class FinderMailer extends Mailer {
 					break;
 				case 4 : 
 				case 8 : 
-				case 9 :
+                case 9 :
+                case 10 :
 					$fitternity_email = [
 						'vikramkhanna@fitternity.com',
 						'niveditasomani@fitternity.com',
