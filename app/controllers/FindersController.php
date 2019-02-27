@@ -1305,19 +1305,32 @@ class FindersController extends \BaseController {
                 
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
-
-                        if(!empty($finder['flags']['cashback_type'])){
-
-                            $text1 = $this->getVendorStripeCashbackText($finder);
-
-                            $response['vendor_stripe_data']	=	[
-                                        'text1'=> $text1,
-                                        'text3'=>"",
-                                        'background-color'=> "",
-                                        'text_color'=> '$fff',
-                                        'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
-                            ];
                         
+                        if(!empty($finder['flags']['cashback_type'])){
+                            
+                            $text1 = $this->getVendorStripeCashbackText($finder);
+                            
+                            $response['vendor_stripe_data']	=	[
+                                'text1'=> $text1,
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                            ];
+                            
+                        }
+                        
+                        if(!in_array($finder['_id'], Config::get('app.fit_10_excluded_finder_ids', []))){
+                            $response['vendor_stripe_data']	=	[
+                                'text1'=> "Get addnl flat 10% off* - Use Code: FIT10 | Valid till 28th Feb",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                            ];
+                
+                        }else if(empty($response['vendor_stripe_data']['text1'])){
+                            $response['vendor_stripe_data'] = "no-patti";
                         }
 						// if(empty($finder['flags']['end_sale_0'])){
 						// 	if(!empty($finder['flags']['end_sale_10'])){
