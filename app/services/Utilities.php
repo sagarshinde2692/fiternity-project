@@ -7470,7 +7470,7 @@ Class Utilities {
         if(!empty($data['schedule_date'])){
             $query
                 ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
-                ->where(function($query){
+                ->where(function($query) use ($data){
                     $query->where('ratecard_flags.unlimited_validity', true)->orWhere('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])));
                 });
         }
@@ -7522,7 +7522,7 @@ Class Utilities {
         }
 
         $orders = Order::active()->where('finder_id', $data['finder_id'])->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
-        ->where(function($query){
+        ->where(function($query) use ($data){
             $query->where('ratecard_flags.unlimited_validity', true)->orWhere('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])));
         })
         ->where('sessions_left', '>', 0);
