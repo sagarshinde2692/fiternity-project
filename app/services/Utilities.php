@@ -7906,7 +7906,7 @@ Class Utilities {
     public function validateInput($functionName, $data){
 
         switch($functionName){
-            case 'generateComplimentarySessionPack':
+            case 'generateFreeSP':
             $rules = [
                 'customer_name'=>'required',
                 'customer_email'=>'required|email',
@@ -7923,6 +7923,46 @@ Class Utilities {
             return ['status'=>200];
         }
 
+    }
+
+    public function getFreeSPRatecard($order){
+
+        try{
+            
+            if($order['type'] == 'memberships' && empty($order['extended_validity']) && !empty($order['duration_day']) && in_array($order['duration_day'], [360, 180, 30, 90])){
+                $sessions = $duration = null;
+                switch($order['duration_day']){
+                    case 30:
+                    case 90:    
+                        $sessions = 4;
+                        $duration = 15;
+                        break;
+                    case 180:
+                        $sessions = 12;
+                        $duration = 30;
+                        break;
+                    case 360:
+                        $sessions = 20;
+                        $duration = 45;
+                }
+            }
+    
+            $free_sp_rc = Ratecard::active()->where('flags.free_sp', true)->where('service_id', $order['service_id'])->where('duration', $duration)->first();
+    
+            if($free_sp_rc){
+                
+                return $free_sp_rc['_id'];
+            
+            }
+
+            return null;
+
+        }catch(Exception $e){
+
+            Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+            return null;
+
+        }
     }
 }
 

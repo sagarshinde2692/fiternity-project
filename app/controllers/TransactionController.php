@@ -2462,6 +2462,8 @@ class TransactionController extends \BaseController {
             if(!empty($data['type']) && $data['type'] == 'memberships'){
                 $data['loyalty_email_content'] = $this->utilities->getLoyaltyEmailContent($order);
             }
+            
+            $data['free_sp_ratecard_id'] = $this->utitlities->getFreeSPRatecard($order);
 
             $order->update($data);
 
@@ -8540,31 +8542,29 @@ class TransactionController extends \BaseController {
         Order::whereIn('_id', $order_ids)->update(['status'=>'0', 'upgraded_order'=>$order['_id']]);
     }
 
-    public function generateComplimentarySessionPack(){
+    public function generateFreeSP(){
 
         $data = $this->getAllPostData();
 
-        $dataValidation = $this->utilities->validateInput('generateComplimentarySessionPack', $data);
+        $dataValidation = $this->utilities->validateInput('generateFreeSP', $data);
 
         if(!(!empty($dataValidation['status']) && $dataValidation['status'] == 200)){
             if(!empty($dataValidation['message'])){
-                return [status=>400, 'message'=>$dataValidation['message']];
+                return ['status'=>400, 'message'=>$dataValidation['message']];
             }else{
-                return [status=>400, 'message'=>'Please try after sometime'];
+                return ['status'=>400, 'message'=>'Please try after sometime'];
             }
         }
 
-        $order = $this->getParentOrder($data);
+        $capture_data = $this->getFreeSPData($data);
 
-        $captureData = $this->getCompimentaryOrderData($order);
+        $capture_response = $this->capture($capture_data);
 
-        $captureResponse = $this->capture($captureData);
-
-        if(!empty($captureResponse['status']) && $captureResponse['status'] == 200){
-            $successResponse= $this->successCommon($captureResponse['order']);
+        if(!empty($capture_response['status']) && $capture_response['status'] == 200){
+            $success_response= $this->successCommon($captureResponse['order']);
         }
 
-        if(!empty($successResponse['status']) && $successResponse['status'] == 200){
+        if(!empty($success_response['status']) && $success_response['status'] == 200){
             return ['status'=>200, 'message'=>'Transaction successful'];
         }
 
@@ -8578,16 +8578,26 @@ class TransactionController extends \BaseController {
         return Input::json()->all();
     }
 
-    /**
-     * @param $data
-     * @return mixed
-     */
-    public function getParentOrder($data)
-    {
+    public function getFreeSPData($data){
+        
         Order::$withoutAppends = true;
+        
+        $order = Order::active()->where('free_sp_ratecard_id','!=', null)->find($data['order_id']);
 
-        $order = Order::where('free_session_pack_avble', true)->find($data['order_id']);
-        return $order;
+        if(empty($order)){
+            return ['status'=>400, 'message'=>'Invalid order'];
+        }
+
+        $capture_data = array_only($data, ["customer_email","customer_name","customer_phone","preferred_starting_date"]);
+        
+        $capture_data = array_merge($capture_data, array_only($order->toArray(), ["customer_source","finder_id","gender","service_id","type","env"]));
+
+        $capture_data['ratecard_id'] = $order['free_sp_ratecard_id'];
+
+        return $capture_data;
     }
 
+   
+
 }
+
