@@ -3135,7 +3135,7 @@ class SchedulebooktrialsController extends \BaseController {
             $alreadyBookedTrials = Config::get('app.debug') ? [] : $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
             
             
-            if (count($alreadyBookedTrials) > 0) {
+            if (count($alreadyBookedTrials) > 0 && empty($data['third_party_acronym'])) {
                 $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
                 return Response::json($resp, 403);
             }
