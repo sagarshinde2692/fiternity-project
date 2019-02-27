@@ -9197,7 +9197,7 @@ class CustomerController extends \BaseController {
     public function formatSessionPack($order){
         
         $order['active'] = true;
-        if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
+        if((!empty($order['ratecard_flags']['unlimited_validity']) || strtotime($order['end_date']) > time()) && !empty($order['sessions_left'])){
             $order['button_title'] = 'Book your next Session';
             $order['button_type'] = 'book';
 
