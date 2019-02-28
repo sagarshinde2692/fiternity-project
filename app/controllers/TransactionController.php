@@ -8546,22 +8546,23 @@ class TransactionController extends \BaseController {
 
         $data = $this->getAllPostData();
 
-        $dataValidation = $this->utilities->validateInput('generateFreeSP', $data);
+        $requestValidation = $this->utilities->validateInput('generateFreeSP', $data);
 
-        if(!(!empty($dataValidation['status']) && $dataValidation['status'] == 200)){
-            if(!empty($dataValidation['message'])){
-                return ['status'=>400, 'message'=>$dataValidation['message']];
+        if(!(!empty($requestValidation['status']) && $requestValidation['status'] == 200)){
+            if(!empty($requestValidation['message'])){
+                return ['status'=>400, 'message'=>$requestValidation['message']];
             }else{
                 return ['status'=>400, 'message'=>'Please try after sometime'];
             }
         }
+
 
         $capture_data = $this->getFreeSPData($data);
 
         $capture_response = $this->capture($capture_data);
 
         if(!empty($capture_response['status']) && $capture_response['status'] == 200){
-            $success_response= $this->successCommon($captureResponse['order']);
+            $success_response= $this->successCommon($captureResponse['data']);
         }
 
         if(!empty($success_response['status']) && $success_response['status'] == 200){
@@ -8580,12 +8581,25 @@ class TransactionController extends \BaseController {
 
     public function getFreeSPData($data){
         
-        Order::$withoutAppends = true;
         
-        $order = Order::active()->where('free_sp_ratecard_id','!=', null)->find($data['order_id']);
+        $logged_id_customer_id = $this->utilities->getCustomerFromToken();
+        
+        if(empty($logged_id_customer_id) || empty($logged_id_customer_id['customer']['_id']));{
+            return ['status'=>400, 'message'=>'Invalid request(2).'];
+        }
+        
+        $customer_id = $logged_id_customer_id['customer']['_id'];
+        
+        Order::$withoutAppends = true;
+
+        $order = Order::active()->where('customer_id', $customer_id)->where('free_sp_ratecard_id','!=', null)->find($data['order_id']);
 
         if(empty($order)){
-            return ['status'=>400, 'message'=>'Invalid order'];
+            return ['status'=>400, 'message'=>'Invalid request(1).'];
+        }
+
+        if(strtolower($order['customer_email']) == strtolower($data['customer_email'])){
+            return ['status'=>400, 'message'=>'Cannot create order for same email id'];
         }
 
         $capture_data = array_only($data, ["customer_email","customer_name","customer_phone","preferred_starting_date"]);
