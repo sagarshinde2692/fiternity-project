@@ -7947,7 +7947,7 @@ Class Utilities {
                 }
             }
     
-            $free_sp_rc = Ratecard::active()->where('flags.free_sp', true)->where('service_id', $order['service_id'])->where('duration', $duration)->first();
+            $free_sp_rc = Ratecard::where('flags.free_sp', true)->where('service_id', $order['service_id'])->where('duration', $duration)->first();
     
             if($free_sp_rc){
                 
