@@ -2463,7 +2463,7 @@ class TransactionController extends \BaseController {
                 $data['loyalty_email_content'] = $this->utilities->getLoyaltyEmailContent($order);
             }
             
-            $data['free_sp_ratecard_id'] = $this->utitlities->getFreeSPRatecard($order);
+            $data['free_sp_ratecard_id'] = $this->utilities->getFreeSPRatecard($order);
 
             $order->update($data);
 
