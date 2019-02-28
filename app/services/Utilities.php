@@ -1016,7 +1016,7 @@ Class Utilities {
     	if(!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session')
     		$hash_verified = true;
     	
-    	else if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK" ||(isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched)){
+    	else if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK" ||(isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched) || !empty($data['internal_success'])){
             if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
@@ -7929,24 +7929,21 @@ Class Utilities {
 
         try{
             
+            $sessions = $duration = null;
             if($order['type'] == 'memberships' && empty($order['extended_validity']) && !empty($order['duration_day']) && in_array($order['duration_day'], [360, 180, 30, 90])){
-                $sessions = $duration = null;
                 switch($order['duration_day']){
                     case 30:
                     case 90:    
-                        $sessions = 4;
-                        $duration = 15;
+                        $duration = 4;
                         break;
                     case 180:
-                        $sessions = 12;
-                        $duration = 30;
+                        $duration= 12;
                         break;
                     case 360:
-                        $sessions = 20;
-                        $duration = 45;
+                        $duration= 20;
                 }
             }
-    
+            
             $free_sp_rc = Ratecard::where('flags.free_sp', true)->where('service_id', $order['service_id'])->where('duration', $duration)->first();
     
             if($free_sp_rc){

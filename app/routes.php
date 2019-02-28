@@ -1329,3 +1329,5 @@ Route::get('customer/getsessionpacks/{offset?}/{limit?}','CustomerController@get
 Route::post('addServiceMultipleSessionPack','DebugController@addServiceMultipleSessionPack');
 
 Route::get('orderOldSuccessDateToNew', 'DebugController@orderOldSuccessDateToNew');
+
+Route::post('generatefreesp', 'TransactionController@generateFreeSP');
