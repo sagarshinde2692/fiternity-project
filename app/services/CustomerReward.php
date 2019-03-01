@@ -2335,7 +2335,7 @@ Class CustomerReward {
 
                 if(!$device || !in_array($device, ['ios', 'android'])){
                     
-                    $gender = Input::get('gender');
+                    $gender = Input::json()->get('gender');
 
                     if(!empty($gender) && $coupon['gender'] != strtolower($gender)) {
 
