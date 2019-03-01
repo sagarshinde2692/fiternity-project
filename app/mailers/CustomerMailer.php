@@ -751,6 +751,18 @@ Class CustomerMailer extends Mailer {
 		);
 		return $this->common($label,$data,$message_data);
 	}
+
+	public function remainingVoucher($data){
+
+		$label = 'Remaining Voucher Notification Mail';
+
+		$message_data = array(
+			'user_email' => array('ankitamamnia@gmail.com'),
+			'user_name' => 'Ankita Mamnia',
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
 	
 	protected function common($label,$data,$message_data,$delay = 0){
 

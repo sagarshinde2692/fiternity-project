@@ -9266,6 +9266,10 @@ class CustomerController extends \BaseController {
     public function getCustomerMilestones($customer)
     {
         return !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
-    }
+	}
+	
+	public function test(){
+		$this->utilities->remaningVoucherNotification();
+	}
 
 }
