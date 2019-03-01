@@ -3135,7 +3135,7 @@ class SchedulebooktrialsController extends \BaseController {
             $alreadyBookedTrials = Config::get('app.debug') ? [] : $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
             
             
-            if (count($alreadyBookedTrials) > 0) {
+            if (count($alreadyBookedTrials) > 0 && empty($data['third_party_acronym'])) {
                 $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
                 return Response::json($resp, 403);
             }
@@ -3585,8 +3585,20 @@ class SchedulebooktrialsController extends \BaseController {
             if(isset($data['recommended_booktrial_id']) && $data['recommended_booktrial_id'] != ""){
                 $booktrialdata['recommended_booktrial_id'] = (int)$data['recommended_booktrial_id'];
             }
+            if(empty($data['third_party_acronym'])){
+                $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrialdata);
+            }
 
-            $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrialdata);
+            if(!empty($data['third_party_acronym'])){
+                $booktrialdata['third_party'] = true;
+                $booktrialdata['third_party_acronym'] = $data['third_party_acronym'];
+                $booktrialdata['third_party_details'] = $data['third_party_details'];
+                $booktrialdata['third_party_details'][$data['third_party_acronym']]['third_party_used_sessions'] = $data['total_session_used'];
+                
+                $booktrialdata['total_sessions'] = $data['total_sessions'];
+                $booktrialdata['total_sessions_used'] = $data['total_session_used'];
+                $booktrialdata['ratecard_id'] = $ratecard_id;
+            }
 
             if(isset($data['_id'])){
                 $booktrialid = (int) $data['_id'];
@@ -3612,35 +3624,37 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if($trialbooked == true){
+            if(empty($data['third_party_acronym'])){
+                try {
+                    $this->addReminderMessage($booktrialid);
 
-            try {
-                $this->addReminderMessage($booktrialid);
+                }catch (Exception $e) {
 
-            }catch (Exception $e) {
+                    $message = array(
+                        'type'    => get_class($e),
+                        'message' => $e->getMessage(),
+                        'file'    => $e->getFile(),
+                        'line'    => $e->getLine(),
+                    );
 
-                $message = array(
-                    'type'    => get_class($e),
-                    'message' => $e->getMessage(),
-                    'file'    => $e->getFile(),
-                    'line'    => $e->getLine(),
-                );
-
-                $response = array('status'=>400,'reason'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
-                Log::info('addReminderMessage Error : '.json_encode($response));
-            }
-
-            
-            $after_booking_response =  $this->utilities->afterTranSuccess($booktrial->toArray(), 'booktrial');
-
-            if(!empty($after_booking_response['checkin'])){
-                if(!empty($after_booking_response['checkin']['status']) && $after_booking_response['checkin']['status'] == 200 && !empty($after_booking_response['checkin']['checkin']['_id'])){
-                    $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
+                    $response = array('status'=>400,'reason'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+                    Log::info('addReminderMessage Error : '.json_encode($response));
                 }
             }
+
+            if(empty($data['third_party_acronym'])){
+                $after_booking_response =  $this->utilities->afterTranSuccess($booktrial->toArray(), 'booktrial');
+
+                if(!empty($after_booking_response['checkin'])){
+                    if(!empty($after_booking_response['checkin']['status']) && $after_booking_response['checkin']['status'] == 200 && !empty($after_booking_response['checkin']['checkin']['_id'])){
+                        $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
+                    }
+                }
+                    
                 
-            
-            if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
-                $booktrial->loyalty_registration = true;
+                if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
+                    $booktrial->loyalty_registration = true;
+                }
             }
 
             //if vendor type is free special dont send communication

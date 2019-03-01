@@ -162,6 +162,13 @@ class FindersController extends \BaseController {
 			Service::$withoutAppends=true;
 			Service::$isThirdParty = $isThirdParty;
 			Service::$setAppends=['active_weekdays','serviceratecard'];
+			$brand_id = Finder::active()->where('slug', $tslug)->get(['brand_id'])->first();
+			if(!empty($brand_id) && !empty($brand_id['brand_id'])){
+				$brand_id = $brand_id['brand_id'];
+			}
+			else {
+				$brand_id = null;
+			}
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
@@ -175,9 +182,17 @@ class FindersController extends \BaseController {
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
-				->with(array('services'=>function($query) use ($isThirdParty){
+				->with(array('services'=>function($query) use ($isThirdParty, $brand_id){
 					if($isThirdParty){
-						$query->where('workoutsessionschedules.0','exists',true)->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
+						if(!empty($brand_id) && $brand_id==130){
+							$query->where(function($q1){
+								$q1->where('workoutsessionschedules.0','exists',true)
+								->orWhere('trialschedules.0','exists',true);
+							})->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
+						}
+						else {
+							$query->where('workoutsessionschedules.0','exists',true)->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
+						}
 					}
 					$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug', 'description');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');
 				}))
@@ -1292,19 +1307,32 @@ class FindersController extends \BaseController {
                 
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
-
-                        if(!empty($finder['flags']['cashback_type'])){
-
-                            $text1 = $this->getVendorStripeCashbackText($finder);
-
-                            $response['vendor_stripe_data']	=	[
-                                        'text1'=> $text1,
-                                        'text3'=>"",
-                                        'background-color'=> "",
-                                        'text_color'=> '$fff',
-                                        'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
-                            ];
                         
+                        if(!empty($finder['flags']['cashback_type'])){
+                            
+                            $text1 = $this->getVendorStripeCashbackText($finder);
+                            
+                            $response['vendor_stripe_data']	=	[
+                                'text1'=> $text1,
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                            ];
+                            
+                        }
+                        
+                        if(!in_array($finder['_id'], Config::get('app.women_week_off', []))){
+                            $response['vendor_stripe_data']	=	[
+                                'text1'=> "Women's Week Special : Additional Flat 25% Off + Exclusive Rewards on Lowest Prices Only For Women | Use Code : POWER",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                            ];
+                
+                        }else if(empty($response['vendor_stripe_data']['text1'])){
+                            $response['vendor_stripe_data'] = "no-patti";
                         }
 						// if(empty($finder['flags']['end_sale_0'])){
 						// 	if(!empty($finder['flags']['end_sale_10'])){
@@ -3292,9 +3320,9 @@ class FindersController extends \BaseController {
 			}else{
 
 				if(!empty(Request::header('Vendor-Token'))){
-					$membership_services = Ratecard::where('finder_id', $finder_id)->whereIn('type',['membership', 'packages', 'extended validity'])->lists('service_id');
+					$membership_services = Ratecard::active()->where('finder_id', $finder_id)->whereIn('type',['membership', 'packages', 'extended validity'])->lists('service_id');
 				}else{
-					$membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
+					$membership_services = Ratecard::active()->where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
 				}
 				$membership_services = array_map('intval',$membership_services);
 

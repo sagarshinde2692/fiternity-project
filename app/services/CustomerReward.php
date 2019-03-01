@@ -2328,7 +2328,26 @@ Class CustomerReward {
                     $coupon["discount_max"] = 1250;
                 }
             }
-    
+            
+            if(isset($coupon['gender'])){
+
+                $device = Request::header('Device-Type');
+
+                if(!$device || !in_array($device, ['ios', 'android'])){
+                    
+                    $gender = Input::get('gender');
+
+                    if(!empty($gender) && $coupon['gender'] != strtolower($gender)) {
+
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Applicable only for women");
+        
+                        return $resp;
+                    }
+                    
+                }
+                
+            }
+
             
             if($amount){
                 $price = $amount;

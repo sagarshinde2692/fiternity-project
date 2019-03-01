@@ -7969,13 +7969,14 @@ class CustomerController extends \BaseController {
 				if(!empty($header))$resp['response']['bookings']['header']=$header;
 				if(!empty($options))$resp['response']['bookings']['options']=$options;
 				
-				// if(empty($pop_up)&&empty($options)&&empty($optionsBuy))unset($resp['response']['bookings']);
+                // if(empty($pop_up)&&empty($options)&&empty($optionsBuy))unset($resp['response']['bookings']);
 
-				return $resp;
+                return $resp;
 			}
 		} 
 		catch (Exception $e) {
-			return ['status'=>400,'message'=>'Something went wrong, Please try again later'];
+            Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+			return ['status'=>400,'message'=>'Something went wrong. Please try again later'];
 			// return ['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()];
 		}
 		return $resp;
@@ -9197,7 +9198,7 @@ class CustomerController extends \BaseController {
     public function formatSessionPack($order){
         
         $order['active'] = true;
-        if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
+        if((!empty($order['ratecard_flags']['unlimited_validity']) || strtotime($order['end_date']) > time()) && !empty($order['sessions_left'])){
             $order['button_title'] = 'Book your next Session';
             $order['button_type'] = 'book';
 
