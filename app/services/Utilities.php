@@ -7934,7 +7934,7 @@ Class Utilities {
             }
             
             $sessions = $duration = null;
-            if(in_array($data['type'], ['memberships', 'membership']) && empty($data['extended_validity']) && !empty($data['duration_day']) && in_array($data['duration_day'], [360, 180, 30, 90])){
+            if(in_array($data['finder_id'], Config::get('app.women_mixed_finder_id')) && in_array($data['type'], ['memberships', 'membership']) && empty($data['extended_validity']) && !empty($data['duration_day']) && in_array($data['duration_day'], [360, 180, 30, 90])){
                 switch($data['duration_day']){
                     case 30:
                     case 90:    
