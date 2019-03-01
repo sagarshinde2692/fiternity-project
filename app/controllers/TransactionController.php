@@ -2462,9 +2462,13 @@ class TransactionController extends \BaseController {
             if(!empty($data['type']) && $data['type'] == 'memberships'){
                 $data['loyalty_email_content'] = $this->utilities->getLoyaltyEmailContent($order);
             }
-            
-            $data['free_sp_ratecard_id'] = $this->utilities->getFreeSPRatecard($order);
 
+            $free_sp_ratecard_id = $this->utilities->getFreeSPRatecard($order);
+
+            if(!empty($free_sp_ratecard_id)){
+                $data['free_sp_ratecard_id'] = $free_sp_ratecard_id['_id'];
+            }
+            
             if(!empty($order['ratecard_flags']['free_sp'])){
 
                 $parent_order_update = Order::where('_id', $order['parent_order_id'])->where('free_sp_order_id', 'exists', false)->update(['free_sp_order_id'=>$order['_id']]);

@@ -940,4 +940,5 @@ return array(
         5=>5,
         6=>6
     ],
+    'women_mixed_finder_id'=>[9932]
 );

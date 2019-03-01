@@ -7925,13 +7925,17 @@ Class Utilities {
 
     }
 
-    public function getFreeSPRatecard($order){
+    public function getFreeSPRatecard($data, $source='order'){
 
         try{
             
+            if($source == 'ratecard'){
+                $data['duration_day'] = $this->getDurationDay(($data));
+            }
+            
             $sessions = $duration = null;
-            if($order['type'] == 'memberships' && empty($order['extended_validity']) && !empty($order['duration_day']) && in_array($order['duration_day'], [360, 180, 30, 90])){
-                switch($order['duration_day']){
+            if(in_array($data['type'], ['memberships', 'membership']) && empty($data['extended_validity']) && !empty($data['duration_day']) && in_array($data['duration_day'], [360, 180, 30, 90])){
+                switch($data['duration_day']){
                     case 30:
                     case 90:    
                         $duration = 4;
@@ -7944,11 +7948,11 @@ Class Utilities {
                 }
             }
             
-            $free_sp_rc = Ratecard::where('flags.free_sp', true)->where('service_id', $order['service_id'])->where('duration', $duration)->first();
+            $free_sp_rc = Ratecard::where('flags.free_sp', true)->where('service_id', $data['service_id'])->where('duration', $duration)->first();
     
             if($free_sp_rc){
                 
-                return $free_sp_rc['_id'];
+                return $free_sp_rc;
             
             }
 
