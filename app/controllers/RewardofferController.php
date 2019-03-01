@@ -1112,6 +1112,7 @@ class RewardofferController extends BaseController {
         }
 
         if(empty($gold_mixed) && in_array($finder['_id'], Config::get('app.women_mixed_finder_id', []))){
+            $rewardObj = Reward::where('quantity_type','mixed')->first();
             
             $mixedreward_content = MixedRewardContent::where('finder_id',$finder['_id'])->first();
 
