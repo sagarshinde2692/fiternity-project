@@ -1274,6 +1274,8 @@ class FindersController extends \BaseController {
 
 				$response['finder']  = $this->applyNonValidity($response, 'web');
 
+                $this->applyFreeSP($response);
+
                 $this->insertWSNonValidtiy($response, 'web');
 
                 // $response['finder'] = $this->applyTopService($response);
@@ -7084,6 +7086,28 @@ class FindersController extends \BaseController {
         }
 
         return $msg;
+
+    }
+
+    public function applyFreeSP(&$data){
+        
+        $free_sp_rc_all = $this->utilities->getFreeSPRatecardsByFinder(['finder_id'=>$data['finder']['_id']]);
+
+        if(!empty($free_sp_rc_all)){
+            foreach($data['finder']['services'] as &$service){
+                foreach($service['serviceratecard'] as &$ratecard){
+                    $free_sp_rc = $this->utilities->getFreeSPRatecard($ratecard,'ratecard',$free_sp_rc_all);
+                    if(!empty($free_sp_rc)){
+                        // return $free_sp_rc;
+                        $ratecard['special_offer'] = true;
+                        $finder_special_offer = true;
+
+                    }
+                }
+            }
+        }
+
+        $data['finder']['special_offer'] = !empty($finder_special_offer);
 
     }
 

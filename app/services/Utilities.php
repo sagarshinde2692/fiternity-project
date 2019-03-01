@@ -7925,7 +7925,7 @@ Class Utilities {
 
     }
 
-    public function getFreeSPRatecard($data, $source='order'){
+    public function getFreeSPRatecard($data, $source='order', $free_sp_rc_all=[]){
 
         try{
             
@@ -7946,15 +7946,39 @@ Class Utilities {
                     case 360:
                         $duration= 20;
                 }
-            }
-            
-            $free_sp_rc = Ratecard::where('flags.free_sp', true)->where('service_id', $data['service_id'])->where('duration', $duration)->first();
-    
-            if($free_sp_rc){
+
+                if(empty($free_sp_rc_all)){
+
+                    $free_sp_rc_all = Ratecard::where('flags.free_sp', true);
+                    if(!empty($data['finder_id'])){
+                        $free_sp_rc_all->where('finder_id', $data['finder_id']);
+                    }
+                    if(!empty($data['service_id'])){
+                        $free_sp_rc_all->where('service_id', $data['service_id']);
+                    }
+                    
+                    $free_sp_rc_all = $free_sp_rc_all->where('duration', $duration)->get();
+                }
+
+                if(!empty($free_sp_rc_all)){
+                    $free_sp_rc_all_map = [];
+
+                    foreach($free_sp_rc_all as $f){
+                        $free_sp_rc_all_map[$f['service_id'].'-'.$f['duration']] = $f;
+                    }
+
+                    if(!empty($free_sp_rc_all_map[$data['service_id'].'-'.$duration])){
+                        $free_sp_rc = $free_sp_rc_all_map[$data['service_id'].'-'.$duration];
+                    }
+                }
                 
-                return $free_sp_rc;
-            
+                if(!empty($free_sp_rc)){
+                    
+                    return $free_sp_rc;
+                
+                }
             }
+            
 
             return null;
 
@@ -7965,6 +7989,11 @@ Class Utilities {
 
         }
     }
+
+    public function getFreeSPRatecardsByFinder($data){
+        return Ratecard::where('flags.free_sp', true)->where('finder_id', $data['finder_id'])->get();
+    }
+
 }
 
 
