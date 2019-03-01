@@ -2467,6 +2467,7 @@ class TransactionController extends \BaseController {
 
             if(!empty($free_sp_ratecard_id)){
                 $data['free_sp_ratecard_id'] = $free_sp_ratecard_id['_id'];
+                $data['free_sp_url'] = Config::get('app.website')."/membership?capture_type=womens_offer_week&order_token=".$order_token;
             }
             
             if(!empty($order['ratecard_flags']['free_sp'])){
@@ -8567,6 +8568,14 @@ class TransactionController extends \BaseController {
 
         $data = $this->getAllPostData();
 
+        if(!empty($data['order_token'])){
+            
+            $decodedOrderToken = decodeOrderToken($data['order_token']);
+            $data['order_id'] = $decodedOrderToken['data']['order_id'];
+            $data['customer_id'] = $decodedOrderToken['data']['customer_id'];
+            
+        }
+
         $requestValidation = $this->utilities->validateInput('generateFreeSP', $data);
 
         if(!(!empty($requestValidation['status']) && $requestValidation['status'] == 200)){
@@ -8617,15 +8626,26 @@ class TransactionController extends \BaseController {
 
     public function getFreeSPData($data){
         
-        
-        $logged_in_customer = $this->utilities->getCustomerFromToken();
-        
-        
-        if(empty($logged_in_customer) || empty($logged_in_customer['_id'])){
-            return ['status'=>400, 'message'=>'Please log in'];
+        $customer_id = null;
+
+        if(!empty($data['order_id'])){
+            $data['order_id'] = intval($data['order_id']);
         }
+
+        if(!empty($data['order_token'])){
         
-        $customer_id = $logged_in_customer['_id'];
+            $customer_id = $data['customer_id'];
+        
+        }else{
+
+            $logged_in_customer = $this->utilities->getCustomerFromToken();
+            
+            if(empty($logged_in_customer) || empty($logged_in_customer['_id'])){
+                return ['status'=>400, 'message'=>'Please log in'];
+            }
+            
+            $customer_id = $logged_in_customer['_id'];
+        }
         
         Order::$withoutAppends = true;
 

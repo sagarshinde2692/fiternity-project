@@ -141,7 +141,11 @@ Class CustomerMailer extends Mailer {
 		if(isset($data['event_type']) && $data['event_type']=='TOI'){
 			$label = 'Order-PG-Event-TOI';
             $data['via'] = 'mfp';
-		}
+        }
+        
+        if(!empty($data['ratecard_flags']['free_sp'])){
+            $label = "Free-SP-Customer";
+        }
 
 		$message_data 	= array(
 			'user_email' =>explode(",",$data['customer_email']),

@@ -1131,6 +1131,9 @@ class RewardofferController extends BaseController {
                     $free_sp_ratecard_duration = null;
                     if(!empty($free_sp_ratecard)){
                         $free_sp_ratecard_duration = $free_sp_ratecard['duration'];
+                        if(!empty($free_sp_ratecard['price'])){
+                            $mixedreward_content['total_amount'] += $free_sp_ratecard['price'];
+                        }
                         array_push($rewards_snapfitness_contents, $mixedreward_content->session_pack_reward_content);
                     }
 
