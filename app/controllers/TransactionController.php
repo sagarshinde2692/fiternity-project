@@ -2464,8 +2464,8 @@ class TransactionController extends \BaseController {
             }
 
             $free_sp_ratecard_id = $this->utilities->getFreeSPRatecard($order);
-
-            if(!empty($free_sp_ratecard_id) && $order["reward_type"] ==  "mixed"){
+            
+            if(!empty($free_sp_ratecard_id) && !empty($order["reward_type"]) && $order["reward_type"] ==  "mixed"){
                 $data['free_sp_ratecard_id'] = $free_sp_ratecard_id['_id'];
                 $data['free_sp_url'] = Config::get('app.website')."/membership?capture_type=womens_offer_week&order_token=".$order_token;
             }
