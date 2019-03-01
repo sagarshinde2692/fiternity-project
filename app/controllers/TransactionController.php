@@ -8590,8 +8590,8 @@ class TransactionController extends \BaseController {
         $capture_data = $this->getFreeSPData($data);
 
         if(empty($capture_data['status']) || $capture_data['status'] != 200){
-            if(!empty($requestValidation['message'])){
-                return ['status'=>400, 'message'=>$requestValidation['message']];
+            if(!empty($capture_data['message'])){
+                return ['status'=>400, 'message'=>$capture_data['message']];
             }else{
                 return ['status'=>400, 'message'=>'Please try after sometime(2)'];
             }
@@ -8660,7 +8660,7 @@ class TransactionController extends \BaseController {
         }
 
         if(strtolower($order['customer_email']) == strtolower($data['customer_email'])){
-            return ['status'=>400, 'message'=>'Complemetary Session Pack cannot be availed by the same person'];
+            return ['status'=>400, 'message'=>'Please enter a different email id to claim the Complementary Session Pack'];
         }
 
         $capture_data = array_only($data, ["customer_email","customer_name","customer_phone","preferred_starting_date"]);
