@@ -5199,6 +5199,8 @@ class HomeController extends BaseController {
     
     public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id){
         Log::info('----- Entered getLoyaltyAppropriationConsentMsg -----');
+        $device_type = Request::header('Device-Type');
+        $cashbackMap = ['A','B','C','D','E','F'];
         $customer = Customer::active()
                             ->where('_id', intval($customer_id))
                             ->where('loyalty.brand_loyalty','$exists',false)
@@ -5224,7 +5226,12 @@ class HomeController extends BaseController {
                 $message = "<br>Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. <br>Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b><br>You are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.<br>Do you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
                 $rewardsExist = false;
                 if(in_array($existingLoyalty['reward_type'],[1,2,3,4])){
-                    $message .= "rewards (<a href=''>Checkout Rewards</a>)";
+                    if(!empty($device_type) && in_array($device_type, ['android', 'ios'])){
+                        $message .= "rewards (<a onclick=''>Checkout Rewards</a>)";
+                    }
+                    else {
+                        $message .= "rewards (<a onclick=\"cashbackPopup('".$existingLoyalty['reward_type']."', '".$cashbackMap[intval($existingLoyalty['cashback_type'])-1]."')\">Checkout Rewards</a>)";
+                    }
                     $rewardsExist = true;
                 }
                 if(in_array($existingLoyalty['reward_type'],[3,4,5,6])){
