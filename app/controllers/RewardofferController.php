@@ -1159,7 +1159,8 @@ class RewardofferController extends BaseController {
                         }
                     }
 
-					$rewards[] = $rewardObjData;
+                    // $rewards[] = $rewardObjData;
+                    array_unshift($rewards, $rewardObjData);
 				}
 			}
 
