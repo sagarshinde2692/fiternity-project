@@ -1819,13 +1819,13 @@ class HomeController extends BaseController {
                 }
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
                     if(!empty($item['loyalty_email_content'])){
-                        $subline = $subline."\n".$item['loyalty_email_content'];
-                        // $subline = $subline."\n".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                        // $subline = $subline."<br>".$item['loyalty_email_content'];
+                        $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     }
                 }
                 else {
                     if(!empty($item['loyalty_email_content'])){
-                        $subline = $subline."\n".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                        $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     }
                 }
 
@@ -5220,8 +5220,8 @@ class HomeController extends BaseController {
                     $existingLoyalty['cashback_type'] = $order['finder_flags']['cashback_type'];
                     $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight', strtotime($order['end_date'])));
                 }
-                // "Hi, ".$customer_name.",\n
-                $message = "Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b>\nYou are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.\nDo you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
+                // "Hi, ".$customer_name.",<br>
+                $message = "Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b><br>You are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.<br>Do you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
                 $rewardsExist = false;
                 if(in_array($existingLoyalty['reward_type'],[1,2,3,4])){
                     $message .= "rewards (<a href=''>Checkout Rewards</a>)";
@@ -5236,8 +5236,8 @@ class HomeController extends BaseController {
                         $message .= "<b>120%</b> cashback";
                     }
                 }
-                $message .= ".\nPlease note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till ".$existingLoyalty['new_end_date'];
-                $message .= ".\n<a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
+                $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till ".$existingLoyalty['new_end_date'];
+                $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
             }
             return $message;
         }
