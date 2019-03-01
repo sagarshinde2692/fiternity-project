@@ -1322,7 +1322,7 @@ class FindersController extends \BaseController {
                             
                         }
                         
-                        if(!in_array($finder['_id'], Config::get('app.women_week_off', []))){
+                        if(in_array($finder['_id'], Config::get('app.women_week_off', []))){
                             $response['vendor_stripe_data']	=	[
                                 'text1'=> "Women's Week Special : Additional Flat 25% Off + Exclusive Rewards on Lowest Prices Only For Women | Use Code : POWER",
                                 'text3'=>"",
