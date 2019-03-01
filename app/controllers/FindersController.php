@@ -1320,18 +1320,18 @@ class FindersController extends \BaseController {
                             
                         }
                         
-                        if(!in_array($finder['_id'], Config::get('app.fit_10_excluded_finder_ids', []))){
-                            $response['vendor_stripe_data']	=	[
-                                'text1'=> "Get addnl flat 10% off* - Use Code: FIT10 | Valid till 28th Feb",
-                                'text3'=>"",
-                                'background-color'=> "",
-                                'text_color'=> '$fff',
-                                'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
-                            ];
+                        // if(!in_array($finder['_id'], Config::get('app.fit_10_excluded_finder_ids', []))){
+                        //     $response['vendor_stripe_data']	=	[
+                        //         'text1'=> "Get addnl flat 10% off* - Use Code: FIT10 | Valid till 28th Feb",
+                        //         'text3'=>"",
+                        //         'background-color'=> "",
+                        //         'text_color'=> '$fff',
+                        //         'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                        //     ];
                 
-                        }else if(empty($response['vendor_stripe_data']['text1'])){
-                            $response['vendor_stripe_data'] = "no-patti";
-                        }
+                        // }else if(empty($response['vendor_stripe_data']['text1'])){
+                        //     $response['vendor_stripe_data'] = "no-patti";
+                        // }
 						// if(empty($finder['flags']['end_sale_0'])){
 						// 	if(!empty($finder['flags']['end_sale_10'])){
 						// 		$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addnl Flat 10% off. Code: JFIT *T&C';
