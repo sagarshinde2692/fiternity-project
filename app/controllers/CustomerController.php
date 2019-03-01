@@ -9319,10 +9319,10 @@ class CustomerController extends \BaseController {
 		try{
 			if(!empty($data)){
 				if(!empty($data['customer_id'])){
-					$customer_id = $data['customer_id'];
+					$customer_id = intval($data['customer_id']);
 					$cust = Customer::active()->where('_id', $customer_id)->first();
 					if(!empty($data['order_id'])){
-						$order_id = $data['order_id'];
+						$order_id = intval($data['order_id']);
 						$order = Order::active()->where('_id', $order_id)->where('customer_id', $customer_id)->first();
 					
 						$reason = 'loyalty_appropriation';

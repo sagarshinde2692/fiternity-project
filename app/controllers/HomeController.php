@@ -5221,22 +5221,24 @@ class HomeController extends BaseController {
                     $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight', strtotime($order['end_date'])));
                 }
                 // "Hi, ".$customer_name.",<br>
-                $message = "Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b><br>You are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.<br>Do you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
+                $message = "<br>Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. <br>Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b><br>You are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.<br>Do you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
                 $rewardsExist = false;
                 if(in_array($existingLoyalty['reward_type'],[1,2,3,4])){
                     $message .= "rewards (<a href=''>Checkout Rewards</a>)";
                     $rewardsExist = true;
                 }
-                if(in_array($existingLoyalty['reward_type'],[3,4,6])){
+                if(in_array($existingLoyalty['reward_type'],[3,4,5,6])){
                     if($rewardsExist){
                         $message .= " & ";
                     }
-                    $message .= '<b>100%</b> cashback';
                     if(in_array($existingLoyalty['cashback_type'],[1,2])){
                         $message .= "<b>120%</b> cashback";
                     }
+                    else {
+                        $message .= '<b>100%</b> cashback';
+                    }
                 }
-                $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till ".$existingLoyalty['new_end_date'];
+                $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till <b>".$existingLoyalty['new_end_date']."</b>";
                 $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
             }
             return $message;
