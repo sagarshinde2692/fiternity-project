@@ -9272,4 +9272,97 @@ class CustomerController extends \BaseController {
         return !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
     }
 
+	public function prepareLoyaltyData($order){
+		Log::info('----- Entered prepareLoyaltyData -----');
+		if(!empty($order)){
+			return [
+				'order_id' => $order['_id'],
+				'start_date' => new MongoDate(strtotime('midnight', strtotime($order['start_date']))),
+				'start_date_time' => new MongoDate(strtotime($order['start_date'])),
+				'finder_id' => $order['finder_id'],
+				'end_date' => new MongoDate(strtotime($order['end_date'])),
+				'type' => $order['type'],
+				'reward_type' => $order['finder_flags']['reward_type'],
+				'cashback_type' => $order['finder_flags']['cashback_type'],
+				'checkins' => 0,
+				'created_at' => new \MongoDate()
+			];
+		}
+		return null;
+	}
+
+	public function archiveCustomerData($customer_id, $data, $reason) {
+		Log::info('----- Entered archiveCustomerData -----');
+		$custArchive = new CustomerArchive();
+		$custArchive['customer_id'] = $customer_id;
+		$custArchive['data'] = $data;
+		$custArchive['reason'] = $reason;
+		$custArchive->save();
+		Log::info('----- Completed archiveCustomerData -----');
+	}
+
+	public function deactivateCheckins($customer_id, $reason) {
+		Log::info('----- Entered deactivateCheckins -----');
+		Checkin::where('customer_id', $customer_id)->update([
+			'status' => '0',
+			'deactivated_on' => new \MongoDate(),
+			'deactivated_for' => $reason
+		]);
+		Log::info('----- Completed deactivateCheckins -----');
+	}
+
+	public function loyaltyAppropriation(){
+		Log::info('----- Entered loyaltyAppropriation -----');
+		$data = Input::all();
+		Log::info('loyaltyAppropriation data: ', [$data]);
+		$resp = ['status' => 500, 'messsage' => 'Something went wrong'];
+		try{
+			if(!empty($data)){
+				if(!empty($data['customer_id'])){
+					$customer_id = $data['customer_id'];
+					$cust = Customer::active()->where('_id', $customer_id)->first();
+					if(!empty($data['order_id'])){
+						$order_id = $data['order_id'];
+						$order = Order::active()->where('_id', $order_id)->where('customer_id', $customer_id)->first();
+					
+						$reason = 'loyalty_appropriation';
+
+						$oldLoyalty = $cust['loyalty'];
+
+						Log::info('ready to prepareLoyaltyData.....');
+						$newLoyalty = $this->prepareLoyaltyData($order);
+						if(!empty($newLoyalty)){
+							$archiveData = ['loyalty' => $oldLoyalty];
+							
+							$this->archiveCustomerData($cust['_id'], $archiveData, $reason);
+
+							$cust['loyalty'] = $newLoyalty;
+							$cust->update();
+
+							$this->deactivateCheckins($cust['_id'], $reason);
+
+							$resp = ['status'=>200, 'message'=>'Successfully appropriated the loyalty of the customer'];
+						}
+						else {
+							$resp = ['status'=>400, 'message'=>'order details are missing'];
+						}
+					}
+					else {
+						$resp = ['status'=>400, 'message'=>'order id is missing'];
+					}
+				}
+				else {
+					$resp = ['status'=>400, 'message'=>'customer id is missing'];
+				}
+			}
+			else {
+				$resp = ['status'=>400, 'message'=>'order id and customer id are missing'];
+			}
+		} catch (Exception $ex) {
+			Log::info('Exception in loyaltyAppropriation: ', [$ex]);
+		}
+		Log::info('returning from loyaltyAppropriation with status: ', $resp);
+		return Response::json($resp, $resp['status']);
+	}
+
 }

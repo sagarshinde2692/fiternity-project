@@ -1329,3 +1329,7 @@ Route::get('customer/getsessionpacks/{offset?}/{limit?}','CustomerController@get
 Route::post('addServiceMultipleSessionPack','DebugController@addServiceMultipleSessionPack');
 
 Route::get('orderOldSuccessDateToNew', 'DebugController@orderOldSuccessDateToNew');
+
+// Route::post('loyaltyAppropriation', 'CustomerController@loyaltyAppropriation');
+Route::get('customer/loyaltyAppropriation', 'CustomerController@loyaltyAppropriation');
+Route::get('home/getLoyaltyAppropriationConsentMsg/{customer_id}/{order_id}','HomeController@getLoyaltyAppropriationConsentMsg');

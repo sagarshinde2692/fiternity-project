@@ -1820,6 +1820,12 @@ class HomeController extends BaseController {
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
                     if(!empty($item['loyalty_email_content'])){
                         $subline = $subline."\n".$item['loyalty_email_content'];
+                        // $subline = $subline."\n".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                    }
+                }
+                else {
+                    if(!empty($item['loyalty_email_content'])){
+                        $subline = $subline."\n".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     }
                 }
 
@@ -2003,10 +2009,10 @@ class HomeController extends BaseController {
                             }
                         }
 
-                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/sms).<br/>Get ".$session_total." sessions for free worth Rs. ".$session_amount;
+                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/sms).\nGet ".$session_total." sessions for free worth Rs. ".$session_amount;
 
                         if($reward['reward_type'] == "swimming_sessions"){
-                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/sms).<br/>Get ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
+                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/sms).\nGet ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
                         }
                         
                     }
@@ -5189,5 +5195,54 @@ class HomeController extends BaseController {
             return ['status'=>500];
         }
     }
-        
+ 
+    
+    public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id){
+        Log::info('----- Entered getLoyaltyAppropriationConsentMsg -----');
+        $customer = Customer::active()
+                            ->where('_id', intval($customer_id))
+                            ->where('loyalty.brand_loyalty','$exists',false)
+                            ->first();
+        if(!empty($customer)){
+            $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
+            $existingLoyalty = [
+                'checkins' => (!empty($customer['loyalty']['checkins']))?$customer['loyalty']['checkins']:0,
+                'end_date' => (!empty($customer['loyalty']['end_date']))?date('d-m-Y', strtotime($customer['loyalty']['end_date']->sec)):null
+            ];
+            if(!empty($existingLoyalty)){
+                if(empty($existingLoyalty['end_date'])){
+                    $existingLoyalty['end_date'] = date('d-m-Y', strtotime('midnight', strtotime('+360 days',$customer['loyalty']['start_date']->sec)));
+                }
+                $order = Order::active()->where('_id', intval($order_id))->where('customer_id', intval($customer_id))->first();
+                if(!empty($order)){
+                    $existingLoyalty['finder_name'] = $order['finder_name'];
+                    $existingLoyalty['reward_type'] = $order['finder_flags']['reward_type'];
+                    $existingLoyalty['cashback_type'] = $order['finder_flags']['cashback_type'];
+                    $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight', strtotime($order['end_date'])));
+                }
+                // "Hi, ".$customer_name.",\n
+                $message = "Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b>\nYou are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.\nDo you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
+                $rewardsExist = false;
+                if(in_array($existingLoyalty['reward_type'],[1,2,3,4])){
+                    $message .= "rewards (<a href=''>Checkout Rewards</a>)";
+                    $rewardsExist = true;
+                }
+                if(in_array($existingLoyalty['reward_type'],[3,4,6])){
+                    if($rewardsExist){
+                        $message .= " & ";
+                    }
+                    $message .= '<b>100%</b> cashback';
+                    if(in_array($existingLoyalty['cashback_type'],[1,2])){
+                        $message .= "<b>120%</b> cashback";
+                    }
+                }
+                $message .= ".\nPlease note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till ".$existingLoyalty['new_end_date'];
+                $message .= ".\n<a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
+            }
+            return $message;
+        }
+        // else {
+
+        // }
+    }
 }
