@@ -1136,6 +1136,9 @@ class RewardofferController extends BaseController {
                             $mixedreward_content['total_amount'] += $free_sp_ratecard['price'];
                         }
                         array_push($rewards_snapfitness_contents, $mixedreward_content->session_pack_reward_content);
+                        $images = $mixedreward_content['images'];
+                        array_push($images, $mixedreward_content->session_pack_image);
+                        $mixedreward_content['images'] = $images;
                     }
 
                     foreach($rewards_snapfitness_contents as &$content){

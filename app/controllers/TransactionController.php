@@ -8660,7 +8660,7 @@ class TransactionController extends \BaseController {
         }
 
         if(strtolower($order['customer_email']) == strtolower($data['customer_email'])){
-            return ['status'=>400, 'message'=>'Cannot create order for same email id'];
+            return ['status'=>400, 'message'=>'Complemetary Session Pack cannot be availed by the same person'];
         }
 
         $capture_data = array_only($data, ["customer_email","customer_name","customer_phone","preferred_starting_date"]);
