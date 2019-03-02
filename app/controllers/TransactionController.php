@@ -8568,6 +8568,9 @@ class TransactionController extends \BaseController {
 
         $data = $this->getAllPostData();
 
+        Log::info("generateFreeSP");
+        Log::info($data);
+
         if(!empty($data['order_token'])){
             
             $decodedOrderToken = decodeOrderToken($data['order_token']);
@@ -8646,6 +8649,9 @@ class TransactionController extends \BaseController {
             
             $customer_id = $logged_in_customer['_id'];
         }
+
+        Log::info("getFreeSPData");
+        Log::info($data);
         
         Order::$withoutAppends = true;
 
@@ -8656,7 +8662,7 @@ class TransactionController extends \BaseController {
         ->find($data['order_id']);
 
         if(empty($order)){
-            return ['status'=>400, 'message'=>'Invalid request(1).'];
+            return ['status'=>400, 'message'=>'The Complementary Session Pack has already been claimed'];
         }
 
         if(strtolower($order['customer_email']) == strtolower($data['customer_email'])){
