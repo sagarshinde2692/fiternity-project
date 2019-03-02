@@ -1328,7 +1328,7 @@ class FindersController extends \BaseController {
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
-                                'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
+                                'background'=> '-webkit-linear-gradient(left, #e873b3 0%, #e873b3 100%)'
                             ];
                 
                         }else if(empty($response['vendor_stripe_data']['text1'])){
