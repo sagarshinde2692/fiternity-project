@@ -1111,6 +1111,64 @@ class RewardofferController extends BaseController {
             
         }
 
+        if(empty($gold_mixed) && in_array($finder['_id'], Config::get('app.women_mixed_finder_id', []))){
+            $rewardObj = Reward::where('quantity_type','mixed')->first();
+            
+            $mixedreward_content = MixedRewardContent::where('finder_id',$finder['_id'])->first();
+
+            if(!empty($mixedreward_content)){
+                
+				if($rewardObj && $mixedreward_content){				
+
+					$rewardObjData = $rewardObj->toArray();
+
+					unset($rewardObjData['rewrardoffers']);
+					unset($rewardObjData['updated_at']);
+					unset($rewardObjData['created_at']);
+                    
+                    $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+
+                    $free_sp_ratecard = $this->utilities->getFreeSPRatecard($ratecard, 'ratecard');
+                    $free_sp_ratecard_duration = null;
+                    if(!empty($free_sp_ratecard)){
+                        $free_sp_ratecard_duration = $free_sp_ratecard['duration'];
+                        if(!empty($free_sp_ratecard['price'])){
+                            $mixedreward_content['total_amount'] += $free_sp_ratecard['price'];
+                        }
+                        array_push($rewards_snapfitness_contents, $mixedreward_content->session_pack_reward_content);
+                        $images = $mixedreward_content['images'];
+                        array_push($images, $mixedreward_content->session_pack_image);
+                        $mixedreward_content['images'] = $images;
+                    }
+
+                    foreach($rewards_snapfitness_contents as &$content){
+						$content = bladeCompile($content, ['finder_name'=>$finder['title'], 'no_of_sessions'=>$free_sp_ratecard_duration]);
+					}
+
+					$rewardObjData['title'] = $mixedreward_content['title'];
+					$rewardObjData['contents'] = $rewards_snapfitness_contents;
+					$rewardObjData['image'] = $mixedreward_content['images'][0];
+					$images = $mixedreward_content['images'];
+					$rewardObjData['gallery'] = $mixedreward_content['images'];
+					$rewardObjData['new_amount'] = $mixedreward_content['total_amount'];
+					$rewardObjData['payload']['amount'] = $mixedreward_content['total_amount'];
+					$rewardObjData['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+
+                    if(!empty($mixedreward_content['footer']) && !in_array(Request::header('Device-Type'), ['android', 'ios'])){
+                        if($duration_day==360){
+                            $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>'1']);
+                        }else{
+                            $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>'6']);
+                        }
+                    }
+
+                    // $rewards[] = $rewardObjData;
+                    array_unshift($rewards, $rewardObjData);
+				}
+			}
+
+        }
+
         if(!empty($rewards)){
 
             foreach ($rewards as $reward_key => $reward_value) {

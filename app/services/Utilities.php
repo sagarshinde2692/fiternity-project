@@ -1016,7 +1016,7 @@ Class Utilities {
     	if(!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session')
     		$hash_verified = true;
     	
-    	else if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK" ||(isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched)){
+    	else if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK" ||(isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched) || !empty($data['internal_success'])){
             if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
@@ -7839,79 +7839,171 @@ Class Utilities {
     }
 
 
-public function getPPSSearchResult($data){
-    $payload = [
-        'category' =>!empty($data['localName']) && !empty($data['name']) ? 
-            [
+    public function getPPSSearchResult($data){
+        $payload = [
+            'category' =>!empty($data['localName']) && !empty($data['name']) ?
                 [
-                    'localName' => !empty($data['localName']) ? $data['localName'] : '',
-                    'name' => !empty($data['name']) ? $data['name'] : '',
-                    'subcategory' =>
-                        [],
-                ],
-        ] : [],
-        'time_tag' => !empty($data['time_tag']) ? $data['time_tag'] : '',
-        'keys' =>!empty($data['keys']) ? $data['keys'] :
-            [
-            'id',
-            'address',
-            'average_rating',
-            'category',
-            'commercial_type',
-            'geolocation',
-            'location',
-            'name',
-            'slug',
-            'total_rating_count',
-            'slots',
-            'vendor_name',
-            'price',
-            'coverimage',
-            'total_slots',
-            'next_slot',
-            'vendor_slug',
-            'overlayimage',
-            'trial_header',
-            'membership_header',
-        ],
-        'location' =>
-            [
-            'city' => !empty($data['city']) ? $data['city'] : 'mumbai',
-            'geo' =>
+                    [
+                        'localName' => !empty($data['localName']) ? $data['localName'] : '',
+                        'name' => !empty($data['name']) ? $data['name'] : '',
+                        'subcategory' =>
+                            [],
+                    ],
+            ] : [],
+            'time_tag' => !empty($data['time_tag']) ? $data['time_tag'] : '',
+            'keys' =>!empty($data['keys']) ? $data['keys'] :
                 [
-                'lat' => !empty($data['lat']) ? $data['lat'] : null,
-                'lon' => !empty($data['lon']) ? $data['lon'] : null,
-                'radius' => !empty($data['radius']) ? $data['radius'] : null,
+                'id',
+                'address',
+                'average_rating',
+                'category',
+                'commercial_type',
+                'geolocation',
+                'location',
+                'name',
+                'slug',
+                'total_rating_count',
+                'slots',
+                'vendor_name',
+                'price',
+                'coverimage',
+                'total_slots',
+                'next_slot',
+                'vendor_slug',
+                'overlayimage',
+                'trial_header',
+                'membership_header',
             ],
-            'regions'=>!empty($data['regions']) ? $data['regions'] : [],
-        ],
-        'offset' =>
-            [
-            'from' => 0,
-            'number_of_records' => !empty($data['number_of_records']) ? $data['number_of_records'] : "4",
-        ],
-        'price_range' => '',
-        'skipTimings' => false,
-        'sort' =>
-            [
-            'order' => 'desc',
-            'sortField' => 'popularity',
-        ],
-    ];
+            'location' =>
+                [
+                'city' => !empty($data['city']) ? $data['city'] : 'mumbai',
+                'geo' =>
+                    [
+                    'lat' => !empty($data['lat']) ? $data['lat'] : null,
+                    'lon' => !empty($data['lon']) ? $data['lon'] : null,
+                    'radius' => !empty($data['radius']) ? $data['radius'] : null,
+                ],
+                'regions'=>!empty($data['regions']) ? $data['regions'] : [],
+            ],
+            'offset' =>
+                [
+                'from' => 0,
+                'number_of_records' => !empty($data['number_of_records']) ? $data['number_of_records'] : "4",
+            ],
+            'price_range' => '',
+            'skipTimings' => false,
+            'sort' =>
+                [
+                'order' => 'desc',
+                'sortField' => 'popularity',
+            ],
+        ];
 
-    $url = "search/paypersession";
+        $url = "search/paypersession";
 
-    $finder = [];
+        $finder = [];
 
-    try {
-        $client = new Client( ['debug' => false, 'base_uri' =>Config::get('app.new_search_url')."/"] );
-        $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
-        return $response;
-    }catch(Exception $e){
-        Log::info($e);
-        return null;
+        try {
+            $client = new Client( ['debug' => false, 'base_uri' =>Config::get('app.new_search_url')."/"] );
+            $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+            return $response;
+        }catch(Exception $e){
+            Log::info($e);
+            return null;
+        }
     }
-}
+
+    public function validateInput($functionName, $data){
+
+        switch($functionName){
+            case 'generateFreeSP':
+            $rules = [
+                'customer_name'=>'required',
+                'customer_email'=>'required|email',
+                'customer_phone'=>'required',
+                'order_id'=>'required|integer'
+            ];
+        }
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return ['status' => 404,'message' => error_message($validator->errors())];
+        }else{
+            return ['status'=>200];
+        }
+
+    }
+
+    public function getFreeSPRatecard($data, $source='order', $free_sp_rc_all=[]){
+
+        try{
+            
+            if($source == 'ratecard'){
+                $data['duration_day'] = $this->getDurationDay(($data));
+            }
+            
+            $sessions = $duration = null;
+            if(in_array($data['finder_id'], Config::get('app.women_mixed_finder_id')) && in_array($data['type'], ['memberships', 'membership']) && empty($data['extended_validity']) && !empty($data['duration_day']) && in_array($data['duration_day'], [360, 180, 30, 90])){
+                switch($data['duration_day']){
+                    case 30:
+                    case 90:    
+                        $duration = 4;
+                        break;
+                    case 180:
+                        $duration= 12;
+                        break;
+                    case 360:
+                        $duration= 20;
+                }
+
+                if(empty($free_sp_rc_all)){
+
+                    $free_sp_rc_all = Ratecard::where('flags.free_sp', true);
+                    if(!empty($data['finder_id'])){
+                        $free_sp_rc_all->where('finder_id', $data['finder_id']);
+                    }
+                    if(!empty($data['service_id'])){
+                        $free_sp_rc_all->where('service_id', $data['service_id']);
+                    }
+                    
+                    $free_sp_rc_all = $free_sp_rc_all->where('duration', $duration)->get();
+                }
+
+                if(!empty($free_sp_rc_all)){
+                    $free_sp_rc_all_map = [];
+
+                    foreach($free_sp_rc_all as $f){
+                        $free_sp_rc_all_map[$f['service_id'].'-'.$f['duration']] = $f;
+                    }
+
+                    if(!empty($free_sp_rc_all_map[$data['service_id'].'-'.$duration])){
+                        $free_sp_rc = $free_sp_rc_all_map[$data['service_id'].'-'.$duration];
+                    }
+                }
+                
+                if(!empty($free_sp_rc)){
+                    
+                    return $free_sp_rc;
+                
+                }
+            }
+            
+
+            return null;
+
+        }catch(Exception $e){
+
+            Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+            return null;
+
+        }
+    }
+
+    public function getFreeSPRatecardsByFinder($data){
+        return Ratecard::where('flags.free_sp', true)->where('finder_id', $data['finder_id'])->get();
+    }
+
 }
 
 

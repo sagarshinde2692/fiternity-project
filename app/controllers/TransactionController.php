@@ -1499,7 +1499,7 @@ class TransactionController extends \BaseController {
             $resp['data']['payment_modes'] = [];
         }
         
-        return Response::json($resp);
+        return $resp;
 
     }
     
@@ -2463,6 +2463,22 @@ class TransactionController extends \BaseController {
                 $data['loyalty_email_content'] = $this->utilities->getLoyaltyEmailContent($order);
             }
 
+            $free_sp_ratecard_id = $this->utilities->getFreeSPRatecard($order);
+            
+            if(!empty($free_sp_ratecard_id) && !empty($data["reward_type"]) && $data["reward_type"] ==  "mixed"){
+                $data['free_sp_ratecard_id'] = $free_sp_ratecard_id['_id'];
+                $data['free_sp_url'] = Config::get('app.website')."/membership?capture_type=womens_offer_week&order_token=".$order_token;
+            }
+            
+            if(!empty($order['ratecard_flags']['free_sp'])){
+
+                $parent_order_update = Order::where('_id', $order['parent_order_id'])->where('free_sp_order_id', 'exists', false)->update(['free_sp_order_id'=>$order['_id']]);
+
+                if(empty($parent_order_update)){
+                    return ['status' => 400, 'statustxt' => 'failed', 'message' => "Transaction Failed :)"];
+                }
+            }
+
             $order->update($data);
 
             //send welcome email to payment gateway customer
@@ -3283,6 +3299,10 @@ class TransactionController extends \BaseController {
                 $data['amount_finder'] = $data['amount'] = $data['amount_customer'] = $data['amount_final'] = 0;
             }
         
+        }
+
+        if(!empty($data['ratecard_flags']['free_sp'])){
+            $data['amount_customer'] = $data['amount'] = 0;
         }
 
         if(!empty($data['amount'] ) && !empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'memberships') && empty($data['extended_validity'])){
@@ -4114,6 +4134,10 @@ class TransactionController extends \BaseController {
     public function getRatecardDetail($data){
 
         $ratecard = Ratecard::find((int)$data['ratecard_id']);
+
+        if(!empty($ratecard['flags']['free_sp']) && empty($data['parent_order_id'])){
+            return array('status' => 404,'message' =>'Ratecard does not exists');
+        }
 
         if(!$ratecard){
             return array('status' => 404,'message' =>'Ratecard does not exists');
@@ -8540,6 +8564,125 @@ class TransactionController extends \BaseController {
         Order::whereIn('_id', $order_ids)->update(['status'=>'0', 'upgraded_order'=>$order['_id']]);
     }
 
-    
+    public function generateFreeSP(){
+
+        $data = $this->getAllPostData();
+
+        Log::info("generateFreeSP");
+        Log::info($data);
+
+        if(!empty($data['order_token'])){
+            
+            $decodedOrderToken = decodeOrderToken($data['order_token']);
+            $data['order_id'] = $decodedOrderToken['data']['order_id'];
+            $data['customer_id'] = $decodedOrderToken['data']['customer_id'];
+            
+        }
+
+        $requestValidation = $this->utilities->validateInput('generateFreeSP', $data);
+
+        if(!(!empty($requestValidation['status']) && $requestValidation['status'] == 200)){
+            if(!empty($requestValidation['message'])){
+                return ['status'=>400, 'message'=>$requestValidation['message']];
+            }else{
+                return ['status'=>400, 'message'=>'Please try after sometime(1)'];
+            }
+        }
+
+
+        $capture_data = $this->getFreeSPData($data);
+
+        if(empty($capture_data['status']) || $capture_data['status'] != 200){
+            if(!empty($capture_data['message'])){
+                return ['status'=>400, 'message'=>$capture_data['message']];
+            }else{
+                return ['status'=>400, 'message'=>'Please try after sometime(2)'];
+            }
+        }
+
+        $capture_response = $this->capture($capture_data['data']);
+        
+        if(empty($capture_response['status']) || $capture_response['status'] != 200 || empty($capture_response['data']['orderid']) || empty($capture_response['data']['email'])){
+            return ['status'=>500, 'message'=>'Please try again later'];
+        }
+        
+        $success_data = [
+            
+            'order_id'=>$capture_response['data']['orderid'],
+            'status'=>'success',
+            'customer_email'=>$capture_response['data']['email'],
+            'amount'=>0
+        
+        ];
+        
+        return $this->successCommon($success_data);
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAllPostData()
+    {
+        return Input::json()->all();
+    }
+
+    public function getFreeSPData($data){
+        
+        $customer_id = null;
+
+        if(!empty($data['order_id'])){
+            $data['order_id'] = intval($data['order_id']);
+        }
+
+        if(!empty($data['order_token'])){
+        
+            $customer_id = $data['customer_id'];
+        
+        }else{
+
+            $logged_in_customer = $this->utilities->getCustomerFromToken();
+            
+            if(empty($logged_in_customer) || empty($logged_in_customer['_id'])){
+                return ['status'=>400, 'message'=>'Please log in'];
+            }
+            
+            $customer_id = $logged_in_customer['_id'];
+        }
+
+        Log::info("getFreeSPData");
+        Log::info($data);
+        
+        Order::$withoutAppends = true;
+
+        $order = Order::active()
+        ->where('customer_id', $customer_id)
+        ->whereNotIn('free_sp_ratecard_id', [null])
+        ->where('free_sp_order_id', 'exists', false)
+        ->find($data['order_id']);
+
+        if(empty($order)){
+            return ['status'=>400, 'message'=>'The Complementary Session Pack has already been claimed'];
+        }
+
+        if(strtolower($order['customer_email']) == strtolower($data['customer_email'])){
+            return ['status'=>400, 'message'=>'Please enter a different email id to claim the Complementary Session Pack'];
+        }
+
+        $capture_data = array_only($data, ["customer_email","customer_name","customer_phone","preferred_starting_date"]);
+        
+        $capture_data = array_merge($capture_data, array_only($order->toArray(), ["customer_source","finder_id","gender","service_id","type","env"]));
+
+        $capture_data['ratecard_id'] = $order['free_sp_ratecard_id'];
+        
+        $capture_data['customer_identity'] = 'email';
+        
+        $capture_data['parent_order_id'] = $data['order_id'];
+
+        return ['status'=>200, 'data'=>$capture_data];
+    }
+
+   
 
 }
+

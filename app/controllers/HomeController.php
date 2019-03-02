@@ -2121,6 +2121,16 @@ class HomeController extends BaseController {
                 $resp['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
             }
             
+            if(!empty($item['free_sp_ratecard_id'])){
+                
+                $resp['special_offer'] = true;
+            
+            }
+            
+            if(!empty($item['reward_type']) && $item['reward_type'] == 'mixed'){
+                $resp['mixed_reward_offer'] = true;
+            }
+            
             $cashback_type_map = Config::get('app.cashback_type_map');
             $resp['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 1;
             $resp['fitsquad_sub_type'] = !empty($item['finder_flags']['cashback_type']) ?  $cashback_type_map[strval($item['finder_flags']['cashback_type'])] : null;

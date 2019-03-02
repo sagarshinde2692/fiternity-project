@@ -1289,6 +1289,8 @@ class FindersController extends \BaseController {
 
 				$response['finder']  = $this->applyNonValidity($response, 'web');
 
+                $this->applyFreeSP($response);
+
                 $this->insertWSNonValidtiy($response, 'web');
 
                 // $response['finder'] = $this->applyTopService($response);
@@ -1320,18 +1322,18 @@ class FindersController extends \BaseController {
                             
                         }
                         
-                        // if(!in_array($finder['_id'], Config::get('app.fit_10_excluded_finder_ids', []))){
-                        //     $response['vendor_stripe_data']	=	[
-                        //         'text1'=> "Get addnl flat 10% off* - Use Code: FIT10 | Valid till 28th Feb",
-                        //         'text3'=>"",
-                        //         'background-color'=> "",
-                        //         'text_color'=> '$fff',
-                        //         'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
-                        //     ];
+                        if(in_array($finder['_id'], Config::get('app.women_week_off', []))){
+                            $response['vendor_stripe_data']	=	[
+                                'text1'=> "#STRONGGETSSTRONGER Additional 25% off + Exclusive Rewards | Code: STRONG",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '-webkit-linear-gradient(left, #e873b3 0%, #e873b3 100%)'
+                            ];
                 
-                        // }else if(empty($response['vendor_stripe_data']['text1'])){
-                        //     $response['vendor_stripe_data'] = "no-patti";
-                        // }
+                        }else if(empty($response['vendor_stripe_data']['text1'])){
+                            $response['vendor_stripe_data'] = "no-patti";
+                        }
 						// if(empty($finder['flags']['end_sale_0'])){
 						// 	if(!empty($finder['flags']['end_sale_10'])){
 						// 		$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addnl Flat 10% off. Code: JFIT *T&C';
@@ -7112,6 +7114,28 @@ class FindersController extends \BaseController {
         }
 
         return $msg;
+
+    }
+
+    public function applyFreeSP(&$data){
+        
+        $free_sp_rc_all = $this->utilities->getFreeSPRatecardsByFinder(['finder_id'=>$data['finder']['_id']]);
+
+        if(!empty($free_sp_rc_all)){
+            foreach($data['finder']['services'] as &$service){
+                foreach($service['serviceratecard'] as &$ratecard){
+                    $free_sp_rc = $this->utilities->getFreeSPRatecard($ratecard,'ratecard',$free_sp_rc_all);
+                    if(!empty($free_sp_rc)){
+                        // return $free_sp_rc;
+                        $ratecard['special_offer'] = true;
+                        $finder_special_offer = true;
+
+                    }
+                }
+            }
+        }
+
+        $data['finder']['special_offer'] = !empty($finder_special_offer);
 
     }
 
