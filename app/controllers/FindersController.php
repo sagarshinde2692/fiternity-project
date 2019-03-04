@@ -4528,6 +4528,8 @@ class FindersController extends \BaseController {
 
 				$data['finder']['review_url'] = Config::get('app.url').'/finderreviewdata/'.$data['finder']['_id'];
                 $data['show_membership_bargain'] = false;
+
+                $this->applyFitsquadSection($data);
 				
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
@@ -7139,5 +7141,41 @@ class FindersController extends \BaseController {
 
     }
 
+    public function applyFitsquadSection(&$data){
+
+        $data['fitsquad'] = [
+            'image'=>'http://b.fitn.in/global/pps/fitsquadlogo.png',
+            'header'=>'FItsquad',
+            'title'=>"TO GET EXCLUSIVE ACCESS TO INDIA\'S BIGGEST REWARDS CLUB FITSQUAD, BUY / RENEW YOUR MEMBERSHIP NOW",
+            'subtitle'=>'Just Workout for 10, 30, 75, 150, 225 Days & Earn Rs. 25,000 Worth of Rewards',
+            'reward_title'=>'Proud Reward Partners',
+            'reward_images'=>Config::get('loyalty_screens.loyalty_reawrd_images'),
+            'button_1'=>[
+                'text'=>'KNOW MORE',
+                'popup'=>[
+                    'image'=>'https://b.fitn.in/global/FitSquad%20logo%20transparent%403x.png',
+                    'header'=>[
+                        'line1'=>"India\'s Biggest Rewards Club",
+                        'line2'=>"Get Rewards Upto Rs 25,000 For Working Out!",
+                        'line3'=>"Burn More, Earn More"
+                    ],
+                    'title'=>'Workout at Anytime Fitness Khar West by buying a membership or booking a session & get rewarded in 3 easy steps',
+                    'steps'=>[
+                        "1.  Check-in every time you workout",
+                        "2.  Workout more and level up",
+                        "3.  Earn rewards worth Rs.25,000",
+                    ],
+                    'reward_title'=>'Proud Reward Partners',
+                    'reward_images'=>Config::get('loyalty_screens.loyalty_reawrd_images'),
+                ]
+            ],
+            'button_2'=>[
+                'text'=>"Checkout Rewards",
+                "image_link"=>'b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
+            ]
+            
+        ];
+
+    }
 
 }
