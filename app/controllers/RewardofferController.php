@@ -1044,9 +1044,9 @@ class RewardofferController extends BaseController {
         if((in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360) 
         || (in_array($finder['brand_id'], [135,166,88]) && in_array($duration_day, [180, 360])) 
         || (in_array($finder['_id'], Config::get('app.upgrade_session_finder_id')) && $ratecard['type'] == 'extended validity')){
-                
-            $rewardObj = Reward::where('quantity_type','mixed')->first();
-            
+
+            $rewardObj = $this->getMixedReward();
+
 			if(in_array($finder['brand_id'], [135, 166, 88]) && $ratecard['type'] != 'extended validity'){
                 if($finder['brand_id']==135){
                     $mixedreward_content = MixedRewardContent::where('brand_id', $finder['brand_id'])->where('finder_id',$finder['_id'])->where("duration",$duration_day)->first();
@@ -1055,7 +1055,7 @@ class RewardofferController extends BaseController {
                     $mixedreward_content = MixedRewardContent::where('brand_id', $finder['brand_id'])->where("duration",$duration_day)->first();
                 }
 			}else{
-                $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();    
+                $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();
             }
             if(!empty($mixedreward_content)){
                 $gold_mixed = true;
@@ -1065,11 +1065,9 @@ class RewardofferController extends BaseController {
 
 					$rewardObjData = $rewardObj->toArray();
 
-					unset($rewardObjData['rewrardoffers']);
-					unset($rewardObjData['updated_at']);
-					unset($rewardObjData['created_at']);
+                    $this->unsetRewardObjFields($rewardObjData);
 
-					$swimming_session_array = Config::get('fitness_kit.swimming_session');
+                    $swimming_session_array = Config::get('fitness_kit.swimming_session');
 
 					foreach ($swimming_session_array as $data_key => $data_value) {
 
@@ -1088,85 +1086,83 @@ class RewardofferController extends BaseController {
 						$content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
 					}
 
-					$rewardObjData['title'] = $mixedreward_content['title'];
-					$rewardObjData['contents'] = $rewards_snapfitness_contents;
-					$rewardObjData['image'] = $mixedreward_content['images'][0];
-					$images = $mixedreward_content['images'];
-					$rewardObjData['gallery'] = $mixedreward_content['images'];
-					$rewardObjData['new_amount'] = $mixedreward_content['total_amount'];
-					$rewardObjData['payload']['amount'] = $mixedreward_content['total_amount'];
-					$rewardObjData['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+                    list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
 
-                    if(!empty($mixedreward_content['footer']) && !in_array(Request::header('Device-Type'), ['android', 'ios'])){
-                        if($duration_day==360){
-                            $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>'1']);
-                        }else{
-                            $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>'6']);
-                        }
-                    }
+                    list($rewardObjData) = $this->rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData);
 
-					$rewards[] = $rewardObjData;
+                    $rewards[] = $rewardObjData;
 				}
 			}
             
         }
+        if(empty($mixedreward_content)){
 
-        if(empty($gold_mixed) && in_array($finder['_id'], Config::get('app.women_mixed_finder_id', []))){
-            $rewardObj = Reward::where('quantity_type','mixed')->first();
-            
-            $mixedreward_content = MixedRewardContent::where('finder_id',$finder['_id'])->first();
-
-            if(!empty($mixedreward_content)){
+            if(!empty($finder['flags']['reward_type']) && in_array($finder['flags']['reward_type'], Config::get('app.no_instant_reward_types')) && empty($this->vendor_token)){
                 
-				if($rewardObj && $mixedreward_content){				
-
-					$rewardObjData = $rewardObj->toArray();
-
-					unset($rewardObjData['rewrardoffers']);
-					unset($rewardObjData['updated_at']);
-					unset($rewardObjData['created_at']);
+                $rewardObj = $this->getMixedReward();
+                $cashback_type = !empty($finder['flags']['cashback_type']) ? $finder['flags']['cashback_type'] : null;
+                $mixedreward_content = MixedRewardContent::where('reward_type',$finder['flags']['reward_type'])->where('cashback_type', $cashback_type)->first();
+    
+                if(!empty($mixedreward_content)){
                     
-                    $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+                    if($rewardObj && $mixedreward_content){				
+    
+                        $rewards = [];
+                        
+                        $rewardObjData = $rewardObj->toArray();
 
-                    $free_sp_ratecard = $this->utilities->getFreeSPRatecard($ratecard, 'ratecard');
-                    $free_sp_ratecard_duration = null;
-                    if(!empty($free_sp_ratecard)){
-                        $free_sp_ratecard_duration = $free_sp_ratecard['duration'];
-                        if(!empty($free_sp_ratecard['price'])){
-                            $mixedreward_content['total_amount'] += $free_sp_ratecard['price'];
-                        }
-                        array_push($rewards_snapfitness_contents, $mixedreward_content->session_pack_reward_content);
-                        $images = $mixedreward_content['images'];
-                        array_push($images, $mixedreward_content->session_pack_image);
-                        $mixedreward_content['images'] = $images;
+                        $this->unsetRewardObjFields($rewardObjData);
+
+                        $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+
+                        list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
+
+                        array_unshift($rewards, $rewardObjData);
                     }
+                }
+            }
 
-                    foreach($rewards_snapfitness_contents as &$content){
-						$content = bladeCompile($content, ['finder_name'=>$finder['title'], 'no_of_sessions'=>$free_sp_ratecard_duration]);
-					}
+            if(empty($mixedreward_content) && in_array($finder['_id'], Config::get('app.women_mixed_finder_id', []))){
+                $rewardObj = $this->getMixedReward();
+                
+                $mixedreward_content = MixedRewardContent::where('finder_id',$finder['_id'])->first();
+    
+                if(!empty($mixedreward_content)){
 
-					$rewardObjData['title'] = $mixedreward_content['title'];
-					$rewardObjData['contents'] = $rewards_snapfitness_contents;
-					$rewardObjData['image'] = $mixedreward_content['images'][0];
-					$images = $mixedreward_content['images'];
-					$rewardObjData['gallery'] = $mixedreward_content['images'];
-					$rewardObjData['new_amount'] = $mixedreward_content['total_amount'];
-					$rewardObjData['payload']['amount'] = $mixedreward_content['total_amount'];
-					$rewardObjData['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+                    if($rewardObj && $mixedreward_content){
+    
+                        $rewardObjData = $rewardObj->toArray();
 
-                    if(!empty($mixedreward_content['footer']) && !in_array(Request::header('Device-Type'), ['android', 'ios'])){
-                        if($duration_day==360){
-                            $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>'1']);
-                        }else{
-                            $rewardObjData['description'] = $rewardObjData['description'].bladeCompile($mixedreward_content['footer'], ['duration'=>'6']);
+                        $this->unsetRewardObjFields($rewardObjData);
+
+                        $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+    
+                        $free_sp_ratecard = $this->utilities->getFreeSPRatecard($ratecard, 'ratecard');
+                        $free_sp_ratecard_duration = null;
+                        if(!empty($free_sp_ratecard)){
+                            $free_sp_ratecard_duration = $free_sp_ratecard['duration'];
+                            if(!empty($free_sp_ratecard['price'])){
+                                $mixedreward_content['total_amount'] += $free_sp_ratecard['price'];
+                            }
+                            array_push($rewards_snapfitness_contents, $mixedreward_content->session_pack_reward_content);
+                            $images = $mixedreward_content['images'];
+                            array_push($images, $mixedreward_content->session_pack_image);
+                            $mixedreward_content['images'] = $images;
                         }
+    
+                        foreach($rewards_snapfitness_contents as &$content){
+                            $content = bladeCompile($content, ['finder_name'=>$finder['title'], 'no_of_sessions'=>$free_sp_ratecard_duration]);
+                        }
+
+                        list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
+                        // $rewards[] = $rewardObjData;
+                        array_unshift($rewards, $rewardObjData);
                     }
-
-                    // $rewards[] = $rewardObjData;
-                    array_unshift($rewards, $rewardObjData);
-				}
-			}
-
+                }
+    
+            }
+    
+            
         }
 
         if(!empty($rewards)){
@@ -1273,7 +1269,7 @@ class RewardofferController extends BaseController {
             $cashback = null;
         }
 
-        if(!empty($finder['flags']['reward_type']) && in_array($finder['flags']['reward_type'], Config::get('app.no_instant_reward_types'))){
+        if(!empty($finder['flags']['reward_type']) && in_array($finder['flags']['reward_type'], Config::get('app.no_instant_reward_types')) && empty($this->vendor_token)){
             $rewards = [];
             $cashback = null;
         }
@@ -1374,5 +1370,60 @@ class RewardofferController extends BaseController {
         
     }
 
-        
+    /**
+     * @param $mixedreward_content
+     * @param $rewardObjData
+     * @param $rewards_snapfitness_contents
+     * @return array
+     */
+    public function compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents)
+    {
+        $rewardObjData['title'] = $mixedreward_content['title'];
+        $rewardObjData['contents'] = $rewards_snapfitness_contents;
+        $rewardObjData['image'] = $mixedreward_content['images'][0];
+        $rewardObjData['gallery'] = $mixedreward_content['images'];
+        $rewardObjData['new_amount'] = $mixedreward_content['total_amount'];
+        $rewardObjData['payload']['amount'] = $mixedreward_content['total_amount'];
+        $rewardObjData['description'] = $mixedreward_content['rewards_header'] . ': <br>- ' . implode('<br>- ', $rewards_snapfitness_contents);
+        return array($rewardObjData);
+    }
+
+    /**
+     * @param $mixedreward_content
+     * @param $duration_day
+     * @param $rewardObjData
+     * @return array
+     * @throws Exception
+     */
+    public function rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData)
+    {
+        if (!empty($mixedreward_content['footer']) && !in_array(Request::header('Device-Type'), ['android', 'ios'])) {
+            if ($duration_day == 360) {
+                $rewardObjData['description'] = $rewardObjData['description'] . bladeCompile($mixedreward_content['footer'], ['duration' => '1']);
+            } else {
+                $rewardObjData['description'] = $rewardObjData['description'] . bladeCompile($mixedreward_content['footer'], ['duration' => '6']);
+            }
+        }
+        return array($rewardObjData);
+    }
+
+    /**
+     * @param $rewardObjData
+     */
+    public function unsetRewardObjFields(&$rewardObjData)
+    {
+        unset($rewardObjData['rewrardoffers']);
+        unset($rewardObjData['updated_at']);
+        unset($rewardObjData['created_at']);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMixedReward()
+    {
+        return Reward::where('quantity_type', 'mixed')->first();
+    }
+
+
 }
