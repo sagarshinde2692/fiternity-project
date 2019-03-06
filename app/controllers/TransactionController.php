@@ -6286,7 +6286,7 @@ class TransactionController extends \BaseController {
 
             $errorMessage =  "Coupon is either not valid or expired";
 
-            if(!empty($resp['fitternity_only_coupon']) || !empty($resp['vendor_exclusive']) || !empty($resp['app_only']) || !empty($resp['user_login_error']) ){
+            if(!empty($resp['error_message']) ){
                 $errorMessage =  $resp['error_message'];
             }
 
