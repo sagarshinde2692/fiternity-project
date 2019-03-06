@@ -2329,21 +2329,24 @@ Class CustomerReward {
                 }
             }
             
-            if(isset($coupon['gender'])){
+            if(!empty($coupon['gender'])){
 
-                $device = Request::header('Device-Type');
+                $gender = Input::json()->get('gender');
 
-                if(!$device || !in_array($device, ['ios', 'android'])){
-                    
-                    $gender = Input::json()->get('gender');
-
-                    if(!empty($gender) && $coupon['gender'] != strtolower($gender)) {
-
-                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Applicable only for women");
-        
-                        return $resp;
+                if(empty($gender)){
+                    $order_id = Input::json()->get('order_id');
+                    if(!empty($order_id)){
+                        \Order::$withoutAppends = true;
+                        $order = \Order::find(intval($order_id));
+                        $gender = !empty($order['gender']) ? $order['gender'] : null;
                     }
+                }
+
+                if(!empty($gender) && strtolower($gender) != strtolower($coupon['gender'])){
                     
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Applicable only for women");
+        
+                    return $resp;
                 }
                 
             }
