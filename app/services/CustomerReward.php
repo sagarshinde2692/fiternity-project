@@ -2336,8 +2336,8 @@ Class CustomerReward {
                 if(empty($gender)){
                     $order_id = Input::json()->get('order_id');
                     if(!empty($order_id)){
-                        Order::$withoutAppends = true;
-                        $order = Order::find(intval($order_id));
+                        \Order::$withoutAppends = true;
+                        $order = \Order::find(intval($order_id));
                         $gender = !empty($order['gender']) ? $order['gender'] : null;
                     }
                 }
