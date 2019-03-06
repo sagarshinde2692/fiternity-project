@@ -5212,7 +5212,7 @@ class HomeController extends BaseController {
             if(!empty($customer['loyalty'])){
                 $existingLoyalty = [
                     'checkins' => (!empty($customer['loyalty']['checkins']))?$customer['loyalty']['checkins']:0,
-                    'end_date' => (!empty($customer['loyalty']['end_date']))?date('d-m-Y', strtotime($customer['loyalty']['end_date']->sec)):null
+                    // 'end_date' => (!empty($customer['loyalty']['end_date']))?date('d-m-Y', strtotime($customer['loyalty']['end_date']->sec)):null
                 ];
             }
             if(!empty($existingLoyalty)){
