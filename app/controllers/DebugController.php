@@ -8666,6 +8666,7 @@ public function yes($msg){
                 $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
                 if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
                     $loyalty['order_id'] = $data['_id'];
+                    $loyalty['start_date'] = new MongoDate($data['start_date']);
                     $loyalty['brand_loyalty'] = $finder['brand_id'];
                     $loyalty['brand_loyalty_duration'] = $data['duration_day'];
                     if($data['duration_day'] == 720){

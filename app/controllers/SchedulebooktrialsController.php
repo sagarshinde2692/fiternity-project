@@ -1833,6 +1833,14 @@ class SchedulebooktrialsController extends \BaseController {
                     return  Response::json($resp, 400);
                 }
                 $extended_validity_order->sessions_left = $extended_validity_order->sessions_left - 1;
+
+                if(strtotime($data['schedule_date']) < strtotime($order['start_date'])){
+                    $extended_validity_order['prev_start_date'] = new MongoDate(strtotime($extended_validity_order['start_date']));
+                    $extended_validity_order['start_date'] =  new MongoDate($data['schedule_date']);
+                    $extended_validity_order['prev_end_date'] = new MongoDate(strtotime($data['end_date']));
+                    $extended_validity_order['end_date'] = new MongoDate(strtotime('+ '.$extended_validity_order['duration_day'], strtotime($data['schedule_date'])));
+                }
+
                 $extended_validity_order->update();
                 $extended_validity_no_of_sessions = $extended_validity_order->no_of_sessions;
                 $extended_validity_sessions_booked = $extended_validity_order->no_of_sessions - $extended_validity_order->sessions_left;
