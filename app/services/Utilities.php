@@ -7732,6 +7732,18 @@ Class Utilities {
                 $match['$match']['brand_id'] =['$exists'=>false];
                 $match['$match']['duration'] =['$exists'=>false];
                 $match['$match']['city'] =['$exists'=>false];
+
+                if(!empty($filter['reward_type']) ){
+                    $match['$match']['reward_type'] = $filter['reward_type'];
+                }else{
+                    $match['$match']['reward_type'] = 2;
+                }
+    
+                if(!empty($filter['cashback_type']) ){
+                    $match['$match']['cashback_type'] = $filter['cashback_type'];
+                }else{
+                    $match['$match']['cashback_type'] =['$exists'=>false];
+                }
 			}
 			if(!empty($filter['brand_loyalty'])) {
 				if(!empty($filter['brand_version'])){
@@ -7742,17 +7754,6 @@ Class Utilities {
 				}
 			}
 
-            if(!empty($filter['reward_type']) ){
-                $match['$match']['reward_type'] = $filter['reward_type'];
-            }else{
-                $match['$match']['reward_type'] = 2;
-            }
-
-            if(!empty($filter['cashback_type']) ){
-                $match['$match']['cashback_type'] = $filter['cashback_type'];
-            }else{
-                $match['$match']['cashback_type'] =['$exists'=>false];
-            }
 
             // print_r($match);
             // exit();
