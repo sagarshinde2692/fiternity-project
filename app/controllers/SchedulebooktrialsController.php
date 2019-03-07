@@ -6947,13 +6947,13 @@ class SchedulebooktrialsController extends \BaseController {
 
             $url = Config::get('app.url')."/locatetrialcommunication/".$booktrial["_id"];
 
-            if(!isset($booktrial->customerCommunicationAfterOneHour)){
+            if(!isset($booktrial->customerCommunicationAfterOneHour) && empty($booktrial['third_party_details'])){
 
             	if($booktrial->type != "workout-session")
                 $booktrial->customerCommunicationAfterOneHour = $this->utilities->hitURLAfterDelay($url,date('Y-m-d H:i:s',strtotime("+1 hours",time())));
             }
 
-            if(isset($booktrial->vendor_kiosk) && $booktrial->vendor_kiosk && ($booktrial->type == "booktrials"||$booktrial->type=='workout-session')&& !isset($booktrial->post_trial_status_updated_by_kiosk)){
+            if(isset($booktrial->vendor_kiosk) && $booktrial->vendor_kiosk && ($booktrial->type == "booktrials"||$booktrial->type=='workout-session')&& !isset($booktrial->post_trial_status_updated_by_kiosk) && empty($booktrial['third_party_details'])){
 
             	Log::info(" info ".print_r(" AAYA ",true));
             	
@@ -7230,6 +7230,7 @@ class SchedulebooktrialsController extends \BaseController {
            ->where('customer_id',$customer_id)
            ->where('_id',$booktrial_id)
            ->whereIn('type',['booktrials','3daystrial', 'workout-session'])
+           ->where('third_party_details','$exists',false)
            ->with('category')
            ->with('city')
            // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
