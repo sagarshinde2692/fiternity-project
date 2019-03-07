@@ -309,10 +309,10 @@ class Service extends \Basemodel{
 												// $ratecardoffers[0]['offer_text']    =   "";
 												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";	
 												break;
-								case "women": 
-												// $ratecardoffers[0]['offer_text']    =   "";
-												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";	
-												break;
+								// case "women": 
+								// 				// $ratecardoffers[0]['offer_text']    =   "";
+								// 				$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";	
+								// 				break;
 							}
 						}
 					}
