@@ -1960,6 +1960,10 @@ Class Utilities {
 
                 $wallet->restricted_for = $request['restricted_for'];
             }
+            if(!empty($request['details'])){
+
+                $wallet->for_details = $request['details'];
+            }
 
             $wallet->save();
 
@@ -7728,6 +7732,18 @@ Class Utilities {
                 $match['$match']['brand_id'] =['$exists'=>false];
                 $match['$match']['duration'] =['$exists'=>false];
                 $match['$match']['city'] =['$exists'=>false];
+
+                if(!empty($filter['reward_type']) ){
+                    $match['$match']['reward_type'] = $filter['reward_type'];
+                }else{
+                    $match['$match']['reward_type'] = 2;
+                }
+    
+                if(!empty($filter['cashback_type']) ){
+                    $match['$match']['cashback_type'] = $filter['cashback_type'];
+                }else{
+                    $match['$match']['cashback_type'] =['$exists'=>false];
+                }
 			}
 			if(!empty($filter['brand_loyalty'])) {
 				if(!empty($filter['brand_version'])){
@@ -7738,17 +7754,6 @@ Class Utilities {
 				}
 			}
 
-            if(!empty($filter['reward_type']) ){
-                $match['$match']['reward_type'] = $filter['reward_type'];
-            }else{
-                $match['$match']['reward_type'] = 2;
-            }
-
-            if(!empty($filter['cashback_type']) ){
-                $match['$match']['cashback_type'] = $filter['cashback_type'];
-            }else{
-                $match['$match']['cashback_type'] =['$exists'=>false];
-            }
 
             // print_r($match);
             // exit();
@@ -8004,7 +8009,25 @@ Class Utilities {
         return Ratecard::where('flags.free_sp', true)->where('finder_id', $data['finder_id'])->get();
     }
 
+    public function addFitcashforVoucherCatageory($data){
+        $validity = strtotime(date('d-m-Y')+(86400* 90));
+        $request = array(
+            "customer_id"=> $data['id'],
+            "amount"=> $data['voucher_catageory']['fitcash'],
+            "amount_fitcash" => 0,
+            "amount_fitcash_plus" => $data['voucher_catageory']['fitcash'],
+            "type"=>'FITCASHPLUS',
+            "validity"=>$validity,
+            'description'=>"Added FitCash for Fitsquad milestone ".$data['voucher_catageory']['milestone'].", Expiry Date on : ".$validity,
+            'entry'=>'credit',
+            'for'=>'Fitsquad',
+            'details'=> array(
+                'for'=>'Fitsquad',
+                'voucher_name'=>$data['voucher_catageory']['name'],
+                'voucher_catageory_id'=> $data['voucher_catageory']['_id']
+            )
+        );
+        $this->walletTransactionNew($request);
+    }
 }
-
-
 
