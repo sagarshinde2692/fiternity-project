@@ -8464,7 +8464,7 @@ class CustomerController extends \BaseController {
 					Log::info('before adding fitcash-> customer_id', $customer_id);			
 					if(!empty($voucher_category->fitcash)){
 						$voucher_category_fitcash = array(
-							"customer"=>$customer,
+							"id"=>$customer_id,
 							"voucher_catageory"=>$voucher_category
 						);
 						$this->utilities->addFitcashforVoucherCatageory($voucher_category_fitcash);

@@ -8011,19 +8011,19 @@ Class Utilities {
     public function addFitcashforVoucherCatageory($data){
         $validity = strtotime(date('d-m-Y')+(86400* 90));
         $request = array(
-            "customer_id"=> $data->customer->_id,
-            "amount"=> $data->voucher_catageory->fitcash,
+            "customer_id"=> $data['id'],
+            "amount"=> $data['voucher_catageory']['fitcash'],
             "amount_fitcash" => 0,
-            "amount_fitcash_plus" => $data->voucher_catageory->fitcash,
+            "amount_fitcash_plus" => $data['voucher_catageory']['fitcash'],
             "type"=>'FITCASHPLUS',
             "validity"=>$validity,
-            'description'=>"Added FitCash for voucher ".$data->voucher_catageory->name." to 3 months only at , Expiry Date on : ".$validity,
+            'description'=>"Added FitCash for voucher ".$data['voucher_catageory']['name']." to 3 months only at , Expiry Date on : ".$validity,
             'entry'=>'credit',
             'for'=>'Fitsquad',
             'details'=> array(
                 'for'=>'Fitsquad',
-                'voucher_name'=>$data->voucher_catageory->name,
-                'voucher_catageory_id'=> $data->voucher_catageory->_id
+                'voucher_name'=>$data['voucher_catageory']['name'],
+                'voucher_catageory_id'=> $data['voucher_catageory']['_id']
             )
         );
         $this->walletTransactionNew($request);
