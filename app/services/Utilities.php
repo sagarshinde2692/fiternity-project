@@ -8017,7 +8017,7 @@ Class Utilities {
             "amount_fitcash_plus" => $data['voucher_catageory']['fitcash'],
             "type"=>'FITCASHPLUS',
             "validity"=>$validity,
-            'description'=>"Added FitCash for voucher ".$data['voucher_catageory']['name']." to 3 months only at , Expiry Date on : ".$validity,
+            'description'=>"Added FitCash for Fitsquad milestone ".$data['voucher_catageory']['milestone'].", Expiry Date on : ".$validity,
             'entry'=>'credit',
             'for'=>'Fitsquad',
             'details'=> array(
