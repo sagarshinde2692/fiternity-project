@@ -8461,9 +8461,14 @@ class CustomerController extends \BaseController {
 					
 					$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
 					Log::info('before adding fitcash-> voucher_catageory', $voucher_category);
-					Log::info('before adding fitcash-> customer_id', $customer_id);
-					if(!empty($voucher_category->fitcash))
-						$this->utilities->addFitcashforVoucherCatageory($customer_id, $voucher_category->fitcash, $voucher_category->name, $voucher_category->_id);
+					Log::info('before adding fitcash-> customer_id', $customer_id);			
+					if(!empty($voucher_category->fitcash)){
+						$voucher_category_fitcash = array(
+							"customer"=>$customer,
+							"voucher_catageory"=>$voucher_category
+						);
+						$this->utilities->addFitcashforVoucherCatageory($voucher_category_fitcash);
+					}
                     if(!$voucherAttached){
                         return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (2).'));
                     }
