@@ -1960,13 +1960,9 @@ Class Utilities {
 
                 $wallet->restricted_for = $request['restricted_for'];
             }
-            if(!empty($request['voucher_name'])){
+            if(!empty($request['details'])){
 
-                $wallet->for = $request['voucher_name'];
-            }
-            if(!empty($request['voucher_catageory_id'])){
-
-                $wallet->for = $request['voucher_catageory_id'];
+                $wallet->for_details = $request['details'];
             }
 
             $wallet->save();
@@ -8013,16 +8009,22 @@ Class Utilities {
     }
 
     public function addFitcashforVoucherCatageory($c_id, $fitcash, $voucher_name, $VC_id){
+        $validity = strtotime(date('d-m-Y')+(86400* 90));
         $request = array(
             "customer_id"=> $c_id,
             "amount"=> $fitcash,
             "amount_fitcash" => 0,
             "amount_fitcash_plus" => $fitcash,
             "type"=>'FITCASHPLUS',
-            'description'=>"Added FitCash for voucher ".$voucher_name." to 1 Year only at , added on : ".date('d-m-Y',time()),
+            "validity"=>$validity,
+            'description'=>"Added FitCash for voucher ".$voucher_name." to 3 months only at , Expiry Date on : ".$validity,
             'entry'=>'credit',
-            'voucher_name'=>$voucher_name,
-            'voucher_catageory_id'=> $VC_id
+            'for'=>'Fitsquad',
+            'details'=> array(
+                'for'=>'Fitsquad',
+                'voucher_name'=>$voucher_name,
+                'voucher_catageory_id'=> $VC_id
+            )
         );
         $this->walletTransactionNew($request);
     }
