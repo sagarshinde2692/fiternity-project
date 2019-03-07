@@ -1330,6 +1330,7 @@ class FindersController extends \BaseController {
                                 'text_color'=> '$fff',
                                 'background'=> '-webkit-linear-gradient(left, #e873b3 0%, #e873b3 100%)'
                             ];
+                            $response['finder']['women_offer'] = true;
                 
                         }else if(empty($response['vendor_stripe_data']['text1'])){
                             $response['vendor_stripe_data'] = "no-patti";
