@@ -8460,8 +8460,8 @@ class CustomerController extends \BaseController {
 					} */
 					
 					$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
-					Log::info('before adding fitcash-> voucher_catageory', $voucher_category);
-					Log::info('before adding fitcash-> customer_id', $customer_id);	
+					// Log::info('before adding fitcash-> voucher_catageory', $voucher_category);
+					// Log::info('before adding fitcash-> customer_id', $customer_id);	
 					try{
 						if(!empty($voucher_category->fitcash)){
 							$voucher_category_fitcash = array(
