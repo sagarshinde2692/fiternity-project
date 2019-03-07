@@ -454,6 +454,14 @@ class TempsController extends \BaseController {
                     $customer_id = $temp->customer_id = $data['customer_id'];
                 }
 
+                // $customer_from_token = $this->utilities->getCustomerFromToken();
+
+                // if(!empty($customer_from_token['_id'])){
+                    
+                //     $customer_id = $customer_from_token['_id'];
+                
+                // }
+
                 $temp->save();
                 $verified = true;
                 Customer::$withoutAppends = true;
@@ -1173,9 +1181,16 @@ class TempsController extends \BaseController {
         
         Log::info("getAllCustomersByPhone");
         Log::info($data);
+        $customer_from_token = $this->utilities->getCustomerFromToken();
+        if(!empty($customer_from_token['_id'])){
+            $customer_id = $customer_from_token['_id'];
+        }
+        if(!empty($customer_id)){
+            $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('_id', $customer_id)->get();
+        }else{
+            $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
 
-            
-        $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
+        }
         
         Log::info("Customers by primary contact no");
         Log::info($customers);
