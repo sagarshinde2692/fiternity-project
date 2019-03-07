@@ -3611,6 +3611,10 @@ class TransactionController extends \BaseController {
                     $data["secondary_payment_mode"] = "cod_membership";
                 }
 
+                if(!empty($couponCheck['flags']['disc_by_vendor'])){
+                    $data['amount_finder'] -= $data["coupon_discount_amount"];
+                }
+
                 // if(strtolower($data["coupon_code"]) == 'fit2018'){
                 //     $data['routed_order'] = "1";
                 // }

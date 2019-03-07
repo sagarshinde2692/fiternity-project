@@ -2377,6 +2377,10 @@ Class CustomerReward {
             if(isset($coupon['description'])){
                 $resp['description'] = $coupon['description'];
             }
+
+            if(isset($coupon['flags'])){
+                $resp['flags'] = $coupon['flags'];
+            }
             
         }else{
 
