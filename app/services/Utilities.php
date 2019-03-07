@@ -1960,6 +1960,14 @@ Class Utilities {
 
                 $wallet->restricted_for = $request['restricted_for'];
             }
+            if(!empty($request['voucher_name'])){
+
+                $wallet->for = $request['voucher_name'];
+            }
+            if(!empty($request['voucher_catageory_id'])){
+
+                $wallet->for = $request['voucher_catageory_id'];
+            }
 
             $wallet->save();
 
@@ -8004,7 +8012,19 @@ Class Utilities {
         return Ratecard::where('flags.free_sp', true)->where('finder_id', $data['finder_id'])->get();
     }
 
+    public function addFitcashforVoucherCatageory($c_id, $fitcash, $voucher_name, $VC_id){
+        $request = array(
+            "customer_id"=> $c_id,
+            "amount"=> $fitcash,
+            "amount_fitcash" => 0,
+            "amount_fitcash_plus" => $fitcash,
+            "type"=>'FITCASHPLUS',
+            'description'=>"Added FitCash for voucher ".$voucher_name." to 1 Year only at , added on : ".date('d-m-Y',time()),
+            'entry'=>'credit',
+            'voucher_name'=>$voucher_name,
+            'voucher_catageory_id'=> $VC_id
+        );
+        $this->walletTransactionNew($request);
+    }
 }
-
-
 
