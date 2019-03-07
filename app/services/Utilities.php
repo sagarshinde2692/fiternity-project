@@ -7741,7 +7741,7 @@ Class Utilities {
             if(!empty($filter['reward_type']) ){
                 $match['$match']['reward_type'] = $filter['reward_type'];
             }else{
-                $match['$match']['reward_type'] =['$exists'=>false];
+                $match['$match']['reward_type'] = 2;
             }
 
             if(!empty($filter['cashback_type']) ){
