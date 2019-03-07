@@ -2378,7 +2378,7 @@ Class CustomerReward {
                 $resp['description'] = $coupon['description'];
             }
 
-            if(isset($coupon['flags'])){
+            if(!empty($coupon['flags'])){
                 $resp['flags'] = $coupon['flags'];
             }
             
