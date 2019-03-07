@@ -4875,7 +4875,18 @@ class FindersController extends \BaseController {
 
             }else{
                $finderData['trials_booked_status'] = true;
-            }
+			}
+
+			if($this->utilities->isIntegratedVendor($finderData['finder'])){
+				$finderData['renewal_data'] = [
+					"header" => "Are you looking to renew your membership?",
+					"title" => "All above rates are applicable to new members only. If you are looking to renew your membership at ".$finderData['finder']['title']." share your details & we'll help you with the best offer.",
+					"button_title" => "RENEW NOW",
+					"callback_header" => "Renewal request for ".$finderData['finder']['title']
+				];
+			}
+			$finderData['total_photos_count'] = count($finder['photos']);
+
 		}else{
 
 			$finderData['status'] = 404;
