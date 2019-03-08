@@ -2343,6 +2343,10 @@ class SchedulebooktrialsController extends \BaseController {
             if(isset($order['promotional_notification_label']) && $order['promotional_notification_label'] != ""){
                 $booktrialdata['promotional_notification_label'] = $order['promotional_notification_label'];
             }
+            
+            if(isset($order['amount_customer']) && $order['amount_customer'] != ""){
+                $booktrialdata['amount_customer'] = $order['amount_customer'];
+            }
 
             // Add Cashback and rewards to booktrialdata if exist in orders....
             isset($order['cashback']) ? $booktrialdata['cashback'] = $order['cashback']:null;
