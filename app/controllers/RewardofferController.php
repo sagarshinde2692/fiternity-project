@@ -186,7 +186,7 @@ class RewardofferController extends BaseController {
 
                 $data['ratecard_id'] = true;
             }
-
+            
             $decodeKioskVendorToken = decodeKioskVendorToken();
 
             $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
@@ -1044,7 +1044,7 @@ class RewardofferController extends BaseController {
         if((in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360) 
         || (in_array($finder['brand_id'], [135,166,88]) && in_array($duration_day, [180, 360])) 
         || (in_array($finder['_id'], Config::get('app.upgrade_session_finder_id')) && $ratecard['type'] == 'extended validity')){
-
+            
             $rewardObj = $this->getMixedReward();
 
 			if(in_array($finder['brand_id'], [135, 166, 88]) && $ratecard['type'] != 'extended validity'){
@@ -1096,8 +1096,8 @@ class RewardofferController extends BaseController {
             
         }
         if(empty($mixedreward_content)){
-
-            if(!empty($finder['flags']['reward_type']) && in_array($finder['flags']['reward_type'], Config::get('app.no_instant_reward_types')) && empty($this->vendor_token)){
+            
+            if(!empty($finder['flags']['reward_type']) && in_array($finder['flags']['reward_type'], Config::get('app.no_instant_reward_types')) && !empty($this->vendor_token)){
                 
                 $rewardObj = $this->getMixedReward();
                 $cashback_type = !empty($finder['flags']['cashback_type']) ? $finder['flags']['cashback_type'] : null;
@@ -1115,18 +1115,18 @@ class RewardofferController extends BaseController {
 
                         $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
-                        $cashback = 100;
+                        // $cashback = 100;
 
-                        // switch($cashback_type){
-                        //     case 1:
-                        //     case 2:
-                        //         $cashback = 120;
+                        // // switch($cashback_type){
+                        // //     case 1:
+                        // //     case 2:
+                        // //         $cashback = 120;
                            
-                        // }
+                        // // }
 
-                        foreach($rewards_snapfitness_contents as &$content){
-                            $content = bladeCompile($content, ['cashback'=>$cashback]);
-                        }
+                        // foreach($rewards_snapfitness_contents as &$content){
+                        //     $content = bladeCompile($content, ['cashback'=>$cashback]);
+                        // }
 
                         list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
 
