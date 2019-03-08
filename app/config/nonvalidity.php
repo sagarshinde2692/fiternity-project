@@ -7,12 +7,7 @@ return array(
         'title' => 'What is __ext_validity_type Membership?',
         'title1' => '__ext_validity_type Membership',
         'title_color' => '#53b7b7',
-        'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">__ext_validity_type Membership gives you the ability to workout at __vendor_name for a longer validity period by buying a workout session pack of your choice.</p>
-            <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;padding-top: 20px;\">__membership_months month standard membership at Rs. __membership_price | Avail it within __membership_months month</p>
-            <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"30%\">	
-            <span style=\"font-family: Rubik;font-size: 15px; color: #767676; margin-bottom: 0px; display: inline-block; text-align: center;\">vs</span>
-            <hr color=\"#767676\" style=\"height: 1px;display: inline-block;\" width=\"30%\">
-            <p style=\"font-family: Rubik; font-size: 15px; color: #ed3024; margin-bottom: 5px; margin-top: 0px; text-align: center;font-weight: 550;line-height: 12px;\"><br>__ext_validity_type session pack (__extended_sessions_count workouts) at Rs. __extended_sessions_price | __sessions_validity_months</p><hr color=\"#767676\" style=\"height: 1px;\" width=\"90%\">"
+        'description' => "<p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">__ext_validity_type Membership gives you the ability to workout at __vendor_name for a longer validity period by buying a workout session pack of your choice.</p>"
           
     ],
 
