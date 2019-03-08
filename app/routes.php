@@ -1331,3 +1331,4 @@ Route::post('addServiceMultipleSessionPack','DebugController@addServiceMultipleS
 Route::get('orderOldSuccessDateToNew', 'DebugController@orderOldSuccessDateToNew');
 
 Route::post('generatefreesp', 'TransactionController@generateFreeSP');
+Route::get('paidAndFreeFItcash', 'DebugController@paidAndFreeFItcash');

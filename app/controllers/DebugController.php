@@ -9099,7 +9099,43 @@ public function yes($msg){
 		}
 
 		echo "done";	
-	}
+    }
+    
+    public function paidAndFreeFItcash(){   
+        
+        Order::$withoutAppends = true;
+        
+        $paid_order_ids = Order::active()->where('type', 'wallet')->lists('_id');
+
+        $paid_wallet_ids = Wallet::whereIn('order_id', $paid_order_ids)->where('type', "CREDIT")->lists('_id');
+
+        $orders = Order::active()->where('wallet_transaction_debit', 'exists', true)->where('success_date', '>', new DateTime('01-04-2018'))->get(['_id', 'success_date', 'wallet_transaction_debit'])->toArray();
+
+        Log::info("count");
+        Log::info(count($orders));
+        $fp = fopen('xx.csv', 'w');
+        foreach($orders as $key => &$order){
+            Log::info($key);
+            $order['paid'] = 0;
+            $order['free'] = 0;
+            foreach($order['wallet_transaction_debit']['wallet_transaction']  as $w){
+
+                if(!empty($w['wallet_id']) && in_array($w['wallet_id'], $paid_wallet_ids)){
+                    $order['paid']+=$w['amount'];
+                }else{
+                    $order['free']+=$w['amount'];
+                }
+                // return $order;
+            }
+            
+            $order['wallet_transaction_debit'] = null;
+            fputcsv($fp, $order);
+        }
+
+        fclose($fp);
+        return $orders;
+
+    }
 
 }
 
