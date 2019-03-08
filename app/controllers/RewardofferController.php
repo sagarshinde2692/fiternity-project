@@ -1101,7 +1101,7 @@ class RewardofferController extends BaseController {
                 
                 $rewardObj = $this->getMixedReward();
                 $cashback_type = !empty($finder['flags']['cashback_type']) ? $finder['flags']['cashback_type'] : null;
-                $mixedreward_content = MixedRewardContent::where('reward_type',$finder['flags']['reward_type'])->where('cashback_type', $cashback_type)->first();
+                $mixedreward_content = MixedRewardContent::where('reward_type',$finder['flags']['reward_type'])->first();
     
                 if(!empty($mixedreward_content)){
                     
@@ -1114,6 +1114,19 @@ class RewardofferController extends BaseController {
                         $this->unsetRewardObjFields($rewardObjData);
 
                         $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+
+                        $cashback = 100;
+
+                        // switch($cashback_type){
+                        //     case 1:
+                        //     case 2:
+                        //         $cashback = 120;
+                           
+                        // }
+
+                        foreach($rewards_snapfitness_contents as &$content){
+                            $content = bladeCompile($content, ['cashback'=>$cashback]);
+                        }
 
                         list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
 
