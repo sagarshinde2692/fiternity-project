@@ -7155,37 +7155,323 @@ class FindersController extends \BaseController {
     public function applyFitsquadSection(&$data){
 
         $data['fitsquad'] = [
-            'image'=>'http://b.fitn.in/global/pps/fitsquadlogo.png',
-            'header'=>'FItsquad',
-            'title'=>"TO GET EXCLUSIVE ACCESS TO INDIA\'S BIGGEST REWARDS CLUB FITSQUAD, BUY / RENEW YOUR MEMBERSHIP NOW",
-            'subtitle'=>'Just Workout for 10, 30, 75, 150, 225 Days & Earn Rs. 25,000 Worth of Rewards',
-            'reward_title'=>'Proud Reward Partners',
-            'reward_images'=>Config::get('loyalty_screens.loyalty_reawrd_images'),
-            'button_1'=>[
-                'text'=>'KNOW MORE',
-                'popup'=>[
-                    'image'=>'https://b.fitn.in/global/FitSquad%20logo%20transparent%403x.png',
-                    'header'=>[
-                        'line1'=>"India\'s Biggest Rewards Club",
-                        'line2'=>"Get Rewards Upto Rs 25,000 For Working Out!",
-                        'line3'=>"Burn More, Earn More"
-                    ],
-                    'title'=>'Workout at Anytime Fitness Khar West by buying a membership or booking a session & get rewarded in 3 easy steps',
-                    'steps'=>[
-                        "1.  Check-in every time you workout",
-                        "2.  Workout more and level up",
-                        "3.  Earn rewards worth Rs.25,000",
-                    ],
-                    'reward_title'=>'Proud Reward Partners',
-                    'reward_images'=>Config::get('loyalty_screens.loyalty_reawrd_images'),
-                ]
-            ],
-            'button_2'=>[
-                'text'=>"Checkout Rewards",
-                "image_link"=>'b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
-            ]
+            // 'reward_title'=>'Proud Reward Partners',
+            // 'reward_images'=>Config::get('loyalty_screens.loyalty_reawrd_images'),
+            // 'button_1'=>[
+            //     'text'=>'KNOW MORE',
+            //     'popup'=>[
+			// 		'image'=>'https://b.fitn.in/global/FitSquad%20logo%20transparent%403x.png',
+			// 		'background'=>'https://b.fitn.in/global/banner%20image.png',
+            //         'header'=>[
+            //             'line1'=>"India's Biggest Rewards Club",
+            //             'line2'=>"Get Rewards Upto Rs 25,000 For Working Out!",
+            //             'line3'=>"Burn More, Earn More"
+            //         ],
+            //         'title'=>"Workout at ".$finderDetails['title']." by buying a membership or booking a session & get rewarded in 3 easy steps",
+            //         'steps'=>[
+            //             "Check-in every time you workout",
+            //             "Workout more and level up",
+            //             "Earn rewards worth Rs.25,000",
+			// 		],
+			// 		'steps_desc'=>[
+            //             "Check-in at ".$finderDetails['title']." by scanning the QR code through the app",
+            //             "Reach easily achievable Fitness Milestones",
+            //             "Exciting Rewards from Best Brands in country",
+            //         ],
+            //         'reward_title'=>'Proud Reward Partners',
+			// 		'reward_images'=>[
+			// 			"https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
+			// 			"https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
+			// 			"https://b.fitn.in/external-vouchers1/JCB.png",
+			// 			"https://b.fitn.in/external-vouchers1/epigamia.png",
+			// 			"https://b.fitn.in/external-vouchers1/cleartrip.png",
+			// 			"https://b.fitn.in/external-vouchers1/o2.png",
+			// 			"https://b.fitn.in/external-vouchers1/book%20my%20show.png",
+			// 		],
+			// 		'post_image_text'=>'And Many More'
+            //     ]
+            // ],
+            // 'button_2'=>[
+            //     'text'=>"Checkout Rewards",
+            //     "image_link"=>'b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
+            // ]
             
-        ];
+		];
+		
+		$brandsList = [135,88,166,56];
+		$brandsMap = ['golds' => 135, 'multifit' => 88, 'shivfit' => 166, 'hanman' => 56];
+		$finderDetails = $data['finder'];
+		$finderRewardType = (!empty($data['finder']['flags']['reward_type']))?$data['finder']['flags']['reward_type']:2;
+		$finderCashbackType =(!empty($data['finder']['flags']['cashback_type']))?$data['finder']['flags']['cashback_type']:null;
+		$fitsquadHeader = 'Fitsquad';
+		$fitsquadLogo = 'http://b.fitn.in/global/pps/fitsquadlogo.png';
+		$powByFit = 'POWERED BY FITTERNITY';
+		$fitsquadTitle = "TO GET EXCLUSIVE ACCESS TO INDIA'S BIGGEST REWARDS CLUB FITSQUAD, BUY / RENEW YOUR MEMBERSHIP NOW";
+		if((!empty($finderDetails['brand_id'])) && in_array($finderDetails['brand_id'], $brandsList) && in_array($finderRewardType, [2, 4, 6])){
+			// fitsquad
+			$data['fitsquad']['image'] = $fitsquadLogo;
+			$data['fitsquad']['header'] = $fitsquadHeader;
+			$data['fitsquad']['imageText'] = null;
+			$data['fitsquad']['title'] = $fitsquadTitle;
+			$data['fitsquad']['reward_title'] = "Proud Reward Partners";
+			$data['fitsquad']['reward_images'] = [];
+			$data['fitsquad']['button_1'] = [
+				'text'=>'KNOW MORE',
+				'popup'=>[]
+			];
+			$data['fitsquad']['button_2'] = null;
+			if($brandsMap['golds']==$finderDetails['brand_id']){
+				$data['fitsquad']['image'] = "https://b.fitn.in/global/fitsquad%20-%20gold%20-%20vendor%20page%20%281%29.png";
+				$data['fitsquad']['imageText'] = $powByFit;
+				$data['fitsquad']['title'] = "GET 100% CASHBACK + REWARDS";
+				$data['fitsquad']['subtitle'] = "Workout and Earn ₹20,000 worth of rewards";
+				// $data['fitsquad']['description'] = ['GET EXCITING REWARDS ON ACHIEVING MILESTONES OF', '10, 45, 75, 150, 225', 'WORKOUTS'];
+				$data['fitsquad']['description'] = "<span>GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> WORKOUTS";
+				
+				$data['fitsquad']['reward_images'] = [
+					"https://b.fitn.in/global/uber.jpg"
+				];
+				$data['fitsquad']['button_1']['popup']['image'] = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				
+			}
+			else if($brandsMap['multifit']==$finderDetails['brand_id']) {
+				$data['fitsquad']['image'] = "https://b.fitn.in/global/MULTIFIT-LOGO-VENDOR-PAGE.png";
+				$data['fitsquad']['title'] = "TO GET EXCLUSIVE ACCESS TO FITSQUAD MULTIFIT BUY / RENEW YOUR MEMBERSHIP NOW";
+				$data['fitsquad']['description'] = ['Just Workout for', '10, 45, 75, 150, 225', 'Days & Earn Rewards Worth of ₹35,000'];
+				$data['fitsquad']['button_1']['popup']['image'] = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+			}
+			else if($brandsMap['shivfit']==$finderDetails['brand_id']) {
+				$data['fitsquad']['image'] = "https://b.fitn.in/global/SHIVFIT-LOGO---VENDOR-PAGE.png";
+				$data['fitsquad']['title'] = "TO GET EXCLUSIVE ACCESS TO FITSQUAD SHIVFIT BUY / RENEW YOUR MEMBERSHIP NOW";
+				$data['fitsquad']['description'] = ['Just Workout for', '10, 45, 75, 150, 225', 'Days & Earn Rewards Worth of ₹35,000'];
+				$data['fitsquad']['button_1']['popup']['image'] = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
+			}
+			else if($brandsMap['hanman']==$finderDetails['brand_id']) {
+				$data['fitsquad']['image'] = "https://b.fitn.in/global/fitsquad%20-%20gold%20-%20vendor%20page%20%281%29.png";
+				$data['fitsquad']['title'] = "GET 100% CASHBACK + REWARDS";
+				$data['fitsquad']['subtitle'] = "Workout and Earn ₹20,000 worth of rewards";
+				$data['fitsquad']['description'] = ['GET EXCITING REWARDS ON ACHIEVING MILESTONES OF', '10, 45, 75, 150, 250', 'WORKOUTS'];
+				$data['fitsquad']['reward_images'] = [
+					"https://b.fitn.in/global/cashback/rewards/UberEats-Logo-OnWhite-Color-H.png"
+				];
+				$data['fitsquad']['button_1']['popup']['image'] = 'https://b.fitn.in/hanman/download2.jpeg';
+			}
+
+			array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png");
+			array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/external-vouchers1/gnc.png");
+			array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/external-vouchers1/cleartrip.png");
+
+		}
+		else {
+			if($finderRewardType==2) {
+				// fitsquad
+				$data['fitsquad']['image'] = $fitsquadLogo;
+				$data['fitsquad']['header'] = $fitsquadHeader;
+				$data['fitsquad']['imageText'] = $powByFit;
+				$data['fitsquad']['title'] = $fitsquadTitle;
+
+				$data['fitsquad']['reward_title'] = "Proud Reward Partners";
+				$data['fitsquad']['reward_images'] = [
+					"https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
+					"https://b.fitn.in/global/uber.jpg",
+					"https://b.fitn.in/external-vouchers1/book%20my%20show.png",
+					"https://b.fitn.in/external-vouchers1/cleartrip.png",
+					"https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
+					"https://b.fitn.in/external-vouchers1/JCB.png"
+				];
+
+				$data['fitsquad']['button_1'] = [
+					'text'=>'KNOW MORE',
+					'popup'=>[
+						'image'=>'https://b.fitn.in/global/FitSquad%20logo%20transparent%403x.png',
+						'background'=>'https://b.fitn.in/global/banner%20image.png',
+						'header'=>[
+							'line1'=>"India's Biggest Rewards Club",
+							'line2'=>"Get Rewards Upto Rs 25,000 For Working Out!",
+							'line3'=>"Burn More, Earn More"
+						],
+						'title'=>"Workout at ".$finderDetails['title']." by buying a membership or booking a session & get rewarded in 3 easy steps",
+						'steps'=>[
+							"1. Check-in every time you workout",
+							"2. Workout more and level up",
+							"3. Earn rewards worth Rs.25,000",
+						],
+						// 'steps_image' => 'https://b.fitn.in/global/Group%20770%403x.png',
+						// 'steps_desc'=>[
+						// 	"Check-in at ".$finderDetails['title']." by scanning the QR code through the app",
+						// 	"Reach easily achievable Fitness Milestones",
+						// 	"Exciting Rewards from Best Brands in country",
+						// ],
+						'reward_title'=>'Proud Reward Partners',
+						'reward_images'=>[
+							"https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
+							"https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
+							"https://b.fitn.in/external-vouchers1/JCB.png",
+							"https://b.fitn.in/external-vouchers1/epigamia.png",
+							"https://b.fitn.in/external-vouchers1/cleartrip.png",
+							"https://b.fitn.in/external-vouchers1/o2.png",
+							"https://b.fitn.in/external-vouchers1/book%20my%20show.png",
+						],
+						'post_image_text'=>'And Many More'
+					]
+				];
+
+				$data['fitsquad']['button_2'] = [
+					'text'=>"Checkout Rewards",
+					"image_link"=>'https://b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
+				];
+
+			} else if($finderRewardType==3){
+				$cashbackImageMap = [
+					1 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%201A1.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],
+					2 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%202A1.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],				
+					3 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A1.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],				
+					4 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "250"],				
+					5 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "275"],				
+					6 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "300"]
+				];
+
+				$cashbackRate = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_rate']:"";
+				$cashbackDays = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_days']:"";
+
+				$data['fitsquad']['title'] = "Get instant complimentary rewards";
+				$data['fitsquad']['title_2'] = "+ ".$cashbackRate." cashback";
+				$data['fitsquad']['subtitle'] = "Workout & earn ".$cashbackRate." cashback on your membership amount";
+				$data['fitsquad']['description'] = ["BUY A MEMBERSHIP THROUGH FITTERNITY & GET EXCLUSIVE ACCESS TO INSTANT REWARDS + ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF", $cashbackDays, "WORKOUTS"];
+
+				$oneYearService = null;
+				if(count($finderDetails['services'])>0){
+					$oneYearService = array_filter($finderDetails['services'], function($service){
+						$rate = null;
+						if(!empty($service['serviceratecard'])){
+							$rate = array_filter($service['serviceratecard'], function($ratecard){
+								return (!empty($ratecard['validity']) && $ratecard['validity']==1) && (!empty($ratecard['validity_type']) && $ratecard['validity_type']=='year');
+							});
+						}
+						return !empty($rate) && !empty($rate[0]) && $service['type']=='extended_validity';
+					}); 
+				}
+
+				if(in_array($finderDetails['flags']['cashback_type'], [1,2,3])){
+					if(!empty($oneYearService)){
+						$data['fitsquad']['buy_button'] = [
+							'text' => 'BUY NOW',
+							'service_id' => $oneYearService['_id'],
+							'ratecard_id' => $oneYearService['ratecard_id']
+						];
+					}
+					$data['fitsquad']['button_1'] = [
+						'text'=>'KNOW MORE',
+						'popup'=>[
+							'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']['image']],
+						]
+					];
+				}
+			} else if(in_array($finderRewardType, [4, 6])){
+				// fitsquad
+				$data['fitsquad']['image'] = $fitsquadLogo;
+				$data['fitsquad']['header'] = $fitsquadHeader;
+				$data['fitsquad']['imageText'] = $powByFit;
+
+				$cashbackImageMap = [
+					1 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20rewards%20type%20A2.png", "cashback_rate" => "120%", "cashback_days" => "10, 30, 75, 150, 250, 275, 300"],
+					2 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20rewards%20type%20B2.png", "cashback_rate" => "120%", "cashback_days" => "10, 30, 75, 150, 250, 275, 300"],				
+					3 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20C2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 250, 275, 300"],				
+					4 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20D2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 250"],				
+					5 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20E2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 275"],				
+					6 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20F2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 300"]
+				];
+
+				$cashbackRate = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_rate']:"";
+				$cashbackDays = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_days']:"";
+
+				$data['fitsquad']['title'] = "Get ".$cashbackRate." cashback + Exciting Rewards";
+				$data['fitsquad']['subtitle'] = null;
+				$data['fitsquad']['description_title'] = "Buy a membership through Fitternity &";
+				$data['fitsquad']['description'] = ['GET EXCLUSIVE ACCESS TO '.$cashbackRate." CASHBACK + EXCITING REWARDS WORTH ₹20,000 ON ACHIEVING MILESTONES OF", $cashbackDays, "WORKOUTS"];
+
+				$oneYearService = null;
+				if(count($finderDetails['services'])>0){
+					$oneYearService = array_filter($finderDetails['services'], function($service){
+						$rate = null;
+						if(!empty($service['serviceratecard'])){
+							$rate = array_filter($service['serviceratecard'], function($ratecard){
+								return (!empty($ratecard['validity']) && $ratecard['validity']==1) && (!empty($ratecard['validity_type']) && $ratecard['validity_type']=='year');
+							});
+						}
+						return !empty($rate) && !empty($rate[0]) && $service['type']=='extended_validity';
+					}); 
+				}
+
+				$data['fitsquad']['reward_title'] = "Proud Reward Partners";
+				$data['fitsquad']['reward_images'] = [
+					"https://b.fitn.in/global/cashback/rewards/UberEats-Logo-OnWhite-Color-H.png",
+					"https://b.fitn.in/global/amazon-logo-vendor-page.png",
+					"https://b.fitn.in/external-vouchers1/gnc.png",
+					"https://b.fitn.in/external-vouchers1/cleartrip.png"
+				];
+
+
+				if(!empty($oneYearService)){
+					$data['fitsquad']['buy_button'] = [
+						'text' => 'BUY NOW',
+						'service_id' => $oneYearService['_id'],
+						'ratecard_id' => $oneYearService['ratecard_id']
+					];
+				}
+				$data['fitsquad']['button_1'] = [
+					'text'=>'KNOW MORE',
+					'popup'=>[
+						'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']['image']],
+					]
+				];
+
+			} else if(in_array($finderRewardType, [5])){
+				$cashbackImageMap = [
+					1 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%201A.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],
+					2 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%202A.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],				
+					3 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],				
+					4 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "250"],				
+					5 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "275"],				
+					6 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "300"]
+				];
+
+				$cashbackRate = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_rate']:"";
+				$cashbackDays = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_days']:"";
+
+				$data['fitsquad']['title'] = "Get ".$cashbackRate." cashback";
+				
+				$data['fitsquad']['description'] = ["Buy a membership through Fitternity & GET EXCLUSIVE ACCESS TO ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF", $cashbackDays, "WORKOUTS"];
+
+				$oneYearService = null;
+				if(count($finderDetails['services'])>0){
+					$oneYearService = array_filter($finderDetails['services'], function($service){
+						$rate = null;
+						if(!empty($service['serviceratecard'])){
+							$rate = array_filter($service['serviceratecard'], function($ratecard){
+								return (!empty($ratecard['validity']) && $ratecard['validity']==1) && (!empty($ratecard['validity_type']) && $ratecard['validity_type']=='year');
+							});
+						}
+						return !empty($rate) && !empty($rate[0]) && $service['type']=='extended_validity';
+					}); 
+				}
+				if(in_array($finderDetails['flags']['cashback_type'], [1,2,3])){
+					if(!empty($oneYearService)){
+						$data['fitsquad']['buy_button'] = [
+							'text' => 'BUY NOW',
+							'service_id' => $oneYearService['_id'],
+							'ratecard_id' => $oneYearService['ratecard_id']
+						];
+					}
+					$data['fitsquad']['button_1'] = [
+						'text'=>'KNOW MORE',
+						'popup'=>[
+							'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']['image']],
+						]
+					];
+				}
+			}
+		}
 
     }
 
