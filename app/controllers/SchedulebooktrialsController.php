@@ -7230,7 +7230,7 @@ class SchedulebooktrialsController extends \BaseController {
            ->where('customer_id',$customer_id)
            ->where('_id',$booktrial_id)
            ->whereIn('type',['booktrials','3daystrial', 'workout-session'])
-           ->where('third_party_details','$exists',false)
+           ->where('third_party_details','exists',false)
            ->with('category')
            ->with('city')
            // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
