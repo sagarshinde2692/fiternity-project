@@ -7473,7 +7473,7 @@ Class Utilities {
 
         if(!empty($data['schedule_date'])){
             $query
-                ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
+                // ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
                 ->where(function($query) use ($data){
                     $query->where('ratecard_flags.unlimited_validity', true)->orWhere('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])));
                 });
@@ -7488,34 +7488,32 @@ Class Utilities {
 
     public function getAllExtendedValidityOrders($data){
 
-
+        
         if(!empty($data['order_customer_email'])){
             $data['customer_email'] = $data['order_customer_email'];
         }
+        
+        if(empty($data['customer_email']) && empty($data['customer_id'])){
+            return null;
+        }
+        
+        $order =  Order::active() 
+                    // ->where('start_date', '<=', new DateTime())
+                    ->where(function($query){
+                        $query->where('ratecard_flags.unlimited_validity', true)->orWhere('end_date', '>=', new DateTime());
+                    })
+                    ->where('sessions_left', '>', 0);
 
         if(!empty($data['customer_email'])){
-            return Order::active()
-                ->where('customer_email', $data['customer_email'])
-                ->where('start_date', '<=', new DateTime())
-                ->where(function($query){
-                    $query->where('ratecard_flags.unlimited_validity', true)->orWhere('end_date', '>=', new DateTime());
-                })
-                ->where('sessions_left', '>', 0)
-                ->first();
+             $order->where('customer_email', $data['customer_email']);
         }
 
         if(!empty($data['customer_id'])){
-            return Order::active()
-                ->where('customer_id', $data['customer_id'])
-                ->where('start_date', '<=', new DateTime())
-                ->where(function($query){
-                    $query->where('ratecard_flags.unlimited_validity', true)->orWhere('end_date', '>=', new DateTime());
-                })
-                ->where('sessions_left', '>', 0)
-                ->first();
+            $order->where('customer_id', $data['customer_id']);
         }
 
-        return null;
+        return  $order->first();
+
     }
 
     public function getExtendedValidityOrderFinder($data){
@@ -7525,11 +7523,12 @@ Class Utilities {
             $data['customer_email'] = $data['order_customer_email'];
         }
 
-        $orders = Order::active()->where('finder_id', $data['finder_id'])->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
-        ->where(function($query) use ($data){
-            $query->where('ratecard_flags.unlimited_validity', true)->orWhere('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])));
-        })
-        ->where('sessions_left', '>', 0);
+        $orders = Order::active()->where('finder_id', $data['finder_id'])
+            // ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
+            ->where(function($query) use ($data){
+                $query->where('ratecard_flags.unlimited_validity', true)->orWhere('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])));
+            })
+            ->where('sessions_left', '>', 0);
 
         if(!empty($data['customer_email'])){
             return $orders->where('customer_email', $data['customer_email'])->get(['service_id','all_service_id']);
