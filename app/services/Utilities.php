@@ -3962,11 +3962,11 @@ Class Utilities {
             return $fitcash;
         }
 
-        if(!empty($data['amount_finder']) && !empty($data['type']) && in_array($data['type'],['workout-session'])){
+        if(!empty($data['amount_customer']) && !empty($data['type']) && in_array($data['type'],['workout-session'])){
 
             $getWorkoutSessionFitcash = $this->getWorkoutSessionFitcash($data);
 
-            $fitcash = round($getWorkoutSessionFitcash * $data['amount_finder'] / 100);
+            $fitcash = round($getWorkoutSessionFitcash * $data['amount_customer'] / 100);
         }
         return $fitcash;
 
