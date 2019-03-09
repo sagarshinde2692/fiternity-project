@@ -7155,47 +7155,17 @@ class FindersController extends \BaseController {
     public function applyFitsquadSection(&$data){
 
         $data['fitsquad'] = [
-            // 'reward_title'=>'Proud Reward Partners',
-            // 'reward_images'=>Config::get('loyalty_screens.loyalty_reawrd_images'),
-            // 'button_1'=>[
-            //     'text'=>'KNOW MORE',
-            //     'popup'=>[
-			// 		'image'=>'https://b.fitn.in/global/FitSquad%20logo%20transparent%403x.png',
-			// 		'background'=>'https://b.fitn.in/global/banner%20image.png',
-            //         'header'=>[
-            //             'line1'=>"India's Biggest Rewards Club",
-            //             'line2'=>"Get Rewards Upto Rs 25,000 For Working Out!",
-            //             'line3'=>"Burn More, Earn More"
-            //         ],
-            //         'title'=>"Workout at ".$finderDetails['title']." by buying a membership or booking a session & get rewarded in 3 easy steps",
-            //         'steps'=>[
-            //             "Check-in every time you workout",
-            //             "Workout more and level up",
-            //             "Earn rewards worth Rs.25,000",
-			// 		],
-			// 		'steps_desc'=>[
-            //             "Check-in at ".$finderDetails['title']." by scanning the QR code through the app",
-            //             "Reach easily achievable Fitness Milestones",
-            //             "Exciting Rewards from Best Brands in country",
-            //         ],
-            //         'reward_title'=>'Proud Reward Partners',
-			// 		'reward_images'=>[
-			// 			"https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
-			// 			"https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
-			// 			"https://b.fitn.in/external-vouchers1/JCB.png",
-			// 			"https://b.fitn.in/external-vouchers1/epigamia.png",
-			// 			"https://b.fitn.in/external-vouchers1/cleartrip.png",
-			// 			"https://b.fitn.in/external-vouchers1/o2.png",
-			// 			"https://b.fitn.in/external-vouchers1/book%20my%20show.png",
-			// 		],
-			// 		'post_image_text'=>'And Many More'
-            //     ]
-            // ],
-            // 'button_2'=>[
-            //     'text'=>"Checkout Rewards",
-            //     "image_link"=>'b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
-            // ]
-            
+			'image' => null,
+			'header' => null,
+			'imageText' => null,
+			'title' => null,
+			'subtitle' => null,
+			'description' => null,
+			'reward_title' => null,
+			'reward_images' => null,
+			'buy_button' => null,
+			'know_more_button' => null,
+			'checkout_button' => null
 		];
 		
 		$brandsList = [135,88,166,56];
@@ -7215,11 +7185,11 @@ class FindersController extends \BaseController {
 			$data['fitsquad']['title'] = $fitsquadTitle;
 			$data['fitsquad']['reward_title'] = "Proud Reward Partners";
 			$data['fitsquad']['reward_images'] = [];
-			$data['fitsquad']['button_1'] = [
+			$data['fitsquad']['know_more_button'] = [
 				'text'=>'KNOW MORE',
 				'popup'=>[]
 			];
-			$data['fitsquad']['button_2'] = null;
+			$data['fitsquad']['checkout_button'] = null;
 			if($brandsMap['golds']==$finderDetails['brand_id']){
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/fitsquad%20-%20gold%20-%20vendor%20page%20%281%29.png";
 				$data['fitsquad']['imageText'] = $powByFit;
@@ -7231,30 +7201,34 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['reward_images'] = [
 					"https://b.fitn.in/global/uber.jpg"
 				];
-				$data['fitsquad']['button_1']['popup']['image'] = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				$data['fitsquad']['know_more_button']['popup']['image'] = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
 				
 			}
 			else if($brandsMap['multifit']==$finderDetails['brand_id']) {
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/MULTIFIT-LOGO-VENDOR-PAGE.png";
 				$data['fitsquad']['title'] = "TO GET EXCLUSIVE ACCESS TO FITSQUAD MULTIFIT BUY / RENEW YOUR MEMBERSHIP NOW";
-				$data['fitsquad']['description'] = ['Just Workout for', '10, 45, 75, 150, 225', 'Days & Earn Rewards Worth of ₹35,000'];
-				$data['fitsquad']['button_1']['popup']['image'] = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+				// $data['fitsquad']['description'] = ['Just Workout for', '10, 45, 75, 150, 225', 'Days & Earn Rewards Worth of ₹35,000'];
+				$data['fitsquad']['description'] = "<span>Just Workout for <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> Days & Earn Rewards Worth of ₹35,000";
+				$data['fitsquad']['know_more_button']['popup']['image'] = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
 			}
 			else if($brandsMap['shivfit']==$finderDetails['brand_id']) {
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/SHIVFIT-LOGO---VENDOR-PAGE.png";
 				$data['fitsquad']['title'] = "TO GET EXCLUSIVE ACCESS TO FITSQUAD SHIVFIT BUY / RENEW YOUR MEMBERSHIP NOW";
-				$data['fitsquad']['description'] = ['Just Workout for', '10, 45, 75, 150, 225', 'Days & Earn Rewards Worth of ₹35,000'];
-				$data['fitsquad']['button_1']['popup']['image'] = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
+				// $data['fitsquad']['description'] = ['Just Workout for', '10, 45, 75, 150, 225', 'Days & Earn Rewards Worth of ₹35,000'];
+				$data['fitsquad']['description'] = "<span>Just Workout for <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> Days & Earn Rewards Worth of ₹35,000";
+				$data['fitsquad']['know_more_button']['popup']['image'] = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
 			}
 			else if($brandsMap['hanman']==$finderDetails['brand_id']) {
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/fitsquad%20-%20gold%20-%20vendor%20page%20%281%29.png";
 				$data['fitsquad']['title'] = "GET 100% CASHBACK + REWARDS";
 				$data['fitsquad']['subtitle'] = "Workout and Earn ₹20,000 worth of rewards";
-				$data['fitsquad']['description'] = ['GET EXCITING REWARDS ON ACHIEVING MILESTONES OF', '10, 45, 75, 150, 250', 'WORKOUTS'];
+				// $data['fitsquad']['description'] = ['GET EXCITING REWARDS ON ACHIEVING MILESTONES OF', '10, 45, 75, 150, 250', 'WORKOUTS']
+				;
+				$data['fitsquad']['description'] = "<span>GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <span style='color: #f7a81e'>10, 45, 75, 150, 250</span> WORKOUTS";
 				$data['fitsquad']['reward_images'] = [
 					"https://b.fitn.in/global/cashback/rewards/UberEats-Logo-OnWhite-Color-H.png"
 				];
-				$data['fitsquad']['button_1']['popup']['image'] = 'https://b.fitn.in/hanman/download2.jpeg';
+				$data['fitsquad']['know_more_button']['popup']['image'] = 'https://b.fitn.in/hanman/download2.jpeg';
 			}
 
 			array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png");
@@ -7270,6 +7244,8 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['imageText'] = $powByFit;
 				$data['fitsquad']['title'] = $fitsquadTitle;
 
+				$data['fitsquad']['description'] = "Just Workout for 10, 30, 75, 150, 225 Days & Earn Rs. 25,000 Worth of Rewards";
+
 				$data['fitsquad']['reward_title'] = "Proud Reward Partners";
 				$data['fitsquad']['reward_images'] = [
 					"https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
@@ -7280,7 +7256,7 @@ class FindersController extends \BaseController {
 					"https://b.fitn.in/external-vouchers1/JCB.png"
 				];
 
-				$data['fitsquad']['button_1'] = [
+				$data['fitsquad']['know_more_button'] = [
 					'text'=>'KNOW MORE',
 					'popup'=>[
 						'image'=>'https://b.fitn.in/global/FitSquad%20logo%20transparent%403x.png',
@@ -7316,7 +7292,7 @@ class FindersController extends \BaseController {
 					]
 				];
 
-				$data['fitsquad']['button_2'] = [
+				$data['fitsquad']['checkout_button'] = [
 					'text'=>"Checkout Rewards",
 					"image_link"=>'https://b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
 				];
@@ -7334,36 +7310,42 @@ class FindersController extends \BaseController {
 				$cashbackRate = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_rate']:"";
 				$cashbackDays = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_days']:"";
 
-				$data['fitsquad']['title'] = "Get instant complimentary rewards";
-				$data['fitsquad']['title_2'] = "+ ".$cashbackRate." cashback";
+				// $data['fitsquad']['title'] = "Get instant complimentary rewards";
+				// $data['fitsquad']['title_2'] = "+ ".$cashbackRate." cashback";
+				$data['fitsquad']['title'] = "<span style='text-align: center;font-weight: 900;'><span style='color: #f7a81e;'>Get instant complimentary rewards</span><br/><span>+ ".$cashbackRate." cashback</span></span>";
 				$data['fitsquad']['subtitle'] = "Workout & earn ".$cashbackRate." cashback on your membership amount";
-				$data['fitsquad']['description'] = ["BUY A MEMBERSHIP THROUGH FITTERNITY & GET EXCLUSIVE ACCESS TO INSTANT REWARDS + ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF", $cashbackDays, "WORKOUTS"];
+				// $data['fitsquad']['description'] = ["BUY A MEMBERSHIP THROUGH FITTERNITY & GET EXCLUSIVE ACCESS TO INSTANT REWARDS + ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF", $cashbackDays, "WORKOUTS"];
+				$data['fitsquad']['description'] = "<span>BUY A MEMBERSHIP THROUGH FITTERNITY & GET EXCLUSIVE ACCESS TO INSTANT REWARDS + ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF <span style='color: #f7a81e;font-weight: 900;'>".$cashbackDays."</span> WORKOUTS</span>";
 
-				$oneYearService = null;
-				if(count($finderDetails['services'])>0){
-					$oneYearService = array_filter($finderDetails['services'], function($service){
-						$rate = null;
-						if(!empty($service['serviceratecard'])){
-							$rate = array_filter($service['serviceratecard'], function($ratecard){
-								return (!empty($ratecard['validity']) && $ratecard['validity']==1) && (!empty($ratecard['validity_type']) && $ratecard['validity_type']=='year');
-							});
+				$jumpToService = null;
+				$jumpToRatecard = null;
+				$services = $finderDetails['services'];
+				for($i=0;$i<count($services);$i++){
+					$ratecards = $services[$i]['ratecard'];
+					for($j=0;$j<count($ratecards);$j++){
+						if($ratecards[$j]['validity'] == 1 && $ratecards[$j]['validity_type'] == 'year' && (empty($services[$i]['type']) || ($services[$i]['type'] != 'extended validity'))) {
+							$jumpToService = $services[$i]['_id'];
+							$jumpToRatecard = $ratecards[$j]['_id'];
+							break;
 						}
-						return !empty($rate) && !empty($rate[0]) && $service['type']=='extended_validity';
-					}); 
+					}
+					if(!empty($jumpToService)){
+						break;
+					}
 				}
 
 				if(in_array($finderDetails['flags']['cashback_type'], [1,2,3])){
-					if(!empty($oneYearService)){
+					if(!empty($jumpToService) && !empty($jumpToRatecard)){
 						$data['fitsquad']['buy_button'] = [
 							'text' => 'BUY NOW',
-							'service_id' => $oneYearService['_id'],
-							'ratecard_id' => $oneYearService['ratecard_id']
+							'service_id' => $jumpToService,
+							'ratecard_id' => $jumpToRatecard
 						];
 					}
-					$data['fitsquad']['button_1'] = [
+					$data['fitsquad']['know_more_button'] = [
 						'text'=>'KNOW MORE',
 						'popup'=>[
-							'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']['image']],
+							'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image'],
 						]
 					];
 				}
@@ -7385,22 +7367,27 @@ class FindersController extends \BaseController {
 				$cashbackRate = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_rate']:"";
 				$cashbackDays = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_days']:"";
 
-				$data['fitsquad']['title'] = "Get ".$cashbackRate." cashback + Exciting Rewards";
+				$data['fitsquad']['title'] = "<span style='text-align: center;font-weight: 900;'>Get ".$cashbackRate." cashback + Exciting Rewards</span>";
 				$data['fitsquad']['subtitle'] = null;
-				$data['fitsquad']['description_title'] = "Buy a membership through Fitternity &";
-				$data['fitsquad']['description'] = ['GET EXCLUSIVE ACCESS TO '.$cashbackRate." CASHBACK + EXCITING REWARDS WORTH ₹20,000 ON ACHIEVING MILESTONES OF", $cashbackDays, "WORKOUTS"];
+				// $data['fitsquad']['description_title'] = "Buy a membership through Fitternity &";
+				// $data['fitsquad']['description'] = ['GET EXCLUSIVE ACCESS TO '.$cashbackRate." CASHBACK + EXCITING REWARDS WORTH ₹20,000 ON ACHIEVING MILESTONES OF", $cashbackDays, "WORKOUTS"];
+				$data['fitsquad']['description'] = '<span><span style="font-weight: 500">Buy a membership through Fitternity &</span><br/><span>GET EXCLUSIVE ACCESS TO '.$cashbackRate." CASHBACK + EXCITING REWARDS WORTH ₹20,000 ON ACHIEVING MILESTONES OF <span style='text-align: center;'>".$cashbackDays."</span></span> WORKOUTS</span>";
 
-				$oneYearService = null;
-				if(count($finderDetails['services'])>0){
-					$oneYearService = array_filter($finderDetails['services'], function($service){
-						$rate = null;
-						if(!empty($service['serviceratecard'])){
-							$rate = array_filter($service['serviceratecard'], function($ratecard){
-								return (!empty($ratecard['validity']) && $ratecard['validity']==1) && (!empty($ratecard['validity_type']) && $ratecard['validity_type']=='year');
-							});
+				$jumpToService = null;
+				$jumpToRatecard = null;
+				$services = $finderDetails['services'];
+				for($i=0;$i<count($services);$i++){
+					$ratecards = $services[$i]['ratecard'];
+					for($j=0;$j<count($ratecards);$j++){
+						if($ratecards[$j]['validity'] == 1 && $ratecards[$j]['validity_type'] == 'year' && (empty($services[$i]['type']) || ($services[$i]['type'] != 'extended validity'))) {
+							$jumpToService = $services[$i]['_id'];
+							$jumpToRatecard = $ratecards[$j]['_id'];
+							break;
 						}
-						return !empty($rate) && !empty($rate[0]) && $service['type']=='extended_validity';
-					}); 
+					}
+					if(!empty($jumpToService)){
+						break;
+					}
 				}
 
 				$data['fitsquad']['reward_title'] = "Proud Reward Partners";
@@ -7412,17 +7399,17 @@ class FindersController extends \BaseController {
 				];
 
 
-				if(!empty($oneYearService)){
+				if(!empty($jumpToService) && !empty($jumpToRatecard)){
 					$data['fitsquad']['buy_button'] = [
 						'text' => 'BUY NOW',
-						'service_id' => $oneYearService['_id'],
-						'ratecard_id' => $oneYearService['ratecard_id']
+						'service_id' => $jumpToService,
+						'ratecard_id' => $jumpToRatecard
 					];
 				}
-				$data['fitsquad']['button_1'] = [
+				$data['fitsquad']['know_more_button'] = [
 					'text'=>'KNOW MORE',
 					'popup'=>[
-						'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']['image']],
+						'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image'],
 					]
 				];
 
@@ -7436,43 +7423,48 @@ class FindersController extends \BaseController {
 					6 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "300"]
 				];
 
-				$cashbackRate = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_rate']:"";
-				$cashbackDays = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_days']:"";
+				$cashbackRate = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_rate']:"100%";
+				$cashbackDays = (!empty($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_days']:"250, 275, 300";
 
-				$data['fitsquad']['title'] = "Get ".$cashbackRate." cashback";
+				// $data['fitsquad']['title'] = "Get ".$cashbackRate." cashback";
+				$data['fitsquad']['title'] = "<span style='color: #f7a81e;font-weight: 900;'>GET ".$cashbackRate." CASHBACK</span>";
 				
-				$data['fitsquad']['description'] = ["Buy a membership through Fitternity & GET EXCLUSIVE ACCESS TO ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF", $cashbackDays, "WORKOUTS"];
+				// $data['fitsquad']['description'] = ["Buy a membership through Fitternity & GET EXCLUSIVE ACCESS TO ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF", $cashbackDays, "WORKOUTS"];
+				$data['fitsquad']['description'] = "<span>BUY A MEMBERSHIP THROUGH FITTERNITY & GET EXCLUSIVE ACCESS TO ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF <span style='color: #f7a81e;'>".$cashbackDays."</span> WORKOUTS</span>";
 
-				$oneYearService = null;
-				if(count($finderDetails['services'])>0){
-					$oneYearService = array_filter($finderDetails['services'], function($service){
-						$rate = null;
-						if(!empty($service['serviceratecard'])){
-							$rate = array_filter($service['serviceratecard'], function($ratecard){
-								return (!empty($ratecard['validity']) && $ratecard['validity']==1) && (!empty($ratecard['validity_type']) && $ratecard['validity_type']=='year');
-							});
+				$jumpToService = null;
+				$jumpToRatecard = null;
+				$services = $finderDetails['services'];
+				for($i=0;$i<count($services);$i++){
+					$ratecards = $services[$i]['ratecard'];
+					for($j=0;$j<count($ratecards);$j++){
+						if($ratecards[$j]['validity'] == 1 && $ratecards[$j]['validity_type'] == 'year' && (empty($services[$i]['type']) || ($services[$i]['type'] != 'extended validity'))) {
+							$jumpToService = $services[$i]['_id'];
+							$jumpToRatecard = $ratecards[$j]['_id'];
+							break;
 						}
-						return !empty($rate) && !empty($rate[0]) && $service['type']=='extended_validity';
-					}); 
+					}
+					if(!empty($jumpToService)){
+						break;
+					}
 				}
 				if(in_array($finderDetails['flags']['cashback_type'], [1,2,3])){
-					if(!empty($oneYearService)){
+					if(!empty($jumpToService) && !empty($jumpToRatecard)){
 						$data['fitsquad']['buy_button'] = [
 							'text' => 'BUY NOW',
-							'service_id' => $oneYearService['_id'],
-							'ratecard_id' => $oneYearService['ratecard_id']
+							'service_id' => $jumpToService,
+							'ratecard_id' => $jumpToRatecard
 						];
 					}
-					$data['fitsquad']['button_1'] = [
+					$data['fitsquad']['know_more_button'] = [
 						'text'=>'KNOW MORE',
 						'popup'=>[
-							'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']['image']],
+							'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image'],
 						]
 					];
 				}
 			}
 		}
-
     }
 
 }
