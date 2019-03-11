@@ -6943,7 +6943,7 @@ Class Utilities {
                     Finder::$withoutAppends = true;
                     $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
                 }
-                if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
+                if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))){
                     $brand_loyalty = true;
                     $loyalty['brand_loyalty'] = $finder['brand_id'];
                     $loyalty['brand_loyalty_duration'] = $duration;
