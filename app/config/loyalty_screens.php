@@ -15,13 +15,14 @@ return array(
             'header' => "<b>GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <font color='#f8a81b'>10, 30, 75, 150 & 225</font> WORKOUTS</b>",
             'data' => [
                 "https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
-                "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
+                "https://b.fitn.in/external-vouchers1/zomato-gold-mobile-logo.jpg",
                 "https://b.fitn.in/external-vouchers/JCB1.png",
                 "https://b.fitn.in/external-vouchers/epigamia.png",
                 "https://b.fitn.in/external-vouchers/small-cleartrip%20logo.jpg",
                 "https://b.fitn.in/external-vouchers/O21.png",
                 "https://b.fitn.in/external-vouchers/book%20my%20show.png",
-                "https://b.fitn.in/loyalty/goldvouchers/uber%20logo.jpg"
+                "https://b.fitn.in/external-vouchers1/UberEats-Logo-OnWhite-Color-V.png",
+                "https://b.fitn.in/external-vouchers1/goqii-mobile-logo.jpg"
             ]
         ],
 
