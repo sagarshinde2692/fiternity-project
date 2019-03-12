@@ -1043,7 +1043,9 @@ class RewardofferController extends BaseController {
         
         if((in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360) 
         || (in_array($finder['brand_id'], [135,166,88]) && in_array($duration_day, [180, 360])) 
-        || ((in_array($finder['_id'], Config::get('app.upgrade_session_finder_id')) || in_array($finder['_id'], Config::get('app.extended_mixed_finder_id'))) && $ratecard['type'] == 'extended validity')){
+        || ((in_array($finder['_id'], Config::get('app.upgrade_session_finder_id'))) && $ratecard['type'] == 'extended validity')
+        || ((in_array($finder['_id'], Config::get('app.extended_mixed_finder_id'))) && $ratecard['type'] == 'membership')
+        ){
             
             $rewardObj = $this->getMixedReward();
 
