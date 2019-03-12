@@ -5257,6 +5257,8 @@ class HomeController extends BaseController {
                 }
                 if(in_array($existingLoyalty['reward_type'],[3,4,5,6])){
                     $retObj['cashback'] = true;
+                    $retObj['reward_type'] = $existingLoyalty['reward_type'];
+                    $retObj['cashback_type'] = $existingLoyalty['cashback_type'];
                     if($rewardsExist){
                         $message .= " & ";
                     }
