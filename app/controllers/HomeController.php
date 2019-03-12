@@ -667,6 +667,8 @@ class HomeController extends BaseController {
         $type       =   strtolower(trim($type));
         $order_type    = "";
 
+        $loyaltySuccessMsg = null;
+
         if($type != "" && $id != ""){
 
         	if($type=='product') 
@@ -1820,12 +1822,14 @@ class HomeController extends BaseController {
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
                     if(!empty($item['loyalty_email_content'])){
                         // $subline = $subline."<br>".$item['loyalty_email_content'];
-                        $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                        // $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                        $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     }
                 }
                 else {
                     if(!empty($item['loyalty_email_content'])){
-                        $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                        $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                        // $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     }
                 }
 
@@ -2101,7 +2105,8 @@ class HomeController extends BaseController {
                 'show_other_vendor' => $show_other_vendor,
                 'all_options_url' => $all_options_url,
                 'customer_auto_register' => $customer_auto_register,
-                'why_buy'=>$why_buy
+                'why_buy'=>$why_buy,
+                'loyalty_success_msg' => $loyaltySuccessMsg
             ];
 
             if(empty($finder) && !empty($itemData['finder_id'])){
@@ -5205,6 +5210,7 @@ class HomeController extends BaseController {
                             ->where('_id', intval($customer_id))
                             ->where('loyalty.brand_loyalty','$exists',false)
                             ->first();
+        $retObj = [];
         if(!empty($customer)){
             $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
             $existingLoyalty = null;
@@ -5224,14 +5230,25 @@ class HomeController extends BaseController {
                     $existingLoyalty['finder_name'] = $order['finder_name'];
                     $existingLoyalty['reward_type'] = $order['finder_flags']['reward_type'];
                     $existingLoyalty['cashback_type'] = $order['finder_flags']['cashback_type'];
-                    $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight', strtotime($order['end_date'])));
+                    $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime($order['end_date'])));
                 }
                 // "Hi, ".$customer_name.",<br>
                 $message = "<br>Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. <br>Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b><br>You are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.<br>Do you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
                 $rewardsExist = false;
+
+                $retObj['checkins'] = $existingLoyalty["checkins"];
+                $retObj['end_date'] = $existingLoyalty["end_date"];
+                $retObj['finder_name'] = $existingLoyalty["finder_name"];
+                $retObj['new_end_date'] = date('d-m-Y', strtotime('midnight', strtotime($order['end_date'])));
+                $retObj['reward'] = false;
+                $retObj['cashback'] = false;
                 if(in_array($existingLoyalty['reward_type'],[1,2,3,4])){
+                    $retObj['reward'] = true;
+                    $retObj['reward_type'] = $existingLoyalty['reward_type'];
+                    $retObj['cashback_type'] = $existingLoyalty['cashback_type'];
                     if(!empty($device_type) && in_array($device_type, ['android', 'ios'])){
                         $message .= "rewards (<a onclick=''>Checkout Rewards</a>)";
+                        $retObj['finder_name'] = $existingLoyalty["finder_name"];
                     }
                     else {
                         $message .= "rewards (<a onclick=\"cashbackPopup('".$existingLoyalty['reward_type']."', '".$cashbackMap[intval($existingLoyalty['cashback_type'])-1]."')\">Checkout Rewards</a>)";
@@ -5239,20 +5256,24 @@ class HomeController extends BaseController {
                     $rewardsExist = true;
                 }
                 if(in_array($existingLoyalty['reward_type'],[3,4,5,6])){
+                    $retObj['cashback'] = true;
                     if($rewardsExist){
                         $message .= " & ";
                     }
                     if(in_array($existingLoyalty['cashback_type'],[1,2])){
+                        $retObj['cashback_percent'] = 120;
                         $message .= "<b>120%</b> cashback";
                     }
                     else {
+                        $retObj['cashback_percent'] = 100;
                         $message .= '<b>100%</b> cashback';
                     }
                 }
                 $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till <b>".$existingLoyalty['new_end_date']."</b>";
                 $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
             }
-            return $message;
+            // return $message;
+            return $retObj;
         }
         // else {
 
