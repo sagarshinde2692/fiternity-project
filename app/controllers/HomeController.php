@@ -2138,9 +2138,11 @@ class HomeController extends BaseController {
             if(!empty($finder) && isset($finder['brand_id'])){
                 $resp['brand_id'] = $finder['brand_id'];
             }
+
+            if(!empty($finder['_id'])){
+                $resp['finder_id'] = $finder['_id'];
+            }
                 
-
-
             if(isset($itemData['coupon_id'])){
                 $resp['coupon'] = \GiftCoupon::find($itemData['coupon_id']);
             }
