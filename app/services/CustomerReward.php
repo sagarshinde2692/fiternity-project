@@ -366,7 +366,11 @@ Class CustomerReward {
                                 $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->first();
                             }
                             else {
-                                $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->orWhere('brand_id',$finder['brand_id'])->first();
+                                if(!empty($finder['brand_id'])){
+                                    $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->orWhere('brand_id',$finder['brand_id'])->first();
+                                }else{
+                                    $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->first();
+                                }
                             }
                         }
                         if(!empty($mixedreward_content)){
