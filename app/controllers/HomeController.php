@@ -5208,7 +5208,7 @@ class HomeController extends BaseController {
         $cashbackMap = ['A','B','C','D','E','F'];
         $customer = Customer::active()
                             ->where('_id', intval($customer_id))
-                            ->where('loyalty.brand_loyalty','$exists',false)
+                            // ->where('loyalty.brand_loyalty','$exists',false)
                             ->first();
         $retObj = [];
         if(!empty($customer)){
@@ -5225,7 +5225,8 @@ class HomeController extends BaseController {
                 if(empty($existingLoyalty['end_date'])){
                     $existingLoyalty['end_date'] = date('d-m-Y', strtotime('midnight', strtotime('+360 days',$customer['loyalty']['start_date']->sec)));
                 }
-                $order = Order::active()->where('_id', intval($order_id))->where('customer_id', intval($customer_id))->first();
+                $order = Order::active()->where('_id', intval($order_id))->first();
+                //->where('customer_id', intval($customer_id))
                 if(!empty($order)){
                     $existingLoyalty['finder_name'] = $order['finder_name'];
                     $existingLoyalty['reward_type'] = $order['finder_flags']['reward_type'];
@@ -5233,7 +5234,7 @@ class HomeController extends BaseController {
                     $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime($order['end_date'])));
                 }
                 // "Hi, ".$customer_name.",<br>
-                $message = "<br>Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. <br>Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b><br>You are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.<br>Do you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
+                // $message = "<br>Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. <br>Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b><br>You are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.<br>Do you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
                 $rewardsExist = false;
 
                 $retObj['checkins'] = $existingLoyalty["checkins"];
@@ -5272,7 +5273,7 @@ class HomeController extends BaseController {
                     }
                 }
                 $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till <b>".$existingLoyalty['new_end_date']."</b>";
-                $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
+                // $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
             }
             // return $message;
             return $retObj;
