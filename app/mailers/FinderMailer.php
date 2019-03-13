@@ -1194,7 +1194,7 @@ Class FinderMailer extends Mailer {
 
 		if(!Config::get('app.vendor_communication')){
 
-			$message_data['user_email'] = array('sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'akhilkulkarni@fitternity.com');
+			$message_data['user_email'] = array('sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'akhilkulkarni@fitternity.com', 'ankitamamnia@gmail.com');
 		}
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
