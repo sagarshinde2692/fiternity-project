@@ -5206,32 +5206,53 @@ class HomeController extends BaseController {
         Log::info('----- Entered getLoyaltyAppropriationConsentMsg -----');
         $device_type = Request::header('Device-Type');
         $cashbackMap = ['A','B','C','D','E','F'];
+        $order = Order::active()->where('_id', intval($order_id))->first();
         $customer = Customer::active()
-                            ->where('_id', intval($customer_id))
-                            // ->where('loyalty.brand_loyalty','$exists',false)
+                            ->where('email', $order['customer_email'])
                             ->first();
         $retObj = [];
         if(!empty($customer)){
-            $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
+            // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
             $existingLoyalty = null;
             $message = null;
             if(!empty($customer['loyalty'])){
                 $existingLoyalty = [
                     'checkins' => (!empty($customer['loyalty']['checkins']))?$customer['loyalty']['checkins']:0,
-                    // 'end_date' => (!empty($customer['loyalty']['end_date']))?date('d-m-Y', strtotime($customer['loyalty']['end_date']->sec)):null
+                    'end_date' => null,
+                    'finder_name' => null,
+                    'reward_type' => null,
+                    'cashback_type' => null,
+                    'new_end_date' => null,
+                    'checkins' => null
                 ];
-            }
-            if(!empty($existingLoyalty)){
+                if(!empty($customer['loyalty']['end_date'])){
+                    $endDateType = gettype($customer['loyalty']['end_date']);
+                    if($endDateType=='string'){
+                        $existingLoyalty['end_date'] = date('d-m-Y', strtotime(substr($customer['loyalty']['end_date'],0,10)));
+                    }
+                    else {
+                        $existingLoyalty['end_date'] = date('d-m-Y', strtotime($customer['loyalty']['end_date']->sec));
+                    }
+                }
+            // }
+            // if(!empty($existingLoyalty)){
                 if(empty($existingLoyalty['end_date'])){
                     $existingLoyalty['end_date'] = date('d-m-Y', strtotime('midnight', strtotime('+360 days',$customer['loyalty']['start_date']->sec)));
                 }
-                $order = Order::active()->where('_id', intval($order_id))->first();
-                //->where('customer_id', intval($customer_id))
+                
                 if(!empty($order)){
-                    $existingLoyalty['finder_name'] = $order['finder_name'];
-                    $existingLoyalty['reward_type'] = $order['finder_flags']['reward_type'];
-                    $existingLoyalty['cashback_type'] = $order['finder_flags']['cashback_type'];
-                    $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime($order['end_date'])));
+                    if(!empty($order['finder_flags']['finder_name'])) {
+                        $existingLoyalty['finder_name'] = $order['finder_name'];
+                    }
+                    if(!empty($order['finder_flags']['reward_type'])) {
+                        $existingLoyalty['reward_type'] = $order['finder_flags']['reward_type'];
+                    }
+                    if(!empty($order['finder_flags']['cashback_type']) && $order['finder_flags']['cashback_type']>0) {
+                        $existingLoyalty['cashback_type'] = $cashbackMap[$order['finder_flags']['cashback_type'] - 1];
+                    }
+                    if(!empty($order['finder_flags']['end_date'])) {
+                        $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime($order['end_date'])));
+                    }
                 }
                 // "Hi, ".$customer_name.",<br>
                 // $message = "<br>Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. <br>Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b><br>You are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.<br>Do you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
@@ -5240,7 +5261,9 @@ class HomeController extends BaseController {
                 $retObj['checkins'] = $existingLoyalty["checkins"];
                 $retObj['end_date'] = $existingLoyalty["end_date"];
                 $retObj['finder_name'] = $existingLoyalty["finder_name"];
-                $retObj['new_end_date'] = date('d-m-Y', strtotime('midnight', strtotime($order['end_date'])));
+                if(!empty($order['end_date'])) {
+                    $retObj['new_end_date'] = date('d-m-Y', strtotime('midnight', strtotime($order['end_date'])));
+                }
                 $retObj['reward'] = false;
                 $retObj['cashback'] = false;
                 if(in_array($existingLoyalty['reward_type'],[1,2,3,4])){
@@ -5278,8 +5301,8 @@ class HomeController extends BaseController {
             // return $message;
             return $retObj;
         }
-        // else {
-
-        // }
+        else {
+            return null;
+        }
     }
 }
