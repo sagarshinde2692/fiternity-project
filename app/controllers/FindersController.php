@@ -7151,18 +7151,19 @@ class FindersController extends \BaseController {
 			$ratecard_key = 'serviceratecard';
 		}
 	
-		$services = $data['finder']['services'];
+        $services = $data['finder']['services'];
+        
+        $extended_validity_service_ids = array_column(array_values(array_filter($services,function ($e) {return !empty($e['type']) && $e['type'] == "extended validity";})), '_id');
 		
 		foreach($services as $key => $value){
 			
-			if(empty($value[$ratecard_key])){
-			// 	array_splice($services, $key, 1);
+			if(in_array($value['_id'], $extended_validity_service_ids) && empty($value[$ratecard_key]) || (count($value[$ratecard_key]) == 1 && in_array($value[$ratecard_key][0]['type'], ['trial', 'workout session']))){
 				unset($services[$key]);
 			}
 
 
 		}
-	
-		$data['finder']['services'] = $services;
+        
+		$data['finder']['services'] = array_values($services);
 	}
 }
