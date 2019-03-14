@@ -129,6 +129,8 @@ Class FinderMailer extends Mailer {
 			array_push($user_email, 'akhil16.4.93@gmail.com');
 		}
 
+		Log::info('AutoTrial-Instant-Vendor user_email list: ', $user_email);
+
 		$message_data 	= array(
 			'user_email' => $user_email,
 			'user_name' =>  $user_name,
