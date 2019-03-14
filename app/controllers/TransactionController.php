@@ -1503,7 +1503,7 @@ class TransactionController extends \BaseController {
 
     }
     
-    
+
     public function productCapture($data =null)
     {
     	
@@ -1770,14 +1770,14 @@ class TransactionController extends \BaseController {
     						 $result['convinience_fee'] = $data['convinience_fee'];
     						 } */
     						
-//     						$cash_pickup_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 2500) ? true : false;
+                            //  $cash_pickup_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 2500) ? true : false;
     						$emi_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 5000) ? true : false;
     						
     						$resp   =   [
     								'status' => 200,
     								'data' => $result,
     								'message' => "Tmp Order Generated Sucessfully",
-//     								'cash_pickup' => $cash_pickup_applicable,
+                                    //  'cash_pickup' => $cash_pickup_applicable,
     								'emi'=>$emi_applicable
     						];
     						
@@ -2072,8 +2072,6 @@ class TransactionController extends \BaseController {
         } 
 
     }
-
-
 
     public function update(){
         
@@ -3258,7 +3256,6 @@ class TransactionController extends \BaseController {
 
     }
 
-
     public function getCashbackRewardWalletNew($data,$order){
 
         Log::info('new');
@@ -3454,28 +3451,28 @@ class TransactionController extends \BaseController {
                         }
 
 
-//                        $req = array(
-//                            'customer_id'=>$order['customer_id'],
-//                            'order_id'=>$order['_id'],
-//                            'amount'=>$order['wallet_amount'],
-//                            'type'=>'REFUND',
-//                            'entry'=>'credit',
-//                            'description'=>'Refund for Order ID: '.$order['_id'],
-//                            'full_amount'=>true,
-//                        );
-//
-//                        $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
-//
-//                        if(isset($order['wallet_refund_sidekiq']) && $order['wallet_refund_sidekiq'] != ''){
-//                            try {
-//                                $this->sidekiq->delete($order['wallet_refund_sidekiq']);
-//                            }catch(\Exception $exception){
-//                                Log::error($exception);
-//                            }
-//                        }
-//
-//                        $order->unset('wallet', 'wallet_amount');
-                        // $order->unset('wallet_amount');
+                    //                        $req = array(
+                    //                            'customer_id'=>$order['customer_id'],
+                    //                            'order_id'=>$order['_id'],
+                    //                            'amount'=>$order['wallet_amount'],
+                    //                            'type'=>'REFUND',
+                    //                            'entry'=>'credit',
+                    //                            'description'=>'Refund for Order ID: '.$order['_id'],
+                    //                            'full_amount'=>true,
+                    //                        );
+                    //
+                    //                        $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                    //
+                    //                        if(isset($order['wallet_refund_sidekiq']) && $order['wallet_refund_sidekiq'] != ''){
+                    //                            try {
+                    //                                $this->sidekiq->delete($order['wallet_refund_sidekiq']);
+                    //                            }catch(\Exception $exception){
+                    //                                Log::error($exception);
+                    //                            }
+                    //                        }
+                    //
+                    //                        $order->unset('wallet', 'wallet_amount');
+                                            // $order->unset('wallet_amount');
 
                     }else{
 
@@ -4123,6 +4120,7 @@ class TransactionController extends \BaseController {
         return array('status' => 200,'data' =>$data);
 
     }
+
     public function getProductRatecardDetail($data){
     	
     	
@@ -4135,6 +4133,7 @@ class TransactionController extends \BaseController {
     	$ratecard = $ratecard->toArray();
     	
     }
+
     public function getRatecardDetail($data){
 
         $ratecard = Ratecard::find((int)$data['ratecard_id']);
@@ -4442,7 +4441,6 @@ class TransactionController extends \BaseController {
 
     }
 
-
     public function stripTags($string){
         return ucwords(str_replace("&nbsp;","",strip_tags($string)));
     }
@@ -4603,7 +4601,6 @@ class TransactionController extends \BaseController {
         return $service_duration;
     }
 
-
     public function getHash($data){
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
@@ -4690,13 +4687,11 @@ class TransactionController extends \BaseController {
         return Response::json($response,$response['status']);
     }
 
-
     public  function sendCommunication($job,$data){
 
         $job->delete();
 
         try {
-
             $order_id = (int)$data['order_id'];
 
             $order = Order::find($order_id);
@@ -4707,6 +4702,19 @@ class TransactionController extends \BaseController {
                 
                 return "success";
             
+            }
+            
+            Log::info("Order id", [$order['_id']]);
+            Log::info("Order status", [$order['status']]);
+            Log::info("Order payment mode", [$order['payment_mode']]);
+
+            if(isset($order['status']) && isset($order['payment_mode']) && $order['status'] == '0' && $order['payment_mode'] == 'paymentgateway'){
+                //$delayReminderTimeAfter2Hrs = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($order['created_at'])))->addMinutes(60*2);
+                Log::info("In send Communication");
+                
+                $delayReminderTimeAfter2Hrs = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($order['created_at'])))->addMinutes(60*2);
+                $this->findermailer->abandonCartCustomerAfter2hoursFinder($order->toArray(),$delayReminderTimeAfter2Hrs);
+                //$this->findermailer->abandonCartCustomerAfter2hoursFinder($order->toArray());
             }
 
             $this->utilities->removeOrderCommunication($order);
@@ -4931,7 +4939,6 @@ class TransactionController extends \BaseController {
 
         return array('order_id'=>$order_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
     }
-    
     
     public function generateFreeDietPlanOrder($order,$type = false){
     	
@@ -6306,7 +6313,6 @@ class TransactionController extends \BaseController {
         return Response::json($resp,200);
     }
 
-
     public function convinienceFeeFlag(){
 
         $flag = true;
@@ -6473,6 +6479,7 @@ class TransactionController extends \BaseController {
         $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
         return Response::json($resp);
     }
+
     public function walletOrderSuccess(){
         $data = Input::json()->all();
         Log::info("wallet success");
@@ -7407,7 +7414,6 @@ class TransactionController extends \BaseController {
 
     }
 
-    
     public function locateMembership($code){
 
         $order_id = (int) $code;
@@ -7504,7 +7510,6 @@ class TransactionController extends \BaseController {
     	];
     	return Response::json($data);
     }
-
 
     public function getCustomMembershipDetails(){
 
@@ -7619,6 +7624,7 @@ class TransactionController extends \BaseController {
         $response = $client->generateSignatureAndEncrypt($val);
         return $response;
     }
+
     public function amazonSignAndEncrypt(){
     	
     	$config = Config::get('amazonpay.config_seamless');
@@ -7643,7 +7649,6 @@ class TransactionController extends \BaseController {
     	return $response;
     	
     }
-    
     
     public function verifyAmazonChecksumSignature($website = false){
     	
@@ -8026,7 +8031,7 @@ class TransactionController extends \BaseController {
     	
     	
     	array_push($payment_modes, ['title' => 'Online Payment','subtitle' => 'Transact online with netbanking, card and wallet','value' => 'paymentgateway','payment_options'=>$payment_options]);
-//     	array_push($payment_modes, ['title' => 'Cash Pickup','subtitle' => 'Schedule cash payment pick up','value' => 'cod']);
+        //array_push($payment_modes, ['title' => 'Cash Pickup','subtitle' => 'Schedule cash payment pick up','value' => 'cod']);
     	
     	$emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));    		
     	if(!empty($data['emi']) && $data['emi'])
@@ -8038,6 +8043,7 @@ class TransactionController extends \BaseController {
     		
     	return $payment_modes;
     }
+
     public function checkProductCaptureFailureStatus($data){
     	
     	try {
@@ -8064,8 +8070,7 @@ class TransactionController extends \BaseController {
     	}
     	
     }
-    
-    
+  
     public function getPaymentDetailsProduct($data){
     	
     	try {
