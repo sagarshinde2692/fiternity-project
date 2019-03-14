@@ -3171,7 +3171,7 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null){
 
-        $inoperational_dates = ['2019-01-26'];
+        $inoperational_dates = ['2019-03-21'];
 
         if( in_array($date, $inoperational_dates)){
             return false;
