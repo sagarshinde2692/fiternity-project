@@ -1196,7 +1196,7 @@ Class FinderMailer extends Mailer {
 
 		if(!Config::get('app.vendor_communication')){
 
-			$message_data['user_email'] = array('sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'akhilkulkarni@fitternity.com');
+			$message_data['user_email'] = array('sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'akhilkulkarni@fitternity.com','ankitamamnia@gmail.com');
 		}
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
@@ -1235,5 +1235,24 @@ Class FinderMailer extends Mailer {
 	    return $content;
 	}
 
+	protected function abandonCartCustomerAfter2hoursFinder($data, $delay = 0){
+		Log::info("In finder mail");
+		$label = 'AbandonCartCustomer-After2hours-Finder';
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['finder_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label, $data, $message_data, $delay);
+	}
 
 }

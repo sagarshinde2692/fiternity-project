@@ -50,12 +50,15 @@ class CommunicationsController extends \BaseController {
 
 		try{
 
-			$label_array = ["sendPaymentLinkAfter3Days","sendPaymentLinkAfter7Days","sendPaymentLinkAfter45Days","purchaseAfter10Days","purchaseAfter30Days"];
+			$label_array = ["sendPaymentLinkAfter3Days","sendPaymentLinkAfter7Days","sendPaymentLinkAfter45Days","purchaseAfter10Days","purchaseAfter30Days", "AbandonCartCustomer-After2hours-Finder"];
 
 			if(in_array($label,$label_array)){
 				return array('status'=>400, 'message'=>'Communication not sent');
 			}
 		
+			Log::info('label', [$label]);
+			Log::info('transaction_type', [$transaction_type]);
+
 			if($transaction_type == 'order'){
 
 				$transaction_data = Order:: where('_id', intval($id))
@@ -287,6 +290,14 @@ class CommunicationsController extends \BaseController {
 					{	
 						$booktrial = Booktrial::find($data['_id']);
 						if($booktrial->post_trial_status == "attended" || $booktrial->post_trial_verified_status == 'yes'){
+							$data['abort_delay_comm'] = true;
+						}
+						break;
+					}
+				case "AbandonCartCustomer-After2hours-Finder":
+					{
+						$order = Order::find($data['_id']);
+						if($order['status'] == '1'){
 							$data['abort_delay_comm'] = true;
 						}
 						break;

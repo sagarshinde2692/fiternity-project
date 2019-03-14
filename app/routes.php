@@ -1332,3 +1332,5 @@ Route::get('orderOldSuccessDateToNew', 'DebugController@orderOldSuccessDateToNew
 
 Route::post('generatefreesp', 'TransactionController@generateFreeSP');
 Route::get('paidAndFreeFItcash', 'DebugController@paidAndFreeFItcash');
+
+Route::get('test', 'TransactionController@testMail');

@@ -2508,14 +2508,19 @@ Class Utilities {
             $delay = $this->getSeconds($delay);
         }
 
+        Log::info('delay', [$delay]);
 
 
         $payload = array('url'=>$url,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+
+        Log::info("payload", [$payload]);
 
         $route  = 'outbound';
 
         $sidekiq = new Sidekiq();
         $result  = $sidekiq->sendToQueue($payload,$route);
+
+        Log::info('result', [$result]);
 
         if($result['status'] == 200){
             return $result['task_id'];
@@ -2556,10 +2561,12 @@ Class Utilities {
         $transaction_data = $data[0];
         $transaction_id = isset($transaction_data['_id']) ? $transaction_data['_id'] : $transaction_data['id'];
         $delay = $data[1];
+        //Log::info("delay", [$delay]);
+        //Log::info("transaction_id", [$transaction_id]);
         // $transaction_type = (isset($transaction_data['order_id'])) ? "order" : "trial";
         $key = rand(100000000, 999999999);
 
-        if(in_array($method, ["before3HourSlotBooking", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days"])){
+        if(in_array($method, ["before3HourSlotBooking", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "abandonCartCustomerAfter2hoursFinder"])){
             $transaction_type = "order";
         }else{
             $transaction_type = "trial";
@@ -2571,6 +2578,8 @@ Class Utilities {
         }else{
             $transaction = \Booktrial::find($transaction_id);
         }
+
+        //Log::info("transaction", [$transaction]);
 
         $communication_keys = isset($transaction->communication_keys)?$transaction->communication_keys:array();
         $communication_variable = "$class_name-$method";
