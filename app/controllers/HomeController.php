@@ -5210,12 +5210,13 @@ class HomeController extends BaseController {
         $customer = Customer::active()
                             ->where('email', $order['customer_email'])
                             ->first();
-        $retObj = [];
+        $retObj = null;
         if(!empty($customer)){
             // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
             $existingLoyalty = null;
             $message = null;
             if(!empty($customer['loyalty'])){
+                $retObj = [];
                 $existingLoyalty = [
                     'checkins' => (!empty($customer['loyalty']['checkins']))?$customer['loyalty']['checkins']:0,
                     'end_date' => null,
