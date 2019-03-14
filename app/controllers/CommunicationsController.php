@@ -56,6 +56,9 @@ class CommunicationsController extends \BaseController {
 				return array('status'=>400, 'message'=>'Communication not sent');
 			}
 		
+			Log::info('label', [$label]);
+			Log::info('transaction_type', [$transaction_type]);
+
 			if($transaction_type == 'order'){
 
 				$transaction_data = Order:: where('_id', intval($id))
@@ -287,6 +290,14 @@ class CommunicationsController extends \BaseController {
 					{	
 						$booktrial = Booktrial::find($data['_id']);
 						if($booktrial->post_trial_status == "attended" || $booktrial->post_trial_verified_status == 'yes'){
+							$data['abort_delay_comm'] = true;
+						}
+						break;
+					}
+				case "abandonCartCustomerAfter2hoursFinder":
+					{
+						// $order = Order::find($data['_id']);
+						if(!empty($data['status']) && $data['status'] == '1'){
 							$data['abort_delay_comm'] = true;
 						}
 						break;

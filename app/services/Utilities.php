@@ -2559,7 +2559,7 @@ Class Utilities {
         // $transaction_type = (isset($transaction_data['order_id'])) ? "order" : "trial";
         $key = rand(100000000, 999999999);
 
-        if(in_array($method, ["before3HourSlotBooking", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days"])){
+        if(in_array($method, ["before3HourSlotBooking", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "abandonCartCustomerAfter2hoursFinder"])){
             $transaction_type = "order";
         }else{
             $transaction_type = "trial";
