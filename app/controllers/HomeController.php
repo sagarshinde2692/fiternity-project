@@ -1820,14 +1820,14 @@ class HomeController extends BaseController {
                     }
                 }
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
-                    if(!empty($item['loyalty_email_content'])){
+                    if(isset($item['loyalty_email_content'])){
                         // $subline = $subline."<br>".$item['loyalty_email_content'];
                         // $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                         $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     }
                 }
                 else {
-                    if(!empty($item['loyalty_email_content'])){
+                    if(isset($item['loyalty_email_content'])){
                         $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                         // $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     }
@@ -5230,7 +5230,7 @@ class HomeController extends BaseController {
                         $existingLoyalty['end_date'] = date('d-m-Y', strtotime(substr($customer['loyalty']['end_date'],0,10)));
                     }
                     else {
-                        $existingLoyalty['end_date'] = date('d-m-Y', strtotime($customer['loyalty']['end_date']->sec));
+                        $existingLoyalty['end_date'] = date('d-m-Y', $customer['loyalty']['end_date']->sec);
                     }
                 }
             // }
@@ -5275,11 +5275,11 @@ class HomeController extends BaseController {
                     $retObj['reward_type'] = $existingLoyalty['reward_type'];
                     $retObj['cashback_type'] = $existingLoyalty['cashback_type'];
                     if(!empty($device_type) && in_array($device_type, ['android', 'ios'])){
-                        $message .= "rewards (<a onclick=''>Checkout Rewards</a>)";
+                        // $message .= "rewards (<a onclick=''>Checkout Rewards</a>)";
                         $retObj['finder_name'] = $existingLoyalty["finder_name"];
                     }
                     else {
-                        $message .= "rewards (<a onclick=\"cashbackPopup('".$existingLoyalty['reward_type']."', '".$cashbackMap[intval($existingLoyalty['cashback_type'])-1]."')\">Checkout Rewards</a>)";
+                        // $message .= "rewards (<a onclick=\"cashbackPopup('".$existingLoyalty['reward_type']."', '".$cashbackMap[intval($existingLoyalty['cashback_type'])-1]."')\">Checkout Rewards</a>)";
                     }
                     $rewardsExist = true;
                 }
@@ -5288,18 +5288,18 @@ class HomeController extends BaseController {
                     $retObj['reward_type'] = $existingLoyalty['reward_type'];
                     $retObj['cashback_type'] = $existingLoyalty['cashback_type'];
                     if($rewardsExist){
-                        $message .= " & ";
+                        // $message .= " & ";
                     }
                     if(in_array($existingLoyalty['cashback_type'],[1,2])){
                         $retObj['cashback_percent'] = 120;
-                        $message .= "<b>120%</b> cashback";
+                        // $message .= "<b>120%</b> cashback";
                     }
                     else {
                         $retObj['cashback_percent'] = 100;
-                        $message .= '<b>100%</b> cashback';
+                        // $message .= '<b>100%</b> cashback';
                     }
                 }
-                $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till <b>".$existingLoyalty['new_end_date']."</b>";
+                // $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till <b>".$existingLoyalty['new_end_date']."</b>";
                 // $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
             }
             // return $message;
