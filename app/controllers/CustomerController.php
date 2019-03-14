@@ -9282,7 +9282,7 @@ class CustomerController extends \BaseController {
 				'finder_id' => $order['finder_id'],
 				'end_date' => new MongoDate(strtotime($order['end_date'])),
 				'type' => $order['type'],
-				'reward_type' => $order['finder_flags']['reward_type'],
+				'reward_type' => (!empty($order['finder_flags']['reward_type']))?$order['finder_flags']['reward_type']:2,
 				'cashback_type' => $order['finder_flags']['cashback_type'],
 				'checkins' => 0,
 				'created_at' => new \MongoDate()

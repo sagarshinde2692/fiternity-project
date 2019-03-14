@@ -1820,17 +1820,17 @@ class HomeController extends BaseController {
                     }
                 }
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
-                    if(isset($item['loyalty_email_content'])){
+                    // if(isset($item['loyalty_email_content'])){
                         // $subline = $subline."<br>".$item['loyalty_email_content'];
                         // $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                         $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
-                    }
+                    // }
                 }
                 else {
-                    if(isset($item['loyalty_email_content'])){
+                    // if(isset($item['loyalty_email_content'])){
                         $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                         // $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
-                    }
+                    // }
                 }
 
             }
@@ -5220,7 +5220,7 @@ class HomeController extends BaseController {
                     'checkins' => (!empty($customer['loyalty']['checkins']))?$customer['loyalty']['checkins']:0,
                     'end_date' => null,
                     'finder_name' => null,
-                    'reward_type' => null,
+                    'reward_type' => 2,
                     'cashback_type' => null,
                     'new_end_date' => null
                 ];
