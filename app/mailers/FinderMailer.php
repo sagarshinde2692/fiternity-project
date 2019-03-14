@@ -126,7 +126,7 @@ Class FinderMailer extends Mailer {
 		}
 		
 		if(!empty($data['third_party_details']['abg'])) {
-			array_push($user_email, 'akhil16.4.93@gmail.com');
+			array_push($user_email, 'multiply.fitternity@gmail.com');
 		}
 
 		Log::info('AutoTrial-Instant-Vendor user_email list: ', $user_email);
