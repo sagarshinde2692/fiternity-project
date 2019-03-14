@@ -125,6 +125,10 @@ Class FinderMailer extends Mailer {
 			$user_email = array_merge($user_email,$common);
 		}
 		
+		if(!empty($data['third_party_details']['abg'])) {
+			array_push($user_email, 'akhil16.4.93@gmail.com');
+		}
+
 		$message_data 	= array(
 			'user_email' => $user_email,
 			'user_name' =>  $user_name,
