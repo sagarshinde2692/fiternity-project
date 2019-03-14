@@ -7189,7 +7189,10 @@ class FindersController extends \BaseController {
 				'text'=>'KNOW MORE',
 				'popup'=>[]
 			];
-			$data['fitsquad']['checkout_button'] = null;
+			$data['fitsquad']['checkout_button'] = [
+				'text'=>'KNOW MORE',
+				'image'=>null
+			];
 			if($brandsMap['golds']==$finderDetails['brand_id']){
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/fitsquad%20-%20gold%20-%20vendor%20page%20%281%29.png";
 				$data['fitsquad']['imageText'] = $powByFit;
@@ -7201,7 +7204,7 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['reward_images'] = [
 					"https://b.fitn.in/global/uber.jpg"
 				];
-				$data['fitsquad']['know_more_button']['popup']['image'] = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
 				
 			}
 			else if($brandsMap['multifit']==$finderDetails['brand_id']) {
@@ -7209,14 +7212,14 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['title'] = "TO GET EXCLUSIVE ACCESS TO FITSQUAD MULTIFIT BUY / RENEW YOUR MEMBERSHIP NOW";
 				// $data['fitsquad']['description'] = ['Just Workout for', '10, 45, 75, 150, 225', 'Days & Earn Rewards Worth of ₹35,000'];
 				$data['fitsquad']['description'] = "<span>Just Workout for <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> Days & Earn Rewards Worth of ₹35,000";
-				$data['fitsquad']['know_more_button']['popup']['image'] = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
 			}
 			else if($brandsMap['shivfit']==$finderDetails['brand_id']) {
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/SHIVFIT-LOGO---VENDOR-PAGE.png";
 				$data['fitsquad']['title'] = "TO GET EXCLUSIVE ACCESS TO FITSQUAD SHIVFIT BUY / RENEW YOUR MEMBERSHIP NOW";
 				// $data['fitsquad']['description'] = ['Just Workout for', '10, 45, 75, 150, 225', 'Days & Earn Rewards Worth of ₹35,000'];
 				$data['fitsquad']['description'] = "<span>Just Workout for <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> Days & Earn Rewards Worth of ₹35,000";
-				$data['fitsquad']['know_more_button']['popup']['image'] = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
+				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
 			}
 			else if($brandsMap['hanman']==$finderDetails['brand_id']) {
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/fitsquad%20-%20gold%20-%20vendor%20page%20%281%29.png";
@@ -7228,7 +7231,7 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['reward_images'] = [
 					"https://b.fitn.in/global/cashback/rewards/UberEats-Logo-OnWhite-Color-H.png"
 				];
-				$data['fitsquad']['know_more_button']['popup']['image'] = 'https://b.fitn.in/hanman/download2.jpeg';
+				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/hanman/download2.jpeg';
 			}
 
 			array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png");
@@ -7342,11 +7345,9 @@ class FindersController extends \BaseController {
 							'ratecard_id' => $jumpToRatecard
 						];
 					}
-					$data['fitsquad']['know_more_button'] = [
+					$data['fitsquad']['checkout_button'] = [
 						'text'=>'KNOW MORE',
-						'popup'=>[
-							'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image'],
-						]
+						'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image']
 					];
 				}
 			} else if(in_array($finderRewardType, [4, 6])){
@@ -7406,11 +7407,9 @@ class FindersController extends \BaseController {
 						'ratecard_id' => $jumpToRatecard
 					];
 				}
-				$data['fitsquad']['know_more_button'] = [
+				$data['fitsquad']['checkout_button'] = [
 					'text'=>'KNOW MORE',
-					'popup'=>[
-						'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image'],
-					]
+					'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image']
 				];
 
 			} else if(in_array($finderRewardType, [5])){
@@ -7456,11 +7455,9 @@ class FindersController extends \BaseController {
 							'ratecard_id' => $jumpToRatecard
 						];
 					}
-					$data['fitsquad']['know_more_button'] = [
+					$data['fitsquad']['checkout_button'] = [
 						'text'=>'KNOW MORE',
-						'popup'=>[
-							'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image'],
-						]
+						'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image']
 					];
 				}
 			}
