@@ -1304,7 +1304,9 @@ class FindersController extends \BaseController {
 				if(!in_array($finder['_id'], Config::get('app.upgrade_session_finder_id'))){
 					$this->removeNonValidity($response, 'web');
 				}
-                
+
+                $this->removeEmptyServices($response, 'web');
+				                
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
                         
@@ -7064,7 +7066,7 @@ class FindersController extends \BaseController {
 
 		$data['finder']['services'] = $services;
 	}
-
+	
 	public function addNonValidityLink(&$data){
 		foreach($data['finder']['services'] as &$service){
 			if(empty($service['type']) && empty($service['top_service'])){
@@ -7084,8 +7086,8 @@ class FindersController extends \BaseController {
     
     public function getVendorStripeCashbackText($finder){
         
-        if(empty($finder['flags']['reward_type'])){
-            $finder['flags']['reward_type'] = 1;
+		if(empty($finder['flags']['reward_type'])){
+			$finder['flags']['reward_type'] = 1;
         }
         if(empty($finder['flags']['cashback_type'])){
             $finder['flags']['cashback_type'] = 0;
@@ -7098,16 +7100,16 @@ class FindersController extends \BaseController {
         }
         $msg = "";
         switch($finder['flags']['reward_type']){
-            case 1:
+			case 1:
             break;
             case 2:
             break;
             case 3:
-                $msg = "BEST OFFER : GET ".$cashback."% CASHBACK & INSTANT REWARDS";
+			$msg = "BEST OFFER : GET ".$cashback."% CASHBACK & INSTANT REWARDS";
             break;
             case 4:
             case 6:
-                $msg = "BEST OFFER : GET ".$cashback."% CASHBACK & REWARDS WORTH RS 20,000";
+			$msg = "BEST OFFER : GET ".$cashback."% CASHBACK & REWARDS WORTH RS 20,000";
             break;
             case 5:
                 $msg  = "BEST OFFER : GET ".$cashback."% CASHBACK ON MEMBERSHIP AMOUNT";
@@ -7120,12 +7122,12 @@ class FindersController extends \BaseController {
 
     public function applyFreeSP(&$data){
         
-        $free_sp_rc_all = $this->utilities->getFreeSPRatecardsByFinder(['finder_id'=>$data['finder']['_id']]);
+		$free_sp_rc_all = $this->utilities->getFreeSPRatecardsByFinder(['finder_id'=>$data['finder']['_id']]);
 
         if(!empty($free_sp_rc_all)){
             foreach($data['finder']['services'] as &$service){
                 foreach($service['serviceratecard'] as &$ratecard){
-                    $free_sp_rc = $this->utilities->getFreeSPRatecard($ratecard,'ratecard',$free_sp_rc_all);
+					$free_sp_rc = $this->utilities->getFreeSPRatecard($ratecard,'ratecard',$free_sp_rc_all);
                     if(!empty($free_sp_rc)){
                         // return $free_sp_rc;
                         $ratecard['special_offer'] = true;
@@ -7141,4 +7143,26 @@ class FindersController extends \BaseController {
     }
 
 
+	public function removeEmptyServices(&$data, $source = null){
+		
+		$ratecard_key = 'ratecard';
+	
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
+	
+		$services = $data['finder']['services'];
+		
+		foreach($services as $key => $value){
+			
+			if(empty($value[$ratecard_key])){
+			// 	array_splice($services, $key, 1);
+				unset($services[$key]);
+			}
+
+
+		}
+	
+		$data['finder']['services'] = $services;
+	}
 }
