@@ -5222,8 +5222,7 @@ class HomeController extends BaseController {
                     'finder_name' => null,
                     'reward_type' => null,
                     'cashback_type' => null,
-                    'new_end_date' => null,
-                    'checkins' => null
+                    'new_end_date' => null
                 ];
                 if(!empty($customer['loyalty']['end_date'])){
                     $endDateType = gettype($customer['loyalty']['end_date']);
@@ -5241,7 +5240,7 @@ class HomeController extends BaseController {
                 }
                 
                 if(!empty($order)){
-                    if(!empty($order['finder_flags']['finder_name'])) {
+                    if(!empty($order['finder_name'])) {
                         $existingLoyalty['finder_name'] = $order['finder_name'];
                     }
                     if(!empty($order['finder_flags']['reward_type'])) {
@@ -5250,7 +5249,7 @@ class HomeController extends BaseController {
                     if(!empty($order['finder_flags']['cashback_type']) && $order['finder_flags']['cashback_type']>0) {
                         $existingLoyalty['cashback_type'] = $cashbackMap[$order['finder_flags']['cashback_type'] - 1];
                     }
-                    if(!empty($order['finder_flags']['end_date'])) {
+                    if(!empty($order['end_date'])) {
                         $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime($order['end_date'])));
                     }
                 }
@@ -5259,10 +5258,15 @@ class HomeController extends BaseController {
                 $rewardsExist = false;
 
                 $retObj['checkins'] = $existingLoyalty["checkins"];
-                $retObj['end_date'] = $existingLoyalty["end_date"];
-                $retObj['finder_name'] = $existingLoyalty["finder_name"];
-                if(!empty($order['end_date'])) {
-                    $retObj['new_end_date'] = date('d-m-Y', strtotime('midnight', strtotime($order['end_date'])));
+
+                if(!empty($existingLoyalty['end_date'])) {
+                    $retObj['end_date'] = $existingLoyalty["end_date"];
+                }
+                if(!empty($existingLoyalty['finder_name'])) {
+                    $retObj['finder_name'] = $existingLoyalty["finder_name"];
+                }
+                if(!empty($existingLoyalty['new_end_date'])) {
+                    $retObj['new_end_date'] = $existingLoyalty['new_end_date'];
                 }
                 $retObj['reward'] = false;
                 $retObj['cashback'] = false;
