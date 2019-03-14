@@ -22,7 +22,7 @@ return array(
                 "https://b.fitn.in/external-vouchers/O21.png",
                 "https://b.fitn.in/external-vouchers/book%20my%20show.png",
                 "https://b.fitn.in/external-vouchers1/UberEats-Logo-OnWhite-Color-V.png",
-                "https://b.fitn.in/external-vouchers1/goqii-mobile-logo.jpg"
+                "https://b.fitn.in/loyalty/goqii---logo-mobile.jpg",
             ]
         ],
 
