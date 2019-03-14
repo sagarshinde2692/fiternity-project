@@ -9275,7 +9275,7 @@ class CustomerController extends \BaseController {
 	public function prepareLoyaltyData($order){
 		Log::info('----- Entered prepareLoyaltyData -----');
 		if(!empty($order)){
-			return [
+			$loyalty = [
 				'order_id' => $order['_id'],
 				'start_date' => new MongoDate(strtotime('midnight', strtotime($order['start_date']))),
 				'start_date_time' => new MongoDate(strtotime($order['start_date'])),
@@ -9283,10 +9283,13 @@ class CustomerController extends \BaseController {
 				'end_date' => new MongoDate(strtotime($order['end_date'])),
 				'type' => $order['type'],
 				'reward_type' => (!empty($order['finder_flags']['reward_type']))?$order['finder_flags']['reward_type']:2,
-				'cashback_type' => $order['finder_flags']['cashback_type'],
 				'checkins' => 0,
 				'created_at' => new \MongoDate()
 			];
+			if(!empty($order['finder_flags']['cashback_type'])){
+				$loyalty['cashback_type'] = $order['finder_flags']['cashback_type'];
+			}
+			return $loyalty;
 		}
 		return null;
 	}
@@ -9318,12 +9321,13 @@ class CustomerController extends \BaseController {
 		$resp = ['status' => 500, 'messsage' => 'Something went wrong'];
 		try{
 			if(!empty($data)){
-				if(!empty($data['customer_id'])){
-					$customer_id = intval($data['customer_id']);
-					$cust = Customer::active()->where('_id', $customer_id)->first();
-					if(!empty($data['order_id'])){
-						$order_id = intval($data['order_id']);
-						$order = Order::active()->where('_id', $order_id)->where('customer_id', $customer_id)->first();
+				if(!empty($data['order_id'])){
+					$order_id = intval($data['order_id']);
+					$order = Order::active()->where('_id', $order_id)->first();
+					if(!empty($order)){
+						$customer_id = intval($order['customer_id']);
+						$cust = Customer::active()->where('_id', $customer_id)->first();
+							
 					
 						$reason = 'loyalty_appropriation';
 
