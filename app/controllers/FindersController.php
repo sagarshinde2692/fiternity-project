@@ -1306,6 +1306,8 @@ class FindersController extends \BaseController {
 				}
 
                 $this->removeEmptyServices($response, 'web');
+
+                // return $response['finder']['services'];
 				                
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
@@ -7157,7 +7159,7 @@ class FindersController extends \BaseController {
 		
 		foreach($services as $key => $value){
 			
-			if(in_array($value['_id'], $extended_validity_service_ids) && empty($value[$ratecard_key]) || (count($value[$ratecard_key]) == 1 && in_array($value[$ratecard_key][0]['type'], ['trial', 'workout session']))){
+			if(in_array($value['_id'], $extended_validity_service_ids) && (empty($value[$ratecard_key]) || (count($value[$ratecard_key]) == 1 && in_array($value[$ratecard_key][0]['type'], ['trial', 'workout session'])))){
 				unset($services[$key]);
 			}
 
