@@ -5273,7 +5273,7 @@ class HomeController extends BaseController {
             // }
             // if(!empty($existingLoyalty)){
                 if(empty($existingLoyalty['end_date'])){
-                    $existingLoyalty['end_date'] = date('d-m-Y', strtotime('midnight', strtotime('+360 days',$customer['loyalty']['start_date']->sec)));
+                    $existingLoyalty['end_date'] = date('d-m-Y', strtotime('midnight', strtotime('+1 year',$customer['loyalty']['start_date']->sec)));
                 }
                 
                 if(!empty($order)){
@@ -5287,7 +5287,7 @@ class HomeController extends BaseController {
                         $existingLoyalty['cashback_type'] = $cashbackMap[$order['finder_flags']['cashback_type'] - 1];
                     }
                     if(!empty($order['end_date'])) {
-                        $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime('+360 days', strtotime($order['start_date']))));
+                        $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime('+1 year', strtotime($order['start_date']))));
                     }
                 }
                 // "Hi, ".$customer_name.",<br>

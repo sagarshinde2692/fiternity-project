@@ -9281,7 +9281,7 @@ class CustomerController extends \BaseController {
 				'start_date' => new MongoDate(strtotime('midnight', strtotime($order['start_date']))),
 				'start_date_time' => new MongoDate(strtotime($order['start_date'])),
 				'finder_id' => $order['finder_id'],
-				'end_date' => new MongoDate(strtotime('+360 days', strtotime($order['start_date']))),
+				'end_date' => new MongoDate(strtotime('+1 year', strtotime($order['start_date']))),
 				'type' => $order['type'],
 				'checkins' => 0,
 				'created_at' => new MongoDate()
