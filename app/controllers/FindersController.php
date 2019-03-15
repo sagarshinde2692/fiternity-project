@@ -7169,12 +7169,12 @@ class FindersController extends \BaseController {
 
         }
         
-        foreach($services as &$value){
+        // foreach($services as &$value){
             
-            if(in_array($value['_id'], $removed_services) && isset($value['post_name'])){
-                unset($value['post_name']);
-            }
-        }
+        //     if(in_array($value['_id'], $removed_services) && isset($value['post_name'])){
+        //         unset($value['post_name']);
+        //     }
+        // }
 
 		$data['finder']['services'] = array_values($services);
 	} 
