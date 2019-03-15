@@ -9280,11 +9280,11 @@ class CustomerController extends \BaseController {
 				'start_date' => new MongoDate(strtotime('midnight', strtotime($order['start_date']))),
 				'start_date_time' => new MongoDate(strtotime($order['start_date'])),
 				'finder_id' => $order['finder_id'],
-				'end_date' => new MongoDate(strtotime($order['end_date'])),
+				'end_date' => new MongoDate(strtotime('+360 days', strtotime($order['start_date']))),
 				'type' => $order['type'],
 				'reward_type' => (!empty($order['finder_flags']['reward_type']))?$order['finder_flags']['reward_type']:2,
 				'checkins' => 0,
-				'created_at' => new \MongoDate()
+				'created_at' => new MongoDate()
 			];
 			if(!empty($order['finder_flags']['cashback_type'])){
 				$loyalty['cashback_type'] = $order['finder_flags']['cashback_type'];

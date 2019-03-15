@@ -5287,7 +5287,7 @@ class HomeController extends BaseController {
                         $existingLoyalty['cashback_type'] = $cashbackMap[$order['finder_flags']['cashback_type'] - 1];
                     }
                     if(!empty($order['end_date'])) {
-                        $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime($order['end_date'])));
+                        $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime('+360 days', strtotime($order['start_date']))));
                     }
                 }
                 // "Hi, ".$customer_name.",<br>
