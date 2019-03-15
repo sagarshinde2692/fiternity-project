@@ -467,7 +467,8 @@ class PaymentGatewayController extends \BaseController {
 	}
 
 	public function checkBalance($type){
-
+		Log::info('----entering checkBalance----');
+		Log::info('data:: ', [$type]);
 		switch ($type) {
 			case 'mobikwik': 
 				$return = $this->checkBalanceMobikwik();
@@ -811,7 +812,7 @@ class PaymentGatewayController extends \BaseController {
 	}
 
 	public function verifyPayment($status = 'success'){
-
+		Log::info('----entering verifyPayment----');
 		$response = [
 			'status'=>200,
 			'message'=>'200 Added to wallet',
