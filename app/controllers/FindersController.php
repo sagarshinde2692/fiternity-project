@@ -7156,16 +7156,26 @@ class FindersController extends \BaseController {
         $services = $data['finder']['services'];
         
         $extended_validity_service_ids = array_column(array_values(array_filter($services,function ($e) {return !empty($e['type']) && $e['type'] == "extended validity";})), '_id');
-		
+		$removed_services = [];
 		foreach($services as $key => $value){
-			
-			if(in_array($value['_id'], $extended_validity_service_ids) && (empty($value[$ratecard_key]) || (count($value[$ratecard_key]) == 1 && in_array($value[$ratecard_key][0]['type'], ['trial', 'workout session'])))){
-				unset($services[$key]);
+            
+            $membership_ratecards = array_values(array_filter($value[$ratecard_key],function ($e) {return empty($e['hidden']) && !in_array($e['type'], ['trial', 'workout session']);}));
+
+			if((empty($value['type']) || $value['type'] != 'extended validity') && in_array($value['_id'], $extended_validity_service_ids) && (empty($membership_ratecards))){
+                unset($services[$key]);
+                array_push($removed_services, $value['_id']);
 			}
 
 
-		}
+        }
         
+        foreach($services as &$value){
+            
+            if(in_array($value['_id'], $removed_services) && isset($value['post_name'])){
+                unset($value['post_name']);
+            }
+        }
+
 		$data['finder']['services'] = array_values($services);
-	}
+	} 
 }
