@@ -9068,6 +9068,15 @@ class CustomerController extends \BaseController {
 
         $post_register['rewards']['data'] = $post_register_rewards_data;
 
+
+		Order::$withoutAppends = true;
+		$order = Order::active()->where('customer_id', $customer['_id'])->orderBy('_id', 'desc')->first();
+		if(!empty($order)){
+			$loyaltyAppropriation = $this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $order['_id']);
+
+			$post_register['loyalty_success_msg'] = $loyaltyAppropriation;
+		}
+
         return ['post_register'=>$post_register];
     }
 
