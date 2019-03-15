@@ -7185,10 +7185,6 @@ class FindersController extends \BaseController {
 			$data['fitsquad']['title'] = $fitsquadTitle;
 			$data['fitsquad']['reward_title'] = "Proud Reward Partners";
 			$data['fitsquad']['reward_images'] = [];
-			$data['fitsquad']['know_more_button'] = [
-				'text'=>'KNOW MORE',
-				'popup'=>[]
-			];
 			$data['fitsquad']['checkout_button'] = [
 				'text'=>'KNOW MORE',
 				'image'=>null
