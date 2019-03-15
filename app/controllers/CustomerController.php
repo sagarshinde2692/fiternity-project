@@ -9275,6 +9275,7 @@ class CustomerController extends \BaseController {
 	public function prepareLoyaltyData($order){
 		Log::info('----- Entered prepareLoyaltyData -----');
 		if(!empty($order)){
+			$finder = Finder::active()->where('_id', $order['finder_id'])->first();
 			$loyalty = [
 				'order_id' => $order['_id'],
 				'start_date' => new MongoDate(strtotime('midnight', strtotime($order['start_date']))),
@@ -9282,11 +9283,33 @@ class CustomerController extends \BaseController {
 				'finder_id' => $order['finder_id'],
 				'end_date' => new MongoDate(strtotime('+360 days', strtotime($order['start_date']))),
 				'type' => $order['type'],
-				'reward_type' => (!empty($order['finder_flags']['reward_type']))?$order['finder_flags']['reward_type']:2,
 				'checkins' => 0,
 				'created_at' => new MongoDate()
 			];
-			if(!empty($order['finder_flags']['cashback_type'])){
+			if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))){
+				$duration = !empty($order['duration_day']) ? $order['duration_day'] : (!empty($order['order_duration_day']) ? $order['order_duration_day'] : 0);
+                $duration = $duration > 180 ? 360 : $duration;
+				$loyalty['brand_loyalty'] = $finder['brand_id'];
+				$loyalty['brand_loyalty_duration'] = $duration;
+				$loyalty['brand_loyalty_city'] = $order['city_id'];
+
+				if($loyalty['brand_loyalty'] == 135){
+					if($loyalty['brand_loyalty_duration'] == 180){
+						$loyalty['brand_version'] = 1;
+					}else{
+						$loyalty['brand_version'] = 2;
+					}
+				}else{
+					$loyalty['brand_version'] = 1;
+				}
+			}
+			else if(!empty($order['finder_flags']['reward_type'])){
+				$loyalty['reward_type'] = $order['finder_flags']['reward_type'];
+			}
+			else{
+				$loyalty['reward_type'] = 2;
+			}
+			if(!empty($loyalty['reward_type']) && !empty($order['finder_flags']['cashback_type'])){
 				$loyalty['cashback_type'] = $order['finder_flags']['cashback_type'];
 			}
 			return $loyalty;
