@@ -5217,18 +5217,23 @@ class HomeController extends BaseController {
             $message = null;
             if(!empty($customer['loyalty'])){
                 $retObj = [];
-                if(!empty($customer['loyalty']['brand_loyalty'])){
+                if(!empty($customer['loyalty']['brand_loyalty']) && !in_array($order['finder_id'], Config::get('app.brand_finder_without_loyalty'))){
                     $finderMilestone = FinderMilestone::where('duration', $customer['loyalty']['brand_loyalty_duration'])
                                             ->where('brand_id', $customer['loyalty']['brand_loyalty'])
                                             ->where('brand_version', $customer['loyalty']['brand_version'])
                                             ->first();
                 }
                 else if (!empty($customer['loyalty']['reward_type'])) {
-                    $query = FinderMilestone::where('reward_type', $customer['loyalty']['reward_type']);
-                    if(!empty($customer['loyalty']['cashback_type'])){
-                        $query->where('cashback_type', $customer['loyalty']['cashback_type']);
+                    if($customer['loyalty']['reward_type']==2){
+                        $finderMilestone = Config::get('loyalty_constants');
                     }
-                    $finderMilestone = $query->first();
+                    else {
+                        $query = FinderMilestone::where('reward_type', $customer['loyalty']['reward_type']);
+                        if(!empty($customer['loyalty']['cashback_type'])){
+                            $query->where('cashback_type', $customer['loyalty']['cashback_type']);
+                        }
+                        $finderMilestone = $query->first();
+                    }
                 }
                 else {
                     $finderMilestone = Config::get('loyalty_constants');
@@ -5243,14 +5248,18 @@ class HomeController extends BaseController {
                     'new_end_date' => null
                 ];
 
-                $finderMilestone = $finderMilestone['milestones'];
-    
-                $milestone = array_filter($finderMilestone, function($mile) use ($existingLoyalty){
-                    return $existingLoyalty['checkins']>=$mile['count'] && $existingLoyalty['checkins']<$mile['next_count'];
-                });
-                $milestone = (!empty($milestone))?$milestone[0]:$milestone;
-                $retObj['next_milestone'] = ($milestone['milestone']<5)?($milestone['milestone'] + 1):0;
-                $retObj['checkins_left_next_milestone'] = $milestone['next_count'] - $existingLoyalty['checkins'];
+                $retObj['next_milestone'] = null;
+                $retObj['checkins_left_next_milestone'] = null;
+
+                if(!empty($finderMilestone['milestones'])){
+                    $finderMilestone = $finderMilestone['milestones'];
+                    $milestone = array_filter($finderMilestone, function($mile) use ($existingLoyalty){
+                        return $existingLoyalty['checkins']>=$mile['count'] && $existingLoyalty['checkins']<$mile['next_count'];
+                    });
+                    $milestone = (!empty($milestone))?$milestone[0]:$milestone;
+                    $retObj['next_milestone'] = ($milestone['milestone']<5)?($milestone['milestone'] + 1):0;
+                    $retObj['checkins_left_next_milestone'] = $milestone['next_count'] - $existingLoyalty['checkins'];
+                }
 
                 if(!empty($customer['loyalty']['end_date'])){
                     $endDateType = gettype($customer['loyalty']['end_date']);
