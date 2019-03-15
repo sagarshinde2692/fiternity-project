@@ -1098,17 +1098,17 @@ class RewardofferController extends BaseController {
             
         }
         if(empty($mixedreward_content)){
-            
+           
             if(!empty($finder['flags']['reward_type']) && in_array($finder['flags']['reward_type'], Config::get('app.no_instant_reward_types')) && !empty($this->vendor_token)){
                 
                 $rewardObj = $this->getMixedReward();
                 $cashback_type = !empty($finder['flags']['cashback_type']) ? $finder['flags']['cashback_type'] : null;
                 $mixedreward_content = MixedRewardContent::where('reward_type',$finder['flags']['reward_type'])->first();
-    
+                
                 if(!empty($mixedreward_content)){
                     
                     if($rewardObj && $mixedreward_content){				
-    
+                        $no_instant_rewards = true;
                         $rewards = [];
                         
                         $rewardObjData = $rewardObj->toArray();
@@ -1296,7 +1296,7 @@ class RewardofferController extends BaseController {
         if(!empty($finder['_id']) && $finder['_id'] == 11230 && $duration_day == 360){
             $cashback = null;
         }
-        if(!empty($gold_mixed)){
+        if(!empty($gold_mixed) || !empty($no_instant_rewards)){
             $cashback = null;
         }
         
