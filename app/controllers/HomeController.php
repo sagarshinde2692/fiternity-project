@@ -5211,7 +5211,7 @@ class HomeController extends BaseController {
                             ->where('email', $order['customer_email'])
                             ->first();
         $retObj = null;
-        if(!empty($customer)){
+        if(!empty($customer) && (!isset($order['loyalty_registration']) || !$order['loyalty_registration'])){
             // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
             $existingLoyalty = null;
             $message = null;
