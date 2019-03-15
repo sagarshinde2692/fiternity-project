@@ -9294,25 +9294,6 @@ class CustomerController extends \BaseController {
 		return null;
 	}
 
-	public function archiveCustomerData($customer_id, $data, $reason) {
-		Log::info('----- Entered archiveCustomerData -----');
-		$custArchive = new CustomerArchive();
-		$custArchive['customer_id'] = $customer_id;
-		$custArchive['data'] = $data;
-		$custArchive['reason'] = $reason;
-		$custArchive->save();
-		Log::info('----- Completed archiveCustomerData -----');
-	}
-
-	public function deactivateCheckins($customer_id, $reason) {
-		Log::info('----- Entered deactivateCheckins -----');
-		Checkin::where('customer_id', $customer_id)->update([
-			'status' => '0',
-			'deactivated_on' => new \MongoDate(),
-			'deactivated_for' => $reason
-		]);
-		Log::info('----- Completed deactivateCheckins -----');
-	}
 
 	public function loyaltyAppropriation(){
 		Log::info('----- Entered loyaltyAppropriation -----');
@@ -9338,12 +9319,12 @@ class CustomerController extends \BaseController {
 						if(!empty($newLoyalty)){
 							$archiveData = ['loyalty' => $oldLoyalty];
 							
-							$this->archiveCustomerData($cust['_id'], $archiveData, $reason);
+							$this->utilities->archiveCustomerData($cust['_id'], $archiveData, $reason);
 
 							$cust['loyalty'] = $newLoyalty;
 							$cust->update();
 
-							$this->deactivateCheckins($cust['_id'], $reason);
+							$this->utilities->deactivateCheckins($cust['_id'], $reason);
 
 							$resp = ['status'=>200, 'message'=>'Successfully appropriated the loyalty of the customer'];
 						}

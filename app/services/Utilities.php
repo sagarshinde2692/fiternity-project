@@ -6902,90 +6902,103 @@ Class Utilities {
     
     public function autoRegisterCustomerLoyalty($data){
         try{
-            $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
-            if(!$customer){
-                return ['status'=>400, 'Customer already registered'];
-            }
-            
-            if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
-                
-                Finder::$withoutAppends = true;
-                $finder = Finder::find($data['finder_id']);
-                $data['finder_flags'] = !empty($finder['flags']) ? $finder['flags'] : [];
-            
-            }
+            $customer = Customer::where('_id', $data['customer_id'])->first();
+            //->where('loyalty', 'exists', false)
 
-            if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1]))){
-                return ['status'=>400, 'message'=>'No fitsquad for vendor'];
-            }
-            
-            
-            $loyalty = [
-                'start_date'=>new \MongoDate(strtotime('midnight')),
-                'start_date_time'=>new \MongoDate()
-            ];
-
-            if(!empty($data['start_date'])){
-                $loyalty['start_date'] = new \MongoDate(strtotime('midnight', strtotime($data['start_date'])));
-                $loyalty['start_date_time'] = new \MongoDate(strtotime($data['start_date']));
-            }
-            $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name','customer_membership']);
-            $loyalty = array_merge($loyalty, $fields_to_add);
-            $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
-            $duration = $duration > 180 ? 360 : $duration;
-            
-            if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
-                if(empty($finder)){
-                    Finder::$withoutAppends = true;
-                    $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+            if(empty($customer['loyalty']) || (isset($customer['loyalty']['brand_loyalty']))){
+                $existingLoyalty = [];
+                if(isset($customer['loyalty']['brand_loyalty'])) {
+                    $existingLoyalty = $customer['loyalty'];
                 }
-                if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
-                    $brand_loyalty = true;
-                    $loyalty['brand_loyalty'] = $finder['brand_id'];
-                    $loyalty['brand_loyalty_duration'] = $duration;
-                    $loyalty['brand_loyalty_city'] = $data['city_id'];
 
-                    if($loyalty['brand_loyalty'] == 135){
-                        if($loyalty['brand_loyalty_duration'] == 180){
-                            $loyalty['brand_version'] = 1;
+                // if(!$customer){
+                //     return ['status'=>400, 'Customer already registered'];
+                // }
+                
+                if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
+                    
+                    Finder::$withoutAppends = true;
+                    $finder = Finder::find($data['finder_id']);
+                    $data['finder_flags'] = !empty($finder['flags']) ? $finder['flags'] : [];
+                
+                }
+
+                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1]))){
+                    return ['status'=>400, 'message'=>'No fitsquad for vendor'];
+                }
+                
+                
+                $loyalty = [
+                    'start_date'=>new \MongoDate(strtotime('midnight')),
+                    'start_date_time'=>new \MongoDate()
+                ];
+
+                if(!empty($data['start_date'])){
+                    $loyalty['start_date'] = new \MongoDate(strtotime('midnight', strtotime($data['start_date'])));
+                    $loyalty['start_date_time'] = new \MongoDate(strtotime($data['start_date']));
+                }
+                $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name','customer_membership']);
+                $loyalty = array_merge($loyalty, $fields_to_add);
+                $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
+                $duration = $duration > 180 ? 360 : $duration;
+                
+                if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
+                    if(empty($finder)){
+                        Finder::$withoutAppends = true;
+                        $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+                    }
+                    if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
+                        $brand_loyalty = true;
+                        $loyalty['brand_loyalty'] = $finder['brand_id'];
+                        $loyalty['brand_loyalty_duration'] = $duration;
+                        $loyalty['brand_loyalty_city'] = $data['city_id'];
+
+                        if($loyalty['brand_loyalty'] == 135){
+                            if($loyalty['brand_loyalty_duration'] == 180){
+                                $loyalty['brand_version'] = 1;
+                            }else{
+                                $loyalty['brand_version'] = 2;
+                            }
                         }else{
-                            $loyalty['brand_version'] = 2;
+                            $loyalty['brand_version'] = 1;
                         }
-                    }else{
-                        $loyalty['brand_version'] = 1;
                     }
                 }
-            }
-            
-            
-            if(empty($brand_loyalty) && !empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
                 
-                $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
-                if(!empty($data['finder_flags']['cashback_type'])){
-                    $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
+                
+                if(empty($brand_loyalty) && !empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
+                    
+                    $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
+                    if(!empty($data['finder_flags']['cashback_type'])){
+                        $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
+                    }
                 }
+
+                $update_data = [
+                    'loyalty'=>$loyalty 
+                ];
+
+                $this->archiveCustomerData($customer['_id'], ['loyalty' => $existingLoyalty], 'loyalty_appropriation_autoupgrade');
+
+                $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
+                // ->where('loyalty', 'exists', false)
+
+                if($customer_update){
+                    return ['status'=>200];
+                }else{
+                    return ['status'=>400, 'message'=>'Customer already registered'];
+                }
+                // if($customer_update && $this->sendLoyaltyCommunication($data)){
+
+                //     $customermailer = new CustomerMailer();
+
+                //     $customermailer->loyaltyRegister($customer->toArray());
+
+                //     return ['status'=>200];
+                // }else{
+                //     return ['status'=>400, 'message'=>'Customer already registered'];
+                // }
             }
-
-            $update_data = [
-                'loyalty'=>$loyalty 
-            ];
-            $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update($update_data);
-
-            if($customer_update){
-                return ['status'=>200];
-            }else{
-                return ['status'=>400, 'message'=>'Customer already registered'];
-            }
-            // if($customer_update && $this->sendLoyaltyCommunication($data)){
-
-            //     $customermailer = new CustomerMailer();
-
-            //     $customermailer->loyaltyRegister($customer->toArray());
-
-            //     return ['status'=>200];
-            // }else{
-            //     return ['status'=>400, 'message'=>'Customer already registered'];
-            // }
         
         }catch(Exception $e){
         
@@ -7902,6 +7915,26 @@ public function getPPSSearchResult($data){
         return null;
     }
 }
+    public function archiveCustomerData($customer_id, $data, $reason) {
+		Log::info('----- Entered archiveCustomerData -----');
+		$custArchive = new \CustomerArchive();
+		$custArchive['customer_id'] = $customer_id;
+		$custArchive['data'] = $data;
+		$custArchive['reason'] = $reason;
+		$custArchive->save();
+		Log::info('----- Completed archiveCustomerData -----');
+	}
+
+    public function deactivateCheckins($customer_id, $reason) {
+		Log::info('----- Entered deactivateCheckins -----');
+		\Checkin::where('customer_id', $customer_id)->update([
+			'status' => '0',
+			'deactivated_on' => new \MongoDate(),
+			'deactivated_for' => $reason
+		]);
+		Log::info('----- Completed deactivateCheckins -----');
+	}
+
 }
 
 
