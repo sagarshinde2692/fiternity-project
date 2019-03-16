@@ -8650,7 +8650,8 @@ public function yes($msg){
     private function assignGoldLoyalty(){
 		$ids = [
 			// 272056,
-    268973
+			//268973
+			157344
 	];
         $orders = Order::whereIn('_id', $ids)->orderBy('_id', 'asc')->get();
         foreach($orders as $data){
@@ -8660,20 +8661,24 @@ public function yes($msg){
             }
             Log::info($data['_id']);
             $loyalty = $customer->loyalty;
-            // return $data['duration_day'];
-            if(!empty($data['duration_day']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($data['duration_day'], [180, 360, 720])){
+			
+			if(!empty($data['duration_day']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($data['duration_day'], [180, 360, 720]) && !in_array($data['finder_id'], Config::get('app.brand_finder_without_loyalty'))){
                 Finder::$withoutAppends = true;
                 $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
                 if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
                     $loyalty['order_id'] = $data['_id'];
-                    $loyalty['start_date'] = new MongoDate($data['start_date']);
+                    $loyalty['finder_id'] = $data['finder_id'];
+                    $loyalty['start_date'] = new MongoDate(strtotime($data['start_date']));
                     $loyalty['brand_loyalty'] = $finder['brand_id'];
                     $loyalty['brand_loyalty_duration'] = $data['duration_day'];
                     if($data['duration_day'] == 720){
                         $loyalty['brand_loyalty_duration'] = 360;
                     }
                     $loyalty['brand_loyalty_city'] = $data['city_id'];
-                    $loyalty['brand_version'] = 2;
+					$loyalty['brand_version'] = 2;
+					if($data['duration_day'] == 180){
+						$loyalty['brand_version'] = 1;
+					}
                     $loyalty['brand_version_by_script'] = '03-02-2019-1';
                 }
             }
@@ -8685,7 +8690,122 @@ public function yes($msg){
 
 
 
-    }
+	}
+	
+	public function assignLoyalty(){
+        Log::info("in assignLoyalty");
+        
+        
+        Customer::$withoutAppends = true;
+        Order::$withoutAppends = true;
+        Finder::$withoutAppends = true;
+		// $ids = [295520,293543,292815,292798,292191,296387,296199,296108,296094,295626,295544,295537,295535,295088,294636,294296,294132,293754,293738,293734,293356,292772,292733,292686,292533,292239,291568,290282,290153,290130,289888,289884,289315,305693,305681,305389,305387,305385,305363,305362,304340,304158,303940,303840,303821,303752,303652,303622,303618,303612,303606,303602,303601,303586,303581,303577,303527,303442,303361,303316,303298,303154,302895,302520,302342,302337,302327,302282,302223,302219,302216,302177,301894,301884,301879,301874,301870,301760,301752,301733,301718,301695,301660,301652,301610,301581,301451,301376,301375,301339,301332,301312,301311,301306,301298,301278,301260,301233,301178,301102,300986,300912,300904,300856,300536,300506,300451,300438,300411,300389,300384,300376,300325,300121,300112,300108,300087,300071,299873,299781,299769,299741,299321,299308,299299,299281,299268,299215,299043,299042,298781,298762,298675,298674,298425,298122,298058,298007,297990,297902,297890,297886,297883,297745,296733,289700,282055,];
+        $ids = [];
+        $orders = Order::whereIn('_id', $ids)->orderBy('_id', 'asc')->get();
+        Log::info("Fetched Orders");
+        Log::info(count($orders));
+        foreach($orders as $key => $data){
+            Log::info('---------------------------------------------');
+            Log::info($key);
+            $customer = Customer::where('_id', $data['customer_id'])
+            ->where('loyalty.changedOn', 'exists', false)
+            ->first();
+            
+            if(empty($customer)){
+                continue;
+            }
+			
+			Log::info("customer :: ", [$customer]);
+			
+            $old_loyalty = $loyalty = $customer->loyalty;
+        		
+			$loyalty['order_id'] = $data['_id'];
+            $loyalty['finder_id'] = $data['finder_id'];
+            
+            if(empty($loyalty['start_date'])){
+                $loyalty['start_date'] = new MongoDate(strtotime($data['start_date']));
+            }
+
+			Log::info('before Loyalty :: ', [$loyalty]);
+            $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
+            $duration = $duration > 180 ? 360 : $duration;
+            
+            if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
+
+                Log::info('inside if');
+
+                $finder = Finder::find($data['finder_id'], ['flags', 'brand_id', 'city_id'])->toArray();
+
+                Log::info('Finder :: ',[$finder]);
+                Log::info('Finder brand_id :: ',[isset($finder['brand_id'])? $finder['brand_id'] : 'null' ]);
+                
+                if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))){
+
+                    Log::info('if if');
+                    // Log::info('reward :: ',[$loyalty['start_date']]);
+
+                    $brand_loyalty = true;
+                    
+                    unset($loyalty['reward_type']);
+                    unset($loyalty['cashback_type']);
+                    
+                    $loyalty['brand_loyalty'] = $finder['brand_id'];
+                    $loyalty['brand_loyalty_duration'] = $duration;
+                    $loyalty['brand_loyalty_city'] = $data['city_id'];
+
+                    if($loyalty['brand_loyalty'] == 135){
+                        if($loyalty['brand_loyalty_duration'] == 180){
+                            $loyalty['brand_version'] = 1;
+                        }else{
+                            $loyalty['brand_version'] = 2;
+                        }
+                    }else{
+                        $loyalty['brand_version'] = 1;
+                    }
+                }
+            }
+            
+            if(empty($finder)){
+                $finder = Finder::find($data['finder_id'], ['flags'])->toArray();
+            }
+
+            if(empty($finder['flags']['reward_type'])){
+                $finder['flags']['reward_type'] = 2;
+            }
+            
+            if(empty($brand_loyalty) && !empty($finder['flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
+                    Log::info("brand");
+                unset($loyalty['brand_loyalty']);
+                unset($loyalty['brand_loyalty_duration']);
+                unset($loyalty['brand_loyalty_city']);
+                unset($loyalty['brand_version']);
+
+                $loyalty['reward_type'] = $finder['flags']['reward_type'];
+                
+                if(!empty($finder['flags']['cashback_type'])){
+                    $loyalty['cashback_type'] = $finder['flags']['cashback_type'];
+                }
+            }
+            
+            $loyalty['changedOn'] = '15/03/2018_D';
+            // $update_data = [
+            // 	'loyalty'=>$loyalty 
+            // ];
+            // $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
+            Log::info('after Loyalty :: ', [$loyalty]);
+            $customer->loyalty = $loyalty;
+        // return $customer;
+            $customer->update();
+            $archive = [];
+            $archive['loyalty'] = $old_loyalty;
+            $archive['customer_id'] = $customer['_id'];
+            $archive['type'] = 'loyalty_update';
+            CustomerArchive::insert($archive);
+
+        }
+        
+        return "Done";
+	}
 
     public function addLoyaltyVouherAll(){
         // return "asdsa";
