@@ -120,6 +120,8 @@ Class CustomerMailer extends Mailer {
 
 		$label = 'Order-PG-Customer';
 
+		$data['loyalty_success_msg'] = $this->utilities->getLoyaltyAppropriationConsentMsg($data['customer_id'], $data['order_id'], true);
+
 		switch ($data['payment_mode']) {
 			case 'cod': $label = 'Order-COD-Customer'; break;
 			case 'paymentgateway': $label = 'Order-PG-Customer'; break;

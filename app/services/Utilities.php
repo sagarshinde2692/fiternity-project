@@ -7935,7 +7935,7 @@ public function getPPSSearchResult($data){
 		Log::info('----- Completed deactivateCheckins -----');
 	}
 
-    public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id){
+    public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false){
         Log::info('----- Entered getLoyaltyAppropriationConsentMsg -----');
         $device_type = Request::header('Device-Type');
         $cashbackMap = ['A','B','C','D','E','F'];
@@ -8072,8 +8072,19 @@ public function getPPSSearchResult($data){
                 // $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till <b>".$existingLoyalty['new_end_date']."</b>";
                 // $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
             }
+
+            $message = "Current check-ins: ".$retObj['checkins'].". Your workout counter will reset on ".$retObj['end_date'].".";
+            if($retObj['next_milestone']==0){
+                $message .= " You have reached the final milestone.";
+            }
+            else {
+                $message .= " You are ".$retObj['checkins_left_next_milestone']." check-ins away from milestone ".$retObj['next_milestone'].".";
+            }
+            
+            $message .= " You can upgrade to ".$retObj['finder_name']." specific rewards by visiting the profile section of your account on the website. Please note : On switching, your check-in counter will reset to 0 with a check-in validity till ".$retObj['new_end_date'].".";
+            
             // return $message;
-            return $retObj;
+            return ($messageOnly)?$messageOnly:$retObj;
         }
         else {
             return null;
