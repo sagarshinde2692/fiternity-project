@@ -5185,11 +5185,13 @@ class HomeController extends BaseController {
 
             $crashlog = new ApiCrashLog($data);
 
-            $crashlog->save();
 			if(!empty($data["post_data"]["res_header"]) && (empty($data["post_data"]["res_header"]['Status']) || $data["post_data"]["res_header"]['Status'] != "200 OK")){
+                
+                $crashlog->save();
 				$customersms = new \App\Sms\FinderSms();
             	$sms = $customersms->apicrashlogsSMS(['url'=>$crashlog['post_data']['url'], '_id'=>$crashlog['_id'], 'device'=>$data['header_data']['Device-Type']]);
-			}
+            
+            }
             // $customermailer = new CustomerMailer();
             // $mail = $customermailer->apicrashlogsSMS(['data'=>json_encode(array_only($crashlog->toArray(), ['post_data', 'created_at', '_id']))]);
             // $sms = $customersms->apicrashlogsSMS(['data'=>$crashlog['post_data']]);
