@@ -8018,6 +8018,7 @@ public function getPPSSearchResult($data){
                     }
                     if(!empty($order['finder_flags']['cashback_type']) && $order['finder_flags']['cashback_type']>0) {
                         $existingLoyalty['cashback_type'] = $cashbackMap[$order['finder_flags']['cashback_type'] - 1];
+                        $existingLoyalty['cashback_type_num'] = $order['finder_flags']['cashback_type'];
                     }
                     if(!empty($order['end_date'])) {
                         $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime('+1 year', strtotime($order['start_date']))));
@@ -8057,6 +8058,7 @@ public function getPPSSearchResult($data){
                     $retObj['cashback'] = true;
                     $retObj['reward_type'] = $existingLoyalty['reward_type'];
                     $retObj['cashback_type'] = $existingLoyalty['cashback_type'];
+                    $retObj['cashback_type_num'] = $existingLoyalty['cashback_type_num'];
                     if($rewardsExist){
                         // $message .= " & ";
                     }
@@ -8088,7 +8090,7 @@ public function getPPSSearchResult($data){
                     $rewTypeChk = empty($retObj['reward_type']);
                 }
                 if(!empty($customer['loyalty']['cashback_type'])){
-                    $cbkTypeChk = $customer['loyalty']['cashback_type']==$retObj['cashback_type'];
+                    $cbkTypeChk = $customer['loyalty']['cashback_type']==$retObj['cashback_type_num'];
                 }
                 else {
                     $cbkTypeChk = empty($retObj['cashback_type']);
