@@ -8071,18 +8071,47 @@ public function getPPSSearchResult($data){
                 }
                 // $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till <b>".$existingLoyalty['new_end_date']."</b>";
                 // $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
+                $message = "Current check-ins: ".$retObj['checkins'].".<br/>Your workout counter will reset on ".$retObj['end_date'].".";
+                if($retObj['next_milestone']==0){
+                    $message .= "<br/>You have reached the final milestone.";
+                }
+                else {
+                    $message .= "<br/>You are ".$retObj['checkins_left_next_milestone']." check-ins away from milestone ".$retObj['next_milestone'].".";
+                }
+                
+                $message .= "<br/>You can upgrade to ".$retObj['finder_name']." specific rewards by visiting the profile section of your account on the website.<br/>Please note : On switching, your check-in counter will reset to 0 with a check-in validity till ".$retObj['new_end_date'].".";
+                
+                if(!empty($customer['loyalty']['reward_type'])){
+                    $rewTypeChk = $customer['loyalty']['reward_type']==$retObj['reward_type'];
+                }
+                else {
+                    $rewTypeChk = empty($retObj['reward_type']);
+                }
+                if(!empty($customer['loyalty']['cashback_type'])){
+                    $cbkTypeChk = $customer['loyalty']['cashback_type']==$retObj['cashback_type'];
+                }
+                else {
+                    $cbkTypeChk = empty($retObj['cashback_type']);
+                }
+                $finder = Finder::active()->where('_id', $order['finder_id'])->first();
+                if(!empty($customer['loyalty']['brand_loyalty'])){
+                    $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$order['brand_id'];
+                    if($brandIdTypeChk){
+                        $brand_loyalty_data = $this->buildBrandLoyaltyInfoFromOrder($finder, $order);
+                        $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$brand_loyalty_data['brand_id']
+                        && $customer['loyalty']['brand_loyalty_duration']==$brand_loyalty_data['brand_loyalty_duration']
+                        && $customer['loyalty']['brand_loyalty_city']==$brand_loyalty_data['brand_loyalty_city']
+                        && $customer['loyalty']['brand_version']==$brand_loyalty_data['brand_version'];
+                    }
+                }
+                else {
+                    $brandIdTypeChk = empty($order['brand_id'])||in_array($finder['brand_id'], Config::get('app.brand_finder_without_loyalty'));
+                }
+                if($rewTypeChk && $cbkTypeChk && $brandIdTypeChk){
+                    // same grid - no need to upgrade
+                    $retObj = null;
+                }
             }
-
-            $message = "Current check-ins: ".$retObj['checkins'].".<br/>Your workout counter will reset on ".$retObj['end_date'].".";
-            if($retObj['next_milestone']==0){
-                $message .= "<br/>You have reached the final milestone.";
-            }
-            else {
-                $message .= "<br/>You are ".$retObj['checkins_left_next_milestone']." check-ins away from milestone ".$retObj['next_milestone'].".";
-            }
-            
-            $message .= "<br/>You can upgrade to ".$retObj['finder_name']." specific rewards by visiting the profile section of your account on the website.<br/>Please note : On switching, your check-in counter will reset to 0 with a check-in validity till ".$retObj['new_end_date'].".";
-            
             // return $message;
             return ($messageOnly)?$message:$retObj;
         }
@@ -8090,6 +8119,28 @@ public function getPPSSearchResult($data){
             return null;
         }
     }
+
+    public function buildBrandLoyaltyInfoFromOrder($finder, $order){
+		$data = null;
+		if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))){
+			$duration = !empty($order['duration_day']) ? $order['duration_day'] : (!empty($order['order_duration_day']) ? $order['order_duration_day'] : 0);
+			$duration = $duration > 180 ? 360 : $duration;
+			$data['brand_loyalty'] = $finder['brand_id'];
+			$data['brand_loyalty_duration'] = $duration;
+			$data['brand_loyalty_city'] = $order['city_id'];
+
+			if($data['brand_loyalty'] == 135){
+				if($data['brand_loyalty_duration'] == 180){
+					$data['brand_version'] = 1;
+				}else{
+					$data['brand_version'] = 2;
+				}
+			}else{
+				$data['brand_version'] = 1;
+			}
+		}
+		return $data;
+	}
 
 }
 

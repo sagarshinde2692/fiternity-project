@@ -9295,9 +9295,10 @@ class CustomerController extends \BaseController {
 				'checkins' => 0,
 				'created_at' => new MongoDate()
 			];
-			if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))){
+			
+			/*if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))){
 				$duration = !empty($order['duration_day']) ? $order['duration_day'] : (!empty($order['order_duration_day']) ? $order['order_duration_day'] : 0);
-                $duration = $duration > 180 ? 360 : $duration;
+				$duration = $duration > 180 ? 360 : $duration;
 				$loyalty['brand_loyalty'] = $finder['brand_id'];
 				$loyalty['brand_loyalty_duration'] = $duration;
 				$loyalty['brand_loyalty_city'] = $order['city_id'];
@@ -9311,6 +9312,14 @@ class CustomerController extends \BaseController {
 				}else{
 					$loyalty['brand_version'] = 1;
 				}
+			}*/
+
+			$brand_loyalty_data = $this->utilities->buildBrandLoyaltyInfoFromOrder($finder, $order);
+			if(!empty($brand_loyalty_data)){
+				$loyalty['brand_loyalty'] = $brand_loyalty_data['brand_loyalty'];
+				$loyalty['brand_loyalty_duration'] = $brand_loyalty_data['brand_loyalty_duration'];
+				$loyalty['brand_loyalty_city'] = $brand_loyalty_data['brand_loyalty_city'];
+				$loyalty['brand_version'] = $brand_loyalty_data['brand_version'];
 			}
 			else if(!empty($order['finder_flags']['reward_type'])){
 				$loyalty['reward_type'] = $order['finder_flags']['reward_type'];
@@ -9332,11 +9341,17 @@ class CustomerController extends \BaseController {
 		$data = Input::all();
 		Log::info('loyaltyAppropriation data: ', [$data]);
 		$resp = ['status' => 500, 'messsage' => 'Something went wrong'];
+		$order = null;
 		try{
+			if((empty($data) || empty($data['order_id'])) && !empty($data['type']) && $data['type']=='profile'){
+				$order = Order::active()->where('customer_id', $data['customer_id'])-where('type','memberships')->orderBy('_id', 'desc')->first();
+			}
 			if(!empty($data)){
 				if(!empty($data['order_id'])){
 					$order_id = intval($data['order_id']);
-					$order = Order::active()->where('_id', $order_id)->first();
+					if(empty($order)){
+						$order = Order::active()->where('_id', $order_id)->first();
+					}
 					if(!empty($order)){
 						$customer_id = intval($order['customer_id']);
 						$cust = Customer::active()->where('_id', $customer_id)->first();

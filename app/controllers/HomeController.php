@@ -5201,6 +5201,8 @@ class HomeController extends BaseController {
         }
     }
  
-    
-    
+ 	public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false) {
+		return $this->utilities->getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false);
+	}
+
 }
