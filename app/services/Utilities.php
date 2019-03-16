@@ -8073,18 +8073,18 @@ public function getPPSSearchResult($data){
                 // $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
             }
 
-            $message = "Current check-ins: ".$retObj['checkins'].". Your workout counter will reset on ".$retObj['end_date'].".";
+            $message = "Current check-ins: ".$retObj['checkins'].".<br/>Your workout counter will reset on ".$retObj['end_date'].".";
             if($retObj['next_milestone']==0){
-                $message .= " You have reached the final milestone.";
+                $message .= "<br/>You have reached the final milestone.";
             }
             else {
-                $message .= " You are ".$retObj['checkins_left_next_milestone']." check-ins away from milestone ".$retObj['next_milestone'].".";
+                $message .= "<br/>You are ".$retObj['checkins_left_next_milestone']." check-ins away from milestone ".$retObj['next_milestone'].".";
             }
             
-            $message .= " You can upgrade to ".$retObj['finder_name']." specific rewards by visiting the profile section of your account on the website. Please note : On switching, your check-in counter will reset to 0 with a check-in validity till ".$retObj['new_end_date'].".";
+            $message .= "<br/>You can upgrade to ".$retObj['finder_name']." specific rewards by visiting the profile section of your account on the website.<br/>Please note : On switching, your check-in counter will reset to 0 with a check-in validity till ".$retObj['new_end_date'].".";
             
             // return $message;
-            return ($messageOnly)?$messageOnly:$retObj;
+            return ($messageOnly)?$message:$retObj;
         }
         else {
             return null;

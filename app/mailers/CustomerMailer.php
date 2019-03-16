@@ -123,6 +123,8 @@ Class CustomerMailer extends Mailer {
 		$utilities = new Utilities();
 		$data['loyalty_success_msg'] = $utilities->getLoyaltyAppropriationConsentMsg($data['customer_id'], $data['order_id'], true);
 
+		\Log::info('loyalty_success_msg :: ', [$data['loyalty_success_msg']]);
+
 		switch ($data['payment_mode']) {
 			case 'cod': $label = 'Order-COD-Customer'; break;
 			case 'paymentgateway': $label = 'Order-PG-Customer'; break;
