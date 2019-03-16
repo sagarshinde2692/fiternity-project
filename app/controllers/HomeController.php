@@ -1822,13 +1822,13 @@ class HomeController extends BaseController {
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
                     if(isset($item['loyalty_email_content'])){
                         $subline = $subline."<br>".$item['loyalty_email_content'];
-                        // $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                        // $subline = $subline."<br>".$this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                          // $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     }
                 }
                 else {
                     // if(isset($item['loyalty_email_content'])){
-                        $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                        $loyaltySuccessMsg = $this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                         // $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     // }
                 }
