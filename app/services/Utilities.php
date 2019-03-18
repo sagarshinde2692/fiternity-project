@@ -7978,6 +7978,7 @@ public function getPPSSearchResult($data){
                     'finder_name' => null,
                     'reward_type' => 2,
                     'cashback_type' => null,
+                    'cashback_type_num' => null,
                     'new_end_date' => null
                 ];
 
