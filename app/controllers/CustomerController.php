@@ -9344,7 +9344,7 @@ class CustomerController extends \BaseController {
 		$order = null;
 		try{
 			if((empty($data) || empty($data['order_id'])) && !empty($data['type']) && $data['type']=='profile'){
-				$order = Order::active()->where('customer_id', $data['customer_id'])->where('type','memberships')->orderBy('_id', 'desc')->first();
+				$order = Order::active()->where('customer_id', intval($data['customer_id']))->where('type','memberships')->orderBy('_id', 'desc')->first();
 				$data['order_id'] = $order['_id'];
 			}
 			if(!empty($data)){
