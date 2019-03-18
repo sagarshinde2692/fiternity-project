@@ -7177,6 +7177,9 @@ class FindersController extends \BaseController {
 		$fitsquadLogo = 'http://b.fitn.in/global/pps/fitsquadlogo.png';
 		$powByFit = 'POWERED BY FITTERNITY';
 		$fitsquadTitle = "TO GET EXCLUSIVE ACCESS TO INDIA'S BIGGEST REWARDS CLUB FITSQUAD, BUY / RENEW YOUR MEMBERSHIP NOW";
+
+		$thumbsUpImage = 'https://b.fitn.in/global/web%20payment%20page%20thumbs%20up%20icon%403x.png';
+		$thumbsUpBackImage = 'https://b.fitn.in/global/web%20payment%20page%20background%403x.png';
 		if((!empty($finderDetails['brand_id'])) && in_array($finderDetails['brand_id'], $brandsList) && in_array($finderRewardType, [2, 4, 6])){
 			// fitsquad
 			$data['fitsquad']['image'] = $fitsquadLogo;
@@ -7189,6 +7192,19 @@ class FindersController extends \BaseController {
 				'text'=>'KNOW MORE',
 				'image'=>null
 			];
+
+			$data['fitsquad']['checkout_summary'] = [
+				'image' => $thumbsUpImage,
+				'back_image' => $thumbsUpBackImage,
+				'line1' => 'On buying this, you get exclusive access into FitSquad',
+				'line2' => 'India\'s Biggest Fitness Rewards club',
+				'checkout_button' =>[
+					'text' => 'Checkout Rewards',
+					'image' => ''
+				],
+				'know_more' => true
+			];
+
 			if($brandsMap['golds']==$finderDetails['brand_id']){
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/fitsquad%20-%20gold%20-%20vendor%20page%20%281%29.png";
 				$data['fitsquad']['imageText'] = $powByFit;
@@ -7201,7 +7217,7 @@ class FindersController extends \BaseController {
 					"https://b.fitn.in/global/uber.jpg"
 				];
 				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
-				
+				$data['fitsquad']['checkout_summary']['line1'] = 'On buying this, you get exclusive access into FitSquad Gold';
 			}
 			else if($brandsMap['multifit']==$finderDetails['brand_id']) {
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/MULTIFIT-LOGO-VENDOR-PAGE.png";
@@ -7229,6 +7245,8 @@ class FindersController extends \BaseController {
 				];
 				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/hanman/download2.jpeg';
 			}
+
+			$data['fitsquad']['checkout_summary']['checkout_button']['image'] = $data['fitsquad']['checkout_button']['image'];
 
 			array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png");
 			array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/external-vouchers1/gnc.png");
@@ -7293,7 +7311,19 @@ class FindersController extends \BaseController {
 
 				$data['fitsquad']['checkout_button'] = [
 					'text'=>"Checkout Rewards",
-					"image_link"=>'https://b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
+					"image"=>'https://b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
+				];
+
+				$data['checkout_summary'] = [
+					'image' => $thumbsUpImage,
+					'back_image' => $thumbsUpBackImage,
+					'line1' => 'On buying this, you get exclusive access into FitSquad',
+					'line2' => 'India\'s Biggest Fitness Rewards club',
+					'checkout_button' =>[
+						'text' => 'Checkout Rewards',
+						'image' => 'https://b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
+					],
+					'know_more' => true
 				];
 
 			} else if($finderRewardType==3){
@@ -7333,6 +7363,15 @@ class FindersController extends \BaseController {
 					}
 				}
 
+				$data['fitsquad']['checkout_summary'] = [
+					'image' => $thumbsUpImage,
+					'back_image' => $thumbsUpBackImage,
+					'line1' => 'On buying this you get exclusive access to earn '.$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_rate'].' cashback on your membership amount.',
+					'line2' => null,
+					'checkout_button' => null,
+					'know_more' => false
+				];
+
 				if(in_array($finderDetails['flags']['cashback_type'], [1,2,3])){
 					if(!empty($jumpToService) && !empty($jumpToRatecard)){
 						$data['fitsquad']['buy_button'] = [
@@ -7345,7 +7384,16 @@ class FindersController extends \BaseController {
 						'text'=>'KNOW MORE',
 						'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image']
 					];
+
+					$data['fitsquad']['checkout_summary']['checkout_button'] = [
+						'text' => 'KNOW MORE',
+						'image' => $cashbackImageMap[$finderDetails['flags']['cashback_type']]['image']
+					];
+
 				}
+
+				
+
 			} else if(in_array($finderRewardType, [4, 6])){
 				// fitsquad
 				$data['fitsquad']['image'] = $fitsquadLogo;
@@ -7408,6 +7456,18 @@ class FindersController extends \BaseController {
 					'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image']
 				];
 
+				$data['fitsquad']['checkout_summary'] = [
+					'image' => $thumbsUpImage,
+					'back_image' => $thumbsUpBackImage,
+					'line1' => 'On buying this you get exclusive access to earn '.$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_rate'].' cashback on your membership amount.',
+					'line2' => null,
+					'checkout_button' => [
+						'text' => 'KNOW MORE',
+						'image' => $cashbackImageMap[$finderDetails['flags']['cashback_type']]['image']
+					],
+					'know_more' => false
+				];
+
 			} else if(in_array($finderRewardType, [5])){
 				$cashbackImageMap = [
 					1 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%201A.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],
@@ -7443,6 +7503,16 @@ class FindersController extends \BaseController {
 						break;
 					}
 				}
+				
+				$data['fitsquad']['checkout_summary'] = [
+					'image' => $thumbsUpImage,
+					'back_image' => $thumbsUpBackImage,
+					'line1' => 'On buying this you get exclusive access to earn '.$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_rate'].' cashback on your membership amount.',
+					'line2' => null,
+					'checkout_button' => null,
+					'know_more' => false
+				];
+
 				if(in_array($finderDetails['flags']['cashback_type'], [1,2,3])){
 					if(!empty($jumpToService) && !empty($jumpToRatecard)){
 						$data['fitsquad']['buy_button'] = [
@@ -7454,6 +7524,11 @@ class FindersController extends \BaseController {
 					$data['fitsquad']['checkout_button'] = [
 						'text'=>'KNOW MORE',
 						'image'=>$cashbackImageMap[$finderDetails['flags']['cashback_type']]['image']
+					];
+
+					$data['fitsquad']['checkout_summary']['checkout_button'] = [
+						'text' => 'KNOW MORE',
+						'image' => $cashbackImageMap[$finderDetails['flags']['cashback_type']]['image']
 					];
 				}
 			}
