@@ -8045,6 +8045,7 @@ public function getPPSSearchResult($data){
                     $retObj['reward'] = true;
                     $retObj['reward_type'] = $existingLoyalty['reward_type'];
                     $retObj['cashback_type'] = $existingLoyalty['cashback_type'];
+                    $retObj['cashback_type_num'] = $existingLoyalty['cashback_type_num'];
                     if(!empty($device_type) && in_array($device_type, ['android', 'ios'])){
                         // $message .= "rewards (<a onclick=''>Checkout Rewards</a>)";
                         $retObj['finder_name'] = $existingLoyalty["finder_name"];
