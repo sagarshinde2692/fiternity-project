@@ -7179,7 +7179,7 @@ class FindersController extends \BaseController {
 		$fitsquadTitle = "TO GET EXCLUSIVE ACCESS TO INDIA'S BIGGEST REWARDS CLUB FITSQUAD, BUY / RENEW YOUR MEMBERSHIP NOW";
 
 		$thumbsUpImage = 'https://b.fitn.in/global/web%20payment%20page%20thumbs%20up%20icon%403x.png';
-		$thumbsUpBackImage = 'https://b.fitn.in/global/web%20payment%20page%20background%403x.png';
+		$thumbsUpBackImage = 'https://b.fitn.in/global/web%20payment%20page%20background_app%403x.png';
 		if((!empty($finderDetails['brand_id'])) && in_array($finderDetails['brand_id'], $brandsList) && in_array($finderRewardType, [2, 4, 6])){
 			// fitsquad
 			$data['fitsquad']['image'] = $fitsquadLogo;
