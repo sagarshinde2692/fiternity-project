@@ -9135,7 +9135,16 @@ public function yes($msg){
         fclose($fp);
         return $orders;
 
-    }
+	}
+	
+	public function debitWalletTransaction(){
+		$utilities = new Utilities();
+		$data =   Input::all();
 
+		Log::info('ASP                ::               ',[$data]);
+
+		$walletData = Input::all();
+		$wallet_res = $utilities->walletTransactionNew($walletData);
+	}
 }
 

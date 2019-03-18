@@ -296,6 +296,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 });
 
+
+Route::post('walletTransactionnew', array('uses' => 'DebugController@debitWalletTransaction'));
 /******************** CUSTOMERS SECTION END HERE ********************/
 ##############################################################################
 

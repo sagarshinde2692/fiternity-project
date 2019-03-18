@@ -1612,7 +1612,7 @@ Class Utilities {
     }
 
     public function walletTransactionNew($request, $data=false){
-
+            Log::info('in wallet transaction',[$request]);
         $wallet_limit = 100000;
 
         // if($data && isset($data['type']) && in_array($data['type'], ['wallet'])){
@@ -1634,6 +1634,7 @@ Class Utilities {
         // }
 
         $customer_id = (int)$request['customer_id'];
+        Log::info('customer_id ', [$customer_id]);
 
         $jwt_token = Request::header('Authorization');
 
@@ -1651,13 +1652,15 @@ Class Utilities {
         $customer = Customer::find($customer_id);
 
         $validator = Validator::make($request, Wallet::$rules);
-
+        Log::info('validator', [$validator]);
         if ($validator->fails()) {
             return ['status' => 400,'message' => $this->errorMessage($validator->errors())];
         }
 
         $entry = $request['entry'];
         $type = $request['type'];
+
+        Log::info('entry', [$entry]);
 
         if(isset($request['order_id']) &&  $request['order_id'] != 0){
 
@@ -2014,12 +2017,16 @@ Class Utilities {
         }
 
         if($entry == 'debit'){
-
+                Log::info('entry debit');
             $amount = $request['amount'];
 
             $query =  $this->getWalletQuery($request);
 
+            //Log::info("query ::            ", [$query]);
+
             $allWallets  = $query->OrderBy('restricted','desc')->OrderBy('_id','asc')->get();
+
+            Log::info('wallet ::             ',[count($allWallets)]);
 
             if(count($allWallets) > 0){
 
@@ -2070,7 +2077,12 @@ Class Utilities {
                         $walletTransactionData['wallet_id'] = $value->_id;
                         $walletTransactionData['entry'] = $entry;
                         $walletTransactionData['type'] = $request['type'];
+                        $walletTransactionData['description'] = $request['description'];
                         $walletTransactionData['customer_id'] = $customer_id;
+                        
+                        if(isset($request['debit_added_by'])){
+                            $walletTransactionData['debit_added_by'] = $request['debit_added_by'];
+                        }
 
                         if(isset($request['order_id']) && $request['order_id'] != ""){
                             $walletTransactionData['order_id'] = (int)$request['order_id'];
@@ -2612,6 +2624,11 @@ Class Utilities {
         Log::info('---------------request-------------------',$request);
 
         $query = Wallet::active()->where('customer_id',(int)$request['customer_id'])->where('balance','>',0);
+
+        if(isset($request['wallet_id'])){
+            Log::info('in wallet request');
+            $query->where('_id',(int)$request['wallet_id']);
+        }
 
         if(!empty($request['extended_validity'])){
             $query->where('restricted_for', '!=', 'upgrade');
