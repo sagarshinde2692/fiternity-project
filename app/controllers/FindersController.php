@@ -1321,27 +1321,27 @@ class FindersController extends \BaseController {
                             ];
                             
                         }
-                        
-                        if(!empty($finder['flags']['fit10'])){
-                            $response['vendor_stripe_data']	=	[
-                                'text1'=> "Lowest Prices + Get addnl flat 10% off | Code: FIT10 - *T&C Applicable",
-                                'text3'=>"",
-                                'background-color'=> "",
-                                'text_color'=> '$fff',
-                                'background'=> '-webkit-linear-gradient(left, #e873b3 0%, #e873b3 100%)'
-                            ];
-                            
-                
-                        }if(!empty($finder['flags']['fit500'])){
-                            $response['vendor_stripe_data']	=	[
-                                'text1'=> "Lowest Prices + Get flat Rs 500 off | Code: FIT500",
-                                'text3'=>"",
-                                'background-color'=> "",
-                                'text_color'=> '$fff',
-                                'background'=> '-webkit-linear-gradient(left, #e873b3 0%, #e873b3 100%)'
-                            ];
-                        }else if(empty($response['vendor_stripe_data']['text1'])){
-                            $response['vendor_stripe_data'] = "no-patti";
+                        if(empty($finder['flags']['no_disc_mar'])){
+
+                            if(!empty($finder['flags']['fit500'])){
+                                $response['vendor_stripe_data']	=	[
+                                    
+                                    'text1'=> "Lowest Prices + Get flat Rs 500 off | Code: FIT500",
+                                    'text3'=>"",
+                                    'background-color'=> "",
+                                    'text_color'=> '$fff',
+                                    'background'=> '-webkit-linear-gradient(left, #2c3e50 0%, #2c3e50 100%)'
+                                ];
+                                
+                            }else{
+                                $response['vendor_stripe_data']	=	[
+                                    'text1'=> "Lowest Prices + Get addnl flat 10% off | Code: FIT10 - *T&C Applicable",
+                                    'text3'=>"",
+                                    'background-color'=> "",
+                                    'text_color'=> '$fff',
+                                    'background'=> '-webkit-linear-gradient(left, #2c3e50 0%, #2c3e50 100%)'
+                                ];
+                            }
                         }
 						// if(empty($finder['flags']['end_sale_0'])){
 						// 	if(!empty($finder['flags']['end_sale_10'])){
