@@ -2628,94 +2628,97 @@ Class Utilities {
         if(isset($request['wallet_id'])){
             Log::info('in wallet request');
             $query->where('_id',(int)$request['wallet_id']);
-        }
-
-        if(!empty($request['extended_validity'])){
-            $query->where('restricted_for', '!=', 'upgrade');
-        }
-
-        if(isset($request['finder_id']) && $request['finder_id'] != ""){
-
-            $finder_id = (int)$request['finder_id'];
-
-            $finder = \Finder::find($finder_id);
-
-            $conditionData = [];
-
-            $conditionData['finder_category_id'] = $finder->category_id;
-
-            $fitcashCoupons = \Fitcashcoupon::select('_id','code','condition')->where('condition','exists',true)->get();
-
-            if(count($fitcashCoupons) > 0){
-
-                $fitcashCoupons = $fitcashCoupons->toArray();
-
-                foreach ($fitcashCoupons as $coupon) {
-
-                    $code = $coupon['code'];
-
-                    $condition_array = [];
-
-                    foreach ($coupon['condition'] as $condition) {
-
-                        $operator = $condition['operator'];
-                        $field = $condition['field'];
-                        $value = $condition['value'];
-
-                        switch ($operator) {
-                            case 'in':
-
-                                if(isset($conditionData[$field]) && in_array($conditionData[$field],$value)){
-                                    $condition_array[] = 'true';
-                                }else{
-                                    $condition_array[] = 'false';
-                                }
-
-                                break;
-
-                            case 'not_in':
-
-                                if(isset($conditionData[$field]) && !in_array($conditionData[$field],$value)){
-                                    $condition_array[] = 'true';
-                                }else{
-                                    $condition_array[] = 'false';
-                                }
-
-                                break;
-                        }
-
-                    }
-
-                    if(in_array('false', $condition_array)){
-                        $query->where('coupon','!=',$code);
-                    }
-
-                }
-            }
-
-
-            $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
-
-
+        
         }else{
 
-            $query->where('valid_finder_id','exists',false);
+            if(!empty($request['extended_validity'])){
+                $query->where('restricted_for', '!=', 'upgrade');
+            }
+    
+            if(isset($request['finder_id']) && $request['finder_id'] != ""){
+    
+                $finder_id = (int)$request['finder_id'];
+    
+                $finder = \Finder::find($finder_id);
+    
+                $conditionData = [];
+    
+                $conditionData['finder_category_id'] = $finder->category_id;
+    
+                $fitcashCoupons = \Fitcashcoupon::select('_id','code','condition')->where('condition','exists',true)->get();
+    
+                if(count($fitcashCoupons) > 0){
+    
+                    $fitcashCoupons = $fitcashCoupons->toArray();
+    
+                    foreach ($fitcashCoupons as $coupon) {
+    
+                        $code = $coupon['code'];
+    
+                        $condition_array = [];
+    
+                        foreach ($coupon['condition'] as $condition) {
+    
+                            $operator = $condition['operator'];
+                            $field = $condition['field'];
+                            $value = $condition['value'];
+    
+                            switch ($operator) {
+                                case 'in':
+    
+                                    if(isset($conditionData[$field]) && in_array($conditionData[$field],$value)){
+                                        $condition_array[] = 'true';
+                                    }else{
+                                        $condition_array[] = 'false';
+                                    }
+    
+                                    break;
+    
+                                case 'not_in':
+    
+                                    if(isset($conditionData[$field]) && !in_array($conditionData[$field],$value)){
+                                        $condition_array[] = 'true';
+                                    }else{
+                                        $condition_array[] = 'false';
+                                    }
+    
+                                    break;
+                            }
+    
+                        }
+    
+                        if(in_array('false', $condition_array)){
+                            $query->where('coupon','!=',$code);
+                        }
+    
+                    }
+                }
+    
+    
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
+    
+    
+            }else{
+    
+                $query->where('valid_finder_id','exists',false);
+            }
+    
+            if(!empty($request['service_id'])){
+                $query->where(function($query) use($request) {$query->orWhere('service_id','exists',false)->orWhere('service_id', $request['service_id']);});
+            }
+            
+            if(!empty($request['duration_day'])){
+                $query->where(function($query) use($request) {$query->orWhere('duration_day','exists',false)->orWhere('duration_day', $request['duration_day']);});
+            }
+    
+            Log::info("wallet debit query");
+            Log::info($request);
+    
+            if(!empty($request['order_type'])){
+                $query->where(function($query) use ($request){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $request['order_type']);});
+            }
         }
 
-        if(!empty($request['service_id'])){
-            $query->where(function($query) use($request) {$query->orWhere('service_id','exists',false)->orWhere('service_id', $request['service_id']);});
-        }
-        
-        if(!empty($request['duration_day'])){
-            $query->where(function($query) use($request) {$query->orWhere('duration_day','exists',false)->orWhere('duration_day', $request['duration_day']);});
-        }
-
-        Log::info("wallet debit query");
-        Log::info($request);
-
-        if(!empty($request['order_type'])){
-            $query->where(function($query) use ($request){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $request['order_type']);});
-        }
 
         return $query;
 
