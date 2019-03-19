@@ -1322,19 +1322,27 @@ class FindersController extends \BaseController {
                             
                         }
                         
-                        // if(in_array($finder['_id'], Config::get('app.women_week_off', []))){
-                        //     $response['vendor_stripe_data']	=	[
-                        //         'text1'=> "#STRONGGETSSTRONGER Additional 25% off + Exclusive Rewards | Code: STRONG",
-                        //         'text3'=>"",
-                        //         'background-color'=> "",
-                        //         'text_color'=> '$fff',
-                        //         'background'=> '-webkit-linear-gradient(left, #e873b3 0%, #e873b3 100%)'
-                        //     ];
-                        //     $response['finder']['women_offer'] = true;
+                        if(!empty($finder['flags']['fit10'])){
+                            $response['vendor_stripe_data']	=	[
+                                'text1'=> "Lowest Prices + Get addnl flat 10% off | Code: FIT10 - *T&C Applicable",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '-webkit-linear-gradient(left, #e873b3 0%, #e873b3 100%)'
+                            ];
+                            
                 
-                        // }else if(empty($response['vendor_stripe_data']['text1'])){
-                        //     $response['vendor_stripe_data'] = "no-patti";
-                        // }
+                        }if(!empty($finder['flags']['fit500'])){
+                            $response['vendor_stripe_data']	=	[
+                                'text1'=> "Lowest Prices + Get flat Rs 500 off | Code: FIT500",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '-webkit-linear-gradient(left, #e873b3 0%, #e873b3 100%)'
+                            ];
+                        }else if(empty($response['vendor_stripe_data']['text1'])){
+                            $response['vendor_stripe_data'] = "no-patti";
+                        }
 						// if(empty($finder['flags']['end_sale_0'])){
 						// 	if(!empty($finder['flags']['end_sale_10'])){
 						// 		$response['vendor_stripe_data']['text3'] = $response['vendor_stripe_data']['text3'].' | Addnl Flat 10% off. Code: JFIT *T&C';
