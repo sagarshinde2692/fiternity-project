@@ -1330,7 +1330,7 @@ class FindersController extends \BaseController {
                                     'text3'=>"",
                                     'background-color'=> "",
                                     'text_color'=> '$fff',
-                                    'background'=> '-webkit-linear-gradient(left, #2c3e50 0%, #2c3e50 100%)'
+                                    'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
                                 ];
                                 
                             }else{
@@ -1339,7 +1339,7 @@ class FindersController extends \BaseController {
                                     'text3'=>"",
                                     'background-color'=> "",
                                     'text_color'=> '$fff',
-                                    'background'=> '-webkit-linear-gradient(left, #2c3e50 0%, #2c3e50 100%)'
+                                    'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
                                 ];
                             }
                         }
