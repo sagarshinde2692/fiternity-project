@@ -3952,6 +3952,9 @@ class FindersController extends \BaseController {
 										if(isset($opening_hour_arr[1])){
 											$opening_hour_surfix = (strlen($opening_hour_arr[1]) == 1) ? $opening_hour_arr[1]."0" : $opening_hour_arr[1];
 										}
+										else{
+											$opening_hour_surfix =  "00";
+										}
 										$opening_hour     = $opening_hour_arr[0].":".$opening_hour_surfix;
 										$closing_hour_arr = explode(".",max($slots_end_time_24_hour_format_Arr));
 										$closing_hour_surfix    = "";
