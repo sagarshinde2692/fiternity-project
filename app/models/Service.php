@@ -206,7 +206,7 @@ class Service extends \Basemodel{
 
 		
 		if($ratecardsarr){
-	            var_dump($ratecardsarr);
+	        //var_dump($ratecardsarr);
 
 			$offer_exists = false;
 			
@@ -216,7 +216,7 @@ class Service extends \Basemodel{
 			// 						->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout','added_by_script'])
 			// 						->toArray();
 
-			$serviceoffers = Offer::getActiveV1('vendorservice_id', intval($this->_id), intval($finder->_id))->toArray();
+			$serviceoffers = Offer::getActiveV1('vendorservice_id', intval($this->_id), $finder)->toArray();
 			foreach ($ratecardsarr as $key => $value) {
 
 				// if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){

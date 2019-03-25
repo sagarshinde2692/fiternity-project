@@ -3523,7 +3523,7 @@ class FindersController extends \BaseController {
 							// 	->get(['start_date','end_date','price','type','allowed_qty','remarks'])
 							// 	->toArray();
 
-							$ratecardoffersRecards = Offer::getActiveV1('ratecard_id', intval($ratecard['_id']), intval($ratecard['finder_id']))->toArray();
+							$ratecardoffersRecards = Offer::getActiveV1('ratecard_id', intval($rateval['_id']), intval($rateval['finder_id']))->toArray();
 
 
 							if(count($ratecardoffersRecards) > 0){ 
@@ -7160,6 +7160,12 @@ class FindersController extends \BaseController {
 		$field_name = 'ratecard_id';
 		$field_value = $rate_card = 72855;
 		$finder_id = 40;
+
+		// return Service::where('finder_id',$finder_id)->active()
+		// 	->with('serviceratecard')
+		// 	->latest()
+		// 	->get();
+		// 	exit();
 
 		// return DB::connection('mongodb2')->table('offers')
 		// ->where($field_name, intval($field_value))->where('hidden', false)->orderBy('order', 'asc')

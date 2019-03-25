@@ -48,11 +48,18 @@ class Offer extends \Basemodel {
 		Log::info("In model");
 
 		DB::connection('mongodb2')->enableQueryLog();
-
-		$finder = Finder::where('_id', $finder_id)->where('flags.gmv1','$exists',true)->get(['flags.gmv1']);
-		Log::info("dfssfd   ::  ", [$finder[0]['flags']['gmv1']]);
 		
-		if(isset($finder) && $finder[0]['flags']['gmv1'] == true){
+		if(isset($finder_id['flags']['gmv1'])){
+			$gmv1Flag = $finder_id['flags']['gmv1'];
+		}else{
+			$finder = Finder::where('_id', $finder_id)->where('flags.gmv1','$exists',true)->get(['flags.gmv1']);
+			$gmv1Flag = $finder[0]['flags']['gmv1'];
+		}
+
+		// $finder = Finder::where('_id', $finder_id)->where('flags.gmv1','$exists',true)->get(['flags.gmv1']);
+		// Log::info("dfssfd   ::  ", [$finder[0]['flags']['gmv1']]);
+		
+		if($gmv1Flag == true){
 			Log::info("if");
 			return $query->where($field_name, intval($field_value))->where('hidden', false)->orderBy('order', 'asc')
 					->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
