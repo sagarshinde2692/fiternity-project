@@ -8028,5 +8028,9 @@ Class Utilities {
         );
         $this->walletTransactionNew($request);
     }
+
+    public function getRatecardPrice($ratecard){
+        return !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);        
+    }
 }
 
