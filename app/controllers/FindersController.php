@@ -3516,12 +3516,14 @@ class FindersController extends \BaseController {
 
 					if(!isset($rateval['offers']) || (isset($rateval['offers']) && count($rateval['offers'])==0)){
 						if(!empty($rateval['_id']) && isset($rateval['_id'])){
-							$ratecardoffersRecards  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)
-								->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-								->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-								->orderBy('order', 'asc')
-								->get(['start_date','end_date','price','type','allowed_qty','remarks'])
-								->toArray();
+							// $ratecardoffersRecards  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)
+							// 	->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+							// 	->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+							// 	->orderBy('order', 'asc')
+							// 	->get(['start_date','end_date','price','type','allowed_qty','remarks'])
+							// 	->toArray();
+
+							$ratecardoffersRecards = Offer::getActiveV1('ratecard_id', intval($ratecard['_id']), intval($ratecard['finder_id']))->toArray();
 
 
 							if(count($ratecardoffersRecards) > 0){ 
@@ -7150,7 +7152,57 @@ class FindersController extends \BaseController {
 
         $data['finder']['special_offer'] = !empty($finder_special_offer);
 
-    }
+	}
+	
+	public function testOffer(){
+		Log::info("in Test");
+
+		$field_name = 'ratecard_id';
+		$field_value = $rate_card = 72855;
+		$finder_id = 40;
+
+		// return DB::connection('mongodb2')->table('offers')
+		// ->where($field_name, intval($field_value))->where('hidden', false)->orderBy('order', 'asc')
+		// ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+		// //->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+        // ->join('finders', function($join)
+        // {
+        //     $join->on('offers.vendor_id', '=', 'finders._id');
+        // })
+		// ->get();
+
+		// Log::info("qe  ::  ",[ DB::connection('mongodb2')->getQueryLog()]);
+		// exit();
+
+		
+		$ratecardoffersRecards = Offer::getActiveV1('ratecard_id', intval($field_value), intval($finder_id))->toArray();
+		Log::info("qe  ::  ",[ DB::connection('mongodb2')->getQueryLog()]);
+		return $ratecardoffersRecards;
+		// Log::info("query :     ",[DB::getQueryLog()]);
+		// print_r($ratecardoffersRecards);
+		// Log::info("count   ::   ", [sizeof($ratecardoffersRecards)] );
+		// foreach($ratecardoffersRecards as $v){
+		// 	print_r($v);
+		// }
+		//print_r($re);
+
+		
+
+		// $ratecardoffersRecards  =   Offer::where('ratecard_id', intval($field_value))->where('hidden', false)
+		// 						->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+		// 						->where(function($q) {
+		// 							$query->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+		// 								->orWhere(function ($query1){
+		// 									$query1->with(['finder' => function($query2){$query2->where('flags.gmv1',true);}]);
+		// 								});
+		// 						})
+		// 						->orderBy('order', 'asc')
+		// 						->get(['start_date','end_date','price','type','allowed_qty','remarks'])
+		// 						->toArray();
+								//print_r($ratecardoffersRecards);
+
+								
+	}
 
 
 }

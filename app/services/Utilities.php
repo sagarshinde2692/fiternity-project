@@ -6675,12 +6675,14 @@ Class Utilities {
 
         $data['offer_id'] = false;
 
-        $offer = Offer::where('ratecard_id',$ratecard['_id'])
-                ->where('hidden', false)
-                ->orderBy('order', 'asc')
-                ->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))
-                ->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))
-                ->first();
+        // $offer = Offer::where('ratecard_id',$ratecard['_id'])
+        //         ->where('hidden', false)
+        //         ->orderBy('order', 'asc')
+        //         ->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))
+        //         ->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))
+        //         ->first();
+        
+        $offer = Offer::getActiveV1('ratecard_id', intval($ratecard['_id']), intval($ratecard['finder_id']))->first();
 
         if($offer){
             if(isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"]){
