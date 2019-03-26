@@ -2104,6 +2104,14 @@ class HomeController extends BaseController {
             
             $resp['loyalty_collaterals_delivered'] = !empty($finder) && !empty($finder['flags']['loyalty_collaterals_delivered']);
 
+            if(!empty($item['finder_name'])){
+                $resp['finder_name'] = $item['finder_name'];
+            }
+
+            if(!empty($item['amount_customer'])){
+                $resp['amount'] = $item['amount_customer'] - (!empty($item['convinience_fee']) ? $item['convinience_fee'] : 0);
+            }
+
             if(!empty($item['type']) && $item['type'] == 'booktrials' && !empty($customer_id)){
 
                 if(empty($customer)){
