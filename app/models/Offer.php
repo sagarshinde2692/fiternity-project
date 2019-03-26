@@ -49,15 +49,29 @@ class Offer extends \Basemodel {
 
 		DB::connection('mongodb2')->enableQueryLog();
 		
-		if(isset($finder_id['flags']['gmv1'])){
-			$gmv1Flag = $finder_id['flags']['gmv1'];
-		}else{
-			$finder = Finder::where('_id', $finder_id)->where('flags.gmv1','$exists',true)->get(['flags.gmv1']);
-			$gmv1Flag = $finder[0]['flags']['gmv1'];
-		}
+		$gmv1Flag = false;
 
-		// $finder = Finder::where('_id', $finder_id)->where('flags.gmv1','$exists',true)->get(['flags.gmv1']);
-		// Log::info("dfssfd   ::  ", [$finder[0]['flags']['gmv1']]);
+		if(!empty($finder_id['flags'])){
+			if(!empty($finder_id['flags']['gmv1'])){
+				$gmv1Flag = $finder_id['flags']['gmv1'];
+			}
+			
+		}else{
+
+			if(!empty($GLOBALS[$finder_id]['flag'])){
+				Log::info("global");
+				$gmv1Flag = $GLOBALS[$finder_id]['flag'];
+			}else{
+				Log::info("else condition");
+				$finder = Finder::where('_id', $finder_id)->where('flags.gmv1','$exists',true)->get(['flags.gmv1']);
+				if(count($finder) > 0){
+					$gmv1Flag = $GLOBALS[$finder_id]['flag'] = $finder[0]['flags']['gmv1'];
+				}else{
+					$gmv1Flag = $GLOBALS[$finder_id]['flag'] = false;
+				}
+				
+			}
+		}
 		
 		if($gmv1Flag == true){
 			Log::info("if");
