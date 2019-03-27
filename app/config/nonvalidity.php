@@ -15,15 +15,7 @@ return array(
         'image' => 'https://b.fitn.in/non-validity/success-page/Mobile%20Responsive%20EVM%20.png',
         'title' => '__ext_validity_type',
         'title_color' => '#53b7b7',
-        'description' => "<p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b>&#8226; What is __ext_validity_type Membership?</b></p><p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">__ext_validity_type Membership gives you the ability to workout at __vendor_name for a longer validity period by buying a workout session pack of your choice.</p>
-            // <p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b>&#8226; Example</b></p>
-            // <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\">__membership_months month membership at Rs. __membership_price | Avail it within __membership_months month</p>
-            
-            // <div style=\"text-align:center\">vs</div>
-            
-            // <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin-bottom: 5px; margin-top: 0px; text-align: center;\"><br>__ext_validity_type membership (__extended_sessions_count sessions) at Rs. __extended_sessions_price | __sessions_validity_months</p>
-            // <p style=\"font-family: Rubik; font-size: 15px; color: #767676; margin: 0px; margin-bottom: 15px; text-align: center;\"></p>"
-            ,
+        'description' => "<p style=\"font-family: Rubik; font-size: 15px;  color: #5CBBBA; text-align: left\"><b>&#8226; What is __ext_validity_type Membership?</b></p><p style=\"font-family: Rubik;font-size: 15px;color: #767676;text-align: left;\">__ext_validity_type Membership gives you the ability to workout at __vendor_name for a longer validity period by buying a workout session pack of your choice.</p>",
         "how_it_works"=>[
             'title' => 'How it works',
             'title_color' => '#53b7b7',
