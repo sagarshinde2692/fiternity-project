@@ -6966,7 +6966,7 @@ Class Utilities {
                 }
                 
                 
-                if(empty($brand_loyalty) && !empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
+                if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
                     
                     $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
                     if(!empty($data['finder_flags']['cashback_type'])){
