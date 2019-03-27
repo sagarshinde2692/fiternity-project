@@ -45,6 +45,7 @@ class Offer extends \Basemodel {
 	public function scopeGetActiveV1($query, $field_name, $field_value, $finder_id){
 		Log::info("filed_name  ", [$field_name]);
 		Log::info("field_value  ", [$field_value]);
+		Log::info("finder  ", [$finder_id]);
 		Log::info("In model");
 
 		DB::connection('mongodb2')->enableQueryLog();
@@ -52,22 +53,25 @@ class Offer extends \Basemodel {
 		$gmv1Flag = false;
 
 		if(!empty($finder_id['flags'])){
+
+			Log::info("full finder");
+			
 			if(!empty($finder_id['flags']['gmv1'])){
 				$gmv1Flag = $finder_id['flags']['gmv1'];
 			}
 			
 		}else{
 
-			if(!empty($GLOBALS[$finder_id]['flag'])){
+			if(!empty($GLOBALS['gmvFlag'][$finder_id])){
 				Log::info("global");
-				$gmv1Flag = $GLOBALS[$finder_id]['flag'];
+				$gmv1Flag = $GLOBALS['gmvFlag'][$finder_id];
 			}else{
 				Log::info("else condition");
 				$finder = Finder::where('_id', $finder_id)->where('flags.gmv1','$exists',true)->get(['flags.gmv1']);
 				if(count($finder) > 0){
-					$gmv1Flag = $GLOBALS[$finder_id]['flag'] = $finder[0]['flags']['gmv1'];
+					$gmv1Flag = $GLOBALS['gmvFlag'][$finder_id] = $finder[0]['flags']['gmv1'];
 				}else{
-					$gmv1Flag = $GLOBALS[$finder_id]['flag'] = false;
+					$gmv1Flag = $GLOBALS['gmvFlag'][$finder_id] = false;
 				}
 				
 			}
@@ -75,12 +79,12 @@ class Offer extends \Basemodel {
 		
 		if($gmv1Flag == true){
 			Log::info("if");
-			return $query->where($field_name, intval($field_value))->where('hidden', false)->orderBy('order', 'asc')
+			return $query->where($field_name, intval($field_value))->where('hidden', false)->orderBy('_id', 'desc')
 					->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 					->get();
 		}else{
 			Log::info("else");
-			return $query->where($field_name, intval($field_value))->where('hidden', false)->orderBy('order', 'asc')
+			return $query->where($field_name, intval($field_value))->where('hidden', false)->orderBy('_id', 'desc')
 					->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 					->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 					->get();		
