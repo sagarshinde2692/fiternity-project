@@ -65,10 +65,10 @@ class Offer extends \Basemodel {
 				$gmv1Flag = $GLOBALS['gmvFlag'][$finder_id];
 			}else{
 				Log::info("else condition");
-				$finder = Finder::where('_id', $finder_id)->where('flags.gmv1','$exists',true)->get(['flags.gmv1']);
+				$finder = Finder::where('_id', $finder_id)->where('flags.gmv1','exists',true)->first(['flags.gmv1']);
 				Log::info("f  :::  ", [$finder]);
 				if(count($finder) > 0){
-					$gmv1Flag = $GLOBALS['gmvFlag'][$finder_id] = $finder[0]['flags']['gmv1'];
+					$gmv1Flag = $GLOBALS['gmvFlag'][$finder_id] = $finder['flags']['gmv1'];
 				}else{
 					$gmv1Flag = $GLOBALS['gmvFlag'][$finder_id] = false;
 				}
