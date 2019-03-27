@@ -8567,8 +8567,13 @@ public function yes($msg){
     }
 	public function getreversehash(){
 		$data = Input::json()->all();
-		$order = Order::where("_id",$data["_id"])->get();
-		$reverseData = getReversehash($order[0]);
+        $order = Order::where("_id",$data["_id"])->first();
+        
+        if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK") && !(isset($data["order_success_flag"]))){
+            $reverseData = getpayTMhash($order);
+        }else{
+            $reverseData = getReversehash($order);
+        }
 		$resp = array(
 				"order_id"=> $reverseData["_id"],
    				"status"=> "success",
@@ -8578,7 +8583,7 @@ public function yes($msg){
 				"customer_id"=> $reverseData["customer_id"],
 				"customer_location"=> "-",
 				"error_Message"=> "",
-				"type"=> $order[0]['type'],
+				"type"=> $order['type'],
 				"txnid"=>$reverseData["txnid"],
 				"hash"=> $reverseData["reverse_hash"],
 				"order_status"=>$reverseData["status"]
