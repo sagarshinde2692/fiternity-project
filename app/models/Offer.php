@@ -52,14 +52,12 @@ class Offer extends \Basemodel {
 		
 		$gmv1Flag = false;
 
-		if(!empty($finder_id['flags'])){
-
+		if(is_object($finder_id)){
 			Log::info("full finder");
-			
 			if(!empty($finder_id['flags']['gmv1'])){
+				Log::info("full finder gmv");
 				$gmv1Flag = $finder_id['flags']['gmv1'];
 			}
-			
 		}else{
 
 			if(!empty($GLOBALS['gmvFlag'][$finder_id])){
@@ -68,6 +66,7 @@ class Offer extends \Basemodel {
 			}else{
 				Log::info("else condition");
 				$finder = Finder::where('_id', $finder_id)->where('flags.gmv1','$exists',true)->get(['flags.gmv1']);
+				Log::info("f  :::  ", [$finder]);
 				if(count($finder) > 0){
 					$gmv1Flag = $GLOBALS['gmvFlag'][$finder_id] = $finder[0]['flags']['gmv1'];
 				}else{
