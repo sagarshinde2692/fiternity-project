@@ -141,6 +141,11 @@ class BrandsController extends \BaseController {
                     $data['stripe_data'] = "no-patti";
                 }
 
+                if(!empty($this->device_type) && $this->device_type == "android"){
+
+                    unset($data['finders']['request']);
+                    unset($data['finders']['aggregations']);
+                }
                 
                 if(empty($finders) || empty($finders['metadata']['total_records'])){
                     Log::info("Not caching brand");
