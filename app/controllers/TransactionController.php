@@ -2461,12 +2461,12 @@ class TransactionController extends \BaseController {
                 $data['loyalty_email_content'] = $this->utilities->getLoyaltyEmailContent($order);
             }
 
-            $free_sp_ratecard_id = $this->utilities->getFreeSPRatecard($order);
+            // $free_sp_ratecard_id = $this->utilities->getFreeSPRatecard($order);
             
-            if(!empty($free_sp_ratecard_id) && !empty($data["reward_type"]) && $data["reward_type"] ==  "mixed"){
-                $data['free_sp_ratecard_id'] = $free_sp_ratecard_id['_id'];
-                $data['free_sp_url'] = Config::get('app.website')."/membership?capture_type=womens_offer_week&order_token=".$order_token;
-            }
+            // if(!empty($free_sp_ratecard_id) && !empty($data["reward_type"]) && $data["reward_type"] ==  "mixed"){
+            //     $data['free_sp_ratecard_id'] = $free_sp_ratecard_id['_id'];
+            //     $data['free_sp_url'] = Config::get('app.website')."/membership?capture_type=womens_offer_week&order_token=".$order_token;
+            // }
             
             if(!empty($order['ratecard_flags']['free_sp'])){
 

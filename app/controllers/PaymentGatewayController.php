@@ -81,7 +81,8 @@ class PaymentGatewayController extends \BaseController {
 	}
 
 	public function generateOtpPaytm($data = false){
-
+		Log::info('----entering generateOtpPaytm----');
+		Log::info('data:: ', [$data]);
 		$data = $data ? $data : Input::json()->all();  
 
 		$rules = [
@@ -91,7 +92,7 @@ class PaymentGatewayController extends \BaseController {
 		$validator = Validator::make($data,$rules);
 
 		if($validator->fails()){
-
+			Log::info('paytm validation failed');
 			$response = [
 				'status'=>400,
 				'message'=>error_message($validator->errors())
@@ -99,7 +100,7 @@ class PaymentGatewayController extends \BaseController {
 
 			return Response::json($response);
 		}
-
+		Log::info('paytm generating otp');
 		$generateOtp = $this->paytm->generateOtp($data);
 
 		$response = [
@@ -110,7 +111,7 @@ class PaymentGatewayController extends \BaseController {
 		if($generateOtp['status'] == 200){
 
 			if(!empty($generateToken['response']['ErrorMsg'])){
-
+				Log::info('paytm otp error');
 				$response = [
 					'message'=>$generateToken['response']['ErrorMsg'],
 					'status'=>400
@@ -127,7 +128,7 @@ class PaymentGatewayController extends \BaseController {
 
 			}
 		}
-
+		Log::info('paytm response:: ', [$response]);
 		return Response::json($response);
 	}
 
@@ -466,7 +467,8 @@ class PaymentGatewayController extends \BaseController {
 	}
 
 	public function checkBalance($type){
-
+		Log::info('----entering checkBalance----');
+		Log::info('data:: ', [$type]);
 		switch ($type) {
 			case 'mobikwik': 
 				$return = $this->checkBalanceMobikwik();
@@ -810,7 +812,7 @@ class PaymentGatewayController extends \BaseController {
 	}
 
 	public function verifyPayment($status = 'success'){
-
+		Log::info('----entering verifyPayment----');
 		$response = [
 			'status'=>200,
 			'message'=>'200 Added to wallet',

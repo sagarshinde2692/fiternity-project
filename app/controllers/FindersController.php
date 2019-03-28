@@ -1304,7 +1304,9 @@ class FindersController extends \BaseController {
 				if(!in_array($finder['_id'], Config::get('app.upgrade_session_finder_id'))){
 					$this->removeNonValidity($response, 'web');
 				}
-                
+
+                $this->removeEmptyServices($response, 'web');
+				                
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
                         
@@ -1321,19 +1323,27 @@ class FindersController extends \BaseController {
                             ];
                             
                         }
-                        
-                        if(in_array($finder['_id'], Config::get('app.women_week_off', []))){
-                            $response['vendor_stripe_data']	=	[
-                                'text1'=> "#STRONGGETSSTRONGER Additional 25% off + Exclusive Rewards | Code: STRONG",
-                                'text3'=>"",
-                                'background-color'=> "",
-                                'text_color'=> '$fff',
-                                'background'=> '-webkit-linear-gradient(left, #e873b3 0%, #e873b3 100%)'
-                            ];
-                            $response['finder']['women_offer'] = true;
-                
-                        }else if(empty($response['vendor_stripe_data']['text1'])){
-                            $response['vendor_stripe_data'] = "no-patti";
+                        if(empty($finder['flags']['no_disc_mar'])){
+
+                            if(!empty($finder['flags']['fit500'])){
+                                $response['vendor_stripe_data']	=	[
+                                    
+                                    'text1'=> "Lowest Prices + Get flat Rs 500 off | Code: FIT500",
+                                    'text3'=>"",
+                                    'background-color'=> "",
+                                    'text_color'=> '$fff',
+                                    'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
+                                ];
+                                
+                            }else{
+                                $response['vendor_stripe_data']	=	[
+                                    'text1'=> "Lowest Prices + Get addnl flat 10% off | Code: FIT10 - *T&C Applicable",
+                                    'text3'=>"",
+                                    'background-color'=> "",
+                                    'text_color'=> '$fff',
+                                    'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
+                                ];
+                            }
                         }
 						// if(empty($finder['flags']['end_sale_0'])){
 						// 	if(!empty($finder['flags']['end_sale_10'])){
@@ -1350,6 +1360,10 @@ class FindersController extends \BaseController {
                     }
                 }else if(!empty($response['vendor_stripe_data']['text'])){
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
+                }
+
+                if(empty($response['vendor_stripe_data']['text1'])){
+                    $response['vendor_stripe_data'] = "no-patti";
                 }
 
                 $cashback_type_map = Config::get('app.cashback_type_map');
@@ -3948,6 +3962,9 @@ class FindersController extends \BaseController {
 										if(isset($opening_hour_arr[1])){
 											$opening_hour_surfix = (strlen($opening_hour_arr[1]) == 1) ? $opening_hour_arr[1]."0" : $opening_hour_arr[1];
 										}
+										else{
+											$opening_hour_surfix =  "00";
+										}
 										$opening_hour     = $opening_hour_arr[0].":".$opening_hour_surfix;
 										$closing_hour_arr = explode(".",max($slots_end_time_24_hour_format_Arr));
 										$closing_hour_surfix    = "";
@@ -6486,6 +6503,7 @@ class FindersController extends \BaseController {
 	}
 
     public function applyNonValidity($data, $source = 'web'){
+        
         $extended_services = [];
         $ratecard_key = 'ratecard';
 		$service_name_key = 'service_name';
@@ -6496,7 +6514,7 @@ class FindersController extends \BaseController {
 		}
 
         $memberships = [];
-        $session_pack_duration_map =  Config::get('nonvalidity.session_pack_duration_map');
+        // // $session_pack_duration_map =  Config::get('nonvalidity.session_pack_duration_map');
         $duration_session_map =  Config::get('nonvalidity.duration_session_map');
 
         function cmpSessions($a, $b)
@@ -6507,50 +6525,9 @@ class FindersController extends \BaseController {
             $no_validity_exists = false;
 			$no_validity_ratecards = [];
             $no_validity_ratecards_all = [];
-			if(!empty($service[$ratecard_key])){
-				foreach($service[$ratecard_key] as $rate_key => $ratecard){
-                    $duration_day = $this->utilities->getDurationDay($ratecard);
-					if($ratecard['type'] == 'extended validity'){
-                       
-                        $service[$ratecard_key][$rate_key]['recommended'] = Config::get('nonvalidity.recommnded_block');
-                        $extended_validity_exists = true;
-                       
-						$ratecard['duration_type_copy'] = $ratecard['duration_type'];
 
-                        if(!empty($ratecard['flags']['unlimited_validity'])){
-                            $no_validity_exists = true;
-                            $ratecard['ext_validity'] = "Unlimited Validity";
-                            // $ratecard['remarks'] = "Recommended: Unlimited validity membership";
-                        }else{
-                            // $ratecard['remarks'] = "Recommended: Extended validity membership";
-                            $ratecard['ext_validity'] = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
-                        }
-                        $ratecard['duration_type'] = $ratecard['duration_type']."\n(".$ratecard['ext_validity'].')';
-						// $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
-                        // $ratecard['price'] = $price;
-						// $ratecard['special_price'] = 0;
-						$ratecard['validity_type_copy'] = $ratecard['validity_type'];
-						$ratecard['validity_copy'] = $ratecard['validity'];
-						$ratecard['validity'] = 0;
-						// if(!empty($ratecard['offers'])){
-						// 	// unset($ratecard['offers']);
-                        //     $ratecard['offers'] = [];
-						// }
-                        
-                        // $ratecard['non_validity_ratecard'] = $this->getNonValidityBanner();
-                        // unset($ratecard['validity_type']);
+            $this->extractNonValidityRatecards($service, $ratecard_key, $no_validity_ratecards, $ratecard, $duration_day, $no_validity_exists, $no_validity_ratecards_all);
 
-
-                        if(empty($no_validity_ratecards[$duration_day])){
-                            $no_validity_ratecards[$duration_day] = [];
-                        }
-						array_push($no_validity_ratecards[$duration_day], $ratecard) ;
-						array_push($no_validity_ratecards_all, $ratecard) ;
-					}
-				}
-			}
-
-            
             usort($no_validity_ratecards_all, "cmpSessions");
 
             if(!empty($no_validity_ratecards)){
@@ -6562,7 +6539,7 @@ class FindersController extends \BaseController {
 
                         $duration_day = $this->utilities->getDurationDay($ratecard);
 
-						$price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+						$price = $this->utilities->getRatecardPrice($ratecard);
 						
 						$ratecard['final_price'] = $price;
                         
@@ -6574,165 +6551,36 @@ class FindersController extends \BaseController {
                         if(!empty($duration_session_map[strval($duration_day)])){
                             
                             $sessions_range = $duration_session_map[strval($duration_day)];
-                            // print_r(json_encode($sessions_range));
-                            // exit();
                             foreach($no_validity_ratecards_all as $cs_ratecard){
-                                $cs_ratecard_price = !empty($cs_ratecard['offers'][0]['price']) ? $cs_ratecard['offers'][0]['price'] : (!empty($cs_ratecard['special_price']) ? $cs_ratecard['special_price'] : $cs_ratecard['price']);
-                                if($cs_ratecard['duration'] > $sessions_range['low'] && $cs_ratecard['duration'] <= $sessions_range['high'] && $cs_ratecard_price <= $price * 1.2){
-                                    $cs_ratecard['knowmore'] =  false;
-                                    // $unlimited_validity = !empty($cs_ratecard['flags']['unlimited_validity']);
-                                    $cs_ratecard['sub_title'] = !empty($cs_ratecard['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$cs_ratecard['validity_copy'].' '.ucwords($cs_ratecard['validity_type']);
-                                    $cs_ratecard['title'] = $cs_ratecard['duration'].' '.$cs_ratecard['duration_type_copy'];
-                                    // $cs_ratecard['sub_title'] = $cs_ratecard['remarks'];
-                                    $cs_ratecard['button_text'] = 'BUY';
-                                    $cs_ratecard['validity'] = 0;
-                                    // $price = !empty($cs_ratecard['offers'][0]['price']) ? $cs_ratecard['offers'][0]['price'] : (!empty($cs_ratecard['special_price']) ? $cs_ratecard['special_price'] : $cs_ratecard['price']);
-                                    $cs_ratecard['price'] = $cs_ratecard_price;
-                                    $cs_ratecard['special_price'] = 0;
+                                $cs_ratecard_price = $this->utilities->getRatecardPrice($cs_ratecard);
+                                if($cs_ratecard['duration'] > $sessions_range['low'] && $cs_ratecard['duration'] <= $sessions_range['high'] && $cs_ratecard_price <= $price * (1 + Config::get('nonvalidity.cross_sell_diff'))){
 
-                                    $ratecard['button_text'] = 'Continue';
-                                    $ratecard['title'] = $ratecard['validity'].' '.$ratecard['validity_type'];
-                                    $ratecard['validity'] = 0;
+                                    $this->formatCrossSellRatecard($cs_ratecard, $cs_ratecard_price);
 
-                                    if(!empty($ratecard['campaign_offer'])){
-                                        unset($ratecard['campaign_offer']);
-                                    }
-                                    if(!empty($ratecard["remarks"])){
-                                        unset($ratecard['remarks']);
-                                    }
-                                    if(!empty($ratecard['offers'])){
-                                        // unset($ratecard['offers']);
-                                        $ratecard['offers'] = [];
-                                    }
-									$section3 = Config::get('nonvalidity.success_page');
-									$section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name'=>$data['finder']['title']]);
-                                    $ratecard['price'] = $price;
-                                    $ratecard['special_price'] = 0;
-									$ratecard['validity'] = 0;
-									if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios'])){
-										$section3['text'] = "You will get workout sessions in your wallet on Fitternity & can book this whenever you wish to workout. It gives you the ability to manage your usage & pay only for the workouts you end up doing.";
-									}
-                                    $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
-                                        'header'=>'Want to SAVE MORE?',
-                                        'section1'=>[
-                                            'header'=>'You are currently buying',
-                                            'ratecards'=>[$ratecard],
-                                        ],
-                                        'section2'=>[
-                                            'header'=>'Save more by buying Session Packs',
-                                            'ratecards'=>[$cs_ratecard],
-                                        ],
-                                        'section3'=>$section3
-                                        // 'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
-                                        // 'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\nYou are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
-                                        // 'ratecards'=>$duration_value,
-                                        // 'continue_text'=>"Continue with ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' at Rs.'.$price
-									];
+                                    $this->formatRatecard($ratecard, $price);
+
+                                    $this->getCorssSellSection($data, $ratecard, $cs_ratecard, $key, $ratecard_key, $key1);
+
                                     break;
                                 }
                             }
                         }
-
-                        // if(!empty($session_pack_duration_map[strval($duration_day)])){
-                        //     // return $ratecard;
-                        //     foreach($no_validity_ratecards as $duration_key => $duration_value){
-
-                        //         if(intval($duration_key) == $session_pack_duration_map[strval($duration_day)]){
-                        //             $unlimited_validity = false;
-                        //             foreach($duration_value as &$rc){
-                        //                 // return $rc;
-                        //                 $rc['knowmore'] =  false;
-						// 				$unlimited_validity = $unlimited_validity || !empty($rc['flags']['unlimited_validity']);
-						// 				$rc['sub_title'] = !empty($rc['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for ".$rc['validity_copy'].' '.ucwords($rc['validity_type']);
-						// 				$rc['title'] = $rc['duration'].' '.$rc['duration_type_copy'];
-						// 				// $rc['sub_title'] = $rc['remarks'];
-						// 				$rc['button_text'] = 'BUY';
-                        //                 $rc['validity'] = 0;
-                        //                 $price = !empty($rc['offers'][0]['price']) ? $rc['offers'][0]['price'] : (!empty($rc['special_price']) ? $rc['special_price'] : $rc['price']);
-                        //                 $rc['price'] = $price;
-						//                 $rc['special_price'] = 0;
-                        //             }
-                        //             $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
-                        //             $ratecard['button_text'] = 'Continue';
-                        //             $ratecard['title'] = $ratecard['validity'].' '.$ratecard['validity_type'];
-                        //             $ratecard['validity'] = 0;
-
-                        //             if(!empty($ratecard['campaign_offer'])){
-                        //                 unset($ratecard['campaign_offer']);
-                        //             }
-                        //             if(!empty($ratecard["remarks"])){
-                        //                 unset($ratecard['remarks']);
-                        //             }
-                        //             if(!empty($ratecard['offers'])){
-                        //                 // unset($ratecard['offers']);
-                        //                 $ratecard['offers'] = [];
-                        //             }
-						// 			$section3 = Config::get('nonvalidity.success_page');
-						// 			$section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name'=>$data['finder']['title']]);
-                        //             $ratecard['price'] = $price;
-                        //             $ratecard['special_price'] = 0;
-                        //             $ratecard['validity'] = 0;
-                        //             $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
-                        //                 'header'=>'Want to SAVE MORE?',
-                        //                 'section1'=>[
-                        //                     'header'=>'You are currently buying',
-                        //                     'ratecards'=>[$ratecard],
-                        //                 ],
-                        //                 'section2'=>[
-                        //                     'header'=>'Save more by buying Session Packs',
-                        //                     'ratecards'=>$duration_value,
-                        //                 ],
-                        //                 'section3'=>$section3
-                        //                 // 'line1'=>'Avail the '.($unlimited_validity ? 'UNLIMITED' : 'EXTENDED').'Validity Membership',
-                        //                 // 'line2'=>" - The Most effective way to avail a membership at ".$data['finder']['title']."\n\nYou are currently buying a ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' membership at Rs.'.$price,
-                        //                 // 'ratecards'=>$duration_value,
-                        //                 // 'continue_text'=>"Continue with ".$ratecard['validity'].' '.ucwords($ratecard['validity_type']).' at Rs.'.$price
-						// 			];
-									
-                        //             break;
-                                
-                        //         }
-                        //     }
-                        // }
                     }
                     if($ratecard['type'] == 'extended validity'){
                         $duration_day = $this->utilities->getDurationDay($ratecard);
-                        $price = !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);
+                        $price = $this->utilities->getRatecardPrice($ratecard);
+                        
                         if(!empty($ratecard['flags']['unlimited_validity'])){
-                            // $remarks = "Recommended: Unlimited validity membership";
                             $ext_validity = "Unlimited Validity";
                         }else{
-                            // $remarks = "Recommended: Extended validity membership";
                             $ext_validity = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
                         }
-                        // print_r( json_encode($data['finder']['services'][$key][$ratecard_key][$key1]));
-                        // exit();
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['ext_validity'] = $ext_validity;
-                        $data['finder']['services'][$key]['unlimited_validity'] = !empty($data['finder']['services'][$key]['unlimited_validity']) || !empty($ratecard['flags']['unlimited_validity']);
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $service[$ratecard_key][$key1]['duration_type']."\n(".$ext_validity.')';
-                        // $data['finder']['services'][$key][$ratecard_key][$key1]['price'] = $price;                        
-                        // $data['finder']['services'][$key][$ratecard_key][$key1]['special_price'] = 0;
-                        // unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity']);
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['validity_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['validity'];
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['validity'] = 0;
-                        $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type'];
-                        unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
-						// if(!empty($data['finder']['services'][$key][$ratecard_key][$key1]['offers'])){
-							// $data['finder']['services'][$key][$ratecard_key][$key1]['offers_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['offers'];
-							// unset($data['finder']['services'][$key][$ratecard_key][$key1]['offers'])
-                            // $data['finder']['services'][$key][$ratecard_key][$key1]['offers'] = [];
-						// }
-                        // $data['finder']['services'][$key][$ratecard_key][$key1]['non_validity_ratecard'] = $this->getNonValidityBanner();
-                        // $data['finder']['services'][$key][$ratecard_key][$key1]['remarks'] = $remarks;
 
-                        // if(!empty($data['finder']['services'][$key][$ratecard_key][$key1]['offers'][0]['remarks'])){
-                        //     $data['finder']['services'][$key][$ratecard_key][$key1]['offers'][0]['remarks'] = $remarks;
-                        // }
-                        
+                        $this->formatServiceRatecard($data, $ext_validity, $key, $ratecard_key, $key1, $ratecard, $service);
+
                     }
 				}
                 
-                // $service['non_validity'] = $this->getNonValidityBanner();
                 $service['recommended'] = Config::get('nonvalidity.recommnded_block');
                 $service['service_name_display'] = $service[$service_name_key];
 				$post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
@@ -6759,33 +6607,17 @@ class FindersController extends \BaseController {
                 $service[$ratecard_key] = $no_validity_ratecards_service;
                 $service['type'] = 'extended validity';
 				
-				// $data['finder']['services'][$key]['non_validity_ratecard'] = Config::get('nonvalidity.finder_banner');
 
                 array_push($extended_services, $service);
-                // array_splice( $return , $key, 0, $service );
             }
         }
-
-        // $return = $data['finder']['services'];
-        // $pushed = 0;
-        // // return $extended_services;
-        // foreach($extended_services as $es){
-        //     foreach($return as $r_k => $r){
-        //         // return $r;
-        //         if($es['_id'] == $r['_id']){
-        //             // return $data['finder']['services'];
-        //             array_splice( $data['finder']['services'] , $r_k+$pushed, 0, [$es] );
-        //             $pushed++;
-        //         }
-        //     }
-        // }
 
         $extended_services_map = [];
 
         foreach($extended_services as $ext_ser){
             $extended_services_map[$ext_ser['_id']] = $ext_ser;
         }
-        // return $extended_services_map;
+
         $merged_services = [];
         
         foreach($data['finder']['services'] as $ser_key => $ser_value){
@@ -6796,72 +6628,68 @@ class FindersController extends \BaseController {
         }
 
         $data['finder']['services'] = $merged_services;
+        try{
 
-        $session_pack_duration_map_flip = array_flip($session_pack_duration_map);
-
-        foreach($data['finder']['services'] as &$s){
-            // if(empty($s['type']) || $s['type'] != 'extended validity'){
-                foreach($s[$ratecard_key] as &$r){
-                    // return $r;
-                    if($r['type'] == 'extended validity'){
-						$price = !empty($r['offers'][0]['price']) ? $r['offers'][0]['price'] : (!empty($r['special_price']) ? $r['special_price'] : $r['price']);
-						$sessions = $r['duration'];
-						$mem_ratecard = null;
-                        foreach($duration_session_map as $key => $value){
-							if( $sessions > $value['low'] &&  $sessions <= $value['high']){
-								if(!empty($memberships[strval($s['_id'])][$key])){
-									foreach($memberships[strval($s['_id'])][$key] as $m){
-										if(!empty($m['final_price']) && $m['final_price'] > $price){
-											$mem_ratecard = $m;
-											break;
-										}
-									}
-								}
-							}
-						}
-
-						if(empty($mem_ratecard)){
-							continue;
-						}
-
-						
-                        // if(!empty($session_pack_duration_map_flip[$duration_day]) && !empty($memberships[strval($s['_id'])][$session_pack_duration_map_flip[$duration_day]])){
+            foreach($data['finder']['services'] as &$s){
+                    foreach($s[$ratecard_key] as &$r){
+                        if($r['type'] == 'extended validity'){
+                            // $price = $this->utilities->getRatecardPrice($r);
+                            // $sessions = $r['duration'];
+                            // $mem_ratecard = null;
+                            // foreach($duration_session_map as $key => $value){
+                            // 	if( $sessions > $value['low'] &&  $sessions <= $value['high']){
+                            // 		if(!empty($memberships[strval($s['_id'])][$key])){
+                            // 			foreach($memberships[strval($s['_id'])][$key] as $m){
+                            // 				if(!empty($m['final_price']) && $m['final_price'] > $price){
+                            // 					$mem_ratecard = $m;
+                            // 					break;
+                            // 				}
+                            // 			}
+                            // 		}
+                            // 	}
+                            // }
+    
+                            // if(empty($mem_ratecard)){
+                            // 	continue;
+                            // }
+    
                             
-                            // $mem_ratecard = $memberships[strval($s['_id'])][$session_pack_duration_map_flip[$duration_day]][0];
-
-						$getNonValidityBanner = $this->getNonValidityBanner();
-						// return $r;
-						$mem_ratecard_duration_day = $this->utilities->getDurationDay($mem_ratecard);
-						$mem_ratecard_price = !empty($mem_ratecard['offers'][0]['price']) ? $mem_ratecard['offers'][0]['price'] : (!empty($mem_ratecard['special_price']) ? $mem_ratecard['special_price'] : $mem_ratecard['price']);
-						$price = !empty($r['offers'][0]['price']) ? $r['offers'][0]['price'] : (!empty($r['special_price']) ? $r['special_price'] : $r['price']);
-						$getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
-							"__membership_price"=>$mem_ratecard_price,
-							"__membership_months"=>$mem_ratecard_duration_day/30,
-							"__extended_sessions_count"=>$r['duration'],
-							"__extended_sessions_price"=>$price,
-							"__sessions_validity_months"=>$r['ext_validity'],
-							"__vendor_name"=>$data['finder']['title'],
-							"__ext_validity_type"=>!empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity"
-						]);
-
-						if(!empty($getNonValidityBanner['how_it_works'])){
-							$getNonValidityBanner['how_it_works']['description'] = strtr($getNonValidityBanner['how_it_works']['description'], ['__vendor_name'=>$data['finder']['title']]);
-						}
-
-						$getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>(!empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity")]);
-						if(!empty($getNonValidityBanner['title1'])){
-							$getNonValidityBanner['title1'] = strtr($getNonValidityBanner['title1'], ['__ext_validity_type'=>(!empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity")]);
-						}
-						$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
-						$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
-						$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
-						$r['non_validity_ratecard']  = $getNonValidityBanner;
-							
-                        // }
-
+                            $getNonValidityBanner = $this->getNonValidityBanner();
+                            // $mem_ratecard_duration_day = $this->utilities->getDurationDay($mem_ratecard);
+                            // $mem_ratecard_price = $this->utilities->getRatecardPrice($mem_ratecard);
+                            // $price = $this->utilities->getRatecardPrice($r);
+                            $extended_validity_type = $this->getExtendedValidityType($r);
+                            $getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
+                                // "__membership_price"=>$mem_ratecard_price,
+                                // "__membership_months"=>$mem_ratecard_duration_day/30,
+                                // "__extended_sessions_count"=>$r['duration'],
+                                // "__extended_sessions_price"=>$price,
+                                // "__sessions_validity_months"=>$r['ext_validity'],
+                                "__vendor_name"=>$data['finder']['title'],
+                                "__ext_validity_type"=> $extended_validity_type
+                            ]);
+    
+                            if(!empty($getNonValidityBanner['how_it_works'])){
+                                $getNonValidityBanner['how_it_works']['description'] = strtr($getNonValidityBanner['how_it_works']['description'], ['__vendor_name'=>$data['finder']['title']]);
+                            }
+    
+                            $getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>($extended_validity_type)]);
+                            if(!empty($getNonValidityBanner['title1'])){
+                                $getNonValidityBanner['title1'] = strtr($getNonValidityBanner['title1'], ['__ext_validity_type'=>($extended_validity_type)]);
+                            }
+                            $r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+                            $getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
+                            $getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
+                            $r['non_validity_ratecard']  = $getNonValidityBanner;
+                                
+    
+                        }
                     }
-                }
-            // }
+            }
+        }catch(Exception $e){
+            
+            Log::info("Non validity description breaking");
+        
         }
 
         foreach($data['finder']['services'] as &$ser){
@@ -7064,7 +6892,7 @@ class FindersController extends \BaseController {
 
 		$data['finder']['services'] = $services;
 	}
-
+	
 	public function addNonValidityLink(&$data){
 		foreach($data['finder']['services'] as &$service){
 			if(empty($service['type']) && empty($service['top_service'])){
@@ -7084,8 +6912,8 @@ class FindersController extends \BaseController {
     
     public function getVendorStripeCashbackText($finder){
         
-        if(empty($finder['flags']['reward_type'])){
-            $finder['flags']['reward_type'] = 1;
+		if(empty($finder['flags']['reward_type'])){
+			$finder['flags']['reward_type'] = 1;
         }
         if(empty($finder['flags']['cashback_type'])){
             $finder['flags']['cashback_type'] = 0;
@@ -7098,16 +6926,16 @@ class FindersController extends \BaseController {
         }
         $msg = "";
         switch($finder['flags']['reward_type']){
-            case 1:
+			case 1:
             break;
             case 2:
             break;
             case 3:
-                $msg = "BEST OFFER : GET ".$cashback."% CASHBACK & INSTANT REWARDS";
+			$msg = "BEST OFFER : GET ".$cashback."% CASHBACK & INSTANT REWARDS";
             break;
             case 4:
             case 6:
-                $msg = "BEST OFFER : GET ".$cashback."% CASHBACK & REWARDS WORTH RS 20,000";
+			$msg = "BEST OFFER : GET ".$cashback."% CASHBACK & REWARDS WORTH RS 20,000";
             break;
             case 5:
                 $msg  = "BEST OFFER : GET ".$cashback."% CASHBACK ON MEMBERSHIP AMOUNT";
@@ -7120,12 +6948,12 @@ class FindersController extends \BaseController {
 
     public function applyFreeSP(&$data){
         
-        $free_sp_rc_all = $this->utilities->getFreeSPRatecardsByFinder(['finder_id'=>$data['finder']['_id']]);
+		$free_sp_rc_all = $this->utilities->getFreeSPRatecardsByFinder(['finder_id'=>$data['finder']['_id']]);
 
         if(!empty($free_sp_rc_all)){
             foreach($data['finder']['services'] as &$service){
                 foreach($service['serviceratecard'] as &$ratecard){
-                    $free_sp_rc = $this->utilities->getFreeSPRatecard($ratecard,'ratecard',$free_sp_rc_all);
+					$free_sp_rc = $this->utilities->getFreeSPRatecard($ratecard,'ratecard',$free_sp_rc_all);
                     if(!empty($free_sp_rc)){
                         // return $free_sp_rc;
                         $ratecard['special_offer'] = true;
@@ -7140,5 +6968,174 @@ class FindersController extends \BaseController {
 
     }
 
+    /**
+     * @param $service
+     * @param $ratecard_key
+     * @param $no_validity_ratecards
+     * @param $ratecard
+     * @param $duration_day
+     * @param $no_validity_exists
+     * @param $no_validity_ratecards_all
+     */
+    public function extractNonValidityRatecards(&$service, $ratecard_key, &$no_validity_ratecards, &$ratecard, &$duration_day, &$no_validity_exists, &$no_validity_ratecards_all)
+    {
+        if (!empty($service[$ratecard_key])) {
+            foreach ($service[$ratecard_key] as $rate_key => $ratecard) {
+                $duration_day = $this->utilities->getDurationDay($ratecard);
+                if ($ratecard['type'] == 'extended validity') {
 
+                    $service[$ratecard_key][$rate_key]['recommended'] = Config::get('nonvalidity.recommnded_block');
+
+                    $ratecard['duration_type_copy'] = $ratecard['duration_type'];
+
+                    if (!empty($ratecard['flags']['unlimited_validity'])) {
+                        $no_validity_exists = true;
+                        $ratecard['ext_validity'] = "Unlimited Validity";
+
+                    } else {
+
+                        $ratecard['ext_validity'] = "Valid for " . $ratecard['validity'] . ' ' . $ratecard['validity_type'];
+                    }
+                    $ratecard['duration_type'] = $ratecard['duration_type'] . "\n(" . $ratecard['ext_validity'] . ')';
+
+                    $ratecard['validity_type_copy'] = $ratecard['validity_type'];
+                    $ratecard['validity_copy'] = $ratecard['validity'];
+                    $ratecard['validity'] = 0;
+
+                    if (empty($no_validity_ratecards[$duration_day])) {
+                        $no_validity_ratecards[$duration_day] = [];
+                    }
+                    array_push($no_validity_ratecards[$duration_day], $ratecard);
+                    array_push($no_validity_ratecards_all, $ratecard);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $cs_ratecard
+     * @param $cs_ratecard_price
+     */
+    public function formatCrossSellRatecard(&$cs_ratecard, $cs_ratecard_price)
+    {
+        $cs_ratecard['knowmore'] = false;
+        $cs_ratecard['sub_title'] = !empty($cs_ratecard['flags']['unlimited_validity']) ? "Unlimited Validity" : "Valid for " . $cs_ratecard['validity_copy'] . ' ' . ucwords($cs_ratecard['validity_type']);
+        $cs_ratecard['title'] = $cs_ratecard['duration'] . ' ' . $cs_ratecard['duration_type_copy'];
+        $cs_ratecard['button_text'] = 'BUY';
+        $cs_ratecard['validity'] = 0;
+        $cs_ratecard['price'] = $cs_ratecard_price;
+        $cs_ratecard['special_price'] = 0;
+    }
+
+    /**
+     * @param $ratecard
+     * @param $price
+     */
+    public function formatRatecard(&$ratecard, $price)
+    {
+        $ratecard['button_text'] = 'Continue';
+        $ratecard['title'] = $ratecard['validity'] . ' ' . $ratecard['validity_type'];
+        $ratecard['validity'] = 0;
+
+        if (!empty($ratecard['campaign_offer'])) {
+            unset($ratecard['campaign_offer']);
+        }
+        if (!empty($ratecard["remarks"])) {
+            unset($ratecard['remarks']);
+        }
+        if (!empty($ratecard['offers'])) {
+            $ratecard['offers'] = [];
+        }
+
+        $ratecard['price'] = $price;
+        $ratecard['special_price'] = 0;
+        $ratecard['validity'] = 0;
+    }
+
+    /**
+     * @param $data
+     * @param $ratecard
+     * @param $cs_ratecard
+     * @param $key
+     * @param $ratecard_key
+     * @param $key1
+     */
+    public function getCorssSellSection(&$data, $ratecard, $cs_ratecard, $key, $ratecard_key, $key1)
+    {
+        $section3 = Config::get('nonvalidity.success_page');
+        $section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name' => $data['finder']['title']]);
+
+        if (empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios'])) {
+            $section3['text'] = "You will get workout sessions in your wallet on Fitternity & can book this whenever you wish to workout. It gives you the ability to manage your usage & pay only for the workouts you end up doing.";
+        }
+
+        $data['finder']['services'][$key][$ratecard_key][$key1]['block'] = [
+            'header' => 'Want to SAVE MORE?',
+            'section1' => [
+                'header' => 'You are currently buying',
+                'ratecards' => [$ratecard],
+            ],
+            'section2' => [
+                'header' => 'Save more by buying Session Packs',
+                'ratecards' => [$cs_ratecard],
+            ],
+            'section3' => $section3
+        ];
+    }
+
+    /**
+     * @param $data
+     * @param $ext_validity
+     * @param $key
+     * @param $ratecard_key
+     * @param $key1
+     * @param $ratecard
+     * @param $service
+     */
+    public function formatServiceRatecard(&$data, $ext_validity, $key, $ratecard_key, $key1, &$ratecard, $service)
+    {
+        $data['finder']['services'][$key][$ratecard_key][$key1]['ext_validity'] = $ext_validity;
+        $data['finder']['services'][$key]['unlimited_validity'] = !empty($data['finder']['services'][$key]['unlimited_validity']) || !empty($ratecard['flags']['unlimited_validity']);
+        $data['finder']['services'][$key][$ratecard_key][$key1]['duration_type'] = $service[$ratecard_key][$key1]['duration_type'] . "\n(" . $ext_validity . ')';
+        $data['finder']['services'][$key][$ratecard_key][$key1]['validity_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['validity'];
+        $data['finder']['services'][$key][$ratecard_key][$key1]['validity'] = 0;
+        $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type_copy'] = $data['finder']['services'][$key][$ratecard_key][$key1]['validity_type'];
+        unset($data['finder']['services'][$key][$ratecard_key][$key1]['validity_type']);
+    }
+    
+    public function removeEmptyServices(&$data, $source = null){
+		
+		$ratecard_key = 'ratecard';
+	
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
+	
+        $services = $data['finder']['services'];
+        
+        $extended_validity_service_ids = array_column(array_values(array_filter($services,function ($e) {return !empty($e['type']) && $e['type'] == "extended validity";})), '_id');
+		$removed_services = [];
+		foreach($services as $key => $value){
+            
+            $membership_ratecards = array_values(array_filter($value[$ratecard_key],function ($e) {return empty($e['hidden']) && !in_array($e['type'], ['trial', 'workout session']);}));
+
+			if((empty($value['type']) || $value['type'] != 'extended validity') && in_array($value['_id'], $extended_validity_service_ids) && (empty($membership_ratecards))){
+                unset($services[$key]);
+                array_push($removed_services, $value['_id']);
+			}
+
+
+        }
+        
+		$data['finder']['services'] = array_values($services);
+	}
+
+    /**
+     * @param $r
+     * @return string
+     */
+    public function getExtendedValidityType(&$r)
+    {
+        return !empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity";
+    }
 }

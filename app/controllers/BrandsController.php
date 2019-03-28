@@ -15,13 +15,13 @@ class BrandsController extends \BaseController {
 
 
     public function brandDetail($slug, $city, $cache = true){
-		Log::info($_SERVER['REQUEST_URI']);
+        Log::info($_SERVER['REQUEST_URI']);
         
         $brand_detail = $cache ? Cache::tags('brand_detail')->has("$slug-$city") : false;
 
         if(!$brand_detail){
 
-            $brand = Brand::where('slug',$slug)->where("status","1")->firstOrFail();
+            $brand = Brand::where('slug',$slug)->where("status","1")->first();
 
             $finder_ids = isset($brand->finder_id) ? $brand->finder_id : [];
                     
@@ -141,6 +141,11 @@ class BrandsController extends \BaseController {
                     $data['stripe_data'] = "no-patti";
                 }
 
+                if(!empty($this->device_type) && $this->device_type == "android"){
+
+                    unset($data['finders']['request']);
+                    unset($data['finders']['aggregations']);
+                }
                 
                 if(empty($finders) || empty($finders['metadata']['total_records'])){
                     Log::info("Not caching brand");
@@ -157,7 +162,7 @@ class BrandsController extends \BaseController {
                 
             }else{
 
-                return Response::json(array('status' => 400,'message' => 'brand not found'),400);
+                return Response::json(array('status' => 400,'message' => 'Brand not active'),400);
             }
         }
 
