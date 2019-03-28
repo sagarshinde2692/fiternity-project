@@ -7590,10 +7590,10 @@ class TransactionController extends \BaseController {
         $config = Config::get('amazonpay.config');
         $client = new PWAINBackendSDKNon($config);
         $post_params = Input::all();
-        Log::info(Input::all());
+        Log::info('input at generate url:::::',Input::all());
         if(isset($post_params["order_id"])){
             $order = Order::find((int) $post_params["order_id"] );
-            Log::info($order);
+            //Log::info($order);
             $val['orderTotalAmount'] = $order->amount;
             $val['sellerOrderId'] = $order->txnid;
         }else{
@@ -7604,8 +7604,10 @@ class TransactionController extends \BaseController {
         // For testing in sandbox mode, remove for production
         // $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
         $returnUrl = Config::get('app.url')."/verifyamazonchecksum/1";
+        Log::info('return url:::::>>>>>>>>>>>>>>>>>>>',[$returnUrl]);
         // $returnUrl = "http://ar-deepthi.com/amazonpay/thankyou.php";
         $redirectUrl = $client->getProcessPaymentUrl($val, $returnUrl);
+        Log::info('redirct url ::::::::::::::::::::',[$redirectUrl]);
         return $redirectUrl;
     }
 
