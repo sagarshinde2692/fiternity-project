@@ -1336,3 +1336,4 @@ Route::get('paidAndFreeFItcash', 'DebugController@paidAndFreeFItcash');
 // Route::get('assignGold', 'DebugController@assignGoldLoyalty');
 // Route::get('assignloyaltygen', 'DebugController@assignLoyalty');
 Route::post('registershedeat', 'EmailSmsApiController@registerShedEat');
+Route::post('notifyshedeat', 'EmailSmsApiController@notifyShedEat');

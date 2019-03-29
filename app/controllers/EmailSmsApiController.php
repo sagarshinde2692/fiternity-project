@@ -1321,5 +1321,9 @@ class EmailSmsApiController extends \BaseController {
         return ['status'=>200];
     }
     
+    public function notifyShedEat(){
+        ShedEatNotify::insert(Input::json()->all());
+        return ['status'=>200];
+    }
 
 }
