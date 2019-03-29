@@ -1315,6 +1315,11 @@ class EmailSmsApiController extends \BaseController {
         }
 
     }
+
+    public function registerShedEat(){
+        ShedEatRegistration::insert(Input::json()->all());
+        return ['status'=>200];
+    }
     
 
 }
