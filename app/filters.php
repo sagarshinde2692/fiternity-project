@@ -13,7 +13,7 @@
 
 App::before(function($request)
 {
-    //
+    Log::info($_SERVER['REQUEST_URI']);
 });
 
 
