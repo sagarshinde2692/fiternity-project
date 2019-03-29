@@ -7148,7 +7148,7 @@ class CustomerController extends \BaseController {
 							]
 						]
 					],
-					// 'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']],
+					'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']],
 
 					'qrcode'=>[
 						'text'=> "SCAN YOUR QR CODE"
