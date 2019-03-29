@@ -2127,6 +2127,12 @@ class HomeController extends BaseController {
 
             $resp['payment_mode'] = !empty($item['pg_type']) ? $item['pg_type'] : 'card';
 
+            if(!empty($resp['booking_details'])){
+                foreach($resp['booking_details'] as $detail){
+                    $resp['booking_details_obj'][$detail['field']] = $detail['value'];
+                }
+            }
+
             if(!empty($item['amount_customer'])){
                 $resp['amount'] = $item['amount_customer'] - (!empty($item['convinience_fee']) ? $item['convinience_fee'] : 0);
             }
