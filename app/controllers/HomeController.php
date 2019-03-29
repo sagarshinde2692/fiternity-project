@@ -2101,12 +2101,31 @@ class HomeController extends BaseController {
             if(empty($finder) && !empty($itemData['finder_id'])){
                 $finder = Finder::find($itemData['finder_id']);
             }
+
+            if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
+                $resp['multifit_email'] = Config::get('app.multifit_email');
+                $resp['multifit_helpline'] = Config::get('app.contact_us_customer_number');
+            }
             
             $resp['loyalty_collaterals_delivered'] = !empty($finder) && !empty($finder['flags']['loyalty_collaterals_delivered']);
 
             if(!empty($item['finder_name'])){
                 $resp['finder_name'] = $item['finder_name'];
             }
+           
+            if(!empty($item['service_name'])){
+                $resp['service_name'] = $item['service_name'];
+            }
+
+            if(!empty($item['finder_poc_for_customer_name'])){
+                $resp['finder_poc_for_customer_name'] = $item['finder_poc_for_customer_name'];
+            }
+            
+            if(!empty($item['finder_poc_for_customer_no'])){
+                $resp['finder_poc_for_customer_no'] = $item['finder_poc_for_customer_no'];
+            }
+
+            $resp['payment_mode'] = !empty($item['pg_type']) ? $item['pg_type'] : 'card';
 
             if(!empty($item['amount_customer'])){
                 $resp['amount'] = $item['amount_customer'] - (!empty($item['convinience_fee']) ? $item['convinience_fee'] : 0);
