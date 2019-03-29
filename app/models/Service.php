@@ -379,8 +379,8 @@ class Service extends \Basemodel{
 
                     if(!empty($value['offers'][0]['price']) && !empty($commission_discounted_price)){
                         $value['offers'][0]['price'] = $commission_discounted_price;
-                    }
-                }
+					}
+				}
 				
 				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;
 

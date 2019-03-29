@@ -241,8 +241,25 @@ Class CustomerMailer extends Mailer {
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
 		);
-
-		return $this->common($label,$data,$message_data);
+		//if(empty($data["communications"]['customer']['mails']) ||(!empty($data["communications"]['customer']['mails']) &&  (in_array($label,$data["communications"]['customer']['mails'])))){
+			Log::info('Cancel-Trial-Customer - data:: ', [$data]);
+			if(!empty($data['studio_extended_validity_order_id'])){
+				if(!empty($data['studio_sessions'])){
+					$avail = $data['studio_sessions']['total_cancel_allowed'] - $data['studio_sessions']['cancelled'];
+					$avail = ($avail<0)?0:$avail;
+					$data['studio_extended_details'] = [
+						'can_cancel' => $avail,
+						'total_cancel' => $data['studio_sessions']['total_cancel_allowed']
+					];
+					$data['app_onelink'] = "https://go.onelink.me/I0CO?pid=studioextcancelmail";
+				}	
+			}
+			return $this->common($label, $data, $message_data);
+		// }
+		// else if(!empty($data["communications"]['customer']['mails']) &&  !(in_array($label,$data["communications"]['customer']['mails']))){
+		// 	return null;
+		// }
+		//return $this->common($label,$data,$message_data);
 	}
 	
 	protected function cancelBookTrialByVendor($data){

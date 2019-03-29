@@ -1013,9 +1013,9 @@ Class Utilities {
     public function verifyOrder($data,$order){
     	// Log::info(" info data".print_r($data,true));
     	// Log::info(" info order ".print_r($order,true));
-    	if(!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session')
+    	if((!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session') || (!empty($order['studio_extended_validity_order_id']))){
     		$hash_verified = true;
-    	
+        }
     	else if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK" ||(isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched) || !empty($data['internal_success'])){
             if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
@@ -1964,7 +1964,7 @@ Class Utilities {
 
                 $wallet->for_details = $request['details'];
             }
-
+            
             $wallet->save();
 
             $walletTransactionData['wallet_id'] = $wallet->_id;
@@ -2014,7 +2014,7 @@ Class Utilities {
         }
 
         if($entry == 'debit'){
-
+                
             $amount = $request['amount'];
 
             $query =  $this->getWalletQuery($request);
@@ -2071,7 +2071,7 @@ Class Utilities {
                         $walletTransactionData['entry'] = $entry;
                         $walletTransactionData['type'] = $request['type'];
                         $walletTransactionData['customer_id'] = $customer_id;
-
+                        
                         if(isset($request['order_id']) && $request['order_id'] != ""){
                             $walletTransactionData['order_id'] = (int)$request['order_id'];
 
@@ -4064,7 +4064,7 @@ Class Utilities {
 
         Log::info('commision : '.$commision);
         return $commision;
-
+        
     }
 
     public function financeUpdate($order){
@@ -6249,7 +6249,7 @@ Class Utilities {
                 }else{
                     $milestone['enabled'] = true;
                     $milestone_next_count = $milestone['next_count'];
-                    $milestone['progress'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
+                        $milestone['progress'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
                     break;
                 }
             }
@@ -6455,7 +6455,7 @@ Class Utilities {
                 $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null ]);
             }
         }
-
+        
         return ['loyalty_registration'=>$loyalty_registration, 'checkin'=> $checkin];
     }
 
@@ -7403,7 +7403,7 @@ Class Utilities {
             // if($service_id){
             // 	$query->where('service_id',(int)$service_id);
             // }
-
+       
             $booktrial_count = $query->orderBy('created_at', 'desc')->get(['created_at'])->toArray();
         }
 
@@ -7916,7 +7916,7 @@ Class Utilities {
             return null;
         }
     }
-
+           
     public function validateInput($functionName, $data){
 
         switch($functionName){
@@ -8004,7 +8004,7 @@ Class Utilities {
         }
     }
 
-    public function getFreeSPRatecardsByFinder($data){
+     public function getFreeSPRatecardsByFinder($data){
         return Ratecard::where('flags.free_sp', true)->where('finder_id', $data['finder_id'])->get();
     }
 
