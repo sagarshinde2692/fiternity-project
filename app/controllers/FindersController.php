@@ -676,6 +676,13 @@ class FindersController extends \BaseController {
 
 								foreach ($service['serviceratecard'] as $ratekey => $rateval){
 
+									if((!empty($service['batches']) && count($service['batches'])>0 ) && !empty($rateval['studio_extended_validity']) && $rateval['studio_extended_validity']) {
+										$service['studio_extended_validity'] = [
+											'1_month' => ['count' => '15', 'unit' => 'days'],
+											'greater_than_1_month' => ['count' => '30', 'unit' => 'days']
+										];
+									}
+
 									if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime("+ 1 days", strtotime($rateval['expiry_date'])) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime($rateval['start_date']) > time())){
 										unset($service['serviceratecard'][$ratekey]);
 										continue;
@@ -3492,6 +3499,15 @@ class FindersController extends \BaseController {
 				// 'showOnFront'=>(isset($item['showOnFront'])) ? $item['showOnFront'] : []
 			);
 			
+			foreach($service['ratecard'] as $rateval){
+				if((!empty($service['batches']) && count($service['batches'])>0 ) && !empty($rateval['studio_extended_validity']) && $rateval['studio_extended_validity']) {
+					$service['studio_extended_validity'] = [
+						'1_month' => ['count' => '15', 'unit' => 'days'],
+						'greater_than_1_month' => ['count' => '30', 'unit' => 'days']
+					];
+				}
+			}
+
 			// if(isset($service['servicecategory_id']) && $service['servicecategory_id'] == 184){
 			// 	$service['remarks'] = "Personal Training is not inclusive of the Gym membership. To avail Personal Training, ensure to buy the Gym membership also.";
 			// }

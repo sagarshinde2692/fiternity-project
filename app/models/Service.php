@@ -229,6 +229,21 @@ class Service extends \Basemodel{
 									// Log::info($serviceoffers);
                 if(!empty($value['_id']) && isset($value['_id'])){
 					
+					$studioExtValidity = (!empty($this->batches) && count($this->batches)>0) && (($value['validity']==30 && $value['validity_type']=='days') || ($value['validity']==1 && in_array($value['validity_type'],['months', 'month'])) || ($value['validity']==3 && $value['validity_type']=='months'));
+
+
+					if(!empty($studioExtValidity) && $studioExtValidity){
+						$numOfDays = (in_array($value['validity_type'], ['month', 'months']))?$value['validity']*30:$value['validity'];
+						
+						$numOfDays = (in_array($value['validity_type'], ['year', 'years']))?$value['validity']*360:$numOfDays;
+
+						$numOfDaysExt = ($numOfDays==30)?15:(($numOfDays>=90)?30:0);
+
+						$value['studio_extended_validity'] = [
+							'num_days_extended' => $numOfDaysExt
+						];
+					}
+
                     $ratecardoffersRecards 	= 	array_where($serviceoffers, function($key, $offer) use ($value){
 						if($offer['ratecard_id'] == $value['_id'])
 							{

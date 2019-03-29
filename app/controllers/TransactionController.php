@@ -1117,6 +1117,32 @@ class TransactionController extends \BaseController {
             $data['pps_new'] = true;
         }
 
+        $studioExtValidity = (($ratecardDetail['data']['validity']==30 && $ratecardDetail['data']['validity_type']=='days') || ($ratecardDetail['data']['validity']==1 && in_array($ratecardDetail['data']['validity_type'],['months', 'month'])) || ($ratecardDetail['data']['validity']==3 && $ratecardDetail['data']['validity_type']=='months'));
+
+        $numOfDays = (in_array($ratecardDetail['data']['validity_type'], ['month', 'months']))?$ratecardDetail['data']['validity']*30:$ratecardDetail['data']['validity'];
+        
+        $numOfDays = (in_array($ratecardDetail['data']['validity_type'], ['year', 'years']))?$ratecardDetail['data']['validity']*360:$numOfDays;
+
+        $numOfDaysExt = ($numOfDays==30)?15:(($numOfDays>=60)?30:0);
+
+        $ext = ' +'.$numOfDaysExt.' days';
+
+        if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity){
+            $data['studio_extended_validity'] = true;
+            $data['studio_sessions'] = [
+                'total' => $ratecardDetail['data']['duration'],
+                'cancelled' => 0,
+                'total_cancel_allowed' => intval($ratecardDetail['data']['duration']*0.25)
+            ];
+            $data['studio_membership_duration'] = [
+                'num_of_days' => $numOfDays,
+                'num_of_days_extended' => $numOfDaysExt,
+                'start_date' => new MongoDate(strtotime($data['start_date'])),
+                'end_date' => new MongoDate(strtotime($data['end_date'])),
+                'end_date_extended' => new MongoDate(strtotime($data['end_date'].$ext))
+            ];
+        }
+
         if(isset($old_order_id)){
             
             if($order){
@@ -1501,6 +1527,12 @@ class TransactionController extends \BaseController {
             $resp['data']['payment_modes'] = [];
         }
         
+        // $scheduleBookingsRedisId = Queue::connection('redis')->push('SchedulebooktrialsController@scheduleStudioBookings', array('order_id'=>$order_id),Config::get('app.queue'));
+
+        // if(!empty($data['studio_extended_validity']) && $data['studio_extended_validity']) {
+        //     $this->utilities->scheduleStudioBookings(null, $order_id);
+        // }
+
         return $resp;
 
     }
@@ -2248,7 +2280,7 @@ class TransactionController extends \BaseController {
                     $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$group_id, 'order_id'=>$order->_id]);
                 }
 
-                if(empty($order['studio_extended_validity_order_id']) && !empty($order['studio_extended_session'])){
+                if((empty($order['studio_extended_validity_order_id']) && !empty($order['studio_extended_session'])) || empty($order['studio_extended_session'])){
                     $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
                 }
 
@@ -2809,7 +2841,11 @@ class TransactionController extends \BaseController {
                 $resp   =   array('status' => 200,"message" => "Transaction Successful");
             }
             // $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>0),Config::get('app.queue'));
-            Log::info("successCommon returned");            
+            if(!empty($order['studio_extended_validity']) && $order['studio_extended_validity']){
+                $scheduleBookingsRedisId = Queue::connection('redis')->push('TransactionController@scheduleStudioBookings', array('order_id'=>$order_id, 'isPaid'=>false),Config::get('app.queue'));
+                $order->update(['schedule_bookings_redis_id'=>$scheduleBookingsRedisId]);
+            }
+            Log::info("successCommon returned");
             Log::info($order['_id']);
             return Response::json($resp);
 
@@ -3303,6 +3339,10 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['ratecard_flags']['free_sp'])){
+            $data['amount_customer'] = $data['amount'] = 0;
+        }
+
+        if(!empty($data['studio_extended_validity_order_id']) && empty($data['studio_extended_session'])){
             $data['amount_customer'] = $data['amount'] = 0;
         }
 
@@ -8695,7 +8735,13 @@ class TransactionController extends \BaseController {
         return ['status'=>200, 'data'=>$capture_data];
     }
 
-   
+    public function scheduleStudioBookings($job, $data) {
+        Log::info('Entered scheduleStudioBookings in SchedulebooktrialsController.....');
+        if($job){
+            $job->delete();
+        }
+        $this->utilities->scheduleStudioBookings($data['order_id'], $data['isPaid']);
+    }
 
 }
 

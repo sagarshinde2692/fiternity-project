@@ -1705,9 +1705,9 @@ class SchedulebooktrialsController extends \BaseController {
         return $count;
     }
 
-    public function bookTrialPaid(){
+    public function bookTrialPaid($data=null){
 
-        $data = Input::json()->all();
+        $data = $data ? $data : Input::json()->all();
 
 
         //        return $data;
@@ -1876,7 +1876,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $schedule_slot_start_time 	       =	trim($slot_times[0]);
                 $schedule_slot_end_time 	       =	trim($slot_times[1]);
                 $schedule_slot 				       =	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
-                $slot_date 					       =	date('d-m-Y', strtotime(Input::json()->get('schedule_date')));                
+                $slot_date 					       =	date('d-m-Y', strtotime($data['schedule_date']));
                 $schedule_date_starttime 	       =	strtoupper($slot_date ." ".$schedule_slot_start_time);
 
             }
@@ -1887,7 +1887,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialid                       =    Booktrial::max('_id') + 1;
             }
 
-            $finderid 					       = 	(int) Input::json()->get('finder_id');            
+            $finderid 					       = 	(int) $data['finder_id'];
             $finder 					       = 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->find($finderid);
 
             $cleartrip_count                   =    $this->getCleartripCount($finderid);
@@ -5071,7 +5071,7 @@ class SchedulebooktrialsController extends \BaseController {
                         }
                     }
                     $this->customersms->cancelBookTrial($emaildata);
-                    if(!isset($booktrial['third_party_details']) && $emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
+                    if(!isset($booktrial['third_party_details'])){
                         $this->customernotification->cancelBookTrial($emaildata);
                     }
                 }
@@ -5447,7 +5447,22 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial['amount'] = $booktrial['amount_finder'];
         }
 
-        $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
+        if(empty($booktrial['studio_extended_validity_order_id'])){
+            $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
+        }
+        else {
+            Order::$withoutAppends = true;
+            $order = Order::where('_id', $booktrial['studio_extended_validity_order_id'])->first(['_id', 'studio_extended_validity', 'studio_sessions', 'studio_membership_duration']);
+            if(!empty($order['studio_sessions'])){
+                $avail = $order['studio_sessions']['total_cancel_allowed'] - $order['studio_sessions']['cancelled'];
+                $avail = ($avail<0)?0:$avail;
+                $booktrial['what_i_should_carry'] = $booktrial['what_i_should_carry']."<br><br><b>Can't make it? Cancel your session 60 minutes prior from your user profile to avail the extension.</b><br/><b>You have ".$avail.'/'.$order['studio_sessions']['total_cancel_allowed']." cancellations available up to ".date('d-m-Y', $order['studio_membership_duration']['end_date_extended']->sec).".</b><br/><b>Post cancelation, refer your Email for further details.</b>";
+                if($avail<=0) {
+                    $cancel_enable = false;
+                    array_set($booktrial, 'cancel_enable', $cancel_enable);
+                }
+            }
+        }
 
         if(empty($booktrial['surprise_fit_cash'])){
             $booktrial['surprise_fit_cash'] = $this->utilities->getFitcash($booktrial);
@@ -7685,7 +7700,7 @@ class SchedulebooktrialsController extends \BaseController {
                     'status'=>200,
                     'header'=>'OOPS!',
                     'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
-                    'sub_header_2'=>'Make sure you attend next time to earn Cashback and continue working out!',
+                    'sub_header_2'=>'Sorry, cancellation is available only 60 minutes prior to your session time.',
                     'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
                     // 'streak'=>[
                     //     'header'=>'STREAK IT OUT',
@@ -7696,13 +7711,13 @@ class SchedulebooktrialsController extends \BaseController {
                 // if(isset($customer_level_data['next_level']['level'])){
                 //     $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
                 // }
-                if($payment_done){
-                    $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!";
+                // if($payment_done){
+                //     $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!";
 
-                    if(!empty($booktrial->amount)){
-                        $response['sub_header_2'] = $response['sub_header_2']."\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
-                    }
-                }
+                //     if(!empty($booktrial->amount)){
+                //         $response['sub_header_2'] = $response['sub_header_2']."\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
+                //     }
+                // }
                 if($booktrial->type=='booktrials'){
                     
                     $response['reschedule_button'] = true;
