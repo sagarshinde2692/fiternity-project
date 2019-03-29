@@ -42,6 +42,8 @@ use App\Services\CustomerInfo as CustomerInfo;
 
 use App\Services\Jwtauth as Jwtauth;
 
+use Booktrial;
+
 Class Utilities {
 
 //    protected $myreward;
