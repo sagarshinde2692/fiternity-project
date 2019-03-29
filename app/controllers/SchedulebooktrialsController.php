@@ -7413,13 +7413,13 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->lostfitcode = $lostfitcode;
             
             $fitcash_amount = 0;
-            if(!isset($booktrial['third_party_details'])){
-                $fitcash_amount = $this->utilities->getFitcash($booktrial);
-            }
+            // if(!isset($booktrial['third_party_details'])){
+            //     $fitcash_amount = $this->utilities->getFitcash($booktrial);
+            // }
 
             $device_type = Request::header('Device-Type');
             // if(in_array($device_type, ['ios', 'android']) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
-            if( !(isset($_GET['reason']) && $_GET['reason'] == 1) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
+            if( !empty($fitcash_amount) && !(isset($_GET['reason']) && $_GET['reason'] == 1) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
 
                 $update = Booktrial::where('_id',$booktrial['_id'])->where('post_trial_status_updated_by_lostfitcode', 'exists', false)->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_lostfitcode'=>time()]);
 
@@ -7459,7 +7459,8 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_date = time();
             
             $message = 'Hi, '.ucwords($booktrial['customer_name']).'! Thanks for your update.';
-            if(!isset($booktrial['extended_validity_order_id'])){
+            
+            if(!isset($booktrial['extended_validity_order_id']) && !empty($fitcash_amount)){
                 $message = 'Hi, '.ucwords($booktrial['customer_name']).'! Thanks for your update. Rs. '.$fitcash_amount.' will be added into your Fitternity wallet within 48 hours';
             }
             
