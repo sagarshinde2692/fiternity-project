@@ -7799,7 +7799,7 @@ class SchedulebooktrialsController extends \BaseController {
                     unset($response['activate']);
                     unset($response['attend']['sub_header_1']);
                     $response['sub_header_2']='Enjoy your session at '.$booktrial['finder_name'].'. Your workout checklist is ready';
-                    if($this->get_device_type=='android')
+                    if($this->device_type=='android')
                         $response['attend']['sub_header_2']='Enjoy your session at '.$booktrial['finder_name'].'. Your workout checklist is ready';
                     
                 }
