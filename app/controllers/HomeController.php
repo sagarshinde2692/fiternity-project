@@ -652,7 +652,7 @@ class HomeController extends BaseController {
 
 
     public function getSuccessMsg($type, $id){
-
+        Log::info($_SERVER['REQUEST_URI']);
         $customer_id = "";
         $jwt_token = Request::header('Authorization');
         $device_type = Request::header('Device-Type');
@@ -777,7 +777,12 @@ class HomeController extends BaseController {
                     return ['status'=>400];
                 }
                 
-                
+                Log::info('book trials data',[$id]);
+            
+                if($itemData['studio_extended_validity']==true ){
+                    Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity']]);
+                    $extended_message = $itemData['studio_membership_duration']['num_of_days_extended'];
+                }
                 
                 // order section 
                 
@@ -991,7 +996,7 @@ class HomeController extends BaseController {
             if(isset($itemData['finder_id']) && $itemData['finder_id'] != ""){
 
                 $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id','brand_id'));
-
+                
                 if(isset($finder['title']) && $finder['title'] != ""){
                     $finder_name = ucwords($finder['title']);
                 }
@@ -1089,7 +1094,7 @@ class HomeController extends BaseController {
                 }
 
                 if(!empty($finder) && isset($finder['brand_id'])){
-                    $response['brand_id'] = !empty($finder['brand_id']);
+                    $response['brand_id'] = !empty($finder['brand_id']);                    
                 }
                 
                 if(!empty($customer_id)){
@@ -2097,7 +2102,9 @@ class HomeController extends BaseController {
                 'customer_auto_register' => $customer_auto_register,
                 'why_buy'=>$why_buy
             ];
-
+            
+            if(!empty($extended_message))
+                $resp['studio_extended_validity_message']= $extended_message;
             if(empty($finder) && !empty($itemData['finder_id'])){
                 $finder = Finder::find($itemData['finder_id']);
             }
@@ -2172,7 +2179,7 @@ class HomeController extends BaseController {
                 ];
 
             }
-
+            
             $section3 = Config::get('nonvalidity.success_page');
             $section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name'=>$itemData['finder_name']]);
 
@@ -2708,7 +2715,7 @@ class HomeController extends BaseController {
         if($this->device_type == 'android' && $this->app_version >= '5.14'){
             return Response::json(['data'=>$cites],200);
         }
-
+        
         return Response::json($cites,200);
     }
 
@@ -5183,33 +5190,33 @@ class HomeController extends BaseController {
         	}
         }
 
-    public function apicrashlogs(){
+        public function apicrashlogs(){
 
-        try{
-            
-            $data = ["post_data"=>Input::all()];
-            
-            $data['header_data'] = apache_request_headers();
-
-            $crashlog = new ApiCrashLog($data);
-
-			if(!empty($data["post_data"]["res_header"]) && (empty($data["post_data"]["res_header"]['Status']) || $data["post_data"]["res_header"]['Status'] != "200 OK")){
+            try{
                 
-                $crashlog->save();
-				$customersms = new \App\Sms\FinderSms();
-            	$sms = $customersms->apicrashlogsSMS(['url'=>$crashlog['post_data']['url'], '_id'=>$crashlog['_id'], 'device'=>$data['header_data']['Device-Type']]);
-            
+                $data = ["post_data"=>Input::all()];
+                
+                $data['header_data'] = apache_request_headers();
+    
+                $crashlog = new ApiCrashLog($data);
+    
+                if(!empty($data["post_data"]["res_header"]) && (empty($data["post_data"]["res_header"]['Status']) || $data["post_data"]["res_header"]['Status'] != "200 OK")){
+                    
+                    $crashlog->save();
+                    $customersms = new \App\Sms\FinderSms();
+                    $sms = $customersms->apicrashlogsSMS(['url'=>$crashlog['post_data']['url'], '_id'=>$crashlog['_id'], 'device'=>$data['header_data']['Device-Type']]);
+                
+                }
+                // $customermailer = new CustomerMailer();
+                // $mail = $customermailer->apicrashlogsSMS(['data'=>json_encode(array_only($crashlog->toArray(), ['post_data', 'created_at', '_id']))]);
+                // $sms = $customersms->apicrashlogsSMS(['data'=>$crashlog['post_data']]);
+    
+                return ['status'=>200];
+    
+            }catch(Exception $e){
+                Log::info($e);
+                return ['status'=>500];
             }
-            // $customermailer = new CustomerMailer();
-            // $mail = $customermailer->apicrashlogsSMS(['data'=>json_encode(array_only($crashlog->toArray(), ['post_data', 'created_at', '_id']))]);
-            // $sms = $customersms->apicrashlogsSMS(['data'=>$crashlog['post_data']]);
-
-            return ['status'=>200];
-
-        }catch(Exception $e){
-            Log::info($e);
-            return ['status'=>500];
         }
-    }
-        
+ 
 }

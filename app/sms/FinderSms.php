@@ -7,6 +7,8 @@ Class FinderSms extends VersionNextSms{
 
 	protected function bookTrial ($data){
 
+		\Log::info('FinderSms bookTrial');
+
 		$to = explode(',', $data['finder_vcc_mobile']);
 
 		$label = 'AutoTrial-Instant-Vendor';
@@ -70,6 +72,8 @@ Class FinderSms extends VersionNextSms{
 	}
 
 	protected function sendPgOrderSms ($data){
+
+		\Log::info('FinderSms Order-PG-Vendor');
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 

@@ -16,6 +16,17 @@ abstract Class VersionNextSms {
 
         $reflect = new \ReflectionClass($qualified_class_name);
         $objInstance = $reflect->newInstanceArgs();
+        $comm_type = 'sms';
+        if($class_name == 'CustomerSms'){
+            $class_name_comm = 'customer';
+		}
+		else{
+			$class_name_comm = 'finder';
+		}
+		\Log::info('inside customer sms checking for after 2 hour for normal bookingssss:::::::::::::::::::::',[]);
+		if(!(!isset($arguments[0]['communications']) || !isset($arguments[0]['communications'][$class_name_comm]) || (!isset($arguments[0]['communications'][$class_name_comm][$comm_type])) || (in_array($method, $arguments[0]['communications'][$class_name_comm][$comm_type])))){
+            return null;
+        }
         
 		if(count($arguments) < 2 || (is_int($arguments[1]) && $arguments[1] == 0) || !in_array($method, Config::get('app.delay_methods'))){
 			// return $objInstance->$method($arguments[0], 0);

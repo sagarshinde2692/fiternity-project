@@ -19,6 +19,7 @@ use Wallet;
 use WalletTransaction;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
+use App\Sms\FinderSms as FinderSms;
 use App\Services\Fitapi as Fitapi;
 use App\Mailers\CustomerMailer as CustomerMailer;
 use Exception;
@@ -32,6 +33,16 @@ use FinderMilestone;
 use MongoDate;
 use Coupon;
 use \GuzzleHttp\Client;
+
+use App\Services\Fitnessforce as Fitnessforce;
+
+use App\Services\OzontelOutboundCall as OzontelOutboundCall;
+use App\Services\CustomerReward as CustomerReward;
+use App\Services\CustomerInfo as CustomerInfo;
+
+use App\Services\Jwtauth as Jwtauth;
+
+use Booktrial;
 
 Class Utilities {
 
@@ -1013,9 +1024,9 @@ Class Utilities {
     public function verifyOrder($data,$order){
     	// Log::info(" info data".print_r($data,true));
     	// Log::info(" info order ".print_r($order,true));
-    	if(!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session')
+    	if((!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session') || (!empty($order['studio_extended_validity_order_id']))){
     		$hash_verified = true;
-    	
+        }
     	else if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK" ||(isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched) || !empty($data['internal_success'])){
             if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
@@ -1964,7 +1975,7 @@ Class Utilities {
 
                 $wallet->for_details = $request['details'];
             }
-
+            
             $wallet->save();
 
             $walletTransactionData['wallet_id'] = $wallet->_id;
@@ -2014,7 +2025,7 @@ Class Utilities {
         }
 
         if($entry == 'debit'){
-
+                
             $amount = $request['amount'];
 
             $query =  $this->getWalletQuery($request);
@@ -2071,7 +2082,7 @@ Class Utilities {
                         $walletTransactionData['entry'] = $entry;
                         $walletTransactionData['type'] = $request['type'];
                         $walletTransactionData['customer_id'] = $customer_id;
-
+                        
                         if(isset($request['order_id']) && $request['order_id'] != ""){
                             $walletTransactionData['order_id'] = (int)$request['order_id'];
 
@@ -4064,7 +4075,7 @@ Class Utilities {
 
         Log::info('commision : '.$commision);
         return $commision;
-
+        
     }
 
     public function financeUpdate($order){
@@ -6249,7 +6260,7 @@ Class Utilities {
                 }else{
                     $milestone['enabled'] = true;
                     $milestone_next_count = $milestone['next_count'];
-                    $milestone['progress'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
+                        $milestone['progress'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
                     break;
                 }
             }
@@ -6455,7 +6466,7 @@ Class Utilities {
                 $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null ]);
             }
         }
-
+        
         return ['loyalty_registration'=>$loyalty_registration, 'checkin'=> $checkin];
     }
 
@@ -7403,7 +7414,7 @@ Class Utilities {
             // if($service_id){
             // 	$query->where('service_id',(int)$service_id);
             // }
-
+       
             $booktrial_count = $query->orderBy('created_at', 'desc')->get(['created_at'])->toArray();
         }
 
@@ -7916,7 +7927,7 @@ Class Utilities {
             return null;
         }
     }
-
+           
     public function validateInput($functionName, $data){
 
         switch($functionName){
@@ -8004,7 +8015,7 @@ Class Utilities {
         }
     }
 
-    public function getFreeSPRatecardsByFinder($data){
+     public function getFreeSPRatecardsByFinder($data){
         return Ratecard::where('flags.free_sp', true)->where('finder_id', $data['finder_id'])->get();
     }
 
@@ -8032,5 +8043,224 @@ Class Utilities {
     public function getRatecardPrice($ratecard){
         return !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);        
     }
+
+    public function getBatchDaysOfWeek($batch) {
+        $daysList = [];
+        foreach($batch as $slot) {
+            array_push($daysList, $slot['weekday']);
+        }
+        return $daysList;
+    }
+
+    public function getBatchSlotTimeDaywise($batch){
+        $slotTime = [];
+        foreach($batch as $slot) {
+            $slotTime[$slot['weekday']] = $slot['slots'][0]['slot_time'];
+        }
+        return $slotTime;
+    }
+
+    public function getDatesToSchedule($order) {
+        $batchDaysOfWeek = $this->getBatchDaysOfWeek($order['batch']);
+        $scheduleDates = [];
+        $prevDate = date('Y-m-d', strtotime($order['start_date']));
+        $dayOfWeekMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        $slotTimes = $this->getBatchSlotTimeDaywise($order['batch']);
+        $limit = $order['studio_sessions']['total'];
+        for($i=0; $i<$limit; $i++) {
+            while(empty($scheduleDates[$i])){
+                $dayofweek = $dayOfWeekMap[date('w', strtotime($prevDate))];
+                if(in_array($dayofweek, $batchDaysOfWeek)){
+                    array_push($scheduleDates, [
+                        'schedule_date' => date('d-m-Y', strtotime($prevDate)),
+                        'day' => $dayofweek,
+                        'schedule_slot' => $slotTimes[$dayofweek]
+                    ]);
+                }
+                $prevDate = date('Y-m-d', strtotime('+1 day', strtotime($prevDate)));
+            }
+        }
+        return $scheduleDates;
+    }
+
+    public function getExtendedSessionDate($order) {
+        $studioSessions = $order['studio_sessions'];
+        $cancelled = $studioSessions['cancelled'];
+        $total_cancel_allowed = $studioSessions['total_cancel_allowed'];
+
+        if($cancelled <= $total_cancel_allowed) {
+
+            Booktrial::$withoutAppends = true;
+            $lastBooktrial = Booktrial::where('going_status','!=',2)->where('studio_extended_validity_order_id', $order['_id'])->orderBy('schedule_date_time', 'desc')->first();
+
+            Log::info('$lastBooktrial - schedule_date:: ', [$lastBooktrial['schedule_date']]);
+            $scheduleDateStart = strtotime('+1 day', strtotime($lastBooktrial['schedule_date']));
+            $scheduleDateEnd = strtotime('+1 day', $order['studio_membership_duration']['end_date_extended']->sec);
+            $scheduleDates = [];
+            $currTime = time();
+            if($currTime>$scheduleDateStart){
+                $scheduleDateStart = strtotime('+1 day', $currTime);
+            }
+            if($scheduleDateEnd>$currTime){
+                $batchDaysOfWeek = $this->getBatchDaysOfWeek($order['batch']);
+                $prevDate = date('Y-m-d', $scheduleDateStart);
+                $dayOfWeekMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                $slotTimes = $this->getBatchSlotTimeDaywise($order['batch']);
+                while(empty($scheduleDates[0])){
+                    $dayofweek = $dayOfWeekMap[date('w', strtotime($prevDate))];
+                    if(in_array($dayofweek, $batchDaysOfWeek)){
+                        array_push($scheduleDates, [
+                            'schedule_date' => date('d-m-Y', strtotime($prevDate)),
+                            'day' => $dayofweek,
+                            'schedule_slot' => $slotTimes[$dayofweek]
+                        ]);
+                    }
+                    $prevDate = date('Y-m-d', strtotime('+1 day', strtotime($prevDate)));
+                }
+            }
+            return $scheduleDates;
+        }
+        else {
+            return null;
+        }
+
+    }
+
+    public function scheduleStudioBookings($order_id, $isPaid=false) {
+
+		Log::info('Utilities scheduleStudioBookings:: ', [$order_id]);
+
+		Order::$withoutAppends = true;
+		$order = Order::where('_id', $order_id)->first();
+
+		if(!empty($order['studio_extended_validity']) && $order['studio_extended_validity']){
+			Log::info('making studio bookings...');
+
+			$scheduleDates = [];
+
+            if($isPaid) {
+                $scheduleDates = $this->getExtendedSessionDate($order);
+                Log::info('scheduleDates:: ', [$scheduleDates]);
+            }
+            else {
+                $scheduleDates = $this->getDatesToSchedule($order);
+            }
+
+            if(!empty($scheduleDates) && count($scheduleDates)>0){
+
+                Log::info('scheduleDates: ', [count($scheduleDates)]);
+
+                $tc=new \TransactionController( new CustomerMailer(), new CustomerSms(), new Sidekiq(), new FinderMailer(), new FinderSms(), $this,new CustomerReward(), new CustomerNotification(), new Fitapi(), new Fitweb());
+
+                $sc=new \SchedulebooktrialsController( new CustomerMailer(), new FinderMailer(), new CustomerSms(), new FinderSms(), new CustomerNotification(), new Fitnessforce(), new Sidekiq(), new OzontelOutboundCall(new Sidekiq()), $this,new CustomerReward(), new Jwtauth());
+
+                $ratecard = Ratecard::active()->where('service_id', $order['service_id'])->where('type', 'workout session')->first();
+
+                foreach($scheduleDates as $booking_date) {
+                    Log::info('booking now....');
+                    $captureReq = [
+                        "booking_for_others" => false,
+                        "cashback" => false,
+                        "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+                        "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+                        "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+                        "customer_source" => (!empty($order['customer_source']))?$order['customer_source']:null,
+                        "wallet" => false,
+                        "device_type" => (!empty($order['device_type']))?$order['device_type']:null,
+                        "finder_id" => $order['finder_id'],
+                        "gender" => $order['gender'],
+                        "gcm_reg_id" => (!empty($order['gcm_reg_id']))?$order['gcm_reg_id']:null,
+                        "schedule_date" => $booking_date['schedule_date'],
+                        "schedule_slot" => $booking_date['schedule_slot'],
+                        "pt_applied" => (!empty($order['pt_applied']))?$order['pt_applied']:null,
+                        "customer_quantity" => 1,
+                        "ratecard_id" => $ratecard['_id'],
+                        "reward_ids" => [],
+                        "service_id" => $order['service_id'],
+                        "type" => "workout-session",
+                        "studio_extended_validity_order_id" => $order['_id']
+                    ];
+                    if($isPaid){
+                        $captureReq['studio_extended_session'] = true;
+                    }
+                    $captureRes = $tc->capture($captureReq);
+
+                    if(!(empty($captureRes['status']) || $captureRes['status'] != 200 || empty($captureRes['data']['orderid']) || empty($captureRes['data']['email']))){
+                        $booktrialReq = [
+                            "order_id" => $captureRes['data']['orderid'],
+                            "status" => "success",
+                            "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+                            "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+                            "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+                            "schedule_date" => $booking_date['schedule_date'],
+                            "schedule_slot" => $booking_date['schedule_slot'],
+                            "finder_id" => $order['finder_id'],
+                            "service_name" => $captureRes['data']['service_name'],
+                            "service_id" => $order['service_id'],
+                            "ratecard_id" => $ratecard['_id'],
+                            "type" => "workout-session",
+                            "studio_extended_validity_order_id" => $order['_id'],
+                            "communications" => [
+                                "customer" => [
+                                    "mails" => [
+                                        'bookTrialReminderBefore3Hour',
+                                        'bookTrialReminderBefore12Hour',
+                                        'cancelBookTrial',
+                                        'cancelBookTrialByVendor'
+                                    ],
+                                    "sms" => [
+                                        'bookTrialReminderBefore3Hour',
+                                        'bookTrialReminderBefore12Hour',
+                                        'cancelBookTrial',
+                                        'cancelBookTrialByVendor'
+                                    ],
+                                    "notifications" => [
+                                        'bookTrialReminderBefore10Min',
+                                        'bookTrialReminderBefore3Hour',
+                                        'bookTrialReminderBefore12Hour',
+                                        'cancelBookTrial',
+                                        'cancelBookTrialByVendor'
+                                    ]
+                                ],
+                                "finder" => [
+                                    "mails" => [],
+                                    "sms" => [],
+                                    "notifications" => []
+                                ]
+                            ]
+                        ];
+
+                        if($isPaid){
+                            $booktrialReq['studio_extended_session'] = true;
+                            if(!empty($booktrialReq['communications']['customer'])) {
+                                unset($booktrialReq['communications']['customer']);
+                            }
+                            $booktrialReq["communications"]["finder"] = [
+                                "mails" => [
+                                    'bookTrial',
+                                    'cancelBookTrial'
+                                ],
+                                "sms" => [
+                                    'bookTrial',
+                                    'cancelBookTrial'
+                                ]
+                            ];
+                        }
+                        $booktrialRes = $sc->bookTrialPaid($booktrialReq);
+                    }
+                    Log::info('booking done....');
+                    sleep(20);
+                }
+                Log::info('....All bookings done....');
+
+            }
+            else {
+                Log::info('Number of cancellable sessions exceeded...');
+            }
+        }
+
+		
+
+	}
 }
 

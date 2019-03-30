@@ -181,7 +181,9 @@ class TransactionController extends \BaseController {
 
         $data = $data ? $data : Input::json()->all();
 
-        Log::info($_SERVER['REQUEST_URI']);
+        if(!empty($_SERVER['REQUEST_URI'])){
+            Log::info($_SERVER['REQUEST_URI']);
+        }
         Log::info('------------transactionCapture---------------',$data);
 
         if(!empty($data['coupon_code']) && strtoupper($data['coupon_code']) == "APPLY COUPON"){
@@ -304,7 +306,7 @@ class TransactionController extends \BaseController {
         if(empty($data['service_id']) && !empty($data['ratecard_id']))
         {
             
-        	Ratecard::$withoutAppends=true;
+            Ratecard::$withoutAppends=true;
         	$servId=Ratecard::find(intval($data['ratecard_id']))->first(['service_id']);
         	(!empty($servId))?$data['service_id']=$servId->service_id:"";
         }
@@ -540,28 +542,28 @@ class TransactionController extends \BaseController {
                 }
             }
             
+
             
-              
             $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
             
             if(isset($data['ratecard_id'])){
                 
                 $ratecard_id = (int) $data['ratecard_id'];
-    
+                
                 $ratecardDetail = $this->getRatecardDetail($data);
                 
                 if($ratecardDetail['status'] != 200){
                     return Response::json($ratecardDetail,$this->error_status);
                 }
-    
+                
                 $data = array_merge($data,$ratecardDetail['data']);
-    
+                
             }
-            
+                        
             if(!empty($data['third_party'])) {
                 $acronym = $data['third_party_acronym'];
                 // unset($data['third_party_acronym']);
-                Log::info('$data: ', $data);
+                Log::info('$data["total_sessions_used"]: ', [$data['total_sessions_used']]);
             	if(isset($data['total_sessions_used']))
             	{
             		if(intval($data['total_sessions'])>intval($data['total_sessions_used']))
@@ -665,7 +667,7 @@ class TransactionController extends \BaseController {
                     return Response::json(['status'=>400,"message"=>"Total sessions used not present. "]);
                 }
             }
-
+    
             if(isset($data['manual_order']) && $data['manual_order']){
     
                 $manualOrderDetail = $this->getManualOrderDetail($data);
@@ -1115,6 +1117,32 @@ class TransactionController extends \BaseController {
             $data['pps_new'] = true;
         }
 
+        $studioExtValidity = (($ratecardDetail['data']['validity']==30 && $ratecardDetail['data']['validity_type']=='days') || ($ratecardDetail['data']['validity']==1 && in_array($ratecardDetail['data']['validity_type'],['months', 'month'])) || ($ratecardDetail['data']['validity']==3 && $ratecardDetail['data']['validity_type']=='months'));
+
+        $numOfDays = (in_array($ratecardDetail['data']['validity_type'], ['month', 'months']))?$ratecardDetail['data']['validity']*30:$ratecardDetail['data']['validity'];
+        
+        $numOfDays = (in_array($ratecardDetail['data']['validity_type'], ['year', 'years']))?$ratecardDetail['data']['validity']*360:$numOfDays;
+
+        $numOfDaysExt = ($numOfDays==30)?15:(($numOfDays>=60)?30:0);
+
+        $ext = ' +'.$numOfDaysExt.' days';
+
+        if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity){
+            $data['studio_extended_validity'] = true;
+            $data['studio_sessions'] = [
+                'total' => $ratecardDetail['data']['duration'],
+                'cancelled' => 0,
+                'total_cancel_allowed' => intval($ratecardDetail['data']['duration']*0.25)
+            ];
+            $data['studio_membership_duration'] = [
+                'num_of_days' => $numOfDays,
+                'num_of_days_extended' => $numOfDaysExt,
+                'start_date' => new MongoDate(strtotime($data['start_date'])),
+                'end_date' => new MongoDate(strtotime($data['end_date'])),
+                'end_date_extended' => new MongoDate(strtotime($data['end_date'].$ext))
+            ];
+        }
+
         if(isset($old_order_id)){
             
             if($order){
@@ -1242,7 +1270,7 @@ class TransactionController extends \BaseController {
         // if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1){
         //     $pay_later = false;
         // }
-
+        
         $resp   =   array(
             'status' => 200,
             'data' => $result,
@@ -1260,53 +1288,53 @@ class TransactionController extends \BaseController {
         if(!empty($data['qrcodepayment'])){
            $resp['qrcodepayment'] = true;
         }
-
         
         
-        if(!empty($order['amount_final'])){
-            $resp['data']["coupon_details"] = [
-                "title" => "Apply Coupon Code",
-                "description" => "",
-                "applied" => false,
-                "remove_title" => "",
-                "remove_msg" => ""
-            ];
-        }
         
-        
-        if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
-            $resp['data']["coupon_details"] = [];
-            $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
-            $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
-            $resp['data']['coupon_details']['applied'] =  true;
-            if(isset($data['coupon_description'])){
-                $resp['data']['coupon_details']['description'] = $data['coupon_description'];
-            }
-        }
-        
-        if(empty($data['session_payment']) && empty($data['session_pack_discount'])){
-            
-            if(in_array($order['type'], ['booktrials', 'workout-session'])){
-                $resp['data']["quantity_details"] = [
-                    "field" => "No of People",
-                    "description" => "👤 ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1),
-                    'max'=>5,
-                    'selected_quantity'=>(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1)
+            if(!empty($order['amount_final'])){
+                $resp['data']["coupon_details"] = [
+                    "title" => "Apply Coupon Code",
+                    "description" => "",
+                    "applied" => false,
+                    "remove_title" => "",
+                    "remove_msg" => ""
                 ];
             }
+            
+            
+            if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
+                $resp['data']["coupon_details"] = [];
+                $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
+                $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
+                $resp['data']['coupon_details']['applied'] =  true;
+                if(isset($data['coupon_description'])){
+                    $resp['data']['coupon_details']['description'] = $data['coupon_description'];
+                }
+            }
     
-            // if(!empty($order['customer_quantity'])){
-
-                // $resp['data']["pt_details"] = [
-                //     "title" => "Add on",
-                //     "description" => "Personal Training",
-                //     "cost"=>"Rs.300",
-                //     "applied" => !empty($data['pt_applied']) ? $data['pt_applied'] : false
-                // ];
-            // }
-        }
-
+            if(empty($data['session_payment']) && empty($data['session_pack_discount'])){
+                
+                if(in_array($order['type'], ['booktrials', 'workout-session'])){
+                    $resp['data']["quantity_details"] = [
+                        "field" => "No of People",
+                        "description" => "👤 ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1),
+                        'max'=>5,
+                        'selected_quantity'=>(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1)
+                    ];
+                }
         
+                // if(!empty($order['customer_quantity'])){
+    
+                    // $resp['data']["pt_details"] = [
+                    //     "title" => "Add on",
+                    //     "description" => "Personal Training",
+                    //     "cost"=>"Rs.300",
+                    //     "applied" => !empty($data['pt_applied']) ? $data['pt_applied'] : false
+                    // ];
+                // }
+            }
+        
+
         // $resp['payment_offers'] = [
         //     'amazon_pay'=>'25% instant cashback'
         // ];
@@ -1499,6 +1527,12 @@ class TransactionController extends \BaseController {
             $resp['data']['payment_modes'] = [];
         }
         
+        // $scheduleBookingsRedisId = Queue::connection('redis')->push('SchedulebooktrialsController@scheduleStudioBookings', array('order_id'=>$order_id),Config::get('app.queue'));
+
+        // if(!empty($data['studio_extended_validity']) && $data['studio_extended_validity']) {
+        //     $this->utilities->scheduleStudioBookings(null, $order_id);
+        // }
+
         return $resp;
 
     }
@@ -2246,7 +2280,9 @@ class TransactionController extends \BaseController {
                     $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$group_id, 'order_id'=>$order->_id]);
                 }
 
-                $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+                if((empty($order['studio_extended_validity_order_id']) && !empty($order['studio_extended_session'])) || empty($order['studio_extended_session'])){
+                    $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+                }
 
                 if(!empty($order['wallet_transaction_debit']['wallet_transaction'])){
 
@@ -2438,7 +2474,7 @@ class TransactionController extends \BaseController {
                     }
                 
                 }
-                
+				
             }
             $data["profile_link"] = isset($profile_link) ? $profile_link : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
 
@@ -2553,7 +2589,7 @@ class TransactionController extends \BaseController {
                             if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
 
                                 $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
-
+                                
                                 // $this->customermailer->payPerSessionFree($emailData);
                             }
 
@@ -2565,7 +2601,7 @@ class TransactionController extends \BaseController {
                                     $emailData['customer_email'] = $c['customer_email'];
                                     $emailData['customer_name'] = $c['customer_name'];
                                     $emailData['jockey_code'] = !empty($c['jockey_code']) ? $c['jockey_code'] :'';
-                                    $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                                    $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);                                    
                                 }
                             
                             }else{
@@ -2576,7 +2612,7 @@ class TransactionController extends \BaseController {
                             // $this->customermailer->payPerSessionFree($emailData);
 
                             if(isset($order['routed_order']) && $order['routed_order'] == "1" && !in_array($reward_type,['cashback','diet_plan'])){
-                                $this->customermailer->routedOrder($emailData);
+                                $this->customermailer->routedOrder($emailData);                                
                             }
                         }
                     }
@@ -2590,15 +2626,15 @@ class TransactionController extends \BaseController {
 
                     //no email to Healthy Snacks Beverages and Healthy Tiffins
                     if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin") ) && empty($snap_block) && empty($extended_validity_block)){
-                        
+
                         if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                             if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
 
-                                $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                                $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());                                
                             }
                             
                         }else{
-                            $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                            $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());            
                         }
 
                     }
@@ -2626,11 +2662,11 @@ class TransactionController extends \BaseController {
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
                         if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
 
-                            $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
+                            $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);                            
                         }
 
                     }else{
-                        $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
+                        $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);                        
                     }
                 }
 
@@ -2641,23 +2677,23 @@ class TransactionController extends \BaseController {
                 Log::info('empty($snap_block): ', [empty($snap_block)]);
                 Log::info('empty($extended_validity_block)', [empty($extended_validity_block)]);
 
-                //no sms to Healthy Snacks Beverages and Healthy Tiffins
+                //no sms to Healthy Snacks Beverages and Healthy Tiffins                
                 if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30 && !(!empty($data["order_success_flag"]) && $data["order_success_flag"] == "admin")) && empty($snap_block) && empty($extended_validity_block)){
-                    
+                
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                         if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
 
-                            $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
+                            $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());                           
                         }
                         
                     }else{
-                        $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
+                        $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());                        
                     }
                     
                 }
 
                 if(!empty($order['upgrade_fitcash'])){
-                    $data['upgrade_sms_instant'] = $this->customersms->upgradeMembershipInstant($order->toArray());
+                    $data['upgrade_sms_instant'] = $this->customersms->upgradeMembershipInstant($order->toArray());                    
                 }
 
             }
@@ -2805,6 +2841,10 @@ class TransactionController extends \BaseController {
                 $resp   =   array('status' => 200,"message" => "Transaction Successful");
             }
             // $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>0),Config::get('app.queue'));
+            if(!empty($order['studio_extended_validity']) && $order['studio_extended_validity']){
+                $scheduleBookingsRedisId = Queue::connection('redis')->push('TransactionController@scheduleStudioBookings', array('order_id'=>$order_id, 'isPaid'=>false),Config::get('app.queue'));
+                $order->update(['schedule_bookings_redis_id'=>$scheduleBookingsRedisId]);
+            }
             Log::info("successCommon returned");
             Log::info($order['_id']);
             return Response::json($resp);
@@ -2854,7 +2894,7 @@ class TransactionController extends \BaseController {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = customerTokenDecode($jwt_token);
-            $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
+            $data['logged_in_customer_id'] = (int)$decoded->customer->_id;            
         }
 
         $customer = Customer::find((int)$customer_id);
@@ -3299,6 +3339,10 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['ratecard_flags']['free_sp'])){
+            $data['amount_customer'] = $data['amount'] = 0;
+        }
+
+        if(!empty($data['studio_extended_validity_order_id']) && empty($data['studio_extended_session'])){
             $data['amount_customer'] = $data['amount'] = 0;
         }
 
@@ -6673,7 +6717,7 @@ class TransactionController extends \BaseController {
     
             $data = array_merge($data,$finderDetail['data']);
             
-            if(!empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'membership')){
+            if(!empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'membership')){                
                 $commission = getVendorCommision(['finder_id'=>$data['finder_id']]);
                 
                 if(!empty($commission)){
@@ -8691,7 +8735,13 @@ class TransactionController extends \BaseController {
         return ['status'=>200, 'data'=>$capture_data];
     }
 
-   
+    public function scheduleStudioBookings($job, $data) {
+        Log::info('Entered scheduleStudioBookings in SchedulebooktrialsController.....');
+        if($job){
+            $job->delete();
+        }
+        $this->utilities->scheduleStudioBookings($data['order_id'], $data['isPaid']);
+    }
 
 }
 

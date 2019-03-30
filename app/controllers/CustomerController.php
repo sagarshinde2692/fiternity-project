@@ -51,56 +51,56 @@ class CustomerController extends \BaseController {
 
 	}
 
-    // Listing Schedule Tirals for Normal Customer
-	public function getAutoBookTrials($customeremail){
+	public function getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType='website', $type='lte') {
+		if($deviceType=='website'){
 
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order','customer_id');
+			// returning cancelled trials as well, for website...
 
-		if(isset($_GET['device_type']) && $_GET['device_type'] == "website"){
-
-			$trials = Booktrial::where('customer_email', '=', $customeremail)
+			return Booktrial::where('customer_email', '=', $customeremail)
+			->where('third_party_details','exists',false)
 			->whereIn('booktrial_type', array('auto'))
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
-			->orderBy('_id', 'desc')->take(8)
+			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(time()))
+			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
 			->get($selectfields);
-
-		}else{
-
-			$trials		=	Booktrial::where('customer_email', '=', $customeremail)
+		}
+		return Booktrial::where('customer_email', '=', $customeremail)
+		->where('third_party_details','exists',false)
 			->whereIn('booktrial_type', array('auto'))
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
 			->where('going_status_txt','!=','cancel')
-			->orderBy('_id', 'desc')->take(8)
+			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(time()))
+			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
 			->get($selectfields);
-		}
+	}
 
-		if(count($trials) < 0){
-			$resp 	= 	array('status' => 200,'trials' => [],'message' => 'No trials scheduled yet :)');
-			return Response::json($resp,200);
-		}else{
-			$trials->toArray();
-		}
-
-		$customertrials  = 	$trial = array();
+	public function getBooktrialsListTimewise($trials, $deviceType='website', $type='upcoming') {
+		$bookings = [];
 		$currentDateTime =	\Carbon\Carbon::now();
-		$upcomingtrials = [];
-		$passedtrials = [];
-		$healthytiffintrail = [];
-		$passed_trials_date_array = [];
-		$upcoming_trials_date_array = [];
-
-		$hour = 60*60;
-		$hour12 = 60*60*12;
 		$hour2 = 60*60*2;
-		
-		foreach ($trials as $trial){
-
+		foreach($trials as $trial){
 			array_set($trial, 'type_text', 'Trial');
 
 			if($trial['type'] == 'workout-session'){
 				array_set($trial, 'type_text', 'Workout Session');
+			}
+			if(!empty($trial['studio_extended_validity_order_id'])){
+				Order::$withoutAppends = true;
+				$order = Order::where('_id', $trial['studio_extended_validity_order_id'])->first(['_id', 'studio_extended_validity', 'studio_sessions', 'studio_membership_duration']);
+				if(!empty($order['studio_sessions'])){
+					$avail = $order['studio_sessions']['total_cancel_allowed'] - $order['studio_sessions']['cancelled'];
+					$avail = ($avail<0)?0:$avail;
+					array_set($trial, 'type_text', 'WS');
+					if($avail>0){
+						$trial['finder_name'] .= ' - '.$avail.'/'.$order['studio_sessions']['total_cancel_allowed'].' cancellations available';
+					}
+					else {
+						$trial['finder_name'] .= ' - No cancellations available';
+					}
+
+				}
 			}
 
 			array_set($trial, 'message', '');
@@ -116,32 +116,15 @@ class CustomerController extends \BaseController {
 					array_set($trial, 'average_rating', $avg_rating);
 				}
 			}
-
-			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
-			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
-
-			array_set($trial, 'message', "");
-			array_set($trial, 'passed', $slot_datetime_pass_status);
-
-			$trial['fit_code'] = $this->utilities->fitCode($trial);
+			
+			if(empty($trial['studio_extended_validity_order_id']) && !empty($trial['studio_extended_session'])){
+				$trial['fit_code'] = $this->utilities->fitCode($trial);
+			}
 
 			$trial['interaction_date'] = strtotime($trial['created_at']);
 
-			if($slot_datetime_pass_status){
-
-				$trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
-				try{
-					$trial['fitcash_text'] = "Enter your Fitcode to get  Rs.".$this->utilities->getFitcash($trial)." Fitcash.";
-				}catch(Exception $e){
-					Log::info($e);
-				}
-
-				array_push($passedtrials, $trial);
-
-				$passed_trials_date_array[] = strtotime($trial['created_at']);
-				
-			}else{
-
+			if($type=='upcoming') {
+				$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 				$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
 
 				$going_status_txt = ['rescheduled','cancel'];
@@ -178,7 +161,7 @@ class CustomerController extends \BaseController {
 					$reschedule_enable = false;
 				}
 
-				$upcoming_trials_date_array[] = strtotime($trial['created_at']);
+				// $upcoming_trials_date_array[] = strtotime($trial['created_at']);
 			
 				array_set($trial, 'reschedule_enable', $reschedule_enable);
 
@@ -187,19 +170,76 @@ class CustomerController extends \BaseController {
 					array_set($trial, 'payment_pending', true);
 
 				}
-				$trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
-				try{
-					$trial['fitcash_text'] = "Enter your Fitcode to get  Rs.".$this->utilities->getFitcash($trial)." Fitcash.";
-				}catch(Exception $e){
-					Log::info($e);
-				}
-
-				array_push($upcomingtrials, $trial);	
 			}
-
-
-
+			$trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
+			try{
+				$trial['fitcash_text'] = "Enter your Fitcode to get  Rs.".$this->utilities->getFitcash($trial)." Fitcash.";
+			}catch(Exception $e){
+				Log::info($e);
+			}
+			if(!empty($trial['studio_extended_validity_order_id'])){
+				$trial['fitcash_text'] = '';
+			}
+			array_push($bookings, $trial);
 		}
+		return $bookings;
+	}
+
+    // Listing Schedule Tirals for Normal Customer
+	public function getAutoBookTrials($customeremail, $offset = 0, $limit = 12){
+
+		$offset 			=	intval($offset);
+		$limit 				=	intval($limit);
+		$deviceType = (isset($_GET['device_type']))?$_GET['device_type']:"website";
+
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order','customer_id', 'studio_extended_validity_order_id');
+
+		// if(isset($_GET['device_type']) && $_GET['device_type'] == "website"){
+
+			// $trials = Booktrial::where('customer_email', '=', $customeremail)
+			// ->whereIn('booktrial_type', array('auto'))
+			// ->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+			// ->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
+			// ->orderBy('_id', 'asc')->skip($offset)->take($limit)
+			// ->get($selectfields);
+
+			$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'gt');
+			$pastTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'lte');
+
+		// }else{
+		// 	$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, 'gt');
+		// 	$pastTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, 'lte');
+		// }
+
+		if(count($upcomingTrialsQuery) < 0 && count($pastTrialsQuery) < 0){
+			$resp 	= 	array('status' => 200,'trials' => [],'message' => 'No trials scheduled yet :)');
+			return Response::json($resp,200);
+		}else{
+			$upcomingTrialsQuery->toArray();
+			$pastTrialsQuery->toArray();
+		}
+
+		$customertrials  = 	$trial = array();
+		$currentDateTime =	\Carbon\Carbon::now();
+		$upcomingtrials = [];
+		$passedtrials = [];
+		$healthytiffintrail = [];
+		$passed_trials_date_array = [];
+		$upcoming_trials_date_array = [];
+
+		$hour = 60*60;
+		$hour12 = 60*60*12;
+		$hour2 = 60*60*2;
+		
+		$passedtrials = $this->getBooktrialsListTimewise($pastTrialsQuery, $deviceType, 'past');
+		$upcomingtrials = $this->getBooktrialsListTimewise($upcomingTrialsQuery, $deviceType, 'upcoming');
+		// $passed_trials_date_array[] = strtotime($trial['created_at']);
+
+		
+
+
+
+		
 
 		$healthytiffintrails = array();
 
@@ -210,7 +250,7 @@ class CustomerController extends \BaseController {
 			->orWhere(function($query){$query->where('status',"1")->where('order_action','bought')->where('amount','!=',0);})
 			->orWhere(function($query){$query->where('status',"0")->where('amount','exist',false);})
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-			->orderBy('_id', 'desc')->take(8)
+			->orderBy('_id', 'asc')->skip($offset)->take($limit)
 			->get($ht_selectfields);
 
 			if(count($healthytiffintrails) > 0){
@@ -310,14 +350,14 @@ class CustomerController extends \BaseController {
 				}
 			}
 
-		if(count($upcomingtrials) > 0 && count($upcoming_trials_date_array) > 0){
+		// if(count($upcomingtrials) > 0){// && count($upcoming_trials_date_array) > 0){
 
-			array_multisort($upcoming_trials_date_array, SORT_DESC, $upcomingtrials);
-		}
+		// 	array_multisort($upcoming_trials_date_array, SORT_ASC, $upcomingtrials);
+		// }
 
-		if(count($passedtrials) > 0 && count($passed_trials_date_array) > 0){
-			array_multisort($passed_trials_date_array, SORT_DESC, $passedtrials);
-		}
+		// if(count($passedtrials) > 0){ // && count($passed_trials_date_array) > 0){
+		// 	array_multisort($passed_trials_date_array, SORT_ASC, $passedtrials);
+		// }
 
 		// array_push($customertrials, $trial);
 		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'healthytiffintrail'=>[],'message' => 'List of scheduled trials');
@@ -578,7 +618,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function register($data = null){
-		
+
 		if(empty($data)){
 			$data = Input::json()->all();
 		}
@@ -1673,7 +1713,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function customerUpdate(){
-
+        
 		$jwt_token = Request::header('Authorization');
 		$decodedToken = $this->customerTokenDecode($jwt_token);
 		$variable = ['name',
@@ -2079,12 +2119,14 @@ class CustomerController extends \BaseController {
 		return Response::json($response, 200);
 	}
 
-	public function getAllTrials(){
+	public function getAllTrials($offset = 0, $limit = 12){
 
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
 
-		return $this->getAutoBookTrials($decoded->customer->email);
+
+
+		return $this->getAutoBookTrials($decoded->customer->email, $offset, $limit);
 
 	// $selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
 
@@ -3442,12 +3484,12 @@ class CustomerController extends \BaseController {
 							});
 						})
 						->orderBy('schedule_date_time', 'asc')
-						->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount')
+						->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown')
 						->get();
 				
 				}else if($this->app_version > '4.4.3'){
 					Log::info("4.4.3");
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount')->get();
+					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount','studio_extended_validity_order_id','studio_block_shown')->get();
 
 
 				}else{
@@ -3460,7 +3502,7 @@ class CustomerController extends \BaseController {
 				$no_block = [];
 				$future = [];
 				$review = [];
-				
+				//Log::info('trails count',[count($trials), $trials]);
 				if(count($trials) > 0){
 					$workout_session_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);
 
@@ -3546,6 +3588,22 @@ class CustomerController extends \BaseController {
 							$data['trial_id'] = $data['_id'];
 							Log::info(strtotime($data['schedule_date_time']));
 							Log::info(time());
+
+							if(isset($data['studio_extended_validity_order_id']) && (empty($data['studio_block_shown']) || !$data['studio_block_shown'])){
+								
+								$time = null;
+								if((time() >= (strtotime($data['schedule_date_time'])-3*60*60)) && (time() <= (strtotime($data['schedule_date_time'])))){
+									Log::info('into studio extended valdity and calling block screen', [$data]);
+									// it is session for grouping named as le us know
+									$data['block_screen'] = [
+										'type'=>'let_us_know',
+										'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/session_reminder',
+										'time'=>'n-3'
+									];
+								}
+									
+							}
+
 							if(!isset($data['third_party_details'])){
 								if((!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""]))  ){
 									Log::info("inside block");
@@ -3558,7 +3616,8 @@ class CustomerController extends \BaseController {
 												'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session',
 												'time'=>'n-10m'
 											];
-										}else if(time() < (strtotime($data['schedule_date_time'])+3*24*60*60)){
+										}else if(time() < (strtotime($data['schedule_date_time'])+3*24*60*60) && empty($data['studio_extended_validity_order_id'])){
+											Log::info('notification by app before ',[$data]);
 											$data['block_screen'] = [
 												'type'=>'let_us_know',
 												'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know',
@@ -3572,7 +3631,7 @@ class CustomerController extends \BaseController {
 									
 
 									
-								}else if(!((isset($data['has_reviewed']) && $data['has_reviewed']) || (isset($data['skip_review']) && $data['skip_review'])) && strtotime($data['schedule_date_time']) < strtotime('-1 hour')){
+								}else if(!((isset($data['has_reviewed']) && $data['has_reviewed']) || (isset($data['skip_review']) && $data['skip_review'])) && strtotime($data['schedule_date_time']) < strtotime('-1 hour') && empty($data['studio_extended_validity_order_id'])){
 
 									if($this->app_version >= 5){
 
@@ -3591,6 +3650,7 @@ class CustomerController extends \BaseController {
 										}
 									}
 								}
+								
 							}
 
 							$data['current_time'] = date('Y-m-d H:i:s', time());
@@ -4614,7 +4674,7 @@ class CustomerController extends \BaseController {
 					return Response::json($resp,404);
 				}
 			}
-
+			
 			if (is_array($fitcashcode->customer_emails)) {
 				
 				if(!in_array(strtolower($customer_email), $fitcashcode->customer_emails)){
@@ -5106,7 +5166,7 @@ class CustomerController extends \BaseController {
 
 		}
 
-		if(!isset($order->upgrade_membership) && isset($order['start_date']) && time() >= strtotime($order['start_date'].'+5 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
+		if(!isset($order->upgrade_membership) && isset($order['start_date']) && time() >= strtotime($order['start_date'].'+5 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180 && empty($order['studio_extended_validity'])){
 			$action = [
 				"button_text"=>"Upgrade",
 				"activity"=>"upgrade_membership",
@@ -5119,7 +5179,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days') && $change_start_date && !$cult_vendor_flag){
+		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days') && $change_start_date && !$cult_vendor_flag && empty($order['studio_extended_validity'])){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
@@ -5296,7 +5356,7 @@ class CustomerController extends \BaseController {
 
 		}
 
-		if(!isset($order->upgrade_membership) && isset($order['success_date']) && time() >= strtotime($order['success_date']) && $upgrade_membership && strtotime($order['end_date']) >= time()){
+		if(!isset($order->upgrade_membership) && isset($order['success_date']) && time() >= strtotime($order['success_date']) && $upgrade_membership && strtotime($order['end_date']) >= time() && empty($order['studio_extended_validity'])){
 			$action['upgrade_membership'] = [
 				"button_text"=>"Upgrade",
 				"activity"=>"upgrade_membership",
@@ -5309,7 +5369,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(!isset($order->preferred_starting_change_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+10 days') && $change_start_date && !$cult_vendor_flag){
+		if(!isset($order->preferred_starting_change_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+10 days') && $change_start_date && !$cult_vendor_flag && empty($order['studio_extended_validity'])){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['success_date'].'+29 days');
@@ -5359,7 +5419,7 @@ class CustomerController extends \BaseController {
 
 		}
 
-		if($action['change_start_date'] == null && !isset($order->requested_preferred_starting_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+29 days') && $change_start_date_request && !$cult_vendor_flag){
+		if($action['change_start_date'] == null && !isset($order->requested_preferred_starting_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+29 days') && $change_start_date_request && !$cult_vendor_flag && empty($order['studio_extended_validity'])){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['success_date'].'+29 days');
@@ -5766,7 +5826,7 @@ class CustomerController extends \BaseController {
 								->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 								->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 								->get(['start_date','end_date','price','type','allowed_qty','remarks']);
-
+							
 							if(count($ratecard_offers) > 0){
 
 								$ratecard_offers = $ratecard_offers->toArray();
@@ -7116,7 +7176,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function getBlockScreenData($label, $data){
-		
+
 		$response = [];
 
 		switch ($label) {
@@ -7234,6 +7294,22 @@ class CustomerController extends \BaseController {
 					'attended'=>['text'=>'YES I’LL BE THERE','url'=>Config::get('app.url')."/sessionstatuscapture/confirm/".$data['_id'], 'type'=>"SUCCESS"],
 					'did_not_attend'=>['text'=>'NO, I’M NOT GOING','url'=>Config::get('app.url')."/sessionstatuscapture/cantmake/".$data['_id']]
 				];
+				if(isset($data['studio_extended_validity_order_id'])){
+					unset($response['button_text']);
+					Booktrial::where('_id', $data['_id'])->update(['studio_block_shown'=>true]);
+					Order::$withoutAppends = true;
+					$order = Order::where('_id', $data['studio_extended_validity_order_id'])->first(['_id', 'studio_extended_validity', 'studio_sessions', 'studio_membership_duration']);
+					if(!empty($order['studio_sessions'])){
+						$avail = $order['studio_sessions']['total_cancel_allowed'] - $order['studio_sessions']['cancelled'];
+						$avail = ($avail<0)?0:$avail;
+						$response['sub_header_2'] = $response['sub_header_2']."\n\nCan't make it? Cancel your session 60 minutes prior from your user profile to avail the extension.";
+					}
+					$response['button_text'] = [
+						'attended'=>['text'=>'YES I’LL BE THERE','url'=>Config::get('app.url')."/sessionstatuscapture/confirm/".$data['_id'], 'type'=>"SUCCESS"],
+						'did_not_attend'=>['text'=>'Cancel','url'=>Config::get('app.url')."/sessionstatuscapture/cancel/".$data['_id']]
+					];
+				}
+				Log::info('at the end');
 				$response['block'] = false;
 			break;
 			case 'review':
@@ -7991,6 +8067,7 @@ class CustomerController extends \BaseController {
 	
 	public function markCustomerAttendance()
 	{		$resp=['status'=>200];
+    Log::info($_SERVER['REQUEST_URI']);
 	try {
 		$jwt_token = Request::header('Authorization');
 		if(empty($jwt_token)) return ['status' => 400,'message' =>"Token absent"];
@@ -8374,7 +8451,6 @@ class CustomerController extends \BaseController {
 
 
 	public function listCheckins(){
-
 		$check_ins = Config::get("loyalty_constants.checkin_limit");
 		$jwt_token = Request::header('Authorization');
 		
@@ -8423,7 +8499,7 @@ class CustomerController extends \BaseController {
 			array_push($checkins, ['title'=>'Registered for','date'=>'FITSQUAD' , 'start'=>date('d M, Y', $customer->loyalty['start_date']->sec)]);
 
 		}
-		
+	
 		return Response::json(['data'=>$checkins]);
 		
 	}
@@ -9226,7 +9302,7 @@ class CustomerController extends \BaseController {
         $order['subscription_text'] = "Subscription code: ";
         $order['subscription_code'] = strval($order['_id']);
         $order['sessions_left'] = strval($order['sessions_left']);
-        $order['title'] = $order['finder_name'].' - '.$order['service_name'];
+		$order['title'] = $order['finder_name'].' - '.$order['service_name'];
         $order['detail_text'] = "VIEW DETAILS";
         $order['total_session_text'] = $order['no_of_sessions']." Session pack";
         $order['left_text'] = "left";
