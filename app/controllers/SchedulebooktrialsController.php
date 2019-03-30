@@ -7589,7 +7589,7 @@ class SchedulebooktrialsController extends \BaseController {
                     'header'=>'DON’T WORRY',
                     'image'=>'https://b.fitn.in/paypersession/cashback.png',
                     'sub_header_1'=>$customer_level_data['current_level']['cashback'].'% Cashback',
-                    'sub_header_2'=>' is added in your wallet. Use this to book your next session with lowest price.',
+                    'sub_header_2'=>' will be added to your wallet after we verify your attendace from the gym / studio',
                     // 'streak'=>[
                     //     'header'=>'STREAK IT OUT',
                     //     'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
