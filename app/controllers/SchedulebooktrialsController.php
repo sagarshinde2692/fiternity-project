@@ -7296,7 +7296,7 @@ class SchedulebooktrialsController extends \BaseController {
                     Log::info("Adding pps fitcash");
                     
                     if(!isset($booktrial['extended_validity_order_id'])){
-                        $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+                        $fitcash = $this->utilities->getFitcash($booktrial->toArray());
                     }
                     $req = array(
                         "customer_id"=>$booktrial['customer_id'],
