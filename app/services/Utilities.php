@@ -1012,7 +1012,11 @@ Class Utilities {
 
     public function verifyOrder($data,$order){
     	// Log::info(" info data".print_r($data,true));
-    	// Log::info(" info order ".print_r($order,true));
+        // Log::info(" info order ".print_r($order,true));
+        if(!empty($data['internal_success'])){
+            return true;
+        }
+
     	if(!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session')
     		$hash_verified = true;
     	

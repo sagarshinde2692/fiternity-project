@@ -10,6 +10,7 @@
 use App\Services\Mobikwik as Mobikwik;
 use App\Services\Paytm as Paytm;
 use App\Services\Fitweb as Fitweb;
+use App\Services\Paypal as Paypal;
 
 class PaymentGatewayController extends \BaseController {
 
@@ -17,7 +18,8 @@ class PaymentGatewayController extends \BaseController {
 
 		Mobikwik $mobikwik,
 		Paytm $paytm,
-		Fitweb $fitweb
+		Fitweb $fitweb,
+		Paypal $paypal
 
 	) {
 
@@ -26,6 +28,7 @@ class PaymentGatewayController extends \BaseController {
      	$this->mobikwik = $mobikwik;
      	$this->paytm = $paytm;
      	$this->fitweb = $fitweb;
+     	$this->paypal = $paypal;
     }
 
 	
@@ -925,4 +928,97 @@ class PaymentGatewayController extends \BaseController {
 		return Response::json($response);
 	}
 
+	public function firstCallPaypal(){
+		$access_token = $this->paypal->getAccessToken();
+		return Response::json($access_token);
+	}
+
+	public function createPaymentPaypal(){
+		//$data = array();
+		$post_data = Input::json()->all();
+		// print_r($dapost_datata);
+		// exit();
+		$data = '{
+			"intent": "sale",
+			"payer": {
+			  "payment_method": "paypal"
+			},
+			"transactions": [
+			  {
+				"amount": {
+				  "total": "'.$post_data['data']['amount'].'",
+				  "currency": "INR"
+				},
+				"invoice_number": "'.$post_data['data']['orderid'].'",
+				"payment_options": {
+				  "allowed_payment_method": "INSTANT_FUNDING_SOURCE"
+				},
+				"soft_descriptor": "'.$post_data['data']['txnid'].'",
+				"item_list": {
+				  "items": [
+					{
+					  "name": "'.ucwords($post_data['data']['productinfo']).'",
+					  "description": "'.ucwords($post_data['data']['service_name']).'",
+					  "quantity": "1",
+					  "price": "'.$post_data['data']['amount'].'",
+					  "sku": "1",
+					  "currency": "INR"
+					}
+				  ]
+				}
+			  }
+			],
+			"note_to_payer": "Contact us for any questions on your order.",
+			"redirect_urls": {
+			  "return_url": "'.Config::get('app.url').'successRoutePaypal",
+			  "cancel_url": "'.Config::get('app.url').'cancleRoutePaypal"
+			}
+		  }';
+
+		$res_data = $this->paypal->createPayment($data);
+		$value = array("rel" => "approval_url");
+		if($res_data['status'] == 200){
+			$link = array_where($res_data['message']['links'], function($key, $val) use ($value){
+				if($val['rel'] == $value['rel'])
+					{
+					 return true; 
+					}
+			});
+			
+			if(!empty($link)){
+				foreach($link as $k => $v){
+					$l = $v['href'];
+				}
+			}
+
+			$return_data = [
+				'status' => '200',
+				'message' => $l.'&locale.x=en_IN&country.x=IN'
+			];
+			
+		}else{
+			$return_data = $res_data;
+		}
+		
+		return Response::json($return_data);
+	}
+
+	public function successExecutePaymentPaypal(){
+		$payer_id_ = Input::get('PayerID');
+		$token = Input::get('token');
+		$paymentId = Input::get('paymentId');
+		
+		$d = array("payer_id" => $payer_id_);
+		$payer_id = json_encode($d);
+		$response = $this->paypal->executePayment($paymentId, $payer_id);
+
+		app(TransactionController::class)->success($payer_id_);
+
+		return Response::json($response);
+	}
+
+
+	public function canclePaymentPaypal(){
+
+	}
 }
