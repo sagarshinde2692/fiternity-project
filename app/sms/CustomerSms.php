@@ -118,6 +118,8 @@ Class CustomerSms extends VersionNextSms{
 
 	protected function cancelBookTrial ($data){
 
+		Log::info('cancelBookTrial sms: ', [$data]);
+
 		$label = 'Cancel-Trial-Customer';
 		
 		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
@@ -130,6 +132,8 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 	protected function cancelBookTrialByVendor ($data){
+
+		Log::info('cancelBookTrialByVendor sms: ', [$data]);
 
 		$label = 'CancelTrialByVendor-Customer';
 
