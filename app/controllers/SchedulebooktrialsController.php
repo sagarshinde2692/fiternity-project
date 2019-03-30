@@ -4652,9 +4652,11 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json($resp,200);
         }
 
-        if((!empty($booktrial['third_party_details'])) && ((isset($booktrial['post_trial_status_updated_by_lostfitcode'])) || (isset($booktrial['post_trial_status_updated_by_fitcode'])) || (isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600) && !$isBackendReq))){
-            $resp   =   array('status' => 400, 'message' => "This session cannot be cancelled");
-            return Response::json($resp,200);
+        if(
+            // (!empty($booktrial['third_party_details'])) &&
+            ((isset($booktrial['post_trial_status_updated_by_lostfitcode'])) || (isset($booktrial['post_trial_status_updated_by_fitcode'])) || (isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600) && !$isBackendReq))){
+                $resp = array('status' => 400, 'message' => "This session cannot be cancelled");
+                return Response::json($resp,200);
         }
 
         array_set($bookdata, 'going_status', 2);
@@ -5388,7 +5390,8 @@ class SchedulebooktrialsController extends \BaseController {
 
         $hour2 = 60*60*2;
         $hour1 = 60*60;
-		$going_status_txt = ['rescheduled','cancel'];
+		$going_status_txt = ['rescheduled','
+        '];
 
 		if(!isset($booktrial['going_status_txt'])){
 			$booktrial['going_status_txt'] = "-";
