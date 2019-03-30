@@ -23,7 +23,7 @@ abstract Class VersionNextSms {
 		else{
 			$class_name_comm = 'finder';
 		}
-		
+		\Log::info('inside customer sms checking for after 2 hour for normal bookingssss:::::::::::::::::::::',[]);
 		if(!(!isset($arguments[0]['communications']) || !isset($arguments[0]['communications'][$class_name_comm]) || (!isset($arguments[0]['communications'][$class_name_comm][$comm_type])) || (in_array($method, $arguments[0]['communications'][$class_name_comm][$comm_type])))){
             return null;
         }

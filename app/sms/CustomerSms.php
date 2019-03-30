@@ -93,7 +93,7 @@ Class CustomerSms extends VersionNextSms{
 	protected function bookTrialReminderAfter2Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
-		
+		\Log::info('inside auto trial remainder after 2 hours for customerss:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
 		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
 			$label = 'AutoTrial-ReminderAfter2Hour-Customer-abg';
 		}

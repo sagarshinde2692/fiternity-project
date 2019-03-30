@@ -2914,6 +2914,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $send_communication["customer_sms_after30mins_abg"] = $this->customersms->bookTrialReminderAfter30Mins($booktrialdata, $delayReminderTimeAfter30Mins);
                 }
                 else {
+                    Log::info('customer sm after 2 houers scheduling at schedulebooktrailController',[$booktrialdata]);
                     $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
                     $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter6Hrs);
                 
