@@ -5391,8 +5391,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $hour2 = 60*60*2;
         $hour1 = 60*60;
-		$going_status_txt = ['rescheduled','
-        '];
+		$going_status_txt = ['rescheduled','cancel'];
 
 		if(!isset($booktrial['going_status_txt'])){
 			$booktrial['going_status_txt'] = "-";
