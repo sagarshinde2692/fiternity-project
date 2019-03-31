@@ -8190,10 +8190,10 @@ class CustomerController extends \BaseController {
 								else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status'=>'no show']);
 								
 								
-								if($booktrial_update&&!empty($value['mark'])&& !empty($booktrial->payment_done)){
+								if($booktrial_update&&!empty($value['mark'])&& !(isset($booktrial->payment_done) && $booktrial->payment_done == false)){
 									
 									if(!isset($booktrial['extended_validity_order_id'])){
-										$fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+										$fitcash = $this->utilities->getFitcash($booktrial->toArray());
 										$req = array(
 												"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
 												"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
