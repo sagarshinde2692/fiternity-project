@@ -7366,7 +7366,7 @@ class SchedulebooktrialsController extends \BaseController {
                     Log::info("Adding pps fitcash");
                     
                     if(!isset($booktrial['extended_validity_order_id'])){
-                        $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+                        $fitcash = $this->utilities->getFitcash($booktrial->toArray());
                     }
                     $req = array(
                         "customer_id"=>$booktrial['customer_id'],
@@ -7485,13 +7485,13 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->lostfitcode = $lostfitcode;
             
             $fitcash_amount = 0;
-            if(!isset($booktrial['third_party_details'])){
-                $fitcash_amount = $this->utilities->getFitcash($booktrial);
-            }
+            // if(!isset($booktrial['third_party_details'])){
+            //     $fitcash_amount = $this->utilities->getFitcash($booktrial);
+            // }
 
             $device_type = Request::header('Device-Type');
             // if(in_array($device_type, ['ios', 'android']) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
-            if( !(isset($_GET['reason']) && $_GET['reason'] == 1) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
+            if( !empty($fitcash_amount) && !(isset($_GET['reason']) && $_GET['reason'] == 1) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
 
                 $update = Booktrial::where('_id',$booktrial['_id'])->where('post_trial_status_updated_by_lostfitcode', 'exists', false)->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_lostfitcode'=>time()]);
 
@@ -7531,7 +7531,8 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_date = time();
             
             $message = 'Hi, '.ucwords($booktrial['customer_name']).'! Thanks for your update.';
-            if(!isset($booktrial['extended_validity_order_id'])){
+            
+            if(!isset($booktrial['extended_validity_order_id']) && !empty($fitcash_amount)){
                 $message = 'Hi, '.ucwords($booktrial['customer_name']).'! Thanks for your update. Rs. '.$fitcash_amount.' will be added into your Fitternity wallet within 48 hours';
             }
             
@@ -7658,7 +7659,7 @@ class SchedulebooktrialsController extends \BaseController {
                     'header'=>'DON’T WORRY',
                     'image'=>'https://b.fitn.in/paypersession/cashback.png',
                     'sub_header_1'=>$customer_level_data['current_level']['cashback'].'% Cashback',
-                    'sub_header_2'=>' is added in your wallet. Use this to book your next session with lowest price.',
+                    'sub_header_2'=>' will be added to your wallet after we verify your attendace from the gym / studio',
                     // 'streak'=>[
                     //     'header'=>'STREAK IT OUT',
                     //     'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
