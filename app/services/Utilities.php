@@ -7554,7 +7554,7 @@ Class Utilities {
 
     public function giveFitcashforUpgrade($order){
 
-        if(!empty($order['upgrade_fitcash'])){
+        if(!empty($order['upgrade_fitcash']) || !empty($order['multifit'])){
             return;
         }
 
