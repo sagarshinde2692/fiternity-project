@@ -2124,6 +2124,10 @@ class HomeController extends BaseController {
             if(!empty($item['finder_poc_for_customer_no'])){
                 $resp['finder_poc_for_customer_no'] = $item['finder_poc_for_customer_no'];
             }
+            
+            if(!empty($item['multifit'])){
+                $resp['multifit'] = $item['multifit'];
+            }
 
             $resp['payment_mode'] = !empty($item['pg_type']) ? $item['pg_type'] : 'card';
 
