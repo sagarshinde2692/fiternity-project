@@ -59,6 +59,7 @@ return array(
 	'url' => 'https://a1.fitternity.com',
 	'admin_url' => 'https://fitn.in',
 	'website' => 'https://www.fitternity.com',
+	'multifit_website' => 'http://www.multifitgym.com',
 	'sidekiq_url' => 'http://nw.fitn.in/',
 	'queue' => 'booktrial',
 	'vendor_communication' => true,
