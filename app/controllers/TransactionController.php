@@ -939,7 +939,7 @@ class TransactionController extends \BaseController {
 
             $website_url = Config::get('app.website');
             
-            if(!empty($data['multifit'])){
+            if(!empty($data['multifit']) || (!empty($_SERVER['HTTP_HOST']) && strtolower($_SERVER['HTTP_HOST']) == 'multifitgym.com')){
             
                 $website_url = Config::get('app.multifit_website');
             
