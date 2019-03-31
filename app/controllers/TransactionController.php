@@ -937,7 +937,15 @@ class TransactionController extends \BaseController {
                 $txnid = "FIT".$data['_id']."-R".$data['repetition'];
             }
 
-            $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
+            $website_url = Config::get('app.website');
+            
+            if(!empty($data['multifit'])){
+            
+                $website_url = Config::get('app.multifit_website');
+            
+            }
+
+            $successurl = $data['type'] == "memberships" ? $website_url."/paymentsuccess" : $website_url."/paymentsuccesstrial";
         }
         
 
