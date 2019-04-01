@@ -202,7 +202,7 @@ class CommunicationsController extends \BaseController {
 					$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
 					$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
 					$batch = 1;
-					$booktrialMissedcall  = Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
+					$booktrialMissedcall  = Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone',substr($data['customer_phone'], -10))->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
 					if(!empty($booktrialMissedcall) && isset($booktrialMissedcall->missedcall_batch) && $booktrialMissedcall->missedcall_batch != ''){
 						$batch = $booktrialMissedcall->missedcall_batch + 1;
 					}
@@ -246,7 +246,7 @@ class CommunicationsController extends \BaseController {
 						$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
 						$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
 						$batch = 1;
-						$booktrialMissedcall  = Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
+						$booktrialMissedcall  = Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone', substr($data['customer_phone'], -10))->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
 						if(!empty($booktrialMissedcall) && isset($booktrialMissedcall->missedcall_batch) && $booktrialMissedcall->missedcall_batch != ''){
 							$batch = $booktrialMissedcall->missedcall_batch + 1;
 						}

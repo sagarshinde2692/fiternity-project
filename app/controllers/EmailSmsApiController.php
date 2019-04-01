@@ -604,7 +604,7 @@ class EmailSmsApiController extends \BaseController {
         }
 
         if($data['capture_type'] == 'fitness_canvas'){
-            $count = Capture::where('capture_type','fitness_canvas')->where('phone','LIKE','%'.substr($data['phone'], -9).'%')->count();
+            $count = Capture::where('capture_type','fitness_canvas')->where('phone', substr($data['phone'], -10))->count();
 
             if($count >= 2){
                 $resp = array('status' => 402,'message' => "Only 2 requests are allowed");

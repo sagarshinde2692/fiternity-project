@@ -91,7 +91,7 @@ Class Utilities {
             return \Booktrial::
                 where(function ($query) use($customer_email, $customer_phone) {
                     $query->orWhere('customer_email', $customer_email)
-                        ->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');
+                        ->orWhere('customer_phone', substr($customer_phone, -10));
                 })
                 ->where('finder_id', '=', (int) $finder_id)
                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
@@ -119,7 +119,7 @@ Class Utilities {
             return \Booktrial::
                 where(function ($query) use($customer_email, $customer_phone) {
                     $query->orWhere('customer_email', $customer_email)
-                        ->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');
+                        ->orWhere('customer_phone', substr($customer_phone, -10));
                 })
                 ->where('finder_id', '=', (int) $finder_id)
                 ->where('service_id', '=', (int) $service_id)
@@ -3544,7 +3544,7 @@ Class Utilities {
         
         $beforeTime 	=	date('d-m-Y H:i:s', strtotime(Carbon::now()->addHours(-4)));
         
-        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->first();
+        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', substr($customer_phone, -10))->orWhere('customer_email', $customer_email);})->first();
 
         if($transaction){
             
@@ -3566,7 +3566,7 @@ Class Utilities {
 
         Log::info($beforeTime);
         
-        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->first();
+        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', substr($customer_phone, -10))->orWhere('customer_email', $customer_email);})->first();
 
         if($transaction){
             
@@ -7394,7 +7394,7 @@ Class Utilities {
 
         		$query = \Booktrial::where(function ($query) use($customer_email, $customer_phone) {
 								$query->orWhere('customer_email', $customer_email)
-									->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -10).'%');
+									->orWhere('customer_phone',substr($customer_phone, -10));
 							})
                         ->where('finder_id',(int)$finder_id)
                         ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);

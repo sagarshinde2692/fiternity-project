@@ -4568,9 +4568,9 @@ class HomeController extends BaseController {
 
             $response = ['status'=>200, 'message'=>'Valid Email'];
 
-            $customer_email = Customer::where('email','Like', $email)->first();
+            $customer_email = Customer::where('email', strtolower($email))->first();
 
-            $customer_phone = Customer::where('contact_no','Like', '%'.substr($phone, -10).'%')->first();
+            $customer_phone = Customer::where('contact_no', substr($phone, -10))->first();
 
             if($customer_email && $customer_phone){
                 $response = ['status'=>400, 'message'=>'Email and mobile number already registered'];
@@ -5193,7 +5193,7 @@ class HomeController extends BaseController {
         							}
         							else if(in_array('once_per_month', $coupon['conditions'])){
         								if(!($customer_phone||$customer_email))continue;
-        								$prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+        								$prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', substr($customer_phone, -10))->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
         								if($prev_workout_session_count)
         									continue;
         							}
