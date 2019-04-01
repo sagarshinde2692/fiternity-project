@@ -7611,7 +7611,7 @@ class TransactionController extends \BaseController {
         $val['sellerStoreName']= 'Fitternity';
         // $val['transactionTimeout'] = Config::get('amazonpay.timeout');
         // For testing in sandbox mode, remove for production
-        $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
+        //$val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
         $returnUrl = Config::get('app.url')."/verifyamazonchecksum/1";
         Log::info('return url:::::>>>>>>>>>>>>>>>>>>>',[$returnUrl]);
         // $returnUrl = "http://ar-deepthi.com/amazonpay/thankyou.php";
