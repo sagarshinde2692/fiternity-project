@@ -1003,8 +1003,8 @@ class PaymentGatewayController extends \BaseController {
 			],
 			"note_to_payer": "Contact us for any questions on your order.",
 			"redirect_urls": {
-			  "return_url": "'.Config::get('app.url').'successRoutePaypal",
-			  "cancel_url": "'.Config::get('app.url').'cancleRoutePaypal"
+			  "return_url": "'.Config::get('app.url').'/successRoutePaypal",
+			  "cancel_url": "'.Config::get('app.url').'/cancleRoutePaypal"
 			}
 		}';
 		
