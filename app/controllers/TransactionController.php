@@ -1135,7 +1135,7 @@ class TransactionController extends \BaseController {
 
         $ext = ' +'.$numOfDaysExt.' days';
 
-        if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity && !empty($ratecardDetail['data']['duration']) && count($ratecardDetail['data']['duration'])>0){
+        if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity && !empty($ratecardDetail['data']['duration']) && count($ratecardDetail['data']['duration'])>0 && $finderDetail['data']['finderFlags']['trial']=='auto'){
             $workoutSessionRatecard = Ratecard::where('direct_payment_enable', '1')->where('type', 'workout session')->where('service_id', $data['service_id'])->first();
             if(!empty($workoutSessionRatecard)){
                 $data['studio_extended_validity'] = true;
@@ -1152,6 +1152,12 @@ class TransactionController extends \BaseController {
                     'end_date_extended' => new MongoDate(strtotime($data['end_date'].$ext))
                 ];
             }
+            else {
+                Log::info('workout session ratecard does not exist for studio extended validity: ', [$data['_id']]);
+            }
+        }
+        else {
+            Log::info('Not bookings as studio extended validity: ', [$data['_id']]);
         }
 
         if(isset($old_order_id)){
