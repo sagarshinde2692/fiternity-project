@@ -7598,14 +7598,15 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
         Log::info('input at generate url:::::',Input::all());
-        if(isset($post_params["order_id"])){
+        //if(isset($post_params["order_id"])){
             $order = Order::find((int) $post_params["order_id"] );
             //Log::info($order);
             $val['orderTotalAmount'] = $order->amount;
             $val['sellerOrderId'] = $order->txnid;
-        }else{
-            $val['orderTotalAmount'] = $post_params['orderTotalAmount'];
-        }
+        //}
+        // else{
+        //     $val['orderTotalAmount'] = $post_params['orderTotalAmount'];
+        // }
         $val['orderTotalCurrencyCode'] = "INR";
         $val['sellerNote'] = 'some Note';
         $val['sellerStoreName']= 'Fitternity';
