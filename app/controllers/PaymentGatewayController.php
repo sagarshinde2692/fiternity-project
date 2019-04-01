@@ -1027,7 +1027,7 @@ class PaymentGatewayController extends \BaseController {
 
 			$return_data = [
 				'status' => '200',
-				'message' => $l.'&locale.x=en_IN&country.x=IN'
+				'url' => $l.'&locale.x=en_IN&country.x=IN'
 			];
 			
 		}else{
