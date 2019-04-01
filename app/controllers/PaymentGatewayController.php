@@ -959,19 +959,19 @@ class PaymentGatewayController extends \BaseController {
 		// echo $web_prof;
 
 		// $customArr = array(
-		// 	'order_id' => $post_data['data']['orderid'],
-		// 	'customer_name' => $post_data['data']['firstname'],
-		// 	'customer_email' => $post_data['data']['email'],
-		// 	'customer_phone' => $post_data['data']['phone'],
-		// 	'finder_id' => $post_data['data']['finder_id'],
-		// 	'service_name' => $post_data['data']['service_name'],
-		// 	'amount' => $post_data['data']['amount'],
-		// 	'type' => $post_data['data']['type']
+		// 	'order_id' => $post_data['orderid'],
+		// 	'customer_name' => $post_data['firstname'],
+		// 	'customer_email' => $post_data['email'],
+		// 	'customer_phone' => $post_data['phone'],
+		// 	'finder_id' => $post_data['finder_id'],
+		// 	'service_name' => $post_data['service_name'],
+		// 	'amount' => $post_data['amount'],
+		// 	'type' => $post_data['type']
 		// );
 
 		// $customStr = base64_encode(json_encode($customArr));
 
-		// "soft_descriptor": "'.$post_data['data']['txnid'].'",
+		// "soft_descriptor": "'.$post_data['txnid'].'",
 		$data = '{
 			"intent": "sale",
 			"payer": {
@@ -980,21 +980,21 @@ class PaymentGatewayController extends \BaseController {
 			"transactions": [
 			  {
 				"amount": {
-				  "total": "'.$post_data['data']['amount'].'",
+				  "total": "'.$post_data['amount'].'",
 				  "currency": "INR"
 				},
-				"invoice_number": "'.$post_data['data']['txnid'].'",
+				"invoice_number": "'.$post_data['txnid'].'",
 				"payment_options": {
 				  "allowed_payment_method": "INSTANT_FUNDING_SOURCE"
 				},
 				"item_list": {
 				  "items": [
 					{
-					  "name": "'.ucwords($post_data['data']['productinfo']).'",
-					  "description": "'.ucwords($post_data['data']['service_name']).'",
+					  "name": "'.ucwords($post_data['productinfo']).'",
+					  "description": "'.ucwords($post_data['service_name']).'",
 					  "quantity": "1",
-					  "price": "'.$post_data['data']['amount'].'",
-					  "sku": "'.ucwords($post_data['data']['type']).'",
+					  "price": "'.$post_data['amount'].'",
+					  "sku": "'.ucwords($post_data['type']).'",
 					  "currency": "INR"
 					}
 				  ]
