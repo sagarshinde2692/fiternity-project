@@ -1135,20 +1135,23 @@ class TransactionController extends \BaseController {
 
         $ext = ' +'.$numOfDaysExt.' days';
 
-        if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity){
-            $data['studio_extended_validity'] = true;
-            $data['studio_sessions'] = [
-                'total' => $ratecardDetail['data']['duration'],
-                'cancelled' => 0,
-                'total_cancel_allowed' => intval($ratecardDetail['data']['duration']*0.25)
-            ];
-            $data['studio_membership_duration'] = [
-                'num_of_days' => $numOfDays,
-                'num_of_days_extended' => $numOfDaysExt,
-                'start_date' => new MongoDate(strtotime($data['start_date'])),
-                'end_date' => new MongoDate(strtotime($data['end_date'])),
-                'end_date_extended' => new MongoDate(strtotime($data['end_date'].$ext))
-            ];
+        if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity && !empty($ratecardDetail['data']['duration']) && count($ratecardDetail['data']['duration'])>0){
+            $workoutSessionRatecard = Ratecard::where('direct_payment_enable', '1')->where('type', 'workout session')->where('service_id', $data['service_id'])->first();
+            if(!empty($workoutSessionRatecard)){
+                $data['studio_extended_validity'] = true;
+                $data['studio_sessions'] = [
+                    'total' => $ratecardDetail['data']['duration'],
+                    'cancelled' => 0,
+                    'total_cancel_allowed' => intval($ratecardDetail['data']['duration']*0.25)
+                ];
+                $data['studio_membership_duration'] = [
+                    'num_of_days' => $numOfDays,
+                    'num_of_days_extended' => $numOfDaysExt,
+                    'start_date' => new MongoDate(strtotime($data['start_date'])),
+                    'end_date' => new MongoDate(strtotime($data['end_date'])),
+                    'end_date_extended' => new MongoDate(strtotime($data['end_date'].$ext))
+                ];
+            }
         }
 
         if(isset($old_order_id)){
