@@ -1125,7 +1125,7 @@ class TransactionController extends \BaseController {
             $data['pps_new'] = true;
         }
 
-        $studioExtValidity = (($ratecardDetail['data']['validity']==30 && $ratecardDetail['data']['validity_type']=='days') || ($ratecardDetail['data']['validity']==1 && in_array($ratecardDetail['data']['validity_type'],['months', 'month'])) || ($ratecardDetail['data']['validity']==3 && $ratecardDetail['data']['validity_type']=='months'));
+        $studioExtValidity = (($ratecardDetail['data']['validity']>=30 && $ratecardDetail['data']['validity_type']=='days') || ($ratecardDetail['data']['validity']==1 && in_array($ratecardDetail['data']['validity_type'],['months', 'month'])) || ($ratecardDetail['data']['validity']==3 && $ratecardDetail['data']['validity_type']=='months'));
 
         $numOfDays = (in_array($ratecardDetail['data']['validity_type'], ['month', 'months']))?$ratecardDetail['data']['validity']*30:$ratecardDetail['data']['validity'];
         
@@ -1135,20 +1135,36 @@ class TransactionController extends \BaseController {
 
         $ext = ' +'.$numOfDaysExt.' days';
 
-        if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity){
-            $data['studio_extended_validity'] = true;
-            $data['studio_sessions'] = [
-                'total' => $ratecardDetail['data']['duration'],
-                'cancelled' => 0,
-                'total_cancel_allowed' => intval($ratecardDetail['data']['duration']*0.25)
-            ];
-            $data['studio_membership_duration'] = [
-                'num_of_days' => $numOfDays,
-                'num_of_days_extended' => $numOfDaysExt,
-                'start_date' => new MongoDate(strtotime($data['start_date'])),
-                'end_date' => new MongoDate(strtotime($data['end_date'])),
-                'end_date_extended' => new MongoDate(strtotime($data['end_date'].$ext))
-            ];
+        if(!empty($ratecardDetail['data']['duration'])){
+            Log::info('$ratecardDetail[data][duration]: ', [$ratecardDetail['data']['duration']]);
+        }
+        if(!empty($finderDetail['data']['finder_flags'])){
+            Log::info('$finderDetail[data][finderFlags]: ', [$finderDetail['data']['finder_flags']]);
+        }
+
+        if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity && !empty($ratecardDetail['data']['duration']) && count($ratecardDetail['data']['duration'])>0 && $finderDetail['data']['finder_flags']['trial']=='auto'){
+            $workoutSessionRatecard = Ratecard::where('direct_payment_enable', '1')->where('type', 'workout session')->where('service_id', $data['service_id'])->first();
+            if(!empty($workoutSessionRatecard)){
+                $data['studio_extended_validity'] = true;
+                $data['studio_sessions'] = [
+                    'total' => $ratecardDetail['data']['duration'],
+                    'cancelled' => 0,
+                    'total_cancel_allowed' => intval($ratecardDetail['data']['duration']*0.25)
+                ];
+                $data['studio_membership_duration'] = [
+                    'num_of_days' => $numOfDays,
+                    'num_of_days_extended' => $numOfDaysExt,
+                    'start_date' => new MongoDate(strtotime($data['start_date'])),
+                    'end_date' => new MongoDate(strtotime($data['end_date'])),
+                    'end_date_extended' => new MongoDate(strtotime($data['end_date'].$ext))
+                ];
+            }
+            else {
+                Log::info('workout session ratecard does not exist for studio extended validity: ', [$data['_id']]);
+            }
+        }
+        else {
+            Log::info('Not bookings as studio extended validity: ', [$data['_id']]);
         }
 
         if(isset($old_order_id)){
