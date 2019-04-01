@@ -1125,7 +1125,7 @@ class TransactionController extends \BaseController {
             $data['pps_new'] = true;
         }
 
-        $studioExtValidity = (($ratecardDetail['data']['validity']==30 && $ratecardDetail['data']['validity_type']=='days') || ($ratecardDetail['data']['validity']==1 && in_array($ratecardDetail['data']['validity_type'],['months', 'month'])) || ($ratecardDetail['data']['validity']==3 && $ratecardDetail['data']['validity_type']=='months'));
+        $studioExtValidity = (($ratecardDetail['data']['validity']>=30 && $ratecardDetail['data']['validity_type']=='days') || ($ratecardDetail['data']['validity']==1 && in_array($ratecardDetail['data']['validity_type'],['months', 'month'])) || ($ratecardDetail['data']['validity']==3 && $ratecardDetail['data']['validity_type']=='months'));
 
         $numOfDays = (in_array($ratecardDetail['data']['validity_type'], ['month', 'months']))?$ratecardDetail['data']['validity']*30:$ratecardDetail['data']['validity'];
         
@@ -1134,6 +1134,13 @@ class TransactionController extends \BaseController {
         $numOfDaysExt = ($numOfDays==30)?15:(($numOfDays>=60)?30:0);
 
         $ext = ' +'.$numOfDaysExt.' days';
+
+        if(!empty($ratecardDetail['data']['duration'])){
+            Log::info('$ratecardDetail[data][duration]: ', [$ratecardDetail['data']['duration']]);
+        }
+        if(!empty($finderDetail['data']['finderFlags'])){
+            Log::info('$finderDetail[data][finderFlags]: ', [$finderDetail['data']['finderFlags']]);
+        }
 
         if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity && !empty($ratecardDetail['data']['duration']) && count($ratecardDetail['data']['duration'])>0 && $finderDetail['data']['finderFlags']['trial']=='auto'){
             $workoutSessionRatecard = Ratecard::where('direct_payment_enable', '1')->where('type', 'workout session')->where('service_id', $data['service_id'])->first();
