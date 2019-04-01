@@ -9,6 +9,8 @@ Class FinderMailer extends Mailer {
 
 	protected function bookTrial ($data){
 
+		Log::info(" FinderMailer bookTrial-Vendor");
+
 		$label = 'AutoTrial-Instant-Vendor';
 
 		if(isset($data['type']) && ($data['type'] == "vip_booktrials" || $data['type'] == "vip_booktrials_rewarded" || $data['type'] == "vip_booktrials_invited" )){
@@ -274,6 +276,8 @@ Class FinderMailer extends Mailer {
 	}
 
 	protected function sendPgOrderMail ($data){
+
+		Log::info(" FinderMailer Order-PG-Vendor");
 
 		$label = 'Order-PG-Vendor';
 

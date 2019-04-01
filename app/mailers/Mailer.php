@@ -15,7 +15,21 @@ abstract Class Mailer {
         $class_name = $reflect->getShortName();
 
         $reflect = new \ReflectionClass($qualified_class_name);
-        $objInstance = $reflect->newInstanceArgs();
+		$objInstance = $reflect->newInstanceArgs();
+		
+		Log::info('info at mailer',[$method, $class_name]);
+		$comm_type = 'mails';
+		if($class_name == 'CustomerMailer'){
+			$class_name_comm = 'customer';
+		}
+		else{
+			$class_name_comm = 'finder';
+		}
+        
+        if(!(!isset($arguments[0]['communications']) || !isset($arguments[0]['communications'][$class_name_comm]) || (!isset($arguments[0]['communications'][$class_name_comm][$comm_type])) || (in_array($method, $arguments[0]['communications'][$class_name_comm][$comm_type])))){
+            return null;
+        }
+
 		if(count($arguments) < 2 || (is_int($arguments[1]) && $arguments[1] == 0) || !in_array($method, Config::get('app.delay_methods'))){
 			return call_user_func_array( array($objInstance, $method), $arguments);
 		}else{

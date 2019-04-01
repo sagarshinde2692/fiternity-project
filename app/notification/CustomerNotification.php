@@ -83,6 +83,8 @@ Class CustomerNotification extends Notification{
 
 	protected function cancelBookTrial ($data){
 
+		\Log::info("cancelBookTrial notification:: ", [$data]);
+
 		$label = 'Cancel-Trial-Customer';
 
 		$notif_type = 'open_trial';
