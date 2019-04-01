@@ -1052,11 +1052,11 @@ class PaymentGatewayController extends \BaseController {
 
 		if($response['status'] == 200){
 			if($response['message']['state'] == 'approved'){
-				$order_id = $response['message']['transactions'][0]['invoice_number'];
+				$txnid = $response['message']['transactions'][0]['invoice_number'];
 				//$order_id = "329588";
-				$order = Order::where('_id', intval($order_id))->first(['customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','type'])->toArray();
+				$order = Order::where('txnid', intval($txnid))->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','type'])->toArray();
 				$fin_arr = array(
-					"order_id" => $order_id,
+					"order_id" => $order['_id'],
 					"status" => "success",
 					"customer_name" => $order['customer_name'],
 					"customer_email" => $order['customer_email'],
