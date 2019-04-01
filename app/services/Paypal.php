@@ -63,6 +63,93 @@ Class Paypal {
         return $this->access_token;
     }
 
+    public function listWebProfile(){
+        try {
+            $response = $this->client->request('GET', $this->base_uri.'v1/payment-experience/web-profiles', [
+                'headers' =>
+                    [
+                        'Content-Type' => 'application/json',
+                        'Authorization' => 'Bearer '.$this->access_token.'',
+                    ]
+                ]);
+
+            $res_data = json_decode($response->getBody(), true);
+            
+            $res_da = [  
+                'status'=>'200',
+                'message'=>$res_data
+            ];
+            return $res_da;
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  
+                'status'=>$response->getStatusCode(),
+                'message'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+
+        }catch (Exception $e) {
+
+            $error = [  
+                'status'=>400,
+                'message'=>'Error'
+            ];
+
+            return $error;
+        }
+    }
+
+    public function createWebProfile(){
+        try {
+            $response = $this->client->request('POST', $this->base_uri.'v1/payment-experience/web-profiles', [
+                'headers' =>
+                    [
+                        'Content-Type' => 'application/json',
+                        'Authorization' => 'Bearer '.$this->access_token.'',
+                    ],
+                'body' => '{
+                    "name": "Fitternity Profile",
+                    "input_fields": {
+                      "no_shipping": 1
+                    },
+                    "flow_config": {
+                      "landing_page_type": "billing"
+                    }
+                  }'
+                ]);
+
+            $res_data = json_decode($response->getBody(), true);
+            
+            $res_da = [  
+                'status'=>'200',
+                'message'=>$res_data
+            ];
+            return $res_da;
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  
+                'status'=>$response->getStatusCode(),
+                'message'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+
+        }catch (Exception $e) {
+
+            $error = [  
+                'status'=>400,
+                'message'=>'Error'
+            ];
+
+            return $error;
+        }
+    }
+
     public function createPayment($data = null){
         try {
             $response = $this->client->request('POST', $this->base_uri.'v1/payments/payment', [

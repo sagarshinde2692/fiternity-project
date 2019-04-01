@@ -2173,8 +2173,6 @@ class TransactionController extends \BaseController {
     }
 
     public function success($data = null){
-        print_r($data);
-        exit();
         if($data){
             $data['internal_success'] = true;
         }else{
@@ -2211,18 +2209,16 @@ class TransactionController extends \BaseController {
 
         //If Already Status Successfull Just Send Response
         if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
-
             $resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
             return Response::json($resp,401);
 
         }elseif(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && isset($order->status) && $order->status != '1' && isset($order->order_action) && $order->order_action != 'bought'){
-
             $resp   =   array('status' => 401, 'statustxt' => 'error',"message" => "Status should be Bought");
             return Response::json($resp,401);
         }
       
         $hash_verified = $this->utilities->verifyOrder($data,$order);
-
+        Log::info("successCommon ",[$hash_verified]);
         if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
