@@ -2158,7 +2158,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'geolocation' => array('lat' => $lat, 'lon' => $lon),
                         'offeringrank' => $offrank,
                         'inputservicecat' => '',
-                        'category_subcat'=>$cat['name'].'#'.(!empty($off['name']) ? $off['name'] : ''),
+                        'category_subcat'=>!empty($off['name']) ? $cat['name'].'#'.$off['name'] : "",
                     );
                     return $postfields_data;
                 }

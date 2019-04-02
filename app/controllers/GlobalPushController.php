@@ -864,7 +864,6 @@ class GlobalPushController extends \BaseController
               $offerings = $cat['offerings'];
             foreach ($offerings as $off) {
                 foreach ($locationtags as $loc) {
-                    Log::info($cat['name']);
                 switch (strtolower($cat['name'])) {
                 case 'gyms':
                 $cluster = '';
