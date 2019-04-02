@@ -1309,7 +1309,8 @@ $query = '{
  "inputcat",
  "inputservicecat",
  "outlets",
- "infrastructure_type"
+ "infrastructure_type",
+ "category_subcat"
  ],
  "from": '.$from.',
  "size": '.$size.',

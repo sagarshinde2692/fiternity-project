@@ -319,9 +319,9 @@ return array(
 	// ),
 	//stage
 	'es' =>array(
-	 	'url'		=> 			'127.0.0.1:9200',
-	 	'host'		=> 			'127.0.0.1',
-	 	'port'		=>			9200,
+	 	'url'		=> 			'139.59.16.74:1243',
+	 	'host'		=> 			'139.59.16.74',
+	 	'port'		=>			1243,
 	 	'default_index' => 	'fitternity',
 	 	'default_type' 	=> 	'finder',
 	),
