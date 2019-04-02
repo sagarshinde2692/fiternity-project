@@ -821,7 +821,7 @@ if (!function_exists('get_elastic_service_document')) {
 if (!function_exists('es_curl_request')) {
     function es_curl_request($params)
     {
-
+        
         $ci = curl_init();
         curl_setopt($ci, CURLOPT_TIMEOUT, 200);
         curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
@@ -2157,7 +2157,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'slug' => "",
                         'geolocation' => array('lat' => $lat, 'lon' => $lon),
                         'offeringrank' => $offrank,
-                        'inputservicecat' => ''
+                        'inputservicecat' => '',
+                        'category_subcat'=>!empty($off['name']) ? $cat['name'].'#'.$off['name'] : "",
                     );
                     return $postfields_data;
                 }
