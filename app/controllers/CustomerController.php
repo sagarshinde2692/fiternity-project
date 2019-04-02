@@ -650,7 +650,7 @@ class CustomerController extends \BaseController {
 
 		}else{
 
-			$customerNoEmail = Customer::active()->where('contact_no','LIKE','%'.substr($data['contact_no'], -10).'%')
+			$customerNoEmail = Customer::active()->where('contact_no', substr($data['contact_no'], -10))
 			->where(function($query) use($data) {
 				$query->orWhere('email', 'exists', false)->orWhere('email','=','');
 			})
