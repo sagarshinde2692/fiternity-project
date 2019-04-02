@@ -7608,8 +7608,8 @@ class TransactionController extends \BaseController {
         //     $val['orderTotalAmount'] = $post_params['orderTotalAmount'];
         // }
         $val['orderTotalCurrencyCode'] = "INR";
-        $val['sellerNote'] = 'some Note';
-        $val['sellerStoreName']= 'Fitternity';
+        //$val['sellerNote'] = 'some Note';
+        //$val['sellerStoreName']= 'Fitternity';
         // $val['transactionTimeout'] = Config::get('amazonpay.timeout');
         // For testing in sandbox mode, remove for production
         //$val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
