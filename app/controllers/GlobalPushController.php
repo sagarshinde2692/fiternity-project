@@ -29,313 +29,313 @@ class GlobalPushController extends \BaseController
 
   public function rollingbuildautosuggest(){
 
-    ini_set('max_execution_time', 300000);
+    // ini_set('max_execution_time', 300000);
 
     /*
     appending date to rolling builds for new index
     */
-    $timestamp =  date('Y-m-d');
-    $index_name = $this->name.$timestamp.'-'.random_numbers(3);
+//     $timestamp =  date('Y-m-d');
+//     $index_name = $this->name.$timestamp.'-'.random_numbers(3);
 
-    /*
-   creating new index appended with timestamp
-    */
+//     /*
+//    creating new index appended with timestamp
+//     */
 
-    $url = $this->elasticsearch_url_build."$index_name";
-    $request = array(
-        'url' =>  $url,
-        'port' => $this->elasticsearch_port,
-        'method' => 'POST',
-    );
+//     $url = $this->elasticsearch_url_build."$index_name";
+//     $request = array(
+//         'url' =>  $url,
+//         'port' => $this->elasticsearch_port,
+//         'method' => 'POST',
+//     );
 
-    echo es_curl_request($request);
-    sleep(5);
+//     echo es_curl_request($request);
+//     sleep(5);
 
-    // var_dump($request);exit;
+//     // var_dump($request);exit;
 
-    /*
-  closing newly created index
-    */
+//     /*
+//   closing newly created index
+//     */
 
-    $url = $this->elasticsearch_url_build."$index_name/_close";
-    $request = array(
-        'url' =>  $url,
-        'port' => $this->elasticsearch_port,
-        'method' => 'POST'
-    );
+//     $url = $this->elasticsearch_url_build."$index_name/_close";
+//     $request = array(
+//         'url' =>  $url,
+//         'port' => $this->elasticsearch_port,
+//         'method' => 'POST'
+//     );
 
-    echo es_curl_request($request);
-    sleep(5);
+//     echo es_curl_request($request);
+//     sleep(5);
 
-    $settings = '{
-  "analysis": {
-    "analyzer": {
-      "synonymanalyzer": {
-        "tokenizer": "standard",
-        "filter": ["lowercase", "locationsynfilter"]
-      },
-      "locationanalyzer": {
-        "type": "custom",
-        "filter": ["standard", "locationsynfilter", "lowercase", "delimiter-filter"],
-        "tokenizer": "my_ngram_tokenizer"
-      },
-      "categoryanalyzer": {
-        "type": "custom",
-        "filter": ["standard", "categorysynfilter", "lowercase", "delimiter-filter"],
-        "tokenizer": "my_ngram_tokenizer"
-      },
-      "search_analyzer": {
-        "type": "custom",
-        "filter": [
-          "lowercase"
-        ],
-        "tokenizer": "standard"
-      },
-      "index_analyzerV1": {
-        "type": "custom",
-        "filter": [
-          "standard",
-          "lowercase"
-        ],
-        "tokenizer": "my_ngram_tokenizer"
-      },
-      "index_analyzerV2": {
-        "type": "custom",
-        "filter": [
-          "standard",
-          "lowercase",
-          "ngram-filter"
-        ],
-        "tokenizer": "standard"
-      },
-      "input_analyzer": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "standard",
-          "lowercase",
-          "ngram-filter",
-          "titlesynfilter"
-        ]
-      }
-    },
-    "tokenizer": {
-      "my_ngram_tokenizer": {
-        "type": "edgeNGram",
-        "min_gram": "3",
-        "max_gram": "20"
-      },
-      "input_ngram_tokenizer": {
-        "type": "edgeNGram",
-        "min_gram": "2",
-        "max_gram": "25"
-      }
-    },
-    "filter": {
-      "ngram-filter": {
-        "type": "edgeNGram",
-        "min_gram": "1",
-        "max_gram": "20"
-      },
-      "stop-filter": {
-        "type": "stop",
-        "stopwords": "_english_",
-        "ignore_case": "true"
-      },
-      "snowball-filter": {
-        "type": "snowball",
-        "language": "english"
-      },
-      "delimiter-filter": {
-        "type": "word_delimiter",
-        "preserve_original": true
-      },
-      "locationsynfilter": {
-        "type": "synonym",
-        "synonyms": [
-          "lokhandwala,andheri west",
-          "versova,andheri west",
-          "oshiwara,andheri west",
-          "chakala,andheri east",
-          "jb nagar,andheri east",
-          "marol,andheri east",
-          "sakinaka,andheri east",
-          "chandivali,powai",
-          "vidyavihar,ghatkopar",
-          "dharavi,sion",
-          "chunabatti,sion",
-          "deonar,chembur",
-          "govandi,chembur",
-          "anushakti nagar,chembur",
-          "charkop,kandivali",
-          "seven bungalows,andheri west",
-          "opera house,grant road",
-          "nana chowk,grant road",
-          "shivaji park,dadar",
-          "lalbaug,dadar",
-          "walkeshwar,malabar hill",
-          "tilak nagar,chembur",
-          "vashi,navi mumbai",
-          "sanpada,navi mumbai",
-          "juinagar,navi mumbai",
-          "nerul,navi mumbai",
-          "seawoods,navi mumbai",
-          "cbd belapur,navi mumbai",
-          "kharghar,navi mumbai",
-          "airoli,navi mumbai",
-          "kamothe,navi mumbai",
-          "kopar khairan,navi mumbai",
-          "gamdevi,hughes road",
-          "mazgaon,byculla",
-          "navi mumbai,vashi",
-          "navi mumbai,sanpada",
-          "navi mumbai,juinagar",
-          "navi mumbai,nerul",
-          "navi mumbai,seawoods",
-          "navi mumbai,cbd belapur",
-          "navi mumbai,kharghar",
-          "navi mumbai,airoli",
-          "navi mumbai,kamothe",
-          "navi mumbai,kopar khairan",
-          "gamdevi,hughes road",
-          "mazgaon,byculla"
-        ]
-      },
-      "categorysynfilter": {
-        "type": "synonym",
-        "synonyms": [
-          "gyms,gymnasium, gym deals, gym workout",
-          "zumba,zumba fitness,zumba workout,zumba dance,zumba dance workout,zumba instructor,zumba weight loss,zumba training,aerobics",
-          "crossfit,crossfit workouts,crossfit training,crossfit box,crossfit gym,crossfit weight loss,crossfit fitness",
-          "pilates,pilates exercises,pilates weiht loss",
-          "mma and kick boxing,kickboxing classes,mixed martial arts,mma,kickboxing training",
-          "marathon training,marathon coach,marathon fitness,half marathon training,running clubs,marathon training clubs",
-          "healthy tiffins,tiffins,tiffining,tiffing service,tiffing",
-          "personal trainers,yoga instructor,yoga trainer"
-        ]
-      },
-      "titlesynfilter": {
-        "type": "synonym",
-        "synonyms": [
-          "golds , gold, gold\'s",
-          "talwalkars, talwalkar"
-        ]
+//     $settings = '{
+//   "analysis": {
+//     "analyzer": {
+//       "synonymanalyzer": {
+//         "tokenizer": "standard",
+//         "filter": ["lowercase", "locationsynfilter"]
+//       },
+//       "locationanalyzer": {
+//         "type": "custom",
+//         "filter": ["standard", "locationsynfilter", "lowercase", "delimiter-filter"],
+//         "tokenizer": "my_ngram_tokenizer"
+//       },
+//       "categoryanalyzer": {
+//         "type": "custom",
+//         "filter": ["standard", "categorysynfilter", "lowercase", "delimiter-filter"],
+//         "tokenizer": "my_ngram_tokenizer"
+//       },
+//       "search_analyzer": {
+//         "type": "custom",
+//         "filter": [
+//           "lowercase"
+//         ],
+//         "tokenizer": "standard"
+//       },
+//       "index_analyzerV1": {
+//         "type": "custom",
+//         "filter": [
+//           "standard",
+//           "lowercase"
+//         ],
+//         "tokenizer": "my_ngram_tokenizer"
+//       },
+//       "index_analyzerV2": {
+//         "type": "custom",
+//         "filter": [
+//           "standard",
+//           "lowercase",
+//           "ngram-filter"
+//         ],
+//         "tokenizer": "standard"
+//       },
+//       "input_analyzer": {
+//         "type": "custom",
+//         "tokenizer": "standard",
+//         "filter": [
+//           "standard",
+//           "lowercase",
+//           "ngram-filter",
+//           "titlesynfilter"
+//         ]
+//       }
+//     },
+//     "tokenizer": {
+//       "my_ngram_tokenizer": {
+//         "type": "edgeNGram",
+//         "min_gram": "3",
+//         "max_gram": "20"
+//       },
+//       "input_ngram_tokenizer": {
+//         "type": "edgeNGram",
+//         "min_gram": "2",
+//         "max_gram": "25"
+//       }
+//     },
+//     "filter": {
+//       "ngram-filter": {
+//         "type": "edgeNGram",
+//         "min_gram": "1",
+//         "max_gram": "20"
+//       },
+//       "stop-filter": {
+//         "type": "stop",
+//         "stopwords": "_english_",
+//         "ignore_case": "true"
+//       },
+//       "snowball-filter": {
+//         "type": "snowball",
+//         "language": "english"
+//       },
+//       "delimiter-filter": {
+//         "type": "word_delimiter",
+//         "preserve_original": true
+//       },
+//       "locationsynfilter": {
+//         "type": "synonym",
+//         "synonyms": [
+//           "lokhandwala,andheri west",
+//           "versova,andheri west",
+//           "oshiwara,andheri west",
+//           "chakala,andheri east",
+//           "jb nagar,andheri east",
+//           "marol,andheri east",
+//           "sakinaka,andheri east",
+//           "chandivali,powai",
+//           "vidyavihar,ghatkopar",
+//           "dharavi,sion",
+//           "chunabatti,sion",
+//           "deonar,chembur",
+//           "govandi,chembur",
+//           "anushakti nagar,chembur",
+//           "charkop,kandivali",
+//           "seven bungalows,andheri west",
+//           "opera house,grant road",
+//           "nana chowk,grant road",
+//           "shivaji park,dadar",
+//           "lalbaug,dadar",
+//           "walkeshwar,malabar hill",
+//           "tilak nagar,chembur",
+//           "vashi,navi mumbai",
+//           "sanpada,navi mumbai",
+//           "juinagar,navi mumbai",
+//           "nerul,navi mumbai",
+//           "seawoods,navi mumbai",
+//           "cbd belapur,navi mumbai",
+//           "kharghar,navi mumbai",
+//           "airoli,navi mumbai",
+//           "kamothe,navi mumbai",
+//           "kopar khairan,navi mumbai",
+//           "gamdevi,hughes road",
+//           "mazgaon,byculla",
+//           "navi mumbai,vashi",
+//           "navi mumbai,sanpada",
+//           "navi mumbai,juinagar",
+//           "navi mumbai,nerul",
+//           "navi mumbai,seawoods",
+//           "navi mumbai,cbd belapur",
+//           "navi mumbai,kharghar",
+//           "navi mumbai,airoli",
+//           "navi mumbai,kamothe",
+//           "navi mumbai,kopar khairan",
+//           "gamdevi,hughes road",
+//           "mazgaon,byculla"
+//         ]
+//       },
+//       "categorysynfilter": {
+//         "type": "synonym",
+//         "synonyms": [
+//           "gyms,gymnasium, gym deals, gym workout",
+//           "zumba,zumba fitness,zumba workout,zumba dance,zumba dance workout,zumba instructor,zumba weight loss,zumba training,aerobics",
+//           "crossfit,crossfit workouts,crossfit training,crossfit box,crossfit gym,crossfit weight loss,crossfit fitness",
+//           "pilates,pilates exercises,pilates weiht loss",
+//           "mma and kick boxing,kickboxing classes,mixed martial arts,mma,kickboxing training",
+//           "marathon training,marathon coach,marathon fitness,half marathon training,running clubs,marathon training clubs",
+//           "healthy tiffins,tiffins,tiffining,tiffing service,tiffing",
+//           "personal trainers,yoga instructor,yoga trainer"
+//         ]
+//       },
+//       "titlesynfilter": {
+//         "type": "synonym",
+//         "synonyms": [
+//           "golds , gold, gold\'s",
+//           "talwalkars, talwalkar"
+//         ]
 
-      }
-    }
-  }
-}';
+//       }
+//     }
+//   }
+// }';
 
-    /*
-    add setting to new index
-    */
-    $url                = $this->elasticsearch_url_build."$index_name/_settings";
-    $postfields_data    = json_encode(json_decode($settings,true));
+//     /*
+//     add setting to new index
+//     */
+//     $url                = $this->elasticsearch_url_build."$index_name/_settings";
+//     $postfields_data    = json_encode(json_decode($settings,true));
 
-    $request = array(
-        'url' => $url,
-        'port' => $this->elasticsearch_port,
-        'postfields' => $postfields_data,
-        'method' => 'PUT'
-    );
+//     $request = array(
+//         'url' => $url,
+//         'port' => $this->elasticsearch_port,
+//         'postfields' => $postfields_data,
+//         'method' => 'PUT'
+//     );
 
-    echo es_curl_request($request);
-    sleep(5);
+//     echo es_curl_request($request);
+//     sleep(5);
 
-    /*
-    open newly created index
-    */
+//     /*
+//     open newly created index
+//     */
 
-    $url = $this->elasticsearch_url_build."$index_name/_open";
-    $request = array(
-        'url' =>  $url,
-        'port' => $this->elasticsearch_port,
-        'method' => 'POST'
-    );
+//     $url = $this->elasticsearch_url_build."$index_name/_open";
+//     $request = array(
+//         'url' =>  $url,
+//         'port' => $this->elasticsearch_port,
+//         'method' => 'POST'
+//     );
 
-    echo es_curl_request($request);
-    sleep(4);
+//     echo es_curl_request($request);
+//     sleep(4);
 
-    $mapping = '{
-          "_source": {
-            "compress": "true"
-          },
-          "_all": {
-            "enabled": "true"
-          },
-          "properties": {
-            "input": {
-              "type": "string",
-              "index_analyzer": "input_analyzer"
-            },
-            "autosuggestvalue": {
-              "type": "string",
-              "index": "not_analyzed",
-              "store": "yes"
-            },
-            "city": {
-              "type": "string",
-              "index": "not_analyzed",
-              "store": "yes"
-            },
-            "location": {
-              "type": "string",
-              "index": "not_analyzed",
-              "store": "yes"
-            },
-            "slug": {
-              "type": "string",
-              "index": "not_analyzed",
-              "store": "yes"
-            },
-            "type": {
-              "type": "string",
-              "index": "not_analyzed",
-              "store": "yes"
-            },
-            "inputloc1":{
-              "type": "string",
-              "index_analyzer": "locationanalyzer"
-            },
-            "inputv3":{
-              "type": "string",
-              "index_analyzer": "index_analyzerV2"
-            },
-            "inputv4":{
-              "type": "string",
-              "index_analyzer": "index_analyzerV2"
-            },
-            "inputcat1":{
-              "type": "string",
-              "index_analyzer": "categoryanalyzer"
-            },
-            "inputservicecat":{
-              "type": "string",
-              "index_analyzer": "index_analyzerV2"
-            },
-            "geolocation" : {
-              "type" : "geo_point",
-              "geohash": true,
-              "geohash_prefix": true,
-              "geohash_precision": 10
-            }
-          }
-        }';
+//     $mapping = '{
+//           "_source": {
+//             "compress": "true"
+//           },
+//           "_all": {
+//             "enabled": "true"
+//           },
+//           "properties": {
+//             "input": {
+//               "type": "string",
+//               "index_analyzer": "input_analyzer"
+//             },
+//             "autosuggestvalue": {
+//               "type": "string",
+//               "index": "not_analyzed",
+//               "store": "yes"
+//             },
+//             "city": {
+//               "type": "string",
+//               "index": "not_analyzed",
+//               "store": "yes"
+//             },
+//             "location": {
+//               "type": "string",
+//               "index": "not_analyzed",
+//               "store": "yes"
+//             },
+//             "slug": {
+//               "type": "string",
+//               "index": "not_analyzed",
+//               "store": "yes"
+//             },
+//             "type": {
+//               "type": "string",
+//               "index": "not_analyzed",
+//               "store": "yes"
+//             },
+//             "inputloc1":{
+//               "type": "string",
+//               "index_analyzer": "locationanalyzer"
+//             },
+//             "inputv3":{
+//               "type": "string",
+//               "index_analyzer": "index_analyzerV2"
+//             },
+//             "inputv4":{
+//               "type": "string",
+//               "index_analyzer": "index_analyzerV2"
+//             },
+//             "inputcat1":{
+//               "type": "string",
+//               "index_analyzer": "categoryanalyzer"
+//             },
+//             "inputservicecat":{
+//               "type": "string",
+//               "index_analyzer": "index_analyzerV2"
+//             },
+//             "geolocation" : {
+//               "type" : "geo_point",
+//               "geohash": true,
+//               "geohash_prefix": true,
+//               "geohash_precision": 10
+//             }
+//           }
+//         }';
 
-    /*
-    add mappings to new index
-    */
+//     /*
+//     add mappings to new index
+//     */
 
-    $postfields_data    =   json_encode(json_decode($mapping,true));
-    $url        =   $this->elasticsearch_url_build."$index_name/autosuggestor/_mapping";
-    $request = array(
-        'url' => $url,
-        'port' => $this->elasticsearch_port,
-        'method' => 'PUT',
-        'postfields' => $postfields_data
-    );
-    echo es_curl_request($request);
-    sleep(5);
+//     $postfields_data    =   json_encode(json_decode($mapping,true));
+//     $url        =   $this->elasticsearch_url_build."$index_name/autosuggestor/_mapping";
+//     $request = array(
+//         'url' => $url,
+//         'port' => $this->elasticsearch_port,
+//         'method' => 'PUT',
+//         'postfields' => $postfields_data
+//     );
+//     echo es_curl_request($request);
+//     sleep(5);
 
     /*
 
@@ -343,21 +343,21 @@ class GlobalPushController extends \BaseController
 
     */
 
-
-    $this->pushBrandOutlets($index_name);
-    $this->pushcategorylocations($index_name);
-    $this->pushcategorycity($index_name);
-    $this->pushallfittnesslocation($index_name);
-    // $this->pushservicecategorylocations($index_name);
-    // $this->pushservicecategorycity($index_name);
-    foreach ($this->citylist as $key => $city) {
-      $this->pushfinders($index_name, $city);
-    }
+    $index_name = '';
+    // $this->pushBrandOutlets($index_name);
+    // $this->pushcategorylocations($index_name);
+    // $this->pushcategorycity($index_name);
+    // $this->pushallfittnesslocation($index_name);
+    // // $this->pushservicecategorylocations($index_name);
+    // // $this->pushservicecategorycity($index_name);
+    // foreach ($this->citylist as $key => $city) {
+    //   $this->pushfinders($index_name, $city);
+    // }
 
 
 //        $this->pushcategorywithfacilities($index_name);
 //        $this->pushcategoryoffering($index_name);
-       $this->pushcategoryofferinglocation($index_name);
+       return $this->pushcategoryofferinglocation($index_name);
 //        $this->pushcategoryfacilitieslocation($index_name);
 //        $this->pushofferingcity($index_name);
 
@@ -851,7 +851,7 @@ class GlobalPushController extends \BaseController
       $locationtags = Location::where('cities', $city)
           ->get();
 
-      $categorytag_offerings = Findercategorytag::active()
+    $categorytag_offerings = Findercategorytag::active()
           ->whereIn('cities',array($city))
           ->with('offerings')
           ->orderBy('ordering')
@@ -859,20 +859,22 @@ class GlobalPushController extends \BaseController
           //->whereIn('_id',array(32))
           ->get(array('_id','name','offering_header','slug','status','offerings'));
 
-      foreach ($categorytag_offerings as $cat) {
-        $catprioroff = isset($this->amenitiesrank[strtolower($cat['name'])]) ? $this->amenitiesrank[strtolower($cat['name'])] : null;
-        $offerings = $cat['offerings'];
-        foreach ($offerings as $off) {
-          foreach ($locationtags as $loc) {
-            switch (strtolower($cat['name'])) {
-              case 'gyms':
+          foreach ($categorytag_offerings as $cat) {
+              $catprioroff = isset($this->amenitiesrank[strtolower($cat['name'])]) ? $this->amenitiesrank[strtolower($cat['name'])] : null;
+              $offerings = $cat['offerings'];
+              
+            foreach ($offerings as $off) {
+            foreach ($locationtags as $loc) {
+                switch (strtolower($cat['name'])) {
+                case 'gyms':
+                return $cat;
                 $cluster = '';
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
                 $string = ucwords($cat['name']).' with '.ucwords($off['name']).' in '.ucwords($loc['name']);
                 $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                // echo "<br> ---  ".es_curl_request($request);
                 break;
 
               case 'yoga':
@@ -882,7 +884,7 @@ class GlobalPushController extends \BaseController
                 $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                // echo "<br> ---  ".es_curl_request($request);
                 break;
 
               case 'zumba':
@@ -893,7 +895,7 @@ class GlobalPushController extends \BaseController
                   $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                   $postfields_data = json_encode($postdata);
                   $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                  echo "<br> ---  ".es_curl_request($request);
+                //   echo "<br> ---  ".es_curl_request($request);
                 }
                 break;
 
@@ -905,7 +907,7 @@ class GlobalPushController extends \BaseController
                 $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                // echo "<br> ---  ".es_curl_request($request);
                 break;
 
               case 'dance':
@@ -915,7 +917,7 @@ class GlobalPushController extends \BaseController
                 $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                // echo "<br> ---  ".es_curl_request($request);
                 break;
 
               case 'fitness studios':
@@ -925,7 +927,7 @@ class GlobalPushController extends \BaseController
                 $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                // echo "<br> ---  ".es_curl_request($request);
                 break;
 
               case 'crossfit':
@@ -935,7 +937,7 @@ class GlobalPushController extends \BaseController
                 $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                // echo "<br> ---  ".es_curl_request($request);
                 break;
 
               case 'pilates':
@@ -945,7 +947,7 @@ class GlobalPushController extends \BaseController
                 $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                // echo "<br> ---  ".es_curl_request($request);
                 break;
 
               case 'mma & kickboxing':
@@ -955,7 +957,7 @@ class GlobalPushController extends \BaseController
                 $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                // echo "<br> ---  ".es_curl_request($request);
                 break;
 
               default:
@@ -965,7 +967,7 @@ class GlobalPushController extends \BaseController
                 $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                // echo "<br> ---  ".es_curl_request($request);
                 break;
             }
           }

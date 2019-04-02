@@ -821,7 +821,7 @@ if (!function_exists('get_elastic_service_document')) {
 if (!function_exists('es_curl_request')) {
     function es_curl_request($params)
     {
-
+        return ;
         $ci = curl_init();
         curl_setopt($ci, CURLOPT_TIMEOUT, 200);
         curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
