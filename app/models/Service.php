@@ -461,9 +461,9 @@ class Service extends \Basemodel{
 
                 if(!empty($value['type']) && $value['type'] == "workout session"){
                     if(!empty($value['offers'][0]['remarks'])){
-                        $value['offers'][0]['remarks'] = "Book multiple sessions at this price";
+                        $value['offers'][0]['remarks'] = "Book multiple sessions at this price".(!empty($value['offers'][0]['remarks']) ? $value['offers'][0]['remarks'] : "");;
                     }else{
-                        $value['remarks'] = "Book multiple sessions at this price";
+                        $value['remarks'] =  "Book multiple sessions at this price. ".(!empty($value['remarks']) ? $value['remarks'] : "");
                     }
                 }
 
