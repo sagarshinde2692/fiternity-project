@@ -343,15 +343,16 @@ class GlobalPushController extends \BaseController
 
     */
 
-    // $this->pushBrandOutlets($index_name);
-    // $this->pushcategorylocations($index_name);
-    // $this->pushcategorycity($index_name);
-    // $this->pushallfittnesslocation($index_name);
-    // // $this->pushservicecategorylocations($index_name);
-    // // $this->pushservicecategorycity($index_name);
-    // foreach ($this->citylist as $key => $city) {
-    //   $this->pushfinders($index_name, $city);
-    // }
+    
+    $this->pushBrandOutlets($index_name);
+    $this->pushcategorylocations($index_name);
+    $this->pushcategorycity($index_name);
+    $this->pushallfittnesslocation($index_name);
+    // $this->pushservicecategorylocations($index_name);
+    // $this->pushservicecategorycity($index_name);
+    foreach ($this->citylist as $key => $city) {
+      $this->pushfinders($index_name, $city);
+    }
 
 
 //        $this->pushcategorywithfacilities($index_name);
@@ -855,7 +856,6 @@ class GlobalPushController extends \BaseController
           ->with('offerings')
           ->orderBy('ordering')
           ->whereNotIn('_id', array(22,30))
-          ->whereIn('name', ['zumba'])
           //->whereIn('_id',array(32))
           ->get(array('_id','name','offering_header','slug','status','offerings'));
 
