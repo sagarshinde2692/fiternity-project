@@ -8152,9 +8152,9 @@ Class Utilities {
 
                 Log::info('scheduleDates: ', [count($scheduleDates)]);
 
-                $tc=new \TransactionController( new CustomerMailer(), new CustomerSms(), new Sidekiq(), new FinderMailer(), new FinderSms(), $this,new CustomerReward(), new CustomerNotification(), new Fitapi(), new Fitweb());
+                // $tc=new \TransactionController( new CustomerMailer(), new CustomerSms(), new Sidekiq(), new FinderMailer(), new FinderSms(), $this,new CustomerReward(), new CustomerNotification(), new Fitapi(), new Fitweb());
 
-                $sc=new \SchedulebooktrialsController( new CustomerMailer(), new FinderMailer(), new CustomerSms(), new FinderSms(), new CustomerNotification(), new Fitnessforce(), new Sidekiq(), new OzontelOutboundCall(new Sidekiq()), $this,new CustomerReward(), new Jwtauth());
+                // $sc=new \SchedulebooktrialsController( new CustomerMailer(), new FinderMailer(), new CustomerSms(), new FinderSms(), new CustomerNotification(), new Fitnessforce(), new Sidekiq(), new OzontelOutboundCall(new Sidekiq()), $this,new CustomerReward(), new Jwtauth());
 
                 $ratecard = Ratecard::active()->where('service_id', $order['service_id'])->where('type', 'workout session')->first();
 
