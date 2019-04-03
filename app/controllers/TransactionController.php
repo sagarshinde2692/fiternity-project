@@ -2868,8 +2868,12 @@ class TransactionController extends \BaseController {
             }
             // $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>0),Config::get('app.queue'));
             if(!empty($order['studio_extended_validity']) && $order['studio_extended_validity']){
-                $scheduleBookingsRedisId = Queue::connection('redis')->push('TransactionController@scheduleStudioBookings', array('order_id'=>$order_id, 'isPaid'=>false),Config::get('app.queue'));
-                $order->update(['schedule_bookings_redis_id'=>$scheduleBookingsRedisId]);
+                Order::$withoutAppends = true;
+                $prevOrderCheck = Order::where(['studio_extended_validity_order_id' => $order_id])->get()->toArray();
+                if(empty($prevOrderCheck)){
+                    $scheduleBookingsRedisId = Queue::connection('redis')->push('TransactionController@scheduleStudioBookings', array('order_id'=>$order_id, 'isPaid'=>false),Config::get('app.queue'));
+                    $order->update(['schedule_bookings_redis_id'=>$scheduleBookingsRedisId]);
+                }
             }
             Log::info("successCommon returned");
             Log::info($order['_id']);
