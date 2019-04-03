@@ -193,7 +193,7 @@ Class CustomerMailer extends Mailer {
 		);
 
 		$vendor_token = Request::header('Authorization-Vendor');
-
+		
 		if($vendor_token){
 
             $decodeKioskVendorToken = decodeKioskVendorToken();
@@ -202,11 +202,15 @@ Class CustomerMailer extends Mailer {
 
 			$finder_id = (int)$vendor->_id;
 			\Log::info('register     :: ', [$finder_id]);
-			if($finder_id != 9932){
-				\Log::info('call common');
+			if($finder_id == 9932){
+				\Log::info('no call common');
+			}else{
+				\Log::info('no call common');
 				return $this->common($label,$data,$message_data);
 			}
         }
+			
+		return $this->common($label,$data,$message_data);
 		
 	}
 
