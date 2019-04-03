@@ -1126,7 +1126,7 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($ratecardDetail) && !empty($finderDetail)){
-            $studioExtValidity = (($ratecardDetail['data']['validity']>=30 && $ratecardDetail['data']['validity_type']=='days') || ($ratecardDetail['data']['validity']==1 && in_array($ratecardDetail['data']['validity_type'],['months', 'month'])) || ($ratecardDetail['data']['validity']==3 && $ratecardDetail['data']['validity_type']=='months'));
+            $studioExtValidity = (($ratecardDetail['data']['validity']>=30 && $ratecardDetail['data']['validity_type']=='days') || ($ratecardDetail['data']['validity']>=1 && in_array($ratecardDetail['data']['validity_type'],['months', 'month'])));
 
             $numOfDays = (in_array($ratecardDetail['data']['validity_type'], ['month', 'months']))?$ratecardDetail['data']['validity']*30:$ratecardDetail['data']['validity'];
             
@@ -1143,7 +1143,7 @@ class TransactionController extends \BaseController {
                 Log::info('$finderDetail[data][finderFlags]: ', [$finderDetail['data']['finder_flags']]);
             }
 
-            if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity && !empty($ratecardDetail['data']['duration']) && count($ratecardDetail['data']['duration'])>0 && $finderDetail['data']['finder_flags']['trial']=='auto'){
+            if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity && !empty($ratecardDetail['data']['duration']) && count($ratecardDetail['data']['duration'])>0 && (empty($finderDetail['data']['finder_flags']['trial']) || $finderDetail['data']['finder_flags']['trial']=='auto')){
                 $workoutSessionRatecard = Ratecard::where('direct_payment_enable', '1')->where('type', 'workout session')->where('service_id', $data['service_id'])->first();
                 if(!empty($workoutSessionRatecard)){
                     $data['studio_extended_validity'] = true;
@@ -2868,8 +2868,12 @@ class TransactionController extends \BaseController {
             }
             // $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>0),Config::get('app.queue'));
             if(!empty($order['studio_extended_validity']) && $order['studio_extended_validity']){
-                $scheduleBookingsRedisId = Queue::connection('redis')->push('TransactionController@scheduleStudioBookings', array('order_id'=>$order_id, 'isPaid'=>false),Config::get('app.queue'));
-                $order->update(['schedule_bookings_redis_id'=>$scheduleBookingsRedisId]);
+                Order::$withoutAppends = true;
+                $prevOrderCheck = Order::where(['studio_extended_validity_order_id' => $order_id])->get()->toArray();
+                if(empty($prevOrderCheck)){
+                    $scheduleBookingsRedisId = Queue::connection('redis')->push('TransactionController@scheduleStudioBookings', array('order_id'=>$order_id, 'isPaid'=>false),Config::get('app.queue'));
+                    $order->update(['schedule_bookings_redis_id'=>$scheduleBookingsRedisId]);
+                }
             }
             Log::info("successCommon returned");
             Log::info($order['_id']);

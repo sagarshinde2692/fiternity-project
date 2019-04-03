@@ -8133,7 +8133,9 @@ Class Utilities {
 		Order::$withoutAppends = true;
 		$order = Order::where('_id', $order_id)->first();
 
-		if(!empty($order['studio_extended_validity']) && $order['studio_extended_validity']){
+        $existingOrdersCount = Order::active()->where('studio_extended_validity_order_id', $order_id)->count();
+
+		if(!empty($order['studio_extended_validity']) && $order['studio_extended_validity'] && ((!empty($order['studio_sessions']['total']) && isset($existingOrdersCount) && $existingOrdersCount<$order['studio_sessions']['total']) || ($isPaid && $order['studio_sessions']['cancelled']<$order['studio_sessions']['total_cancel_allowed']))){
 			Log::info('making studio bookings...');
 
 			$scheduleDates = [];
@@ -8150,106 +8152,111 @@ Class Utilities {
 
                 Log::info('scheduleDates: ', [count($scheduleDates)]);
 
-                $tc=new \TransactionController( new CustomerMailer(), new CustomerSms(), new Sidekiq(), new FinderMailer(), new FinderSms(), $this,new CustomerReward(), new CustomerNotification(), new Fitapi(), new Fitweb());
+                // $tc=new \TransactionController( new CustomerMailer(), new CustomerSms(), new Sidekiq(), new FinderMailer(), new FinderSms(), $this,new CustomerReward(), new CustomerNotification(), new Fitapi(), new Fitweb());
 
-                $sc=new \SchedulebooktrialsController( new CustomerMailer(), new FinderMailer(), new CustomerSms(), new FinderSms(), new CustomerNotification(), new Fitnessforce(), new Sidekiq(), new OzontelOutboundCall(new Sidekiq()), $this,new CustomerReward(), new Jwtauth());
+                // $sc=new \SchedulebooktrialsController( new CustomerMailer(), new FinderMailer(), new CustomerSms(), new FinderSms(), new CustomerNotification(), new Fitnessforce(), new Sidekiq(), new OzontelOutboundCall(new Sidekiq()), $this,new CustomerReward(), new Jwtauth());
 
                 $ratecard = Ratecard::active()->where('service_id', $order['service_id'])->where('type', 'workout session')->first();
 
                 foreach($scheduleDates as $booking_date) {
-                    Log::info('booking now....');
-                    $captureReq = [
-                        "booking_for_others" => false,
-                        "cashback" => false,
-                        "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
-                        "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
-                        "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
-                        "customer_source" => (!empty($order['customer_source']))?$order['customer_source']:null,
-                        "wallet" => false,
-                        "device_type" => (!empty($order['device_type']))?$order['device_type']:null,
-                        "finder_id" => $order['finder_id'],
-                        "gender" => $order['gender'],
-                        "gcm_reg_id" => (!empty($order['gcm_reg_id']))?$order['gcm_reg_id']:null,
-                        "schedule_date" => $booking_date['schedule_date'],
-                        "schedule_slot" => $booking_date['schedule_slot'],
-                        "pt_applied" => (!empty($order['pt_applied']))?$order['pt_applied']:null,
-                        "customer_quantity" => 1,
-                        "ratecard_id" => $ratecard['_id'],
-                        "reward_ids" => [],
-                        "service_id" => $order['service_id'],
-                        "type" => "workout-session",
-                        "studio_extended_validity_order_id" => $order['_id']
-                    ];
-                    if($isPaid){
-                        $captureReq['studio_extended_session'] = true;
-                    }
-                    $captureRes = json_decode(json_encode($tc->capture($captureReq)), true);
-
-                    if(!(empty($captureRes['status']) || $captureRes['status'] != 200 || empty($captureRes['data']['orderid']) || empty($captureRes['data']['email']))){
-                        $booktrialReq = [
-                            "order_id" => $captureRes['data']['orderid'],
-                            "status" => "success",
-                            "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+                    $existingOrdersCountRecheck = Order::active()->where('studio_extended_validity_order_id', $order_id)->count();
+                    if(($existingOrdersCountRecheck<$order['studio_sessions']['total']) || ($isPaid && $order['studio_sessions']['cancelled']<$order['studio_sessions']['total_cancel_allowed'])){
+                        Log::info('booking now....');
+                        $captureReq = [
+                            "booking_for_others" => false,
+                            "cashback" => false,
                             "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+                            "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
                             "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+                            "customer_source" => (!empty($order['customer_source']))?$order['customer_source']:null,
+                            "wallet" => false,
+                            "device_type" => (!empty($order['device_type']))?$order['device_type']:null,
+                            "finder_id" => $order['finder_id'],
+                            "gender" => $order['gender'],
+                            "gcm_reg_id" => (!empty($order['gcm_reg_id']))?$order['gcm_reg_id']:null,
                             "schedule_date" => $booking_date['schedule_date'],
                             "schedule_slot" => $booking_date['schedule_slot'],
-                            "finder_id" => $order['finder_id'],
-                            "service_name" => $captureRes['data']['service_name'],
-                            "service_id" => $order['service_id'],
+                            "pt_applied" => (!empty($order['pt_applied']))?$order['pt_applied']:null,
+                            "customer_quantity" => 1,
                             "ratecard_id" => $ratecard['_id'],
+                            "reward_ids" => [],
+                            "service_id" => $order['service_id'],
                             "type" => "workout-session",
-                            "studio_extended_validity_order_id" => $order['_id'],
-                            "communications" => [
-                                "customer" => [
-                                    "mails" => [
-                                        'bookTrialReminderBefore3Hour',
-                                        'bookTrialReminderBefore12Hour',
-                                        'cancelBookTrial',
-                                        'cancelBookTrialByVendor'
-                                    ],
-                                    "sms" => [
-                                        'bookTrialReminderBefore3Hour',
-                                        'bookTrialReminderBefore12Hour',
-                                        'cancelBookTrial',
-                                        'cancelBookTrialByVendor'
-                                    ],
-                                    "notifications" => [
-                                        'bookTrialReminderBefore10Min',
-                                        'bookTrialReminderBefore3Hour',
-                                        'bookTrialReminderBefore12Hour',
-                                        'cancelBookTrial',
-                                        'cancelBookTrialByVendor'
-                                    ]
-                                ],
-                                "finder" => [
-                                    "mails" => [],
-                                    "sms" => [],
-                                    "notifications" => []
-                                ]
-                            ]
+                            "studio_extended_validity_order_id" => $order['_id']
                         ];
-
                         if($isPaid){
-                            $booktrialReq['studio_extended_session'] = true;
-                            if(!empty($booktrialReq['communications']['customer'])) {
-                                unset($booktrialReq['communications']['customer']);
-                            }
-                            $booktrialReq["communications"]["finder"] = [
-                                "mails" => [
-                                    'bookTrial',
-                                    'cancelBookTrial'
-                                ],
-                                "sms" => [
-                                    'bookTrial',
-                                    'cancelBookTrial'
+                            $captureReq['studio_extended_session'] = true;
+                        }
+                        // $captureRes = json_decode(json_encode($tc->capture($captureReq)), true);
+                        $captureRes = json_decode(json_encode(app(\TransactionController::class)->capture($captureReq)), true);
+
+                        if(!(empty($captureRes['status']) || $captureRes['status'] != 200 || empty($captureRes['data']['orderid']) || empty($captureRes['data']['email']))){
+                            $booktrialReq = [
+                                "order_id" => $captureRes['data']['orderid'],
+                                "status" => "success",
+                                "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+                                "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+                                "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+                                "schedule_date" => $booking_date['schedule_date'],
+                                "schedule_slot" => $booking_date['schedule_slot'],
+                                "finder_id" => $order['finder_id'],
+                                "service_name" => $captureRes['data']['service_name'],
+                                "service_id" => $order['service_id'],
+                                "ratecard_id" => $ratecard['_id'],
+                                "type" => "workout-session",
+                                "studio_extended_validity_order_id" => $order['_id'],
+                                "communications" => [
+                                    "customer" => [
+                                        "mails" => [
+                                            'bookTrialReminderBefore3Hour',
+                                            'bookTrialReminderBefore12Hour',
+                                            'cancelBookTrial',
+                                            'cancelBookTrialByVendor'
+                                        ],
+                                        "sms" => [
+                                            'bookTrialReminderBefore3Hour',
+                                            'bookTrialReminderBefore12Hour',
+                                            'cancelBookTrial',
+                                            'cancelBookTrialByVendor'
+                                        ],
+                                        "notifications" => [
+                                            'bookTrialReminderBefore10Min',
+                                            'bookTrialReminderBefore3Hour',
+                                            'bookTrialReminderBefore12Hour',
+                                            'cancelBookTrial',
+                                            'cancelBookTrialByVendor'
+                                        ]
+                                    ],
+                                    "finder" => [
+                                        "mails" => [],
+                                        "sms" => [],
+                                        "notifications" => []
+                                    ]
                                 ]
                             ];
+
+                            if($isPaid){
+                                $booktrialReq['studio_extended_session'] = true;
+                                if(!empty($booktrialReq['communications']['customer'])) {
+                                    unset($booktrialReq['communications']['customer']);
+                                }
+                                $booktrialReq["communications"]["finder"] = [
+                                    "mails" => [
+                                        'bookTrial',
+                                        'cancelBookTrial'
+                                    ],
+                                    "sms" => [
+                                        'bookTrial',
+                                        'cancelBookTrial'
+                                    ]
+                                ];
+                            }
+                            // $booktrialRes = json_decode(json_encode($sc->bookTrialPaid($booktrialReq)), true);
+                            $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)), true);
                         }
-                        $booktrialRes = json_decode(json_encode($sc->bookTrialPaid($booktrialReq)), true);
+                        Log::info('booking done....');
+                        sleep(20);
                     }
-                    Log::info('booking done....');
-                    sleep(20);
                 }
                 Log::info('....All bookings done....');
 
