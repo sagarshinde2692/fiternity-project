@@ -184,7 +184,7 @@ Class CustomerMailer extends Mailer {
 	}
 
 	protected function register($data){
-
+		\Log::info('in register');
 		$label = 'Register-Customer';
 
 		$message_data 	= array(
@@ -193,16 +193,16 @@ Class CustomerMailer extends Mailer {
 		);
 
 		$vendor_token = Request::header('Authorization-Vendor');
-		
+		\Log::info('register auth             :: ', [$vendor_token]);
 		if($vendor_token){
 
             $decodeKioskVendorToken = decodeKioskVendorToken();
 
             $vendor = $decodeKioskVendorToken->vendor;
 
-			$finder_id = (int)$vendor->_id;
+			$finder_id = strval($vendor->_id);
 			\Log::info('register     :: ', [$finder_id]);
-			if($finder_id == 9932){
+			if($finder_id == "9932"){
 				\Log::info('no call common');
 			}else{
 				\Log::info('no call common');
