@@ -8187,7 +8187,8 @@ Class Utilities {
                         if($isPaid){
                             $captureReq['studio_extended_session'] = true;
                         }
-                        $captureRes = json_decode(json_encode($tc->capture($captureReq)), true);
+                        // $captureRes = json_decode(json_encode($tc->capture($captureReq)), true);
+                        $captureRes = json_decode(json_encode(app(\TransactionController::class)->success($captureReq)), true);
 
                         if(!(empty($captureRes['status']) || $captureRes['status'] != 200 || empty($captureRes['data']['orderid']) || empty($captureRes['data']['email']))){
                             $booktrialReq = [
@@ -8250,7 +8251,8 @@ Class Utilities {
                                     ]
                                 ];
                             }
-                            $booktrialRes = json_decode(json_encode($sc->bookTrialPaid($booktrialReq)), true);
+                            // $booktrialRes = json_decode(json_encode($sc->bookTrialPaid($booktrialReq)), true);
+                            $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)), true);
                         }
                         Log::info('booking done....');
                         sleep(20);
