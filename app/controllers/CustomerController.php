@@ -3894,6 +3894,10 @@ class CustomerController extends \BaseController {
                            continue;
                        }
 
+                       if($_GET['device_type'] == 'android' && !empty($banner['link_android'])){
+                           $banner['link'] = $banner['link_android'];
+                       }
+
                        array_push($campaigns, $banner);
 
                    }
