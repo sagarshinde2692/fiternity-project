@@ -70,7 +70,7 @@ return array(
 	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
 	'mobikwik_sandbox'=>false,
-	'paytm_sandbox'=>false,
+	'paytm_sandbox'=>true,
 
 	"core_key"=> "FITITRNTY",
 	'non_peak_hours' => ["off"=>0.6,"non_peak_title1"=>"Look for this sign to book a slot for ", "non_peak_title"=>"NON RUSH HOUR (40% OFF)", "gym"=>["off"=>0.6,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.6]],

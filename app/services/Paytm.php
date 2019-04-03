@@ -52,7 +52,7 @@ Class Paytm {
 
     public function postForm($data,$url){
 
-        \Log::info('postForm',$data);
+        \Log::info('postForm',[$data]);
 
         try {
 
@@ -67,7 +67,7 @@ Class Paytm {
                 'response'=>$response
             ];
 
-            \Log::info('postFormResponse',$response);
+            \Log::info('postFormResponse',[$response]);
 
             return $return;
 

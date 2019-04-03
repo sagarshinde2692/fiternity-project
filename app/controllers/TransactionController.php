@@ -20,7 +20,9 @@ use App\AmazonPay\PWAINBackendSDK as PWAINBackendSDK;
 use App\AmazonPaynon\PWAINBackendSDK as PWAINBackendSDKNon;
 use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
-
+use App\Services\Paytm as PaytmService;
+//use App\Controllers\PaymentGatewayController as GatewayController;
+//use App\config\paytm as paytmConfig;
 class TransactionController extends \BaseController {
 
     protected $customermailer;
@@ -34,6 +36,9 @@ class TransactionController extends \BaseController {
     protected $customernotification;
     protected $fitapi;
     protected $fitweb;
+    protected $PaytmService;
+    //protected $GatewayController;
+    //protected $paytmConfig;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -45,7 +50,10 @@ class TransactionController extends \BaseController {
         CustomerReward $customerreward,
         CustomerNotification $customernotification,
         Fitapi $fitapi,
-        Fitweb $fitweb
+        Fitweb $fitweb,
+        PaytmService $PaytmService
+        //GatewayController $GatewayController,
+        //paytmConfig $paytmConfig
     ) {
         parent::__construct();
         $this->customermailer       =   $customermailer;
@@ -65,6 +73,9 @@ class TransactionController extends \BaseController {
         $this->membership_array     =   array('memberships','healthytiffinmembership');
 
         $this->vendor_token = false;
+        $this->PaytmService = $PaytmService;
+        //$this->GatewayController = $GatewayController;
+        //$this->paytmConfig = $paytmConfig;
         
         $vendor_token = Request::header('Authorization-Vendor');
 
@@ -8779,6 +8790,41 @@ class TransactionController extends \BaseController {
             $job->delete();
         }
         $this->utilities->scheduleStudioBookings($data['order_id'], $data['isPaid']);
+    }
+
+    public function generatePaytmUrl(){
+        $input = Input::All();
+        Log::info('input data at generatepaytmurl:::::>>>>>>>>>>>>',[$input]);
+        $transactionURL ="https://securegw-stage.paytm.in/theia/processTransaction";
+        $params = Config::get('paytm');//$this->paytmconfig;
+        $rules = array(
+            'order_id'=>'required',
+            'customer_email'=>'required|email',
+            'customer_phone'=>'required',
+            'customer_id'=>'required',
+            "amount" => 'required'
+        );
+
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+        $params['ORDER_ID'] = $input['order_id'];
+        $params['CUST_ID'] = $input['customer_id'];
+        $params['MOBILE_NO'] = $input['customer_phone'];
+        $params['TXN_AMOUNT'] = $input['amount'];
+        $params['EMAIL'] = $input['customer_email'];
+        $params['CHECKSUMHASH'] = $this->PaytmService->createChecksum($params);
+        Log::info('parameters before generating final uel:::>>>>>>>>>.', [$params]);
+        $paytmURL = $this->PaytmService->postForm($params, $transactionURL);
+        Log::info('return url', [$paytmURL]);
+        return $paytmURL;
+    }
+
+    public function verifyPaytmChecksum(){
+        Log::info('at verify checsum of paytm url:::::::::::::::::::::::::::::::>>>>', [Input::all()]);
+
+        return 'checked';
     }
 
 }
