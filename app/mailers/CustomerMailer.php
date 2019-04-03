@@ -621,7 +621,7 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['name']
 		);
 
-		$vendor_token = Request::header('Authorization-Vendor');
+		$vendor_token = \Request::header('Authorization-Vendor');
 		\Log::info('register auth             :: ', [$vendor_token]);
 		if($vendor_token){
 
