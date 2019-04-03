@@ -8188,7 +8188,7 @@ Class Utilities {
                             $captureReq['studio_extended_session'] = true;
                         }
                         // $captureRes = json_decode(json_encode($tc->capture($captureReq)), true);
-                        $cpres = app(TransactionController::class)->success($captureReq);
+                        $cpres = app(TransactionController::class)->capture($captureReq);
                         $captureRes = json_decode(json_encode($cpres->getData()), true);
 
                         if(!(empty($captureRes['status']) || $captureRes['status'] != 200 || empty($captureRes['data']['orderid']) || empty($captureRes['data']['email']))){
