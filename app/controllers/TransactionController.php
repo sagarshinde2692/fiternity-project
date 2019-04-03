@@ -8816,9 +8816,13 @@ class TransactionController extends \BaseController {
         $params['EMAIL'] = $input['customer_email'];
         $params['CHECKSUMHASH'] = $this->PaytmService->createChecksum($params);
         Log::info('parameters before generating final uel:::>>>>>>>>>.', [$params]);
-        $paytmURL = $this->PaytmService->postForm($params, $transactionURL);
-        Log::info('return url', [$paytmURL]);
-        return $paytmURL;
+        $context = stream_context_create(array('https'=>array(
+            "method" => 'POST',
+            "content" => json_encode($params)
+        )));
+        //$paytmURL = $this->PaytmService->postForm($params, $transactionURL);
+        Log::info('return url', [$context, $transactionURL]);
+        return ;
     }
 
     public function verifyPaytmChecksum(){
