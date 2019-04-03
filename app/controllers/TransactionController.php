@@ -8782,7 +8782,7 @@ class TransactionController extends \BaseController {
         if($job){
             $job->delete();
         }
-        $this->utilities->scheduleStudioBookings($data['order_id'], $data['isPaid'], TransactionController::class, SchedulebooktrialsController::class);
+        $this->utilities->scheduleStudioBookings($data['order_id'], $data['isPaid']);
     }
 
 }

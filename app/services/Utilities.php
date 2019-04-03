@@ -8126,7 +8126,7 @@ Class Utilities {
 
     }
 
-    public function scheduleStudioBookings($order_id, $isPaid=false, $transController, $schedController) {
+    public function scheduleStudioBookings($order_id, $isPaid=false) {
 
 		Log::info('Utilities scheduleStudioBookings:: ', [$order_id]);
 
@@ -8188,7 +8188,7 @@ Class Utilities {
                             $captureReq['studio_extended_session'] = true;
                         }
                         // $captureRes = json_decode(json_encode($tc->capture($captureReq)), true);
-                        $cpres = app($transController)->success($captureReq);
+                        $cpres = app(TransactionController::class)->success($captureReq);
                         $captureRes = json_decode(json_encode($cpres->getData()), true);
 
                         if(!(empty($captureRes['status']) || $captureRes['status'] != 200 || empty($captureRes['data']['orderid']) || empty($captureRes['data']['email']))){
@@ -8253,7 +8253,7 @@ Class Utilities {
                                 ];
                             }
                             // $booktrialRes = json_decode(json_encode($sc->bookTrialPaid($booktrialReq)), true);
-                            $scres = app($schedController)->bookTrialPaid($booktrialReq);
+                            $scres = app(SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq);
                             $booktrialRes = json_decode(json_encode($scres->getData()), true);
                         }
                         Log::info('booking done....');
