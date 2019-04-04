@@ -7693,7 +7693,7 @@ class TransactionController extends \BaseController {
         //$val['sellerStoreName']= 'Fitternity';
         // $val['transactionTimeout'] = Config::get('amazonpay.timeout');
         // For testing in sandbox mode, remove for production
-        //$val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
+        $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
         $returnUrl = Config::get('app.url')."/verifyamazonchecksum/1";
         Log::info('return url:::::>>>>>>>>>>>>>>>>>>>',[$returnUrl]);
         // $returnUrl = "http://ar-deepthi.com/amazonpay/thankyou.php";
@@ -8795,7 +8795,7 @@ class TransactionController extends \BaseController {
     public function generatePaytmUrl(){
         $input = Input::All();
         Log::info('input data at generatepaytmurl:::::>>>>>>>>>>>>',[$input]);
-        $transactionURL ="https://securegw-stage.paytm.in/theia/processTransaction";
+        $transactionURL ="https://securegw-stage.paytm.in/theia/processTransaction?";
         $params = Config::get('paytm');//$this->paytmconfig;
         $rules = array(
             'order_id'=>'required',
@@ -8815,19 +8815,19 @@ class TransactionController extends \BaseController {
         $params['TXN_AMOUNT'] = $input['amount'];
         $params['EMAIL'] = $input['customer_email'];
         $params['CHECKSUMHASH'] = $this->PaytmService->createChecksum($params);
-        Log::info('parameters before generating final uel:::>>>>>>>>>.', [$params]);
-        $context = stream_context_create(array('https'=>array(
-            "method" => 'POST',
-            "content" => json_encode($params)
-        )));
-        //$paytmURL = $this->PaytmService->postForm($params, $transactionURL);
-        Log::info('return url', [$context, $transactionURL]);
-        return ;
+        Log::info('parameters before generating final url:::>>>>>>>>>.', [$params]);
+        foreach($params as $key => $value){
+            Log::info([$transactionURL, $key, $value]);
+            $transactionURL=$transactionURL.$key."=".$value.'&';
+        }
+        Log::info('uisuklsdvdf::::::::::::', [$transactionURL, strlen($transactionURL)]);
+        $transactionURL = substr($transactionURL,0,(strlen($transactionURL)-1));
+        return $transactionURL;
     }
 
     public function verifyPaytmChecksum(){
         Log::info('at verify checsum of paytm url:::::::::::::::::::::::::::::::>>>>', [Input::all()]);
-
+        
         return 'checked';
     }
 
