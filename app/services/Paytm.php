@@ -23,7 +23,7 @@ Class Paytm {
 
         $this->base_uri = 'https://secure.paytm.in/oltp/HANDLER_INTERNAL/';
         $this->mid = 'fitter45826906213917';
-        $this->secret_key = 'G3ohqCH84rf5aCtA';//'j&0CCJb%B26dMs79';
+        $this->secret_key = 'j&0CCJb%B26dMs79';
         $this->transaction_api = "https://secure.paytm.in/oltp-web/processTransaction?orderid=";
 
         $paytm_sandbox = \Config::get('app.paytm_sandbox');
