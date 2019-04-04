@@ -9,6 +9,6 @@
         "TXN_AMOUNT" => '',
         "WEBSITE" => 'WEBSTAGING',
         "INDUSTRY_TYPE_ID" => 'Retail',
-        "CALLBACK_URL" => 'http://localhost:8000/verifypaytmchecksum',
+        "CALLBACK_URL" => 'http://adminstage.fitn.in/verifypaytmchecksum',
         )
 ?>
