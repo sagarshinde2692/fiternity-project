@@ -2238,6 +2238,15 @@ class TransactionController extends \BaseController {
             }
 
             if($data['status'] == '1'){
+
+                if(!empty($data['parent_payment_id_paypal'])){
+                    array_set($data, 'parent_payment_id_paypal', $data['parent_payment_id_paypal']);
+                }
+    
+                if(!empty($data['payment_id_paypal'])){
+                    array_set($data, 'payment_id_paypal', $data['payment_id_paypal']);
+                }
+
                 if($order->type == "memberships"){
                     $group_id = isset($order->group_id) ? $order->group_id : null;
                     $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$group_id, 'order_id'=>$order->_id]);

@@ -47,7 +47,7 @@ Class Paypal {
                     [
                         'Accept' => 'application/json',
                         'Accept-Language' => 'en_US',
-                    'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/x-www-form-urlencoded',
                     ],
                 'body' => 'grant_type=client_credentials',
 
@@ -110,13 +110,15 @@ Class Paypal {
         }
     }
 
-    public function createPayment($data = null){
+    public function createPayment($data = null, $uniqueId = ""){
         try {
             $response = $this->client->request('POST', $this->base_uri.'v1/payments/payment', [
                 'headers' =>
                     [
                         'Content-Type' => 'application/json',
                         'Authorization' => 'Bearer '.$this->access_token.'',
+                        'PayPal-Client-Metadata-Id' => $uniqueId,
+                        'PayPal-Request-Id' => $uniqueId
                     ],
                 'body' => $data
                 ]);
@@ -150,13 +152,15 @@ Class Paypal {
         }
     }
 
-    public function executePayment($paymentId, $payer_id){
+    public function executePayment($paymentId, $payer_id, $uniqId){
         try {
             $response = $this->client->request('POST', $this->base_uri.'v1/payments/payment/'.$paymentId.'/execute', [
                 'headers' =>
                     [
                         'Content-Type' => 'application/json',
                         'Authorization' => 'Bearer '.$this->access_token.'',
+                        'PayPal-Client-Metadata-Id' => $uniqueId,
+                        'PayPal-Request-Id' => $uniqueId
                     ],
                 'body' => $payer_id
                 ]);
