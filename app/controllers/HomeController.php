@@ -5230,10 +5230,18 @@ class HomeController extends BaseController {
                 $crashlog = new ApiCrashLog($data);
     
                 if(!empty($data["post_data"]["res_header"]) && (empty($data["post_data"]["res_header"]['Status']) || $data["post_data"]["res_header"]['Status'] != "200 OK")){
-                    
                     $crashlog->save();
-                    $customersms = new \App\Sms\FinderSms();
-                    $sms = $customersms->apicrashlogsSMS(['url'=>$crashlog['post_data']['url'], '_id'=>$crashlog['_id'], 'device'=>$data['header_data']['Device-Type']]);
+                    $message = json_encode(["text"=>strtoupper($data['header_data']['Device-Type'])."----".$crashlog['post_data']['url']]);
+                    // $message = json_encode(['text'=?""]);
+                    $c = curl_init();
+                    curl_setopt($c, CURLOPT_URL, "https://hooks.slack.com/services/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");
+                    curl_setopt($c, CURLOPT_POST, 1);
+                    curl_setopt($c, CURLOPT_POSTFIELDS, $message);
+                    curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 30);
+                    curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
+                    Log::info(curl_exec($c));
                 
                 }
                 // $customermailer = new CustomerMailer();
