@@ -1337,3 +1337,4 @@ Route::get('paidAndFreeFItcash', 'DebugController@paidAndFreeFItcash');
 // Route::get('assignloyaltygen', 'DebugController@assignLoyalty');
 Route::post('registershedeat', 'EmailSmsApiController@registerShedEat');
 Route::post('notifyshedeat', 'EmailSmsApiController@notifyShedEat');
+Route::get('testoffers', 'FindersController@testOffer');
