@@ -936,10 +936,33 @@ class PaymentGatewayController extends \BaseController {
 	public function createPaymentPaypal(){
 		
 		$postData = Input::json()->all();
+
+		$header = $this->getHeaderInfo();
+		// print_r($header);
+		// exit();
+
+		$stcData = array(
+			"tracking_id" => $postData['txnid'],
+			"additional_data" => array(
+				array(
+					"sender_account_id" => $postData['amount'],
+					"sender_first_name" => $postData['firstname'],
+					"sender_email" => $postData['email'],
+					"sender_phone" => $postData['phone'],
+					"sender_create_date" => $postData['amount'],
+					"loyalty_flag_exists" => 0
+				)
+			)
+		);
 		
 		$data = array("intent" => "sale",
 					"payer" => array(
 						"payment_method" => "paypal"
+					),
+					"application_context" => array(
+						"shipping_preference" => "NO_SHIPPING",
+						"locale" => "en_IN",
+						"user_action" => "commit"
 					),
 					"transactions" => array(array(
 						"amount" => array(
@@ -947,9 +970,6 @@ class PaymentGatewayController extends \BaseController {
 							"currency" => "INR" 
 						),
 						"invoice_number" => $postData['txnid'],
-						"payment_options" => array(
-							"allowed_payment_method" => "INSTANT_FUNDING_SOURCE"
-						),
 						"item_list" => array(
 							"items" => array(array(
 								"name" => ucwords($postData['productinfo']),
@@ -971,7 +991,14 @@ class PaymentGatewayController extends \BaseController {
 		$jsonData = json_encode($data);
 		//echo $jsonData;
 		//exit();
+		 $jsonStcData = json_encode($stcData);
+		// print_r( $jsonStcData);
+		// exit();
+		// $res = $this->paypal->setTransactionContext($jsonStcData);
+		// return Response::json($res);
+		// exit();
 		$response = $this->paypal->createPayment($jsonData);
+		Log::info("create payment res ::: ", [$response]);
 		$value = array("rel" => "approval_url");
 		if($response['status'] == 200){
 			$link = array_where($response['message']['links'], function($key, $val) use ($value){
@@ -1007,11 +1034,8 @@ class PaymentGatewayController extends \BaseController {
 		
 		$payer_id = json_encode(array("payer_id" => $PayerID));
 		$response = $this->paypal->executePayment($paymentId, $payer_id);
-		//print_r( json_encode($response));
-		//echo "<hr>";
-		// exit();
-		// $response = '{"status":"200","message":{"id":"PAYID-LSRPQBQ6BB39287UH465151N","intent":"sale","state":"approved","cart":"8A216201FT1647355","payer":{"payment_method":"paypal","status":"VERIFIED","payer_info":{"email":"vid_ind_buyer1@gmail.com","first_name":"Vidya","last_name":"Test","payer_id":"L26VQ4J43WRGN","shipping_address":{"recipient_name":"Anil Chaudhari","line1":"Darpan Road, Baghdor","city":"Central Delhi","state":"DL","postal_code":"110001","country_code":"IN"},"country_code":"IN"}},"transactions":[{"amount":{"total":"300.00","currency":"INR","details":[]},"payee":{"merchant_id":"TEJG56ER4YM26","email":"ankita-facilitator@fitternity.com"},"invoice_number":"MFIT329707-R1","item_list":{"items":[{"name":"Gym Membership - Gold S Gym Aundh","sku":"Memberships","description":"Gym Membership","price":"300.00","currency":"INR","quantity":1}],"shipping_address":{"recipient_name":"Anil Chaudhari","line1":"Darpan Road, Baghdor","city":"Central Delhi","state":"DL","postal_code":"110001","country_code":"IN"}},"related_resources":[{"sale":{"id":"4TU7309940568202U","state":"completed","amount":{"total":"300.00","currency":"INR","details":{"subtotal":"300.00"}},"payment_mode":"INSTANT_TRANSFER","protection_eligibility":"ELIGIBLE","protection_eligibility_type":"ITEM_NOT_RECEIVED_ELIGIBLE,UNAUTHORIZED_PAYMENT_ELIGIBLE","transaction_fee":{"value":"12.04","currency":"INR"},"parent_payment":"PAYID-LSRPQBQ6BB39287UH465151N","create_time":"2019-04-02T05:53:43Z","update_time":"2019-04-02T05:53:43Z","links":[{"href":"https:\/\/api.sandbox.paypal.com\/v1\/payments\/sale\/4TU7309940568202U","rel":"self","method":"GET"},{"href":"https:\/\/api.sandbox.paypal.com\/v1\/payments\/sale\/4TU7309940568202U\/refund","rel":"refund","method":"POST"},{"href":"https:\/\/api.sandbox.paypal.com\/v1\/payments\/payment\/PAYID-LSRPQBQ6BB39287UH465151N","rel":"parent_payment","method":"GET"}],"soft_descriptor":"PAYPAL *NEHAMOTWANI"}}]}],"create_time":"2019-04-02T05:53:44Z","links":[{"href":"https:\/\/api.sandbox.paypal.com\/v1\/payments\/payment\/PAYID-LSRPQBQ6BB39287UH465151N","rel":"self","method":"GET"}]}}';
-		// $response = json_decode($response,true);
+		Log::info("execute paymet res :::   ", [Response::json($response)]);
+		
 		if($response['status'] == 200){
 			Log::info("200");
 			if($response['message']['state'] == 'approved'){
@@ -1057,6 +1081,43 @@ class PaymentGatewayController extends \BaseController {
 	}
 
 	public function canclePaymentPaypal(){
+		$header = $this->getHeaderInfo();
+
+		$app_device = strtolower($header['app_device']);
+
+		if($app_device == 'android' || $app_device == 'ios'){
+			return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=400&message=fail');
+		}
 		return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=400&message=fail');
+	}
+
+	public function getHeaderInfo(){
+
+		Log::info("header");
+
+		$customer_id = "";
+		$app_device = "";
+		$app_version = "";
+
+		$jwt_token = Request::header('Authorization');
+		if($jwt_token){
+			$decoded = customerTokenDecode($jwt_token);
+
+			$customer_id = (int)$decoded->customer->_id;
+		}
+	
+		$app_device = Request::header('Device-Type');
+   		$app_version = Request::header('App-Version');
+		
+		Log::info("app device paypal ::: ", [$app_device]);
+		Log::info("app version paypal ::: ", [$app_version]);
+		Log::info("customer paypal ::: ", [$customer_id]);
+
+		$data = array("customer_id" => $customer_id,
+				"app_version" => $app_version,
+				"app_device" => $app_device
+		);
+
+		return $data;
 	}
 }
