@@ -7373,7 +7373,7 @@ class FindersController extends \BaseController {
 					'know_more' => false
 				];
 
-				if(in_array($finderDetails['flags']['cashback_type'], [1,2,3])){
+				if(!in_array($finderDetails['flags']['cashback_type'], [4,5,6])){
 					if(!empty($jumpToService) && !empty($jumpToRatecard)){
 						$data['fitsquad']['buy_button'] = [
 							'text' => 'BUY NOW',
@@ -7516,7 +7516,7 @@ class FindersController extends \BaseController {
 					'know_more' => false
 				];
 
-				if(in_array($finderDetails['flags']['cashback_type'], [1,2,3])){
+				if(!in_array($finderDetails['flags']['cashback_type'], [4,5,6])){
 					if(!empty($jumpToService) && !empty($jumpToRatecard)){
 						$data['fitsquad']['buy_button'] = [
 							'text' => 'BUY NOW',
