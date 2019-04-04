@@ -32,7 +32,7 @@ Class Paytm {
 
             $this->base_uri = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/';
             $this->mid = 'Fitern22272466067721';
-            $this->secret_key = 'j&0CCJb%B26dMs79';
+            $this->secret_key = 'G3ohqCH84rf5aCtA';//'j&0CCJb%B26dMs79';
             $this->transaction_api = "https://pguat.paytm.com/oltp-web/processTransaction?orderid=";
         }
 
