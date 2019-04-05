@@ -9262,7 +9262,16 @@ public function yes($msg){
 
     }
 
+	public function testmailMsg(){
+		Log::info("testmailmsg");
+		$order = Order::where('_id',intval('329818'))->first()->toArray();
+		$customermailer = new CustomerMailer();
 
+		$customermailer->sendPgOrderMail($order);
+
+		$customersms = new CustomerSms();
+		$customersms->sendCodOrderSms($order);
+	}
 
 }
 

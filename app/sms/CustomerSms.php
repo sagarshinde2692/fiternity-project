@@ -18,6 +18,11 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'AutoTrial-Instant-Customer-abg';
 		}
 
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AutoTrial-Instant-Multifit-Customer';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
@@ -126,6 +131,11 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'Cancel-Trial-Customer-abg';
 		}
 
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'Cancel-Trial-Multifit-Customer';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
@@ -173,6 +183,11 @@ Class CustomerSms extends VersionNextSms{
 	protected function sendCodOrderSms ($data){
 
 		$label = 'Order-COD-Customer';
+
+		// $header = $this->multifitUserHeader();
+		// if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+		// 	$label = 'Order-COD-Multifit-Customer';
+		// }
 		
 		$to = $data['customer_phone'];
 
@@ -233,6 +248,12 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'ExtendedValidityInstant-Customer';
 		}
 		
+		$header = $this->multifitKioskOrder($data);
+        
+        if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'Order-PG-Multifit-Customer';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
@@ -1214,6 +1235,41 @@ Class CustomerSms extends VersionNextSms{
 		
 		return $this->common($label,$to,$data);	
 	}
+
+	public function multifitUserHeader(){
+		$vendor_token = \Request::header('Authorization-Vendor');
+		\Log::info('register auth             :: ', [$vendor_token]);
+		if($vendor_token){
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = $decodeKioskVendorToken->vendor;
+
+			$finder_id = $vendor->_id;
+
+			$utilities = new Utilities();
+
+			$allMultifitFinderId = $utilities->multifitFinder(); 
+			// $allMultifitFinderId = [9932, 1935, 9304, 9423, 9481, 9954, 10674, 10970, 11021, 11223, 12208, 12209, 13094, 13898, 14102, 14107, 16062, 13968, 15431, 15980, 15775, 16251, 9600, 14622, 14626, 14627];
+			\Log::info('register     :: ', [$finder_id]);
+			if(in_array($finder_id, $allMultifitFinderId)){
+				return true;
+			}
+		}
+		
+		return false;
+    }
+    
+    public function multifitKioskOrder($data){
+        if(!empty($data['source'])){
+            $data["customer_source"] = $data['source'];
+        }
+        $utilities = new Utilities();
+        $allMultifitFinderId = $utilities->multifitFinder(); 
+        if(in_array($data['finder_id'], $allMultifitFinderId) && !empty($data["customer_source"]) && $data["customer_source"] == "kiosk"){
+            return true;
+        }
+    }
 	
 	public function common($label,$to,$data,$delay = 0){
 

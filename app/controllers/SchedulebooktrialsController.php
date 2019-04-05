@@ -2298,6 +2298,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['ratecard_remarks'] = $order['ratecard_remarks'];
             }
 
+            if(!empty($order['multifit'])){
+                $booktrialdata['multifit'] = $order['multifit'];
+            }
+
             if(!empty($order['manual_order'])){
                 $booktrialdata['manual_order'] = $order['manual_order'];
             }
