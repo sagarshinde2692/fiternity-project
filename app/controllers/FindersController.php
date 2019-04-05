@@ -7312,7 +7312,7 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['checkout_button'] = [
 					'text'=>"Checkout Rewards",
 					// "image"=>'https://b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
-					'image' => 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final (1) (1).jpg'
+					'image' => 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final%20(1)%20(1).jpg'
 				];
 
 				$data['checkout_summary'] = [
@@ -7323,7 +7323,7 @@ class FindersController extends \BaseController {
 					'checkout_button' =>[
 						'text' => 'Checkout Rewards',
 						// 'image' => 'https://b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
-						'image' => 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final (1) (1).jpg'
+						'image' => 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final%20(1)%20(1).jpg'
 					],
 					'know_more' => true
 				];
