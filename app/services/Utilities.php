@@ -8271,5 +8271,26 @@ Class Utilities {
 		
 
 	}
+
+    public function multifitFinder($cache = true){
+        Log::info("multifitFinder");
+
+        $multifit_finder = $cache ? \Cache::tags('multifit_finder_detail')->has('multifitFinder') : false;
+        
+        if(!$multifit_finder){
+            Finder::$withoutAppends=true;
+            $finder_id = Finder::where('brand_id', intval("88"))->where('status','1')->get(['_id'])->toArray();
+            $finFinderId = array();
+            foreach($finder_id as $k => $v){
+                array_push($finFinderId, $v['_id']);
+            }
+            \Cache::tags('multifit_finder_detail')->put("multifitFinder" ,$finFinderId,Config::get('cache.cache_time'));
+            Log::info("!cache");
+            return $finFinderId;
+        }
+        
+        $multifit_finder = \Cache::tags('multifit_finder_detail')->get('multifitFinder');
+        return $multifit_finder;
+    }
 }
 

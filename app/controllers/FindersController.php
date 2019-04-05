@@ -7202,4 +7202,10 @@ class FindersController extends \BaseController {
     {
         return !empty($r['flags']['unlimited_validity']) ? "Unlimited Validity" : "Extended Validity";
     }
+
+	public function testMultifit(){
+		return $this->utilities->multifitFinder();
+	}
+
+	
 }
