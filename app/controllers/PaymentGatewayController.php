@@ -1097,6 +1097,11 @@ class PaymentGatewayController extends \BaseController {
 						if($app_device == 'android' || $app_device == 'ios'){
 							return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=200');
 						}
+
+						if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
+							return Redirect::to(Config::get('app.website')."/paymentsuccesstrial?orderId=".$order['_id']."&type=paypal");
+						}
+
 						return Redirect::to(Config::get('app.website')."/paymentsuccess?orderId=".$order['_id']."&type=paypal");
 					}
 					// else{
