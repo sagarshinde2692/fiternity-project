@@ -20,7 +20,7 @@ Class Paytm_web {
         $this->PAYTM_MERCHANT_WEBSITE = 'WEBSTAGING'; //Change this constant's value with Website name received from Paytm.
         $PAYTM_STATUS_QUERY_NEW_URL = 'https://securegw-stage.paytm.in/merchant-status/getTxnStatus';
         $PAYTM_TXN_URL='https://securegw-stage.paytm.in/theia/processTransaction';
-        if ($PAYTM_ENVIRONMENT == 'PROD') {
+        if ($this->PAYTM_ENVIRONMENT == 'PROD') {
             $PAYTM_STATUS_QUERY_NEW_URL='https://securegw.paytm.in/merchant-status/getTxnStatus';
             $PAYTM_TXN_URL='https://securegw.paytm.in/theia/processTransaction';
         }
@@ -61,12 +61,12 @@ Class Paytm_web {
         if ($sort != 0) {
             ksort($arrayList);
         }
-        $str = getArray2Str($arrayList);
-        $salt = generateSalt_e(4);
+        $str = $this->getArray2Str($arrayList);
+        $salt = $this->generateSalt_e(4);
         $finalString = $str . "|" . $salt;
         $hash = hash("sha256", $finalString);
         $hashString = $hash . $salt;
-        $checksum = encrypt_e($hashString, $key);
+        $checksum = $this->encrypt_e($hashString, $key);
         return $checksum;
     }
     function getChecksumFromString($str, $key) {
@@ -123,10 +123,10 @@ Class Paytm_web {
             }
             
             if ($flag) {
-                $paramStr .= checkString_e($value);
+                $paramStr .= $this->checkString_e($value);
                 $flag = 0;
             } else {
-                $paramStr .= "|" . checkString_e($value);
+                $paramStr .= "|" . $this->checkString_e($value);
             }
         }
         return $paramStr;
@@ -255,4 +255,4 @@ Class Paytm_web {
         return $responseParamList;
     }
 }
-?>
+

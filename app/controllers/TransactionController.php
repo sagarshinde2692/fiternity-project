@@ -8818,11 +8818,11 @@ class TransactionController extends \BaseController {
         Log::info('parameters before generating final url:::>>>>>>>>>.', [$params]);
         foreach($params as $key => $value){
             Log::info([$transactionURL, $key, $value]);
-            $transactionURL=$transactionURL.$key."=".$value.'&';
+            $transactionURL=$transactionURL.$key."=".rawurlencode($value).'&';
         }
         Log::info('uisuklsdvdf::::::::::::', [$transactionURL, strlen($transactionURL)]);
         $transactionURL = substr($transactionURL,0,(strlen($transactionURL)-1));
-        return $transactionURL;
+        return ($transactionURL);
     }
 
     public function verifyPaytmChecksum(){
