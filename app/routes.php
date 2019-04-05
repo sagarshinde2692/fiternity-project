@@ -1338,3 +1338,6 @@ Route::get('paidAndFreeFItcash', 'DebugController@paidAndFreeFItcash');
 Route::post('registershedeat', 'EmailSmsApiController@registerShedEat');
 Route::post('notifyshedeat', 'EmailSmsApiController@notifyShedEat');
 Route::get('testoffers', 'FindersController@testOffer');
+
+// Route::get('testmultifit', 'FindersController@testMultifit');
+// Route::get('testmm', 'DebugController@testmailMsg');
