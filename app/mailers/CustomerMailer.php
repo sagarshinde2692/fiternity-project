@@ -17,7 +17,7 @@ Class CustomerMailer extends Mailer {
 			$label = 'VipTrial-Instant-Customer';
 		}
 
-		$header = $this->multifitUserHeader();
+		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'AutoTrial-Instant-Multifit-Customer';
 		}
@@ -156,7 +156,7 @@ Class CustomerMailer extends Mailer {
             $label = "Free-SP-Customer";
 		}
 		
-		$header = $this->multifitUserHeader();
+		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			switch ($data['payment_mode']) {
 				case 'cod': $label = 'Order-COD-Multifit-Customer'; break;
@@ -833,7 +833,18 @@ Class CustomerMailer extends Mailer {
 		}
 		
 		return false;
-	}
+    }
+    
+    public function multifitKioskOrder($data){
+        if(!empty($data['source'])){
+            $data["customer_source"] = $data['source'];
+        }
+        $utilities = new Utilities();
+        $allMultifitFinderId = $utilities->multifitFinder(); 
+        if(in_array($data['finder_id'], $allMultifitFinderId) && !empty($data["customer_source"]) && $data["customer_source"] == "kiosk"){
+            return true;
+        }
+    }
 	
 	protected function common($label,$data,$message_data,$delay = 0){
 
