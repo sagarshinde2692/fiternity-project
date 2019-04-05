@@ -20,7 +20,7 @@ use App\AmazonPay\PWAINBackendSDK as PWAINBackendSDK;
 use App\AmazonPaynon\PWAINBackendSDK as PWAINBackendSDKNon;
 use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
-use App\Services\Paytm_web as PaytmService_web;
+use App\Services\Paytm as PaytmService;
 //use App\Controllers\PaymentGatewayController as GatewayController;
 //use App\config\paytm as paytmConfig;
 class TransactionController extends \BaseController {
@@ -36,7 +36,7 @@ class TransactionController extends \BaseController {
     protected $customernotification;
     protected $fitapi;
     protected $fitweb;
-    protected $PaytmService_web;
+    protected $PaytmService;
     //protected $GatewayController;
     //protected $paytmConfig;
 
@@ -51,7 +51,7 @@ class TransactionController extends \BaseController {
         CustomerNotification $customernotification,
         Fitapi $fitapi,
         Fitweb $fitweb,
-        PaytmService_web $PaytmService_web
+        PaytmService $PaytmService
         //GatewayController $GatewayController,
         //paytmConfig $paytmConfig
     ) {
@@ -73,7 +73,7 @@ class TransactionController extends \BaseController {
         $this->membership_array     =   array('memberships','healthytiffinmembership');
 
         $this->vendor_token = false;
-        $this->PaytmService_web = $PaytmService_web;
+        $this->PaytmService = $PaytmService;
         //$this->GatewayController = $GatewayController;
         //$this->paytmConfig = $paytmConfig;
         
@@ -8814,7 +8814,7 @@ class TransactionController extends \BaseController {
         $params['MOBILE_NO'] = $input['customer_phone'];
         $params['TXN_AMOUNT'] = $input['amount'];
         $params['EMAIL'] = $input['customer_email'];
-        $params['CHECKSUMHASH'] = $this->PaytmService_web->getChecksumFromArray($params);
+        $params['CHECKSUMHASH'] = $this->PaytmService->createChecksum($params);
         Log::info('parameters before generating final url:::>>>>>>>>>.', [$params]);
         foreach($params as $key => $value){
             Log::info([$transactionURL, $key, $value]);
