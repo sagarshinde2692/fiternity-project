@@ -184,10 +184,10 @@ Class CustomerSms extends VersionNextSms{
 
 		$label = 'Order-COD-Customer';
 
-		$header = $this->multifitUserHeader();
-		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
-			$label = 'Order-COD-Multifit-Customer';
-		}
+		// $header = $this->multifitUserHeader();
+		// if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+		// 	$label = 'Order-COD-Multifit-Customer';
+		// }
 		
 		$to = $data['customer_phone'];
 
@@ -248,8 +248,9 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'ExtendedValidityInstant-Customer';
 		}
 		
-		$header = $this->multifitUserHeader();
-		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+		$header = $this->multifitKioskOrder($data);
+        
+        if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'Order-PG-Multifit-Customer';
 		}
 
@@ -1257,7 +1258,18 @@ Class CustomerSms extends VersionNextSms{
 		}
 		
 		return false;
-	}
+    }
+    
+    public function multifitKioskOrder($data){
+        if(!empty($data['source'])){
+            $data["customer_source"] = $data['source'];
+        }
+        $utilities = new Utilities();
+        $allMultifitFinderId = $utilities->multifitFinder(); 
+        if(in_array($data['finder_id'], $allMultifitFinderId) && !empty($data["customer_source"]) && $data["customer_source"] == "kiosk"){
+            return true;
+        }
+    }
 	
 	public function common($label,$to,$data,$delay = 0){
 

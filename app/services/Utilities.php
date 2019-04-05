@@ -8281,7 +8281,7 @@ Class Utilities {
             
             Finder::$withoutAppends=true;
             
-            $finFinderId = Finder::where('brand_id', intval("88"))->where('status','1')->lists('_id');
+            $finFinderId = Finder::where('brand_id', 88)->where('status','1')->lists('_id');
             
             \Cache::tags('multifit_finder_detail')->put("multifitFinder" ,$finFinderId,Config::get('cache.cache_time'));
             Log::info("!cache");
