@@ -8798,7 +8798,7 @@ class TransactionController extends \BaseController {
         $transactionURL ="https://securegw-stage.paytm.in/theia/processTransaction?";
         $params = Config::get('paytm');//$this->paytmconfig;
         $rules = array(
-            'order_id'=>'required',
+            'txn_id'=>'required',
             'customer_email'=>'required|email',
             'customer_phone'=>'required',
             'customer_id'=>'required',
