@@ -57,7 +57,7 @@ Class Paytm_web {
             $value = '';
         return $value;
     }
-    function getChecksumFromArray($arrayList, $key, $sort=1) {
+    function getChecksumFromArray($arrayList, $key='G3ohqCH84rf5aCtA', $sort=1) {
         if ($sort != 0) {
             ksort($arrayList);
         }

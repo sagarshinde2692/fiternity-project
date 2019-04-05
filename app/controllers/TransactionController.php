@@ -8814,7 +8814,7 @@ class TransactionController extends \BaseController {
         $params['MOBILE_NO'] = $input['customer_phone'];
         $params['TXN_AMOUNT'] = $input['amount'];
         $params['EMAIL'] = $input['customer_email'];
-        $params['CHECKSUMHASH'] = $this->PaytmService_web->getChecksumFromArray($params, $params['MID']);
+        $params['CHECKSUMHASH'] = $this->PaytmService_web->getChecksumFromArray($params);
         Log::info('parameters before generating final url:::>>>>>>>>>.', [$params]);
         foreach($params as $key => $value){
             Log::info([$transactionURL, $key, $value]);
