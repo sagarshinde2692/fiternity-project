@@ -152,7 +152,7 @@ Class Paypal {
         }
     }
 
-    public function executePayment($paymentId, $payer_id, $uniqId){
+    public function executePayment($paymentId, $payer_id, $uniqueId){
         try {
             $response = $this->client->request('POST', $this->base_uri.'v1/payments/payment/'.$paymentId.'/execute', [
                 'headers' =>
