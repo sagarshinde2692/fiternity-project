@@ -825,8 +825,8 @@ return array(
 		'offhours_instant_td_mins'=>5,
 		'offhours_fixed_time_1'=>22,
 		'offhours_fixed_time_2'=>20,
-		'full_day_weekend'=>['Sunday'],
-		'begin_weekend'=>['Saturday'],
+		'full_day_weekend'=>['Sunday', 'Saturday'],
+		'begin_weekend'=>[],
 		'end_weekend'=>['Monday'],
 	],
 
