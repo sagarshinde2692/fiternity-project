@@ -8809,7 +8809,7 @@ class TransactionController extends \BaseController {
         if ($validator->fails()) {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
         }
-        $params['ORDER_ID'] = $input['order_id'];
+        $params['ORDER_ID'] = $input['txn_id'];
         $params['CUST_ID'] = $input['customer_id'];
         $params['MOBILE_NO'] = $input['customer_phone'];
         $params['TXN_AMOUNT'] = $input['amount'];
@@ -8823,12 +8823,6 @@ class TransactionController extends \BaseController {
         Log::info('uisuklsdvdf::::::::::::', [$transactionURL, strlen($transactionURL)]);
         $transactionURL = substr($transactionURL,0,(strlen($transactionURL)-1));
         return ($transactionURL);
-    }
-
-    public function verifyPaytmChecksum(){
-        Log::info('at verify checsum of paytm url:::::::::::::::::::::::::::::::>>>>', [Input::all()]);
-        
-        return 'checked';
     }
 
 }
