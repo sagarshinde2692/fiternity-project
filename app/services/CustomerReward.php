@@ -2387,6 +2387,8 @@ Class CustomerReward {
             if(!empty($coupon['flags'])){
                 $resp['flags'] = $coupon['flags'];
             }
+
+            $GLOBALS['coupon_applied'] = $discount_amount;
             
         }else{
 

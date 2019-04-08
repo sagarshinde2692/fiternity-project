@@ -264,6 +264,8 @@ Class FinderSms extends VersionNextSms{
 
 	protected function trialAlert($data){
 
+        return null;
+
 		$label = 'TrialAlert-Fitternity';
 
 		$to = array('9004556289','9833201020','8976457756','9833023772');

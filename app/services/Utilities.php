@@ -2351,6 +2351,10 @@ Class Utilities {
             $query->where(function($query) use ($data){$query->orwhere('duration_day', 'exists', false)->orWhere('duration_day', $data['duration_day']);});
         }
 
+        if($this->checkCouponApplied()){
+            $query->where('for', 'wallet_recharge');
+        }
+
         $wallet_balance = $query->sum('balance');
 
         return $wallet_balance;
@@ -2626,6 +2630,10 @@ Class Utilities {
 
         if(!empty($request['extended_validity'])){
             $query->where('restricted_for', '!=', 'upgrade');
+        }
+
+        if($this->checkCouponApplied()){
+            $query->where('for', 'wallet_recharge');
         }
 
         if(isset($request['finder_id']) && $request['finder_id'] != ""){
@@ -8281,7 +8289,7 @@ Class Utilities {
             
             Finder::$withoutAppends=true;
             
-            $finFinderId = Finder::where('brand_id', intval("88"))->where('status','1')->lists('_id');
+            $finFinderId = Finder::where('brand_id', 88)->where('status','1')->lists('_id');
             
             \Cache::tags('multifit_finder_detail')->put("multifitFinder" ,$finFinderId,Config::get('cache.cache_time'));
             Log::info("!cache");
@@ -8290,6 +8298,10 @@ Class Utilities {
         
         $multifit_finder = \Cache::tags('multifit_finder_detail')->get('multifitFinder');
         return $multifit_finder;
+    }
+    
+    public function checkCouponApplied(){
+        return !empty($GLOBALS['coupon_applied']);
     }
 }
 
