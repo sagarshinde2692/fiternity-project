@@ -9070,9 +9070,9 @@ class CustomerController extends \BaseController {
 
 
 		Order::$withoutAppends = true;
-		$order = Order::active()->where('customer_id', $customer['_id'])->where('type', 'memberships')->orderBy('_id', 'desc')->first();
+		$order = Order::active()->where('logged_in_customer_id', $customer['_id'])->where('type', 'memberships')->orderBy('_id', 'desc')->first();
 		if(!empty($order)){
-			$loyaltyAppropriation = $this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $order['_id']);
+			$loyaltyAppropriation = $this->utilities->getLoyaltyAppropriationConsentMsg($order['customer_id'], $order['_id']);
 
 			$post_register['loyalty_success_msg'] = $loyaltyAppropriation;
 		}
