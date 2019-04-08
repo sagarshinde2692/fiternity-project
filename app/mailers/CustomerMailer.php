@@ -63,7 +63,7 @@ Class CustomerMailer extends Mailer {
 		\Log::info("inside bookTrialReminderBefore12Hour");
 		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
 
-		$header = $this->multifitUserHeader();
+		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'AutoTrial-ReminderBefore12Hour-Multifit-Customer';
 		}
