@@ -1917,7 +1917,11 @@ class TransactionController extends \BaseController {
     											
     											return Response::json(array('status' => 400,'message' => 'Already Verified'),$this->error_status);
     										}
-    										$otp_data['otp'] = $temp['otp'];
+                                            $otp_data['otp'] = $temp['otp'];
+                                            
+                                            if(!empty($old_order['multifit'])){
+                                                $data_otp['multifit'] = $old_order['multifit'];
+                                            }
     									}
     									
     									if($addTemp_flag){
