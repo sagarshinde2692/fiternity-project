@@ -58,7 +58,7 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'AutoTrial-ReminderBefore12Hour-Customer-abg';
 		}
 
-		$header = $this->multifitUserHeader();
+		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'AutoTrial-ReminderBefore12Hour-Multifit-Customer';
 		}
@@ -94,7 +94,7 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'AutoTrial-ReminderBefore3Hour-Customer-abg';
 		}
 
-		$header = $this->multifitUserHeader();
+		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'AutoTrial-ReminderBefore3Hour-Multifit-Customer';
 		}
@@ -1165,7 +1165,7 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'BookTrialReminderBefore10Min-Customer-abg';
 		}
 
-		$header = $this->multifitUserHeader();
+		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'BookTrialReminderBefore10Min-Multifit-Customer';
 		}
