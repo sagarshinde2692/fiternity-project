@@ -6905,7 +6905,7 @@ Class Utilities {
             $customer = Customer::where('_id', $data['customer_id'])->first();
             //->where('loyalty', 'exists', false)
 
-            if(empty($customer['loyalty']) || (isset($customer['loyalty']['brand_loyalty']))){
+            if(empty($customer['loyalty']) || (isset($customer['loyalty']['brand_loyalty'])) || (isset($customer['loyalty']['reward_type']))){
                 $existingLoyalty = [];
                 if(isset($customer['loyalty']['brand_loyalty'])) {
                     $existingLoyalty = $customer['loyalty'];
