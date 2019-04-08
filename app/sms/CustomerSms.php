@@ -58,6 +58,11 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'AutoTrial-ReminderBefore12Hour-Customer-abg';
 		}
 
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AutoTrial-ReminderBefore12Hour-Multifit-Customer';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data,$delay);
@@ -87,6 +92,11 @@ Class CustomerSms extends VersionNextSms{
 		
 		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
 			$label = 'AutoTrial-ReminderBefore3Hour-Customer-abg';
+		}
+
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AutoTrial-ReminderBefore3Hour-Multifit-Customer';
 		}
 
 		$to = $data['customer_phone'];
@@ -1151,6 +1161,11 @@ Class CustomerSms extends VersionNextSms{
 		
 		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
 			$label = 'BookTrialReminderBefore10Min-Customer-abg';
+		}
+
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'BookTrialReminderBefore10Min-Multifit-Customer';
 		}
 
 		$to = $data['customer_phone'];

@@ -63,6 +63,11 @@ Class CustomerMailer extends Mailer {
 		\Log::info("inside bookTrialReminderBefore12Hour");
 		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
 
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AutoTrial-ReminderBefore12Hour-Multifit-Customer';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
@@ -206,8 +211,14 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['name']
 		);
 
+		$multifitFlag = false;
+		$allData = \Input::json()->all();
+		if(!empty($allData['multifit'])){
+			$multifitFlag = $allData['multifit'];
+		}
+		
 		$header = $this->multifitUserHeader();
-		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+		if($multifitFlag == true || $header == true){
 			return;
 		}
 
@@ -489,6 +500,11 @@ Class CustomerMailer extends Mailer {
 
 		$label = 'OrderUpdatePaymentAtVendor-Customer';
 
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'OrderUpdatePaymentAtVendor-Multifit-Customer';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
@@ -646,8 +662,17 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['name']
 		);
 
+		$multifitFlag = false;
+		$allData = \Input::json()->all();
+		if(!empty($allData['multifit'])){
+			$multifitFlag = $allData['multifit'];
+		}
+
+		\Log::info(" ++++++++ multifitflag",[$multifitFlag]);
+		\Log::info(" ++++++++ multifitflag2",[\Input::get('multifit')]);
+		\Log::info(" ++++++++ all data",[\Input::json()->all()]);
 		$header = $this->multifitUserHeader();
-		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+		if($multifitFlag == true || $header == true){
 			return;
 		}
 
@@ -662,8 +687,14 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['name']
 		);
 
+		$multifitFlag = false;
+		$allData = \Input::json()->all();
+		if(!empty($allData['multifit'])){
+			$multifitFlag = $allData['multifit'];
+		}
+
 		$header = $this->multifitUserHeader();
-		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+		if($multifitFlag == true || $header == true){
 			return;
 		}
 
@@ -686,6 +717,11 @@ Class CustomerMailer extends Mailer {
 		\Log::info("workout sessoin before 10 min sms");
 		// return "sent";
 		$label = 'BookTrialReminderBefore10Min-Customer';
+
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'BookTrialReminderBefore10Min-Multifit-Customer';
+		}
 		
 		$message_data 	= array(
 				'user_email' => array($data['customer_email']),
@@ -701,6 +737,11 @@ Class CustomerMailer extends Mailer {
 		\Log::info("workout sessoin before 10 min sms");
 		// return "sent";
 		$label = 'Workout-session_Instant_WorkoutLevelStart';
+
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			return;
+		}
 		
 		$message_data 	= array(
 				'user_email' => array($data['customer_email']),
@@ -727,6 +768,12 @@ Class CustomerMailer extends Mailer {
 
 		$label = 'AtVendorOrderCaputure-Customer';
 		
+		log::info("AtVendor  ", [$data]);
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AtVendorOrderCaputure-Multifit-Customer';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']

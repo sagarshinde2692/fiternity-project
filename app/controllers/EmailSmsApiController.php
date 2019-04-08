@@ -967,8 +967,13 @@ class EmailSmsApiController extends \BaseController {
                     $sms_data = [];
 
                     $sms_data['customer_phone'] = $storecapture['customer_phone'];
-
+                    
                     $sms_data['message'] = "Hi ".ucwords($storecapture['customer_name'])." your walkin request at ".ucwords($storecapture['finder_name'])." has been confirmed. Address - ".ucwords($storecapture['finder_address'])." . Google pin - ".$storecapture['google_pin'].". Contact person - ". $storecapture['finder_poc_for_customer_name']." If you wish to purchase - make sure you buy through Fitternity with lowest price and assured rewards.";
+
+                    $header = $this->multifitUserHeader();
+                    if($header == true){
+                        $sms_data['message'] = "Hi ".ucwords($storecapture['customer_name'])." your walkin request at ".ucwords($storecapture['finder_name'])." has been confirmed. Address - ".ucwords($storecapture['finder_address'])." . Google pin - ".$storecapture['google_pin'].". Contact person - ". $storecapture['finder_poc_for_customer_name']." ";
+                    }
 
                     $this->customersms->custom($sms_data);
 
@@ -1325,5 +1330,29 @@ class EmailSmsApiController extends \BaseController {
         ShedEatNotify::insert(Input::json()->all());
         return ['status'=>200];
     }
+
+    public function multifitUserHeader(){
+		$vendor_token = \Request::header('Authorization-Vendor');
+		\Log::info('register auth             :: ', [$vendor_token]);
+		if($vendor_token){
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = $decodeKioskVendorToken->vendor;
+
+			$finder_id = $vendor->_id;
+
+			// $utilities = new Utilities();
+
+			$allMultifitFinderId = $this->$utilities->multifitFinder(); 
+			// $allMultifitFinderId = [9932, 1935, 9304, 9423, 9481, 9954, 10674, 10970, 11021, 11223, 12208, 12209, 13094, 13898, 14102, 14107, 16062, 13968, 15431, 15980, 15775, 16251, 9600, 14622, 14626, 14627];
+			\Log::info('register     :: ', [$finder_id]);
+			if(in_array($finder_id, $allMultifitFinderId)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
 }
