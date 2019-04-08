@@ -8141,7 +8141,7 @@ Class Utilities {
                 // $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till <b>".$existingLoyalty['new_end_date']."</b>";
                 // $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
 
-                $newMessage = "As you have purchased ".$order['finder_name']." membership, upgrading your Fitsquad will let you unlock new reward & increase the Fitsquad validity. However, you will loose your current check-in streak (check-ins done till now = ".$retObj['checkins'].")";
+                $newMessage = "As you have purchased ".$order['finder_name']." membership, upgrading your Fitsquad will let you unlock new reward & increase the Fitsquad validity. However, you will loose your current check-in streak (check-ins done till now: ".$retObj['checkins'].")";
 
                 $message = "Current check-ins: ".$retObj['checkins'].".<br/>Your workout counter will reset on ".$retObj['end_date'].".";
                 if($retObj['next_milestone']==0){
