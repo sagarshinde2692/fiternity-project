@@ -2628,6 +2628,10 @@ Class Utilities {
             $query->where('restricted_for', '!=', 'upgrade');
         }
 
+        if(!empty($GLOBALS['coupon_applied'])){
+            $query->where('for', 'wallet_recharge');
+        }
+
         if(isset($request['finder_id']) && $request['finder_id'] != ""){
 
             $finder_id = (int)$request['finder_id'];

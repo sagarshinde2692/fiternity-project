@@ -6336,7 +6336,7 @@ class TransactionController extends \BaseController {
             }
 
             $resp['status'] = 200;
-            $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully ";
+            $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." discount has been applied Successfully ";
 
             $resp['message'] = $resp['success_message'] = "Coupon has been applied successfully";
 
@@ -6366,7 +6366,7 @@ class TransactionController extends \BaseController {
             //         unset($resp['success_message']);
             //     }
             // }
-
+            $resp['message'] = $resp['message']." Promotional fitcash will not be applicable with discount coupon";
             return Response::json($resp,$resp['status']);
 
         }else{
@@ -6591,7 +6591,8 @@ class TransactionController extends \BaseController {
                 "type"=>'CREDIT',
                 'entry'=>'credit',
                 'description'=>"Fitcash wallet recharge (Applicable on all transactions)",
-                'duplicate_allowed'=>true
+                'duplicate_allowed'=>true,
+                'for'=>"wallet_recharge"
             );
             Log::info($req);
             // $order->wallet_req = $req;
@@ -6610,7 +6611,8 @@ class TransactionController extends \BaseController {
                 'entry'=>'credit',
                 'description'=>"10% additional bonus on wallet recharge (Applicable only on Workout Sessions)",
                 'order_type'=>['workout-session', 'workout session'],
-                'duplicate_allowed'=>true
+                'duplicate_allowed'=>true,
+                'for'=>"wallet_recharge"
             );
             Log::info($req);
             // $order->wallet_req = $req;
