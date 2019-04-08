@@ -1484,6 +1484,10 @@ class TransactionController extends \BaseController {
 
                 $otp_data['otp'] = $temp['otp'];
 
+                if(!empty($old_order['multifit'])){
+                    $otp_data['multifit'] = $old_order['multifit'];
+                }
+
             }
 
             if($addTemp_flag){

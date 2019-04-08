@@ -732,6 +732,7 @@ Class CustomerMailer extends Mailer {
 
 		$label = 'AtVendorOrderCaputure-Customer';
 		
+		log::info("AtVendor  ", [$data]);
 		$header = $this->multifitUserHeader();
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'AtVendorOrderCaputure-Multifit-Customer';
