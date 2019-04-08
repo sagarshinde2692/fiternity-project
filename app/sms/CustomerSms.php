@@ -259,8 +259,9 @@ Class CustomerSms extends VersionNextSms{
 		}
 		
 		$header = $this->multifitKioskOrder($data);
-        
-        if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+
+		$header_auth = $this->multifitUserHeader();
+        if($header == true || $header_auth == true){
 			$label = 'Order-PG-Multifit-Customer';
 		}
 
@@ -1178,6 +1179,11 @@ Class CustomerSms extends VersionNextSms{
 	public function atVendorOrderCaputure($data){
 		
 		$label = 'AtVendorOrderCaputure-Customer';
+
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AtVendorOrderCaputure-Multifit-Customer';
+		}
 		
 		$to = $data['customer_phone'];
 		
