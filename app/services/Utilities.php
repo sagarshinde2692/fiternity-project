@@ -6982,12 +6982,15 @@ Class Utilities {
                     'loyalty'=>$loyalty 
                 ];
 
-                $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
+                $customer_update = false;
 
-                $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
+                if(!$dontUpdateLoyalty){
+                    $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
+                    $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
+                }
                 // ->where('loyalty', 'exists', false)
 
-                if($customer_update && !$dontUpdateLoyalty){
+                if($customer_update){
                     return ['status'=>200];
                 }else{
                     return ['status'=>400, 'message'=>'Customer already registered'];
