@@ -9161,6 +9161,15 @@ class CustomerController extends \BaseController {
 
         $post_register['rewards']['data'] = $post_register_rewards_data;
 
+
+		Order::$withoutAppends = true;
+		$order = Order::active()->where('customer_id', $customer['_id'])->where('type', 'memberships')->orderBy('_id', 'desc')->first();
+		if(!empty($order)){
+			$loyaltyAppropriation = $this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $order['_id']);
+
+			$post_register['loyalty_success_msg'] = $loyaltyAppropriation;
+		}
+
         return ['post_register'=>$post_register];
     }
 
@@ -9364,5 +9373,122 @@ class CustomerController extends \BaseController {
     {
         return !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
     }
+
+	public function prepareLoyaltyData($order){
+		Log::info('----- Entered prepareLoyaltyData -----');
+		if(!empty($order)){
+			$finder = Finder::active()->where('_id', $order['finder_id'])->first();
+			$loyalty = [
+				'order_id' => $order['_id'],
+				'start_date' => new MongoDate(strtotime('midnight', strtotime($order['start_date']))),
+				'start_date_time' => new MongoDate(strtotime($order['start_date'])),
+				'finder_id' => $order['finder_id'],
+				'end_date' => new MongoDate(strtotime('+1 year', strtotime($order['start_date']))),
+				'type' => $order['type'],
+				'checkins' => 0,
+				'created_at' => new MongoDate()
+			];
+			
+			/*if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))){
+				$duration = !empty($order['duration_day']) ? $order['duration_day'] : (!empty($order['order_duration_day']) ? $order['order_duration_day'] : 0);
+				$duration = $duration > 180 ? 360 : $duration;
+				$loyalty['brand_loyalty'] = $finder['brand_id'];
+				$loyalty['brand_loyalty_duration'] = $duration;
+				$loyalty['brand_loyalty_city'] = $order['city_id'];
+
+				if($loyalty['brand_loyalty'] == 135){
+					if($loyalty['brand_loyalty_duration'] == 180){
+						$loyalty['brand_version'] = 1;
+					}else{
+						$loyalty['brand_version'] = 2;
+					}
+				}else{
+					$loyalty['brand_version'] = 1;
+				}
+			}*/
+
+			$brand_loyalty_data = $this->utilities->buildBrandLoyaltyInfoFromOrder($finder, $order);
+			if(!empty($brand_loyalty_data)){
+				$loyalty['brand_loyalty'] = $brand_loyalty_data['brand_loyalty'];
+				$loyalty['brand_loyalty_duration'] = $brand_loyalty_data['brand_loyalty_duration'];
+				$loyalty['brand_loyalty_city'] = $brand_loyalty_data['brand_loyalty_city'];
+				$loyalty['brand_version'] = $brand_loyalty_data['brand_version'];
+			}
+			else if(!empty($order['finder_flags']['reward_type'])){
+				$loyalty['reward_type'] = $order['finder_flags']['reward_type'];
+			}
+			else{
+				$loyalty['reward_type'] = 2;
+			}
+			if(!empty($loyalty['reward_type']) && !empty($order['finder_flags']['cashback_type'])){
+				$loyalty['cashback_type'] = $order['finder_flags']['cashback_type'];
+			}
+			return $loyalty;
+		}
+		return null;
+	}
+
+
+	public function loyaltyAppropriation(){
+		Log::info('----- Entered loyaltyAppropriation -----');
+		$data = Input::all();
+		Log::info('loyaltyAppropriation data: ', [$data]);
+		$resp = ['status' => 500, 'messsage' => 'Something went wrong'];
+		$order = null;
+		try{
+			if((empty($data) || empty($data['order_id'])) && !empty($data['type']) && $data['type']=='profile'){
+				$order = Order::active()->where('customer_id', intval($data['customer_id']))->where('type','memberships')->orderBy('_id', 'desc')->first();
+				$data['order_id'] = $order['_id'];
+			}
+			if(!empty($data)){
+				if(!empty($data['order_id'])){
+					$order_id = intval($data['order_id']);
+					if(empty($order)){
+						$order = Order::active()->where('_id', $order_id)->first();
+					}
+					if(!empty($order)){
+						$customer_id = intval($order['customer_id']);
+						$cust = Customer::active()->where('_id', $customer_id)->first();
+							
+					
+						$reason = 'loyalty_appropriation';
+
+						$oldLoyalty = $cust['loyalty'];
+
+						Log::info('ready to prepareLoyaltyData.....');
+						$newLoyalty = $this->prepareLoyaltyData($order);
+						if(!empty($newLoyalty)){
+							$archiveData = ['loyalty' => $oldLoyalty];
+							
+							$this->utilities->archiveCustomerData($cust['_id'], $archiveData, $reason);
+
+							$cust['loyalty'] = $newLoyalty;
+							$cust->update();
+
+							$this->utilities->deactivateCheckins($cust['_id'], $reason);
+
+							$resp = ['status'=>200, 'message'=>'Successfully appropriated the loyalty of the customer'];
+						}
+						else {
+							$resp = ['status'=>400, 'message'=>'order details are missing'];
+						}
+					}
+					else {
+						$resp = ['status'=>400, 'message'=>'order is missing'];
+					}
+				}
+				else {
+					$resp = ['status'=>400, 'message'=>'order id is missing'];
+				}
+			}
+			else {
+				$resp = ['status'=>400, 'message'=>'order id and customer id are missing'];
+			}
+		} catch (Exception $ex) {
+			Log::info('Exception in loyaltyAppropriation: ', [$ex]);
+		}
+		Log::info('returning from loyaltyAppropriation with status: ', $resp);
+		return Response::json($resp, $resp['status']);
+	}
 
 }

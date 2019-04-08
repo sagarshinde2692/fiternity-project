@@ -667,6 +667,8 @@ class HomeController extends BaseController {
         $type       =   strtolower(trim($type));
         $order_type    = "";
 
+        $loyaltySuccessMsg = null;
+
         if($type != "" && $id != ""){
 
         	if($type=='product') 
@@ -1823,9 +1825,17 @@ class HomeController extends BaseController {
                     }
                 }
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
-                    if(!empty($item['loyalty_email_content'])){
-                        $subline = $subline."\n".$item['loyalty_email_content'];
+                    if(isset($item['loyalty_email_content'])){
+                        $subline = $subline."<br>".$item['loyalty_email_content'];
+                        // $subline = $subline."<br>".$this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                         // $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     }
+                }
+                else {
+                    // if(isset($item['loyalty_email_content'])){
+                        $loyaltySuccessMsg = $this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                        // $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                    // }
                 }
 
             }
@@ -2008,10 +2018,10 @@ class HomeController extends BaseController {
                             }
                         }
 
-                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/sms).<br/>Get ".$session_total." sessions for free worth Rs. ".$session_amount;
+                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/sms).\nGet ".$session_total." sessions for free worth Rs. ".$session_amount;
 
                         if($reward['reward_type'] == "swimming_sessions"){
-                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/sms).<br/>Get ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
+                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/sms).\nGet ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
                         }
                         
                     }
@@ -2100,7 +2110,8 @@ class HomeController extends BaseController {
                 'show_other_vendor' => $show_other_vendor,
                 'all_options_url' => $all_options_url,
                 'customer_auto_register' => $customer_auto_register,
-                'why_buy'=>$why_buy
+                'why_buy'=>$why_buy,
+                'loyalty_success_msg' => $loyaltySuccessMsg
             ];
             
             if(!empty($extended_message))
@@ -5255,5 +5266,10 @@ class HomeController extends BaseController {
                 return ['status'=>500];
             }
         }
+    // }
  
+ 	public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false) {
+		return $this->utilities->getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false);
+	}
+
 }

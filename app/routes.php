@@ -1341,3 +1341,6 @@ Route::get('testoffers', 'FindersController@testOffer');
 
 // Route::get('testmultifit', 'FindersController@testMultifit');
 // Route::get('testmm', 'DebugController@testmailMsg');
+// Route::post('loyaltyAppropriation', 'CustomerController@loyaltyAppropriation');
+Route::post('customer/loyaltyAppropriation', 'CustomerController@loyaltyAppropriation');
+Route::get('home/getLoyaltyAppropriationConsentMsg/{customer_id}/{order_id}','HomeController@getLoyaltyAppropriationConsentMsg');
