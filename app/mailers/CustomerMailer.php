@@ -63,6 +63,11 @@ Class CustomerMailer extends Mailer {
 		\Log::info("inside bookTrialReminderBefore12Hour");
 		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
 
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AutoTrial-ReminderBefore12Hour-Multifit-Customer';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
@@ -712,6 +717,11 @@ Class CustomerMailer extends Mailer {
 		\Log::info("workout sessoin before 10 min sms");
 		// return "sent";
 		$label = 'BookTrialReminderBefore10Min-Customer';
+
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'BookTrialReminderBefore10Min-Multifit-Customer';
+		}
 		
 		$message_data 	= array(
 				'user_email' => array($data['customer_email']),
