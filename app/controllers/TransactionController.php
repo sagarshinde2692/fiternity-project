@@ -6367,6 +6367,7 @@ class TransactionController extends \BaseController {
             //     }
             // }
             $resp['message'] = $resp['message']." Promotional fitcash will not be applicable with discount coupon";
+            $resp['success_message'] = $resp['message'];
             return Response::json($resp,$resp['status']);
 
         }else{
