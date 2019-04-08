@@ -8065,7 +8065,7 @@ public function getPPSSearchResult($data){
                     if($rewardsExist){
                         // $message .= " & ";
                     }
-                    if(in_array($existingLoyalty['cashback_type'],[1,2])){
+                    if(in_array($existingLoyalty['cashback_type'],['A', 'B'])){
                         $retObj['cashback_percent'] = 120;
                         // $message .= "<b>120%</b> cashback";
                     }
