@@ -18,7 +18,15 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'AutoTrial-Instant-Customer-abg';
 		}
 
-		$header = $this->multifitUserHeader();
+		// $to = $data['customer_phone'];   
+		//if(empty($data["communications"]['customer']['sms']) ||(!empty($data["communications"]['customer']['sms']) && (in_array($label,$data["communications"]['customer']['sms'])))){
+			// return $this->common($label, $to, $data);
+		//}
+		// else if(!empty($data["communications"]['customer']['sms']) && !(in_array($label,$data["communications"]['customer']['sms']))){
+		// 	return null;
+		// }
+		//return $this->common($label,$to,$data);
+		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'AutoTrial-Instant-Multifit-Customer';
 		}
