@@ -1463,6 +1463,8 @@ class TransactionController extends \BaseController {
 
                 $old_order = $order->toArray();
 
+                Log::info("         =============================== older order:  ", [$old_order]);
+
                 $otp_data = $old_order['otp_data'];
 
                 if(isset($otp_data['created_at']) && ((time() - $otp_data['created_at']) / 60) < 3){
@@ -1899,7 +1901,10 @@ class TransactionController extends \BaseController {
     									$addTemp_flag  = true;
     									
     									if(isset($order['otp_data'])){
-    										$old_order = $order->toArray();
+                                            $old_order = $order->toArray();
+                                            
+                                            Log::info(" =======  old Oder",[$old_order]);
+
     										$otp_data = $old_order['otp_data'];
     										
     										if(isset($otp_data['created_at']) && ((time() - $otp_data['created_at']) / 60) < 3){
