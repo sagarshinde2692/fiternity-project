@@ -6967,10 +6967,11 @@ Class Utilities {
                 
                 
                 if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
-                    
-                    $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
-                    if(!empty($data['finder_flags']['cashback_type'])){
-                        $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
+                    if(!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type']!=2){
+                        $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
+                        if(!empty($data['finder_flags']['cashback_type'])){
+                            $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
+                        }
                     }
                 }
 
@@ -8098,6 +8099,7 @@ public function getPPSSearchResult($data){
                     $cbkTypeChk = empty($retObj['cashback_type']);
                 }
                 $finder = Finder::active()->where('_id', $order['finder_id'])->first();
+                $isDowngrade = false;
                 if(!empty($customer['loyalty']['brand_loyalty'])){
                     $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$order['brand_id'];
                     if($brandIdTypeChk){
@@ -8110,8 +8112,10 @@ public function getPPSSearchResult($data){
                 }
                 else {
                     $brandIdTypeChk = empty($order['brand_id'])||in_array($finder['brand_id'], Config::get('app.brand_finder_without_loyalty'));
+
+                    $isDowngrade = (((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']==2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']>2));
                 }
-                if($rewTypeChk && $cbkTypeChk && $brandIdTypeChk){
+                if(($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
                     // same grid - no need to upgrade
                     $retObj = null;
                 }
