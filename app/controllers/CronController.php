@@ -16,7 +16,7 @@ class CronController extends BaseController {
 			'start_time' => 'required',
 			'end_time' => 'required',
 			'status' => 'required',
-			'message' => 'required'
+			// 'message' => 'required'
 		];
 
 		$validator = Validator::make($data,$rules);
