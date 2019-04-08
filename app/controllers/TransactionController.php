@@ -6923,6 +6923,32 @@ class TransactionController extends \BaseController {
                     }
                 }
             }
+
+            if(!empty($order['coupon_code'])){
+                $data['coupon'] = $order['coupon_code'];
+            }
+
+            if(isset($data['coupon'])){
+                $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
+                $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
+
+                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email);
+                if($resp["coupon_applied"]){
+                    
+                    $data['coupon_discount'] = $data['amount_payable'] > $resp['data']['discount'] ? $resp['data']['discount'] : $data['amount_payable'];
+
+                    $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                    
+                    $data['you_save'] += $data['coupon_discount'];
+                    
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
+                    ];
+                
+                }
+
+            }
                 
             if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
                 
@@ -6968,33 +6994,6 @@ class TransactionController extends \BaseController {
 
                 $customer = Customer::find($customer_id);
                 $result['register_loyalty'] = empty($customer['loyalty']);
-            }
-            
-            if(!empty($order['coupon_code'])){
-                $data['coupon'] = $order['coupon_code'];
-            }
-
-            if(isset($data['coupon'])){
-                $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
-                $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
-
-                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email);
-
-                if($resp["coupon_applied"]){
-                    
-                    $data['coupon_discount'] = $data['amount_payable'] > $resp['data']['discount'] ? $resp['data']['discount'] : $data['amount_payable'];
-
-                    $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
-                    
-                    $data['you_save'] += $data['coupon_discount'];
-                    
-                    $result['payment_details']['amount_summary'][] = [
-                        'field' => 'Coupon Discount',
-                        'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
-                    ];
-                
-                }
-
             }
 
             $result['payment_details']['amount_payable'] = [

@@ -2351,6 +2351,10 @@ Class Utilities {
             $query->where(function($query) use ($data){$query->orwhere('duration_day', 'exists', false)->orWhere('duration_day', $data['duration_day']);});
         }
 
+        if($this->checkCouponApplied()){
+            $query->where('for', 'wallet_recharge');
+        }
+
         $wallet_balance = $query->sum('balance');
 
         return $wallet_balance;
@@ -2628,7 +2632,7 @@ Class Utilities {
             $query->where('restricted_for', '!=', 'upgrade');
         }
 
-        if(!empty($GLOBALS['coupon_applied'])){
+        if($this->checkCouponApplied()){
             $query->where('for', 'wallet_recharge');
         }
 
@@ -8272,6 +8276,9 @@ Class Utilities {
 
 		
 
-	}
+    }
+    public function checkCouponApplied(){
+        return !empty($GLOBALS['coupon_applied']);
+    }
 }
 
