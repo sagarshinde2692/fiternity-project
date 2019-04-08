@@ -489,6 +489,11 @@ Class CustomerMailer extends Mailer {
 
 		$label = 'OrderUpdatePaymentAtVendor-Customer';
 
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'OrderUpdatePaymentAtVendor-Multifit-Customer';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
