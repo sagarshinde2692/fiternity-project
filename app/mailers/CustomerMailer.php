@@ -653,8 +653,8 @@ Class CustomerMailer extends Mailer {
 
 		$multifitFlag = false;
 		
-		if(!empty(Input::get('multifit'))){
-			$multifitFlag = Input::get('multifit');
+		if(!empty(\Input::get('multifit'))){
+			$multifitFlag = \Input::get('multifit');
 		}
 
 		Log::info(" ++++++++ multifitflag",[$multifitFlag]);
