@@ -14,6 +14,10 @@
 App::before(function($request)
 {
     Log::info($_SERVER['REQUEST_URI']);
+    if(!empty(Input::all())){
+        Log::info("API Hit" , Input::all());
+    }
+    Log::info(apache_request_headers());
 });
 
 
