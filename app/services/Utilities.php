@@ -6967,7 +6967,7 @@ Class Utilities {
                 
                 
                 if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
-                    if(!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type']!=2){
+                    if((!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type']!=2) || (!empty($customer['loyalty']['brand_loyalty']))){
                         $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
                         if(!empty($data['finder_flags']['cashback_type'])){
                             $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
