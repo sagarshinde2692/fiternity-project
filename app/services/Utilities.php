@@ -8113,7 +8113,7 @@ public function getPPSSearchResult($data){
                 else {
                     $brandIdTypeChk = empty($order['brand_id'])||in_array($finder['brand_id'], Config::get('app.brand_finder_without_loyalty'));
 
-                    $isDowngrade = (((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2));
+                    $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2)));
                 }
                 if(($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
                     // same grid - no need to upgrade
