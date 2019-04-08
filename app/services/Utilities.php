@@ -7955,6 +7955,7 @@ public function getPPSSearchResult($data){
             // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
             $existingLoyalty = null;
             $message = null;
+            $newMessage = null;
             if(!empty($customer['loyalty'])){
                 $retObj = [];
                 if(!empty($customer['loyalty']['brand_loyalty']) && !in_array($order['finder_id'], \Config::get('app.brand_finder_without_loyalty'))){
