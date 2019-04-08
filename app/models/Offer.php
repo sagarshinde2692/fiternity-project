@@ -80,8 +80,8 @@ class Offer extends \Basemodel {
 			Log::info("if");
 			return $query->where($field_name, intval($field_value))->where('hidden', false)->orderBy('_id', 'desc')
                     ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-                    ->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime('2019-04-08')) ))
-					->get();
+                    ->where(function($query){$query->orWhere('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime('2019-04-08')) ))->orWhere('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ));})
+                    ->get();
 		}else{
 			Log::info("else");
 			return $query->where($field_name, intval($field_value))->where('hidden', false)->orderBy('_id', 'desc')
