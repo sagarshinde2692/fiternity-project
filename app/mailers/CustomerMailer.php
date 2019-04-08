@@ -651,8 +651,15 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['name']
 		);
 
+		$multifitFlag = false;
+		
+		if(!empty(Input::get('multifit'))){
+			$multifitFlag = Input::get('multifit');
+		}
+
+		Log::info(" ++++++++ multifitflag",[$multifitFlag]);
 		$header = $this->multifitUserHeader();
-		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+		if($multifitFlag == true || $header == true){
 			return;
 		}
 
