@@ -718,7 +718,7 @@ Class CustomerMailer extends Mailer {
 		// return "sent";
 		$label = 'BookTrialReminderBefore10Min-Customer';
 
-		$header = $this->multifitUserHeader();
+		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'BookTrialReminderBefore10Min-Multifit-Customer';
 		}
@@ -738,7 +738,7 @@ Class CustomerMailer extends Mailer {
 		// return "sent";
 		$label = 'Workout-session_Instant_WorkoutLevelStart';
 
-		$header = $this->multifitUserHeader();
+		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			return;
 		}
