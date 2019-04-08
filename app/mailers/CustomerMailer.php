@@ -206,8 +206,14 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['name']
 		);
 
+		$multifitFlag = false;
+		$allData = \Input::json()->all();
+		if(!empty($allData['multifit'])){
+			$multifitFlag = $allData['multifit'];
+		}
+		
 		$header = $this->multifitUserHeader();
-		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+		if($multifitFlag == true || $header == true){
 			return;
 		}
 
@@ -652,12 +658,14 @@ Class CustomerMailer extends Mailer {
 		);
 
 		$multifitFlag = false;
-		
-		if(!empty(\Input::get('multifit'))){
-			$multifitFlag = \Input::get('multifit');
+		$allData = \Input::json()->all();
+		if(!empty($allData['multifit'])){
+			$multifitFlag = $allData['multifit'];
 		}
 
-		Log::info(" ++++++++ multifitflag",[$multifitFlag]);
+		\Log::info(" ++++++++ multifitflag",[$multifitFlag]);
+		\Log::info(" ++++++++ multifitflag2",[\Input::get('multifit')]);
+		\Log::info(" ++++++++ all data",[\Input::json()->all()]);
 		$header = $this->multifitUserHeader();
 		if($multifitFlag == true || $header == true){
 			return;
@@ -674,8 +682,14 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['name']
 		);
 
+		$multifitFlag = false;
+		$allData = \Input::json()->all();
+		if(!empty($allData['multifit'])){
+			$multifitFlag = $allData['multifit'];
+		}
+
 		$header = $this->multifitUserHeader();
-		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+		if($multifitFlag == true || $header == true){
 			return;
 		}
 
@@ -713,6 +727,11 @@ Class CustomerMailer extends Mailer {
 		\Log::info("workout sessoin before 10 min sms");
 		// return "sent";
 		$label = 'Workout-session_Instant_WorkoutLevelStart';
+
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			return;
+		}
 		
 		$message_data 	= array(
 				'user_email' => array($data['customer_email']),
