@@ -6979,7 +6979,7 @@ Class Utilities {
                     'loyalty'=>$loyalty 
                 ];
 
-                $this->archiveCustomerData($customer['_id'], ['loyalty' => $existingLoyalty], 'loyalty_appropriation_autoupgrade');
+                $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
 
                 $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
                 // ->where('loyalty', 'exists', false)
