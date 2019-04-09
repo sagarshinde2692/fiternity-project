@@ -23,7 +23,7 @@ Class Paypal {
 
         $debug = ($debug) ? $debug : $this->debug;
 
-        $this->base_uri = 'https://api.paypal.com';
+        $this->base_uri = 'https://api.paypal.com/';
         $this->client_id = 'AZi5DfXM1DJhUmLWSFEH0Lx0bRQv2mwvmJ8I1lupg5epT6irnBkqv-iuRgdKN5o6l4JqzifZ52Lte5zg';
         $this->secret_key = 'EO1RH_hGADEAl0yXToQmU9FNhpnSsUBUC9sgmm8_aKUR3t-atUrVrGihJlHXcgocPqtigDZVEpGjcRGY';
         $this->merchant_id = "3527Q7ANXWFEW";
