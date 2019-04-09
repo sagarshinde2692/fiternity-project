@@ -10,6 +10,7 @@
 use App\Services\Mobikwik as Mobikwik;
 use App\Services\Paytm as Paytm;
 use App\Services\Fitweb as Fitweb;
+use App\Services\Paypal as Paypal;
 
 class PaymentGatewayController extends \BaseController {
 
@@ -17,7 +18,8 @@ class PaymentGatewayController extends \BaseController {
 
 		Mobikwik $mobikwik,
 		Paytm $paytm,
-		Fitweb $fitweb
+		Fitweb $fitweb,
+		Paypal $paypal
 
 	) {
 
@@ -26,6 +28,7 @@ class PaymentGatewayController extends \BaseController {
      	$this->mobikwik = $mobikwik;
      	$this->paytm = $paytm;
      	$this->fitweb = $fitweb;
+     	$this->paypal = $paypal;
     }
 
 	
@@ -925,4 +928,266 @@ class PaymentGatewayController extends \BaseController {
 		return Response::json($response);
 	}
 
+	public function firstCallPaypal(){
+		$access_token = $this->paypal->getAccessToken();
+		return Response::json($access_token);
+	}
+
+	public function createPaymentPaypal(){
+		
+		$postData = Input::json()->all();
+
+		// $header = $this->getHeaderInfo();
+		// print_r($header);
+		// exit();
+		// $stcData = array(
+		// 	"tracking_id" => $postData['txnid'],
+		// 	"additional_data" => array(
+		// 		array(
+		// 			"key" => "sender_account_id",
+		// 			"value" => $postData['amount']
+		// 		),
+		// 		array(
+		// 			"key" => "sender_first_name", 
+		// 			"value" => $postData['firstname']
+		// 		),
+		// 		array(
+		// 			"key" => "sender_email", 
+		// 			"value" => $postData['email']
+		// 		),
+		// 		array(
+		// 			"key" => "sender_phone", 
+		// 			"value" => $postData['phone']
+		// 		),
+		// 		array(
+		// 			"key" => "sender_create_date", 
+		// 			"value" => $postData['amount']
+		// 		),
+		// 		array(
+		// 			"key" => "loyalty_flag_exists", 
+		// 			"value" => 0
+		// 		)
+		// 	)
+		// );
+		
+		$data = array("intent" => "sale",
+					"payer" => array(
+						"payment_method" => "paypal"
+					),
+					"application_context" => array(
+						"shipping_preference" => "NO_SHIPPING",
+						"locale" => "en_IN",
+						"user_action" => "commit"
+					),
+					"transactions" => array(array(
+						"amount" => array(
+							"total" => $postData['amount'], 
+							"currency" => "INR" 
+						),
+						"invoice_number" => $postData['txnid'],
+						"item_list" => array(
+							"items" => array(array(
+								"name" => ucwords($postData['productinfo']),
+								"description" => ucwords($postData['service_name']),
+					  			"quantity" => "1",
+					  			"price" => $postData['amount'],
+					  			"sku" => ucwords($postData['type']),
+					  			"currency" => "INR"
+							)
+						))
+					)),
+					"note_to_payer" => "Contact us for any questions on your order.",
+					"redirect_urls" => array(
+			  			"return_url" => Config::get('app.url')."/successRoutePaypal?txnid=".$postData['txnid'],
+			  			"cancel_url" => Config::get('app.url')."/cancleRoutePaypal"
+					)
+				);
+	
+		$jsonData = json_encode($data);
+		//echo $jsonData;
+		//exit();
+		// $jsonStcData = json_encode($stcData);
+		// print_r( $jsonStcData);
+		// exit();
+		// $res = $this->paypal->setTransactionContext($jsonStcData);
+		// return Response::json($res);
+		// exit();
+		$response = $this->paypal->createPayment($jsonData, $postData['txnid']);
+		Log::info("create payment res ::: ", [$response]);
+		$value = array("rel" => "approval_url");
+		if($response['status'] == 200){
+			$link = array_where($response['message']['links'], function($key, $val) use ($value){
+				if($val['rel'] == $value['rel'])
+					{
+					 return true; 
+					}
+			});
+			
+			if(!empty($link)){
+				foreach($link as $k => $v){
+					$l = $v['href'];
+				}
+			}
+
+			$returnResponse = [
+				'status' => '200',
+				'url' => $l.'&locale.x=en_IN&country.x=IN'
+			];
+			
+		}else{
+			$returnResponse = $response;
+		}
+		
+		return Response::json($returnResponse);
+	}
+
+	public function successExecutePaymentPaypal(){
+		Log::info("successExecutePaymentPaypal");
+		$header = $this->getHeaderInfo();
+		$app_device = strtolower($header['app_device']);
+		$PayerID = Input::get('PayerID');
+		$token = Input::get('token');
+		$paymentId = Input::get('paymentId');
+		$txnid = Input::get('txnid');
+		Log::info("txnid", [$txnid]);
+		$payer_id = json_encode(array("payer_id" => $PayerID));
+		$response = $this->paypal->executePayment($paymentId, $payer_id, $txnid);
+		// return Response::json($response);
+		// exit();
+		Log::info("execute paymet res :::   ", [Response::json($response)]);
+		
+		if($response['status'] == 200){
+			Log::info("200");
+
+			if(!empty($response['message']['transactions'][0]['related_resources'])){
+				Log::info("not empty transaction");
+				$state = $response['message']['transactions'][0]['related_resources'][0]['sale']['state'];
+				if($state == 'completed'){
+
+					Log::info("completed");
+					$parent_payment_id = $response['message']['transactions'][0]['related_resources'][0]['sale']['parent_payment'];
+					$payment_id = $response['message']['transactions'][0]['related_resources'][0]['sale']['id'];
+					$txnid = $response['message']['transactions'][0]['invoice_number'];
+					Log::info("parent payment id :: ",[$parent_payment_id]);
+					Log::info("payment id :: ",[$payment_id]);
+					
+					// Order::where('txnid', $txnid)->update(['parent_payment_id_paypal' => $parent_payment_id, "payment_id_paypal" => $payment_id]);
+
+					$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','schedule_date','type'])->toArray();
+					$fin_arr = array(
+						"order_id" => $order['_id'],
+						"status" => "success",
+						"customer_name" => $order['customer_name'],
+						"customer_email" => $order['customer_email'],
+						"customer_phone" => $order['customer_phone'],
+						"error_Message" => "",
+						"service_name" => $order['service_name'],
+						"amount" => $order['amount_customer'],
+						"finder_id" => $order['finder_id'],
+						"schedule_date" => (empty($order['schedule_date']))? "" : $order['schedule_date'],
+						"type" => $order['type'],
+						"parent_payment_id_paypal" => $parent_payment_id,
+						"payment_id_paypal" => $payment_id
+					);
+					
+					
+					if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
+						$res_obj = app(SchedulebooktrialsController::class)->bookTrialPaid($fin_arr);
+					}else{
+						$res_obj = app(TransactionController::class)->success($fin_arr);
+					}
+					// print_r($res_obj->getData());
+					// echo "<hr>";
+					$res = json_decode(json_encode($res_obj->getData()),true);
+					if($res['status'] == 200){
+						Log::info("db updated");
+						if($app_device == 'android' || $app_device == 'ios'){
+							return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=200');
+						}
+
+						if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
+							return Redirect::to(Config::get('app.website')."/paymentsuccesstrial?orderId=".$order['_id']."&type=paypal");
+						}
+
+						return Redirect::to(Config::get('app.website')."/paymentsuccess?orderId=".$order['_id']."&type=paypal");
+					}
+					// else{
+					// 	Log::info("db update fail");
+					// 	if($app_device == 'android' || $app_device == 'ios'){
+					// 		return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=400&message=fail');
+					// 	}
+					// 	return Redirect::to(Config::get('app.website')."/paymentfailure");	
+					// }
+				}
+				// else{
+				// 	Log::info("nnot completed");
+				// 	if($app_device == 'android' || $app_device == 'ios'){
+				// 		return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=400&message=fail');
+				// 	}
+				// 	return Redirect::to(Config::get('app.website')."/paymentfailure");	
+				// }
+			}
+			// else{
+			// 	Log::info("empty tran");
+			// 	if($app_device == 'android' || $app_device == 'ios'){
+			// 		return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=400&message=fail');
+			// 	}
+			// 	return Redirect::to(Config::get('app.website')."/paymentfailure");
+			// }
+		}
+		// else{
+		// 	Log::info("execute fail");
+		// 	// return header('Location: ftrnty://ftrnty.com/paypalresponse?status=400&message=fail');
+		// 	if($app_device == 'android' || $app_device == 'ios'){
+		// 		return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=400&message=fail');
+		// 	}
+		// 	return Redirect::to(Config::get('app.website')."/paymentfailure");
+		// }
+
+		if($app_device == 'android' || $app_device == 'ios'){
+			return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=400&message=fail');
+		}
+		return Redirect::to(Config::get('app.website')."/paymentfailure");
+	}
+
+	public function canclePaymentPaypal(){
+		$header = $this->getHeaderInfo();
+
+		$app_device = strtolower($header['app_device']);
+
+		if($app_device == 'android' || $app_device == 'ios'){
+			return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=400&message=fail');
+		}
+		return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=400&message=fail');
+	}
+
+	public function getHeaderInfo(){
+
+		Log::info("header");
+
+		$customer_id = "";
+		$app_device = "";
+		$app_version = "";
+
+		$jwt_token = Request::header('Authorization');
+		if($jwt_token){
+			$decoded = customerTokenDecode($jwt_token);
+
+			$customer_id = (int)$decoded->customer->_id;
+		}
+	
+		$app_device = Request::header('Device-Type');
+   		$app_version = Request::header('App-Version');
+		
+		Log::info("app device paypal ::: ", [$app_device]);
+		Log::info("app version paypal ::: ", [$app_version]);
+		Log::info("customer paypal ::: ", [$customer_id]);
+
+		$data = array("customer_id" => $customer_id,
+				"app_version" => $app_version,
+				"app_device" => $app_device
+		);
+
+		return $data;
+	}
 }

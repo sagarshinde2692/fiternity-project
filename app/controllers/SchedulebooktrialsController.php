@@ -1705,10 +1705,15 @@ class SchedulebooktrialsController extends \BaseController {
         return $count;
     }
 
-    public function bookTrialPaid($data=null){
+    public function bookTrialPaid($data = null){
 
-        $data = $data ? $data : Input::json()->all();
+        // $data = $data ? $data : Input::json()->all();
 
+        if($data){
+            $data['internal_success'] = true;
+        }else{
+            $data = Input::json()->all();
+        }
 
         //        return $data;
 
@@ -2543,6 +2548,14 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             array_set($orderData, 'booktrial_id', (int)$booktrialid);
+            if(!empty($data['parent_payment_id_paypal'])){
+                array_set($orderData, 'parent_payment_id_paypal', $data['parent_payment_id_paypal']);
+            }
+
+            if(!empty($data['payment_id_paypal'])){
+                array_set($orderData, 'payment_id_paypal', $data['payment_id_paypal']);
+            }
+            
             $order->update($orderData);
 
             if(!empty($order->vendor_price)){

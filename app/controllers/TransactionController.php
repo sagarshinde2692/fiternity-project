@@ -2247,7 +2247,6 @@ class TransactionController extends \BaseController {
     }
 
     public function success($data = null){
-        
         if($data){
             $data['internal_success'] = true;
         }else{
@@ -2284,18 +2283,16 @@ class TransactionController extends \BaseController {
 
         //If Already Status Successfull Just Send Response
         if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
-
             $resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
             return Response::json($resp,401);
 
         }elseif(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && isset($order->status) && $order->status != '1' && isset($order->order_action) && $order->order_action != 'bought'){
-
             $resp   =   array('status' => 401, 'statustxt' => 'error',"message" => "Status should be Bought");
             return Response::json($resp,401);
         }
       
         $hash_verified = $this->utilities->verifyOrder($data,$order);
-
+        Log::info("successCommon ",[$hash_verified]);
         if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
@@ -2315,6 +2312,15 @@ class TransactionController extends \BaseController {
             }
 
             if($data['status'] == '1'){
+
+                if(!empty($data['parent_payment_id_paypal'])){
+                    array_set($data, 'parent_payment_id_paypal', $data['parent_payment_id_paypal']);
+                }
+    
+                if(!empty($data['payment_id_paypal'])){
+                    array_set($data, 'payment_id_paypal', $data['payment_id_paypal']);
+                }
+
                 if($order->type == "memberships"){
                     $group_id = isset($order->group_id) ? $order->group_id : null;
                     $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$group_id, 'order_id'=>$order->_id]);
@@ -6030,6 +6036,11 @@ class TransactionController extends \BaseController {
             'subtitle' => 'Transact online with Wallets',
             'value'=>'wallet',
             'options'=>[
+                    // [
+                    //         'title' => 'Paypal',
+                    //         // 'subtitle' => 'Paypal',
+                    //         'value' => 'paypal'
+                    // ],
                     [
                             'title' => 'Paytm',
                             // 'subtitle' => 'Paytm',

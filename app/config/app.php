@@ -5,7 +5,7 @@ return array(
 
 	//local
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://fitapi.com',
+	// 'url' => 'http://fitapi.com/',
 	// 'admin_url' => 'http://fitadmin.com',
 	// 'website' => 'https://www.fitternity.com',
 	// 'sidekiq_url' => 'http://kick.fitn.in/',
@@ -19,6 +19,7 @@ return array(
 	// 'website_deeplink' =>'https://ftrnty.com',
 	// 'mobikwik_sandbox'=>true,
 	// 'paytm_sandbox'=>true,
+	// 'paypal_sandbox'=>true,
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -36,6 +37,7 @@ return array(
 	// 'website_deeplink' =>'https://ftrnty.com',
 	// 'mobikwik_sandbox'=>true,
 	// 'paytm_sandbox'=>true,
+	// 'paypal_sandbox'=>true,
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -58,8 +60,8 @@ return array(
 	'new_search_url' =>'http://c1.fitternity.com/',	
 	'url' => 'https://a1.fitternity.com',
 	'admin_url' => 'https://fitn.in',
-	'website' => 'https://www.fitternity.com',
-	'multifit_website' => 'http://www.multifitgym.com',
+    'website' => 'https://www.fitternity.com',
+    'multifit_website' => 'http://www.multifitgym.com',
 	'sidekiq_url' => 'http://nw.fitn.in/',
 	'queue' => 'booktrial',
 	'vendor_communication' => true,
@@ -71,8 +73,9 @@ return array(
 	'website_deeplink' =>'https://ftrnty.com',
 	'mobikwik_sandbox'=>false,
 	'paytm_sandbox'=>false,
-
-	"core_key"=> "FITITRNTY",
+    'paypal_sandbox'=>false,
+    
+    "core_key"=> "FITITRNTY",
 	'non_peak_hours' => ["off"=>0.6,"non_peak_title1"=>"Look for this sign to book a slot for ", "non_peak_title"=>"NON RUSH HOUR (40% OFF)", "gym"=>["off"=>0.6,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.6]],
     'product_delivery_charges' => 50,
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
