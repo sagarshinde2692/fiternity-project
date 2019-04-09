@@ -8151,7 +8151,9 @@ Class Utilities {
                     $message .= "<br/>You are ".$retObj['checkins_left_next_milestone']." check-ins away from milestone ".$retObj['next_milestone'].".";
                 }
                 
-                $message .= "<br/>You can upgrade to ".$retObj['finder_name']." specific rewards by visiting the profile section of your account on the website.<br/>Please note : On switching, your check-in counter will reset to 0 with a check-in validity till ".(!empty($retObj['new_end_date']))?$retObj['new_end_date']:''.".";
+                $newEndDate = (!empty($retObj['new_end_date']))?$retObj['new_end_date']:'';
+
+                $message .= "<br/>You can upgrade to ".$retObj['finder_name']." specific rewards by visiting the profile section of your account on the website.<br/>Please note : On switching, your check-in counter will reset to 0 with a check-in validity till ".$newEndDate.".";
                 
                 if(!empty($customer['loyalty']['reward_type'])){
                     $rewTypeChk = $customer['loyalty']['reward_type']==$retObj['reward_type'];
