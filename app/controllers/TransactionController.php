@@ -6036,11 +6036,11 @@ class TransactionController extends \BaseController {
             'subtitle' => 'Transact online with Wallets',
             'value'=>'wallet',
             'options'=>[
-                    [
-                            'title' => 'Paypal',
-                            // 'subtitle' => 'Paypal',
-                            'value' => 'paypal'
-                    ],
+                    // [
+                    //         'title' => 'Paypal',
+                    //         // 'subtitle' => 'Paypal',
+                    //         'value' => 'paypal'
+                    // ],
                     [
                             'title' => 'Paytm',
                             // 'subtitle' => 'Paytm',
