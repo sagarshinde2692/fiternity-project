@@ -1602,8 +1602,10 @@ Class CustomerReward {
         
         }else{
 
-            $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
-        
+            //$offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
+            
+            $offer = Offer::getActiveV1('ratecard_id', intval($ratecard->_id), intval($ratecard->finder_id))->first();
+
             if($offer){
                 $price = $offer->price;
             }else{
@@ -2137,7 +2139,7 @@ Class CustomerReward {
                 $customer_phone = $decoded->customer->contact_no;
                 $customer_email = $decoded->customer->email;
                 
-                $prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+                $prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', substr($customer_phone, -10))->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
 
                 if($prev_workout_session_count){
                     
@@ -2385,6 +2387,8 @@ Class CustomerReward {
             if(!empty($coupon['flags'])){
                 $resp['flags'] = $coupon['flags'];
             }
+
+            $GLOBALS['coupon_applied'] = $discount_amount;
             
         }else{
 

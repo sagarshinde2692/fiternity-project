@@ -28,7 +28,7 @@ class GlobalPushController extends \BaseController
   }
 
   public function rollingbuildautosuggest(){
-
+    
     ini_set('max_execution_time', 300000);
 
     /*
@@ -343,7 +343,7 @@ class GlobalPushController extends \BaseController
 
     */
 
-
+    
     $this->pushBrandOutlets($index_name);
     $this->pushcategorylocations($index_name);
     $this->pushcategorycity($index_name);
@@ -357,7 +357,7 @@ class GlobalPushController extends \BaseController
 
 //        $this->pushcategorywithfacilities($index_name);
 //        $this->pushcategoryoffering($index_name);
-       $this->pushcategoryofferinglocation($index_name);
+        $this->pushcategoryofferinglocation($index_name);
 //        $this->pushcategoryfacilitieslocation($index_name);
 //        $this->pushofferingcity($index_name);
 
@@ -851,7 +851,7 @@ class GlobalPushController extends \BaseController
       $locationtags = Location::where('cities', $city)
           ->get();
 
-      $categorytag_offerings = Findercategorytag::active()
+    $categorytag_offerings = Findercategorytag::active()
           ->whereIn('cities',array($city))
           ->with('offerings')
           ->orderBy('ordering')
@@ -859,13 +859,13 @@ class GlobalPushController extends \BaseController
           //->whereIn('_id',array(32))
           ->get(array('_id','name','offering_header','slug','status','offerings'));
 
-      foreach ($categorytag_offerings as $cat) {
-        $catprioroff = isset($this->amenitiesrank[strtolower($cat['name'])]) ? $this->amenitiesrank[strtolower($cat['name'])] : null;
-        $offerings = $cat['offerings'];
-        foreach ($offerings as $off) {
-          foreach ($locationtags as $loc) {
-            switch (strtolower($cat['name'])) {
-              case 'gyms':
+          foreach ($categorytag_offerings as $cat) {
+              $catprioroff = isset($this->amenitiesrank[strtolower($cat['name'])]) ? $this->amenitiesrank[strtolower($cat['name'])] : null;
+              $offerings = $cat['offerings'];
+            foreach ($offerings as $off) {
+                foreach ($locationtags as $loc) {
+                switch (strtolower($cat['name'])) {
+                case 'gyms':
                 $cluster = '';
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
                 $string = ucwords($cat['name']).' with '.ucwords($off['name']).' in '.ucwords($loc['name']);
@@ -911,7 +911,7 @@ class GlobalPushController extends \BaseController
               case 'dance':
                 $cluster = '';
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
-                $string = ucwords($off['name']).'- '.ucwords($cat['name']).' classes in '.ucwords($loc['name']);
+                $string = ucwords($off['name']).' - '.ucwords($cat['name']).' classes in '.ucwords($loc['name']);
                 $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
@@ -941,7 +941,7 @@ class GlobalPushController extends \BaseController
               case 'pilates':
                 $cluster = '';
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
-                $string = ucwords($off['name']).'- '.ucwords($cat['name']).' in '.ucwords($loc['name']);
+                $string = ucwords($off['name']).' - '.ucwords($cat['name']).' in '.ucwords($loc['name']);
                 $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);

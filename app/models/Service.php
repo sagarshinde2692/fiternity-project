@@ -206,15 +206,17 @@ class Service extends \Basemodel{
 
 		
 		if($ratecardsarr){
-	//            var_dump($ratecardsarr);
+	        //var_dump($ratecardsarr);
 
 			$offer_exists = false;
 			
-			$serviceoffers = Offer::where('vendorservice_id', $this->_id)->where('hidden', false)->orderBy('order', 'asc')
-									->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout','added_by_script'])
-									->toArray();
+			// $serviceoffers = Offer::where('vendorservice_id', $this->_id)->where('hidden', false)->orderBy('order', 'asc')
+			// 						->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+			// 						->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+			// 						->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout','added_by_script'])
+			// 						->toArray();
+
+			$serviceoffers = Offer::getActiveV1('vendorservice_id', intval($this->_id), $finder)->toArray();
 			foreach ($ratecardsarr as $key => $value) {
 
 				// if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
@@ -229,6 +231,21 @@ class Service extends \Basemodel{
 									// Log::info($serviceoffers);
                 if(!empty($value['_id']) && isset($value['_id'])){
 					
+					$studioExtValidity = (!empty($this->batches) && count($this->batches)>0) && (($value['validity']==30 && $value['validity_type']=='days') || ($value['validity']==1 && in_array($value['validity_type'],['months', 'month'])) || ($value['validity']==3 && $value['validity_type']=='months'));
+
+
+					if(!empty($studioExtValidity) && $studioExtValidity){
+						$numOfDays = (in_array($value['validity_type'], ['month', 'months']))?$value['validity']*30:$value['validity'];
+						
+						$numOfDays = (in_array($value['validity_type'], ['year', 'years']))?$value['validity']*360:$numOfDays;
+
+						$numOfDaysExt = ($numOfDays==30)?15:(($numOfDays>=90)?30:0);
+
+						$value['studio_extended_validity'] = [
+							'num_days_extended' => $numOfDaysExt
+						];
+					}
+
                     $ratecardoffersRecards 	= 	array_where($serviceoffers, function($key, $offer) use ($value){
 						if($offer['ratecard_id'] == $value['_id'])
 							{
@@ -272,14 +289,14 @@ class Service extends \Basemodel{
 
                         $difference     =   $today_date->diff($end_date);
 
-                        if($difference->days <= 15){
+                        if($difference->days <= 15 && $difference->days != 0){
                             $ratecardoffer['offer_text']    =  ($difference->days == 1) ? "Expires Today" : ($difference->days > 7 ? "Expires soon" : "Expires in ".$difference->days." days");
 						}
 						
 						$orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
 						if(isset($orderVariable["available_slots_end_date"]) && time() >= $orderVariable["available_slots_end_date"]){
 							$futureExpiry = (date('d',$orderVariable["end_time"])-intval(date('d', time())));
-							$ratecardoffer['offer_text']    =  ($difference->days == 1 || $futureExpiry == 0) ? "Expires Today" : ($difference->days > 7 ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
+							$ratecardoffer['offer_text']    =  ($difference->days == 1 || $futureExpiry == 0) ? "Expires Today" : (($difference->days > 7 || $difference->days == 0) ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
 						}else{
 							if($this->available_slots > 0 && time() >= $orderVariable["start_time"] && $key == count($ratecardsarr)-1){
 								$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
@@ -379,8 +396,8 @@ class Service extends \Basemodel{
 
                     if(!empty($value['offers'][0]['price']) && !empty($commission_discounted_price)){
                         $value['offers'][0]['price'] = $commission_discounted_price;
-                    }
-                }
+					}
+				}
 				
 				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;
 
@@ -446,9 +463,9 @@ class Service extends \Basemodel{
 
                 if(!empty($value['type']) && $value['type'] == "workout session"){
                     if(!empty($value['offers'][0]['remarks'])){
-                        $value['offers'][0]['remarks'] = "Book multiple sessions at this price";
+                        $value['offers'][0]['remarks'] = "Book multiple sessions at this price".(!empty($value['offers'][0]['remarks']) ? $value['offers'][0]['remarks'] : "");;
                     }else{
-                        $value['remarks'] = "Book multiple sessions at this price";
+                        $value['remarks'] =  "Book multiple sessions at this price. ".(!empty($value['remarks']) ? $value['remarks'] : "");
                     }
                 }
 

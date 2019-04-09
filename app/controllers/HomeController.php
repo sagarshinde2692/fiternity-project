@@ -652,7 +652,7 @@ class HomeController extends BaseController {
 
 
     public function getSuccessMsg($type, $id){
-
+        Log::info($_SERVER['REQUEST_URI']);
         $customer_id = "";
         $jwt_token = Request::header('Authorization');
         $device_type = Request::header('Device-Type');
@@ -666,6 +666,8 @@ class HomeController extends BaseController {
 
         $type       =   strtolower(trim($type));
         $order_type    = "";
+
+        $loyaltySuccessMsg = null;
 
         if($type != "" && $id != ""){
 
@@ -777,7 +779,12 @@ class HomeController extends BaseController {
                     return ['status'=>400];
                 }
                 
-                
+                Log::info('book trials data',[$id]);
+            
+                if($itemData['studio_extended_validity']==true ){
+                    Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity']]);
+                    $extended_message = $itemData['studio_membership_duration']['num_of_days_extended'];
+                }
                 
                 // order section 
                 
@@ -991,7 +998,7 @@ class HomeController extends BaseController {
             if(isset($itemData['finder_id']) && $itemData['finder_id'] != ""){
 
                 $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id','brand_id'));
-
+                
                 if(isset($finder['title']) && $finder['title'] != ""){
                     $finder_name = ucwords($finder['title']);
                 }
@@ -1089,7 +1096,7 @@ class HomeController extends BaseController {
                 }
 
                 if(!empty($finder) && isset($finder['brand_id'])){
-                    $response['brand_id'] = !empty($finder['brand_id']);
+                    $response['brand_id'] = !empty($finder['brand_id']);                    
                 }
                 
                 if(!empty($customer_id)){
@@ -1818,9 +1825,17 @@ class HomeController extends BaseController {
                     }
                 }
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
-                    if(!empty($item['loyalty_email_content'])){
-                        $subline = $subline."\n".$item['loyalty_email_content'];
+                    if(isset($item['loyalty_email_content'])){
+                        $subline = $subline."<br>".$item['loyalty_email_content'];
+                        // $subline = $subline."<br>".$this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                         // $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     }
+                }
+                else {
+                    // if(isset($item['loyalty_email_content'])){
+                        $loyaltySuccessMsg = $this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                        // $subline = $subline."<br>".$this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                    // }
                 }
 
             }
@@ -2003,10 +2018,10 @@ class HomeController extends BaseController {
                             }
                         }
 
-                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/sms).<br/>Get ".$session_total." sessions for free worth Rs. ".$session_amount;
+                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/sms).\nGet ".$session_total." sessions for free worth Rs. ".$session_amount;
 
                         if($reward['reward_type'] == "swimming_sessions"){
-                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/sms).<br/>Get ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
+                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/sms).\nGet ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
                         }
                         
                     }
@@ -2095,17 +2110,49 @@ class HomeController extends BaseController {
                 'show_other_vendor' => $show_other_vendor,
                 'all_options_url' => $all_options_url,
                 'customer_auto_register' => $customer_auto_register,
-                'why_buy'=>$why_buy
+                'why_buy'=>$why_buy,
+                'loyalty_success_msg' => $loyaltySuccessMsg
             ];
-
+            
+            if(!empty($extended_message))
+                $resp['studio_extended_validity_message']= $extended_message;
             if(empty($finder) && !empty($itemData['finder_id'])){
                 $finder = Finder::find($itemData['finder_id']);
+            }
+
+            if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
+                $resp['multifit_email'] = Config::get('app.multifit_email');
+                $resp['multifit_helpline'] = Config::get('app.contact_us_customer_number');
             }
             
             $resp['loyalty_collaterals_delivered'] = !empty($finder) && !empty($finder['flags']['loyalty_collaterals_delivered']);
 
             if(!empty($item['finder_name'])){
                 $resp['finder_name'] = $item['finder_name'];
+            }
+           
+            if(!empty($item['service_name'])){
+                $resp['service_name'] = $item['service_name'];
+            }
+
+            if(!empty($item['finder_poc_for_customer_name'])){
+                $resp['finder_poc_for_customer_name'] = $item['finder_poc_for_customer_name'];
+            }
+            
+            if(!empty($item['finder_poc_for_customer_no'])){
+                $resp['finder_poc_for_customer_no'] = $item['finder_poc_for_customer_no'];
+            }
+            
+            if(!empty($item['multifit'])){
+                $resp['multifit'] = $item['multifit'];
+            }
+
+            $resp['payment_mode'] = !empty($item['pg_type']) ? $item['pg_type'] : 'card';
+
+            if(!empty($resp['booking_details'])){
+                foreach($resp['booking_details'] as $detail){
+                    $resp['booking_details_obj'][$detail['field']] = $detail['value'];
+                }
             }
 
             if(!empty($item['amount_customer'])){
@@ -2172,7 +2219,7 @@ class HomeController extends BaseController {
                 ];
 
             }
-
+            
             $section3 = Config::get('nonvalidity.success_page');
             $section3['data'][0]['text'] = strtr($section3['data'][0]['text'], ['__vendor_name'=>$itemData['finder_name']]);
 
@@ -2708,7 +2755,7 @@ class HomeController extends BaseController {
         if($this->device_type == 'android' && $this->app_version >= '5.14'){
             return Response::json(['data'=>$cites],200);
         }
-
+        
         return Response::json($cites,200);
     }
 
@@ -4532,9 +4579,9 @@ class HomeController extends BaseController {
 
             $response = ['status'=>200, 'message'=>'Valid Email'];
 
-            $customer_email = Customer::where('email','Like', $email)->first();
+            $customer_email = Customer::where('email', strtolower($email))->first();
 
-            $customer_phone = Customer::where('contact_no','Like', '%'.substr($phone, -10).'%')->first();
+            $customer_phone = Customer::where('contact_no', substr($phone, -10))->first();
 
             if($customer_email && $customer_phone){
                 $response = ['status'=>400, 'message'=>'Email and mobile number already registered'];
@@ -5157,7 +5204,7 @@ class HomeController extends BaseController {
         							}
         							else if(in_array('once_per_month', $coupon['conditions'])){
         								if(!($customer_phone||$customer_email))continue;
-        								$prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+        								$prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', substr($customer_phone, -10))->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
         								if($prev_workout_session_count)
         									continue;
         							}
@@ -5183,33 +5230,46 @@ class HomeController extends BaseController {
         	}
         }
 
-    public function apicrashlogs(){
+        public function apicrashlogs(){
 
-        try{
-            
-            $data = ["post_data"=>Input::all()];
-            
-            $data['header_data'] = apache_request_headers();
-
-            $crashlog = new ApiCrashLog($data);
-
-			if(!empty($data["post_data"]["res_header"]) && (empty($data["post_data"]["res_header"]['Status']) || $data["post_data"]["res_header"]['Status'] != "200 OK")){
+            try{
                 
-                $crashlog->save();
-				$customersms = new \App\Sms\FinderSms();
-            	$sms = $customersms->apicrashlogsSMS(['url'=>$crashlog['post_data']['url'], '_id'=>$crashlog['_id'], 'device'=>$data['header_data']['Device-Type']]);
-            
+                $data = ["post_data"=>Input::all()];
+                
+                $data['header_data'] = apache_request_headers();
+    
+                $crashlog = new ApiCrashLog($data);
+    
+                if(!empty($data["post_data"]["res_header"]) && (empty($data["post_data"]["res_header"]['Status']) || $data["post_data"]["res_header"]['Status'] != "200 OK")){
+                    $crashlog->save();
+                    $message = json_encode(["text"=>strtoupper($data['header_data']['Device-Type'])."----".$crashlog['post_data']['url']]);
+                    // $message = json_encode(['text'=?""]);
+                    $c = curl_init();
+                    curl_setopt($c, CURLOPT_URL, "https://hooks.slack.com/services/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");
+                    curl_setopt($c, CURLOPT_POST, 1);
+                    curl_setopt($c, CURLOPT_POSTFIELDS, $message);
+                    curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 30);
+                    curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
+                    Log::info(curl_exec($c));
+                
+                }
+                // $customermailer = new CustomerMailer();
+                // $mail = $customermailer->apicrashlogsSMS(['data'=>json_encode(array_only($crashlog->toArray(), ['post_data', 'created_at', '_id']))]);
+                // $sms = $customersms->apicrashlogsSMS(['data'=>$crashlog['post_data']]);
+    
+                return ['status'=>200];
+    
+            }catch(Exception $e){
+                Log::info($e);
+                return ['status'=>500];
             }
-            // $customermailer = new CustomerMailer();
-            // $mail = $customermailer->apicrashlogsSMS(['data'=>json_encode(array_only($crashlog->toArray(), ['post_data', 'created_at', '_id']))]);
-            // $sms = $customersms->apicrashlogsSMS(['data'=>$crashlog['post_data']]);
-
-            return ['status'=>200];
-
-        }catch(Exception $e){
-            Log::info($e);
-            return ['status'=>500];
         }
-    }
-        
+    // }
+ 
+ 	public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false) {
+		return $this->utilities->getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false);
+	}
+
 }

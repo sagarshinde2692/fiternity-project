@@ -124,7 +124,7 @@ class OrderController extends \BaseController {
         if($resp["coupon_applied"]){
             if(isset($data['event_id']) && isset($data['customer_email'])){
                                 
-                $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
+                $already_applied_coupon = Customer::where('email',  strtolower($data['customer_email']))->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
             
                 if($already_applied_coupon>0){
                     return Response::json(array('status'=>400,'data'=>array('final_amount'=>($resp['data']['discount']+$resp['data']['final_amount']), "discount" => 0), 'error_message'=>'Coupon already applied', "message" => "Coupon already applied"), 400);
@@ -667,7 +667,7 @@ class OrderController extends \BaseController {
         }
 
 
-        $count  = Order::where("status","1")->where('customer_email',$data['customer_email'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->orderBy('_id','asc')->where('_id','<',$orderid)->count();
+        $count  = Order::where("status","1")->where('customer_email',$data['customer_email'])->where('customer_phone', substr($data['customer_phone'], 10))->orderBy('_id','asc')->where('_id','<',$orderid)->count();
 
         if($count > 0){
             array_set($data, 'acquisition_type', 'renewal_direct');
@@ -1411,7 +1411,8 @@ class OrderController extends \BaseController {
                     $service_duration = $data['service_duration'] = $this->getServiceDuration($ratecard);
                 }
 
-                $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+                //$offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+                $offer = Offer::getActiveV1('ratecard_id', intval($ratecard->_id), intval($ratecard->finder_id))->first();
 
                 if($offer){
                     $data['amount_finder'] = $offer->price;
@@ -2402,8 +2403,9 @@ class OrderController extends \BaseController {
                         }
                     }
 
-                    $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
-
+                    //$offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+                    $offer = Offer::getActiveV1('ratecard_id', intval($ratecard->_id), intval($ratecard->finder_id))->first();
+                    
                     if($offer){
                         $data['amount_finder'] = $offer->price;
                         $offer_id = $offer->_id;

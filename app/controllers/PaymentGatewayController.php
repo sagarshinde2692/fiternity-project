@@ -1073,7 +1073,7 @@ class PaymentGatewayController extends \BaseController {
 					
 					// Order::where('txnid', $txnid)->update(['parent_payment_id_paypal' => $parent_payment_id, "payment_id_paypal" => $payment_id]);
 
-					$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','type'])->toArray();
+					$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','schedule_date','type'])->toArray();
 					$fin_arr = array(
 						"order_id" => $order['_id'],
 						"status" => "success",
@@ -1090,9 +1090,11 @@ class PaymentGatewayController extends \BaseController {
 						"payment_id_paypal" => $payment_id
 					);
 					
-					$res_obj = app(TransactionController::class)->success($fin_arr);
+					
 					if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
 						$res_obj = app(SchedulebooktrialsController::class)->bookTrialPaid($fin_arr);
+					}else{
+						$res_obj = app(TransactionController::class)->success($fin_arr);
 					}
 					// print_r($res_obj->getData());
 					// echo "<hr>";
