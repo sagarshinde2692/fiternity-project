@@ -5,7 +5,7 @@ return array(
 
 	//local
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://localhost:8080/',
+	// 'url' => 'http://fitapi.com/',
 	// 'admin_url' => 'http://fitadmin.com',
 	// 'website' => 'https://www.fitternity.com',
 	// 'sidekiq_url' => 'http://kick.fitn.in/',
@@ -60,7 +60,8 @@ return array(
 	'new_search_url' =>'http://c1.fitternity.com/',	
 	'url' => 'https://a1.fitternity.com',
 	'admin_url' => 'https://fitn.in',
-	'website' => 'https://www.fitternity.com',
+    'website' => 'https://www.fitternity.com',
+    'multifit_website' => 'http://www.multifitgym.com',
 	'sidekiq_url' => 'http://nw.fitn.in/',
 	'queue' => 'booktrial',
 	'vendor_communication' => true,
