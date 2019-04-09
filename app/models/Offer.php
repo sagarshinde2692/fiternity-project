@@ -43,10 +43,6 @@ class Offer extends \Basemodel {
 	}
 
 	public function scopeGetActiveV1($query, $field_name, $field_value, $finder_id){
-		Log::info("filed_name  ", [$field_name]);
-		Log::info("field_value  ", [$field_value]);
-		Log::info("finder  ", [$finder_id]);
-		Log::info("In model");
 
 		DB::connection('mongodb2')->enableQueryLog();
 		
@@ -66,7 +62,7 @@ class Offer extends \Basemodel {
 			}else{
 				Log::info("else condition");
 				$finder = Finder::where('_id', $finder_id)->where('flags.gmv1','exists',true)->first(['flags.gmv1']);
-				Log::info("f  :::  ", [$finder]);
+				// Log::info("f  :::  ", [$finder]);
 				if(count($finder) > 0){
 					$gmv1Flag = $GLOBALS['gmvFlag'][$finder_id] = $finder['flags']['gmv1'];
 				}else{
