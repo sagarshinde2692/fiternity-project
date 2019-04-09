@@ -1083,12 +1083,17 @@ class PaymentGatewayController extends \BaseController {
 						"error_Message" => "",
 						"service_name" => $order['service_name'],
 						"amount" => $order['amount_customer'],
+						"finder_id" => $order['finder_id'],
+						"schedule_date" => $order['schedule_date'],
 						"type" => $order['type'],
 						"parent_payment_id_paypal" => $parent_payment_id,
 						"payment_id_paypal" => $payment_id
 					);
-
+					
 					$res_obj = app(TransactionController::class)->success($fin_arr);
+					if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
+						$res_obj = app(SchedulebooktrialsController::class)->bookTrialPaid($fin_arr);
+					}
 					// print_r($res_obj->getData());
 					// echo "<hr>";
 					$res = json_decode(json_encode($res_obj->getData()),true);
