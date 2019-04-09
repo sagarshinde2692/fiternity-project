@@ -935,7 +935,9 @@ class PaymentGatewayController extends \BaseController {
 
 	public function createPaymentPaypal(){
 		
-		$postData = Input::json()->all();
+        $postData = Input::json()->all();
+        
+        Log::info($postData);
 
 		// $header = $this->getHeaderInfo();
 		// print_r($header);
