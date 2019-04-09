@@ -1298,7 +1298,7 @@ Class CustomerSms extends VersionNextSms{
 			return "";
 		}
 
-		Log::info('orderDetails: ', $data);
+		// Log::info('orderDetails: ', $data);
 
 		$template = \Template::where('label',$label)->first();
 

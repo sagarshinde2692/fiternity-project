@@ -17,7 +17,7 @@ App::before(function($request)
     if(!empty(Input::all())){
         Log::info("API Hit" , Input::all());
     }
-    Log::info(apache_request_headers());
+    // Log::info(apache_request_headers());
 });
 
 

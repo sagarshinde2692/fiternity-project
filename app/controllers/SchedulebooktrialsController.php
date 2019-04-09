@@ -2753,7 +2753,7 @@ class SchedulebooktrialsController extends \BaseController {
                     }
                 }
                 // abg check needed
-                Log::info('before abg check', [$booktrialdata]);
+                // Log::info('before abg check', [$booktrialdata]);
                 if  (isset($booktrialdata['third_party_details'])){
                     Log::info('$booktrialdata->third_party_details is set', [$booktrialdata['third_party_details']]);
                     $send_communication["customer_sms_instant_abg"] = $this->customersms->bookTrial($booktrialdata);    
