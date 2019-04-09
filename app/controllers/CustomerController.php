@@ -8639,6 +8639,7 @@ class CustomerController extends \BaseController {
 		$customer_id = $decoded->customer->_id;
 
         $type = !empty($_GET['type']) ? $_GET['type'] : null;
+        $session_pack = !empty($_GET['session_pack']) ? $_GET['session_pack'] : null;
         $unverified = !empty($_GET['type']) ? true : false;
         $customer = Customer::find($customer_id);
 
@@ -8664,6 +8665,8 @@ class CustomerController extends \BaseController {
         if(!empty($_GET['receipt'])){
             $checkin_data['receipt'] = true;
         }
+
+        if
 		
 		$addedCheckin = $this->utilities->addCheckin($checkin_data);
 		
@@ -8813,8 +8816,8 @@ class CustomerController extends \BaseController {
 			$direct_checkin = false;
 			
 			
-            $current_membership = Order::active()->where('customer_id', $customer['id'])->where('finder_id', $finderarr['_id'])->where('type', 'memberships')->where('start_date', '<', new DateTime())->where('end_date', '>=', new DateTime())->first();
-
+            $current_membership = Order::active()->where('customer_id', $customer['id'])->where('finder_id', $finderarr['_id'])->where('type', 'memberships')->where('start_date', '<', new DateTime())->where('end_date', '>=', new DateTime())->where(function($query){$query->where('extended_validity', '!=', true)->orWhere('sessions_left', '>', 0);})->first();
+            
             if(!$current_membership){
                  
                 if(!empty($customer['loyalty']['receipts'])){
@@ -8883,7 +8886,11 @@ class CustomerController extends \BaseController {
 				
                 if(!empty($external_ws_session)){
 					$resp['response']['fitsquad']['url'] = Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=workout-session";
-				}
+                }
+                
+                if(!empty($current_membership['extended_validity'])){
+					$resp['response']['fitsquad']['url'] = Config::get('app.url')."/markcheckin/".$finderarr['_id']."?session_pack=".$current_membership['_id'];
+                }
 			}
 		}
 	}

@@ -8563,5 +8563,62 @@ Class Utilities {
     public function checkCouponApplied(){
         return !empty($GLOBALS['coupon_applied']);
     }
+
+    public function schedulesessionPackBookings($order_id) {
+
+		Log::info('Utilities scheduleStudioBookings:: ', [$order_id]);
+
+		Order::$withoutAppends = true;
+		$order = Order::where('_id', $order_id)->first();
+        
+        $ratecard = Ratecard::active()->where('service_id', $order['service_id'])->where('type', 'workout session')->first();
+        
+        $schedule_date = date('Y-m-d');
+        $schedule_slot = date('Y-m-d');
+
+        $captureReq = [
+            "cashback" => false,
+            "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+            "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+            "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+            "customer_source" => Request::header('Device-Type'),
+            "wallet" => true,
+            "device_type" => (!empty($order['device_type']))?$order['device_type']:null,
+            "finder_id" => $order['finder_id'],
+            "gender" => $order['gender'],
+            "gcm_reg_id" => (!empty($order['gcm_reg_id']))?$order['gcm_reg_id']:null,
+            "schedule_date" => $schedule_date,
+            "schedule_slot" => $schedule_slot,
+            "customer_quantity" => 1,
+            "ratecard_id" => $ratecard['_id'],
+            "reward_ids" => [],
+            "service_id" => $order['service_id'],
+            "type" => "workout-session",
+            "from_checkin" => true,
+        ];
+        
+        $captureRes = json_decode(json_encode(app(\TransactionController::class)->capture($captureReq)), true);
+
+        if(!(empty($captureRes['status']) || $captureRes['status'] != 200 || empty($captureRes['data']['orderid']) || empty($captureRes['data']['email']))){
+            
+            $booktrialReq = [
+                "order_id" => $captureRes['data']['orderid'],
+                "status" => "success",
+                "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+                "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+                "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+                "schedule_date" => $booking_date['schedule_date'],
+                "schedule_slot" => $booking_date['schedule_slot'],
+                "finder_id" => $order['finder_id'],
+                "service_name" => $captureRes['data']['service_name'],
+                "service_id" => $order['service_id'],
+                "ratecard_id" => $ratecard['_id'],
+                "type" => "workout-session",
+            ];
+
+            $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)), true);
+                       
+        }
+	}
 }
 
