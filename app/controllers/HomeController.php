@@ -2074,6 +2074,11 @@ class HomeController extends BaseController {
 
             }
 
+            if(!empty($reward_details)){
+                $reward_details['title'] = str_ireplace("Fitternity ","",$reward_details['title']);
+                $reward_details['description'] = str_ireplace("Fitternity ","",$reward_details['description']);
+            }
+
             if(isset($item['recommended_booktrial_id']) && $item['recommended_booktrial_id'] != ""){
                 $near_by_vendor = [];
             }

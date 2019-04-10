@@ -1301,6 +1301,17 @@ class RewardofferController extends BaseController {
         }
         
         $upgradeMembership = $this->addUpgradeMembership($data, $ratecard);
+        $multifitFinder = $this->utilities->multifitFinder();
+        if(in_array($finder_id, $multifitFinder)){
+            Log::info('multifit');
+            foreach($rewards as $k => $v){
+                Log::info(" +++++++++++++++++++++++",[$v]);
+                foreach($v as $k1 => $v1){
+                    $v1['title'] = str_ireplace("Fitternity ","",$v1['title']);
+                    $v1['description'] = str_ireplace("Fitternity ","",$v1['description']);
+                }
+            }
+        }
 
         $data = array(
             'renewal_cashback'          =>   $renewal_cashback,
