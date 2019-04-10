@@ -5635,7 +5635,7 @@ class TransactionController extends \BaseController {
                 Log::info('after *************************multifit    ',[$booking_details_data['reward']['value']]);
             }
         }
-        Log::info(' *************************multifit    ',[$booking_details_data['reward']]);
+        // Log::info(' *************************multifit    ',[$booking_details_data['reward']]);
 
         if(isset($data["assisted_by"]) && isset($data["assisted_by"]["name"]) && $data["assisted_by"] != ""){
 
