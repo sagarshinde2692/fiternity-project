@@ -5621,6 +5621,22 @@ class TransactionController extends \BaseController {
 
         }
 
+        $finder_id = "";
+        if(!empty($data['finder_id'])){
+            $finder_id = $data['finder_id'];
+        }
+
+        $multifitFinder = $this->utilities->multifitFinder();
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && in_array($finder_id, $multifitFinder)){
+            // Log::info('multifit');
+            if(!empty($booking_details_data['reward'])){
+                Log::info(' *************************multifit    ',[$booking_details_data['reward']['value']]);
+                $booking_details_data['reward']['value'] = str_replace("Fitternity ","",$booking_details_data['reward']['value']);
+                Log::info('after *************************multifit    ',[$booking_details_data['reward']['value']]);
+            }
+        }
+        Log::info(' *************************multifit    ',[$booking_details_data['reward']]);
+
         if(isset($data["assisted_by"]) && isset($data["assisted_by"]["name"]) && $data["assisted_by"] != ""){
 
             $booking_details_data["assisted_by"] = ['field'=>'ASSISTED BY','value'=>$data["assisted_by"]["name"],'position'=>$position++];
