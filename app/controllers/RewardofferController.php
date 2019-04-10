@@ -25,6 +25,15 @@ class RewardofferController extends BaseController {
             $this->vendor_token = true;
         }
 
+        $this->kiosk_app_version = false;
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+
+            $this->kiosk_app_version = (float)Request::header('App-Version');
+        }
+
         $this->error_status = ($this->vendor_token) ? 200 : 400;
     }
 
@@ -1302,13 +1311,16 @@ class RewardofferController extends BaseController {
         
         $upgradeMembership = $this->addUpgradeMembership($data, $ratecard);
         $multifitFinder = $this->utilities->multifitFinder();
-        if(in_array($finder_id, $multifitFinder)){
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && in_array($finder_id, $multifitFinder)){
             Log::info('multifit');
-            foreach($rewards as $k => $v){
-                Log::info(" +++++++++++++++++++++++",[$v]);
-                foreach($v as $k1 => $v1){
-                    $v1['title'] = str_ireplace("Fitternity ","",$v1['title']);
-                    $v1['description'] = str_ireplace("Fitternity ","",$v1['description']);
+            if(!empty($rewards)){
+                foreach($rewards as $k => $v){
+                    Log::info(" +++++++++++++++++++++++",[$v['title']]);
+                    // foreach($v as $k1 => $v1){
+                    //     Log::info("====      ", [$v1]);
+                        $v['title'] = str_ireplace("Fitternity ","",$v['title']);
+                        $v['description'] = str_ireplace("Fitternity ","",$v['description']);
+                    // }
                 }
             }
         }
