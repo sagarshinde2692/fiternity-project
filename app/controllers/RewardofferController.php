@@ -1313,15 +1313,23 @@ class RewardofferController extends BaseController {
         $multifitFinder = $this->utilities->multifitFinder();
         if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && in_array($finder_id, $multifitFinder)){
             Log::info('multifit');
+
             if(!empty($rewards)){
+                $rew = [];
                 foreach($rewards as $k => $v){
                     Log::info(" +++++++++++++++++++++++",[$v['title']]);
-                    // foreach($v as $k1 => $v1){
-                    //     Log::info("====      ", [$v1]);
-                        $v['title'] = str_ireplace("Fitternity ","",$v['title']);
-                        $v['description'] = str_ireplace("Fitternity ","",$v['description']);
-                    // }
+                        
+                    $v['title'] = str_replace("Fitternity ","",$v['title']);
+                    $v['description'] = str_replace("Fitternity ","",$v['description']);
+                    
+                    Log::info("after +++++++++++++++++++++++",[$v['title']]);
+
+                    $rew[] = $v;
                 }
+
+                $rewads = [];
+                $rewards = $rew;
+                // Log::info("1out +++++++++++++++++++++++",[$rewards]);
             }
         }
 
