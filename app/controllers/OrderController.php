@@ -2964,5 +2964,14 @@ class OrderController extends \BaseController {
         return $data;
     }
 
+    public function debitWalletTransaction(){
+
+		$data =   Input::all();
+
+		Log::info('ASP                ::               ',[$data]);
+        $walletData = Input::all();
+		$wallet_res = $this->utilities->walletTransactionNew($walletData);
+	}
+
 
 }
