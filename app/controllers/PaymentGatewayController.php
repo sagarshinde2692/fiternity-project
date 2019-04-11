@@ -943,34 +943,38 @@ class PaymentGatewayController extends \BaseController {
         
         Log::info($postData);
 
-		// $header = $this->getHeaderInfo();
+		$header = $this->getHeaderInfo();
+		$customer_id = "";
+		if(!empty($header)){
+			$customer_id = $header['customer_id'];
+		}
 		// print_r($header);
 		// exit();
-		// $stcData = array(
-		// 	"tracking_id" => $postData['txnid'],
-		// 	"additional_data" => array(
-		// 		array(
-		// 			"key" => "sender_account_id",
-		// 			"value" => $postData['amount']
-		// 		),
-		// 		array(
-		// 			"key" => "sender_first_name", 
-		// 			"value" => $postData['firstname']
-		// 		),
-		// 		array(
-		// 			"key" => "sender_email", 
-		// 			"value" => $postData['email']
-		// 		),
-		// 		array(
-		// 			"key" => "sender_phone", 
-		// 			"value" => $postData['phone']
-		// 		),
-		// 		array(
-		// 			"key" => "loyalty_flag_exists", 
-		// 			"value" => 0
-		// 		)
-		// 	)
-		// );
+		$stcData = array(
+			"tracking_id" => $postData['txnid'],
+			"additional_data" => array(
+				array(
+					"key" => "sender_account_id",
+					"value" => $customer_id
+				),
+				array(
+					"key" => "sender_first_name", 
+					"value" => $postData['firstname']
+				),
+				array(
+					"key" => "sender_email", 
+					"value" => $postData['email']
+				),
+				array(
+					"key" => "sender_phone", 
+					"value" => $postData['phone']
+				),
+				array(
+					"key" => "loyalty_flag_exists", 
+					"value" => 0
+				)
+			)
+		);
 		
 		$data = array("intent" => "sale",
 					"payer" => array(
@@ -999,8 +1003,9 @@ class PaymentGatewayController extends \BaseController {
 					  			"price" => $postData['amount'],
 					  			"sku" => ucwords($postData['type']),
 					  			"currency" => "INR"
-							)
-						))
+							)),
+							"shipping_phone_number" => "+91".$postData['phone'],
+						)
 					)),
 					"note_to_payer" => "Contact us for any questions on your order.",
 					"redirect_urls" => array(
@@ -1012,10 +1017,16 @@ class PaymentGatewayController extends \BaseController {
 		$jsonData = json_encode($data);
 		//echo $jsonData;
 		//exit();
-		// $jsonStcData = json_encode($stcData);
+		$jsonStcData = json_encode($stcData);
 		// print_r( $jsonStcData);
 		// exit();
-		// $res = $this->paypal->setTransactionContext($jsonStcData);
+		
+		$paypal_sandbox = \Config::get('app.paypal_sandbox');
+		if(!$paypal_sandbox){
+			$res = $this->paypal->setTransactionContext($jsonStcData);
+			Log::info("STC CALL result ::: ",[$res]);
+		}
+		
 		// return Response::json($res);
 		// exit();
 		$response = $this->paypal->createPayment($jsonData, $postData['txnid']);

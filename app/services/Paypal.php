@@ -71,8 +71,9 @@ Class Paypal {
             \Log::info("access token  :: ",[$this->access_token]);
             \Log::info("marchant _id  :: ",[$this->merchant_id]);
             \Log::info("tracking _id  :: ",[$dataArr['tracking_id']]);
-            \Log::info($this->base_uri.'v1/risk/transaction-contexts/'.$this->merchant_id.'/'.$dataArr['tracking_id']);
-            $response = $this->client->request('PUT', $this->base_uri.'v1/risk/transaction-contexts/'.$this->merchant_id.'/'.$dataArr['tracking_id'], [
+            \Log::info('https://api.paypal.com/v1/risk/transaction-contexts/'.$this->merchant_id.'/'.$dataArr['tracking_id']);
+
+            $response = $this->client->request('PUT', 'https://api.paypal.com/v1/risk/transaction-contexts/'.$this->merchant_id.'/'.$dataArr['tracking_id'], [
                 'headers' =>
                     [
                         'Content-Type' => 'application/json',
@@ -117,8 +118,7 @@ Class Paypal {
                     [
                         'Content-Type' => 'application/json',
                         'Authorization' => 'Bearer '.$this->access_token.'',
-                        'PayPal-Client-Metadata-Id' => $uniqueId,
-                        'PayPal-Request-Id' => $uniqueId
+                        'PayPal-Client-Metadata-Id' => $uniqueId
                     ],
                 'body' => $data
                 ]);
