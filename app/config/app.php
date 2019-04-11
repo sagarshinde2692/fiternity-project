@@ -3,8 +3,8 @@
 
 return array(
 
-	//local
-	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
+    //local
+    // 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://fitapi.com/',
 	// 'admin_url' => 'http://fitadmin.com',
 	// 'website' => 'https://www.fitternity.com',

@@ -218,6 +218,11 @@ Class CustomerMailer extends Mailer {
 
 		$multifitFlag = false;
 		$allData = \Input::json()->all();
+
+		if(empty($allData)){
+			$allData = \Input::all();
+		}
+		
 		if(!empty($allData['multifit'])){
 			$multifitFlag = $allData['multifit'];
 		}
@@ -669,8 +674,18 @@ Class CustomerMailer extends Mailer {
 
 		$multifitFlag = false;
 		$allData = \Input::json()->all();
+
+		if(empty($allData)){
+			$allData = \Input::all();
+		}
+
 		if(!empty($allData['multifit'])){
 			$multifitFlag = $allData['multifit'];
+		}
+
+		if(isset($_GET['multifit'])){
+			\Log::info("inside get $$$$$$$$$$");
+			$multifitFlag = true;
 		}
 
 		\Log::info(" ++++++++ multifitflag",[$multifitFlag]);
@@ -694,6 +709,11 @@ Class CustomerMailer extends Mailer {
 
 		$multifitFlag = false;
 		$allData = \Input::json()->all();
+
+		if(empty($allData)){
+			$allData = \Input::all();
+		}
+
 		if(!empty($allData['multifit'])){
 			$multifitFlag = $allData['multifit'];
 		}

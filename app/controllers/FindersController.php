@@ -3205,6 +3205,8 @@ class FindersController extends \BaseController {
 		Log::info($finder_id);
 		$getTrialSchedule = $this->getTrialSchedule($finder_id);
 
+		$multifitFinder = $this->utilities->multifitFinder();
+
 		if(empty($getTrialSchedule)){
 
 			$response = [
@@ -3294,6 +3296,10 @@ class FindersController extends \BaseController {
 
 			if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
 
+				unset($response['perks']);
+			}
+
+			if(in_array($finder_id, $multifitFinder)){
 				unset($response['perks']);
 			}
 		}
@@ -5602,6 +5608,8 @@ class FindersController extends \BaseController {
 			return Response::json(["message"=>"Vendor not found","status"=>404], 200);
 		}
 
+		$multifitFinder = $this->utilities->multifitFinder();
+
 		$response = [
 			"status"=>200,
 			"message"=>"Successfully retrieved.",
@@ -5720,6 +5728,7 @@ class FindersController extends \BaseController {
 				'type'=>'fitstore'
 			];
 		}
+
 		$response["response"]["options"][] =[
 			"title"=>"Fitternity Advantage",
 			"description"=>"Buy through Fitterntiy & get access to these amazing rewards",
@@ -5728,6 +5737,7 @@ class FindersController extends \BaseController {
 			"id"=>7,
 			'type'=>'rewards'
 		];
+
 		if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
 
 			$response["response"]["powered"] = "Powered by ";//.ucwords($finder['title']);
@@ -5743,6 +5753,20 @@ class FindersController extends \BaseController {
 			array_pop($response["response"]["options"]);
 			array_pop($response["response"]["options"]);
 
+		}
+		
+		Log::info("kiosk version: ",[$this->kiosk_app_version]);
+		Log::info("multifit finder: ",[$multifitFinder]);
+		if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && in_array($finder_id, $multifitFinder)){
+			Log::info("multifit");
+			unset($response["response"]["about"]);
+
+			foreach ($response["response"]["options"] as &$value){
+				$value['title'] = str_replace("Fitternity ","",$value['title']);
+			}
+			
+			array_pop($response["response"]["options"]);
+			
 		}
 
 		return Response::json($response,$response['status']);

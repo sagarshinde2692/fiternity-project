@@ -218,6 +218,12 @@ Class CustomerSms extends VersionNextSms{
 
 		$label = 'Order-PG-Customer';
 
+		$header = $this->multifitKioskOrder($data);
+
+        if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'Order-PG-Multifit-Customer';
+		}
+
 		if($data['type'] == 'crossfit-week'){
 
 			$label = 'Order-PG-Crossfit-Week-Customer';
@@ -256,14 +262,15 @@ Class CustomerSms extends VersionNextSms{
 		
         if(!empty($data['extended_validity'])){
 			$label = 'ExtendedValidityInstant-Customer';
+
+			$header = $this->multifitKioskOrder($data);
+			
+			if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+				$label = 'ExtendedValidityInstant-Multifit-Customer';
+			}
 		}
 		
-		$header = $this->multifitKioskOrder($data);
-
-		$header_auth = $this->multifitUserHeader();
-        if($header == true || $header_auth == true){
-			$label = 'Order-PG-Multifit-Customer';
-		}
+		
 
 		$to = $data['customer_phone'];
 
