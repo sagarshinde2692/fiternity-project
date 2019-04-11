@@ -3467,6 +3467,79 @@ class TransactionController extends \BaseController {
 
         }
 
+        if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
+
+            $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
+            $ticket = null;
+
+            if(isset($data['ticket_id'])){
+                $ticket = Ticket::find($data['ticket_id']);
+                if(!$ticket){
+                    $resp = array('status'=>400, 'message'=>'Ticket not found');
+                    return Response::json($resp, 400);
+                }
+            }
+            
+            $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
+
+            $service_id = isset($data['service_id']) ? $data['service_id'] : null;
+
+            $total_amount = null;
+
+            if(!empty($data['customer_quantity'])){
+                $total_amount = $data['amount'];
+            }
+
+            !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
+
+            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id, $total_amount, $customer_email);
+
+            Log::info("couponCheck");
+            Log::info($couponCheck);
+
+            if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
+
+                if(isset($couponCheck['vendor_commission'])){
+                    $data['vendor_commission'] = $couponCheck['vendor_commission'];
+                }
+                if(isset($couponCheck['description'])){
+                    $data['coupon_description'] = $couponCheck['description'];
+                }
+
+                $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
+
+                $amount -= $data["coupon_discount_amount"];
+                
+                if(isset($couponCheck["vendor_coupon"]) && $couponCheck["vendor_coupon"]){
+                    $data["payment_mode"] = "at the studio";
+                    $data["secondary_payment_mode"] = "cod_membership";
+                }
+
+                if(!empty($couponCheck['flags']['disc_by_vendor'])){
+                    $data['amount_finder'] -= $data["coupon_discount_amount"];
+                }
+
+                // if(strtolower($data["coupon_code"]) == 'fit2018'){
+                //     $data['routed_order'] = "1";
+                // }
+            }
+            
+        }else{
+
+            if($order && isset($order['coupon_code'])){
+
+                $order->unset(['coupon_code', 'coupon_discount_amount']);
+                // $order->unset('coupon_discount_amount');
+            }
+
+            // if($order && isset($order['routed_order'])){
+                
+            //     $order->unset('routed_order');
+            
+            // }
+
+        }
+
         if($data['type'] != 'events'){
 
             if($data['type'] == "memberships" && isset($data['customer_source']) && (in_array($data['customer_source'],['android','ios','kiosk']))){
@@ -3482,80 +3555,6 @@ class TransactionController extends \BaseController {
 
             $amount -= $data['customer_discount_amount'];
 
-            if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
-
-                $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
-                $ticket = null;
-    
-                if(isset($data['ticket_id'])){
-                    $ticket = Ticket::find($data['ticket_id']);
-                    if(!$ticket){
-                        $resp = array('status'=>400, 'message'=>'Ticket not found');
-                        return Response::json($resp, 400);
-                    }
-                }
-                
-                $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
-    
-                $service_id = isset($data['service_id']) ? $data['service_id'] : null;
-    
-                $total_amount = null;
-    
-                if(!empty($data['customer_quantity'])){
-                    $total_amount = $data['amount'];
-                }
-    
-                !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
-    
-                $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id, $total_amount, $customer_email);
-    
-                Log::info("couponCheck");
-                Log::info($couponCheck);
-    
-                if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
-    
-                    if(isset($couponCheck['vendor_commission'])){
-                        $data['vendor_commission'] = $couponCheck['vendor_commission'];
-                    }
-                    if(isset($couponCheck['description'])){
-                        $data['coupon_description'] = $couponCheck['description'];
-                    }
-    
-                    $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
-    
-                    $amount -= $data["coupon_discount_amount"];
-                    
-                    if(isset($couponCheck["vendor_coupon"]) && $couponCheck["vendor_coupon"]){
-                        $data["payment_mode"] = "at the studio";
-                        $data["secondary_payment_mode"] = "cod_membership";
-                    }
-    
-                    if(!empty($couponCheck['flags']['disc_by_vendor'])){
-                        $data['amount_finder'] -= $data["coupon_discount_amount"];
-                    }
-    
-                    // if(strtolower($data["coupon_code"]) == 'fit2018'){
-                    //     $data['routed_order'] = "1";
-                    // }
-                }
-                
-            }else{
-    
-                if($order && isset($order['coupon_code'])){
-    
-                    $order->unset(['coupon_code', 'coupon_discount_amount']);
-                    // $order->unset('coupon_discount_amount');
-                }
-    
-                // if($order && isset($order['routed_order'])){
-                    
-                //     $order->unset('routed_order');
-                
-                // }
-    
-            }
-
-            
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type'],$data);
 
             if(isset($data['cashback']) && $data['cashback'] == true){
