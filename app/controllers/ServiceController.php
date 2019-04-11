@@ -674,7 +674,7 @@ class ServiceController extends \BaseController {
 		Service::$withoutAppends=true;
 		 Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
 		
-        $query = Service::active()->where('trial','!=','disable');
+        $query = Service::active()->whereNotIn('trial',['manual', 'manualauto','disable']);
 
 
 
