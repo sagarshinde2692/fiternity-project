@@ -679,15 +679,13 @@ Class CustomerMailer extends Mailer {
 			$allData = \Input::all();
 		}
 
-		if(empty($allData)){
-			if($_GET['multifit']){
-				\Log::info("inside get $$$$$$$$$$");
-				$allData = array("multifit" => true);
-			}
-		}
-
 		if(!empty($allData['multifit'])){
 			$multifitFlag = $allData['multifit'];
+		}
+
+		if(isset($_GET['multifit'])){
+			\Log::info("inside get $$$$$$$$$$");
+			$multifitFlag = true;
 		}
 
 		\Log::info(" ++++++++ multifitflag",[$multifitFlag]);
