@@ -3129,7 +3129,7 @@ Class Utilities {
         }
 
         if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && in_array($finder_id, $multifitFinder)){
-            $response['title'] = [];
+            $response['title'] = "";
         }
 
         return $response;
