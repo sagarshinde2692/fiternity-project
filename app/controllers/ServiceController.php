@@ -708,7 +708,11 @@ class ServiceController extends \BaseController {
 
 		$finder_id = $items[0]['finder_id'];
 		// $finder = Finder::find($finder_id, array('inoperational_dates'));
-		$finder = Finder::find($finder_id);
+        $finder = Finder::find($finder_id);
+        
+        if(!empty($finder['trial']) && in_array($finder['trial'], ['manual', 'manualauto'])){
+    		return Response::json(array('status'=>401,'message'=>'Please contact customer support to book a session here'),401);
+    	}
 
 		$findercategory_id = isset($finder->category_id) ? $finder->category_id : null;
 		
