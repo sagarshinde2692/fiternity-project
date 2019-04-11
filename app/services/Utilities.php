@@ -3068,13 +3068,17 @@ Class Utilities {
     }
 
     public function trialBookedLocateScreen($data = false){
-
+        $finder_id = "";
         if(isset($data['finder_id'])){
 
             Finder::$withoutAppends=true;
 
             $finder = Finder::find((int)$data['finder_id']);
+
+            $finder_id = intval($data['finder_id']);
         }
+
+        $multifitFinder = $this->multifitFinder();
 
         $fitcash_amount = 150;
 
@@ -3122,6 +3126,10 @@ Class Utilities {
 
             $response['title'] = "";
             $response['message'] = "";
+        }
+
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && in_array($finder_id, $multifitFinder)){
+            $response['title'] = [];
         }
 
         return $response;
