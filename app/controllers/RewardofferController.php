@@ -25,6 +25,15 @@ class RewardofferController extends BaseController {
             $this->vendor_token = true;
         }
 
+        $this->kiosk_app_version = false;
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+
+            $this->kiosk_app_version = (float)Request::header('App-Version');
+        }
+
         $this->error_status = ($this->vendor_token) ? 200 : 400;
     }
 
@@ -1301,6 +1310,28 @@ class RewardofferController extends BaseController {
         }
         
         $upgradeMembership = $this->addUpgradeMembership($data, $ratecard);
+        $multifitFinder = $this->utilities->multifitFinder();
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && in_array($finder_id, $multifitFinder)){
+            Log::info('multifit');
+
+            if(!empty($rewards)){
+                $rew = [];
+                foreach($rewards as $k => $v){
+                    Log::info(" +++++++++++++++++++++++",[$v['title']]);
+                        
+                    $v['title'] = str_replace("Fitternity ","",$v['title']);
+                    $v['description'] = str_replace("Fitternity ","",$v['description']);
+                    
+                    Log::info("after +++++++++++++++++++++++",[$v['title']]);
+
+                    $rew[] = $v;
+                }
+
+                $rewads = [];
+                $rewards = $rew;
+                // Log::info("1out +++++++++++++++++++++++",[$rewards]);
+            }
+        }
 
         $data = array(
             'renewal_cashback'          =>   $renewal_cashback,
