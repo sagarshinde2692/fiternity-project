@@ -8564,12 +8564,13 @@ Class Utilities {
         return !empty($GLOBALS['coupon_applied']);
     }
 
-    public function schedulesessionPackBookings($order_id) {
+    public function scheduleSessionFromOrder($order_id) {
 
 		Log::info('Utilities scheduleStudioBookings:: ', [$order_id]);
 
 		Order::$withoutAppends = true;
-		$order = Order::where('_id', $order_id)->first();
+        
+        $order = Order::active()->where('_id', $order_id)->where('extended_validity', true)->first();
         
         $ratecard = Ratecard::active()->where('service_id', $order['service_id'])->where('type', 'workout session')->first();
         

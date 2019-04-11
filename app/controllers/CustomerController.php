@@ -8631,12 +8631,12 @@ class CustomerController extends \BaseController {
 		Log::info($_SERVER['REQUEST_URI']);
         // return ['status'=>400];
 
-		$finder_id = intval($finder_id);
+ 		$finder_id = intval($finder_id);
 		
 		$jwt_token = Request::header('Authorization');
 		
-		$decoded = decode_customer_token($jwt_token);
-		$customer_id = $decoded->customer->_id;
+		// $decoded = decode_customer_token($jwt_token);
+		$customer_id = 87977;
 
         $type = !empty($_GET['type']) ? $_GET['type'] : null;
         $session_pack = !empty($_GET['session_pack']) ? $_GET['session_pack'] : null;
@@ -8666,7 +8666,13 @@ class CustomerController extends \BaseController {
             $checkin_data['receipt'] = true;
         }
 
-        if
+        if(!empty($_GET['session_pack'])){
+
+            $order_id = intval($_GET['session_pack']);
+            
+            $schedule_session = $this->utilities->scheduleSessionFromOrder($order_id);
+        
+        }
 		
 		$addedCheckin = $this->utilities->addCheckin($checkin_data);
 		
