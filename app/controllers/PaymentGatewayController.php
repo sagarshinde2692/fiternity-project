@@ -935,7 +935,11 @@ class PaymentGatewayController extends \BaseController {
 
 	public function createPaymentPaypal(){
 		
-        $postData = Input::all();
+		$postData = Input::all();
+		
+		if(empty($postData)){
+			$postData = Input::json()->all();
+		}
         
         Log::info($postData);
 
@@ -962,10 +966,6 @@ class PaymentGatewayController extends \BaseController {
 		// 			"value" => $postData['phone']
 		// 		),
 		// 		array(
-		// 			"key" => "sender_create_date", 
-		// 			"value" => $postData['amount']
-		// 		),
-		// 		array(
 		// 			"key" => "loyalty_flag_exists", 
 		// 			"value" => 0
 		// 		)
@@ -974,7 +974,11 @@ class PaymentGatewayController extends \BaseController {
 		
 		$data = array("intent" => "sale",
 					"payer" => array(
-						"payment_method" => "paypal"
+						"payment_method" => "paypal",
+						"payer_info" => array(
+							"email" => $postData['email'],
+						   	"first_name" => $postData['firstname']
+						)
 					),
 					"application_context" => array(
 						"shipping_preference" => "NO_SHIPPING",
