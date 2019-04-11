@@ -1342,9 +1342,9 @@ class EmailSmsApiController extends \BaseController {
 
 			$finder_id = $vendor->_id;
 
-			// $utilities = new Utilities();
+			$utilities = new Utilities();
 
-			$allMultifitFinderId = $this->$utilities->multifitFinder(); 
+			$allMultifitFinderId = $utilities->multifitFinder(); 
 			// $allMultifitFinderId = [9932, 1935, 9304, 9423, 9481, 9954, 10674, 10970, 11021, 11223, 12208, 12209, 13094, 13898, 14102, 14107, 16062, 13968, 15431, 15980, 15775, 16251, 9600, 14622, 14626, 14627];
 			\Log::info('register     :: ', [$finder_id]);
 			if(in_array($finder_id, $allMultifitFinderId)){
