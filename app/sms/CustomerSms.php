@@ -528,6 +528,14 @@ Class CustomerSms extends VersionNextSms{
 
 		$label = 'Generic-Otp-Customer';
 
+		$utilities = new Utilities();
+		$multifitWebsiteHeader = $utilities->getMultifitWebsiteHeader();
+
+		$headreKiosk = $this->multifitUserHeader();
+		if($multifitWebsiteHeader == 'multifit' || $headreKiosk == true){
+			$label = 'Generic-Otp-Multifit-Customer';
+		}
+
 		$to = $data['customer_phone'];
 
 		$data['otp_route'] = true;
