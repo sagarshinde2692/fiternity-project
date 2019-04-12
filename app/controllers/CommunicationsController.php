@@ -320,7 +320,22 @@ class CommunicationsController extends \BaseController {
         $data['diet_plan_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
 
 		return $data;
-	}
+    }
+    
+    public function triggerdelaycustomercomm($booktrial_id){
+        $booktrial_id = intval($booktrial_id);
+        
+        Booktrial::$withoutAppends = true;
+        $booktrial = Booktrial::find($booktrial_id, ['customer_name','communication_keys']);
+        
+        if(!empty($booktrial['communication_keys'])){
+            foreach($booktrial['communication_keys'] as $key => $value){
+                if (strpos($key, 'Customer') !== false) {
+                    $this->sendCommunication(explode('-', $key)[0], 'trial', explode('-', $key)[1], $booktrial['_id'], $value);
+                }
+            }
+        }
+    }
 
 
 
