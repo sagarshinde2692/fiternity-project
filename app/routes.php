@@ -1147,7 +1147,8 @@ Route::get('cityfitnessoptions', 'HomeController@cityFitnessOptions');
 Route::post('generateamazonchecksum', 'TransactionController@generateAmazonChecksum');
 Route::match(array('GET', 'POST'),'verifyamazonchecksum/{id?}', 'TransactionController@verifyAmazonChecksum');
 Route::post('generateamazonurl', 'TransactionController@generateAmazonUrl');
-
+Route::post('generatepaytmurl', 'TransactionController@generatePaytmUrl');
+Route::match(array('GET', 'POST'),'verifypaytmchecksum', 'TransactionController@verifyPaytmChecksum');
 Route::post('verifyamazonchecksumsignature', 'TransactionController@verifyAmazonChecksumSignature');
 Route::post('amazonsignandencrypt', 'TransactionController@amazonSignAndEncrypt');
 Route::post('amazonsignandencryptop', 'TransactionController@amazonSignAndEncryptForOperation');
