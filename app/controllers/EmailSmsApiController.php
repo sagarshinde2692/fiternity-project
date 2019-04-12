@@ -981,25 +981,28 @@ class EmailSmsApiController extends \BaseController {
 
                     $this->customersms->custom($sms_data);
 
+                    
+                    $finder = Finder::where('_id', $data['finder_id'])->with('location')->first();
+                    $data['finder_address'] = $finder['contact']['address'];
+                    $data['google_pin'] = $finder['lat'].", ".$finder['lon'];
+                    // Log::info('finder_info');
+                    $data['finder_vcc_mobile'] = $finder['finder_vcc_mobile'];
+                    $data['finder_vcc_email'] = $finder['finder_vcc_email'];
+                    $data['finder_name'] = $finder['title'].", ".$finder['location']['name'];
+                    $data['finder_poc_for_customer_name'] = $finder['finder_poc_for_customer_name'];
+                    $data['finder_poc_for_customer_no'] = $finder['finder_poc_for_customer_no'];
+                    $data['finder_lat'] = $finder['lat'];
+                    $data['finder_lon'] = $finder['lon'];
+                    
+                    $data['appointment'] = false;
+                    
+                    $this->customermailer->captureCustomerWalkthrough($data);
+                    
                     if(!$this->vendor_token){
-
-                        $finder = Finder::where('_id', $data['finder_id'])->with('location')->first();
-                        $data['finder_address'] = $finder['contact']['address'];
-                        $data['google_pin'] = $finder['lat'].", ".$finder['lon'];
-                        // Log::info('finder_info');
-                        $data['finder_vcc_mobile'] = $finder['finder_vcc_mobile'];
-                        $data['finder_vcc_email'] = $finder['finder_vcc_email'];
-                        $data['finder_name'] = $finder['title'].", ".$finder['location']['name'];
-                        $data['finder_poc_for_customer_name'] = $finder['finder_poc_for_customer_name'];
-                        $data['finder_poc_for_customer_no'] = $finder['finder_poc_for_customer_no'];
-                        $data['finder_lat'] = $finder['lat'];
-			            $data['finder_lon'] = $finder['lon'];
-                        
-                        $data['appointment'] = false;
-                        
-                        $this->customermailer->captureCustomerWalkthrough($data);
+                    
                         $this->findersms->captureVendorWalkthrough($data);
 			            $this->findermailer->captureVendorWalkthrough($data);
+                    
                     }
 
                     break;
