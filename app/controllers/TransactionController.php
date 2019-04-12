@@ -20,7 +20,9 @@ use App\AmazonPay\PWAINBackendSDK as PWAINBackendSDK;
 use App\AmazonPaynon\PWAINBackendSDK as PWAINBackendSDKNon;
 use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
-
+use App\Services\Paytm as PaytmService;
+//use App\Controllers\PaymentGatewayController as GatewayController;
+//use App\config\paytm as paytmConfig;
 class TransactionController extends \BaseController {
 
     protected $customermailer;
@@ -34,6 +36,9 @@ class TransactionController extends \BaseController {
     protected $customernotification;
     protected $fitapi;
     protected $fitweb;
+    protected $PaytmService;
+    //protected $GatewayController;
+    //protected $paytmConfig;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -45,7 +50,10 @@ class TransactionController extends \BaseController {
         CustomerReward $customerreward,
         CustomerNotification $customernotification,
         Fitapi $fitapi,
-        Fitweb $fitweb
+        Fitweb $fitweb,
+        PaytmService $PaytmService
+        //GatewayController $GatewayController,
+        //paytmConfig $paytmConfig
     ) {
         parent::__construct();
         $this->customermailer       =   $customermailer;
@@ -65,6 +73,9 @@ class TransactionController extends \BaseController {
         $this->membership_array     =   array('memberships','healthytiffinmembership');
 
         $this->vendor_token = false;
+        $this->PaytmService = $PaytmService;
+        //$this->GatewayController = $GatewayController;
+        //$this->paytmConfig = $paytmConfig;
         
         $vendor_token = Request::header('Authorization-Vendor');
 
@@ -7734,7 +7745,7 @@ class TransactionController extends \BaseController {
         //$val['sellerStoreName']= 'Fitternity';
         // $val['transactionTimeout'] = Config::get('amazonpay.timeout');
         // For testing in sandbox mode, remove for production
-        //$val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
+        $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
         $returnUrl = Config::get('app.url')."/verifyamazonchecksum/1";
         Log::info('return url:::::>>>>>>>>>>>>>>>>>>>',[$returnUrl]);
         // $returnUrl = "http://ar-deepthi.com/amazonpay/thankyou.php";
@@ -8831,6 +8842,56 @@ class TransactionController extends \BaseController {
             $job->delete();
         }
         $this->utilities->scheduleStudioBookings($data['order_id'], $data['isPaid']);
+    }
+
+    public function generatePaytmUrl(){
+        $input = Input::All();
+        Log::info('input data at generatepaytmurl:::::>>>>>>>>>>>>',[$input]);
+        $transactionURL ="https://securegw.paytm.in/merchant-status/getTxnStatus?";
+
+        $params = array(
+            "ORDER_ID" => '',
+            "MID" => 'fitter45826906213917',
+            "CUST_ID" => '',
+            "MOBILE_NO" => '',
+            "EMAIL" => '',
+            "CHANNEL_ID" => 'WEB',
+            "TXN_AMOUNT" => '',
+            "WEBSITE" => 'fitternitywap',
+            "INDUSTRY_TYPE_ID" => 'Retail',
+            "CALLBACK_URL" => 'https://fitn.in/verifychecksum',
+        );
+
+        if(Config::get('app.paytm_sandbox')){
+            $params = Config::get('paytm');//$this->paytmconfig;
+            $transactionURL ="https://securegw-stage.paytm.in/theia/processTransaction?";
+        }
+        $rules = array(
+            'txn_id'=>'required',
+            'customer_email'=>'required|email',
+            'customer_phone'=>'required',
+            'customer_id'=>'required',
+            "amount" => 'required'
+        );
+
+        $validator = Validator::make($input, $rules);
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+        $params['ORDER_ID'] = $input['txn_id'];
+        $params['CUST_ID'] = $input['customer_id'];
+        $params['MOBILE_NO'] = $input['customer_phone'];
+        $params['TXN_AMOUNT'] = $input['amount'];
+        $params['EMAIL'] = $input['customer_email'];
+        $params['CHECKSUMHASH'] = $this->PaytmService->createChecksum($params);
+        Log::info('parameters before generating final url:::>>>>>>>>>.', [$params]);
+        foreach($params as $key => $value){
+            Log::info([$transactionURL, $key, $value]);
+            $transactionURL=$transactionURL.$key."=".rawurlencode($value).'&';
+        }
+        Log::info('uisuklsdvdf::::::::::::', [$transactionURL, strlen($transactionURL)]);
+        $transactionURL = substr($transactionURL,0,(strlen($transactionURL)-1));
+        return ($transactionURL);
     }
 
 }
