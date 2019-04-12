@@ -1871,10 +1871,21 @@ class SchedulebooktrialsController extends \BaseController {
             $schedule_date_time = "";
 
             if(isset($data['schedule_slot'])){
-
+                  
                 $slot_times 				       =	explode('-',$data['schedule_slot']);
                 $schedule_slot_start_time 	       =	trim($slot_times[0]);
-                $schedule_slot_end_time 	       =	trim($slot_times[1]);
+                
+                if(count($slot_times) == 1){
+                
+                    $schedule_slot_end_time = date('g:i a', strtotime('+1 hour', strtotime($slot_times[0])));
+                    $data['schedule_slot'] = $slot_times[0].'-'.$schedule_slot_end_time;
+                
+                }else{
+                
+                    $schedule_slot_end_time= trim($slot_times[1]);
+                
+                }
+            
                 $schedule_slot 				       =	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
                 $slot_date 					       =	date('d-m-Y', strtotime($data['schedule_date']));
                 $schedule_date_starttime 	       =	strtoupper($slot_date ." ".$schedule_slot_start_time);
@@ -2587,7 +2598,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $orderid = (int) $data['order_id'];
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid),Config::get('app.queue'));
+            $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid),Config::get('app.queue'));
             $booktrial->update(array('redis_id'=>$redisid));
 
         }

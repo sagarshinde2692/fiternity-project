@@ -8670,7 +8670,7 @@ class CustomerController extends \BaseController {
 
             $order_id = intval($_GET['session_pack']);
             
-            $schedule_session = $this->utilities->scheduleSessionFromOrder($order_id);
+            return $schedule_session = $this->utilities->scheduleSessionFromOrder($order_id);
         
         }
 		
