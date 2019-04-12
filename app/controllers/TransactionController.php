@@ -8847,7 +8847,7 @@ class TransactionController extends \BaseController {
     public function generatePaytmUrl(){
         $input = Input::All();
         Log::info('input data at generatepaytmurl:::::>>>>>>>>>>>>',[$input]);
-        $transactionURL ="https://securegw-stage.paytm.in/theia/processTransaction?";
+        $transactionURL ="https://securegw.paytm.in/merchant-status/getTxnStatus?";
 
         $params = array(
             "ORDER_ID" => '',
@@ -8864,6 +8864,7 @@ class TransactionController extends \BaseController {
 
         if(Config::get('app.paytm_sandbox')){
             $params = Config::get('paytm');//$this->paytmconfig;
+            $transactionURL ="https://securegw-stage.paytm.in/theia/processTransaction?";
         }
         $rules = array(
             'txn_id'=>'required',
