@@ -996,10 +996,10 @@ class EmailSmsApiController extends \BaseController {
                     
                     $data['appointment'] = false;
                     
-                    $this->customermailer->captureCustomerWalkthrough($data);
                     
                     if(!$this->vendor_token){
-                    
+                
+                        $this->customermailer->captureCustomerWalkthrough($data);
                         $this->findersms->captureVendorWalkthrough($data);
 			            $this->findermailer->captureVendorWalkthrough($data);
                     
