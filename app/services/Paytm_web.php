@@ -15,7 +15,7 @@ Class Paytm_web {
     protected $PAYTM_TXN_URL;
     public function __construct() {
         $this->PAYTM_ENVIRONMENT= \Config::get('app.paytm_sandbox') ? 'TEST' :  'PROD';
-        $this->PAYTM_MERCHANT_KEY = 'G3ohqCH84rf5aCtA'; //Change this constant's value with Merchant key received from Paytm.
+        $this->PAYTM_MERCHANT_KEY = 'q1Lq3Gux0CMJg'; //Change this constant's value with Merchant key received from Paytm.
         $this->PAYTM_MERCHANT_MID= 'fihepl10040475076325'; //Change this constant's value with MID (Merchant ID) received from Paytm.
         $this->PAYTM_MERCHANT_WEBSITE = 'WEBSTAGING'; //Change this constant's value with Website name received from Paytm.
         $PAYTM_STATUS_QUERY_NEW_URL = 'https://securegw-stage.paytm.in/merchant-status/getTxnStatus';
@@ -23,6 +23,10 @@ Class Paytm_web {
         if ($this->PAYTM_ENVIRONMENT == 'PROD') {
             $PAYTM_STATUS_QUERY_NEW_URL='https://securegw.paytm.in/merchant-status/getTxnStatus';
             $PAYTM_TXN_URL='https://securegw.paytm.in/theia/processTransaction';
+            $this->PAYTM_MERCHANT_KEY = "Z7&q1Lq3Gux0CMJg";
+            $this->PAYTM_MERCHANT_MID = "fitter45826906213917";
+            $this->PAYTM_MERCHANT_WEBSITE = "fitternitywap";
+            $this->base_uri = "https://secure.paytm.in";
         }
         $this->PAYTM_REFUND_URL= '';
         $this->PAYTM_STATUS_QUERY_URL = $PAYTM_STATUS_QUERY_NEW_URL;
