@@ -8635,8 +8635,8 @@ class CustomerController extends \BaseController {
 		
 		$jwt_token = Request::header('Authorization');
 		
-		// $decoded = decode_customer_token($jwt_token);
-		$customer_id = 87977;
+		$decoded = decode_customer_token($jwt_token);
+		$customer_id = $decoded->customer->_id;
 
         $type = !empty($_GET['type']) ? $_GET['type'] : null;
         $session_pack = !empty($_GET['session_pack']) ? $_GET['session_pack'] : null;
@@ -8666,11 +8666,11 @@ class CustomerController extends \BaseController {
             $checkin_data['receipt'] = true;
         }
 
-        if(!empty($_GET['session_pack'])){
+        if(!empty($session_pack)){
 
             $order_id = intval($_GET['session_pack']);
             
-            return $schedule_session = $this->utilities->scheduleSessionFromOrder($order_id);
+            $schedule_session = $this->utilities->scheduleSessionFromOrder($order_id);
         
         }
 		
@@ -8681,7 +8681,7 @@ class CustomerController extends \BaseController {
 		
 		$finder = Finder::find($finder_id, ['title']);
 		
-		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200){
+		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200 || (!empty($schedule_session['status']) && $schedule_session['status'] == 200)){
 
             if(!empty($update_finder_ws_sessions)){
                  // $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;

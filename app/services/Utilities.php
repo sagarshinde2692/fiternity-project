@@ -6472,7 +6472,7 @@ Class Utilities {
         }else if($type == 'booktrial' && !isset($data['third_party_details'])){
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
-            if(!empty($data['qrcodepayment']) && empty($data['checkin'])){
+            if((!empty($data['qrcodepayment']) || !empty($data['checkin_booking'])) && empty($data['checkin'])){
                 $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null ]);
             }
         }
@@ -8602,7 +8602,8 @@ Class Utilities {
             "service_id" => $order['service_id'],
             "type" => "workout-session",
             "from_checkin" => true,
-            "customer_source"=>$this->device_type
+            "customer_source"=>$this->device_type,
+            "checkin_booking"=>true
         ];
         // return app(\TransactionController::class)->capture($captureReq);
         $captureRes = json_decode(json_encode(app(\TransactionController::class)->capture($captureReq)), true);
@@ -8624,8 +8625,8 @@ Class Utilities {
                 "schedule_slot" => $schedule_slot,
                 "amount" => $captureRes['data']['amount'],
             ];
-            // return app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq);
-return             $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)), true);
+            
+            return $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)->getData()), true);
                        
         }
 	}

@@ -2325,6 +2325,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['first_session_free'] = $order['first_session_free'];
             }
             
+            if(!empty($order['checkin_booking'])){
+                $booktrialdata['checkin_booking'] = $order['checkin_booking'];
+            }
+            
             if(!empty($order['coupon_code']) && !empty($order['coupon_discount_amount'])){
                 $booktrialdata['coupon_code'] = $order['coupon_code'];
                 $booktrialdata['coupon_discount_amount'] = $order['coupon_discount_amount'];
@@ -2494,14 +2498,14 @@ class SchedulebooktrialsController extends \BaseController {
 
             // }
 
-            if(!empty($order['qrcodepayment'])){
+            if(!empty($order['qrcodepayment']) || !empty($booktrialdata['checkin_booking']) ){
                 $booktrial['qrcodepayment'] = true;
                 $booktrial['abort_delay_comm'] = true;
                 $booktrial['post_trial_status'] = 'attended';
                 $booktrial['post_trial_status_updated_by_qrcode'] = time();
                 $booktrial['post_trial_status_date'] = time();
                 
-                if(empty($order['pay_later'])){
+                if(empty($order['pay_later']) && !empty($order['qrcodepayment'])){
 
                     $fitcash = $this->utilities->getFitcash($booktrial->toArray());
                     $req = array(
