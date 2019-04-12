@@ -688,6 +688,12 @@ Class CustomerMailer extends Mailer {
 			$multifitFlag = true;
 		}
 
+		$utilities = new Utilities();
+		$multifitWebsiteHeader = $utilities->getMultifitWebsiteHeader();
+		if($multifitWebsiteHeader == 'multifit'){
+			$multifitFlag = true;
+		}
+
 		\Log::info(" ++++++++ multifitflag",[$multifitFlag]);
 		\Log::info(" ++++++++ multifitflag2",[\Input::get('multifit')]);
 		\Log::info(" ++++++++ all data",[\Input::json()->all()]);
