@@ -8605,5 +8605,16 @@ Class Utilities {
     public function checkCouponApplied(){
         return !empty($GLOBALS['coupon_applied']);
     }
+
+    public function getMultifitWebsiteHeader(){
+        Log::info("getMultifitWebsiteHeader");
+        $source = Request::header('Source');
+        
+        if(!empty($source)){
+            return $source;
+        }
+
+        return;
+    }
 }
 
