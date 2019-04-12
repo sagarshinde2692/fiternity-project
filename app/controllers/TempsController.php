@@ -374,8 +374,9 @@ class TempsController extends \BaseController {
     	$req['for'] = isset($data['for'])&&$data['for']!=""?$data['for']:"";
     	return $this->utilities->walletTransaction($req);
     }
-    function verifyOtpV1($temp_id,$otp,$email="",$name=""){
 
+    function verifyOtpV1($temp_id,$otp,$email="",$name=""){
+        Log::info("verifyOtpV1");
         $customerToken = "";
         $jwt_token = Request::header('Authorization');
 
