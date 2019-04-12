@@ -941,7 +941,11 @@ class PaymentGatewayController extends \BaseController {
 			$postData = Input::json()->all();
 		}
         
-        Log::info($postData);
+		Log::info($postData);
+		
+		$firstname = (empty($postData['firstname'])) ? (empty($postData['customer_name'])) ? "" : $postData['customer_name'] : $postData['firstname'];
+		$email = (empty($postData['email'])) ? (empty($postData['customer_email'])) ? "" : $postData['customer_email'] : $postData['email'];
+		$phone = (empty($postData['phone'])) ? (empty($postData['customer_phone'])) ? "" : $postData['customer_phone'] : $postData['phone'];
 
 		$header = $this->getHeaderInfo();
 		$customer_id = "";
@@ -950,38 +954,49 @@ class PaymentGatewayController extends \BaseController {
 		}
 		// print_r($header);
 		// exit();
-		$stcData = array(
-			"tracking_id" => $postData['txnid'],
-			"additional_data" => array(
-				array(
-					"key" => "sender_account_id",
-					"value" => $customer_id
-				),
-				array(
-					"key" => "sender_first_name", 
-					"value" => $postData['firstname']
-				),
-				array(
-					"key" => "sender_email", 
-					"value" => $postData['email']
-				),
-				array(
-					"key" => "sender_phone", 
-					"value" => $postData['phone']
-				),
-				array(
-					"key" => "loyalty_flag_exists", 
-					"value" => 0
+
+		$paypal_sandbox = \Config::get('app.paypal_sandbox');
+		if(!$paypal_sandbox){
+			$stcData = array(
+				"tracking_id" => $postData['txnid'],
+				"additional_data" => array(
+					array(
+						"key" => "sender_account_id",
+						"value" => $customer_id
+					),
+					array(
+						"key" => "sender_first_name", 
+						"value" => $firstname
+					),
+					array(
+						"key" => "sender_email", 
+						"value" => $email
+					),
+					array(
+						"key" => "sender_phone", 
+						"value" => $phone
+					),
+					array(
+						"key" => "loyalty_flag_exists", 
+						"value" => 0
+					)
 				)
-			)
-		);
+			);
+			
+			$jsonStcData = json_encode($stcData);
+			// print_r( $jsonStcData);
+			// exit();
+
+			$res = $this->paypal->setTransactionContext($jsonStcData);
+			Log::info("STC CALL result ::: ",[$res]);
+		}
 		
 		$data = array("intent" => "sale",
 					"payer" => array(
 						"payment_method" => "paypal",
 						"payer_info" => array(
-							"email" => $postData['email'],
-						   	"first_name" => $postData['firstname']
+							"email" => $email,
+						   	"first_name" => $firstname
 						)
 					),
 					"application_context" => array(
@@ -1004,7 +1019,7 @@ class PaymentGatewayController extends \BaseController {
 					  			"sku" => ucwords($postData['type']),
 					  			"currency" => "INR"
 							)),
-							"shipping_phone_number" => "+91".$postData['phone'],
+							"shipping_phone_number" => "+91".$phone,
 						)
 					)),
 					"note_to_payer" => "Contact us for any questions on your order.",
@@ -1017,18 +1032,7 @@ class PaymentGatewayController extends \BaseController {
 		$jsonData = json_encode($data);
 		//echo $jsonData;
 		//exit();
-		$jsonStcData = json_encode($stcData);
-		// print_r( $jsonStcData);
-		// exit();
 		
-		$paypal_sandbox = \Config::get('app.paypal_sandbox');
-		if(!$paypal_sandbox){
-			$res = $this->paypal->setTransactionContext($jsonStcData);
-			Log::info("STC CALL result ::: ",[$res]);
-		}
-		
-		// return Response::json($res);
-		// exit();
 		$response = $this->paypal->createPayment($jsonData, $postData['txnid']);
 		Log::info("create payment res ::: ", [$response]);
 		$value = array("rel" => "approval_url");
