@@ -9273,5 +9273,17 @@ public function yes($msg){
 		$customersms->sendCodOrderSms($order);
 	}
 
+    public function removephone($phone){
+        
+        if(!in_array($phone, ["9004590034", "8779587913", "7219668287", "7506026203"])){
+            return ['status'=>400];
+        }
+
+        Customer::where('contact_no', $phone)->unset('contact_no');
+
+        return ['status'=>200];
+
+    }
+
 }
 
