@@ -288,7 +288,7 @@ class TransactionController extends \BaseController {
             'type'=>'required'
         );
 
-        $asshole_numbers = ["7838038094","7982850036","8220720704","8510829603","9990099996","8368952443"];
+        $asshole_numbers = ["7838038094","7982850036","8220720704","8510829603","9990099996","8368952443","7021874658"];
         
         if(isset($data["customer_phone"]) && in_array(substr($data["customer_phone"], -10), $asshole_numbers)){
             return Response::json("Can't book anything for you.", $this->error_status);
@@ -300,7 +300,14 @@ class TransactionController extends \BaseController {
             return Response::json("Can't book anything for you.", $this->error_status);
         }
 		if(isset($data["gcm_reg_id"])){
-			$asshole_gcm = ["fAbd5Ws_am4:APA91bFHI-OBhPCXbBkcmcnp7zrlhwVwpQ4bv9MJzTQXDKAxSv7OKMAscV7OCQLthJvYce6D_EUvj6glKkcZsgVsIn0ZmTn90tqcsoyvFECCU-ToR9tX-9pnCgdKpa5tGkFz9AHSvt34", "ee_4c5_T5hs:APA91bFR32t7MT_TTdIeqA82yFjur4LX5cmZXD-sSMiuTdBAbblYpWbDFQvzYaTKMiRDzygIMP9BxZdgP_Q22u2QWqS1nr9b5AOw4rbHuTP5KyPt6S3D6SHnghwc7bt1_106sQrS-ZR4","fiG_xAuFrzk:APA91bEii0FxJeMcw3BW0zuvZLo9zqLnHhDERfMF40DNzd0IhWexY4n0jlhYU9s_vUIr8-gJs8C_-Nso73vePfpSfs8wavCglzndPVs_kqK6bRG4flSEH79agE8iIeViaL8nTkqobD2w","frxy4N3LHIs:APA91bFEda0Je4wZacmEDmHyoiiZdORyE5gAb-t4HStYvCCP4VAHisYpIHa-9JOk6F1pXf2CypivaUrsIFpZmVrw1ksyqszVmr31GESSQXBUHnxMrnrCfpNJDQxKudtbaNzxJGWFC1Q3"];
+            $asshole_gcm = ["fAbd5Ws_am4:APA91bFHI-OBhPCXbBkcmcnp7zrlhwVwpQ4bv9MJzTQXDKAxSv7OKMAscV7OCQLthJvYce6D_EUvj6glKkcZsgVsIn0ZmTn90tqcsoyvFECCU-ToR9tX-9pnCgdKpa5tGkFz9AHSvt34", "ee_4c5_T5hs:APA91bFR32t7MT_TTdIeqA82yFjur4LX5cmZXD-sSMiuTdBAbblYpWbDFQvzYaTKMiRDzygIMP9BxZdgP_Q22u2QWqS1nr9b5AOw4rbHuTP5KyPt6S3D6SHnghwc7bt1_106sQrS-ZR4","fiG_xAuFrzk:APA91bEii0FxJeMcw3BW0zuvZLo9zqLnHhDERfMF40DNzd0IhWexY4n0jlhYU9s_vUIr8-gJs8C_-Nso73vePfpSfs8wavCglzndPVs_kqK6bRG4flSEH79agE8iIeViaL8nTkqobD2w","frxy4N3LHIs:APA91bFEda0Je4wZacmEDmHyoiiZdORyE5gAb-t4HStYvCCP4VAHisYpIHa-9JOk6F1pXf2CypivaUrsIFpZmVrw1ksyqszVmr31GESSQXBUHnxMrnrCfpNJDQxKudtbaNzxJGWFC1Q3",
+            "cbNQ-s6LBFQ:APA91bGujfUOMpf6ytwb4uXGZupxCFoTpSIp02L8ta2zNkPgCsgEOuk-Zcr__ibg04MUr3HlZPFjDIc1vhtLaP8N0mU6Cq-T_s8JIHx--p3fxAJ6GCAZJa8iHJ0ogM_O_FMStqJHnz9l",
+            "e4SR9PNsZG0:APA91bFUANpsL8dOOEboWDiElWnZD9VdydDlVO0SEsy91HNIM47av51AByOlNtrlM1FxICHCB_x4XLx9zsTrGQaddqJ3vi1PoitRnsq2ewQalM24mFlalWowtBhd4i_MRqoJRtT9ek1G",
+            "fswywCMnxvc:APA91bFFTXhn-stB_-YwjKxoEH5LcdplSNjZk6NXxF1eIUFqk0HRyl8jn88_hBkMo_xIkcP29r6VMshv1emkeoW_1M269_EIbiHSJNr1_2a6HBs6IgOpRafegdc_hF8GMlhKUiOHYSvL",
+            "dS0QVQ5ONTo:APA91bFDc4C_VG0f67_mT30DTa3q-GdLgZeJpC1Q9qKOVFvH-ed2FzMlDnDbJ7tjIBpqPJMAjewyR1nadwUq4p67g3cHvGm9jCKW84vQHL6tj-5MloN2kLeIih-o1pxARn4pA5CN2VNz",
+            "dImOwj5PIRk:APA91bFAE9g9Z85Qm5UpX4WFXs17npGZ7JSihLUFTr7d5oPYCXX_QuhfW4GjEyiVKFi_p6moBq7eDzUJ7Fp6Kb6Eb75hWfU7Xf1CxG3BwWNKaDhkcJ8oIDzIQ3IArdjQYpdHfrZ7kiFT",
+            "fLRTgVYHy0E:APA91bHJ-sFZPPl7w-3eRtAkzPi0QP2c2WsLTj6mquargudmtAmuGsO0UxfZ1GqJF_04x4dXACtGFZZQIOHFKQSinuMwqKN4lYdUWTqtksnDr3ql1dJeg-j9Qz9aSahpMcDVVUtA8HNB"
+        ];
 			if(in_array($data["gcm_reg_id"],$asshole_gcm)){
 				return Response::json("Can't book anything for you.", $this->error_status);
 			}
