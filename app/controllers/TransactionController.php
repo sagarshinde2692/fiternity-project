@@ -3366,6 +3366,9 @@ class TransactionController extends \BaseController {
 
     public function getCashbackRewardWalletNew($data,$order){
 
+        
+        addAToGlobals('ratecard_id_for_wallet', (!empty($order['ratecard_id']) ? $order['ratecard_id'] : 0));
+
         Log::info('new');
 
         $jwt_token = Request::header('Authorization');
@@ -6791,6 +6794,8 @@ class TransactionController extends \BaseController {
 
 
         if($ratecard_id && $ratecard_id != ''){
+
+            addAToGlobals('ratecard_id_for_wallet', $ratecard_id);
 
             $data['ratecard_id'] = $ratecard_id;
             
