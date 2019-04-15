@@ -4330,4 +4330,13 @@ if (!function_exists('upgradeSessionPackCondtion')) {
     }
 
 }
+
+if (!function_exists('addAToGlobals')) {
+
+    function addAToGlobals($key, $value)
+    {
+        $GLOBALS[$key] = $value;
+    }
+
+}
 ?>

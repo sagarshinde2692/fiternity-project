@@ -2369,6 +2369,10 @@ Class Utilities {
             $query->where(function($query) use ($data){$query->orwhere('duration_day', 'exists', false)->orWhere('duration_day', $data['duration_day']);});
         }
 
+        if(!empty($GLOBALS['ratecard_id_for_wallet'])){
+            $query->where(function($query){$query->orwhere('ratecard_id', 'exists', false)->orWhere('ratecard_id', $GLOBALS['ratecard_id_for_wallet']);});
+        }
+
         if($this->checkCouponApplied()){
             $query->where('for', 'wallet_recharge');
         }
@@ -2734,6 +2738,10 @@ Class Utilities {
             
             if(!empty($request['duration_day'])){
                 $query->where(function($query) use($request) {$query->orWhere('duration_day','exists',false)->orWhere('duration_day', $request['duration_day']);});
+            }
+            
+            if(!empty($GLOBALS['ratecard_id_for_wallet'])){
+                $query->where(function($query){$query->orwhere('ratecard_id', 'exists', false)->orWhere('ratecard_id', $GLOBALS['ratecard_id_for_wallet']);});
             }
     
             Log::info("wallet debit query");
