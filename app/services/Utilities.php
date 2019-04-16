@@ -3068,6 +3068,11 @@ Class Utilities {
             }
             $flags = $data['flags'];
         }
+        
+        if(!empty($data["finder_id"]) && in_array($data['finder_id'], Config::get('app.no_convinience_finder_ids', []))){
+            return false;
+        }
+        
         $finder = Finder::find((int) $data["finder_id"]);
         
         if((isset($data['session_payment']) && $data['session_payment'])||
