@@ -188,10 +188,12 @@ class FindersController extends \BaseController {
 							$query->where(function($q1){
 								$q1->where('workoutsessionschedules.0','exists',true)
 								->orWhere('trialschedules.0','exists',true);
-							})->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
+							})->where('trial','auto');
+							// ->whereIn('showOnFront',['web','kiosk'])
 						}
 						else {
-							$query->where('workoutsessionschedules.0','exists',true)->whereIn('showOnFront',['web','kiosk'])->where('trial','auto');
+							$query->where('workoutsessionschedules.0','exists',true)->where('trial','auto');
+							// ->whereIn('showOnFront',['web','kiosk'])
 						}
 					}
 					$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug', 'description');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');
