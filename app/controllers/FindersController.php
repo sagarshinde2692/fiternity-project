@@ -1352,6 +1352,17 @@ class FindersController extends \BaseController {
                     //             ];
                     //         }
                     //     }
+
+                            if(in_array($finder['_id'], Config::get('app.discount_vendors', []))){
+                                $response['vendor_stripe_data']	=	[
+                                    
+                                    'text1'=> "#GetSummerReady | Addnl 5% Off on Lowest Price | Use Code: APRIL5",
+                                    'text3'=>"",
+                                    'background-color'=> "",
+                                    'text_color'=> '$fff',
+                                    'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
+                                ];
+                            }
 					
                     
                     // }
