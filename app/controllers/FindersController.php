@@ -622,7 +622,7 @@ class FindersController extends \BaseController {
 					foreach ($finder['services'] as $key => $service){
 
 						// if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && $service['showOnFront']))){
-						if((!isset($service['showOnFront']) || ((isset($service['showOnFront']) && in_array('web', $service['showOnFront'])))) && count($service['serviceratecard'])){ 
+						if((!isset($service['showOnFront']) || (isset($service['showOnFront']) && (in_array('web', $service['showOnFront']) || $isThirdParty))) && count($service['serviceratecard'])){ 
 
 
 
