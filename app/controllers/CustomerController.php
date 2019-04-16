@@ -8673,8 +8673,12 @@ class CustomerController extends \BaseController {
             $schedule_session = $this->utilities->scheduleSessionFromOrder($order_id);
         
         }
-		
-		$addedCheckin = $this->utilities->addCheckin($checkin_data);
+        
+        if(empty($schedule_session['status']) || $schedule_session['status'] == 200){
+            
+            $addedCheckin = $this->utilities->addCheckin($checkin_data);
+        
+        }
 		
 		
 		Finder::$withoutAppends = true;
