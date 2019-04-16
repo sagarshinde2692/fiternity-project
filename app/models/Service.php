@@ -440,11 +440,11 @@ class Service extends \Basemodel{
 					$value['campaign_color'] = "#43a047";
                 }
 
-				if($ratecard_price >= 5000 && !(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable')){
+				// if($ratecard_price >= 5000 && !(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable')){
 
-					$value['campaign_offer'] = !empty($value['campaign_offer']) ?  $value['campaign_offer']." (EMI available)" : "(EMI available)";
-					$value['campaign_color'] = "#43a047";
-				}
+				// 	$value['campaign_offer'] = !empty($value['campaign_offer']) ?  $value['campaign_offer']." (EMI available)" : "(EMI available)";
+				// 	$value['campaign_color'] = "#43a047";
+				// }
 
                 if(!empty($value['special_price']) && $value['price'] <= $value['special_price']){
 					 $value['price'] = $value['special_price'];
