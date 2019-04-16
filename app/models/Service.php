@@ -218,6 +218,11 @@ class Service extends \Basemodel{
 
 			$serviceoffers = Offer::getActiveV1('vendorservice_id', intval($this->_id), $finder)->toArray();
 			foreach ($ratecardsarr as $key => $value) {
+                
+                $days = getDurationDay($value);
+                if(in_array($value['finder_id'], Config::get('app.discount_vendors', [])) && in_array($days, Config::get('app.discount_vendors_duration', [180, 360]))){
+                    $value['coupon_text'] = 'Addnl 5% off - Use code APRIL5';
+                }
 
 				// if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
 				// 	$index--;
@@ -431,15 +436,15 @@ class Service extends \Basemodel{
                     //     $offf_percentage = 50;
                     // }
 
-                	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
+                	$value['campaign_offer'] = $offf_percentage."% off";
 					$value['campaign_color'] = "#43a047";
                 }
 
-				if($ratecard_price >= 5000 && !(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable')){
+				// if($ratecard_price >= 5000 && !(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable')){
 
-					$value['campaign_offer'] = !empty($value['campaign_offer']) ?  $value['campaign_offer']." (EMI available)" : "(EMI available)";
-					$value['campaign_color'] = "#43a047";
-				}
+				// 	$value['campaign_offer'] = !empty($value['campaign_offer']) ?  $value['campaign_offer']." (EMI available)" : "(EMI available)";
+				// 	$value['campaign_color'] = "#43a047";
+				// }
 
                 if(!empty($value['special_price']) && $value['price'] <= $value['special_price']){
 					 $value['price'] = $value['special_price'];
