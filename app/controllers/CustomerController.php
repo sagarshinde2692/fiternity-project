@@ -8674,7 +8674,7 @@ class CustomerController extends \BaseController {
         
         }
         
-        if(empty($schedule_session['status']) || $schedule_session['status'] == 200){
+        if(empty($schedule_session['status']) || $schedule_session['status'] != 200){
             
             $addedCheckin = $this->utilities->addCheckin($checkin_data);
         
