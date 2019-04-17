@@ -220,7 +220,7 @@ class Service extends \Basemodel{
 			foreach ($ratecardsarr as $key => $value) {
                 
                 $days = getDurationDay($value);
-                if(in_array($value['finder_id'], Config::get('app.discount_vendors', [])) && in_array($days, Config::get('app.discount_vendors_duration', [180, 360]))){
+                if(!empty($finder['flags']['april5']) && in_array($days, Config::get('app.discount_vendors_duration', [180, 360]))){
                     $value['coupon_text'] = 'Addnl 5% off - Use code APRIL5';
                 }
 

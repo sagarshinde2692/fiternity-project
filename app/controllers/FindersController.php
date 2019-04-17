@@ -1355,7 +1355,7 @@ class FindersController extends \BaseController {
                     //         }
                     //     }
 
-                            if(in_array($finder['_id'], Config::get('app.discount_vendors', []))){
+                            if(!empty($finder['flags']['april5'])){
                                 $response['vendor_stripe_data']	=	[
                                     
                                     'text1'=> "#GetSummerReady | Addnl 5% Off on Lowest Price | Use Code: APRIL5",
