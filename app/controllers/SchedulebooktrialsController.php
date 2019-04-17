@@ -1876,10 +1876,21 @@ class SchedulebooktrialsController extends \BaseController {
             $schedule_date_time = "";
 
             if(isset($data['schedule_slot'])){
-
+                  
                 $slot_times 				       =	explode('-',$data['schedule_slot']);
                 $schedule_slot_start_time 	       =	trim($slot_times[0]);
-                $schedule_slot_end_time 	       =	trim($slot_times[1]);
+                
+                if(count($slot_times) == 1){
+                
+                    $schedule_slot_end_time = date('g:i a', strtotime('+1 hour', strtotime($slot_times[0])));
+                    $data['schedule_slot'] = $slot_times[0].'-'.$schedule_slot_end_time;
+                
+                }else{
+                
+                    $schedule_slot_end_time= trim($slot_times[1]);
+                
+                }
+            
                 $schedule_slot 				       =	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
                 $slot_date 					       =	date('d-m-Y', strtotime($data['schedule_date']));
                 $schedule_date_starttime 	       =	strtoupper($slot_date ." ".$schedule_slot_start_time);
@@ -2319,6 +2330,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['first_session_free'] = $order['first_session_free'];
             }
             
+            if(!empty($order['checkin_booking'])){
+                $booktrialdata['checkin_booking'] = $order['checkin_booking'];
+            }
+            
             if(!empty($order['coupon_code']) && !empty($order['coupon_discount_amount'])){
                 $booktrialdata['coupon_code'] = $order['coupon_code'];
                 $booktrialdata['coupon_discount_amount'] = $order['coupon_discount_amount'];
@@ -2488,14 +2503,14 @@ class SchedulebooktrialsController extends \BaseController {
 
             // }
 
-            if(!empty($order['qrcodepayment'])){
+            if(!empty($order['qrcodepayment']) || !empty($booktrialdata['checkin_booking']) ){
                 $booktrial['qrcodepayment'] = true;
                 $booktrial['abort_delay_comm'] = true;
                 $booktrial['post_trial_status'] = 'attended';
                 $booktrial['post_trial_status_updated_by_qrcode'] = time();
                 $booktrial['post_trial_status_date'] = time();
                 
-                if(empty($order['pay_later'])){
+                if(empty($order['pay_later']) && !empty($order['qrcodepayment'])){
 
                     $fitcash = $this->utilities->getFitcash($booktrial->toArray());
                     $req = array(

@@ -52,6 +52,8 @@ Class Utilities {
    
    public function __construct() {
     
+    $this->device_type = Request::header('Device-Type');
+    
     $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
     $this->vendor_token = false;
         
@@ -6525,7 +6527,7 @@ Class Utilities {
         }else if($type == 'booktrial' && !isset($data['third_party_details'])){
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
-            if(!empty($data['qrcodepayment']) && empty($data['checkin'])){
+            if((!empty($data['qrcodepayment']) || !empty($data['checkin_booking'])) && empty($data['checkin'])){
                 $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null ]);
             }
         }
@@ -8629,5 +8631,70 @@ Class Utilities {
 
         return;
     }
+    
+    public function scheduleSessionFromOrder($order_id) {
+
+		Log::info('Utilities scheduleStudioBookings:: ', [$order_id]);
+
+		Order::$withoutAppends = true;
+        
+        $order = Order::active()->where('_id', $order_id)->where('extended_validity', true)->first();
+
+        if(empty($order)){
+            return ['status'=>400, 'error'=>1, 'message'=>'Session pack does not exist'];
+        }
+        
+        $ratecard = Ratecard::active()->where('service_id', $order['service_id'])->where('type', 'workout session')->first();
+        
+        $schedule_date = date('Y-m-d');
+        $schedule_slot = date("h:i a");
+
+        $captureReq = [
+            "cashback" => false,
+            "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+            "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+            "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+            "customer_source" => Request::header('Device-Type'),
+            "wallet" => true,
+            "device_type" => (!empty($order['device_type']))?$order['device_type']:null,
+            "finder_id" => $order['finder_id'],
+            "gender" => $order['gender'],
+            "gcm_reg_id" => (!empty($order['gcm_reg_id']))?$order['gcm_reg_id']:null,
+            "schedule_date" => $schedule_date,
+            "schedule_slot" => $schedule_slot,
+            "customer_quantity" => 1,
+            "ratecard_id" => $ratecard['_id'],
+            "reward_ids" => [],
+            "service_id" => $order['service_id'],
+            "type" => "workout-session",
+            "from_checkin" => true,
+            "customer_source"=>$this->device_type,
+            "checkin_booking"=>true
+        ];
+        // return app(\TransactionController::class)->capture($captureReq);
+        $captureRes = json_decode(json_encode(app(\TransactionController::class)->capture($captureReq)), true);
+
+        if(!(empty($captureRes['status']) || $captureRes['status'] != 200 || empty($captureRes['data']['orderid']) || empty($captureRes['data']['email']))){
+            
+            $booktrialReq = [
+                "order_id" => $captureRes['data']['orderid'],
+                "status" => "success",
+                "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+                "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+                "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+                "finder_id" => $order['finder_id'],
+                "service_name" => $captureRes['data']['service_name'],
+                "service_id" => $order['service_id'],
+                "ratecard_id" => $ratecard['_id'],
+                "type" => "workout-session",
+                "schedule_date" => $schedule_date,
+                "schedule_slot" => $schedule_slot,
+                "amount" => $captureRes['data']['amount'],
+            ];
+            
+            return $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)->getData()), true);
+                       
+        }
+	}
 }
 
