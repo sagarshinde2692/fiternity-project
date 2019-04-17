@@ -9285,5 +9285,35 @@ public function yes($msg){
 
     }
 
+    public function verifyRatecards(){
+
+        $total = Ratecard::where('type', 'workout session')->count();
+        // $total = 3000;
+        $limit = 4000;
+        $data = [];
+        for($i=0; $i <= $total/$limit;$i++){
+            Log::info("iteration", [$i]);
+            $ratecard_admin =  Ratecard::where('type', 'workout session')->skip($i*$limit)->limit($limit)->get(['price', 'special_price', 'vendor_price']);
+            $ids = array_column($ratecard_admin->toArray(), '_id');
+            $ratecard_api = RatecardAPI::whereIn('_id', $ids)->where('type', 'workout session')->skip($i*$limit)->limit($limit)->get(['price', 'selling_price', 'vendor_price']);
+            $ratecard_api_map = [];
+            foreach($ratecard_api as $value){
+                $ratecard_api_map[$value['_id']] = $value;
+            }
+            
+            foreach($ratecard_admin as $value){
+                if(!empty($ratecard_api_map[$value['_id']])){
+                    $r_a = $ratecard_api_map[$value['_id']];
+                    if($value['price'] != $r_a['price'] || $value['price'] != $r_a['price'] || $value['price'] != $r_a['price']){
+                        array_push($data, $value['_id']);
+                    }
+                }
+            }
+        }
+        
+        return $data;
+        
+    }
+
 }
 
