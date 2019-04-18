@@ -1353,4 +1353,4 @@ Route::get('testoffers', 'FindersController@testOffer');
 Route::post('customer/loyaltyAppropriation', 'CustomerController@loyaltyAppropriation');
 Route::get('home/getLoyaltyAppropriationConsentMsg/{customer_id}/{order_id}','HomeController@getLoyaltyAppropriationConsentMsg');
 Route::get('testSpinResult/{number}','EmailSmsApiController@testSpinResult');
-Route::post('spinTheWheelReg','EmailSmsApiController@spinTheWheelReg');
+Route::post('spinthewheelreg','EmailSmsApiController@spinTheWheelReg');
