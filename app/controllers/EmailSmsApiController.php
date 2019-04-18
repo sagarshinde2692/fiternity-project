@@ -10,6 +10,7 @@ use App\Services\Utilities as Utilities;
 Use App\Mailers\FinderMailer as FinderMailer;
 Use App\Sms\FinderSms as FinderSms;
 use Illuminate\Support\Facades\Config;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 
 class EmailSmsApiController extends \BaseController {
 
@@ -1360,6 +1361,150 @@ class EmailSmsApiController extends \BaseController {
 		}
 		
 		return false;
-	}
+    }
+    
+    public function spinTheWheelReg(){
+        
+        $data = Input::json()->all();
+        
+        $rules = [
+            'customer_email'=>'required|email|max:255',
+            'customer_phone'=>'required|max:10',
+            // 'temp'=>'required'
+        ];
+
+        
+        // $validator = Validator::make($data, $rules);        
+        
+        // if ($validator->fails()) {
+        //     return Response::json(['message'=>'Invalid Input', 'error'=>1],400);
+        // }
+        
+        // $data['customer_email'] = strtolower(trim($data['customer_email']));
+        // $data['customer_phone'] = trim($data['customer_phone']);
+        
+        // $already_reg = CampaignReg::active()->where('customer_email', $data['customer_email'])->first();
+
+        // if(!empty($already_reg)){
+        //     return Response::json(['message'=>'YOU HAVE ALREADY TRIED YOUR LUCK!!', 'error'=>2], 400); 
+        // }
+
+        // $temp = Temp::where('customer_phone', $data['customer_phone'])->where('verified', 'Y')->first();
+
+        // if(empty($temp)){
+        //     return Response::json(['message'=>'Invalid Input', 'error'=>3], 400);
+        // }
+        
+        list($index, $spin_array ) = $this->getSpinIndex();
+
+        $data['index'] = $index;
+        $data['spin_array'] = $spin_array;
+        $coupon = null;
+        if(!empty($data['spin_array'][$data['index']]['spin_coupon'])){
+            $coupon = $this->getSpinCampaignCoupon($data);
+            $data['coupon'] = $coupon['code'];
+        } 
+        // return $data;
+        $campain_reg = CampaignReg::create($data);
+        
+        
+        $message = $this->getMessage($data);
+
+        return [$message, $data];
+
+        return ['status' => 200, 'index'=>$index, 
+        // 'message'=>$message, 
+        $coupon=>!empty($coupon)?$coupon:null];
+    
+    }
+
+    public function getSpinIndex(){
+        
+        $spin_array = $this->getSpinArray();
+        
+        $index = $this->getRandomWeightedElement(array_column($spin_array, 'value'));
+        $index=1;
+        return [$index, $spin_array];
+    }
+
+    public function getSpinArray(){
+        
+        return Cache::tags('spin_campaign')->remember('spin_array', 60*60*24, function () {
+            $spin_array = Ordervariables::where('name', 'spin_array')->first()['spin_array'];
+            if (!function_exists('relInt')) {
+                function relInt($x){
+                    $x['value']*=100;
+                    return $x;
+                }
+            }
+            $spin_array = array_map('relInt', $spin_array);
+            return $spin_array;
+        });
+        
+
+        
+    }
+
+    
+    function getRandomWeightedElement(array $weightedValues) {
+        
+        $rand = mt_rand(1, (int) array_sum($weightedValues));
+
+        foreach ($weightedValues as $key => $value) {
+            $rand -= $value;
+            if ($rand <= 0) {
+              return $key;
+            }
+        }
+    }
+
+    public function testSpinResult($number){
+
+        $spin_array =[
+            ["text"=>"Flat 5%","value"=>30],
+            ["text"=>"1 workout session worth Rs. 1,000","value"=>30],
+            ["text"=>"500 FitCash","value"=>25],
+            ["text"=>"Flat 10%","value"=>14],
+            ["text"=>"1 year Membership","value"=>0.5],
+            ["text"=>"1,500 Amazon voucher","value"=>1.25],
+            ["text"=>"Stay at 5-star","value"=>1.25],
+        ];
+
+        $spin_array = Config::get('app.spin_array', $spin_array);
+
+        $data = [];
+        for($i=1;$i<=$number;$i++){
+            $r = $this->getRandomWeightedElement(array_column($spin_array, 'value'));
+            if(empty($data[$r])){
+                $data[$r] = 1;
+            }else{
+                $data[$r]++;
+            }
+        }
+        return $data;
+    }
+
+    public function getSpinCampaignCoupon($data){
+        
+        return $coupon = Coupon::where('spin_coupon', $data['spin_array'][$data['index']]['spin_coupon'])->first();
+        
+    }
+
+    public function getMessage($data){
+               
+        // return $coupon;
+        if(!empty($data['coupon'])){
+            $coupon = $data['coupon'];
+            $text = $data['spin_array'][$data['index']]['text'];
+            foreach($text as $key => &$value){
+                $value =  bladeCompile($value, ['coupon' => strtoupper($coupon)]);
+            }
+            
+        }
+        return $text;
+
+    }
+    
+
 
 }

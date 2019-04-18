@@ -4,22 +4,22 @@
 return array(
 
     //local
-    // 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://fitapi.com/',
-	// 'admin_url' => 'http://fitadmin.com',
-	// 'website' => 'https://www.fitternity.com',
-	// 'sidekiq_url' => 'http://kick.fitn.in/',
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
-	// 'metropolis' => 'http://localhost:3030',
-	// 'amazonpay_isSandbox' => 'true',
-	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	// 'website_deeplink' =>'https://ftrnty.com',
-	// 'mobikwik_sandbox'=>true,
-	// 'paytm_sandbox'=>true,
-	// 'paypal_sandbox'=>true,
+    'new_search_url' =>'http://apistage.fitn.in:5000/',
+	'url' => 'http://fitapi.com/',
+	'admin_url' => 'http://fitadmin.com',
+	'website' => 'https://www.fitternity.com',
+	'sidekiq_url' => 'http://kick.fitn.in/',
+	'queue' => 'booktrial',
+	'vendor_communication' => false,
+	'env' => 'stage',
+	'debug' => TRUE,
+	'metropolis' => 'http://localhost:3030',
+	'amazonpay_isSandbox' => 'true',
+	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	'website_deeplink' =>'https://ftrnty.com',
+	'mobikwik_sandbox'=>true,
+	'paytm_sandbox'=>true,
+	'paypal_sandbox'=>true,
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -57,23 +57,23 @@ return array(
 	// 'paytm_sandbox'=>true,
 
 	//live
-	'new_search_url' =>'http://c1.fitternity.com/',	
-	'url' => 'https://a1.fitternity.com',
-	'admin_url' => 'https://fitn.in',
-    'website' => 'https://www.fitternity.com',
-    'multifit_website' => 'http://www.multifitgym.com',
-	'sidekiq_url' => 'http://nw.fitn.in/',
-	'queue' => 'booktrial',
-	'vendor_communication' => true,
-	'env' => 'production',
-	'debug' => false,
-	'metropolis' => 'https://c1.fitternity.com',
-	'amazonpay_isSandbox' => 'false',
-	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
-	'website_deeplink' =>'https://ftrnty.com',
-	'mobikwik_sandbox'=>false,
-	'paytm_sandbox'=>false,
-    'paypal_sandbox'=>false,
+	// 'new_search_url' =>'http://c1.fitternity.com/',	
+	// 'url' => 'https://a1.fitternity.com',
+	// 'admin_url' => 'https://fitn.in',
+    // 'website' => 'https://www.fitternity.com',
+    // 'multifit_website' => 'http://www.multifitgym.com',
+	// 'sidekiq_url' => 'http://nw.fitn.in/',
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => true,
+	// 'env' => 'production',
+	// 'debug' => false,
+	// 'metropolis' => 'https://c1.fitternity.com',
+	// 'amazonpay_isSandbox' => 'false',
+	// 'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
+	// 'mobikwik_sandbox'=>false,
+	// 'paytm_sandbox'=>false,
+    // 'paypal_sandbox'=>false,
     
     "core_key"=> "FITITRNTY",
 	'non_peak_hours' => ["off"=>0.6,"non_peak_title1"=>"Look for this sign to book a slot for ", "non_peak_title"=>"NON RUSH HOUR (40% OFF)", "gym"=>["off"=>0.6,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.6]],
@@ -959,6 +959,6 @@ return array(
 
     'discount_vendors'=>[12592,13251,13252,14526,11437,15882,12793,13941,12794,12803,13282,11397,14206,13265,13266,14168,11580,14230,14278,12730,14274,14226,14439,14803,11778,13441,14529,11622,13963,14046,11622,13342,13345,13349,13352,11409,13382,12371,11613,14292,11372,13099,14119,14438,14293],
 
-    'discount_vendors_duration' => [180, 360]
-    
+    'discount_vendors_duration' => [180, 360],
+  
 );
