@@ -1414,11 +1414,12 @@ class EmailSmsApiController extends \BaseController {
             $redisid = Queue::connection('sync')->push('EmailSmsApiController@spinTheWheelComm',['data'=>$data],Config::get('app.queue'));
             
     
-            return [$data['message'], $data];
+            // return [$data['message'], $data];
      
-            return ['status' => 200, 'index'=>$index, 
-            'message'=>$data['message'], 
-            $coupon=>!empty($coupon)?$coupon:null];
+            return ['status' => 200, 
+            'index'=>$index, 
+            'message'=>$data['message'], 'coupon'=>$data['coupon']
+            ];
         
         }catch(Exception $e){
             
