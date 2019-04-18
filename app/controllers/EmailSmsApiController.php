@@ -1364,86 +1364,81 @@ class EmailSmsApiController extends \BaseController {
     }
     
     public function spinTheWheelReg(){
-        
-        $data = Input::json()->all();
-        
-        $rules = [
-            'customer_email'=>'required|email|max:255',
-            'customer_phone'=>'required|max:10',
-            // 'temp'=>'required'
-        ];
 
-        
-        // $validator = Validator::make($data, $rules);        
-        
-        // if ($validator->fails()) {
-        //     return Response::json(['message'=>'Invalid Input', 'error'=>1],400);
-        // }
-        
-        // $data['customer_email'] = strtolower(trim($data['customer_email']));
-        // $data['customer_phone'] = trim($data['customer_phone']);
-        
-        // $already_reg = CampaignReg::active()->where('customer_email', $data['customer_email'])->first();
+        try{
 
-        // if(!empty($already_reg)){
-        //     return Response::json(['message'=>'YOU HAVE ALREADY TRIED YOUR LUCK!!', 'error'=>2], 400); 
-        // }
-
-        // $temp = Temp::where('customer_phone', $data['customer_phone'])->where('verified', 'Y')->first();
-
-        // if(empty($temp)){
-        //     return Response::json(['message'=>'Invalid Input', 'error'=>3], 400);
-        // }
+            $data = Input::json()->all();
+            
+            $rules = [
+                'customer_email'=>'required|email|max:255',
+                'customer_phone'=>'required|max:10',
+                // 'temp'=>'required'
+            ];
+    
+            
+            $validator = Validator::make($data, $rules);        
+            
+            if ($validator->fails()) {
+                return Response::json(['message'=>'Invalid Input', 'error'=>1],400);
+            }
+            
+            $data['customer_email'] = strtolower(trim($data['customer_email']));
+            $data['customer_phone'] = trim($data['customer_phone']);
+            
+            // $already_reg = CampaignReg::active()->where('customer_email', $data['customer_email'])->first();
+    
+            // if(!empty($already_reg)){
+            //     return Response::json(['message'=>'YOU HAVE ALREADY TRIED YOUR LUCK!!', 'error'=>2], 400); 
+            // }
+    
+            $temp = Temp::where('customer_phone', $data['customer_phone'])->where('verified', 'Y')->first();
+    
+            if(empty($temp)){
+                return Response::json(['message'=>'Invalid Input', 'error'=>3], 400);
+            }
+            
+            list($index, $spin_array ) = $this->getSpinIndex();
+    
+            $data['index'] = $index;
+            $data['spin_array'] = $spin_array;
+            $coupon = null;
+            
+            if(!empty($data['spin_array'][$data['index']]['spin_coupon'])){
+                $coupon = $this->getSpinCampaignCoupon($data);
+                $data['coupon'] = $coupon['code'];
+            }
+            $data['message'] = $this->getMessage($data);
+            $data['status'] = "1";
+            // return $data;
+            $campain_reg = CampaignReg::create($data);
+            $redisid = Queue::connection('sync')->push('EmailSmsApiController@spinTheWheelComm',['data'=>$data],Config::get('app.queue'));
+            
+    
+            return [$data['message'], $data];
+     
+            return ['status' => 200, 'index'=>$index, 
+            'message'=>$data['message'], 
+            $coupon=>!empty($coupon)?$coupon:null];
         
-        list($index, $spin_array ) = $this->getSpinIndex();
+        }catch(Exception $e){
+            
+            print_exception($e);
 
-        $data['index'] = $index;
-        $data['spin_array'] = $spin_array;
-        $coupon = null;
-        if(!empty($data['spin_array'][$data['index']]['spin_coupon'])){
-            $coupon = $this->getSpinCampaignCoupon($data);
-            $data['coupon'] = $coupon['code'];
-        } 
-        // return $data;
-        $campain_reg = CampaignReg::create($data);
+            return Response::json(['message'=>'Please try after some time', 'error'=>5],500);
+        }
         
-        
-        $message = $this->getMessage($data);
-
-        return [$message, $data];
-
-        return ['status' => 200, 'index'=>$index, 
-        // 'message'=>$message, 
-        $coupon=>!empty($coupon)?$coupon:null];
     
     }
 
     public function getSpinIndex(){
         
-        $spin_array = $this->getSpinArray();
+        $spin_array = getSpinArray();
         
         $index = $this->getRandomWeightedElement(array_column($spin_array, 'value'));
-        $index=1;
         return [$index, $spin_array];
     }
 
-    public function getSpinArray(){
-        
-        return Cache::tags('spin_campaign')->remember('spin_array', 60*60*24, function () {
-            $spin_array = Ordervariables::where('name', 'spin_array')->first()['spin_array'];
-            if (!function_exists('relInt')) {
-                function relInt($x){
-                    $x['value']*=100;
-                    return $x;
-                }
-            }
-            $spin_array = array_map('relInt', $spin_array);
-            return $spin_array;
-        });
-        
-
-        
-    }
+    
 
     
     function getRandomWeightedElement(array $weightedValues) {
@@ -1460,17 +1455,7 @@ class EmailSmsApiController extends \BaseController {
 
     public function testSpinResult($number){
 
-        $spin_array =[
-            ["text"=>"Flat 5%","value"=>30],
-            ["text"=>"1 workout session worth Rs. 1,000","value"=>30],
-            ["text"=>"500 FitCash","value"=>25],
-            ["text"=>"Flat 10%","value"=>14],
-            ["text"=>"1 year Membership","value"=>0.5],
-            ["text"=>"1,500 Amazon voucher","value"=>1.25],
-            ["text"=>"Stay at 5-star","value"=>1.25],
-        ];
-
-        $spin_array = Config::get('app.spin_array', $spin_array);
+        $spin_array = $this->getSpinArray();
 
         $data = [];
         for($i=1;$i<=$number;$i++){
@@ -1493,9 +1478,9 @@ class EmailSmsApiController extends \BaseController {
     public function getMessage($data){
                
         // return $coupon;
+        $text = $data['spin_array'][$data['index']]['text'];
         if(!empty($data['coupon'])){
             $coupon = $data['coupon'];
-            $text = $data['spin_array'][$data['index']]['text'];
             foreach($text as $key => &$value){
                 $value =  bladeCompile($value, ['coupon' => strtoupper($coupon)]);
             }
@@ -1505,6 +1490,20 @@ class EmailSmsApiController extends \BaseController {
 
     }
     
+    public function spinTheWheelComm($job,$data){
+
+        $job->delete();
+
+        try{
+            Log::info($data['data']['message']);
+            $this->customermailer->spinTheWheel($data['data']);
+        
+        }catch(\Exception $exception){
+
+            Log::error($exception);
+        }
+
+    }
 
 
 }

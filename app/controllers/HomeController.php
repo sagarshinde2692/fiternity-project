@@ -627,7 +627,8 @@ class HomeController extends BaseController {
                 'recent_blogs' => $recent_blogs,
                 'city_name' => $city_name,
                 'city_id' => $city_id,
-                "campaigns" => $campaigns
+                "campaigns" => $campaigns,
+                "spin_wheel_array"=>array_column(getSpinArray(), 'label1')
                 // 'collections' => $collections
 
             );

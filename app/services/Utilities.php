@@ -8695,6 +8695,6 @@ Class Utilities {
             return $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)->getData()), true);
                        
         }
-	}
+    }
+      
 }
-
