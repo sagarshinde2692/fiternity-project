@@ -1271,6 +1271,15 @@ Class CustomerSms extends VersionNextSms{
 		
 		return $this->common($label,$to,$data);	
 	}
+    
+    public function spinWheelAfterTransaction($data){
+		
+		$label = 'SpinWheelAfterTransaction-Customer';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);	
+	}
 
 	public function multifitUserHeader(){
 		$vendor_token = \Request::header('Authorization-Vendor');

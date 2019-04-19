@@ -1385,12 +1385,16 @@ class EmailSmsApiController extends \BaseController {
             $data['customer_email'] = strtolower(trim($data['customer_email']));
             $data['customer_phone'] = trim($data['customer_phone']);
             
-            // $already_reg = CampaignReg::active()->where('customer_email', $data['customer_email'])->first();
-    
-            // if(!empty($already_reg)){
-            //     return Response::json(['message'=>'YOU HAVE ALREADY TRIED YOUR LUCK!!', 'error'=>2], 400); 
-            // }
-    
+            if(!Config::get('app.debug')){
+
+                $already_reg = CampaignReg::active()->where('customer_email', $data['customer_email'])->first();
+        
+                if(!empty($already_reg)){
+                    return Response::json(['message'=>'YOU HAVE ALREADY TRIED YOUR LUCK!!', 'error'=>2], 400); 
+                }
+        
+            }
+           
             $temp = Temp::where('customer_phone', $data['customer_phone'])->where('verified', 'Y')->first();
     
             if(empty($temp)){

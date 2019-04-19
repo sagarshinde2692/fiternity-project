@@ -8918,5 +8918,44 @@ class TransactionController extends \BaseController {
         return ($transactionURL);
     }
 
+    function afterTransQueued($job, $data){
+
+        if($job){
+            $job->delete();
+        }
+        
+        $data = $data['data'];
+        
+        $type = $data['type'];
+        
+        $campaign_reg = CampaignReg::where('customer_email', $data['customer_email'])->where('customer_phone', $data['customer_phone'])->where('message.transaction', true)->where('claimed', '!=', true)->orderBy('_id', 'desc')->first();
+
+        if($campaign_reg){
+            if($data['amount_customer'] >= 500){
+                $claim = true;
+            }else{
+                $orders_amount = Order::active()->where('customer_id', $data['customer_id'])->where('success_date', '>=', new MongoDate(strtotime($campaign_reg['created_at'])))->sum('amount_customer');
+                if($type == 'order'){
+                    $orders_amount = $orders_amount->where('_id', '!=', $data['_id']);
+                }else{
+                    $orders_amount = $orders_amount->where('booktrial_id', '!=', $data['_id']);
+                }
+                $orders_amount = $orders_amount->sum('amount_customer');
+                
+                if($orders_amount + $data['amount_customer'] >= 500){
+                    $claim = true;
+                }
+            }
+        }
+
+        if(!empty($claim)){
+            $this->customersms->spinWheelAfterTransaction($campaign_reg->toArray());
+            $campaign_reg->claimed = true;
+            $campaign_reg->save();
+        }
+
+        
+    }
+
 }
 

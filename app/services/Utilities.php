@@ -6539,6 +6539,8 @@ Class Utilities {
                 $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null ]);
             }
         }
+
+        Queue::connection('sync')->push('TransactionController@afterTransQueued', array('data'=>$data, 'type'=> $type),Config::get('app.queue'));
         
         return ['loyalty_registration'=>$loyalty_registration, 'checkin'=> $checkin];
     }
