@@ -2387,9 +2387,13 @@ Class CustomerReward {
             if(!empty($coupon['flags'])){
                 $resp['flags'] = $coupon['flags'];
             }
+            if(!empty($coupon['spin_coupon'])){
+                $resp['spin_coupon'] = $coupon['spin_coupon'];
+            }
+            if(!empty($coupon['discount_percent'])){
+                $resp['coupon_discount_percent'] = $coupon['coupon_discount_percent'];
+            }
 
-            $GLOBALS['coupon_applied'] = $discount_amount;
-            
         }else{
 
             $applyCustomerCoupn = false;

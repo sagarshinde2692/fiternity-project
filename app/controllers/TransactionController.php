@@ -3526,6 +3526,18 @@ class TransactionController extends \BaseController {
                 if(isset($couponCheck['description'])){
                     $data['coupon_description'] = $couponCheck['description'];
                 }
+                
+                if(isset($couponCheck['spin_coupon'])){
+                    $data['spin_coupon'] = $couponCheck['spin_coupon'];
+                }else{
+                    $data['spin_coupon'] = "";
+                }
+                
+                if(isset($couponCheck['coupon_discount_percent'])){
+                    $data['coupon_discount_percent'] = $couponCheck['coupon_discount_percent'];
+                }else{
+                    $data['coupon_discount_percent'] = 0;
+                }
 
                 $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
 

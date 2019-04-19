@@ -4159,6 +4159,14 @@ Class Utilities {
         
         }
 
+        if(!empty($order['spin_coupon']) && !empty($order['coupon_discount_percentage'])){
+
+            $order->cos_percentage_spin_discount = ($order->cos_percentage > $order['coupon_discount_percentage'] / 2) ? $order['coupon_discount_percentage'] / 2 : $order->cos_percentage;
+            $order->cos_percentage_orig = $order->cos_percentage;
+            $order->cos_percentage = $order->cos_percentage - $order->cos_percentage_spin_discount;
+
+        }
+
         $amount_used = (!empty($order->vendor_price)) ? $order->vendor_price : $order->amount_finder;
 
         $order->cos_finder_amount = ceil(($amount_used * $order->cos_percentage) / 100);
