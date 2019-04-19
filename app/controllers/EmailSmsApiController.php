@@ -1443,7 +1443,7 @@ class EmailSmsApiController extends \BaseController {
         $spin_array = getSpinArray();
         
         $index = $this->getRandomWeightedElement(array_column($spin_array, 'value'));
-        $index=5;
+        // $index=5;
         return [$index, $spin_array];
     }
 
