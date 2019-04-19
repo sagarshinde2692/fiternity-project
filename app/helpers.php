@@ -3340,6 +3340,7 @@ if (!function_exists('decodeKioskVendorToken')) {
         $jwt_token              =   Request::header('Authorization-Vendor');
         $jwt_key                =   Config::get('jwt.kiosk.key');
         $jwt_alg                =   Config::get('jwt.kiosk.alg');
+        JWT::$leeway = (86400*2000);
         $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
         
         Log::info("Vendor Token : ".$jwt_token);
