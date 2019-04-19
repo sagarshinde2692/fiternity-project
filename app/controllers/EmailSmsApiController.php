@@ -1403,7 +1403,6 @@ class EmailSmsApiController extends \BaseController {
             $data['spin_array'] = $spin_array;
             $coupon = null;
             
-            $data['message'] = $this->getMessage($data);
             $data['status'] = "1";
             // return $data;
             $campain_reg = new CampaignReg($data);
@@ -1413,15 +1412,16 @@ class EmailSmsApiController extends \BaseController {
                 $data['coupon'] = $coupon['code'];
                 $campain_reg->update($data);
             }
-            
+            $data['message'] = $this->getMessage($data);
+
+            $data['pps_link'] = Config::get('app.website').'/pay-per-session';
+        
             $redisid = Queue::connection('sync')->push('EmailSmsApiController@spinTheWheelComm',['data'=>$data],Config::get('app.queue'));
             
-    
-            // return [$data['message'], $data];
-     
-            return ['status' => 200, 
-            'index'=>$index, 
-            'message'=>$data['message'], 'coupon'=>$data['coupon']
+            return [
+                'status' => 200, 
+                'index'=>$index, 
+                'message'=>$data['message'], 'coupon'=>!empty($data['coupon']) ? $data['coupon'] : null
             ];
         
         }catch(Exception $e){
@@ -1439,6 +1439,7 @@ class EmailSmsApiController extends \BaseController {
         $spin_array = getSpinArray();
         
         $index = $this->getRandomWeightedElement(array_column($spin_array, 'value'));
+        $index=5;
         return [$index, $spin_array];
     }
 
@@ -1475,18 +1476,31 @@ class EmailSmsApiController extends \BaseController {
 
     public function getSpinCampaignCoupon($data){
         
-        $coupon = Coupon::where('spin_coupon', $data['spin_array'][$data['index']]['spin_coupon'])->first();
-        $coupon_array = $coupon->toArray();
-        
-        foreach($coupon_array['and_conditions'] as &$value){
-            if($value['key'] == 'logged_in_customer.contact_no'){
-                array_push($value['values'], $data['customer_phone']);
+        if(!empty($data['spin_array'][$data['index']]['fitcash'])){
+            
+            $coupon = Fitcashcoupon::where('spin_coupon', $data['spin_array'][$data['index']]['spin_coupon'])->first();
+            $coupon_array = $coupon->toArray();
+            
+            array_push($coupon_array['customer_phones'], $data['customer_phone']);
+            $coupon->update($coupon_array);
+            return $coupon;
+            
+        }else{
+            
+            $coupon = Coupon::where('spin_coupon', $data['spin_array'][$data['index']]['spin_coupon'])->first();
+            $coupon_array = $coupon->toArray();
+            
+            foreach($coupon_array['and_conditions'] as &$value){
+                if($value['key'] == 'logged_in_customer.contact_no'){
+                    array_push($value['values'], $data['customer_phone']);
+                }
             }
+    
+            $coupon->update($coupon_array);
+    
+            return $coupon;
+
         }
-
-        $coupon->update($coupon_array);
-
-        return $coupon;
         
     }
 
