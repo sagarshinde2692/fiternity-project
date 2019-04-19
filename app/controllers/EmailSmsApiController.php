@@ -20,7 +20,7 @@ class EmailSmsApiController extends \BaseController {
     protected $sidekiq;
     protected $customermailer;
     protected $customerController;
-    protected $transactionController;
+    // protected $transactionController;
     protected $customersms;
     protected $utilities;
     protected $findermailer;
@@ -32,7 +32,7 @@ class EmailSmsApiController extends \BaseController {
         CustomerMailer $customermailer,
         CustomerSms $customersms,
     	CustomerController $customerController,
-        TransactionController $transactionController,
+        // TransactionController $transactionController,
         Utilities $utilities,
         FinderMailer $findermailer,
         FinderSms $findersms
@@ -55,7 +55,7 @@ class EmailSmsApiController extends \BaseController {
         }
 
         $this->customerController=   $customerController;
-        $this->transactionController=   $transactionController;
+        // $this->transactionController=   $transactionController;
         
 
     }
@@ -1403,14 +1403,17 @@ class EmailSmsApiController extends \BaseController {
             $data['spin_array'] = $spin_array;
             $coupon = null;
             
-            if(!empty($data['spin_array'][$data['index']]['spin_coupon'])){
-                $coupon = $this->getSpinCampaignCoupon($data);
-                $data['coupon'] = $coupon['code'];
-            }
             $data['message'] = $this->getMessage($data);
             $data['status'] = "1";
             // return $data;
-            $campain_reg = CampaignReg::create($data);
+            $campain_reg = new CampaignReg($data);
+            $campain_reg->save();
+            if(!empty($data['spin_array'][$data['index']]['spin_coupon'])){
+                $coupon = $this->getSpinCampaignCoupon($data);
+                $data['coupon'] = $coupon['code'];
+                $campain_reg->update($data);
+            }
+            
             $redisid = Queue::connection('sync')->push('EmailSmsApiController@spinTheWheelComm',['data'=>$data],Config::get('app.queue'));
             
     
@@ -1472,7 +1475,18 @@ class EmailSmsApiController extends \BaseController {
 
     public function getSpinCampaignCoupon($data){
         
-        return $coupon = Coupon::where('spin_coupon', $data['spin_array'][$data['index']]['spin_coupon'])->first();
+        $coupon = Coupon::where('spin_coupon', $data['spin_array'][$data['index']]['spin_coupon'])->first();
+        $coupon_array = $coupon->toArray();
+        
+        foreach($coupon_array['and_conditions'] as &$value){
+            if($value['key'] == 'logged_in_customer.contact_no'){
+                array_push($value['values'], $data['customer_phone']);
+            }
+        }
+
+        $coupon->update($coupon_array);
+
+        return $coupon;
         
     }
 
