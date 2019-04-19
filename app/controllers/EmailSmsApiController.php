@@ -1405,6 +1405,7 @@ class EmailSmsApiController extends \BaseController {
     
             $data['index'] = $index;
             $data['spin_array'] = $spin_array;
+            $data['label'] = $spin_array[$index]['label'];
             $coupon = null;
             
             $data['status'] = "1";
@@ -1414,10 +1415,9 @@ class EmailSmsApiController extends \BaseController {
             if(!empty($data['spin_array'][$data['index']]['spin_coupon'])){
                 $coupon = $this->getSpinCampaignCoupon($data);
                 $data['coupon'] = $coupon['code'];
-                $campain_reg->update($data);
             }
             $data['message'] = $this->getMessage($data);
-
+            $campain_reg->update($data);
             $data['pps_link'] = Config::get('app.website').'/pay-per-session';
         
             $redisid = Queue::connection('sync')->push('EmailSmsApiController@spinTheWheelComm',['data'=>$data],Config::get('app.queue'));

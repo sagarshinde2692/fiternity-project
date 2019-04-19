@@ -8927,8 +8927,12 @@ class TransactionController extends \BaseController {
         $data = $data['data'];
         
         $type = $data['type'];
-        
+        // Log::info($data);
         $campaign_reg = CampaignReg::where('customer_email', $data['customer_email'])->where('customer_phone', $data['customer_phone'])->where('message.transaction', true)->where('claimed', '!=', true)->orderBy('_id', 'desc')->first();
+
+        Log::info("campaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_reg");
+        
+        Log::info($campaign_reg);
 
         if($campaign_reg){
             if($data['amount_customer'] >= 500){
@@ -8949,6 +8953,11 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($claim)){
+
+            $campaign_reg->trans_id = $data['_id'];
+            $campaign_reg->type = $type;
+            $campaign_reg->customer_name = $data['customer_name'];
+
             $this->customersms->spinWheelAfterTransaction($campaign_reg->toArray());
             $campaign_reg->claimed = true;
             $campaign_reg->save();
