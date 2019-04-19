@@ -1329,12 +1329,12 @@ class EmailSmsApiController extends \BaseController {
     }
 
     public function registerShedEat(){
-        ShedEatRegistration::insert(Input::json()->all());
+        ShedEatRegistration::create(Input::json()->all());
         return ['status'=>200];
     }
     
     public function notifyShedEat(){
-        ShedEatNotify::insert(Input::json()->all());
+        ShedEatNotify::create(Input::json()->all());
         return ['status'=>200];
     }
 
