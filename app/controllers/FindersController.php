@@ -5773,9 +5773,51 @@ class FindersController extends \BaseController {
 		if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && in_array($finder_id, $multifitFinder)){
 			Log::info("multifit");
 			unset($response["response"]["about"]);
-
+            $response["response"]["options"]= [
+				[
+					"title"=>"Access Fitternity Booking",
+					"description"=>"Quick step to activate your trial/session",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
+					"id"=>1,
+					'type'=>'access_booktrial'
+				],
+				[
+					"title"=>"Buy Membership",
+					"description"=>"Quick buy with free rewards & flexible payment options.",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/buy_membership.png",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/buy_membership_banner.png",
+					"id"=>2,
+					"type"=>'memberships'
+				],
+				[
+					"title"=>"Schedule New Bookings",
+					"description"=>"Pick a day & slot that works for you and get started",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/schedule_new_booking.png",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/schedule_new_booking_banner.png",
+					"id"=>6,
+					'type'=>'booktrials'
+				],
+				[
+					"title"=>"Activate Fitternity Membership",
+					"description"=>"Quick step to activate your membership",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/active_membership.png",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/activate_membership_banner.png",
+					"id"=>5,
+					"type"=>'activate_membership'
+				],
+				[
+					"title"=>"Post a Review",
+					"description"=>"Rate your experience & help fellow fitness enthusiasts.",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/post_a_review.png",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/post_a_review_banner.png",
+					"id"=>3,
+					'type'=>'post_review'
+				],				
+				
+            ];
 			foreach ($response["response"]["options"] as &$value){
-				$value['title'] = str_replace("Fitternity ","",$value['title']);
+				$value['title'] = str_replace("Fitternity ","Multifit ",$value['title']);
 			}
 			
 			array_pop($response["response"]["options"]);
