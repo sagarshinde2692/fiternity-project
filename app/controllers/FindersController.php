@@ -5777,8 +5777,8 @@ class FindersController extends \BaseController {
 				[
 					"title"=>"Access Fitternity Booking",
 					"description"=>"Quick step to activate your trial/session",
-					"image"=>"https://b.fitn.in.s3.amazonaws.com/global/tabapp-homescreen/access_booking.png",
-					"banner_image"=>"https://b.fitn.in.s3.amazonaws.com/global/tabapp-homescreen/access_booking_banner.png",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/access_booking.png",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/access_booking_banner.png",
 					"id"=>1,
 					'type'=>'access_booktrial'
 				],
