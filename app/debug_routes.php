@@ -2719,3 +2719,5 @@ Route::get('addVoucherCategory','DebugController@addVoucherCategory');
 Route::get('ppsTOMembershipConversion','DebugController@ppsTOMembershipConversion');
 Route::get('multifitFitcash','DebugController@multifitFitcash');
 Route::get('verifyRatecards','DebugController@verifyRatecards');
+Route::get('verifyRatecards','DebugController@verifyRatecards');
+

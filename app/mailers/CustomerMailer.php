@@ -887,6 +887,16 @@ Class CustomerMailer extends Mailer {
 		);
 		return $this->common($label,$data,$message_data);
 	}
+    public function spinTheWheel($data, $delay=0){
+
+		$label = 'SpinTheWheel-Customer';
+		
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => '',
+		);
+		return $this->common($label,$data,$message_data);
+	}
 
 	public function multifitUserHeader(){
 		$vendor_token = \Request::header('Authorization-Vendor');
@@ -922,8 +932,8 @@ Class CustomerMailer extends Mailer {
             return true;
         }
     }
-	
-	protected function common($label,$data,$message_data,$delay = 0){
+    
+    protected function common($label,$data,$message_data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
 			return "";

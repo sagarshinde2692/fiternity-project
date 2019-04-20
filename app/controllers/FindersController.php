@@ -1460,7 +1460,8 @@ class FindersController extends \BaseController {
         if(empty(count($response['trials_detials'])) && !empty($response['finder']['brand_id']) && $response['finder']['brand_id'] == 130){
             $response['trial_button'] = true;
         }
-		$response['pending_payment'] = $this->utilities->hasPendingPayments();
+        $response['pending_payment'] = $this->utilities->hasPendingPayments();
+        $response['spin_wheel_array'] = array_column(getSpinArray(), 'label1');
 		if(!$response['pending_payment']){
 			unset($response['pending_payment']);	
 		}
