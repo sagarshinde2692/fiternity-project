@@ -1387,7 +1387,9 @@ class EmailSmsApiController extends \BaseController {
             
             if(!Config::get('app.debug')){
 
-                $already_reg = CampaignReg::active()->where('customer_email', $data['customer_email'])->first();
+                $already_reg = CampaignReg::active()->where(function($query) use ($data){
+                    $query->orWhere('customer_email', $data['customer_email'])->orWhere('customer_phone', $data['customer_phone']);
+                })->first();
         
                 if(!empty($already_reg)){
                     return Response::json(['message'=>'YOU HAVE ALREADY TRIED YOUR LUCK!!', 'error'=>2], 400); 
@@ -1406,12 +1408,11 @@ class EmailSmsApiController extends \BaseController {
             $data['index'] = $index;
             $data['spin_array'] = $spin_array;
             $data['label'] = $spin_array[$index]['label'];
-            $coupon = null;
-            
             $data['status'] = "1";
             // return $data;
             $campain_reg = new CampaignReg($data);
             $campain_reg->save();
+            $coupon = null;
             if(!empty($data['spin_array'][$data['index']]['spin_coupon'])){
                 $coupon = $this->getSpinCampaignCoupon($data);
                 $data['coupon'] = $coupon['code'];
