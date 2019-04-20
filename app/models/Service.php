@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Config;
 
 /** 
  * ModelName : Service.
@@ -191,8 +191,8 @@ class Service extends \Basemodel{
         }
         
 		if(!empty($this->_id) && isset($this->_id)){
-			if(!empty($finder->brand_id) && $finder->brand_id == 130){
-				// talwalkars
+			if((!empty($finder->brand_id) && $finder->brand_id == 130) || (in_array($finder->_id, Config::get('app.powerworld_finder_ids', [])))){
+				// talwalkars & powerworld
 				$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
 			}else{
 				if(self::$isThirdParty){
