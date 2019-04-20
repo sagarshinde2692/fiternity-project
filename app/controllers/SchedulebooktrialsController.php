@@ -2383,6 +2383,12 @@ class SchedulebooktrialsController extends \BaseController {
             if(isset($order['amount_customer']) && $order['amount_customer'] != ""){
                 $booktrialdata['amount_customer'] = $order['amount_customer'];
             }
+            if(isset($order['spin_coupon']) && $order['spin_coupon'] != ""){
+                $booktrialdata['spin_coupon'] = $order['spin_coupon'];
+            }
+            if(isset($order['coupon_discount_percent']) && $order['coupon_discount_percent'] != ""){
+                $booktrialdata['coupon_discount_percent'] = $order['coupon_discount_percent'];
+            }
 
             // Add Cashback and rewards to booktrialdata if exist in orders....
             isset($order['cashback']) ? $booktrialdata['cashback'] = $order['cashback']:null;

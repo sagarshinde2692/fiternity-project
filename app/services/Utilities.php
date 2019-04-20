@@ -4159,6 +4159,14 @@ Class Utilities {
         
         }
 
+        if(!empty($order['spin_coupon']) && !empty($order['coupon_discount_percentage'])){
+
+            $order->cos_percentage_spin_discount = ($order->cos_percentage > $order['coupon_discount_percentage'] / 2) ? $order['coupon_discount_percentage'] / 2 : $order->cos_percentage;
+            $order->cos_percentage_orig = $order->cos_percentage;
+            $order->cos_percentage = $order->cos_percentage - $order->cos_percentage_spin_discount;
+
+        }
+
         $amount_used = (!empty($order->vendor_price)) ? $order->vendor_price : $order->amount_finder;
 
         $order->cos_finder_amount = ceil(($amount_used * $order->cos_percentage) / 100);
@@ -6531,6 +6539,8 @@ Class Utilities {
                 $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null ]);
             }
         }
+
+        \Queue::connection('redis')->push('TransactionController@afterTransQueued', array('data'=>$data, 'type'=> $type),Config::get('app.queue'));
         
         return ['loyalty_registration'=>$loyalty_registration, 'checkin'=> $checkin];
     }
@@ -8695,6 +8705,6 @@ Class Utilities {
             return $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)->getData()), true);
                        
         }
-	}
+    }
+      
 }
-

@@ -10,6 +10,7 @@ use App\Services\Utilities as Utilities;
 Use App\Mailers\FinderMailer as FinderMailer;
 Use App\Sms\FinderSms as FinderSms;
 use Illuminate\Support\Facades\Config;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 
 class EmailSmsApiController extends \BaseController {
 
@@ -19,7 +20,7 @@ class EmailSmsApiController extends \BaseController {
     protected $sidekiq;
     protected $customermailer;
     protected $customerController;
-    protected $transactionController;
+    // protected $transactionController;
     protected $customersms;
     protected $utilities;
     protected $findermailer;
@@ -31,7 +32,7 @@ class EmailSmsApiController extends \BaseController {
         CustomerMailer $customermailer,
         CustomerSms $customersms,
     	CustomerController $customerController,
-        TransactionController $transactionController,
+        // TransactionController $transactionController,
         Utilities $utilities,
         FinderMailer $findermailer,
         FinderSms $findersms
@@ -54,7 +55,7 @@ class EmailSmsApiController extends \BaseController {
         }
 
         $this->customerController=   $customerController;
-        $this->transactionController=   $transactionController;
+        // $this->transactionController=   $transactionController;
         
 
     }
@@ -1360,6 +1361,183 @@ class EmailSmsApiController extends \BaseController {
 		}
 		
 		return false;
-	}
+    }
+    
+    public function spinTheWheelReg(){
+
+        try{
+
+            $data = Input::json()->all();
+            
+            $rules = [
+                'customer_email'=>'required|email|max:255',
+                'customer_phone'=>'required|max:10',
+                // 'temp'=>'required'
+            ];
+    
+            
+            $validator = Validator::make($data, $rules);        
+            
+            if ($validator->fails()) {
+                return Response::json(['message'=>'Invalid Input', 'error'=>1],400);
+            }
+            
+            $data['customer_email'] = strtolower(trim($data['customer_email']));
+            $data['customer_phone'] = trim($data['customer_phone']);
+            
+            if(!Config::get('app.debug')){
+
+                $already_reg = CampaignReg::active()->where(function($query) use ($data){
+                    $query->orWhere('customer_email', $data['customer_email'])->orWhere('customer_phone', $data['customer_phone']);
+                })->first();
+        
+                if(!empty($already_reg)){
+                    return Response::json(['message'=>'YOU HAVE ALREADY TRIED YOUR LUCK!!', 'error'=>2], 400); 
+                }
+        
+            }
+           
+            $temp = Temp::where('customer_phone', $data['customer_phone'])->where('verified', 'Y')->first();
+    
+            if(empty($temp)){
+                return Response::json(['message'=>'Invalid Input', 'error'=>3], 400);
+            }
+            
+            list($index, $spin_array ) = $this->getSpinIndex();
+    
+            $data['index'] = $index;
+            $data['spin_array'] = $spin_array;
+            $data['label'] = $spin_array[$index]['label'];
+            $data['status'] = "1";
+            // return $data;
+            $campain_reg = new CampaignReg($data);
+            $campain_reg->save();
+            $coupon = null;
+            if(!empty($data['spin_array'][$data['index']]['spin_coupon'])){
+                $coupon = $this->getSpinCampaignCoupon($data);
+                $data['coupon'] = $coupon['code'];
+            }
+            $data['message'] = $this->getMessage($data);
+            $campain_reg->update($data);
+            $data['pps_link'] = Config::get('app.website').'/pay-per-session';
+        
+            $redisid = Queue::connection('sync')->push('EmailSmsApiController@spinTheWheelComm',['data'=>$data],Config::get('app.queue'));
+            
+            return [
+                'status' => 200, 
+                'index'=>$index, 
+                'message'=>$data['message'], 'coupon'=>!empty($data['coupon']) ? $data['coupon'] : null
+            ];
+        
+        }catch(Exception $e){
+            
+            print_exception($e);
+
+            return Response::json(['message'=>'Please try after some time', 'error'=>5],500);
+        }
+        
+    
+    }
+
+    public function getSpinIndex(){
+        
+        $spin_array = getSpinArray();
+        
+        $index = $this->getRandomWeightedElement(array_column($spin_array, 'value'));
+        // $index=5;
+        return [$index, $spin_array];
+    }
+
+    
+
+    
+    function getRandomWeightedElement(array $weightedValues) {
+        
+        $rand = mt_rand(1, (int) array_sum($weightedValues));
+
+        foreach ($weightedValues as $key => $value) {
+            $rand -= $value;
+            if ($rand <= 0) {
+              return $key;
+            }
+        }
+    }
+
+    public function testSpinResult($number){
+
+        $spin_array = $this->getSpinArray();
+
+        $data = [];
+        for($i=1;$i<=$number;$i++){
+            $r = $this->getRandomWeightedElement(array_column($spin_array, 'value'));
+            if(empty($data[$r])){
+                $data[$r] = 1;
+            }else{
+                $data[$r]++;
+            }
+        }
+        return $data;
+    }
+
+    public function getSpinCampaignCoupon($data){
+        
+        if(!empty($data['spin_array'][$data['index']]['fitcash'])){
+            
+            $coupon = Fitcashcoupon::where('spin_coupon', $data['spin_array'][$data['index']]['spin_coupon'])->first();
+            $coupon_array = $coupon->toArray();
+            
+            array_push($coupon_array['customer_phones'], $data['customer_phone']);
+            $coupon->update($coupon_array);
+            return $coupon;
+            
+        }else{
+            
+            $coupon = Coupon::where('spin_coupon', $data['spin_array'][$data['index']]['spin_coupon'])->first();
+            $coupon_array = $coupon->toArray();
+            
+            foreach($coupon_array['and_conditions'] as &$value){
+                if($value['key'] == 'logged_in_customer.contact_no'){
+                    array_push($value['values'], $data['customer_phone']);
+                }
+            }
+    
+            $coupon->update($coupon_array);
+    
+            return $coupon;
+
+        }
+        
+    }
+
+    public function getMessage($data){
+               
+        // return $coupon;
+        $text = $data['spin_array'][$data['index']]['text'];
+        if(!empty($data['coupon'])){
+            $coupon = $data['coupon'];
+            foreach($text as $key => &$value){
+                $value =  bladeCompile($value, ['coupon' => strtoupper($coupon)]);
+            }
+            
+        }
+        return $text;
+
+    }
+    
+    public function spinTheWheelComm($job,$data){
+
+        $job->delete();
+
+        try{
+            Log::info($data['data']['message']);
+            $this->customermailer->spinTheWheel($data['data']);
+        
+        }catch(\Exception $exception){
+
+            Log::error($exception);
+        }
+
+    }
+
 
 }

@@ -29,7 +29,7 @@ Class Paytm {
         $paytm_sandbox = \Config::get('app.paytm_sandbox');
 
         if($paytm_sandbox){
-            Log::info('inside sendbox section:::');
+            \Log::info('inside sendbox section:::');
             $this->base_uri = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/';
             $this->mid = 'fihepl10040475076325';//'Fitern22272466067721';
             $this->secret_key = 'G3ohqCH84rf5aCtA';//'j&0CCJb%B26dMs79';

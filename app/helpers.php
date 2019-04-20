@@ -4340,4 +4340,36 @@ if (!function_exists('addAToGlobals')) {
     }
 
 }
+if (!function_exists('print_exception')) {
+
+    function print_exception($e)
+    {
+        Log::info(array(
+            'type'    => get_class($e),
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+        ));
+    }
+
+}
+
+if (!function_exists('getSpinArray')) {
+
+    function getSpinArray(){
+        
+        return Cache::tags('spin_campaign')->remember('spin_array', 60*60*24, function () {
+            $spin_array = Ordervariables::where('name', 'spin_array')->first()['spin_array'];
+            if (!function_exists('relInt')) {
+                function relInt($x){
+                    $x['value']*=100;
+                    return $x;
+                }
+            }
+            $spin_array = array_map('relInt', $spin_array);
+            return $spin_array;
+        });
+    }
+
+}
 ?>

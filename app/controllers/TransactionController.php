@@ -3526,6 +3526,18 @@ class TransactionController extends \BaseController {
                 if(isset($couponCheck['description'])){
                     $data['coupon_description'] = $couponCheck['description'];
                 }
+                
+                if(isset($couponCheck['spin_coupon'])){
+                    $data['spin_coupon'] = $couponCheck['spin_coupon'];
+                }else{
+                    $data['spin_coupon'] = "";
+                }
+                
+                if(isset($couponCheck['coupon_discount_percent'])){
+                    $data['coupon_discount_percent'] = $couponCheck['coupon_discount_percent'];
+                }else{
+                    $data['coupon_discount_percent'] = 0;
+                }
 
                 $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
 
@@ -8904,6 +8916,54 @@ class TransactionController extends \BaseController {
         Log::info('uisuklsdvdf::::::::::::', [$transactionURL, strlen($transactionURL)]);
         $transactionURL = substr($transactionURL,0,(strlen($transactionURL)-1));
         return ($transactionURL);
+    }
+
+    function afterTransQueued($job, $data){
+
+        if($job){
+            $job->delete();
+        }
+        
+        $data = $data['data'];
+        
+        $type = $data['type'];
+        // Log::info($data);
+        $campaign_reg = CampaignReg::where('customer_email', $data['customer_email'])->where('customer_phone', $data['customer_phone'])->where('message.transaction', true)->where('claimed', '!=', true)->orderBy('_id', 'desc')->first();
+
+        Log::info("campaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_regcampaign_reg");
+        
+        Log::info($campaign_reg);
+
+        if($campaign_reg){
+            if($data['amount_customer'] >= 500){
+                $claim = true;
+            }else{
+                $orders_amount = Order::active()->where('customer_id', $data['customer_id'])->where('success_date', '>=', new MongoDate(strtotime($campaign_reg['created_at'])))->sum('amount_customer');
+                if($type == 'order'){
+                    $orders_amount = $orders_amount->where('_id', '!=', $data['_id']);
+                }else{
+                    $orders_amount = $orders_amount->where('booktrial_id', '!=', $data['_id']);
+                }
+                $orders_amount = $orders_amount->sum('amount_customer');
+                
+                if($orders_amount + $data['amount_customer'] >= 500){
+                    $claim = true;
+                }
+            }
+        }
+
+        if(!empty($claim)){
+
+            $campaign_reg->trans_id = $data['_id'];
+            $campaign_reg->type = $type;
+            $campaign_reg->customer_name = $data['customer_name'];
+
+            $this->customersms->spinWheelAfterTransaction($campaign_reg->toArray());
+            $campaign_reg->claimed = true;
+            $campaign_reg->save();
+        }
+
+        
     }
 
 }
