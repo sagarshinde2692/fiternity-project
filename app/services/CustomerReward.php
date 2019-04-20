@@ -2391,7 +2391,7 @@ Class CustomerReward {
                 $resp['spin_coupon'] = $coupon['spin_coupon'];
             }
             if(!empty($coupon['discount_percent'])){
-                $resp['coupon_discount_percent'] = $coupon['coupon_discount_percent'];
+                $resp['coupon_discount_percent'] = $coupon['discount_percent'];
             }
 
         }else{
