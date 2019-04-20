@@ -1048,9 +1048,18 @@ class CustomerController extends \BaseController {
 		$jwt_key = Config::get('jwt.kiosk.key');
 		$jwt_alg = Config::get('jwt.kiosk.alg');
 
-		$token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
+        $token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
+        
+		$primary_color = "#f8a81b";
+		$white_lable = false;
+        
+        if((int)$finder['_id'] == 9932){
+            
+            $primary_color = "#F9CD0C";
+			$white_lable = true;
+        }
 
-		return array('status' => 200,'message' => 'Successfull Login', 'token' => $token, 'finder_id'=> (int)$finder['_id']);
+		return array('status' => 200,'message' => 'Successfull Login', 'token' => $token, 'finder_id'=> (int)$finder['_id'], 'primary_color'=>$primary_color, 'white_lable'=>$white_lable);
 	}
 
 	public function emailLogin($data){
