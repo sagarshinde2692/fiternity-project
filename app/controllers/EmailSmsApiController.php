@@ -1465,7 +1465,7 @@ class EmailSmsApiController extends \BaseController {
 
     public function testSpinResult($number){
 
-        $spin_array = $this->getSpinArray();
+        $spin_array = getSpinArray();
 
         $data = [];
         for($i=1;$i<=$number;$i++){
