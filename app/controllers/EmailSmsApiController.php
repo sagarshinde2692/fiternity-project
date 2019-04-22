@@ -1384,19 +1384,7 @@ class EmailSmsApiController extends \BaseController {
             
             $data['customer_email'] = strtolower(trim($data['customer_email']));
             $data['customer_phone'] = trim($data['customer_phone']);
-            
-            if(!Config::get('app.debug') && !in_array($data['customer_email'], ['sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'gauravraviji@gmail.com', 'palaisuraj@gmail.com'])){
 
-                $already_reg = CampaignReg::active()->where(function($query) use ($data){
-                    $query->orWhere('customer_email', $data['customer_email'])->orWhere('customer_phone', $data['customer_phone']);
-                })->first();
-        
-                if(!empty($already_reg)){
-                    return Response::json(['message'=>'YOU HAVE ALREADY TRIED YOUR LUCK!!', 'error'=>2], 400); 
-                }
-        
-            }
-           
             $temp = Temp::where('customer_phone', $data['customer_phone'])->where('verified', 'Y')->first();
     
             if(empty($temp)){
@@ -1410,6 +1398,18 @@ class EmailSmsApiController extends \BaseController {
             $data['label'] = $spin_array[$index]['label'];
             $data['status'] = "1";
             // return $data;
+            if(!Config::get('app.debug') && !in_array($data['customer_email'], ['sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'gauravraviji@gmail.com', 'palaisuraj@gmail.com'])){
+            
+
+                $already_reg = CampaignReg::active()->where(function($query) use ($data){
+                    $query->orWhere('customer_email', $data['customer_email'])->orWhere('customer_phone', $data['customer_phone']);
+                })->update(['repeat'=>true]);
+        
+                if(!empty($already_reg)){
+                    return Response::json(['message'=>'YOU HAVE ALREADY TRIED YOUR LUCK!!', 'error'=>2], 400); 
+                }
+        
+            }
             $campain_reg = new CampaignReg($data);
             $campain_reg->save();
             $coupon = null;
