@@ -1457,7 +1457,7 @@ class FindersController extends \BaseController {
 
         $response['trial_button'] = false;
 
-        if(empty(count($response['trials_detials'])) && ((!empty($response['finder']['brand_id']) && $response['finder']['brand_id'] == 130) || (in_array($finder['_id'], Config::get('app.powerworld_finder_ids', []))))){
+        if(empty(count($response['trials_detials'])) && ((!empty($response['finder']['brand_id']) && $response['finder']['brand_id'] == 130) || (in_array($response['finder']['_id'], Config::get('app.powerworld_finder_ids', []))))){
             $response['trial_button'] = true;
         }
         $response['pending_payment'] = $this->utilities->hasPendingPayments();
@@ -4915,7 +4915,7 @@ class FindersController extends \BaseController {
 				unset($finderData['pending_payment']);	
 			}
 
-            if(((!empty($finderData['finder']['brand_id']) && $finderData['finder']['brand_id'] == 130) || (in_array($finder['_id'], Config::get('app.powerworld_finder_ids', [])))) && empty($finderData['trials_booked_status'])){
+            if(((!empty($finderData['finder']['brand_id']) && $finderData['finder']['brand_id'] == 130) || (in_array($finderData['finder']['_id'], Config::get('app.powerworld_finder_ids', [])))) && empty($finderData['trials_booked_status'])){
 
             }else{
                $finderData['trials_booked_status'] = true;
