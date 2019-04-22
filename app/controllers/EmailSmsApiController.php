@@ -1385,7 +1385,7 @@ class EmailSmsApiController extends \BaseController {
             $data['customer_email'] = strtolower(trim($data['customer_email']));
             $data['customer_phone'] = trim($data['customer_phone']);
             
-            if(!Config::get('app.debug')){
+            if(!Config::get('app.debug') && !in_array($data['customer_email'], ['sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'gauravraviji@gmail.com', 'palaisuraj@gmail.com'])){
 
                 $already_reg = CampaignReg::active()->where(function($query) use ($data){
                     $query->orWhere('customer_email', $data['customer_email'])->orWhere('customer_phone', $data['customer_phone']);
