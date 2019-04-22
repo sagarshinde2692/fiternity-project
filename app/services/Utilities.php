@@ -7057,8 +7057,9 @@ Class Utilities {
                     }
                 }
                 
-                $dontUpdateLoyalty = false;
+                $dontUpdateLoyalty = true;
                 if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
+                    $dontUpdateLoyalty = false;
                     if((!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type']!=2 && !empty($customer['loyalty']['brand_loyalty'])) || (!empty($customer['loyalty']['brand_loyalty'])) || empty($customer['loyalty'])){
                         $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
                         if(!empty($data['finder_flags']['cashback_type'])){
@@ -7068,6 +7069,8 @@ Class Utilities {
                     else {
                         $dontUpdateLoyalty = true;
                     }
+                } else if(empty($customer['loyalty'])) {
+                    $dontUpdateLoyalty = false;
                 }
 
                 $update_data = [
