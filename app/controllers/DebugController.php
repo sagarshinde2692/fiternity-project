@@ -9209,6 +9209,149 @@ public function yes($msg){
 
     }
 
+    public function fitpassComparison() {
+        $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+        $gym_integrated_vendors = Finder::integrated()->whereIn('_id', $gym_service_finders)->lists('_id');
+        $studio_integrated_vendors = Finder::integrated()->whereNotIn('_id', $gym_service_finders)->whereNotIn('category_id', [42,45,40,25,41, 26])->lists('_id');
+
+        $integrated_vendors_list = Finder::raw(function($collection) use ($gym_integrated_vendors, $studio_integrated_vendors){
+            $aggregate = [
+                ['$match'=>[
+                    '_id'=>['$in'=>$studio_integrated_vendors],
+                    'status' => '1'
+                ]],
+                ['$lookup' => [
+                    'from' => 'cities',
+                    'localField' => 'city_id',
+                    'foreignField' => '_id',
+                    'as' => 'city'
+                ]],
+                ['$project' => [
+                    '_id' => '$_id',
+                    'name' => '$title',
+                    'city' => ['$arrayElemAt' => ['$city.name',0]]
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });  
+
+
+        $citywiseGymFinders = Finder::raw(function($collection) use ($gym_integrated_vendors){    
+            $aggregate = [
+                ['$match' => [
+                    '_id' => ['$in' => $gym_integrated_vendors],
+                    'status' => '1'
+                ]],
+                ['$group' => [
+                    '_id' => '$city_id',
+                    'count' => ['$sum' => 1]
+                ]],
+                ['$lookup' => [
+                    'from' => 'cities',
+                    'localField' => '_id',
+                    'foreignField' => '_id',
+                    'as' => 'city'
+                ]],
+                ['$project' => [
+                    '_id' => 1,
+                    'city_name' => ['$arrayElemAt' => ['$city.name',0]],
+                    'count' => 1
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+        $citywiseStudioFinders = Finder::raw(function($collection) use ($studio_integrated_vendors){    
+            $aggregate = [
+                ['$match' => [
+                    '_id' => ['$in' => $studio_integrated_vendors],
+                    'status' => '1'
+                ]],
+                ['$group' => [
+                    '_id' => '$city_id',
+                    'count' => ['$sum' => 1]
+                ]],
+                ['$lookup' => [
+                    'from' => 'cities',
+                    'localField' => '_id',
+                    'foreignField' => '_id',
+                    'as' => 'city'
+                ]],
+                ['$project' => [
+                    '_id' => 1,
+                    'city_name' => ['$arrayElemAt' => ['$city.name',0]],
+                    'count' => 1
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+        $servicesBookableGym = Service::raw(function($collection) use ($gym_integrated_vendors, $studio_integrated_vendors){    
+            $aggregate = [
+                ['$match' => [
+                    'status' => '1',
+                    // 'showOnFront' => ['$nin' => [[], ['kiosk']]],
+                    '$or' => [['membership'=>['$ne'=>'disable']], ['trial'=>['$ne'=>'disable']]],                    
+                    '$or'=>[['finder_id'=>['$in' => $gym_integrated_vendors]], ['finder_id'=>['$in'=>$studio_integrated_vendors]]],
+                    'servicecategory_id' => 65
+                ]],
+                ['$group' => [
+                    '_id' => '$city_id',
+                    'count' => ['$sum' => 1]
+                ]],
+                ['$lookup' => [
+                    'from' => 'cities',
+                    'localField' => '_id',
+                    'foreignField' => '_id',
+                    'as' => 'city'
+                ]],
+                ['$project' => [
+                    '_id' => 1,
+                    'city_name' => ['$arrayElemAt' => ['$city.name',0]],
+                    'count' => 1
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+        $servicesBookableStudio = Service::raw(function($collection) use ($gym_integrated_vendors, $studio_integrated_vendors){    
+            $aggregate = [
+                ['$match' => [
+                    'status' => '1',
+                    // 'showOnFront' => ['$nin' => [[], ['kiosk']]],
+                    '$or' => [['membership'=>['$ne'=>'disable']], ['trial'=>['$ne'=>'disable']]],
+                    '$or'=>[['finder_id'=>['$in' => $gym_integrated_vendors]], ['finder_id'=>['$in'=>$studio_integrated_vendors]]],
+                    'servicecategory_id' => ['$ne' => 65]
+                ]],
+                ['$group' => [
+                    '_id' => '$city_id',
+                    'count' => ['$sum' => 1]
+                ]],
+                ['$lookup' => [
+                    'from' => 'cities',
+                    'localField' => '_id',
+                    'foreignField' => '_id',
+                    'as' => 'city'
+                ]],
+                ['$project' => [
+                    '_id' => 1,
+                    'city_name' => ['$arrayElemAt' => ['$city.name',0]],
+                    'count' => 1
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+        return [
+            'citywiseGymFinders' => $citywiseGymFinders,
+            'citywiseStudioFinders' => $citywiseStudioFinders,
+            'servicesBookableGym' => $servicesBookableGym,
+            'servicesBookableStudio' => $servicesBookableStudio
+            // 'integrated_vendors_list' => $integrated_vendors_list
+        ];
+    }
+
+
     public function commission(){
 
          $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');

@@ -1323,3 +1323,4 @@ Route::get('addvoucherimages','DebugController@addvoucherimages');
 Route::post('getumarkedmfpattendance','TransactionController@getUmarkedMfpAttendance');
 Route::post('markmfpattendance','TransactionController@markMfpAttendance');
 
+Route::get('fitpassComparison', 'DebugController@fitpassComparison');
