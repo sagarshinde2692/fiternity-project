@@ -4382,8 +4382,27 @@ Class Utilities {
     public function checkPPSReferral($code, $customer_id){
 
         $customer = Customer::active()->where('pps_referral_code', strtoupper($code))->first();
+        
+        
 
         if($customer){
+            
+            if($customer['_id'] != $customer_id){
+                
+                $order_id = Input::get('order_id');        
+                
+                if(!empty($order_id)){
+                
+                    Order::$withoutAppends = true;
+                
+                    $order = Order::find(intval($order_id), ['_id']);
+                
+                    if(!empty($order['customer_id'])){
+                        $customer_id = $order['customer_id'];
+                    }
+                
+                }   
+            }
 
             // if(!empty($customer['pps_referral_credits']) && $customer['pps_referral_credits'] >= 5){
             //     return ['status'=>400, 'message'=>'The referral limit has been exceeded', 'customer'=>$customer];
