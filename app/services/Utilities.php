@@ -4395,7 +4395,7 @@ Class Utilities {
                 
                     \Order::$withoutAppends = true;
                 
-                    $order = \Order::find(intval($order_id), ['_id']);
+                    $order = \Order::find(intval($order_id), ['customer_id']);
                 
                     if(!empty($order['customer_id'])){
                         $customer_id = $order['customer_id'];
