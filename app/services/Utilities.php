@@ -4385,9 +4385,9 @@ Class Utilities {
 
         if($customer){
 
-            if(!empty($customer['pps_referral_credits']) && $customer['pps_referral_credits'] >= 5){
-                return ['status'=>400, 'message'=>'The referral limit has been exceeded', 'customer'=>$customer];
-            }
+            // if(!empty($customer['pps_referral_credits']) && $customer['pps_referral_credits'] >= 5){
+            //     return ['status'=>400, 'message'=>'The referral limit has been exceeded', 'customer'=>$customer];
+            // }
 
 
             if($customer['_id'] == $customer_id){
