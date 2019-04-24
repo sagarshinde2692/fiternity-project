@@ -8935,18 +8935,18 @@ class TransactionController extends \BaseController {
         Log::info($campaign_reg);
 
         if($campaign_reg){
-            if($data['amount_customer'] >= 500){
+            if($data['amount'] >= 500){
                 $claim = true;
             }else{
-                $orders_amount = Order::active()->where('customer_id', $data['customer_id'])->where('success_date', '>=', new MongoDate(strtotime($campaign_reg['created_at'])))->sum('amount_customer');
+                $orders_amount = Order::active()->where('customer_id', $data['customer_id'])->where('success_date', '>=', new MongoDate(strtotime($campaign_reg['created_at'])))->sum('amount');
                 if($type == 'order'){
                     $orders_amount = $orders_amount->where('_id', '!=', $data['_id']);
                 }else{
                     $orders_amount = $orders_amount->where('booktrial_id', '!=', $data['_id']);
                 }
-                $orders_amount = $orders_amount->sum('amount_customer');
+                $orders_amount = $orders_amount->sum('amount');
                 
-                if($orders_amount + $data['amount_customer'] >= 500){
+                if($orders_amount + $data['amount'] >= 500){
                     $claim = true;
                 }
             }
