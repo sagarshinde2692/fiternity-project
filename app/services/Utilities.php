@@ -3662,6 +3662,10 @@ Class Utilities {
             if(!empty($data['post_trial_status_updated_by_qrcode'])){
                 $fit_code = false;
             }
+            
+            if(!empty($data['going_status']) && $data['going_status']==2){
+                $fit_code = false;
+            }
 
             // if(!isset($data['post_trial_status_updated_by_fitcode']) && !isset($data['post_trial_status_updated_by_lostfitcode'])){
 
