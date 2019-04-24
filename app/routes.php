@@ -1354,3 +1354,4 @@ Route::post('customer/loyaltyAppropriation', 'CustomerController@loyaltyAppropri
 Route::get('home/getLoyaltyAppropriationConsentMsg/{customer_id}/{order_id}','HomeController@getLoyaltyAppropriationConsentMsg');
 Route::get('testSpinResult/{number}','EmailSmsApiController@testSpinResult');
 Route::post('spinthewheelreg','EmailSmsApiController@spinTheWheelReg');
+Route::get('fitpassComparison', 'DebugController@fitpassComparison');
