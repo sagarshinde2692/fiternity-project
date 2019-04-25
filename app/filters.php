@@ -42,7 +42,7 @@ App::after(function($request, $response)
 */
 
 Route::filter('auth', function()
-{
+{   Log::info('checking auth');
     if (Auth::guest())
     {
         if (Request::ajax())
@@ -190,7 +190,7 @@ Route::filter('validatevendor',function(){
 });
 
 Route::filter('device',function(){
-
+    Log::info('came to filter');
     $header_array = [
         "Device-Type"=>"",
         "Device-Model"=>"",
@@ -201,7 +201,6 @@ Route::filter('device',function(){
     ];
 
     $flag = false;
-
     foreach ($header_array as $header_key => $header_value) {
 
         $value = Request::header($header_key);

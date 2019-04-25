@@ -3878,20 +3878,20 @@ class CustomerController extends \BaseController {
 		// }
 		
 		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
-			
+			Log::info('inside campain finding:::::::::::::::::');
 			$city_id = City::where('slug', $city)->first(['_id']);
 			
 			// return $city_id;
 			$campaigns = [];
 			/***************************Banners start********************** */
 			// commented below on 26 Jan - start
-
+			Log::info('after city query campain finding:::::::::::::::::', [$city_id]);
 			if($city){
 
 				$homepage = Homepage::where('city_id', $city_id['_id'])->first();
 
 				$campaigns = [];
-
+				Log::info('after after homepage campain finding:::::::::::::::::', [$homepage]);
                if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
 
                    $app_banners = $homepage['app_banners'];
