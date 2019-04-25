@@ -7858,15 +7858,23 @@ class CustomerController extends \BaseController {
                 $twoHours=new DateTime(date('Y-m-d H:i:s',strtotime("-2 hours")));
                 $booktrial = Booktrial::where('customer_id',$customer_id)
 				->whereIn('type',['booktrials','3daystrial', 'workout-session'])
-				->where('finder_id',intval($data['vendor_id']))
 				->whereIn('post_trial_status_updated_by_fitcode',[null, ''])
 				->whereIn('post_trial_status_updated_by_qrcode',[null, ''])
 				->whereIn('post_trial_status_updated_by_lostfitcode',[null, ''])
 				->whereIn('post_trial_status',[null, ''])
 				->where('schedule_date_time', '<=',$cur)
 				->where('schedule_date_time', '>=',$twoHours)
-				->orderBy('schedule_date_time','desc')
-				->get();
+				->orderBy('schedule_date_time','desc');
+                
+                if(in_array($data['vendor_id'], Config::get('app.sucheta_pal_finder_ids', []))){
+                    $booktrial->where(function($query) use ($data){
+                        $query->orWhere('finder_id',intval($data['vendor_id']))->orWhereIn('service_id', Config::get('app.sucheta_pal_service_ids', []));
+                    });
+                }else{
+                    $booktrial->where('finder_id',intval($data['vendor_id']));
+                }
+
+				$booktrial = $booktrial->get();
 				
 				if(!empty($booktrial)&&count($booktrial)>0)
 				{
