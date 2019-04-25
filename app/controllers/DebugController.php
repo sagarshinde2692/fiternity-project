@@ -10404,6 +10404,100 @@ public function yes($msg){
 
     }
 
+    public function fitcashCouponMigration(){
+
+        ini_set('max_execution_time', 300);
+        $i = 1;
+        
+        // try{
+            $wallet_ids = Order::raw(function($query){
+                $aggregate = [
+                    [
+                        '$project'=>[
+                            'wallet_transaction_debit'=>1
+                        ]
+                    ],
+                    [
+                        '$match'=>['wallet_transaction_debit.wallet_transaction.wallet_id'=>['$exists'=>true]]
+                    ],
+                    // [
+                    //     '$limit'=>10
+                    // ],
+                    [
+                        '$unwind'=>'$wallet_transaction_debit'
+                    ],
+                    [
+                        '$unwind'=>'$wallet_transaction_debit.wallet_transaction'
+                    ],
+                    [
+                        '$group'=>['_id'=>null, 'wallet_ids'=>['$addToSet'=>'$wallet_transaction_debit.wallet_transaction.wallet_id']]
+                    ]
+                ];
+
+                return $query->aggregate($aggregate);
+
+            });
+
+            Log::info("DOne wallet_ids");
+            $wallet_ids = $wallet_ids['result'][0]['wallet_ids'];
+            // return $wallet_ids;
+            // ->lists("wallet_transaction_debit.wallet_transaction.wallet_id");
+            $codes = Wallet::raw(function($query) use ($wallet_ids){
+    
+                $aggregate = [
+    
+                    [
+                        '$match'=>[
+                            'coupon'=>[ '$nin' => ['', null]],
+                            '_id'=>['$in'=>  $wallet_ids]
+                        ]
+                    ],
+    
+                    [
+                        '$group'=>[
+                            '_id'=>'$coupon',
+                            'wallet_ids'=>[
+                                '$push'=>'$_id'
+                            ]
+                        ]
+                            ],
+                            // [
+                            //     '$limit'=>10
+                            // ]
+                ];
+                return $query->aggregate($aggregate);
+            });
+            Log::info('Code Got');
+            $codes = $codes['result'];
+            $updates = [];
+            foreach($codes as $code){
+                
+                array_push($updates, [
+                    "q"=>['wallet_transaction_debit.wallet_transaction.wallet_id'=> ['$in'=>$code['wallet_ids']]],
+                    "u"=>[
+                        '$addToSet'=>[
+                            'fitcash_coupons'=>$code['_id']
+                        ]
+                    ],
+                    'multi' => true
+                ]);
+                // return $updates;
+                if(count($updates) == 1){
+                    $update = $this->batchUpdate('mongodb', 'orders', $updates);
+                    $updates =[];
+                }
+            }
+            // return $updates;
+            Log::info("Updating");
+            return "Done";
+        // }catch(Exception $e){
+        //     Log::info("iteration", [++$i]);
+        //     $this->fitcashCouponMigration();
+        
+        // }
+
+    }
+
 
 }
 

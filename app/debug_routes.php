@@ -2736,3 +2736,4 @@ Route::get('salesRangeFinders','DebugController@salesRangeFinders');
 Route::get('salesRangeFindersGyms','DebugController@salesRangeFindersGyms');
 Route::get('salesRangeFindersStudio','DebugController@salesRangeFindersStudio');
 Route::get('salesFinderDetails','DebugController@salesFinderDetails');
+Route::get('fitcashCouponMigration','DebugController@fitcashCouponMigration');
