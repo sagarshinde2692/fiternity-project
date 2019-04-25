@@ -2145,6 +2145,10 @@ Class Utilities {
                             $walletTransactionDebitEntry['upgraded_order_id'] = $value['order_id'];
                         }
                         
+                        if(!empty($value['coupon'])){
+                            $walletTransactionDebitEntry['coupon'] = $value['coupon'];
+                        }
+                        
                         $walletTransactionDebit[] =  $walletTransactionDebitEntry;
 
 
