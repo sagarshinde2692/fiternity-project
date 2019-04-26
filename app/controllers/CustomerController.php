@@ -8391,15 +8391,13 @@ class CustomerController extends \BaseController {
         if($post){
 			$postloyalty = $this->postLoyaltyRegistration($customer, $voucher_categories_map);
 			if($fitsquad_upgrade)
-				$postloyalty['fitsquad_upgrade'] = $fitsquad_upgrade;
+				$postloyalty['post_register']['fitsquad_upgrade'] = $fitsquad_upgrade;
 			return $postloyalty;
 
 		}else{
 
-            $preLoyalty = $this->preLoyaltyRegistration($voucher_categories_map);
-			if($fitsquad_upgrade)
-				$preLoyalty['fitsquad_upgrade'] = $fitsquad_upgrade;
-			return $preLoyalty;
+        	return $this->preLoyaltyRegistration($voucher_categories_map);
+			
 			
 		}
 	}
@@ -9564,10 +9562,9 @@ class CustomerController extends \BaseController {
 				"header"=> "Fitsquad Upgrade Available",
 				"title"=> "Fitsquad Upgrade",
 				"logo"=> "https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png",
-				"text_home" => "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>You are 12 check-ins away from the next Milestone.<b>",
+				"text_home" => "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>You are 12 check-ins away from the next Milestone.<b><br/><br/> FitSquad Upgrade Available",
 				"text"=> "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>It looks like you recently purchased <b>".$newGrid['finder_name']."</b> membership. Upgrading to Gold Gym Kandiwali West's Fitsquad will let you unlock new rewards. However, you will lose your current check-in streak.<br/><br/><b>New check-in validity</b>=>".$newGrid['new_end_date']."<br/><br/>New rewards",
 				"background_image"=> "https://b.fitn.in/loyalty/banner.jpg",
-				"upgrade_image" => "",
 				"ratio"=> 0.36,
 				"upgrade_button"=> array(
 					"title"=> "Upgrade Ftsquad",
