@@ -8277,21 +8277,25 @@ Class Utilities {
                 }
                 else {
                     $brandIdTypeChk = empty($order['brand_id'])||in_array($finder['brand_id'], Config::get('app.brand_finder_without_loyalty'));
-                    //Log::info('at brand checking++++++++>>>>>>>>============ at finder', [$brandIdTypeChk, $finder['brand_id'], $retObj]);
+                    Log::info('at brand checking++++++++>>>>>>>>============ at finder', [$brandIdTypeChk, $finder['brand_id'], $retObj]);
                     $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2)));
-                    $isSameGrid = ((empty($finder['flags']['reward_type']) || $finder['flags']['reward_type']==2) && (empty($customer['loyalty']['reward_type']) || $customer['loyalty']['reward_type']==2));
+                    //$isSameGrid = ((empty($finder['flags']['reward_type']) || $finder['flags']['reward_type']==2) && (empty($customer['loyalty']['reward_type']) || $customer['loyalty']['reward_type']==2));
+                    $isSameGrid = (((empty($finder['flags']['reward_type']) || $finder['flags']['reward_type']==2) && empty($finder['brand_id'])) && (empty($customer['loyalty']['reward_type']) || $customer['loyalty']['reward_type']==2));
+
                 }
                 if(!$isDowngrade && empty($customer['loyalty']['brand_loyalty']) && isset($finder['flags']['reward_type'])){
                     Log::info('at checking basic grid:::>>>>>>>>>>>',[$rewTypeChk, $cbkTypeChk]);
                      $retObj['reward_type'] = $finder['flags']['reward_type'];  
                 }
-                if(!empty($customer['loyalty']) && empty($customer['loyalty']['brand_loyalty']) && $brandIdTypeChk){
-                    Log::info('at setting downgrade false',[$rewTypeChk, $cbkTypeChk]);
-                    $isDowngrade = false;
-                    $isSameGrid = false;
-                }
+                // if(!empty($customer['loyalty']) && empty($customer['loyalty']['brand_loyalty']) && $brandIdTypeChk){
+                //     Log::info('at setting downgrade false',[$rewTypeChk, $cbkTypeChk]);
+                //     $isDowngrade = false;
+                //     $isSameGrid = false;
+                // }
+                Log::info('displaying values of rewad type and chashback type and brandIdTypeChk',[$rewTypeChk , $cbkTypeChk , $brandIdTypeChk, $isSameGrid]);
                 if(($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade || $isSameGrid){
                     // same grid - no need to upgrade
+                    Log::info('inside no need to upgrade:::::::::::');
                     $retObj = null;
                 }
             }

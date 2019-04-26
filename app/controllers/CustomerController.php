@@ -3452,7 +3452,7 @@ class CustomerController extends \BaseController {
 			try {
 
 				$decoded = $this->customerTokenDecode($jwt_token);
-				//Log::info('token values',[$decoded]);
+				Log::info('token values',[$decoded]);
 
                 // if(empty($decoded->customer)){
                 //     return ['isSessionExpired'=>true];
@@ -8358,7 +8358,7 @@ class CustomerController extends \BaseController {
         $filter = [];
         
         $customer = $this->utilities->getCustomerFromTokenAsObject();
-
+		
         if(!empty($customer->_id)){
 
             $customer = Customer::active()->where('_id', $customer->_id)->where('loyalty', 'exists', true)->first();
@@ -8379,15 +8379,27 @@ class CustomerController extends \BaseController {
                 $voucher_categories_map[$vc['_id']][0]['max_amount'] = $vc['amount'];
             }
         }
-		
+		//check onece for it should availabe with postloyaltyregistration and preloyalty registration or with both ->>>>>>>>>> now sendoing with both
+		$fitsquad_upgrade= null;
+		//if((isset($_REQUEST['device_type']) || isset($_REQUEST['Device_Type'])) && (in_array($_REQUEST['device_type'],['ios','android']) || in_array($_REQUEST['Device_type'],['ios','android'])) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
+			Log::info('inside calling fitsquadupgrade',[$customer['id']]);
+			$fitsquadUpgradeOrder = $this->fitSquadUpgradeAvailability($customer['id']);
+			if($fitsquadUpgradeOrder){
+				$fitsquad_upgrade = $fitsquadUpgradeOrder;
+			}
+		//}
         if($post){
-
-            return $this->postLoyaltyRegistration($customer, $voucher_categories_map);
+			$postloyalty = $this->postLoyaltyRegistration($customer, $voucher_categories_map);
+			if($fitsquad_upgrade)
+				$postloyalty['fitsquad_upgrade'] = $fitsquad_upgrade;
+			return $postloyalty;
 
 		}else{
 
-            return $this->preLoyaltyRegistration($voucher_categories_map);
-			
+            $preLoyalty = $this->preLoyaltyRegistration($voucher_categories_map);
+			if($fitsquad_upgrade)
+				$preLoyalty['fitsquad_upgrade'] = $fitsquad_upgrade;
+			return $preLoyalty;
 			
 		}
 	}
@@ -9554,9 +9566,8 @@ class CustomerController extends \BaseController {
 				"logo"=> "https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png",
 				"text_home" => "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>You are 12 check-ins away from the next Milestone.<b>",
 				"text"=> "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>It looks like you recently purchased <b>".$newGrid['finder_name']."</b> membership. Upgrading to Gold Gym Kandiwali West's Fitsquad will let you unlock new rewards. However, you will lose your current check-in streak.<br/><br/><b>New check-in validity</b>=>".$newGrid['new_end_date']."<br/><br/>New rewards",
-				"image"=> "https://b.fitn.in/loyalty/banner.jpg",
-				"background_image" => "",
-				"side_logo_image" =>"",
+				"background_image"=> "https://b.fitn.in/loyalty/banner.jpg",
+				"upgrade_image" => "",
 				"ratio"=> 0.36,
 				"upgrade_button"=> array(
 					"title"=> "Upgrade Ftsquad",
