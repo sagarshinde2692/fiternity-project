@@ -9544,7 +9544,7 @@ class CustomerController extends \BaseController {
 		Log::info('checking new grid',[$newGrid]);
 		$fitSquadUpgrade=null;
 		if($newGrid){
-			$baseURl = Config::get('app.stage_base_url');
+			$baseURl = Config::get('app.url');
 			$upgradeApi = Config::get('app.fitsquad_upgrade_api');
 			$cancelApi = Config::get('app.fitsquad_cancel_api');
 			Log::info('url and apis::::::::::::::',[$baseURl, $upgradeApi, $cancelApi]);
