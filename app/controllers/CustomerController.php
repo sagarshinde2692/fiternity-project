@@ -9600,7 +9600,10 @@ class CustomerController extends \BaseController {
 			}
 		}
 		$customerUpdate = Customer::find($input['customer_id']);
-		$customerUpdate->loyalty->loyalty_upgraded= false;
+		$loyalty = $customerUpdate['loyalty'];
+		$loyalty['loyalty_upgraded']=false;
+		//$customerUpdate['loyalty']['loyalty_upgraded']= false;
+		$customerUpdate->loyalty = $loyalty;
 		$customerUpdate->update();
 		return array("status"=>200, "message"=>"Success");
 		//'loyalty.loyalty_upgraded'=false
