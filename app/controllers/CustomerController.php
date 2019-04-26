@@ -3452,6 +3452,7 @@ class CustomerController extends \BaseController {
 			try {
 
 				$decoded = $this->customerTokenDecode($jwt_token);
+				//Log::info('token values',[$decoded]);
 
                 // if(empty($decoded->customer)){
                 //     return ['isSessionExpired'=>true];
@@ -3891,7 +3892,7 @@ class CustomerController extends \BaseController {
 				$homepage = Homepage::where('city_id', $city_id['_id'])->first();
 
 				$campaigns = [];
-				Log::info('after after homepage campain finding:::::::::::::::::', [$homepage]);
+				//Log::info('after after homepage campain finding:::::::::::::::::', [$homepage]);
                if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
 
                    $app_banners = $homepage['app_banners'];
@@ -3922,7 +3923,6 @@ class CustomerController extends \BaseController {
             // commented above on 26 Jan - end
             
             /***************************Banners end********************** */
-
 			$result['campaigns'] =  $campaigns;
 			// $result['campaigns'] =  [];
 
@@ -4075,7 +4075,12 @@ class CustomerController extends \BaseController {
 	            ]
 	        ];
             $geoLocationFinder = geoLocationFinder($near_by_vendor_request, 'customerhome');
-	        $result['near_by_vendor'] = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
+			$result['near_by_vendor'] = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
+			//checking for fitsquad upgrade
+			$fitsquadUpgradeOrder = $this->fitSquadUpgradeAvailability($customer_id);
+			if($fitsquadUpgradeOrder){
+				$result['fitsquad_upgrade'] = $fitsquadUpgradeOrder;
+			}
 		}
         
 		$result['categoryheader'] = "Discover | Try | Buy";
@@ -9460,6 +9465,22 @@ class CustomerController extends \BaseController {
 		$data = Input::all();
 		Log::info('loyaltyAppropriation data: ', [$data]);
 		$resp = ['status' => 500, 'messsage' => 'Something went wrong'];
+		if(empty($data['customer_id'])){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+				//Log::info('_device_filter_jwt_token : '.$jwt_token);
+
+				$decoded = customerTokenDecode($jwt_token);
+				$data['customer_id'] = (int)$decoded->customer->_id;
+				//$data['type'] = 'memberships';
+			}
+			else{
+				$resp['status']=400;
+				$resp['message'] = "Invalid Request";
+				return $resp;
+			}
+		}
 		$order = null;
 		try{
 			if((empty($data) || empty($data['order_id'])) && !empty($data['type']) && $data['type']=='profile'){
@@ -9483,6 +9504,7 @@ class CustomerController extends \BaseController {
 
 						Log::info('ready to prepareLoyaltyData.....');
 						$newLoyalty = $this->prepareLoyaltyData($order);
+						$newLoyalty['loyalty_upgraded'] = true;
 						if(!empty($newLoyalty)){
 							$archiveData = ['loyalty' => $oldLoyalty];
 							
@@ -9517,4 +9539,59 @@ class CustomerController extends \BaseController {
 		return Response::json($resp, $resp['status']);
 	}
 
+	public function fitSquadUpgradeAvailability($customer_id){
+		$newGrid = $this->utilities->getLoyaltyAppropriationConsentMsg($customer_id, null,false);
+		Log::info('checking new grid',[$newGrid]);
+		$fitSquadUpgrade=null;
+		if($newGrid){
+			$baseURl = Config::get('app.stage_base_url');
+			$upgradeApi = Config::get('app.fitsquad_upgrade_api');
+			$cancelApi = Config::get('app.fitsquad_cancel_api');
+			Log::info('url and apis::::::::::::::',[$baseURl, $upgradeApi, $cancelApi]);
+			$fitSquadUpgrade = array(
+				"header"=> "Fitsquad Upgrade Available",
+				"title"=> "Fitsquad Upgrade",
+				"logo"=> "https//b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png",
+				"text_home" => "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>You are 12 check-ins away from the next Milestone.<b>",
+				"text"=> "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>It looks like you recently purchased <b>".$newGrid['finder_name']."</b> membership. Upgrading to Gold Gym Kandiwali West's Fitsquad will let you unlock new rewards. However, you will lose your current check-in streak.<br/><br/><b>New check-in validity</b>=>".$newGrid['new_end_date']."<br/><br/>New rewards",
+				"image"=> "https//b.fitn.in/loyalty/banner.jpg",
+				"background_image" => "",
+				"side_logo_image" =>"",
+				"ratio"=> 0.36,
+				"upgrade_button"=> array(
+					"title"=> "Upgrade Ftsquad",
+					"url"=> $baseURl.$upgradeApi.'?type=profile'
+				),
+				"continue_button"=> array(
+					"title" => "No Thanks",
+					"url"=> $baseURl.$cancelApi
+				)
+				);
+		}
+		return $fitSquadUpgrade;
+	}
+
+	public function fitSquadUpgradeRemainLoyalty(){
+		$input = Input::All();
+		if(empty($input['customer_id'])){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+				Log::info('_device_filter_jwt_token : '.$jwt_token);
+
+				$decoded = customerTokenDecode($jwt_token);
+				$input['customer_id'] = (int)$decoded->customer->_id;
+			}
+			else{
+				$resp['status']=400;
+				$resp['message'] = "Invalid Request";
+				return $resp;
+			}
+		}
+		$customerUpdate = Customer::find($input['customer_id']);
+		$customerUpdate->loyalty->loyalty_upgraded= false;
+		$customerUpdate->update();
+		return array("status"=>200, "message"=>"Success");
+		//'loyalty.loyalty_upgraded'=false
+	}
 }

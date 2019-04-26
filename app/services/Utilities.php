@@ -8079,11 +8079,29 @@ Class Utilities {
         Log::info('----- Entered getLoyaltyAppropriationConsentMsg -----');
         $device_type = Request::header('Device-Type');
         $cashbackMap = ['A','B','C','D','E','F'];
-        $order = Order::active()->where('_id', intval($order_id))->first();
+        $retObj = null;
+        if(empty($order_id) && empty($customer_id)){
+            return $retObj;
+        }
+        else if(empty($order_id) && isset($customer_id)){
+            Log::info('----- finding order for customer -----');
+            $order = Order::active()->where('customer_id', $customer_id)->where('type', 'memberships')
+            ->where('end_date', '>' ,new MongoDate(time()))->orderBy('_id', 'desc')->first();
+            if(empty($order)){
+                return $retObj;
+            }
+        }
+        else{
+            $order = Order::active()->where('_id', intval($order_id))->first();
+        }
         $customer = Customer::active()
                             ->where('email', $order['customer_email'])
                             ->first();
-        $retObj = null;
+        if(isset($customer['loyalty']) && isset($customer['loyalty']['loyalty_upgraded']) && in_array($customer['loyalty']['loyalty_upgraded'],[false, true])){
+            Log::info("you already udated or caclled you fitsquad Grid true means you have updated or false means you are continue with old Grid=>>>>>>>>>>>>>>>>>>>>>>>>>>>",[$customer['loyalty']['loyalty_upgraded'] ]);
+            return $retObj;
+        }
+        //Log::info('----- retrived orders -----',[$order]);
         if(!empty($customer) && (!isset($order['loyalty_registration']) || !$order['loyalty_registration'])){
             // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
             $existingLoyalty = null;
@@ -8091,6 +8109,7 @@ Class Utilities {
             $newMessage = null;
             if(!empty($customer['loyalty'])){
                 $retObj = [];
+                $retObj['customer_name'] = $customer['name'];
                 if(!empty($customer['loyalty']['brand_loyalty']) && !in_array($order['finder_id'], \Config::get('app.brand_finder_without_loyalty'))){
                     $finderMilestone = FinderMilestone::where('duration', $customer['loyalty']['brand_loyalty_duration'])
                                             ->where('brand_id', $customer['loyalty']['brand_loyalty'])
@@ -8245,11 +8264,12 @@ Class Utilities {
                 }
                 $finder = Finder::active()->where('_id', $order['finder_id'])->first();
                 $isDowngrade = false;
+                $isSameGrid = false;
                 if(!empty($customer['loyalty']['brand_loyalty'])){
-                    $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$order['brand_id'];
+                    $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];//$order['brand_id'];
                     if($brandIdTypeChk){
                         $brand_loyalty_data = $this->buildBrandLoyaltyInfoFromOrder($finder, $order);
-                        $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$brand_loyalty_data['brand_id']
+                        $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$finder['brand_id']/*$brand_loyalty_data['brand_id']*/
                         && $customer['loyalty']['brand_loyalty_duration']==$brand_loyalty_data['brand_loyalty_duration']
                         && $customer['loyalty']['brand_loyalty_city']==$brand_loyalty_data['brand_loyalty_city']
                         && $customer['loyalty']['brand_version']==$brand_loyalty_data['brand_version'];
@@ -8257,10 +8277,20 @@ Class Utilities {
                 }
                 else {
                     $brandIdTypeChk = empty($order['brand_id'])||in_array($finder['brand_id'], Config::get('app.brand_finder_without_loyalty'));
-
+                    //Log::info('at brand checking++++++++>>>>>>>>============ at finder', [$brandIdTypeChk, $finder['brand_id'], $retObj]);
                     $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2)));
+                    $isSameGrid = ((empty($finder['flags']['reward_type']) || $finder['flags']['reward_type']==2) && (empty($customer['loyalty']['reward_type']) || $customer['loyalty']['reward_type']==2));
                 }
-                if(($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
+                if(!$isDowngrade && empty($customer['loyalty']['brand_loyalty']) && isset($finder['flags']['reward_type'])){
+                    Log::info('at checking basic grid:::>>>>>>>>>>>',[$rewTypeChk, $cbkTypeChk]);
+                     $retObj['reward_type'] = $finder['flags']['reward_type'];  
+                }
+                if(!empty($customer['loyalty']) && empty($customer['loyalty']['brand_loyalty']) && $brandIdTypeChk){
+                    Log::info('at setting downgrade false',[$rewTypeChk, $cbkTypeChk]);
+                    $isDowngrade = false;
+                    $isSameGrid = false;
+                }
+                if(($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade || $isSameGrid){
                     // same grid - no need to upgrade
                     $retObj = null;
                 }
