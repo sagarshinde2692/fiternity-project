@@ -38,8 +38,8 @@ return array(
 	'mobikwik_sandbox'=>true,
 	'paytm_sandbox'=>true,
 	'paypal_sandbox'=>true,
-	'fitsquad_upgrade_api'=> 'customer/loyaltyAppropriation',
-	'fitsquad_cancel_api'=>'customer/remaincurrentloyalty',
+	'fitsquad_upgrade_api'=> '/customer/loyaltyAppropriation',
+	'fitsquad_cancel_api'=>'/customer/remaincurrentloyalty',
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -76,8 +76,8 @@ return array(
 	// 'mobikwik_sandbox'=>false,
 	// 'paytm_sandbox'=>false,
     // 'paypal_sandbox'=>false,
-	// 'fitsquad_upgrade_api'=> 'customer/loyaltyAppropriation',
-	// 'fitsquad_cancel_api'=>'customer/remaincurrentloyalty',
+	// 'fitsquad_upgrade_api'=> '/customer/loyaltyAppropriation',
+	// 'fitsquad_cancel_api'=>'/customer/remaincurrentloyalty',
 
 
     "core_key"=> "FITITRNTY",
