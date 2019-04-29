@@ -9558,14 +9558,16 @@ class CustomerController extends \BaseController {
 			$upgradeApi = Config::get('app.fitsquad_upgrade_api');
 			$cancelApi = Config::get('app.fitsquad_cancel_api');
 			Log::info('url and apis::::::::::::::',[$baseURl, $upgradeApi, $cancelApi]);
+			$fitsquad_image = $this->openrewardlist('1', $newGrid['brand_id'], $newGrid['city']);
 			$fitSquadUpgrade = array(
 				"header"=> "Fitsquad Upgrade Available",
 				"title"=> "Fitsquad Upgrade",
 				"logo"=> "https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png",
-				"text_home" => "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>You are 12 check-ins away from the next Milestone.<b><br/><br/> Fitsquad Upgrade Available",
+				"text_home" => "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>You are ".$newGrid['checkins_left_next_milestone']." check-ins away from the next Milestone.<b><br/><br/> Fitsquad Upgrade Available",
 				"text"=> "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>It looks like you recently purchased <b>".$newGrid['finder_name']."</b> membership. Upgrading to Gold Gym Kandiwali West's Fitsquad will let you unlock new rewards. However, you will lose your current check-in streak.<br/><br/><b>New check-in validity</b> ".date('d-M-Y', strtotime($newGrid['new_end_date']))."<br/><br/>New rewards",
 				"background_image"=> "https://b.fitn.in/loyalty/banner.jpg",
 				"ratio"=> 0.36,
+				"fitsquad_image"=>$fitsquad_image,
 				"upgrade_button"=> array(
 					"text"=> "Upgrade Ftsquad",
 					"url"=> $baseURl.$upgradeApi.'?type=profile'
@@ -9604,5 +9606,61 @@ class CustomerController extends \BaseController {
 		$customerUpdate->update();
 		return array("status"=>200, "message"=>"Success");
 		//'loyalty.loyalty_upgraded'=false
+	}
+
+	public function openrewardlist($value, $id, $curcity){
+		$rewardDuration = $value;
+		//$('.gold-fit-rewards').find('.mui-row').addClass('hide');
+		$reward_image = '';
+		if ($id == '88') {
+			//$('.gold-fit-rewards .multifit').removeClass('hide');
+			$reward_image = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+		}else if ($id == '166') {
+			//$('.gold-fit-rewards .shivfit').removeClass('hide');
+			$reward_image = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
+		} else if ($id == '56') {
+			//$('.gold-fit-rewards .hanman').removeClass('hide');
+			$reward_image = 'https://b.fitn.in/hanman/download2.jpeg';
+		} else {
+			if ($rewardDuration == '0') {
+				//$('.gold-fit-rewards .allvendors').removeClass('hide');
+				$reward_image = 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final%20%281%29%20%281%29.jpg';
+			} else if ($curcity == "mumbai" || $curcity == "pune") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixmum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvemum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else if ($curcity == "delhi" || $curcity == "noida" || $curcity == "gurgaon") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixdel').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvedel').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else if ($curcity == "bangalore") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixbang').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvebang').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixmum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvemum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			}
+		}
+		return $reward_image;
+		// openPopUp('gold-fit-rewards');
+		//customOpenPopup('gold-fit-rewards');
 	}
 }

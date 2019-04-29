@@ -8262,7 +8262,10 @@ Class Utilities {
                 else {
                     $cbkTypeChk = empty($retObj['cashback_type']);
                 }
-                $finder = Finder::active()->where('_id', $order['finder_id'])->first();
+                $finder = Finder::active()->where('_id', $order['finder_id'])->with(array('city'=>function($query){$query->select('_id','name');}))->first();
+                $retObj['finder_id'] = $order['finder_id'];
+                $retObj['brand_id'] = $finder['brand_id'];
+                $retObj['city'] = $finder['city']['name'];
                 $isDowngrade = false;
                 $isSameGrid = false;
                 if(!empty($customer['loyalty']['brand_loyalty'])){
