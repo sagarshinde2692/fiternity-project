@@ -9568,6 +9568,7 @@ class CustomerController extends \BaseController {
 				"background_image"=> "https://b.fitn.in/loyalty/banner.jpg",
 				"ratio"=> 0.36,
 				"reward_image"=>$fitsquad_image,
+				"reward_ratio"=>1.05,
 				"upgrade_button"=> array(
 					"text"=> "Upgrade Ftsquad",
 					"url"=> $baseURl.$upgradeApi.'?type=profile'
