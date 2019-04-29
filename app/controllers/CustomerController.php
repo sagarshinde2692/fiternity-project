@@ -9567,7 +9567,7 @@ class CustomerController extends \BaseController {
 				"text"=> "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>It looks like you recently purchased <b>".$newGrid['finder_name']."</b> membership. Upgrading to Gold Gym Kandiwali West's Fitsquad will let you unlock new rewards. However, you will lose your current check-in streak.<br/><br/><b>New check-in validity</b> ".date('d-M-Y', strtotime($newGrid['new_end_date']))."<br/><br/>New rewards",
 				"background_image"=> "https://b.fitn.in/loyalty/banner.jpg",
 				"ratio"=> 0.36,
-				"fitsquad_image"=>$fitsquad_image,
+				"reward_image"=>$fitsquad_image,
 				"upgrade_button"=> array(
 					"text"=> "Upgrade Ftsquad",
 					"url"=> $baseURl.$upgradeApi.'?type=profile'
