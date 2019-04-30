@@ -2179,18 +2179,30 @@ Class CustomerReward {
                         if(!empty($condition['key']) && !empty($condition['operator']) && !empty($condition['values'])){
                             // print_r($condition['key']);
                             $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
-                            // exit();
-                            
                             if($condition['operator'] == 'in'){
                                 if(empty($embedded_value)){
                                     $and_condition = false;
                                     break;
                                 }
-                                if(!in_array($embedded_value, $condition['values'])){
-                                    $and_condition = false;
-                                    break;
-
+                                if(!empty($condition['values'][0]['valid_till'])){
+                        
+                                    $values = array_column($condition['values'], 'value');
+                                    $dates = array_column($condition['values'], 'valid_till');
+                                    
+                                    if(!in_array($embedded_value, $values) || time() > $dates[array_search($embedded_value, $values)]->sec){
+                                        $and_condition = false;
+                                        break;
+                                    }
+                                    
+                                }else{
+                                    
+                                    if(!in_array($embedded_value, $condition['values'])){
+                                        $and_condition = false;
+                                        break;
+                                    }
+                                
                                 }
+                            
                             }else if($condition['operator'] == 'nin'){
                                 if(!empty($embedded_value) && in_array($embedded_value, $condition['values'])){
                                     $and_condition = false;
@@ -2363,7 +2375,7 @@ Class CustomerReward {
                 Log::info("changing price");
                 Log::info($price);
             }
-            $discount_amount = $coupon["discount_amount"];
+            $discount_amount = $coupon["discount_amount"] <= $price ? $coupon["discount_amount"] : $price;
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;

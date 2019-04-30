@@ -1486,7 +1486,7 @@ class EmailSmsApiController extends \BaseController {
             $coupon = Fitcashcoupon::where('spin_coupon', $data['spin_array'][$data['index']]['spin_coupon'])->first();
             $coupon_array = $coupon->toArray();
             
-            array_push($coupon_array['customer_phones'], $data['customer_phone']);
+            array_push($coupon_array['customer_phones'], ['value'=>$data['customer_phone'], 'valid_till'=>new MongoDate(strtotime('+2 days'))]);
             $coupon->update($coupon_array);
             return $coupon;
             
@@ -1497,7 +1497,7 @@ class EmailSmsApiController extends \BaseController {
             
             foreach($coupon_array['and_conditions'] as &$value){
                 if($value['key'] == 'logged_in_customer.contact_no'){
-                    array_push($value['values'], $data['customer_phone']);
+                    array_push($value['values'], ['value'=>$data['customer_phone'], 'valid_till'=>new MongoDate(strtotime('+2 days'))]);
                 }
             }
     
