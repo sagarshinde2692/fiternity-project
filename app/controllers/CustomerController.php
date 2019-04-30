@@ -9512,9 +9512,10 @@ class CustomerController extends \BaseController {
 
 						$oldLoyalty = $cust['loyalty'];
 
-						Log::info('ready to prepareLoyaltyData.....');
+						
 						$newLoyalty = $this->prepareLoyaltyData($order);
 						$newLoyalty['loyalty_upgraded'] = true;
+						Log::info('ready to prepareLoyaltyData.....',[$newLoyalty]);
 						if(!empty($newLoyalty)){
 							$archiveData = ['loyalty' => $oldLoyalty];
 							
