@@ -3878,7 +3878,7 @@ class CustomerController extends \BaseController {
 		// }
 		
 		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
-			
+                
 			$city_id = City::where('slug', $city)->first(['_id']);
 			
 			// return $city_id;
@@ -3905,6 +3905,10 @@ class CustomerController extends \BaseController {
 
                        if($_GET['device_type'] == 'android' && !empty($banner['link_android'])){
                            $banner['link'] = $banner['link_android'];
+                       }
+
+                       if($_REQUEST['device_type'] == 'ios' && !empty($banner['only_android'])){
+                           continue;
                        }
 
                        array_push($campaigns, $banner);
@@ -4698,13 +4702,29 @@ class CustomerController extends \BaseController {
 		
 			if (is_array($fitcashcode->customer_phones)) {
 				
-				if(empty($customer_phone) || !in_array(strtolower($customer_phone), $fitcashcode->customer_phones)){
-					$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
-					return Response::json($resp,404);
-				}
+				
+                if(!empty($fitcashcode->customer_phones[0]['valid_till'])){
+                        
+                    $values = array_column($fitcashcode->customer_phones, 'value');
+                    $dates = array_column($fitcashcode->customer_phones, 'valid_till');
+                    
+                    if(empty($customer_phone) || !in_array($customer_phone, $values) || time() > $dates[array_search($customer_phone, $values)]->sec){
+                        $resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
+                        return Response::json($resp,404);
+                    }
+                    
+                }else{
+                    
+                    if(empty($customer_phone) || !in_array($customer_phone, $fitcashcode->customer_phones)){
+                        $resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
+                        return Response::json($resp,404);
+                    }
+
+                }
 			}
 
-			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
+			// $customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
+			$customer_update 	=	1;
 			$cashback_amount = 0;
 
 			if($customer_update){
@@ -4769,11 +4789,20 @@ class CustomerController extends \BaseController {
 					$walletData["type"] = "FITCASHPLUS";
 					$walletData["amount_fitcash"] = 0;
 					$walletData["amount_fitcash_plus"] = $cashback_amount;
-					$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
-					if(isset($fitcashcode["valid_till"])){
-						$walletData["validity"] = $fitcashcode["valid_till"];
+                    $walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
+                    
+
+                    if(isset($fitcashcode["valid_till_secs"])){
+                        
+                        $walletData["validity"] = strtotime('midnight', time() + $fitcashcode["valid_till_secs"]);
 						$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount.". Expires On : ".date('d-m-Y', strtotime('-1 day',$walletData["validity"]));
-					}
+
+                    }else if(isset($fitcashcode["valid_till"])){
+                        
+                        $walletData["validity"] = $fitcashcode["valid_till"];
+						$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount.". Expires On : ".date('d-m-Y', strtotime('-1 day',$walletData["validity"]));
+                    
+                    }
 				}
 
 				if((!empty($fitcashcode['valid_finder_id']))){

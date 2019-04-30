@@ -10498,6 +10498,51 @@ public function yes($msg){
 
     }
 
+    public function couponsValidMigration(){
+        $coupons = Coupon::where("spin_coupon", 'exists', true)->where('and_conditions.key', 'logged_in_customer.contact_no')->where('and_conditions.values.valid_till', 'exists', false)->get();
+
+        if($coupons){
+
+            foreach($coupons as $coupon){
+                $couponArray = $coupon->toArray();
+                $and_condition1 = $couponArray['and_conditions'];
+                
+                foreach($and_condition1 as &$condition){
+                    if($condition['key'] == 'logged_in_customer.contact_no'){
+                        
+                        foreach($condition['values'] as $key => $value){
+                            $condition['values'][$key] = ['value'=>$value, 'valid_till'=>new MongoDate(strtotime('+2 days'))];
+                        }
+    
+                    }
+                }
+                
+                $couponArray['and_conditions1'] = $and_condition1;
+                $coupon->update($couponArray);
+    
+            }
+        }
+        // return "done";
+        $coupons = Fitcashcoupon::where("spin_coupon", 'exists', true)->where('customer_phones', 'exists', true)->get();
+        
+        foreach($coupons as $coupon){
+            $couponArray = $coupon->toArray();
+            $customer_phones1 = $couponArray['customer_phones'];
+            
+            foreach($customer_phones1 as $key => $value){
+                    
+                $customer_phones1[$key] = ['value'=>$value, 'valid_till'=>new MongoDate(strtotime('+2 days'))];
+
+            }
+            
+            $couponArray['customer_phones1'] = $customer_phones1;
+            $coupon->update($couponArray);
+
+        }
+
+        return "Done";
+    }
+
 
 }
 
