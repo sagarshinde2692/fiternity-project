@@ -21,7 +21,17 @@ class WalletTransaction extends  \Basemodel {
 	public function setIdAttribute($value){
 		
 		$this->attributes['_id'] = $value;
-	}
+    }
+    
+    public function newQuery($excludeDeleted = true){
+        
+        $query = parent::newQuery($excludeDeleted);
+
+        $query->where('status', '!=', '0');
+
+        return $query;
+    
+    }
 
 
 
