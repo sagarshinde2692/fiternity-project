@@ -221,7 +221,7 @@ class Service extends \Basemodel{
                 
                 $days = getDurationDay($value);
                 if(!empty($finder['flags']['april5']) && in_array($days, Config::get('app.discount_vendors_duration', [180, 360]))){
-                    $value['coupon_text'] = 'Addnl 5% off - Use code APRIL5';
+                    $value['coupon_text'] = 'Addnl 5% off - Use code MAY5';
                 }
 
 				// if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
