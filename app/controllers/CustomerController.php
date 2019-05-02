@@ -4724,7 +4724,7 @@ class CustomerController extends \BaseController {
 			}
 
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
-			$customer_update 	=	1;
+			// $customer_update 	=	1;
 			$cashback_amount = 0;
 
 			if($customer_update){
