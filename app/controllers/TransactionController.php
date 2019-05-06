@@ -6739,6 +6739,7 @@ class TransactionController extends \BaseController {
     public function checkoutSummary(){
 
         $data = Input::json()->all();
+        $headerSource = Request::header('Source');
 
         Log::info("checkoutSummary");
 
@@ -7083,6 +7084,10 @@ class TransactionController extends \BaseController {
 
             if(!empty($first_session_free) && $data['amount_payable'] == 0){
                 $result['payment_details']['amount_payable']['value'] = "Free via Fitternity";
+            }
+
+            if(!empty($headerSource) && $headerSource=='multifit') {
+                $result['payment_details']['amount_payable']['value'] = "Free";
             }
 
             if($data['amount_payable'] == 0){
