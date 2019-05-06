@@ -7086,7 +7086,7 @@ class TransactionController extends \BaseController {
                 $result['payment_details']['amount_payable']['value'] = "Free via Fitternity";
             }
 
-            if(!empty($headerSource) && $headerSource=='multifit') {
+            if(!empty($headerSource) && $headerSource=='multifit' && !empty($first_session_free) && $data['amount_payable'] == 0) {
                 $result['payment_details']['amount_payable']['value'] = "Free";
             }
 
