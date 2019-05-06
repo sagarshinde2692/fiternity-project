@@ -239,7 +239,7 @@ class Service extends \Basemodel{
 					$studioExtValidity = (!empty($this->batches) && count($this->batches)>0) && (($value['validity']==30 && $value['validity_type']=='days') || ($value['validity']==1 && in_array($value['validity_type'],['months', 'month'])) || ($value['validity']==3 && $value['validity_type']=='months')) && (!empty($value['duration_type']) && $value['duration_type']=='session' && $value['duration']>0);
 
 
-					if(!empty($studioExtValidity) && $studioExtValidity){
+					if(!empty($studioExtValidity) && $studioExtValidity && ($value['type']!='extended validity')){
 						$numOfDays = (in_array($value['validity_type'], ['month', 'months']))?$value['validity']*30:$value['validity'];
 						
 						$numOfDays = (in_array($value['validity_type'], ['year', 'years']))?$value['validity']*360:$numOfDays;
