@@ -783,7 +783,7 @@ class ServiceController extends \BaseController {
                 'free_trial_available'=>!empty($item['freeTrialRatecards'])
 			);
 
-			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
 
 				$service['cost'] = 'Free';
 			}
