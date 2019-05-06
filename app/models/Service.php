@@ -236,7 +236,7 @@ class Service extends \Basemodel{
 									// Log::info($serviceoffers);
                 if(!empty($value['_id']) && isset($value['_id'])){
 					
-					$studioExtValidity = (!empty($this->batches) && count($this->batches)>0) && (($value['validity']==30 && $value['validity_type']=='days') || ($value['validity']==1 && in_array($value['validity_type'],['months', 'month'])) || ($value['validity']==3 && $value['validity_type']=='months') && (!empty($value['sessions']) && $value['sessions']>0));
+					$studioExtValidity = (!empty($this->batches) && count($this->batches)>0) && (($value['validity']==30 && $value['validity_type']=='days') || ($value['validity']==1 && in_array($value['validity_type'],['months', 'month'])) || ($value['validity']==3 && $value['validity_type']=='months')) && (!empty($value['duration_type']) && $value['duration_type']=='session' && $value['duration']>0);
 
 
 					if(!empty($studioExtValidity) && $studioExtValidity){
