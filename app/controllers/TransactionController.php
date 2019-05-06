@@ -7087,7 +7087,7 @@ class TransactionController extends \BaseController {
             }
 
             if(!empty($headerSource) && $headerSource=='multifit' && !empty($first_session_free) && $data['amount_payable'] == 0) {
-                $result['payment_details']['amount_payable']['value'] = "Free";
+                $result['payment_details']['amount_payable']['value'] = "Free via Multifit";
             }
 
             if($data['amount_payable'] == 0){
