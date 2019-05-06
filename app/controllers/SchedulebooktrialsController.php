@@ -6663,7 +6663,6 @@ class SchedulebooktrialsController extends \BaseController {
     public function transactionSummary(){
 
         $item = Input::json()->all();
-        $headerSource = Request::header('Source');
 
         $rules = [
             'ratecard_id' => 'required',
@@ -6759,7 +6758,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
-        if(($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)) || (!empty($headerSource) && $headerSource=='multifit')){
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
             
             $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free','position'=>$position++,'image'=>'https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/amount.png'];
 
@@ -6808,7 +6807,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booking_details_data['price']['value']= "Free Via Fitternity";
 
-            if(($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)) || (!empty($headerSource) && $headerSource=='multifit')){
+            if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
 
                 $booking_details_data['price']['value'] = "Free";
             }
