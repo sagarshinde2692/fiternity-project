@@ -8995,10 +8995,10 @@ class TransactionController extends \BaseController {
             $client = new GuzzleClient( ['debug' => false, 'base_uri' => "https://hooks.zapier.com/"] );
 
             if($data['type'] == 'trial'){
-                $url = 'hooks/catch/4935729/jij0s8';
+                $url = 'hooks/catch/961068/jrdw9y';
                 $post_data['type'] = "trial";
             }else{
-                $url = 'hooks/catch/4935729/jij0s8';
+                $url = 'hooks/catch/961068/jr55ko';
                 $post_data['type'] = "order";
             }
             $payload = [
