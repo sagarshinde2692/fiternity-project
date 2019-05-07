@@ -21,6 +21,7 @@ use App\AmazonPaynon\PWAINBackendSDK as PWAINBackendSDKNon;
 use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
 use App\Services\Paytm as PaytmService;
+use \GuzzleHttp\Client as GuzzleClient;
 //use App\Controllers\PaymentGatewayController as GatewayController;
 //use App\config\paytm as paytmConfig;
 class TransactionController extends \BaseController {
@@ -8963,7 +8964,51 @@ class TransactionController extends \BaseController {
             $campaign_reg->save();
         }
 
+        $this->fitnessForce(['data'=>$data, 'type'=>$type]);
+
+
+    }
+
+    public function fitnessForce($data=null){
         
+        $post_data = array_only($data['data'], 
+        
+            [
+                "order_id",
+                "customer_name",
+                "customer_phone",
+                "customer_email",
+                "customer_gender",
+                "order_id",
+                "service_name",
+                "service_category_id",
+                "service_category",
+                "schedule_date_time",
+                "schedule_slot",
+                "amount",
+                "service_duration",
+                "start_date",
+                "finder_name",
+                "finder_city",
+                "finder_location",
+            ]);
+            $client = new GuzzleClient( ['debug' => false, 'base_uri' => "https://hooks.zapier.com/"] );
+
+            if($data['type'] == 'trial'){
+                $url = 'hooks/catch/4935729/jij0s8';
+                $post_data['type'] = "trial";
+            }else{
+                $url = 'hooks/catch/4935729/jij0s8';
+                $post_data['type'] = "order";
+            }
+            $payload = [
+                'headers'=>[
+                    'Content-Type' => 'application/json',
+                ],
+                'json'=>$post_data
+            ];
+
+            return $response = $client->post($url,$payload)->getBody()->getContents();
     }
 
 }

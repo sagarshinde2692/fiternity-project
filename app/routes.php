@@ -17,7 +17,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 
 
-// require __DIR__.'/debug_routes.php';
+require __DIR__.'/debug_routes.php';
 require __DIR__.'/analytics_routes.php';
 require __DIR__.'/testing_routes.php';
 
@@ -1355,3 +1355,4 @@ Route::get('home/getLoyaltyAppropriationConsentMsg/{customer_id}/{order_id}','Ho
 Route::get('testSpinResult/{number}','EmailSmsApiController@testSpinResult');
 Route::post('spinthewheelreg','EmailSmsApiController@spinTheWheelReg');
 Route::get('fitpassComparison', 'DebugController@fitpassComparison');
+Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
