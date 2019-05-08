@@ -6312,7 +6312,7 @@ Class Utilities {
         $new_voucher->terms = $voucher_category['terms'];
         $new_voucher->amount = $voucher_category['amount'];
         $new_voucher->claim_date = new \MongoDate();
-        // $new_voucher->selected_voucher = $voucher_category;
+        $new_voucher->selected_voucher = $voucher_category['_id'];
 
         if(isset($voucher_category['flags'])){
             $new_voucher->flags = $voucher_category['flags'];
@@ -8394,7 +8394,7 @@ Class Utilities {
     }
 
     public function addFitcashforVoucherCatageory($data){
-        $validity = strtotime(date('d-m-Y')+(86400* 90));
+        $validity = strtotime('+90 days');
         $request = array(
             "customer_id"=> $data['id'],
             "amount"=> $data['voucher_catageory']['fitcash'],
