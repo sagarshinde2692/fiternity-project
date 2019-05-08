@@ -1268,7 +1268,7 @@ Route::post('inviteforevent','EventsController@inviteForEvent');
 
 // Music Run
 // Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
-Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
+// Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
 
 
 Route::get('checkexistinguser/mobikwik/{cell}','PaymentGatewayController@checkExistingUserMobikwik');
