@@ -1144,7 +1144,7 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($ratecardDetail) && !empty($finderDetail)){
-            $studioExtValidity = in_array($ratecardDetail['duration_day'], [30, 90]); 
+            $studioExtValidity = in_array($data['duration_day'], [30, 90]); 
 
             $numOfDays = (in_array($ratecardDetail['data']['validity_type'], ['month', 'months']))?$ratecardDetail['data']['validity']*30:$ratecardDetail['data']['validity'];
             
