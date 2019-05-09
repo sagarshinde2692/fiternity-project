@@ -1143,7 +1143,7 @@ class TransactionController extends \BaseController {
             $data['pps_new'] = true;
         }
 
-        if(!empty($ratecardDetail) && !empty($finderDetail)){
+        if(!empty($ratecardDetail) && !empty($finderDetail) && !empty($data['duration_day'])){
             $studioExtValidity = in_array($data['duration_day'], [30, 90]); 
 
             $numOfDays = (in_array($ratecardDetail['data']['validity_type'], ['month', 'months']))?$ratecardDetail['data']['validity']*30:$ratecardDetail['data']['validity'];
