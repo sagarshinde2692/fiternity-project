@@ -1469,7 +1469,8 @@ class EmailSmsApiController extends \BaseController {
 
         $data = [];
         for($i=1;$i<=$number;$i++){
-            $r = $this->getRandomWeightedElement(array_column($spin_array, 'value'));
+            $r1 = $this->getRandomWeightedElement(array_column($spin_array, 'value'));
+            $r = array_column($spin_array, 'label')[$r1];
             if(empty($data[$r])){
                 $data[$r] = 1;
             }else{
