@@ -5497,6 +5497,7 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($order['studio_sessions'])){
                 $avail = $order['studio_sessions']['total_cancel_allowed'] - $order['studio_sessions']['cancelled'];
                 $avail = ($avail<0)?0:$avail;
+                $booktrial['what_i_should_carry'] = !empty($booktrial['what_i_should_carry']) ? $booktrial['what_i_should_carry'] : "";
                 $booktrial['what_i_should_carry'] = $booktrial['what_i_should_carry']."<br><br><b>Can't make it? Cancel your session 60 minutes prior from your user profile to avail the extension.</b><br/><b>You have ".$avail.'/'.$order['studio_sessions']['total_cancel_allowed']." cancellations available up to ".date('d-m-Y', $order['studio_membership_duration']['end_date_extended']->sec).".</b><br/><b>Post cancelation, refer your Email for further details.</b>";
                 if($avail<=0) {
                     $cancel_enable = false;
