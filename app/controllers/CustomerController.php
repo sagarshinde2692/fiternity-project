@@ -671,6 +671,7 @@ class CustomerController extends \BaseController {
 					$customerNoEmail->old_customer = true;
 					$customerNoEmail->email = $data['email'];
 					$customerNoEmail->identity = $data['identity'];
+					$customerNoEmail->demonetisation = time();
 					$customerNoEmail->update();
 					$customer_data = array('name'=>ucwords($customerNoEmail['name']),'email'=>$customerNoEmail['email']);
 					if(isset($data['password'])){
