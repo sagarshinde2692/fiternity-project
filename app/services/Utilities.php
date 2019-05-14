@@ -8157,11 +8157,17 @@ Class Utilities {
                 if(!empty($finderMilestone['milestones'])){
                     $finderMilestone = $finderMilestone['milestones'];
                     $milestone = array_filter($finderMilestone, function($mile) use ($existingLoyalty){
-                        return $existingLoyalty['checkins']>=$mile['count'] && $existingLoyalty['checkins']<$mile['next_count'];
+                        return $existingLoyalty['checkins']>=$mile['count'] && (empty($mile['next_count']) || $existingLoyalty['checkins']<$mile['next_count']);
                     });
                     $milestone = (!empty($milestone))?array_values($milestone)[0]:$milestone;
-                    $retObj['next_milestone'] = ($milestone['milestone']<5)?($milestone['milestone'] + 1):0;
-                    $retObj['checkins_left_next_milestone'] = $milestone['next_count'] - $existingLoyalty['checkins'];
+                    if(!empty($milestone['next_count'])){
+                        $retObj['next_milestone'] = ($milestone['milestone']<5)?($milestone['milestone'] + 1):0;
+                        $retObj['checkins_left_next_milestone'] = $milestone['next_count'] - $existingLoyalty['checkins'];
+                    }
+                    else {
+                        $retObj['next_milestone'] = 0;
+                        $retObj['checkins_left_next_milestone'] = 0;
+                    }
                 }
 
                 if(!empty($customer['loyalty']['end_date'])){
