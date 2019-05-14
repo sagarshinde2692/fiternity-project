@@ -4077,9 +4077,11 @@ class CustomerController extends \BaseController {
             $geoLocationFinder = geoLocationFinder($near_by_vendor_request, 'customerhome');
 			$result['near_by_vendor'] = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
 			//checking for fitsquad upgrade
-			$fitsquadUpgradeOrder = $this->fitSquadUpgradeAvailability($customer_id);
-			if($fitsquadUpgradeOrder){
-				$result['fitsquad_upgrade'] = $fitsquadUpgradeOrder;
+			if(isset($customer_id)){
+				$fitsquadUpgradeOrder = $this->fitSquadUpgradeAvailability($customer_id);
+				if($fitsquadUpgradeOrder){
+					$result['fitsquad_upgrade'] = $fitsquadUpgradeOrder;
+				}
 			}
 		}
         
