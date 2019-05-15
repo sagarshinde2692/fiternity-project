@@ -1336,7 +1336,8 @@ Class CustomerSms extends VersionNextSms{
 				$to = ['9920150108','7506262489','9619240452']; //9619240452
 			}
 		}
-		if(NotEmpty($data['multifit'])){
+
+		if(!empty($data['multifit'])){
 			$sender = 'MULTIF';
 		}
 		$message = $this->bladeCompile($template->sms_text,$data);

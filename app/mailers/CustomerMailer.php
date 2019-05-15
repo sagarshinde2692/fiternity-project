@@ -938,7 +938,11 @@ Class CustomerMailer extends Mailer {
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
 			return "";
 		}
-		
+
+		if(!empty($data['multifit'])){
+			$message_data['fromemail'] = 'info@multifit.co.in';
+		}
+
 		$template = \Template::where('label',$label)->first();
 
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
