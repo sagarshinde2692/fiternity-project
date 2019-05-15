@@ -1337,6 +1337,7 @@ Route::get('customer/getsessionpacks/{offset?}/{limit?}','CustomerController@get
 Route::post('addServiceMultipleSessionPack','DebugController@addServiceMultipleSessionPack');
 
 Route::get('orderOldSuccessDateToNew', 'DebugController@orderOldSuccessDateToNew');
+Route::get('addTypeOfPpsVendor', 'DebugController@addTypeOfPpsVendor');
 
 Route::post('generatefreesp', 'TransactionController@generateFreeSP');
 Route::get('paidAndFreeFItcash', 'DebugController@paidAndFreeFItcash');
