@@ -2,7 +2,6 @@
 
 use Config, Log;
 use App\Services\Utilities as Utilities;
-use Zend\Validator\NotEmpty;
 
 Class CustomerSms extends VersionNextSms{
 
