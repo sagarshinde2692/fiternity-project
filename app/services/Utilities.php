@@ -1986,6 +1986,9 @@ Class Utilities {
 
                 $wallet->for_details = $request['details'];
             }
+            if(!empty($request['upgradable_only_to_membership'])){
+                $wallet->upgradable_only_to_membership = $request['upgradable_only_to_membership'];
+            }
             
             $wallet->save();
 
@@ -7692,7 +7695,7 @@ Class Utilities {
             return;
         }
 
-        if(!empty($order['duration_day']) && !empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], Config::get('upgrade_membership.service_cat', [65, 111])) && in_array($order['duration_day'], Config::get('upgrade_membership.duration', [30])) && empty($order['extended_validity'])){
+        if(!empty($order['duration_day']) && !empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], Config::get('upgrade_membership.service_cat', [65, 111])) && in_array($order['duration_day'], Config::get('upgrade_membership.duration', [30, 90])) && empty($order['extended_validity'])){
 
             $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
 
@@ -7704,23 +7707,24 @@ Class Utilities {
                 "amount_fitcash" => 0,
                 "amount_fitcash_plus" => $fitcash_amount,
                 "type"=>'FITCASHPLUS',
-                'description'=>"Added FitCash+ for upgrading 1 month ".ucwords($order['service_name'])." to 1 Year only at ".$order['finder_name'].", Expires On : ".date('d-m-Y',time()+(86400*$no_of_days)),
+                'description'=>"Added FitCash+ for upgrading 1 month ".ucwords($order['service_name'])." to 6 months or 1 year membership only at ".$order['finder_name'].", Expires On : ".date('d-m-Y',time()+(86400*$no_of_days)),
                 'entry'=>'credit',
                 'valid_finder_id'=>$order['finder_id'],
                 'service_id'=>$order['service_id'],
                 'remove_wallet_limit'=>true,
                 'validity'=>strtotime($order['start_date'])+(86400*$no_of_days),
-                'duration_day'=>360,
+                'duration_day'=>Config::get('upgrade_membership.upgradabe_to_membership_duration', [180, 360]),
                 'restricted_for'=>'upgrade',
                 'restricted'=>1,
                 'order_id'=>$order['_id'],
+                'upgradable_only_to_membership'=>true
             );
             
             $this->walletTransactionNew($request);
             
             $order->upgrade_fitcash = true;
 
-        }elseif(!empty($order['extended_validity']) && in_array($order['finder_id'], Config::get('app.upgrade_session_finder_id', []))){
+        }elseif(!empty($order['extended_validity']) && in_array($order['finder_id'], Config::get('app.upgrade_session_finder_id', [])) && !empty($order['no_of_sessions'])){
             $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
 
             $no_of_days = Config::get('upgrade_membership.fitcash_days');
@@ -7740,7 +7744,8 @@ Class Utilities {
                 'restricted'=>1,
                 'order_id'=>$order['_id'],
                 'order_type'=>['membership', 'memberships'],
-                'duration_day'=>Config::get('upgrade_membership.upgrade_session_duration', [90, 180, 360]),
+                'duration_day'=>Config::get('upgrade_membership.upgrade_session_duration', [180, 360]),
+                'upgradable_only_to_membership'=>$order['no_of_sessions'] > Config::get('upgrade_membership.session_pack_to_membership_upgradable_sessions_limit', 20),
             );
             
             $this->walletTransactionNew($request);

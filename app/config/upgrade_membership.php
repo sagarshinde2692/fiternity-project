@@ -43,8 +43,10 @@ return array(
     ],
     'fitcash_days'=>20,
     'service_cat'=>[65, 111, 5],
-    'duration'=>[30],
-    'upgrade_session_duration'=>[90, 180, 360]
+    'duration'=>[30, 90],
+    'upgrade_session_duration'=>[180, 360],
+    'upgradabe_to_membership_duration'=>[180, 360],
+    'session_pack_to_membership_upgradable_sessions_limit'=>20
     
 );
 ?>
