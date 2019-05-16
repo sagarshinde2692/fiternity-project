@@ -1986,8 +1986,11 @@ Class Utilities {
 
                 $wallet->for_details = $request['details'];
             }
-            if(!empty($request['upgradable_only_to_membership'])){
-                $wallet->upgradable_only_to_membership = $request['upgradable_only_to_membership'];
+            if(isset($request['upgradable_to_membership'])){
+                $wallet->upgradable_to_membership = $request['upgradable_to_membership'];
+            }
+            if(isset($request['upgradable_to_session_pack'])){
+                $wallet->upgradable_to_session_pack = $request['upgradable_to_session_pack'];
             }
             
             $wallet->save();
@@ -2666,7 +2669,9 @@ Class Utilities {
         }else{
 
             if(!empty($request['extended_validity'])){
-                $query->where('restricted_for', '!=', 'upgrade');
+                $query->where('upgradable_to_session_pack', '!=', 'false');
+            }else{
+                $query->where('upgradable_to_membership', '!=', 'false');
             }
 
             if($this->checkCouponApplied()){
@@ -7717,7 +7722,8 @@ Class Utilities {
                 'restricted_for'=>'upgrade',
                 'restricted'=>1,
                 'order_id'=>$order['_id'],
-                'upgradable_only_to_membership'=>true
+                'upgradable_to_membership'=> $this->checkUpgradeAvailable($order,'membership')
+                'upgradable_to_session_pack'=> $this->checkUpgradeAvailable($order)
             );
             
             $this->walletTransactionNew($request);
@@ -7745,7 +7751,8 @@ Class Utilities {
                 'order_id'=>$order['_id'],
                 'order_type'=>['membership', 'memberships'],
                 'duration_day'=>Config::get('upgrade_membership.upgrade_session_duration', [180, 360]),
-                'upgradable_only_to_membership'=>$order['no_of_sessions'] > Config::get('upgrade_membership.session_pack_to_membership_upgradable_sessions_limit', 20),
+                'upgradable_to_membership'=>$this->checkUpgradeAvailable($order,'membership'),
+                'upgradable_to_session_pack'=>$this->checkUpgradeAvailable($order),
             );
             
             $this->walletTransactionNew($request);
@@ -8753,6 +8760,29 @@ Class Utilities {
             return $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)->getData()), true);
                        
         }
+    }
+
+    public function checkUpgradeAvailable($order, $type=''){
+        
+        if($type == "membership"){
+            if(
+                empty($order['extended_validity']) 
+            || !(empty($order['no_of_sessions']) && $order['no_of_sessions'] < Config::get('upgrade_membership.session_pack_to_membership_upgradable_sessions_limit', 20))
+            ){
+                return true;
+            }
+        
+        }else{
+
+            if(!empty($order['extended_validity'])){
+                return true;
+            }
+
+        }
+
+        return false;
+            
+
     }
       
 }
