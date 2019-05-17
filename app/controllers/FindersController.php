@@ -1296,11 +1296,11 @@ class FindersController extends \BaseController {
 					unset($response['finder']['payment_options']);
 				}
 
-				$response['finder']  = $this->applyNonValidity($response, 'web');
+				// $response['finder']  = $this->applyNonValidity($response, 'web');
 
                 $this->applyFreeSP($response);
 
-                $this->insertWSNonValidtiy($response, 'web');
+                // $this->insertWSNonValidtiy($response, 'web');
 
                 // $response['finder'] = $this->applyTopService($response);
 
@@ -1308,11 +1308,11 @@ class FindersController extends \BaseController {
                 //     $this->insertWSRatecardTopService($response, $cheapest_price);
 				// }
 
-				$this->addNonValidityLink($response);
+				// $this->addNonValidityLink($response);
 				
-				if(!in_array($finder['_id'], Config::get('app.upgrade_session_finder_id'))){
-					$this->removeNonValidity($response, 'web');
-				}
+				// if(!in_array($finder['_id'], Config::get('app.upgrade_session_finder_id'))){
+				// 	$this->removeNonValidity($response, 'web');
+				// }
 
                 $this->removeEmptyServices($response, 'web');
 				                

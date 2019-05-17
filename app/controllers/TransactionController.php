@@ -4565,7 +4565,9 @@ class TransactionController extends \BaseController {
         if(!empty($service['flags'])){
             $data['service_flags'] = $service['flags'];
         }
-        
+        if(!empty($service['combine_service_ids'])){
+            $data['all_service_id'] = $service['combine_service_ids'];
+        }
         
         return array('status' => 200,'data' =>$data);
 
