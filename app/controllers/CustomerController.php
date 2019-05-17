@@ -8400,6 +8400,9 @@ class CustomerController extends \BaseController {
 			if($customer){
 				$post = true;
 			}
+
+			Log::info("customer_id:   ".$customer->_id);
+			Log::info("customer_email:   ".$customer->email);
         }
         
         $voucher_categories = $this->utilities->getVoucherCategoriesAggregate($filter);
@@ -8413,7 +8416,7 @@ class CustomerController extends \BaseController {
             }
         }
 		
-        if($post){
+		if($post){
 
             return $this->postLoyaltyRegistration($customer, $voucher_categories_map);
 

@@ -8742,9 +8742,13 @@ public function yes($msg){
                 $finder = Finder::find($data['finder_id'], ['flags', 'brand_id', 'city_id'])->toArray();
 
                 Log::info('Finder :: ',[$finder]);
-                Log::info('Finder brand_id :: ',[isset($finder['brand_id'])? $finder['brand_id'] : 'null' ]);
+				Log::info('Finder brand_id :: ',[isset($finder['brand_id'])? $finder['brand_id'] : 'null' ]);
+				
+				if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
+					$duration = 0;
+				}
                 
-                if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))){
+                if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
 
                     Log::info('if if');
                     // Log::info('reward :: ',[$loyalty['start_date']]);

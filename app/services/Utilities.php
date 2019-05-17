@@ -7026,10 +7026,12 @@ Class Utilities {
     }
     
     public function autoRegisterCustomerLoyalty($data){
+
+        Log::info("autoRegisterCustomerLoyalty");
         try{
             $customer = Customer::where('_id', $data['customer_id'])->first();
             //->where('loyalty', 'exists', false)
-
+            
             if(empty($customer['loyalty']) || (isset($customer['loyalty']['brand_loyalty'])) || (isset($customer['loyalty']['reward_type']))){
                 $existingLoyalty = [];
                 if(isset($customer['loyalty']['brand_loyalty'])) {
@@ -7066,13 +7068,20 @@ Class Utilities {
                 $loyalty = array_merge($loyalty, $fields_to_add);
                 $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
                 $duration = $duration > 180 ? 360 : $duration;
-                
+
+                Log::info("duration",[$duration]);
+
                 if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
                     if(empty($finder)){
                         Finder::$withoutAppends = true;
                         $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
                     }
-                    if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))){
+                    
+                    if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
+                        $duration = 0;
+                    }
+
+                    if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
                         $brand_loyalty = true;
                         $loyalty['brand_loyalty'] = $finder['brand_id'];
                         $loyalty['brand_loyalty_duration'] = $duration;
@@ -7111,6 +7120,8 @@ Class Utilities {
                 ];
 
                 $customer_update = false;
+
+                Log::info("dontUpdateLoyalty",[$dontUpdateLoyalty]);
 
                 if(!$dontUpdateLoyalty){
                     $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
@@ -8308,10 +8319,16 @@ Class Utilities {
     }
 
     public function buildBrandLoyaltyInfoFromOrder($finder, $order){
-		$data = null;
-		if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))){
-			$duration = !empty($order['duration_day']) ? $order['duration_day'] : (!empty($order['order_duration_day']) ? $order['order_duration_day'] : 0);
-			$duration = $duration > 180 ? 360 : $duration;
+        $data = null;
+        
+        $duration = !empty($order['duration_day']) ? $order['duration_day'] : (!empty($order['order_duration_day']) ? $order['order_duration_day'] : 0);
+		$duration = $duration > 180 ? 360 : $duration;
+        
+        if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
+            $duration = 0;
+        }
+
+		if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
 			$data['brand_loyalty'] = $finder['brand_id'];
 			$data['brand_loyalty_duration'] = $duration;
 			$data['brand_loyalty_city'] = $order['city_id'];
