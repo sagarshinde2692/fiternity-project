@@ -7722,7 +7722,7 @@ Class Utilities {
                 'restricted_for'=>'upgrade',
                 'restricted'=>1,
                 'order_id'=>$order['_id'],
-                'upgradable_to_membership'=> $this->checkUpgradeAvailable($order,'membership')
+                'upgradable_to_membership'=> $this->checkUpgradeAvailable($order,'membership'),
                 'upgradable_to_session_pack'=> $this->checkUpgradeAvailable($order)
             );
             
