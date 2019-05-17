@@ -4183,6 +4183,8 @@ Class Utilities {
 
         $amount_used = (!empty($order->vendor_price)) ? $order->vendor_price : $order->amount_finder;
 
+        $amount_used = (!empty($order->customer_quantity)) ? $amount_used * intval($order->customer_quantity) :  $amount_used;
+
         $order->cos_finder_amount = ceil(($amount_used * $order->cos_percentage) / 100);
 
         $order->gst_percentage = Config::get('app.gst_on_cos_percentage');
