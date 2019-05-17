@@ -1336,6 +1336,9 @@ Class CustomerSms extends VersionNextSms{
 			}
 		}
 
+		if(!empty($data['multifit'])){
+			$sender = 'MULTIF';
+		}
 		$message = $this->bladeCompile($template->sms_text,$data);
 
 		$otp = false;
