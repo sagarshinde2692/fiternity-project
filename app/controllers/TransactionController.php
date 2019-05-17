@@ -197,6 +197,10 @@ class TransactionController extends \BaseController {
         }
         Log::info('------------transactionCapture---------------',$data);
 
+        if(!empty($data['customer_quantity']) && is_string($data['customer_quantity'])){
+            $data['customer_quantity'] = intval($data['customer_quantity']);
+        }
+
         if(!empty($data['coupon_code']) && strtoupper($data['coupon_code']) == "APPLY COUPON"){
             unset($data['coupon_code']);
         }
