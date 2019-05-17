@@ -2444,7 +2444,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     Log::info("autoRegisterCustomer");
 					Log::info(print_r($data,true));
 
-                	$customer= Customer::active()->where('email', $data['customer_email'])->first();
+                	$customer= Customer::active()->where('email', 'like', $data['customer_email'])->first();
                     
                     if (!$customer) {
 
