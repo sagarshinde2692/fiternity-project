@@ -1752,7 +1752,13 @@ Class Utilities {
                     $request_amount_balance = $request_amount = $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
                 }
 
-                $order = \Order::where('status','!=','1')->find((int)$request['order_id'])->toArray();
+                $order = \Order::where('status','!=','1')->find((int)$request['order_id']);
+
+                if(!empty($order)){
+                    $order = $order->toArray();
+                }else{
+                    return;
+                }
 
                 $wallet_transaction = $order['wallet_transaction_debit']['wallet_transaction'];
                 $wallet_amount = $order['wallet_transaction_debit']['amount'];
@@ -4176,6 +4182,8 @@ Class Utilities {
         }
 
         $amount_used = (!empty($order->vendor_price)) ? $order->vendor_price : $order->amount_finder;
+
+        $amount_used = (!empty($order->customer_quantity)) ? $amount_used * intval($order->customer_quantity) :  $amount_used;
 
         $order->cos_finder_amount = ceil(($amount_used * $order->cos_percentage) / 100);
 
