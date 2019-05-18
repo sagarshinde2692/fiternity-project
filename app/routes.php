@@ -1355,3 +1355,5 @@ Route::get('home/getLoyaltyAppropriationConsentMsg/{customer_id}/{order_id}','Ho
 Route::get('testSpinResult/{number}','EmailSmsApiController@testSpinResult');
 Route::post('spinthewheelreg','EmailSmsApiController@spinTheWheelReg');
 Route::get('fitpassComparison', 'DebugController@fitpassComparison');
+Route::get('fixCustomerQuantity', 'DebugController@fixCustomerQuantity');
+Route::get('fixFinanceCustomerQuantity', 'DebugController@fixFinanceCustomerQuantity');

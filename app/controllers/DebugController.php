@@ -10543,6 +10543,133 @@ public function yes($msg){
         return "Done";
     }
 
+    public function fixCustomerQuantity(){
+
+        return $orders = Order::raw(function($query){
+
+            $aggregate = [
+                [
+                    '$match'=>[
+                        'customer_quantity'=>['$type'=>'string']
+                    ]
+                ],
+                [
+                    '$project'=>[
+                        'customer_quantity'=>1
+                    ]
+                ],
+                [
+                    '$group'=>[
+                        '_id'=>null,
+                        'count'=>['$sum'=>1],
+                        'data'=>['$push'=>'$$ROOT']
+                    ]
+                ]
+                
+            ];
+
+            return $query->aggregate($aggregate);
+        });
+        $time = time();
+        $orders = $orders['result'][0]['data'];
+        $update = [];
+        foreach($orders as $x){
+			array_push($update, [
+                "q"=>['_id'=> $x['_id']],
+                "u"=>[
+                    '$set'=>[
+                        'customer_quantity'=>intval($x['customer_quantity']),
+                        'old_customer_quantity'=>$x['customer_quantity'],
+                        'customer_quantity_by_script'=>$time
+                    ]
+                ],
+                'multi' => false
+
+            ]);
+        }
+        return $update;
+		return $this->batchUpdate('mongodb','orders',$update);
+
+    }
+
+    public function fixFinanceCustomerQuantity(){
+        
+        $orders = Order::raw(function($query){
+
+            $aggregate = [
+                [
+                    '$match'=>[
+                        'customer_quantity'=>['$type'=>'string'],
+                        'finance_status'=>['$ne'=>"settled"],
+                        'status'=>"1", 'customer_quantity'=>['$gt'=>1],
+                        'success_date'=>['$ne'=>null],
+                        'vendor_price'=>['$ne'=>null]
+                    ]
+                ],
+                [
+                    '$project'=>[
+                        'ratecard_amount'=>1, 'vendor_price'=>1, 'customer_quantity'=>1, 'amount_finder'=>1, 'original_amount_finder'=>1, 'success_date'=>['$dateToString'=>['format'=> "%Y-%m-%d", 'date'=>'$success_date']], 'type'=>1,'non_peak'=>1, 'non_peak_discount'=>1,
+                        'diff'=>[
+                            '$cmp'=>[
+                                '$amount_finder',
+                                [
+                                    '$multiply'=>[
+                                        [
+                                            '$cond'=>[
+                                                [
+                                                    '$gt'=>[
+                                                        '$non_peak_discount',
+                                                        0
+                                                    ]
+                                                ],
+                                                [
+                                                    '$add'=>[
+                                                        '$ratecard_amount', 
+                                                        '$non_peak_discount'
+                                                    ]
+                                                ], 
+                                                '$ratecard_amount'
+                                            ]
+                                        ],
+                                        '$customer_quantity'
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    '$match'=>[
+                        'diff'=>['$ne'=>0]
+                    ]
+                ],
+            ];
+
+            return $query->aggregate($aggregate);
+        });
+
+        $orders = $orders['result'];
+        $update = [];
+        $time = time();
+        foreach($orders as $x){
+			array_push($update, [
+                "q"=>['_id'=> $x['_id']],
+                "u"=>[
+                    '$set'=>[
+                        'amount_finder_before_script'=>$x['amount_finder'],
+                        'amount_finder'=>$x['customer_quantity']*(!empty($x['vendor_price']) ? $x['vendor_price'] : $x['amount_finder']),
+                        'amount_finder_updated_by_script'=>$time,
+                    ]
+                ],
+                'multi' => false
+
+            ]);
+        }
+        return $update;
+		return $this->batchUpdate('mongodb','orders',$update);
+
+    }
+
 
 }
 
