@@ -1358,7 +1358,7 @@ class FindersController extends \BaseController {
                             // if(!empty($finder['flags']['april5'])){
                                 $response['vendor_stripe_data']	=	[
                                     
-                                    'text1'=> "Beat The Heat This Summer with addnl 10% off on the lowest price | Code: SFIT - *T&C applicable",
+                                    'text1'=> "BEAT THE HEAT THIS SUMMER WITH ADDNL 10% OFF ON THE LOWEST PRICE | CODE: SFIT - *T&C APPLICABLE",
                                     'text3'=>"",
                                     'background-color'=> "",
                                     'text_color'=> '$fff',
