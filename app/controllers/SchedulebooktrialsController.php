@@ -4740,53 +4740,11 @@ class SchedulebooktrialsController extends \BaseController {
             }
         }
         if($trialbooked == true ){
-            Log::info('before redis call');
-            $queueBookTrial = array('id'=>$id);
-            if(!empty($booktrial['studio_extended_validity_order_id'])){
-                $order = Order::find($booktrial['studio_extended_validity_order_id']);
-                Log::info('order details', [$order['studio_sessions']['cancelled']+1]);
-                $m = $order['studio_sessions'];
-                $m['cancelled'] =  $order['studio_sessions']['cancelled']+1;
-                $order['studio_sessions'] =$m;
-                $order->update();
-                $scheduleDates = $this->utilities->getExtendedSessionDate($order);
-                $booktrial->update(['studio_next_extended_session'=>[
-                    'schedule_date' => $scheduleDates[0]['schedule_date'],
-                    'schedule_slot' => $scheduleDates[0]['schedule_slot']
-                ]]);
-                $queueBookTrial = array('id'=>$id, 'order_id'=>$order['_id']);
-            }
+            
+            $this->addExtendedSession($id, $isBackendReq, $booktrial, $queueBookTrial, $resp);
             $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', $queueBookTrial,Config::get('app.queue'));
             $booktrial->update(array('cancel_redis_id'=>$redisid));
-            //for studio membership as workout session
-            Log::info('before updating order');
-            Log::info('after updating order');
-            $message =  "Trial Canceled";
-            if(isset($booktrial['studio_extended_order_id'])) {
-                $message = "We have cancelled you out from this batch but we have got you covered. This gets you an exclusive chance to attend this missed session later in other batches. You can extend maximum <x> sessions within <y> days of extension.";
-            }
-            $resp 	= 	array('status' => 200, 'message' =>$message);
-            if(!empty($booktrial['third_party_details'])){
-                $cust = Customer::find($booktrial['customer_id']);
-                $thirdPartyAcronym = !empty($cust['third_party_acronym'])?$cust['third_party_acronym']:'abg';
-                Log::info('cust:::: ', [$cust]);
-                if($cust['total_sessions_used']>0){
-                    $cust['total_sessions_used'] -= 1;
-                }
-                $_temp = $cust['third_party_details'];
-                if($cust['third_party_details'][$thirdPartyAcronym]['third_party_used_sessions']>0){
-                    $_temp[$thirdPartyAcronym]['third_party_used_sessions'] -= 1;
-                    $cust['third_party_details'] = $_temp;
-                }
-                $cust->update();
-                $resp['booktrial_id'] = $booktrial['_id'];
-                if($isBackendReq) {
-                    Log::info("it is a backend request");
-                    $metropolis = new Metropolis();
-                    $metropolis->cancelThirdPartySession($cust['third_party_details'][$thirdPartyAcronym]['third_party_token_id'], $booktrial['_id'], $resp['message']);
-                }
-            }
-            
+
             return Response::json($resp,200);
 
         }else{
@@ -8300,6 +8258,67 @@ class SchedulebooktrialsController extends \BaseController {
         if(!empty($booktrial->coupon_code) && !empty($booktrial->coupon_discount_amount) && in_array(strtolower($booktrial->coupon_code), Config::get('app.corporate_coupons'))){
             Log::info("Updating corporate coupons");
             $coupon_update = Coupon::where('code', strtolower($booktrial->coupon_code))->decrement('total_used');
+        }
+    }
+
+    /**
+     * @param $id
+     * @param $isBackendReq
+     * @param $booktrial
+     * @param $queueBookTrial
+     * @param $resp
+     */
+    public function addExtendedSession($id, $isBackendReq, &$booktrial, &$queueBookTrial, &$resp)
+    {
+        Log::info('before redis call');
+
+        $queueBookTrial = array('id' => $id);
+
+        if (!empty($booktrial['studio_extended_validity_order_id'])) {
+
+            $order = Order::find($booktrial['studio_extended_validity_order_id']);
+
+            Log::info('order details', [$order['studio_sessions']['cancelled'] + 1]);
+
+            $m = $order['studio_sessions'];
+            $m['cancelled'] = $order['studio_sessions']['cancelled'] + 1;
+            $order['studio_sessions'] = $m;
+            $order->update();
+            $scheduleDates = $this->utilities->getExtendedSessionDate($order);
+            $booktrial->update(['studio_next_extended_session' => [
+                'schedule_date' => $scheduleDates[0]['schedule_date'],
+                'schedule_slot' => $scheduleDates[0]['schedule_slot']
+            ]]);
+            $queueBookTrial = array('id' => $id, 'order_id' => $order['_id']);
+        }
+
+        //for studio membership as workout session
+        Log::info('before updating order');
+        Log::info('after updating order');
+        $message = "Trial Canceled";
+        if (isset($booktrial['studio_extended_order_id'])) {
+            $message = "We have cancelled you out from this batch but we have got you covered. This gets you an exclusive chance to attend this missed session later in other batches. You can extend maximum <x> sessions within <y> days of extension.";
+        }
+        $resp = array('status' => 200, 'message' => $message);
+        if (!empty($booktrial['third_party_details'])) {
+            $cust = Customer::find($booktrial['customer_id']);
+            $thirdPartyAcronym = !empty($cust['third_party_acronym']) ? $cust['third_party_acronym'] : 'abg';
+            Log::info('cust:::: ', [$cust]);
+            if ($cust['total_sessions_used'] > 0) {
+                $cust['total_sessions_used'] -= 1;
+            }
+            $_temp = $cust['third_party_details'];
+            if ($cust['third_party_details'][$thirdPartyAcronym]['third_party_used_sessions'] > 0) {
+                $_temp[$thirdPartyAcronym]['third_party_used_sessions'] -= 1;
+                $cust['third_party_details'] = $_temp;
+            }
+            $cust->update();
+            $resp['booktrial_id'] = $booktrial['_id'];
+            if ($isBackendReq) {
+                Log::info("it is a backend request");
+                $metropolis = new Metropolis();
+                $metropolis->cancelThirdPartySession($cust['third_party_details'][$thirdPartyAcronym]['third_party_token_id'], $booktrial['_id'], $resp['message']);
+            }
         }
     }
 
