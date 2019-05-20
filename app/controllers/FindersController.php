@@ -1355,16 +1355,16 @@ class FindersController extends \BaseController {
                     //         }
                     //     }
 
-                            if(!empty($finder['flags']['april5'])){
+                            // if(!empty($finder['flags']['april5'])){
                                 $response['vendor_stripe_data']	=	[
                                     
-                                    'text1'=> "#GetSummerReady | Addnl 5% Off on Lowest Price | Use Code: MAY5",
+                                    'text1'=> "Beat The Heat This Summer with addnl 10% off on the lowest price | Code: SFIT - *T&C applicable",
                                     'text3'=>"",
                                     'background-color'=> "",
                                     'text_color'=> '$fff',
                                     'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
                                 ];
-                            }
+                            // }
 					
                     
                     // }
