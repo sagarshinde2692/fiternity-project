@@ -5092,7 +5092,7 @@ class SchedulebooktrialsController extends \BaseController {
             Log::info('after refund');
             if($booktrialdata->source_flag == 'vendor' ){
                 if(!isset($booktrial['third_party_details'])){
-		            if(empty($emaildata['multifit']) || !$emaildata['multifit']){
+		            if(empty($booktrial['multifit']) || !$booktrial['multifit']){
                         $this->customermailer->cancelBookTrial($emaildata);
                     }
                 }
@@ -5107,7 +5107,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
                 if(isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip'){
                     if(!isset($booktrial['third_party_details'])){
-                        if(empty($emaildata['multifit']) || !$emaildata['multifit']){
+                        if(empty($booktrial['multifit']) || !$booktrial['multifit']){
                             $this->customermailer->cancelBookTrial($emaildata);
                         }
                     }
