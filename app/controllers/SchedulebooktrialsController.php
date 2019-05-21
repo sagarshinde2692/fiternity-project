@@ -4740,7 +4740,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
         }
         if($trialbooked == true ){
-            
+            $queueBookTrial = array('id' => $id);
             $this->addExtendedSession($id, $isBackendReq, $booktrial, $queueBookTrial, $resp);
             $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', $queueBookTrial,Config::get('app.queue'));
             $booktrial->update(array('cancel_redis_id'=>$redisid));
@@ -5017,27 +5017,60 @@ class SchedulebooktrialsController extends \BaseController {
                 'source'                        =>      $booktrialdata->source,
                 'booktrial_link'                =>      $booktrial_link
             );
-            // return $booktrialdata;
-            // instead of fitcash adding new workout session to customer in stuio_extended_validity
-            Log::info('before refund');
-            if(!isset($booktrial['third_party_details']) || $booktrial['studio_extended_validity']==true){
-                Log::info('call refund');
-                if(isset($booktrial['studio_extended_validity_order_id'])){
-                    Log::info('at creating new session for studio membership::::::::', [$id]);
-                    $this->utilities->scheduleStudioBookings($data['order_id'],true);
+            
+            /***********instead of fitcash adding new workout session to customer in stuio_extended_validity************/
+            
+            // if(!empty($booktrial['studio_extended_validity'])){
+                
+            //     if(!empty($booktrial['studio_extended_validity_order_id'])){
+                
+            //         $this->utilities->scheduleStudioBookings($data['order_id'],true);
+            //         $emaildata['paid']=0;
+                
+            //     }
+                
+            // }
+
+            /***********instead of fitcash adding new workout session to customer in stuio_extended_validity************/
+
+
+            /***********Creating session pack for studio_extended_validity************/
+            
+            if(!empty($booktrial['studio_extended_validity'])){
+                
+                if(!empty($booktrial['studio_extended_validity_order_id'])){
+                
+					$res_obj = app(TransactionController::class)->createSessionPack(['order_id'=>$booktrial['studio_extended_validity_order_id'], 'booktrial_id'=>$booktrial['_id']]);
+                    
                     $emaildata['paid']=0;
+                
                 }
-                else{
-                    $emaildata['paid']= $this->refundSessionAmount($booktrialdata);
-                }
+                
             }
-            else {
+
+            /***********instead of fitcash adding new workout session to customer in stuio_extended_validity************/
+
+            
+            /*********** Refund  session amount*****************/
+            
+            if(empty($booktrial['third_party_details']) && empty($booktrial['studio_extended_validity'])){
+
+                $emaildata['paid']= $this->refundSessionAmount($booktrialdata);
+
+            }
+            
+            /*********** Refund  session amount*****************/
+
+            if(isset($booktrial['third_party_details']) && empty($booktrial['studio_extended_validity'])){
+                
                 $emaildata['third_party_details'] = $booktrial['third_party_details'];
+            
             }
+
 
             if(!empty($booktrial['studio_extended_validity_order_id'])){
                 $emaildata['studio_extended_validity_order_id'] = $booktrial['studio_extended_validity_order_id'];
-                $emaildata['studio_next_extended_session'] = $booktrial['studio_next_extended_session'];
+                // $emaildata['studio_next_extended_session'] = $booktrial['studio_next_extended_session'];
                 $order = Order::where('_id', $booktrial['studio_extended_validity_order_id'])->first(['_id', 'studio_extended_validity', 'studio_sessions', 'studio_membership_duration']);
                 $emaildata['studio_extended_validity'] = $order['studio_extended_validity'];
                 $emaildata['studio_sessions'] = $order['studio_sessions'];

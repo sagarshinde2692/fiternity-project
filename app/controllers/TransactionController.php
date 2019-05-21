@@ -8973,5 +8973,53 @@ class TransactionController extends \BaseController {
         
     }
 
+    public function createSessionPack($data){
+        
+        $rules = array(
+            'order_id'=>'required|integer',
+            'booktrial_id'=>'required|integer'
+        );
+
+        $validator = Validator::make($data, $rules);
+        
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+        
+        Order::$withoutAppends = true;
+        $order = Order::where('_id', $data['order_id']);
+        
+        $capture_data = array_only($order->toArray(), ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","finder_address","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","ratecard_id","customer_identity","customer_source","customer_location","customer_quantity","init_source","multifit","wallet"]);
+
+        $capture_data['studio_extended_cancelled']['booktrial_id'] = $data['booktrial_id'];
+        $capture_data['studio_extended_cancelled']['order_id'] = $data['order_id'];
+
+        $capture_response = $this->capture($capture_data);
+
+        if(getArrayValue($capture_response, 'status') != 200){
+            return ['status'=>400, 'message'=>'Please contact customer support (110001)'];
+        }
+        
+        $success_data['order_id'] = $capture_response['order_id'];
+
+        $success_response = $this->successCommon($success_data);
+
+        return $success_response;
+
+    }
+
+    public function getSuccessData($order){
+        
+        $success_data = ['order_id'=> $order['_id'], 'status' => 'success'];
+        
+        $data_keys = ['customer_name','customer_email','customer_phone','finder_id','service_name','amount','type'];
+
+        foreach($data_keys as $key){
+            $success_data[$key] = $order[$key];
+        }
+
+        $this->successCommon($success_data);
+    }
+
 }
 

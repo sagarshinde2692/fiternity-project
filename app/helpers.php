@@ -4376,4 +4376,12 @@ if (!function_exists('getSpinArray')) {
     }
 
 }
+if (!function_exists('getArrayValue')) {
+
+    function getArrayValue($array, $key){
+        
+        return isset($array['key']) ? $array['key'] : null;
+    }
+
+}
 ?>
