@@ -297,11 +297,13 @@ class Service extends \Basemodel{
                         if($difference->days <= 15 && $difference->days != 0){
                             $ratecardoffer['offer_text']    =  ($difference->days == 1) ? "Expires Today" : ($difference->days > 7 ? "Expires soon" : "Expires in ".$difference->days." days");
 						}
-						Log::info('setting  slots for 13901');
+                        
+                        Log::info('setting  slots for 13901');
 						if(in_array($finder->_id, [13901])){
-							$ratecardoffer['offer_text']    =  "2 slots left";
-						}
-						else{
+                            
+                            $ratecardoffer['offer_text']    =  "";
+                        
+                        }else{
 							$orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
 							if(isset($orderVariable["available_slots_end_date"]) && time() >= $orderVariable["available_slots_end_date"]){
 								$futureExpiry = (date('d',$orderVariable["end_time"])-intval(date('d', time())));
