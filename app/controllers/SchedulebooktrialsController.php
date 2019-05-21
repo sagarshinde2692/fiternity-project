@@ -5089,6 +5089,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $emaildata['studio_membership_duration'] = $order['studio_membership_duration'];
             }
 
+            if(!empty($booktrial['multifit'])){
+                $emaildata['multifit'] = $booktrial['multifit'];
+            }
+
             Log::info('after refund');
             if($booktrialdata->source_flag == 'vendor' ){
                 if(!isset($booktrial['third_party_details'])){
