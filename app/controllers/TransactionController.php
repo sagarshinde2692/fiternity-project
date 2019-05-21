@@ -960,8 +960,9 @@ class TransactionController extends \BaseController {
             }
 
             $website_url = Config::get('app.website');
-            
-            if(!empty($data['multifit']) || (!empty($_SERVER['HTTP_HOST']) && strtolower($_SERVER['HTTP_HOST']) == 'multifitgym.com')){
+            Log::info("server htto host");
+            Log::info($_SERVER['HTTP_HOST']);
+            if(!empty($order['multifit']) || !empty($data['multifit']) || (!empty($_SERVER['HTTP_HOST']) && strtolower($_SERVER['HTTP_HOST']) == 'multifitgym.com')){
                 $data['multifit'] = true;
                 $website_url = Config::get('app.multifit_website');
             
