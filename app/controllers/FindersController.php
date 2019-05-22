@@ -7324,16 +7324,24 @@ class FindersController extends \BaseController {
                 return in_array(getDurationDay($x), [180,360]) && $x['type'] == 'extended validity';
             });
 
-            if(empty(count($upgradable_ratecards_membership))){
+            if(empty($upgradable_ratecards_membership)){
                 foreach($service['serviceratecard'] as &$rc){
                     if($rc['type'] == 'membership'){
                         unset($rc['upgrade_popup']);
                     }
                 }
             }
-            if(empty(count($upgradable_ratecards_extended_validity))){
+            if(empty($upgradable_ratecards_extended_validity)){
                 foreach($service['serviceratecard'] as &$rc){
-                    if($rc['type'] == 'extended validity'){
+                    if($rc['type'] == 'extended validity' && $rc['duration'] > 20){
+                        unset($rc['upgrade_popup']);
+                    }
+                }
+            }
+
+            if(empty($upgradable_ratecards_extended_validity) && empty($upgradable_ratecards_membership)){
+                foreach($service['serviceratecard'] as &$rc){
+                    if($rc['type'] == 'extended validity' && $rc['duration'] <= 20){
                         unset($rc['upgrade_popup']);
                     }
                 }
