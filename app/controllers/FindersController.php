@@ -1354,20 +1354,28 @@ class FindersController extends \BaseController {
                     //             ];
                     //         }
                     //     }
+                        if(in_array($finder['_id'], Config::get('app.anytime_finder_ids', []))){
+                            
+                            $response['vendor_stripe_data']	=	[
+                                
+                                'text1'=> "BEAT THE HEAT THIS SUMMER WITH RS 500 OFF ON THE LOWEST PRICE | CODE: FITAF",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
+                            ];
 
-                            // if(!empty($finder['flags']['april5'])){
-                                $response['vendor_stripe_data']	=	[
-                                    
-                                    'text1'=> "BEAT THE HEAT THIS SUMMER WITH ADDNL 10% OFF ON THE LOWEST PRICE | CODE: SFIT - *T&C APPLICABLE",
-                                    'text3'=>"",
-                                    'background-color'=> "",
-                                    'text_color'=> '$fff',
-                                    'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
-                                ];
-                            // }
+                        }elseif(!empty($finder['flags']['sfit'])){
+                            $response['vendor_stripe_data']	=	[
+                                
+                                'text1'=> "BEAT THE HEAT THIS SUMMER WITH ADDNL 10% OFF ON THE LOWEST PRICE | CODE: SFIT - *T&C APPLICABLE",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
+                            ];
+                        }
 					
-                    
-                    // }
                 }else if(!empty($response['vendor_stripe_data']['text'])){
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
                 }
