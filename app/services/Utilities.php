@@ -7758,6 +7758,7 @@ Class Utilities {
             $this->walletTransactionNew($request);
             
             $order->upgrade_fitcash = true;
+            $order->update();
         }
     }
 
