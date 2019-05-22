@@ -7730,6 +7730,8 @@ Class Utilities {
             
             $order->upgrade_fitcash = true;
 
+            $order->update();
+
         }elseif(!empty($order['extended_validity']) && in_array($order['finder_id'], Config::get('app.upgrade_session_finder_id', [])) && !empty($order['no_of_sessions'])){
             $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
 
