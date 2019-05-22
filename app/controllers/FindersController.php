@@ -1309,7 +1309,8 @@ class FindersController extends \BaseController {
 				// }
 
 				// $this->addNonValidityLink($response);
-				
+                $this->applyNonValidityDuration($response);
+               
 				// if(!in_array($finder['_id'], Config::get('app.upgrade_session_finder_id'))){
 				// 	$this->removeNonValidity($response, 'web');
 				// }
@@ -6995,6 +6996,25 @@ class FindersController extends \BaseController {
 					}
 				}
 			}
+		}
+	}
+    
+    public function applyNonValidityDuration(&$data){
+		foreach($data['finder']['services'] as &$service){
+		
+            foreach($service['serviceratecard'] as &$ratecard){
+                if($ratecard['type'] == 'extended validity'){
+                        
+                    if(!empty($ratecard['flags']['unlimited_validity'])){
+                        $ext_validity = "Unlimited Validity";
+                    }else{
+                        $ext_validity = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
+                    }
+
+                    $ratecard['duration_type'] = $ratecard['duration_type'] . "(" . $ext_validity . ')';
+                }
+            }
+		
 		}
 	}
     
