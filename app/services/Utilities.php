@@ -7699,6 +7699,22 @@ Class Utilities {
         if(!empty($order['upgrade_fitcash']) || !empty($order['multifit'])){
             return;
         }
+        
+        $finder_detail = json_decode(json_encode(app(\FindersController::class)->finderdetail('golds-gym-kandivali-west')->getData()), true);
+        // return $finder_detail['finder']; 
+        $ratecards_array = array_column($finder_detail['finder']['services'], 'serviceratecard');
+        
+        $all_ratecards = [];
+        
+        foreach($ratecards_array as $v){
+            $all_ratecards = array_merge($all_ratecards, $v);
+        }
+
+        $upgradable_ratecard_ids = array_column($all_ratecards, '_id');
+
+        if(!in_array($order['ratecard_id'], $upgradable_ratecard_ids)){
+            return;
+        }
 
         if(!empty($order['duration_day']) && !empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], Config::get('upgrade_membership.service_cat', [65, 111])) && in_array($order['duration_day'], Config::get('upgrade_membership.duration', [30, 90])) && empty($order['extended_validity'])){
 
