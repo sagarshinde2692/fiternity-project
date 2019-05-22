@@ -91,7 +91,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderdetail($slug, $cache = true){
+	public function finderdetail($slug, $cache = false){
 
 		$thirdPartySector = Request::header('sector');
 		$isThirdParty = (isset($thirdPartySector) && in_array($thirdPartySector, ['multiply', 'health']));
@@ -1316,6 +1316,8 @@ class FindersController extends \BaseController {
 				// }
 
                 $this->removeEmptyServices($response, 'web');
+                // return $response;
+                $this->removeUpgradeWhereNoHigherAvailable($response);
 				                
                 if(empty($response['vendor_stripe_data']['text'])){
                     // if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
@@ -6999,25 +7001,6 @@ class FindersController extends \BaseController {
 		}
 	}
     
-    public function applyNonValidityDuration(&$data){
-		foreach($data['finder']['services'] as &$service){
-		
-            foreach($service['serviceratecard'] as &$ratecard){
-                if($ratecard['type'] == 'extended validity'){
-                        
-                    if(!empty($ratecard['flags']['unlimited_validity'])){
-                        $ext_validity = "Unlimited Validity";
-                    }else{
-                        $ext_validity = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
-                    }
-
-                    $ratecard['duration_type'] = $ratecard['duration_type'] . "(" . $ext_validity . ')';
-                }
-            }
-		
-		}
-	}
-    
     public function getVendorStripeCashbackText($finder){
         
 		if(empty($finder['flags']['reward_type'])){
@@ -7305,6 +7288,58 @@ class FindersController extends \BaseController {
 
 	public function testMultifit(){
 		return $this->utilities->multifitFinder();
+    }
+    
+    public function applyNonValidityDuration(&$data){
+		foreach($data['finder']['services'] as &$service){
+		
+            foreach($service['serviceratecard'] as &$ratecard){
+                if($ratecard['type'] == 'extended validity'){
+                        
+                    if(!empty($ratecard['flags']['unlimited_validity'])){
+                        $ext_validity = "Unlimited Validity";
+                    }else{
+                        $ext_validity = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
+                    }
+
+                    $ratecard['duration_type'] = $ratecard['duration_type'] . "(" . $ext_validity . ')';
+                }
+            }
+		
+		}
+	}
+    
+    public function removeUpgradeWhereNoHigherAvailable(&$data){
+
+		foreach($data['finder']['services'] as $key => &$service){
+            if(empty($key)){
+                continue;
+            }
+            
+            $upgradable_ratecards_membership = array_filter($service['serviceratecard'], function($x){
+                return in_array(getDurationDay($x), [180,360]) && $x['type'] == 'membership';
+            });
+
+            $upgradable_ratecards_extended_validity = array_filter($service['serviceratecard'], function($x){
+                return in_array(getDurationDay($x), [180,360]) && $x['type'] == 'extended validity';
+            });
+
+            if(empty(count($upgradable_ratecards_membership))){
+                foreach($service['serviceratecard'] as &$rc){
+                    if($rc['type'] == 'membership'){
+                        unset($rc['upgrade_popup']);
+                    }
+                }
+            }
+            if(empty(count($upgradable_ratecards_extended_validity))){
+                foreach($service['serviceratecard'] as &$rc){
+                    if($rc['type'] == 'extended validity'){
+                        unset($rc['upgrade_popup']);
+                    }
+                }
+            }
+		
+		}
 	}
 
 	

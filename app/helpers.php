@@ -4323,15 +4323,17 @@ if (!function_exists('upgradeMembershipCondition')) {
 
         $days = getDurationDay($value);
         return $value['type'] == 'membership' 
-        && in_array($days, Config::get('upgrade_membership.duration', [30])) 
-        && in_array($service->servicecategory_id, Config::get('upgrade_membership.service_cat', [65, 111]));
+        && (in_array($days, Config::get('upgrade_membership.duration', [30, 90])) || $days < 30)
+        && in_array($service->servicecategory_id, Config::get('upgrade_membership.service_cat', [65, 111]))
+        && !(isset($value['upgradable']) && empty($value['upgradable']));
     }
 }
 if (!function_exists('upgradeSessionPackCondtion')) {
 
     function upgradeSessionPackCondtion($value, $service)
     {
-        return $value['type'] == 'extended validity' && in_array($service->finder['_id'], Config::get('app.upgrade_session_finder_id', []));
+        return  $value['type'] == 'extended validity' 
+                && !empty($value['upgradable']);
     }
 
 }
