@@ -438,7 +438,7 @@ Route::get('v1/rollingfinderindex', array('as' => 'elasticsearch.rollingbuildfin
 Route::get('v1/rollingserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
 //Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
 Route::get('indexfinderdocument/{id}','RankingController@IndexFinderDocument');
-Route::get('locationcity/{value}','SearchController@locationCity');
+Route::get('locationcity/{value?}','SearchController@locationCity');
 
 Route::get('updatescheduleinsearch/{finderid}','ServiceRankingController@UpdateScheduleOfThisFinderInSessionSearch');
 
