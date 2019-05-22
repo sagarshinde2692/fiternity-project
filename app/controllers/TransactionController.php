@@ -3416,6 +3416,10 @@ class TransactionController extends \BaseController {
         if(!empty($data['studio_extended_validity_order_id']) && empty($data['studio_extended_session'])){
             $data['amount_customer'] = $data['amount'] = 0;
         }
+        
+        if(!empty($data['studio_extended_cancelled']['booktrial_id'])){
+            $data['amount_customer'] = $data['amount'] = 0;
+        }
 
         if(!empty($data['amount'] ) && !empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'memberships') && empty($data['extended_validity'])){
             $commission = getVendorCommision(['finder_id'=>$data['finder_id']]);
@@ -8989,7 +8993,7 @@ class TransactionController extends \BaseController {
         Order::$withoutAppends = true;
         $order = Order::where('_id', $data['order_id']);
         
-        $capture_data = array_only($order->toArray(), ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","finder_address","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","ratecard_id","customer_identity","customer_source","customer_location","customer_quantity","init_source","multifit","wallet"]);
+        $capture_data = array_only($order->toArray(), $this->utilities->getSuccessCommonInputFields());
 
         $capture_data['studio_extended_cancelled']['booktrial_id'] = $data['booktrial_id'];
         $capture_data['studio_extended_cancelled']['order_id'] = $data['order_id'];

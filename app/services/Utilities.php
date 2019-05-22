@@ -8784,5 +8784,9 @@ Class Utilities {
             
 
     }
+
+    public function getSuccessCommonInputFields(){
+        return ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","finder_address","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","ratecard_id","customer_identity","customer_source","customer_location","customer_quantity","init_source","multifit","wallet"];
+    }
       
 }
