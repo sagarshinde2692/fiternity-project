@@ -2007,6 +2007,21 @@ Class CustomerReward {
                 }
             }
 
+            if(!empty($coupon['usage_per_user']) && is_integer($coupon['usage_per_user'])){
+
+                \Order::$withoutAppends = true;
+
+                $order_count = \Order::where('customer_email',$customer_email)->where('coupon_code','like',strtolower($couponCode))->count();
+
+                if($order_count > $coupon['usage_per_user']){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"This coupon is applicable only ".$coupon['usage_per_user']." time per user","user_login_error"=>true);
+
+                    return $resp;
+                }
+            
+            }
+
             if(isset($coupon['type']) && $coupon['type'] == 'syncron'){
                 
                 if(empty($customer_email) && !in_array($this->device_type, ['ios', 'android'])){
