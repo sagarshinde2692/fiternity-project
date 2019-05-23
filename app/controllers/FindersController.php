@@ -1317,7 +1317,7 @@ class FindersController extends \BaseController {
 
                 $this->removeEmptyServices($response, 'web');
                 // return $response;
-                return $this->removeUpgradeWhereNoHigherAvailable($response);
+                $this->removeUpgradeWhereNoHigherAvailable($response);
 				                
                 if(empty($response['vendor_stripe_data']['text'])){
                     // if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
@@ -7323,8 +7323,12 @@ class FindersController extends \BaseController {
             $extended_validity_ratecards = array_filter($service['serviceratecard'], function($x){
                 return $x['type'] == 'extended validity';
             });
+            if(empty($extended_validity_ratecards)){
+                $max_duration_session_pack = 0;    
+            }else{
 
-            $max_duration_session_pack = max(array_column($extended_validity_ratecards, 'duration'));
+                $max_duration_session_pack = max(array_column($extended_validity_ratecards, 'duration'));
+            }
 
             if(empty($upgradable_ratecards_membership)){
                 foreach($service['serviceratecard'] as &$rc){
