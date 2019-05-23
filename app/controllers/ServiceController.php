@@ -676,7 +676,7 @@ class ServiceController extends \BaseController {
 		
         $query = Service::active()->whereNotIn('trial',['manual', 'manualauto','disable']);
 
-
+        $query->where('servicecategory_id','!=',163);
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
 
