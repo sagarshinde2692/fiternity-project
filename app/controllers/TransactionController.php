@@ -912,7 +912,13 @@ class TransactionController extends \BaseController {
             //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
 
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
-	
+            
+            if(!empty($order['duration'])){
+
+                $GLOBALS['order_duration'] = $order['duration'];
+
+            }
+
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
             
             // Log::info("cashbackRewardWallet",$cashbackRewardWallet);

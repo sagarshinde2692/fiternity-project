@@ -1992,6 +1992,9 @@ Class Utilities {
             if(isset($request['upgradable_to_session_pack'])){
                 $wallet->upgradable_to_session_pack = $request['upgradable_to_session_pack'];
             }
+            if(isset($request['session_pack_duration_gt'])){
+                $wallet->session_pack_duration_gt = $request['session_pack_duration_gt'];
+            }
             
             $wallet->save();
 
@@ -2669,9 +2672,15 @@ Class Utilities {
         }else{
 
             if(!empty($request['extended_validity'])){
-                $query->where('upgradable_to_session_pack', '!=', 'false');
+            
+                $duration = isset($GLOBALS['order_duration']) ? $GLOBALS['order_duration'] : 0;
+
+                $query->where('upgradable_to_session_pack', '!=', 'false')->where('session_pack_duration_gt', '<', $duration);
+            
             }else{
+            
                 $query->where('upgradable_to_membership', '!=', 'false');
+            
             }
 
             if($this->checkCouponApplied()){
@@ -7700,7 +7709,7 @@ Class Utilities {
             return;
         }
         
-        $finder_detail = json_decode(json_encode(app(\FindersController::class)->finderdetail('golds-gym-kandivali-west')->getData()), true);
+        $finder_detail = json_decode(json_encode(app(\FindersController::class)->finderdetail($order['finder_slug'])->getData()), true);
         // return $finder_detail['finder']; 
         $ratecards_array = array_column($finder_detail['finder']['services'], 'serviceratecard');
         
@@ -7710,13 +7719,17 @@ Class Utilities {
             $all_ratecards = array_merge($all_ratecards, $v);
         }
 
-        $upgradable_ratecard_ids = array_column($all_ratecards, '_id');
+        $all_upgradable_ratecards = array_filter($all_ratecards, function($rc){
+            return !empty($rc['upgrade_popup']);
+        });
+
+        $upgradable_ratecard_ids = array_column($$all_upgradable_ratecards, '_id');
 
         if(!in_array($order['ratecard_id'], $upgradable_ratecard_ids)){
             return;
         }
 
-        if(!empty($order['duration_day']) && !empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], Config::get('upgrade_membership.service_cat', [65, 111])) && in_array($order['duration_day'], Config::get('upgrade_membership.duration', [30, 90])) && empty($order['extended_validity'])){
+        if(empty($order['extended_validity'])){
 
             $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
 
@@ -7748,7 +7761,8 @@ Class Utilities {
 
             $order->update();
 
-        }elseif(!empty($order['extended_validity']) && in_array($order['finder_id'], Config::get('app.upgrade_session_finder_id', [])) && !empty($order['no_of_sessions'])){
+        }elseif(!empty($order['extended_validity'])){
+            
             $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
 
             $no_of_days = Config::get('upgrade_membership.fitcash_days');
@@ -7769,6 +7783,7 @@ Class Utilities {
                 'order_id'=>$order['_id'],
                 'order_type'=>['membership', 'memberships'],
                 'duration_day'=>Config::get('upgrade_membership.upgrade_session_duration', [180, 360]),
+                'session_pack_duration_gt'=>$order['duration'],
                 'upgradable_to_membership'=>$this->checkUpgradeAvailable($order,'membership'),
                 'upgradable_to_session_pack'=>$this->checkUpgradeAvailable($order),
             );
