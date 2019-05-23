@@ -4333,7 +4333,7 @@ if (!function_exists('upgradeSessionPackCondtion')) {
     function upgradeSessionPackCondtion($value, $service)
     {
         return  $value['type'] == 'extended validity' 
-                && !empty($value['upgradable']);
+                && !empty($value['flags']['upgradable']);
     }
 
 }

@@ -1317,7 +1317,7 @@ class FindersController extends \BaseController {
 
                 $this->removeEmptyServices($response, 'web');
                 // return $response;
-                $this->removeUpgradeWhereNoHigherAvailable($response);
+                return $this->removeUpgradeWhereNoHigherAvailable($response);
 				                
                 if(empty($response['vendor_stripe_data']['text'])){
                     // if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
@@ -7320,9 +7320,11 @@ class FindersController extends \BaseController {
                 return in_array(getDurationDay($x), [180,360]) && $x['type'] == 'membership';
             });
 
-            $upgradable_ratecards_extended_validity = array_filter($service['serviceratecard'], function($x){
-                return in_array(getDurationDay($x), [180,360]) && $x['type'] == 'extended validity';
+            $extended_validity_ratecards = array_filter($service['serviceratecard'], function($x){
+                return $x['type'] == 'extended validity';
             });
+
+            $max_duration_session_pack = max(array_column($extended_validity_ratecards, 'duration'));
 
             if(empty($upgradable_ratecards_membership)){
                 foreach($service['serviceratecard'] as &$rc){
@@ -7331,22 +7333,25 @@ class FindersController extends \BaseController {
                     }
                 }
             }
-            if(empty($upgradable_ratecards_extended_validity)){
-                foreach($service['serviceratecard'] as &$rc){
-                    if($rc['type'] == 'extended validity' && $rc['duration'] > 20){
-                        unset($rc['upgrade_popup']);
-                    }
-                }
-            }
+            
+            foreach($service['serviceratecard'] as &$rc){
+                if($rc['type'] == 'extended validity'){
+                    if($rc['duration'] <= 20){
+                        
+                        if(empty($upgradable_ratecards_membership) && $max_duration_session_pack <= $rc['duration']){
+                            unset($rc['upgrade_popup']);
+                        }
+                        
+                    
+                    }else{
 
-            if(empty($upgradable_ratecards_extended_validity) && empty($upgradable_ratecards_membership)){
-                foreach($service['serviceratecard'] as &$rc){
-                    if($rc['type'] == 'extended validity' && $rc['duration'] <= 20){
-                        unset($rc['upgrade_popup']);
+                        if($max_duration_session_pack <= $rc['duration']){
+                            unset($rc['upgrade_popup']);
+                        }
+                    
                     }
                 }
             }
-		
 		}
 	}
 
