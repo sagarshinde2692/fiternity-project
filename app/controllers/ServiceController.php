@@ -1668,7 +1668,7 @@ class ServiceController extends \BaseController {
 
 
 
-            if(!empty($finder['category_id']) && $finder['category_id'] == 47){
+            if((!empty($finder['category_id']) && $finder['category_id'] == 47) || !empty($service_details['flags']['disable_dynamic_pricing'])){
                 $service_details['price'] = "Starting at ₹".$service_details['amount'];
             }else{
                 $service_details['price'] = "Starting at ₹".floor($service_details['amount'] * Config::get('app.non_peak_hours.off'));
