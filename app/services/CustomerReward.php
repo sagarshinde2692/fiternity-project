@@ -2395,7 +2395,7 @@ Class CustomerReward {
             $discount_amount = intval($discount_amount);
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
             
-
+            $GLOBALS['coupon_applied'] = true;
             $discount_price = $price - $discount_amount;
             $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
             $vendor_routed_coupon = isset($coupon["vendor_routed_coupon"]) ? $coupon["vendor_routed_coupon"] : false;
