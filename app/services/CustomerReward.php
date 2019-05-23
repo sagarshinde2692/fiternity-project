@@ -2011,7 +2011,7 @@ Class CustomerReward {
 
                 \Order::$withoutAppends = true;
 
-                $order_count = \Order::where('customer_email',$customer_email)->where('coupon_code','like',strtolower($couponCode))->count();
+                $order_count = \Order::active()->where('customer_email',$customer_email)->where('coupon_code','like',strtolower($couponCode))->count();
 
                 if($order_count > $coupon['usage_per_user']){
 
