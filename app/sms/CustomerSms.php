@@ -1336,7 +1336,7 @@ Class CustomerSms extends VersionNextSms{
 			}
 		}
 
-		if(!empty($data['multifit'])){
+		if(!empty($data['multifit']) && $label != 'Generic-Otp-Customer'){
 			$sender = 'MULTIF';
 		}
 		$message = $this->bladeCompile($template->sms_text,$data);
