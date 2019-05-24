@@ -9379,17 +9379,27 @@ class CustomerController extends \BaseController {
         }
 
         if(!empty($order['studio_extended_validity'])){
+        
             if(
-                time() < strtotime('+1 days', strtotime($order['end_date'])) 
-                || $order['studio_sessions']['cancelled'] >= $order['studio_sessions']['total_cancel_allowed'] 
-                || time() > strtotime($order['studio_membership_duration']['end_date_extended'])
+                time() < $order['studio_membership_duration']['end_date']->sec 
+                || 
+                $order['studio_sessions']['cancelled'] >= $order['studio_sessions']['total_cancel_allowed'] 
+                || 
+                time() > $order['studio_membership_duration']['end_date_extended']->sec
             ){
                 unset($order['button_title']);
                 unset($order['button_type']);
+                if(requestFtomApp()){
+                    $order['active'] = false;
+                    $order['button_title'] = 'Renew Pack';
+                    $order['button_type'] = 'renew';
+                }
             }else{
+                
                 if(requestFtomApp()){
                     $order['button_title'] = 'Book your next Session';
                     $order['button_type'] = 'book';
+                    
                 }else{
                     unset($order['button_title']);
                     unset($order['button_type']);
