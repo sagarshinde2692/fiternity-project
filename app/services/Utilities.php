@@ -7685,7 +7685,7 @@ Class Utilities {
             $extended_count = Order::active()->where('studio_extended_validity_order_id', $order['_id'])->where('studio_extended_session', true)->count();
         }
 
-        if(isset($order['studio_sessions']['cancelled']) && !empty($order['studio_sessions']['total_cancel_allowed']) && ($order['studio_sessions']['cancelled'] + $extended_count) < $order['studio_sessions']['total_cancel_allowed']){
+        if(isset($order['studio_sessions']['cancelled']) && !empty($order['studio_sessions']['total_cancel_allowed']) && $extended_count < $order['studio_sessions']['cancelled']){
             return $order;
         }
     }
