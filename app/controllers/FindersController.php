@@ -7293,7 +7293,7 @@ class FindersController extends \BaseController {
 		foreach($data['finder']['services'] as &$service){
             $membership_ratecards = false;
             $unlimited_validity = false;
-            foreach($service['serviceratecard'] as $ratecard){
+            foreach($service['serviceratecard'] as &$ratecard){
                 if($ratecard['type'] == 'extended validity'){
                         
                     if(!empty($ratecard['flags']['unlimited_validity'])){
