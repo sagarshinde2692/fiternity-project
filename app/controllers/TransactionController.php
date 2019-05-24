@@ -3485,6 +3485,7 @@ class TransactionController extends \BaseController {
             $studio_extended_validity_order = $this->utilities->getStudioExtendedValidityOrder($data);
             if($studio_extended_validity_order){
                 $data['studio_extended_validity_order_id'] = $studio_extended_validity_order['_id'];
+                $data['studio_extended_session'] = true;
                 $data['session_pack_discount'] = $data['ratecard_amount'];
                 $amount = $data['amount'] - $data['session_pack_discount'];
                 // if(!empty($data['ratecard']['enable_vendor_novalidity_comm'])){

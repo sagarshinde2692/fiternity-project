@@ -954,7 +954,8 @@ class ServiceController extends \BaseController {
                             $decoded = decode_customer_token();
                             $customer_email = $decoded->customer->email;
                             $extended_validity_order =  $this->utilities->getExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
-                            $service['extended_validity'] = !empty($extended_validity_order);
+                            // $studio_extended_validity_order =  $this->utilities->getStudioExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
+                            $service['extended_validity'] = !empty($extended_validity_order) || !empty($studio_extended_validity_order);
                         }
 
                         if($finder['category_id'] != 47 && empty($service['extended_validity']) && empty($item['flags']['disable_dynamic_pricing'])){

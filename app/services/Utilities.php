@@ -7656,7 +7656,7 @@ Class Utilities {
         if(empty($data['customer_id']) && empty($data['customer_email'])){
             return;
         }
-
+        Order::$withoutAppends = true;
         $query = Order::active()->where('studio_extended_validity', true);
         
         if(!empty($data['customer_email'])){
@@ -7679,9 +7679,13 @@ Class Utilities {
         $order =  $query
             ->where(function($query) use ($data){ $query->orWhere('service_id', $data['service_id'])->orWhere('all_service_id', $data['service_id']);})
             ->first();;
+        
+        $extended_count = 0;
+        if(!empty($order)){
+            $extended_count = Order::active()->where('studio_extended_validity_order_id', $order['_id'])->where('studio_extended_session', true)->count();
+        }
 
-
-        if(isset($order['studio_sessions']['cancelled']) && !empty($order['studio_sessions']['total_cancel_allowed']) && $order['studio_sessions']['cancelled'] < $order['studio_sessions']['total_cancel_allowed']){
+        if(isset($order['studio_sessions']['cancelled']) && !empty($order['studio_sessions']['total_cancel_allowed']) && ($order['studio_sessions']['cancelled'] + $extended_count) < $order['studio_sessions']['total_cancel_allowed']){
             return $order;
         }
     }
