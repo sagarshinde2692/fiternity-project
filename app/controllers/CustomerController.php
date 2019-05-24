@@ -9382,8 +9382,8 @@ class CustomerController extends \BaseController {
         
             if(
                 time() < $order['studio_membership_duration']['end_date']->sec 
-                || 
-                $order['studio_sessions']['cancelled'] >= $order['studio_sessions']['total_cancel_allowed'] 
+                // || 
+                // $order['studio_sessions']['cancelled'] >= $order['studio_sessions']['total_cancel_allowed'] 
                 || 
                 time() > $order['studio_membership_duration']['end_date_extended']->sec
             ){
