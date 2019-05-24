@@ -9388,6 +9388,7 @@ class CustomerController extends \BaseController {
                 unset($order['button_type']);
             }else{
                 $order['button_title'] = 'Book your next Session';
+                $order['button_type'] = 'book';
             }
         }
 
