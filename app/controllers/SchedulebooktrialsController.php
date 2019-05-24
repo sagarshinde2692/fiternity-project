@@ -5065,9 +5065,9 @@ class SchedulebooktrialsController extends \BaseController {
             // return $booktrialdata;
             // instead of fitcash adding new workout session to customer in stuio_extended_validity
             Log::info('before refund');
-            if(!isset($booktrial['third_party_details']) || $booktrial['studio_extended_validity']==true){
+            if(!isset($booktrial['third_party_details']) || $booktrial['studio_extended_validity_order_id']==true){
                 Log::info('call refund');
-                if(isset($booktrial['studio_extended_validity_order_id'])){
+                if(isset($booktrial['studio_extended_validity_order_id']) && empty($booktrial['studio_extended_session'])){
                     Log::info('at creating new session for studio membership::::::::', [$id]);
                     $this->utilities->scheduleStudioBookings($data['order_id'],true);
                     $emaildata['paid']=0;
