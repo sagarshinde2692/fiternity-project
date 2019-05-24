@@ -1319,7 +1319,12 @@ class FindersController extends \BaseController {
                 $this->removeUpgradeWhereNoHigherAvailable($response);
                 
                 $this->serviceRemoveFlexiIfExtendedPresent($response);
-				                
+                try{
+                    $this->orderRatecards($response);
+                }catch(Exception $e){
+                    Log::info("Error while sorting ratecard");
+                }
+
                 if(empty($response['vendor_stripe_data']['text'])){
                     // if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
                         
@@ -7399,7 +7404,53 @@ class FindersController extends \BaseController {
 		
 		}
 		
-	}
+    }
+    
+    public function orderRatecards(&$data){
+        
+        $duration_session_pack = [30=>7, 90=>20, 180=>75, 360=>120, 720=>500];
+        
+        function compareDuration($a, $b){
+            return getDurationDay($a) >= getDurationDay($b);
+        }
+        
+        function compareSessions($a, $b){
+            return $a['duration'] >= $b['duration'];
+        }
+        function duration_days($a){
+            $a['duration_day'] = getDurationDay($a);
+            return $a;
+        }
+
+        foreach($data['finder']['services'] as &$service){
+
+            $membership_ratecards = array_filter($service['serviceratecard'], function($rc){
+                return $rc['type'] != 'extended validity';
+            });
+
+            $session_ratecards = array_filter($service['serviceratecard'], function($rc){
+                return $rc['type'] == 'extended validity' ;
+            });
+            
+            usort($membership_ratecards, "compareDuration");
+            usort($session_ratecards, "compareSessions");
+            // return $session_ratecards;
+            $all_ratecards = [];
+
+            $membership_ratecards = array_map('duration_days', $membership_ratecards);
+
+            $session_buckets = createBucket($session_ratecards, 'duration', array_values($duration_session_pack));
+            
+            $membership_buckets = createBucket($membership_ratecards, 'duration_day', array_keys($duration_session_pack));
+
+            foreach($duration_session_pack as $key => $value){
+                $all_ratecards = array_merge($all_ratecards, $session_buckets[$value], $membership_buckets[$key]);
+            }
+
+            $service['serviceratecard'] =  $all_ratecards;
+            
+        }
+    }
 
 	
 }

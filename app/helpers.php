@@ -4394,4 +4394,30 @@ if (!function_exists('requestFtomApp')) {
     }
 
 }
+
+if (!function_exists('createBucket')) {
+
+    function createBucket($array, $key, $range){
+        
+        $buckets = [];
+
+        foreach($range as $r){
+            $buckets[$r] = [];
+            foreach($array as &$x){
+                if($x[$key] <= $r && empty($x['pushed'])){
+                    array_push($buckets[$r], $x);
+                    $x['pushed'] = true;
+                }
+            }
+        }
+
+        return $buckets;
+        
+        
+    
+    }
+
+}
+
+
 ?>
