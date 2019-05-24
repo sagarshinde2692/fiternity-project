@@ -966,5 +966,7 @@ return array(
     'sucheta_pal_finder_ids'=>[16452, 12986, 1493],
     
     'sucheta_pal_service_ids'=>[16452, 12986, 1493],
+
+    'non_flexi_service_cat'=>[111, 65, 5]
     
 );

@@ -1317,6 +1317,8 @@ class FindersController extends \BaseController {
                 $this->removeEmptyServices($response, 'web');
                 // return $response;
                 $this->removeUpgradeWhereNoHigherAvailable($response);
+                
+                $this->serviceRemoveFlexiIfExtendedPresent($response);
 				                
                 if(empty($response['vendor_stripe_data']['text'])){
                     // if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
@@ -7374,6 +7376,29 @@ class FindersController extends \BaseController {
                 }
             }
 		}
+	}
+    
+    public function serviceRemoveFlexiIfExtendedPresent(&$data){
+        foreach($data['finder']['services'] as &$service){
+            $extended_validity = false;
+            
+            foreach($service['serviceratecard'] as &$ratecard){
+                if($ratecard['type'] == 'extended validity'){
+                    $extended_validity = true;
+                    break;
+                }
+            }
+
+            if(empty($extended_validity)){
+                if($ratecard['type'] == 'extended validity'){
+                    if(!empty($ratecard['studio_extended_validity'])){
+                        unset($ratecard['studio_extended_validity']);
+                    }
+                }
+            }
+		
+		}
+		
 	}
 
 	
