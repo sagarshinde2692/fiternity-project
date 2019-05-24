@@ -86,8 +86,20 @@ Class CustomerNotification extends Notification{
 		\Log::info("cancelBookTrial notification:: ", [$data]);
 
 		$label = 'Cancel-Trial-Customer';
-
-		$notif_type = 'open_trial';
+        
+        if(!empty($data['studio_extended_validity_order_id'])){
+            if(!empty($data['studio_sessions'])){
+                $avail = $data['studio_sessions']['total_cancel_allowed'] - $data['studio_sessions']['cancelled'];
+                $avail = ($avail<0)?0:$avail;
+                $data['studio_extended_details'] = [
+                    'can_cancel' => $avail,
+                    'total_cancel' => $data['studio_sessions']['total_cancel_allowed']
+                ];
+                $data['app_onelink'] = "https://go.onelink.me/I0CO?pid=studioextcancelmail";
+            }	
+        }
+        
+        $notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant");
 		
 		return $this->common($label,$data,$notif_type,$notif_object);

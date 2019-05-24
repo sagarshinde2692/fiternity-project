@@ -4386,4 +4386,12 @@ if (!function_exists('getArrayValue')) {
     }
 
 }
+if (!function_exists('requestFtomApp')) {
+
+    function requestFtomApp(){
+        
+        return !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios']);
+    }
+
+}
 ?>

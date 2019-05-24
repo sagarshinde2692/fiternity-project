@@ -7646,6 +7646,44 @@ Class Utilities {
             ->where('sessions_left', '>', 0)
             ->first();;
     }
+    
+    public function getStudioExtendedValidityOrder($data){
+        
+        if(!empty($data['order_customer_email'])){
+            $data['customer_email'] = $data['order_customer_email'];
+        }
+
+        if(empty($data['customer_id']) && empty($data['customer_email'])){
+            return;
+        }
+
+        $query = Order::active()->where('studio_extended_validity', true);
+        
+        if(!empty($data['customer_email'])){
+            $query->where('customer_email', $data['customer_email']);
+        }
+
+        if(!empty($data['customer_id'])){
+            $query->where('customer_id', $data['customer_id']);
+        }
+
+
+        $query
+            // ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
+            ->where(function($query) use ($data){
+                $query->orWhere('end_date', '<', new MongoDate(strtotime($data['schedule_date'])));
+            });
+
+
+        $order =  $query
+            ->where(function($query) use ($data){ $query->orWhere('service_id', $data['service_id'])->orWhere('all_service_id', $data['service_id']);})
+            ->where('sessions_left', '>', 0)
+            ->first();;
+
+        if(!empty($order['studio_sessions']['cancelled']) && !empty($order['studio_sessions']['total_cancel_allowed']) && $order['studio_sessions']['cancelled'] < $order['studio_sessions']['total_cancel_allowed']){
+            return $order;
+        }
+    }
 
 
     public function getAllExtendedValidityOrders($data){

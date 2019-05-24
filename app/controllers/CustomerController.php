@@ -9382,13 +9382,18 @@ class CustomerController extends \BaseController {
             if(
                 time() < strtotime('+1 days', strtotime($order['end_date'])) 
                 || $order['studio_sessions']['cancelled'] >= $order['studio_sessions']['total_cancel_allowed'] 
-                || time() > strtotime('+'.$order['studio_membership_duration']['num_of_days_extended'].' days', strtotime($order['end_date']))
+                || time() > strtotime($order['studio_membership_duration']['end_date_extended'])
             ){
                 unset($order['button_title']);
                 unset($order['button_type']);
             }else{
-                $order['button_title'] = 'Book your next Session';
-                $order['button_type'] = 'book';
+                if(requestFtomApp()){
+                    $order['button_title'] = 'Book your next Session';
+                    $order['button_type'] = 'book';
+                }else{
+                    unset($order['button_title']);
+                    unset($order['button_type']);
+                }
             }
         }
 

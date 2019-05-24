@@ -3480,6 +3480,20 @@ class TransactionController extends \BaseController {
             }
         }        
         
+        if(!empty($data['amount'] ) && $data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
+            Order::$withoutAppends = true;
+            $studio_extended_validity_order = $this->utilities->getStudioExtendedValidityOrder($data);
+            if($studio_extended_validity_order){
+                $data['studio_extended_validity_order_id'] = $studio_extended_validity_order['_id'];
+                $data['session_pack_discount'] = $data['ratecard_amount'];
+                $amount = $data['amount'] - $data['session_pack_discount'];
+                // if(!empty($data['ratecard']['enable_vendor_novalidity_comm'])){
+                    // $data['amount_finder'] = 0;
+                    // $data['vendor_price'] = 0;
+                // }
+            }
+        }        
+        
         if(empty($data['session_pack_discount']) && empty($order['session_pack_discount']) && ((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
             $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
