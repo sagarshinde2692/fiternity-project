@@ -7671,16 +7671,17 @@ Class Utilities {
         $query
             // ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
             ->where(function($query) use ($data){
-                $query->orWhere('end_date', '<', new MongoDate(strtotime($data['schedule_date'])));
+                $query->where('studio_membership_duration.end_date', '<', new MongoDate(strtotime($data['schedule_date'])));
+                $query->where('studio_membership_duration.end_date_extended', '>', new MongoDate(strtotime($data['schedule_date'])));
             });
 
 
         $order =  $query
             ->where(function($query) use ($data){ $query->orWhere('service_id', $data['service_id'])->orWhere('all_service_id', $data['service_id']);})
-            ->where('sessions_left', '>', 0)
             ->first();;
 
-        if(!empty($order['studio_sessions']['cancelled']) && !empty($order['studio_sessions']['total_cancel_allowed']) && $order['studio_sessions']['cancelled'] < $order['studio_sessions']['total_cancel_allowed']){
+
+        if(isset($order['studio_sessions']['cancelled']) && !empty($order['studio_sessions']['total_cancel_allowed']) && $order['studio_sessions']['cancelled'] < $order['studio_sessions']['total_cancel_allowed']){
             return $order;
         }
     }
