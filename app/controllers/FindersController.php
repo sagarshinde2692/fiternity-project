@@ -1310,7 +1310,6 @@ class FindersController extends \BaseController {
 
 				// $this->addNonValidityLink($response);
                 $this->applyNonValidityDuration($response);
-               
 				// if(!in_array($finder['_id'], Config::get('app.upgrade_session_finder_id'))){
 				// 	$this->removeNonValidity($response, 'web');
 				// }
@@ -7292,18 +7291,36 @@ class FindersController extends \BaseController {
     
     public function applyNonValidityDuration(&$data){
 		foreach($data['finder']['services'] as &$service){
-		
-            foreach($service['serviceratecard'] as &$ratecard){
+            $membership_ratecards = false;
+            $unlimited_validity = false;
+            foreach($service['serviceratecard'] as $ratecard){
                 if($ratecard['type'] == 'extended validity'){
                         
                     if(!empty($ratecard['flags']['unlimited_validity'])){
                         $ext_validity = "Unlimited Validity";
+                        $unlimited_validity = true;
                     }else{
                         $ext_validity = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
                     }
 
                     $ratecard['duration_type'] = $ratecard['duration_type'] . "(" . $ext_validity . ')';
+                }else{
+                    if($ratecard['type'] != 'workout session'){
+                        $membership_ratecards = true;
+                    }
                 }
+            }
+
+            if(empty($membership_ratecards)){
+                
+                $getNonValidityBanner = $this->getNonValidityBanner();
+                $getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.service_footer');
+                foreach($getNonValidityBanner as &$value){
+                    $value = strtr($value, ['__ext_validity_type'=>!empty($unlimited_validity) ? "Unlimited Validity":"Extended Validity", '__vendor_name'=>$data['finder']['title']]);
+                }
+                $service['non_validity'] = $getNonValidityBanner;
+
+
             }
 		
 		}
