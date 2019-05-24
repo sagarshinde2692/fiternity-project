@@ -5036,17 +5036,17 @@ class SchedulebooktrialsController extends \BaseController {
 
             /***********Creating session pack for studio_extended_validity************/
             
-            if(!empty($booktrial['studio_extended_validity'])){
+            // if(!empty($booktrial['studio_extended_validity'])){
                 
-                if(!empty($booktrial['studio_extended_validity_order_id'])){
+            //     if(!empty($booktrial['studio_extended_validity_order_id'])){
                 
-					$res_obj = app(TransactionController::class)->createSessionPack(['order_id'=>$booktrial['studio_extended_validity_order_id'], 'booktrial_id'=>$booktrial['_id']]);
+			// 		$res_obj = app(TransactionController::class)->createSessionPack(['order_id'=>$booktrial['studio_extended_validity_order_id'], 'booktrial_id'=>$booktrial['_id']]);
                     
-                    $emaildata['paid']=0;
+            //         $emaildata['paid']=0;
                 
-                }
+            //     }
                 
-            }
+            // }
 
             /***********instead of fitcash adding new workout session to customer in stuio_extended_validity************/
 

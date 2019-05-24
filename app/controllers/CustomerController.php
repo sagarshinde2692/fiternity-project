@@ -1837,7 +1837,7 @@ class CustomerController extends \BaseController {
 		$orders 			=  	[];
 		$membership_types 		= Config::get('app.membership_types');
 
-		$orderData 			= 	Order::where('extended_validity', '!=', true)->where(function($query){$query->where('status', '1')->orWhere('cod_otp', 'exists', true)->orWhere(function($q1){$q1->where("payment_mode", "at the studio")->where("customer_source","website");});})->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+		$orderData 			= 	Order::where("studio_extended_validity", true)->where('extended_validity', '!=', true)->where(function($query){$query->where('status', '1')->orWhere('cod_otp', 'exists', true)->orWhere(function($q1){$q1->where("payment_mode", "at the studio")->where("customer_source","website");});})->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
 
 		if(count($orderData) > 0){
@@ -9325,7 +9325,12 @@ class CustomerController extends \BaseController {
         
         $orders = Order::active()
                 ->where('customer_id', $customer_id)
-                ->where('extended_validity', true)
+                ->where(function($query){
+                    $query
+                    ->orWhere('extended_validity', true)
+                    ->orWhere('studio_extended_validity', true);
+                })
+                
                 ->with(['finder'=>function($query){
                     $query->select('slug');
                 }])
@@ -9343,7 +9348,7 @@ class CustomerController extends \BaseController {
 
         }
 
-        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags']);
+        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags','studio_extended_validity', 'studio_sessions', 'studio_membership_duration']);
 
         $orders = $this->formatSessionPackList($orders);
 
@@ -9373,6 +9378,19 @@ class CustomerController extends \BaseController {
             $order['button_type'] = 'renew';
         }
 
+        if(!empty($order['studio_extended_validity'])){
+            if(
+                time() < strtotime('+1 days', strtotime($order['end_date'])) 
+                || $order['studio_sessions']['cancelled'] >= $order['studio_sessions']['total_cancel_allowed'] 
+                || time() > strtotime('+'.$order['studio_membership_duration']['num_of_days_extended'].' days', strtotime($order['end_date']))
+            ){
+                unset($order['button_title']);
+                unset($order['button_type']);
+            }else{
+                $order['button_title'] = 'Book your next Session';
+            }
+        }
+
         $order['start_date'] = strtotime($order['start_date']);
         $order['starting_date'] = date('d M, Y', strtotime($order['start_date']));
         $order['starting_text'] = "Starts from: ";
@@ -9388,6 +9406,11 @@ class CustomerController extends \BaseController {
         $order['detail_text'] = "VIEW DETAILS";
         $order['total_session_text'] = $order['no_of_sessions']." Session pack";
         $order['left_text'] = "left";
+        if(!empty($order['studio_extended_validity'])){
+            $order['left_text'] = "booked";
+            $order['sessions_left'] =  $order['studio_sessions']['total'];
+            $order['total_session_text'] = $order['studio_sessions']['total']." Session pack";
+        }
         $order['session_active'] = "SESSION PACK ACTIVE";
         // if(strtotime($order['start_date']) >= time()){
         //     $order['before_start_message'] = "Your session pack start from ".date('d M, Y', strtotime($order['start_date'])).". Session pack will not be applied to bookings before the start date";
