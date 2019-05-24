@@ -1168,8 +1168,15 @@ class TransactionController extends \BaseController {
             }
 
             if((!empty($data['servicecategory_id']) && !in_array($data['servicecategory_id'], Config::get('app.non_flexi_service_cat', [111, 65, 5]))) && $data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity && !empty($ratecardDetail['data']['duration']) && $ratecardDetail['data']['duration']>0 && (empty($finderDetail['data']['finder_flags']['trial']) || $finderDetail['data']['finder_flags']['trial']=='auto')){
-                $workoutSessionRatecard = Ratecard::where('direct_payment_enable', '1')->where('type', 'workout session')->where('service_id', $data['service_id'])->first();
-                if(!empty($workoutSessionRatecard)){
+                $workoutSessionOrExtendedRatecard = Ratecard::where('direct_payment_enable', '1')->whereIn('type', ['workout session', 'extended validity'])->where('service_id', $data['service_id'])->get()->toArray();
+                $workoutSessionRatecard = array_filter($workoutSessionOrExtendedRatecard, function($x){
+                    return $x['type'] == 'workout session';
+                });
+                $extendedValidityRatecards = array_filter($workoutSessionOrExtendedRatecard, function($x){
+                    return $x['type'] == 'extended validity';
+                });
+
+                if(!empty($workoutSessionRatecard) && empty($extendedValidityRatecards)){
                     $data['studio_extended_validity'] = true;
                     $data['studio_sessions'] = [
                         'total' => $ratecardDetail['data']['duration'],
