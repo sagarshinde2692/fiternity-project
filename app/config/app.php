@@ -312,14 +312,24 @@ return array(
 	//currently used only for vip trials rolling builds and search api.
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
-	//Production
+	//Production - Old
+	// 'es' =>array(
+	// 	'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+	// 	'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+	// 	'port'		=>			8050,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
+	// ),
+
+	// Production
 	'es' =>array(
-		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
-		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+		'url'		=> 			'ESAdmin:fitternity2020@13.233.237.28:8050',
+		'host'		=> 			'ESAdmin:fitternity2020@13.233.237.28',
 		'port'		=>			8050,
 		'default_index' => 	'fitternity',
 		'default_type' 	=> 	'finder',
 	),
+
 	//stage
 	// 'es' =>array(
 	//  	'url'		=> 			'139.59.16.74:1243',
