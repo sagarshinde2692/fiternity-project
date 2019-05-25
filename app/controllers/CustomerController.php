@@ -8397,7 +8397,7 @@ class CustomerController extends \BaseController {
             $customer = Customer::active()->where('_id', $customer->_id)->where('loyalty', 'exists', true)->first();
             $filter = $this->utilities->getMilestoneFilterData($customer);
 
-			if($customer){
+			if($customer && !empty($customer['loyalty'])){
 				$post = true;
 			}
 
