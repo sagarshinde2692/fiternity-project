@@ -236,7 +236,7 @@ class Service extends \Basemodel{
 									// Log::info($serviceoffers);
                 if(!empty($value['_id']) && isset($value['_id'])){
 					
-					$studioExtValidity = (!empty($this->batches) && count($this->batches)>0) && in_array($days, [30, 90]) && (!empty($value['duration_type']) && $value['duration_type']=='session' && !empty($value['duration']));
+					$studioExtValidity = (!in_array($this->servicecategory_id, Config::get('app.non_flexi_service_cat', [111, 65, 5]))) && (!empty($this->batches) && count($this->batches)>0) && in_array($days, [30, 90]) && (!empty($value['duration_type']) && $value['duration_type']=='session' && !empty($value['duration']));
 
 
 					if(!empty($studioExtValidity) && $studioExtValidity && ($value['type']!='extended validity')){
@@ -378,7 +378,7 @@ class Service extends \Basemodel{
 
 				
 				
-				appendUpgradeData($value, $this);
+				// appendUpgradeData($value, $this);
                 
                 // if($value["type"] == "workout session" && $finder->category_id != 47){
                 //     if($value["special_price"] > 0){

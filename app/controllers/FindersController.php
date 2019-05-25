@@ -675,8 +675,14 @@ class FindersController extends \BaseController {
                             
 
 							if(count($service['serviceratecard']) > 0){
-
+								$dupDurationDays = [];
 								foreach ($service['serviceratecard'] as $ratekey => $rateval){
+
+									$durationDays = $this->utilities->getDurationDay($rateval);
+									if(empty($dupDurationDays[$durationDays])){
+										$dupDurationDays[$durationDays] = [];	
+									}
+									array_push($dupDurationDays[$durationDays], $ratekey);
 
 									if((!empty($service['batches']) && count($service['batches'])>0 ) && !empty($rateval['studio_extended_validity']) && $rateval['studio_extended_validity']) {
 										$service['studio_extended_validity'] = [
@@ -781,6 +787,20 @@ class FindersController extends \BaseController {
 									// 	}
 									// }
 								}
+
+								$remarkImportantIndex = [];
+								foreach ($dupDurationDays as $record) {
+									if(count($record)>1) {
+										$remarkImportantIndex = array_merge($remarkImportantIndex, $record);
+									}
+								}
+								foreach ($remarkImportantIndex as $idx) {
+									if(!empty($service['serviceratecard'][$idx])) {
+										$service['serviceratecard'][$idx]['remarks_imp'] = true;
+										$service['serviceratecard'][$idx]['remarks_imp_api'] = true;
+									}
+								}
+
 							}
 
 							if((isset($finderarr['membership']) && $finderarr['membership'] == 'disable') || isset($service['membership']) && $service['membership'] == 'disable'){
@@ -1296,11 +1316,11 @@ class FindersController extends \BaseController {
 					unset($response['finder']['payment_options']);
 				}
 
-				$response['finder']  = $this->applyNonValidity($response, 'web');
+				// $response['finder']  = $this->applyNonValidity($response, 'web');
 
                 $this->applyFreeSP($response);
 
-                $this->insertWSNonValidtiy($response, 'web');
+                // $this->insertWSNonValidtiy($response, 'web');
 
                 // $response['finder'] = $this->applyTopService($response);
 
@@ -1308,14 +1328,23 @@ class FindersController extends \BaseController {
                 //     $this->insertWSRatecardTopService($response, $cheapest_price);
 				// }
 
-				$this->addNonValidityLink($response);
-				
-				if(!in_array($finder['_id'], Config::get('app.upgrade_session_finder_id'))){
-					$this->removeNonValidity($response, 'web');
-				}
+				// $this->addNonValidityLink($response);
+                $this->applyNonValidityDuration($response);
+				// if(!in_array($finder['_id'], Config::get('app.upgrade_session_finder_id'))){
+				// 	$this->removeNonValidity($response, 'web');
+				// }
 
                 $this->removeEmptyServices($response, 'web');
-				                
+                // return $response;
+                $this->removeUpgradeWhereNoHigherAvailable($response);
+                
+                $this->serviceRemoveFlexiIfExtendedPresent($response);
+                try{
+                    $this->orderRatecards($response);
+                }catch(Exception $e){
+                    Log::info("Error while sorting ratecard");
+                }
+
                 if(empty($response['vendor_stripe_data']['text'])){
                     // if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
                         
@@ -7293,7 +7322,163 @@ class FindersController extends \BaseController {
 
 	public function testMultifit(){
 		return $this->utilities->multifitFinder();
+    }
+    
+    public function applyNonValidityDuration(&$data){
+		foreach($data['finder']['services'] as &$service){
+            $membership_ratecards = false;
+            $unlimited_validity = false;
+            foreach($service['serviceratecard'] as &$ratecard){
+                if($ratecard['type'] == 'extended validity'){
+                        
+                    if(!empty($ratecard['flags']['unlimited_validity'])){
+                        $ext_validity = "Unlimited Validity";
+                        $unlimited_validity = true;
+                    }else{
+                        $ext_validity = "Valid for ".$ratecard['validity'].' '.$ratecard['validity_type'];
+                    }
+
+                    $ratecard['duration_type'] = $ratecard['duration_type'] . "(" . $ext_validity . ')';
+                }else{
+                    if($ratecard['type'] != 'workout session'){
+                        $membership_ratecards = true;
+                    }
+                }
+            }
+
+            if(empty($membership_ratecards)){
+                
+                $getNonValidityBanner = $this->getNonValidityBanner();
+                $getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.service_footer');
+                foreach($getNonValidityBanner as &$value){
+                    $value = strtr($value, ['__ext_validity_type'=>!empty($unlimited_validity) ? "Unlimited Validity":"Extended Validity", '__vendor_name'=>$data['finder']['title']]);
+                }
+                $service['non_validity'] = $getNonValidityBanner;
+
+
+            }
+		
+		}
 	}
+    
+    public function removeUpgradeWhereNoHigherAvailable(&$data){
+
+		foreach($data['finder']['services'] as $key => &$service){
+            if(empty($key)){
+                continue;
+            }
+            
+            $upgradable_ratecards_membership = array_filter($service['serviceratecard'], function($x){
+                return in_array(getDurationDay($x), [180,360]) && $x['type'] == 'membership';
+            });
+
+            $extended_validity_ratecards = array_filter($service['serviceratecard'], function($x){
+                return $x['type'] == 'extended validity';
+            });
+            if(empty($extended_validity_ratecards)){
+                $max_duration_session_pack = 0;    
+            }else{
+
+                $max_duration_session_pack = max(array_column($extended_validity_ratecards, 'duration'));
+            }
+
+            if(empty($upgradable_ratecards_membership)){
+                foreach($service['serviceratecard'] as &$rc){
+                    if($rc['type'] == 'membership'){
+                        unset($rc['upgrade_popup']);
+                    }
+                }
+            }
+            
+            foreach($service['serviceratecard'] as &$rc){
+                if($rc['type'] == 'extended validity'){
+                    if($rc['duration'] <= 20){
+                        
+                        if(empty($upgradable_ratecards_membership) && $max_duration_session_pack <= $rc['duration']){
+                            unset($rc['upgrade_popup']);
+                        }
+                        
+                    
+                    }else{
+
+                        if($max_duration_session_pack <= $rc['duration']){
+                            unset($rc['upgrade_popup']);
+                        }
+                    
+                    }
+                }
+            }
+		}
+	}
+    
+    public function serviceRemoveFlexiIfExtendedPresent(&$data){
+        foreach($data['finder']['services'] as &$service){
+            $extended_validity = false;
+            
+            foreach($service['serviceratecard'] as &$ratecard){
+                if($ratecard['type'] == 'extended validity'){
+                    $extended_validity = true;
+                    break;
+                }
+            }
+
+            if(empty($extended_validity)){
+                if($ratecard['type'] == 'extended validity'){
+                    if(!empty($ratecard['studio_extended_validity'])){
+                        unset($ratecard['studio_extended_validity']);
+                    }
+                }
+            }
+		
+		}
+		
+    }
+    
+    public function orderRatecards(&$data){
+        
+        $duration_session_pack = [30=>7, 90=>20, 180=>75, 360=>120, 720=>500];
+        
+        function compareDuration($a, $b){
+            return getDurationDay($a) >= getDurationDay($b);
+        }
+        
+        function compareSessions($a, $b){
+            return $a['duration'] >= $b['duration'];
+        }
+        function duration_days($a){
+            $a['duration_day'] = getDurationDay($a);
+            return $a;
+        }
+
+        foreach($data['finder']['services'] as &$service){
+
+            $membership_ratecards = array_filter($service['serviceratecard'], function($rc){
+                return $rc['type'] != 'extended validity';
+            });
+
+            $session_ratecards = array_filter($service['serviceratecard'], function($rc){
+                return $rc['type'] == 'extended validity' ;
+            });
+            
+            usort($membership_ratecards, "compareDuration");
+            usort($session_ratecards, "compareSessions");
+            // return $session_ratecards;
+            $all_ratecards = [];
+
+            $membership_ratecards = array_map('duration_days', $membership_ratecards);
+
+            $session_buckets = createBucket($session_ratecards, 'duration', array_values($duration_session_pack));
+            
+            $membership_buckets = createBucket($membership_ratecards, 'duration_day', array_keys($duration_session_pack));
+
+            foreach($duration_session_pack as $key => $value){
+                $all_ratecards = array_merge($all_ratecards, $session_buckets[$value], $membership_buckets[$key]);
+            }
+
+            $service['serviceratecard'] =  $all_ratecards;
+            
+        }
+    }
 
 	
 }

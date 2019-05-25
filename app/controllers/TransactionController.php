@@ -916,7 +916,13 @@ class TransactionController extends \BaseController {
             //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
 
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
-	
+            
+            if(!empty($order['duration'])){
+
+                $GLOBALS['order_duration'] = $order['duration'];
+
+            }
+
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
             
             // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
@@ -1165,9 +1171,16 @@ class TransactionController extends \BaseController {
                 Log::info('$finderDetail[data][finderFlags]: ', [$finderDetail['data']['finder_flags']]);
             }
 
-            if($data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity && !empty($ratecardDetail['data']['duration']) && $ratecardDetail['data']['duration']>0 && (empty($finderDetail['data']['finder_flags']['trial']) || $finderDetail['data']['finder_flags']['trial']=='auto')){
-                $workoutSessionRatecard = Ratecard::where('direct_payment_enable', '1')->where('type', 'workout session')->where('service_id', $data['service_id'])->first();
-                if(!empty($workoutSessionRatecard)){
+            if((!empty($data['servicecategory_id']) && !in_array($data['servicecategory_id'], Config::get('app.non_flexi_service_cat', [111, 65, 5]))) && $data['type']=='memberships' && !empty($data['batch']) && (count($data['batch'])>0) && $studioExtValidity && !empty($ratecardDetail['data']['duration']) && $ratecardDetail['data']['duration']>0 && (empty($finderDetail['data']['finder_flags']['trial']) || $finderDetail['data']['finder_flags']['trial']=='auto')){
+                $workoutSessionOrExtendedRatecard = Ratecard::where('direct_payment_enable', '1')->whereIn('type', ['workout session', 'extended validity'])->where('service_id', $data['service_id'])->get()->toArray();
+                $workoutSessionRatecard = array_filter($workoutSessionOrExtendedRatecard, function($x){
+                    return $x['type'] == 'workout session';
+                });
+                $extendedValidityRatecards = array_filter($workoutSessionOrExtendedRatecard, function($x){
+                    return $x['type'] == 'extended validity';
+                });
+
+                if(!empty($workoutSessionRatecard) && empty($extendedValidityRatecards)){
                     $data['studio_extended_validity'] = true;
                     $data['studio_sessions'] = [
                         'total' => $ratecardDetail['data']['duration'],
@@ -3420,6 +3433,10 @@ class TransactionController extends \BaseController {
         if(!empty($data['studio_extended_validity_order_id']) && empty($data['studio_extended_session'])){
             $data['amount_customer'] = $data['amount'] = 0;
         }
+        
+        if(!empty($data['studio_extended_cancelled']['booktrial_id'])){
+            $data['amount_customer'] = $data['amount'] = 0;
+        }
 
         if(!empty($data['amount'] ) && !empty($data['finder_flags']['enable_commission_discount']) && (!empty($data['type']) && $data['type'] == 'memberships') && empty($data['extended_validity'])){
             $commission = getVendorCommision(['finder_id'=>$data['finder_id']]);
@@ -3474,7 +3491,21 @@ class TransactionController extends \BaseController {
             }
         }        
         
-        if(empty($data['session_pack_discount']) && empty($order['session_pack_discount']) && ((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
+        if(!empty($data['amount'] ) && $data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
+            Order::$withoutAppends = true;
+            $studio_extended_validity_order = $this->utilities->getStudioExtendedValidityOrder($data);
+            if($studio_extended_validity_order){
+                $data['studio_extended_validity_order_id'] = $studio_extended_validity_order['_id'];
+                $data['studio_extended_session'] = true;
+                $data['session_pack_discount'] = $data['ratecard_amount'];
+                $amount = $data['amount'] - $data['session_pack_discount'];
+                // if(!empty($data['ratecard']['enable_vendor_novalidity_comm'])){
+                    // $data['amount_finder'] = 0;
+                    // $data['vendor_price'] = 0;
+                    // }
+                }
+            }    
+           if(empty($data['session_pack_discount']) && empty($order['session_pack_discount']) && ((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
             $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
 
@@ -4569,7 +4600,9 @@ class TransactionController extends \BaseController {
         if(!empty($service['flags'])){
             $data['service_flags'] = $service['flags'];
         }
-        
+        if(!empty($service['combine_service_ids'])){
+            $data['all_service_id'] = $service['combine_service_ids'];
+        }
         
         return array('status' => 200,'data' =>$data);
 
@@ -8973,6 +9006,54 @@ class TransactionController extends \BaseController {
         }
 
         
+    }
+
+    public function createSessionPack($data){
+        
+        $rules = array(
+            'order_id'=>'required|integer',
+            'booktrial_id'=>'required|integer'
+        );
+
+        $validator = Validator::make($data, $rules);
+        
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+        
+        Order::$withoutAppends = true;
+        $order = Order::where('_id', $data['order_id']);
+        
+        $capture_data = array_only($order->toArray(), $this->utilities->getSuccessCommonInputFields());
+
+        $capture_data['studio_extended_cancelled']['booktrial_id'] = $data['booktrial_id'];
+        $capture_data['studio_extended_cancelled']['order_id'] = $data['order_id'];
+
+        $capture_response = $this->capture($capture_data);
+
+        if(getArrayValue($capture_response, 'status') != 200){
+            return ['status'=>400, 'message'=>'Please contact customer support (110001)'];
+        }
+        
+        $success_data['order_id'] = $capture_response['order_id'];
+
+        $success_response = $this->successCommon($success_data);
+
+        return $success_response;
+
+    }
+
+    public function getSuccessData($order){
+        
+        $success_data = ['order_id'=> $order['_id'], 'status' => 'success'];
+        
+        $data_keys = ['customer_name','customer_email','customer_phone','finder_id','service_name','amount','type'];
+
+        foreach($data_keys as $key){
+            $success_data[$key] = $order[$key];
+        }
+
+        $this->successCommon($success_data);
     }
 
 }
