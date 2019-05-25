@@ -8401,8 +8401,8 @@ class CustomerController extends \BaseController {
 				$post = true;
 			}
 
-			Log::info("customer_id:   ".$customer->_id);
-			Log::info("customer_email:   ".$customer->email);
+			// Log::info("customer_id:   ".$customer->_id);
+			// Log::info("customer_email:   ".$customer->email);
         }
         
         $voucher_categories = $this->utilities->getVoucherCategoriesAggregate($filter);
