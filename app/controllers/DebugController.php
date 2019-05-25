@@ -10543,6 +10543,7 @@ public function yes($msg){
         return "Done";
     }
 
+
     public function fixCustomerQuantity(){
 
         return $orders = Order::raw(function($query){
@@ -10604,6 +10605,7 @@ public function yes($msg){
                         'status'=>"1", 'customer_quantity'=>['$gt'=>1],
                         'success_date'=>['$ne'=>null],
                         'vendor_price'=>['$ne'=>null]
+
                     ]
                 ],
                 [
@@ -10668,6 +10670,52 @@ public function yes($msg){
         return $update;
 		return $this->batchUpdate('mongodb','orders',$update);
 
+    }
+
+
+    public function fixAmountCustomer(){
+        $orders = Order::raw(function($query){
+        $aggregate = [
+            [
+                '$match'=>[
+                    'amount_customer'=>['$type'=>'string']
+
+                ]
+            ],
+            [
+                '$project'=>[
+                        'amount_customer'=>1
+                    ]
+                ]
+            ];
+            return $query->aggregate($aggregate);
+        });
+        $orders = $orders['result'];
+
+        return count($orders);
+        $updates = [];
+        foreach($orders as $x){
+            
+            array_push($updates, [
+                "q"=>['_id'=> $x['_id']],
+                "u"=>[
+                    '$set'=>[
+                        'old_amount_customer'=>$x['amount_customer'],
+                        'amount_customer'=>intval($x['amount_customer'])
+                    ]
+                ],
+                'multi' => false
+            ]);
+            // if(count($updates) == 5000){
+                // return $updates;
+                // $updates =[];
+                // }
+        }
+            
+        $update = $this->batchUpdate('mongodb', 'orders', $updates);
+        
+        return "Done";
+        
     }
 
 

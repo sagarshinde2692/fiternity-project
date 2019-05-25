@@ -1992,6 +1992,15 @@ Class Utilities {
 
                 $wallet->for_details = $request['details'];
             }
+            if(isset($request['upgradable_to_membership'])){
+                $wallet->upgradable_to_membership = $request['upgradable_to_membership'];
+            }
+            if(isset($request['upgradable_to_session_pack'])){
+                $wallet->upgradable_to_session_pack = $request['upgradable_to_session_pack'];
+            }
+            if(isset($request['session_pack_duration_gt'])){
+                $wallet->session_pack_duration_gt = $request['session_pack_duration_gt'];
+            }
             
             $wallet->save();
 
@@ -2669,7 +2678,15 @@ Class Utilities {
         }else{
 
             if(!empty($request['extended_validity'])){
-                $query->where('restricted_for', '!=', 'upgrade');
+            
+                $duration = isset($GLOBALS['order_duration']) ? $GLOBALS['order_duration'] : 0;
+
+                $query->where('upgradable_to_session_pack', '!=', 'false')->where('session_pack_duration_gt', '<', $duration);
+            
+            }else{
+            
+                $query->where('upgradable_to_membership', '!=', 'false');
+            
             }
 
             if($this->checkCouponApplied()){
@@ -7638,6 +7655,49 @@ Class Utilities {
             ->where('sessions_left', '>', 0)
             ->first();;
     }
+    
+    public function getStudioExtendedValidityOrder($data){
+        
+        if(!empty($data['order_customer_email'])){
+            $data['customer_email'] = $data['order_customer_email'];
+        }
+
+        if(empty($data['customer_id']) && empty($data['customer_email'])){
+            return;
+        }
+        Order::$withoutAppends = true;
+        $query = Order::active()->where('studio_extended_validity', true);
+        
+        if(!empty($data['customer_email'])){
+            $query->where('customer_email', $data['customer_email']);
+        }
+
+        if(!empty($data['customer_id'])){
+            $query->where('customer_id', $data['customer_id']);
+        }
+
+
+        $query
+            // ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
+            ->where(function($query) use ($data){
+                $query->where('studio_membership_duration.end_date', '<', new MongoDate(strtotime($data['schedule_date'])));
+                $query->where('studio_membership_duration.end_date_extended', '>', new MongoDate(strtotime($data['schedule_date'])));
+            });
+
+
+        $order =  $query
+            ->where(function($query) use ($data){ $query->orWhere('service_id', $data['service_id'])->orWhere('all_service_id', $data['service_id']);})
+            ->first();;
+        
+        $extended_count = 0;
+        if(!empty($order)){
+            $extended_count = Order::active()->where('studio_extended_validity_order_id', $order['_id'])->where('studio_extended_session', true)->count();
+        }
+
+        if(isset($order['studio_sessions']['cancelled']) && !empty($order['studio_sessions']['total_cancel_allowed']) && $extended_count < $order['studio_sessions']['cancelled']){
+            return $order;
+        }
+    }
 
 
     public function getAllExtendedValidityOrders($data){
@@ -7700,8 +7760,28 @@ Class Utilities {
         if(!empty($order['upgrade_fitcash']) || !empty($order['multifit'])){
             return;
         }
+        
+        $finder_detail = json_decode(json_encode(app(\FindersController::class)->finderdetail($order['finder_slug'])->getData()), true);
+        // return $finder_detail['finder']; 
+        $ratecards_array = array_column($finder_detail['finder']['services'], 'serviceratecard');
+        
+        $all_ratecards = [];
+        
+        foreach($ratecards_array as $v){
+            $all_ratecards = array_merge($all_ratecards, $v);
+        }
 
-        if(!empty($order['duration_day']) && !empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], Config::get('upgrade_membership.service_cat', [65, 111])) && in_array($order['duration_day'], Config::get('upgrade_membership.duration', [30])) && empty($order['extended_validity'])){
+        $all_upgradable_ratecards = array_filter($all_ratecards, function($rc){
+            return !empty($rc['upgrade_popup']);
+        });
+
+        $upgradable_ratecard_ids = array_column($$all_upgradable_ratecards, '_id');
+
+        if(!in_array($order['ratecard_id'], $upgradable_ratecard_ids)){
+            return;
+        }
+
+        if(empty($order['extended_validity'])){
 
             $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
 
@@ -7713,23 +7793,28 @@ Class Utilities {
                 "amount_fitcash" => 0,
                 "amount_fitcash_plus" => $fitcash_amount,
                 "type"=>'FITCASHPLUS',
-                'description'=>"Added FitCash+ for upgrading 1 month ".ucwords($order['service_name'])." to 1 Year only at ".$order['finder_name'].", Expires On : ".date('d-m-Y',time()+(86400*$no_of_days)),
+                'description'=>"Added FitCash+ for upgrading 1 month ".ucwords($order['service_name'])." to 6 months or 1 year membership only at ".$order['finder_name'].", Expires On : ".date('d-m-Y',time()+(86400*$no_of_days)),
                 'entry'=>'credit',
                 'valid_finder_id'=>$order['finder_id'],
                 'service_id'=>$order['service_id'],
                 'remove_wallet_limit'=>true,
                 'validity'=>strtotime($order['start_date'])+(86400*$no_of_days),
-                'duration_day'=>360,
+                'duration_day'=>Config::get('upgrade_membership.upgradabe_to_membership_duration', [180, 360]),
                 'restricted_for'=>'upgrade',
                 'restricted'=>1,
                 'order_id'=>$order['_id'],
+                'upgradable_to_membership'=> $this->checkUpgradeAvailable($order,'membership'),
+                'upgradable_to_session_pack'=> $this->checkUpgradeAvailable($order)
             );
             
             $this->walletTransactionNew($request);
             
             $order->upgrade_fitcash = true;
 
-        }elseif(!empty($order['extended_validity']) && in_array($order['finder_id'], Config::get('app.upgrade_session_finder_id', []))){
+            $order->update();
+
+        }elseif(!empty($order['extended_validity'])){
+            
             $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
 
             $no_of_days = Config::get('upgrade_membership.fitcash_days');
@@ -7749,12 +7834,16 @@ Class Utilities {
                 'restricted'=>1,
                 'order_id'=>$order['_id'],
                 'order_type'=>['membership', 'memberships'],
-                'duration_day'=>Config::get('upgrade_membership.upgrade_session_duration', [90, 180, 360]),
+                'duration_day'=>Config::get('upgrade_membership.upgrade_session_duration', [180, 360]),
+                'session_pack_duration_gt'=>$order['duration'],
+                'upgradable_to_membership'=>$this->checkUpgradeAvailable($order,'membership'),
+                'upgradable_to_session_pack'=>$this->checkUpgradeAvailable($order),
             );
             
             $this->walletTransactionNew($request);
             
             $order->upgrade_fitcash = true;
+            $order->update();
         }
     }
 
@@ -8757,6 +8846,33 @@ Class Utilities {
             return $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)->getData()), true);
                        
         }
+    }
+
+    public function checkUpgradeAvailable($order, $type=''){
+        
+        if($type == "membership"){
+            if(
+                empty($order['extended_validity']) 
+            || !(empty($order['no_of_sessions']) && $order['no_of_sessions'] < Config::get('upgrade_membership.session_pack_to_membership_upgradable_sessions_limit', 20))
+            ){
+                return true;
+            }
+        
+        }else{
+
+            if(!empty($order['extended_validity'])){
+                return true;
+            }
+
+        }
+
+        return false;
+            
+
+    }
+
+    public function getSuccessCommonInputFields(){
+        return ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","finder_address","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","ratecard_id","customer_identity","customer_source","customer_location","customer_quantity","init_source","multifit","wallet"];
     }
       
 }

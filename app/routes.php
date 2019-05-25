@@ -1357,3 +1357,4 @@ Route::post('spinthewheelreg','EmailSmsApiController@spinTheWheelReg');
 Route::get('fitpassComparison', 'DebugController@fitpassComparison');
 Route::get('fixCustomerQuantity', 'DebugController@fixCustomerQuantity');
 Route::get('fixFinanceCustomerQuantity', 'DebugController@fixFinanceCustomerQuantity');
+Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');

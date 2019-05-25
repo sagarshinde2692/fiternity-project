@@ -1069,6 +1069,12 @@ class MigrationReverseController extends \BaseController {
             if(isset($data['flags'])){
                 $insertData['flags'] = $data['flags'];
             }
+            if(isset($data['combine_service_ids'])){
+                $insertData['combine_service_ids'] = $data['combine_service_ids'];
+            }
+            if(isset($data['flags'])){
+                $insertData['flags'] = $data['flags'];
+            }
 
             if(isset($data['slug'])){
                 $insertData['slug'] = $data['slug'];
@@ -1177,6 +1183,10 @@ class MigrationReverseController extends \BaseController {
 
             if(isset($data['vendor_price'])){
                 $insertData['vendor_price'] = $data['vendor_price'];
+            }
+            
+            if(isset($data['remarks_imp'])){
+                $insertData['remarks_imp'] = $data['remarks_imp'];
             }
             
 
