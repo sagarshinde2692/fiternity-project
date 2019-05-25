@@ -7815,7 +7815,7 @@ Class Utilities {
             return !empty($rc['upgrade_popup']);
         });
 
-        $upgradable_ratecard_ids = array_column($$all_upgradable_ratecards, '_id');
+        $upgradable_ratecard_ids = array_column($all_upgradable_ratecards, '_id');
 
         if(!in_array($order['ratecard_id'], $upgradable_ratecard_ids)){
             return;

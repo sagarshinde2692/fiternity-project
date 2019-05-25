@@ -785,7 +785,7 @@ Class CustomerReward {
                 $utilities->setPPSReferralData($order->toArray());
             }
 
-            $utilities->giveFitcashforUpgrade($order);
+            // $utilities->giveFitcashforUpgrade($order);
             
             
         }
