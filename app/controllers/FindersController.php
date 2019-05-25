@@ -675,8 +675,14 @@ class FindersController extends \BaseController {
                             
 
 							if(count($service['serviceratecard']) > 0){
-
+								$dupDurationDays = [];
 								foreach ($service['serviceratecard'] as $ratekey => $rateval){
+
+									$durationDays = $this->utilities->getDurationDay($rateval);
+									if(empty($dupDurationDays[$durationDays])){
+										$dupDurationDays[$durationDays] = [];	
+									}
+									array_push($dupDurationDays[$durationDays], $ratekey);
 
 									if((!empty($service['batches']) && count($service['batches'])>0 ) && !empty($rateval['studio_extended_validity']) && $rateval['studio_extended_validity']) {
 										$service['studio_extended_validity'] = [
@@ -781,6 +787,20 @@ class FindersController extends \BaseController {
 									// 	}
 									// }
 								}
+
+								$remarkImportantIndex = [];
+								foreach ($dupDurationDays as $record) {
+									if(count($record)>1) {
+										$remarkImportantIndex = array_merge($remarkImportantIndex, $record);
+									}
+								}
+								foreach ($remarkImportantIndex as $idx) {
+									if(!empty($service['serviceratecard'][$idx])) {
+										$service['serviceratecard'][$idx]['remarks_imp'] = true;
+										$service['serviceratecard'][$idx]['remarks_imp_api'] = true;
+									}
+								}
+
 							}
 
 							if((isset($finderarr['membership']) && $finderarr['membership'] == 'disable') || isset($service['membership']) && $service['membership'] == 'disable'){
