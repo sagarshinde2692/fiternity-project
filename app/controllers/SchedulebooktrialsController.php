@@ -5073,7 +5073,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(!empty($booktrial['studio_extended_validity_order_id'])){
                 $emaildata['studio_extended_validity_order_id'] = $booktrial['studio_extended_validity_order_id'];
-                // $emaildata['studio_next_extended_session'] = $booktrial['studio_next_extended_session'];
+                $emaildata['studio_next_extended_session'] = $booktrial['studio_next_extended_session'];
                 $order = Order::where('_id', $booktrial['studio_extended_validity_order_id'])->first(['_id', 'studio_extended_validity', 'studio_sessions', 'studio_membership_duration']);
                 $emaildata['studio_extended_validity'] = $order['studio_extended_validity'];
                 $emaildata['studio_sessions'] = $order['studio_sessions'];

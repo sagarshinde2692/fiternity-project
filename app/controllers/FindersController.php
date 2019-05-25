@@ -91,7 +91,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderdetail($slug, $cache = false){
+	public function finderdetail($slug, $cache = true){
 
 		$thirdPartySector = Request::header('sector');
 		$isThirdParty = (isset($thirdPartySector) && in_array($thirdPartySector, ['multiply', 'health']));
