@@ -679,10 +679,12 @@ class FindersController extends \BaseController {
 								foreach ($service['serviceratecard'] as $ratekey => $rateval){
 
 									$durationDays = $this->utilities->getDurationDay($rateval);
-									if(empty($dupDurationDays[$durationDays])){
-										$dupDurationDays[$durationDays] = [];	
+									if($rateval['type']!='extended validity') {
+										if(empty($dupDurationDays[$durationDays])){
+											$dupDurationDays[$durationDays] = [];	
+										}
+										array_push($dupDurationDays[$durationDays], $ratekey);
 									}
-									array_push($dupDurationDays[$durationDays], $ratekey);
 
 									if((!empty($service['batches']) && count($service['batches'])>0 ) && !empty($rateval['studio_extended_validity']) && $rateval['studio_extended_validity']) {
 										$service['studio_extended_validity'] = [
