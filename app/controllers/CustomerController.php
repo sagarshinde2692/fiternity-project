@@ -61,7 +61,7 @@ class CustomerController extends \BaseController {
 			->whereIn('booktrial_type', array('auto'))
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
-			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate($type=='lte'?(strtotime('-1 hour')):(strtotime('now'))))
+			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-1 hour')))
 			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
 			->get($selectfields);
 		}
@@ -71,7 +71,7 @@ class CustomerController extends \BaseController {
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
 			->where('going_status_txt','!=','cancel')
-			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate($type=='lte'?(strtotime('-1 hour')):(strtotime('now'))))
+			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-1 hour')))
 			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
 			->get($selectfields);
 	}
