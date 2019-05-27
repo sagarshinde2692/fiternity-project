@@ -7438,7 +7438,7 @@ class FindersController extends \BaseController {
     
     public function orderRatecards(&$data){
         
-        $duration_session_pack = [30=>7, 90=>20, 180=>75, 360=>120, 720=>500];
+        $duration_session_pack = [1=>1, 30=>7, 90=>20, 180=>75, 360=>120, 720=>500];
         
         function compareDuration($a, $b){
             return getDurationDay($a) >= getDurationDay($b);
@@ -7454,6 +7454,10 @@ class FindersController extends \BaseController {
 
         foreach($data['finder']['services'] as &$service){
 
+            $ws_ratecards = array_filter($service['serviceratecard'], function($rc){
+                return $rc['type'] == 'workout session';
+            });
+            
             $membership_ratecards = array_filter($service['serviceratecard'], function($rc){
                 return $rc['type'] != 'extended validity';
             });
@@ -7465,7 +7469,7 @@ class FindersController extends \BaseController {
             usort($membership_ratecards, "compareDuration");
             usort($session_ratecards, "compareSessions");
             // return $session_ratecards;
-            $all_ratecards = [];
+            $all_ratecards = $ws_ratecards;
 
             $membership_ratecards = array_map('duration_days', $membership_ratecards);
 
