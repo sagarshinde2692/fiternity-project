@@ -426,7 +426,12 @@ class FindersController extends \BaseController {
 				// 	unset($finder['ozonetelno']);
 				// }
 
-				$finder['review_count']     =   isset($finderarr["total_rating_count"]) ? $finderarr["total_rating_count"] : 0;
+				// $finder['review_count']     =   isset($finderarr["total_rating_count"]) ? $finderarr["total_rating_count"] : 0;
+				$finder['review_count']     =   Review::where('status','=','1')->where('description', '!=', "")->where('finder_id', $finder['_id'])->count();
+
+				if(empty($finder['review_count'])) {
+					$finder['review_count'] = 0;
+				}
 
 				$finder['offer_icon'] = "";
 				$finder['offer_icon_mob'] = "";
@@ -4266,7 +4271,14 @@ class FindersController extends \BaseController {
 					}
 				}
 
-				$finder['review_count']     =   isset($finder["total_rating_count"]) ? $finder["total_rating_count"] : 0;
+				// $finder['review_count']     =   isset($finder["total_rating_count"]) ? $finder["total_rating_count"] : 0;
+
+				$finder['review_count']     =   Review::where('status','=','1')->where('description', '!=', "")->where('finder_id', $finder['_id'])->count();
+
+				if(empty($finder['review_count'])) {
+					$finder['review_count'] = 0;
+				}
+
 				$finder['average_rating']   =   (isset($finder['average_rating']) && $finder['average_rating'] != "") ? round($finder['average_rating'],1) : 0;
 				
 				// if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != '' && isset($finder['contact']['phone']) && $finder['contact']['phone'] != ""){
@@ -7438,7 +7450,7 @@ class FindersController extends \BaseController {
     
     public function orderRatecards(&$data){
         
-        $duration_session_pack = [30=>7, 90=>20, 180=>75, 360=>120, 720=>500];
+        $duration_session_pack = [1=>1, 30=>7, 90=>20, 180=>75, 360=>120, 720=>500];
         
         function compareDuration($a, $b){
             return getDurationDay($a) >= getDurationDay($b);
@@ -7454,6 +7466,10 @@ class FindersController extends \BaseController {
 
         foreach($data['finder']['services'] as &$service){
 
+            $ws_ratecards = array_filter($service['serviceratecard'], function($rc){
+                return $rc['type'] == 'workout session';
+            });
+            
             $membership_ratecards = array_filter($service['serviceratecard'], function($rc){
                 return $rc['type'] != 'extended validity';
             });
@@ -7465,7 +7481,7 @@ class FindersController extends \BaseController {
             usort($membership_ratecards, "compareDuration");
             usort($session_ratecards, "compareSessions");
             // return $session_ratecards;
-            $all_ratecards = [];
+            $all_ratecards = $ws_ratecards;
 
             $membership_ratecards = array_map('duration_days', $membership_ratecards);
 
