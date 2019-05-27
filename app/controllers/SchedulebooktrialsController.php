@@ -2856,6 +2856,16 @@ class SchedulebooktrialsController extends \BaseController {
                     $send_communication["customer_sms_before12hour"] = $this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
                 }
             }
+            else if(!isset($booktrialdata['third_party_details'])){
+                $mins = 30;
+                if($currentScheduleDateDiffMin < 60){
+                    $mins = 0;
+                }
+                $reminderTimeAfterHalfHour 	       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes($mins);
+                $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfterHalfHour);     
+                $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfterHalfHour);
+                $send_communication["customer_sms_before12hour"] = $this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfterHalfHour);
+            }
 
 
 
@@ -7139,9 +7149,14 @@ class SchedulebooktrialsController extends \BaseController {
                         }
                         
                         if(!isset($booktrial['extended_validity_order_id'])){
-                			if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
-                				$booktrial->send_communication['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
-                				else $booktrial->send_communication['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
+                            $sendComm = $booktrial->send_communication;
+                			if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true) {
+                				$sendComm['customer_sms_paypersession_FitCodeEnter_PayLater'] = $this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
+                            }
+                			else {
+                                $sendComm['customer_sms_paypersession_FitCodeEnter'] = $this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
+                            }
+                            $booktrial->send_communication = $sendComm;
                         }		
                 				$this->deleteTrialCommunication($booktrial);
                         
@@ -7164,7 +7179,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_date = time();
             $booktrial->update();
 
-            if(isset($booktrial['customer_sms_after24hour']) && $booktrial['customer_sms_after24hour'] != ""){
+            if(isset($booktrial['send_communication']['customer_sms_after24hour']) && $booktrial['send_communication']['customer_sms_after24hour'] != ""){
                          
                 $booktrial->unset('customer_sms_after24hour');
              

@@ -1727,8 +1727,13 @@ class ServiceController extends \BaseController {
 
 			}
 	
+			$reviewCounts = Review::where('status','=','1')->where('description', '!=', "")->where('finder_id', $finder['_id'])->count();
+			if(empty($reviewCounts)) {
+				$reviewCounts = 0;
+			}
+
 			$service_details['reviews'] = [
-				'count'=>isset($finder['total_rating_count']) ? $finder['total_rating_count'] : 0,
+				'count'=>$reviewCounts,
 				'reviews'=>$reviews
 			];
 
