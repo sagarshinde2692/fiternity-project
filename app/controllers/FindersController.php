@@ -7459,7 +7459,7 @@ class FindersController extends \BaseController {
             });
             
             $membership_ratecards = array_filter($service['serviceratecard'], function($rc){
-                return $rc['type'] != 'extended validity';
+                return $rc['type'] == 'membership';
             });
 
             $session_ratecards = array_filter($service['serviceratecard'], function($rc){
