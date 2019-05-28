@@ -6797,37 +6797,45 @@ class FindersController extends \BaseController {
                             // $mem_ratecard_duration_day = $this->utilities->getDurationDay($mem_ratecard);
                             // $mem_ratecard_price = $this->utilities->getRatecardPrice($mem_ratecard);
                             // $price = $this->utilities->getRatecardPrice($r);
-                            $extended_validity_type = $this->getExtendedValidityType($r);
-                            $getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
-                                // "__membership_price"=>$mem_ratecard_price,
-                                // "__membership_months"=>$mem_ratecard_duration_day/30,
-                                // "__extended_sessions_count"=>$r['duration'],
-                                // "__extended_sessions_price"=>$price,
-                                // "__sessions_validity_months"=>$r['ext_validity'],
-                                "__vendor_name"=>$data['finder']['title'],
-                                "__ext_validity_type"=> $extended_validity_type
-                            ]);
-    
-                            if(!empty($getNonValidityBanner['how_it_works'])){
-                                $getNonValidityBanner['how_it_works']['description'] = strtr($getNonValidityBanner['how_it_works']['description'], ['__vendor_name'=>$data['finder']['title']]);
-                            }
-    
-                            $getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>($extended_validity_type)]);
-                            if(!empty($getNonValidityBanner['title1'])){
-                                $getNonValidityBanner['title1'] = strtr($getNonValidityBanner['title1'], ['__ext_validity_type'=>($extended_validity_type)]);
-                            }
-                            $r['non_validity_ratecard_copy'] = $getNonValidityBanner;
-                            $getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
-                            $getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
-                            $r['non_validity_ratecard']  = $getNonValidityBanner;
-                                
+							$extended_validity_type = $this->getExtendedValidityType($r);
+							if($this->app_version > '5.1.7'){
+								$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
+								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
+								$r['data']  = $getNonValidityBanner;
+								$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+							}
+							else{
+								$getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
+									// "__membership_price"=>$mem_ratecard_price,
+									// "__membership_months"=>$mem_ratecard_duration_day/30,
+									// "__extended_sessions_count"=>$r['duration'],
+									// "__extended_sessions_price"=>$price,
+									// "__sessions_validity_months"=>$r['ext_validity'],
+									"__vendor_name"=>$data['finder']['title'],
+									"__ext_validity_type"=> $extended_validity_type
+								]);
+		
+								if(!empty($getNonValidityBanner['how_it_works'])){
+									$getNonValidityBanner['how_it_works']['description'] = strtr($getNonValidityBanner['how_it_works']['description'], ['__vendor_name'=>$data['finder']['title']]);
+								}
+		
+								$getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>($extended_validity_type)]);
+								if(!empty($getNonValidityBanner['title1'])){
+									$getNonValidityBanner['title1'] = strtr($getNonValidityBanner['title1'], ['__ext_validity_type'=>($extended_validity_type)]);
+								}
+								$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+								$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
+								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
+								$r['non_validity_ratecard']  = $getNonValidityBanner;
+							}
+                            Log::info('non validity ratecard:::::::::::', [$r['non_validity_ratecard']]);
     
                         }
                     }
             }
         }catch(Exception $e){
             
-            Log::info("Non validity description breaking");
+            Log::info("Non validity description breaking", [$e]);
         
         }
 
@@ -6880,8 +6888,10 @@ class FindersController extends \BaseController {
     }
 
     public function getNonValidityBanner(){
+		Log::info('values:::::::', [$this->device_type, $this->app_version]);
         if(in_array($this->device_type, ['android', 'ios'])){
 			if($this->app_version > '5.1.7'){
+				Log::info('values:::::::', [$this->device_type, $this->app_version]);
 				return Config::get('nonvalidity.finder_banner_app_data');
 			}
 			else{
