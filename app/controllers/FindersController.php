@@ -426,7 +426,12 @@ class FindersController extends \BaseController {
 				// 	unset($finder['ozonetelno']);
 				// }
 
-				$finder['review_count']     =   isset($finderarr["total_rating_count"]) ? $finderarr["total_rating_count"] : 0;
+				// $finder['review_count']     =   isset($finderarr["total_rating_count"]) ? $finderarr["total_rating_count"] : 0;
+				$finder['review_count']     =   Review::where('status','=','1')->where('description', '!=', "")->where('finder_id', $finder['_id'])->count();
+
+				if(empty($finder['review_count'])) {
+					$finder['review_count'] = 0;
+				}
 
 				$finder['offer_icon'] = "";
 				$finder['offer_icon_mob'] = "";
@@ -4266,7 +4271,14 @@ class FindersController extends \BaseController {
 					}
 				}
 
-				$finder['review_count']     =   isset($finder["total_rating_count"]) ? $finder["total_rating_count"] : 0;
+				// $finder['review_count']     =   isset($finder["total_rating_count"]) ? $finder["total_rating_count"] : 0;
+
+				$finder['review_count']     =   Review::where('status','=','1')->where('description', '!=', "")->where('finder_id', $finder['_id'])->count();
+
+				if(empty($finder['review_count'])) {
+					$finder['review_count'] = 0;
+				}
+
 				$finder['average_rating']   =   (isset($finder['average_rating']) && $finder['average_rating'] != "") ? round($finder['average_rating'],1) : 0;
 				
 				// if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != '' && isset($finder['contact']['phone']) && $finder['contact']['phone'] != ""){
