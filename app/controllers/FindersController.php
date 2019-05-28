@@ -6881,7 +6881,12 @@ class FindersController extends \BaseController {
 
     public function getNonValidityBanner(){
         if(in_array($this->device_type, ['android', 'ios'])){
-            return Config::get('nonvalidity.finder_banner_app');
+			if($this->app_version > '5.1.7'){
+				return Config::get('nonvalidity.finder_banner_app_data');
+			}
+			else{
+				return Config::get('nonvalidity.finder_banner_app');
+			}
         }else{
             return Config::get('nonvalidity.finder_banner');
         }
