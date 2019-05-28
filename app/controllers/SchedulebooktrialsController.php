@@ -7642,6 +7642,15 @@ class SchedulebooktrialsController extends \BaseController {
 
             case 'activate':
                 Log::info($_SERVER['REQUEST_URI']);
+
+                if(empty($_GET['vendor_code']) && strpos($_GET['source'], 'let_us_know?vendor_code=')>=0){
+                    $vendorCode = explode('vendor_code=', $_GET['source']);
+                    if(!empty($vendorCode[1])){
+                        $_GET['vendor_code'] = $vendorCode[1];
+                        $_GET['source'] = 'let_us_know';
+                    }
+                }
+
                 if(!isset($_GET['vendor_code'])){
                     return Response::json(array('status'=>400, 'message'=>'Fitcode not attached'), 200);
                 }
