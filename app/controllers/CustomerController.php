@@ -9599,4 +9599,43 @@ class CustomerController extends \BaseController {
 		return Response::json($resp, $resp['status']);
 	}
 
+	public function distanceCalculationOfCheckinsCheckouts($coordinates, $vendorCoordinates){
+		$p = 0.017453292519943295;    // Math.PI / 180
+		$dLat = ($vendorCoordinates[1] - $coordinates[1]) * $p;
+		$dLon = ($vendorCoordinates[0] - $coordinates[0]) * $p;
+		$a = sin($dLat/2) * sin($dLat/2) +
+		cos($coordinates[1] * $p) * cos($vendorCoordinates[1] * $p) * 
+		sin($dLon/2) * sin($dLon/2);
+		$c = 2 * atan2(sqrt(a), sqrt(1-a)); 
+  		$d = 6371 * c; // Distance in km
+  		return d;
+	}
+
+	public function checkForOperationalDayAndTime($finder){
+		$serviceDetails = $order['service_id'];
+		$trialschedules = $serviceDetails['trialschedules'];
+		$currentDay = date("D");
+		$currentTime = date("H:i:s");
+		$matched= false;
+		foreach($trialschedules as $index =>$value){
+			if($value['weekday']== $currentDay){
+
+			}
+		}
+	}
+
+	public function checkForCheckinFromDevice($device_id, $time){
+		$date =new dateTime();
+		Log::info('modified date::::::::', [$date->modify('-1 days')], 'actual Date::::::', [$date]);
+		$checkins= Checkin::where('device_id', $device_id)->where('created_at', '>', $date->modify('-1 days'))->select('customer_id', 'created_at')->get();
+		$res = ["status"=> true];
+		//->where('created_at', '<', $date->modify('-2 hours'))
+		$d = date("h:i:s", $checkins[0]['created_at']);
+		$second = $d->format('h')* 60 + $d->format('i')*60 + $d->format('s');
+		
+		if(count($checkins)>0){
+			$res = ["status"=>false, "message"=>"You have already checked-in for the day."];
+		}
+		return $res;
+	}
 }
