@@ -4519,14 +4519,18 @@ Class Utilities {
             $customer = $referral_resp['customer'];
             
             if($referral_resp['type'] == 'self'){
-            
+                if(empty($customer->pps_referral_credits_used)) {
+                    $customer->pps_referral_credits_used = 0;
+                }
                 $customer->pps_referral_credits_used = $customer->pps_referral_credits_used + 1;
                 $customer->update();
 
                 $update_order = \Order::where('_id', $order['_id'])->update(['pps_referral'=> 'self']);
             
             }else{
-            
+                if(empty($customer->pps_referral_credits)) {
+                    $customer->pps_referral_credits = 0;
+                }
                 $customer->pps_referral_credits = $customer->pps_referral_credits + 1;
                 $pps_referral_customer_ids = isset($customer->pps_referral_customer_ids) ? $customer->pps_referral_customer_ids : [];
                 array_push($pps_referral_customer_ids, $customer_id);
