@@ -33,6 +33,7 @@ use FinderMilestone;
 use MongoDate;
 use Coupon;
 use \GuzzleHttp\Client;
+use Input;
 
 use App\Services\Fitnessforce as Fitnessforce;
 
@@ -4427,19 +4428,31 @@ Class Utilities {
             if($customer['_id'] != $customer_id){
             
                 
-                $order_id = \Input::get('order_id');        
+                $customer_email = Input::get('customer_email');
                 
-                if(!empty($order_id)){
+                if(!empty($customer_email)){
+                    
+                    Customer::$withoutAppends = true;
+                    $current_customer = Customer::where('email', strtolower($customer_email))->first();
+                    $customer_id = $current_customer->_id;
+
+                }else{
+
+                    $order_id = \Input::get('order_id');        
+                    
+                    if(!empty($order_id)){
+                    
+                        \Order::$withoutAppends = true;
+                    
+                        $order = \Order::find(intval($order_id), ['customer_id']);
+                    
+                        if(!empty($order['customer_id'])){
+                            $customer_id = $order['customer_id'];
+                        }
+                    
+                    }   
+                }
                 
-                    \Order::$withoutAppends = true;
-                
-                    $order = \Order::find(intval($order_id), ['customer_id']);
-                
-                    if(!empty($order['customer_id'])){
-                        $customer_id = $order['customer_id'];
-                    }
-                
-                }   
             }
 
             if($customer['_id'] == $customer_id){
