@@ -3775,7 +3775,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = true){
+	public function finderDetailApp($slug, $cache = false){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -3936,7 +3936,7 @@ class FindersController extends \BaseController {
 						if(!isset($povInd['url']) || trim($povInd['url']) == ""){
 							$povInd=null;
 						}
-						Log::info(" povInd  :: ".print_r($povInd,true));
+						//Log::info(" povInd  :: ".print_r($povInd,true));
 						if(!empty($povInd))
 						{
 							array_splice($finder['videos'],(int)$finder['playOverVideo'], 1);
@@ -4540,7 +4540,7 @@ class FindersController extends \BaseController {
 							$date1=date_create(date("Y/m/d"));
 							$date2=date_create(date('Y/m/d',$data['finder']['flags']['newly_launched_date']->sec));
 							$diff=date_diff($date1,$date2);
-							Log::info(" info diff ".print_r($diff,true));
+							//Log::info(" info diff ".print_r($diff,true));
 							if($diff->invert>0)
 							{
 								if($diff->days<=30)
@@ -5031,7 +5031,7 @@ class FindersController extends \BaseController {
 				// return $finderservice['ratecard'];
 				// exit;
 				foreach ($finderservice['ratecard'] as $ratecard){
-                    Log::info($ratecard);
+                    //Log::info($ratecard);
 					if(in_array($ratecard["type"],["workout session", "trial"])){
 
 						if($type == "workout session" && in_array($ratecard["type"],["trial"])){
@@ -6863,7 +6863,19 @@ class FindersController extends \BaseController {
 				unset($rate_c1['non_validity_ratecard_copy']);
             }
 		}
-	
+		$getExtendedValidityBanner = $this->getExtendedValidityBanner();
+		$getExtendedValidityBanner['data']['header'] = strtr($getExtendedValidityBanner['data']['header'], ['vendor_name'=>($data['finder']['title'])]);	
+		$getExtendedValidityBanner['data']['description'] = strtr($getExtendedValidityBanner['data']['description'], ['vendor_name'=>($data['finder']['title'])]);
+		Log::info('before setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', [$getExtendedValidityBanner]);
+		foreach($data['finder']['services'] as &$extended){
+			foreach($extended['ratecard'] as &$ratecards){
+				//Log::info('before extended studio condition', [$ratecard]);
+				if(!empty($ratecards['studio_extended_validity'])){
+					Log::info('inside setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+					$ratecards['studio_extended_ratecard'] = $getExtendedValidityBanner;		
+				}
+			}
+		}
         return $data['finder'];
     }
 
@@ -7498,5 +7510,13 @@ class FindersController extends \BaseController {
         }
     }
 
+	public function getExtendedValidityBanner(){
+        if(in_array($this->device_type, ['android', 'ios'])){
+            return Config::get('extendedValidity.finder_banner_app');
+		}
+		else{
+            return Config::get('extendedValidity.finder_banner');
+        }
+    }
 	
 }
