@@ -8970,7 +8970,6 @@ class TransactionController extends \BaseController {
     }
 
     public function fitnessForce($data=null){
-        
         $post_data = array_only($data['data'], 
         
             [
@@ -8990,8 +8989,33 @@ class TransactionController extends \BaseController {
                 "start_date",
                 "finder_name",
                 "finder_city",
-                "finder_location",
+                "finder_location"
             ]);
+            
+            if(!empty($post_data['customer_name'])) {
+                $nameArr = explode(' ', $post_data['customer_name']);
+                if(!empty($nameArr) && count($nameArr)>0) {
+                    $countNameArr = count($nameArr);
+                    $post_data['first_name'] = $nameArr[0];
+                    if($countNameArr>1) {
+                        $post_data['last_name'] = $nameArr[$countNameArr-1];
+                    }
+                }
+            }
+            $post_data['source'] = 'payme';
+            $post_data['tenantid'] = 45;
+            $post_data['authkey'] = 'FFT_D_45';
+            
+            $post_data['productid'] = 34767;
+            // $post_data['packageid'] = 45;
+            // $post_data['campaignid'] = 45;
+            $post_data['purchasedate'] = '2019-05-29';
+            $post_data['activationdate'] = '2019-05-29';
+            $post_data['total'] = 2609;
+            $post_data['productprice'] = 2609;
+            $post_data['paymentmode'] = 'payme';
+            $post_data['amountpaid'] = 2609;
+
             $client = new GuzzleClient( ['debug' => false, 'base_uri' => "https://hooks.zapier.com/"] );
 
             if($data['type'] == 'trial'){
