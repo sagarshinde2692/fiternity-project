@@ -8994,9 +8994,9 @@ class TransactionController extends \BaseController {
             $order = $data['data'];
             Log::info('fitnessforce $data[data]: ', [$data['data']]);
             if(!(empty($data['type'])) && $data['type']=='booktrial') {
-                $order = Order::where('booktrial_id', $data['data']['_id'])->first();
+                $order = Order::where('_id', $data['data']['order_id'])->first();
             }
-
+            Log::info('fitnessforce $order: ', [$order]);
             $ratecard = Ratecard::where('_id', $order['ratecard_id'])->first();
 
             if(!empty($post_data['customer_name'])) {
