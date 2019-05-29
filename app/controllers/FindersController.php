@@ -7473,6 +7473,9 @@ class FindersController extends \BaseController {
 				];
 
 			} else if(in_array($finderRewardType, [5])){
+				$data['fitsquad']['image'] = $fitsquadLogo;
+				$data['fitsquad']['header'] = $fitsquadHeader;
+				$data['fitsquad']['imageText'] = $powByFit;
 				$cashbackImageMap = [
 					0 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A1.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],
 					1 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%201A.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],
