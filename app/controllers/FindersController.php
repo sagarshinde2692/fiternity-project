@@ -6760,6 +6760,7 @@ class FindersController extends \BaseController {
                     foreach($s[$ratecard_key] as &$r){
 						//Log::info('ratecards:::::::::::::::::: ');
                         if($r['type'] == 'extended validity'){
+							$r['type'] = 'studio_extended_validity';
 							$r[ "button_color"] = Config::get('app.ratecard_button_color');
 							$r['pps_image'] = Config::get('app.pps_image');
 							Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
