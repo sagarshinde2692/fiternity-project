@@ -9026,7 +9026,7 @@ class TransactionController extends \BaseController {
             }
 
             $post_data['purchasedate'] = date('Y-m-d',strtotime($data['data']['created_at'])); // '2019-05-29';
-            if(!(empty($data['type'])) && $data['type']=='booktrial') {
+            if(!(empty($data['type'])) && $data['type']=='workout-session') {
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['schedule_date_time']));
             }
             else {
