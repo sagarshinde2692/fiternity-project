@@ -6361,7 +6361,7 @@ Class Utilities {
         $new_voucher->selected_voucher = $voucher_category['_id'];
         $new_voucher->milestone = !empty($voucher_category['milestone']) ? $voucher_category['milestone'] : null;
         if(!empty($voucher_category->fitcash)){
-            $new_voucher->code = $new_voucher->code.". Fitcash 100 Added.";
+            $new_voucher->code = $new_voucher->code.". Fitcash ".$voucher_category->fitcash." Added.";
         }
 
         if(isset($voucher_category['flags'])){
