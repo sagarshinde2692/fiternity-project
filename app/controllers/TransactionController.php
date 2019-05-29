@@ -9011,7 +9011,7 @@ class TransactionController extends \BaseController {
             // $post_data['campaignid'] = 45;
             $post_data['purchasedate'] = date('d-M-Y',strtotime($data['data']['created_at'])); // '2019-05-29';
             if(!empty($data['data']) && array_search($data['data']['type'], ['workout-session', 'trial'])>=0) {
-                $post_data['purchasedate'] = date('d-M-Y',strtotime($data['schedule_date_time']));
+                $post_data['purchasedate'] = date('d-M-Y',strtotime($data['data']['schedule_date_time']));
             }
             else {
                 $post_data['activationdate'] = date('d-M-Y',strtotime($data['data']['preferred_starting_date'])); // '2019-05-29';
