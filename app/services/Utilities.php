@@ -6326,15 +6326,16 @@ Class Utilities {
                 ->first();
 
         if($already_assigned_voucher){
+            // Log::info("already_assigned_voucher");
             return $already_assigned_voucher;
         }
 
         if(!empty($voucher_category['flags']['manual_redemption'])){
-
+            // Log::info("manual_redemption");
             $new_voucher =  $this->assignManualVoucher($customer, $voucher_category);
         
         }else{
-
+            // Log::info("new".$voucher_category->_id);
             $new_voucher = \LoyaltyVoucher::active()
                 ->where('voucher_category', $voucher_category->_id)
                 ->where('customer_id', null)
@@ -6343,8 +6344,11 @@ Class Utilities {
                 ->first();
             
             if(!$new_voucher){
+                // Log::info("empty new_voucher");
                 return;
             }
+
+            // Log::info("new_voucher :: ", [$new_voucher]);
         
         }
 
@@ -6356,6 +6360,9 @@ Class Utilities {
         $new_voucher->claim_date = new \MongoDate();
         $new_voucher->selected_voucher = $voucher_category['_id'];
         $new_voucher->milestone = !empty($voucher_category['milestone']) ? $voucher_category['milestone'] : null;
+        if(!empty($voucher_category->fitcash)){
+            $new_voucher->code = $new_voucher->code.". Fitcash 100 Added.";
+        }
 
         if(isset($voucher_category['flags'])){
             $new_voucher->flags = $voucher_category['flags'];
