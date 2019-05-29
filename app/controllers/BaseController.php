@@ -8,6 +8,7 @@ class BaseController extends Controller {
     
     public $device_type;
     public $app_version;
+    public $device_id;
 
     /**
      * @constructor
@@ -17,6 +18,7 @@ class BaseController extends Controller {
         $this->app_version = Request::header('App-Version');
         $this->authorization = Request::header('Authorization');
         $this->mobile_verified = Request::header('Mobile-Verified');
+        $this->device_id = Request::header('Device-Id');
 
         $this->get_device_type = !empty($_GET['device_type']) ? $_GET['device_type'] : '' ;
         $this->get_app_version = !empty($_GET['app_version']) ? $_GET['app_version'] : '' ;

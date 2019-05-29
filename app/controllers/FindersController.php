@@ -341,7 +341,7 @@ class FindersController extends \BaseController {
 
 								if(isset($weekdayslots['slots']) && count($weekdayslots['slots']) > 0){
 									foreach ($weekdayslots['slots'] as $key => $slot) {
-//                                        return $slot;
+	                                    // return $slot;
 										$find       =   ["am","pm"];
 										$replace    =   [""];
 										$start_time_surfix_arr  =   explode(":", trim(str_replace($find, $replace, $slot['start_time'])) );
@@ -356,7 +356,7 @@ class FindersController extends \BaseController {
 										array_push($slots_end_time_24_hour_format_Arr, $end_time);
 									}
 
-//                                    return $slots_start_time_24_hour_format_Arr;
+                                   //  return $slots_start_time_24_hour_format_Arr;
 
 
 									if(!empty($slots_start_time_24_hour_format_Arr) && !empty($slots_end_time_24_hour_format_Arr)){
@@ -382,7 +382,7 @@ class FindersController extends \BaseController {
 
 										$closing_hour     = $closing_hour_arr[0].":".$closing_hour_surfix;
 
-//                                        return "$opening_hour  -- $closing_hour";
+                                    	//    return "$opening_hour  -- $closing_hour";
 										//   $finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
 										//   $finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr)
 										if($today_weekday == $weekday){

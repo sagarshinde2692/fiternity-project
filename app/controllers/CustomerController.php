@@ -8673,7 +8673,7 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function markCheckin($finder_id){
+	public function checkinInitiate($finder_id, $finder_data){
 
         // if(empty($_GET['lat']) || empty($_GET['lon'])){
         //     return ['status'=>400, 'message'=>'Checkin from invalid location'];
@@ -8709,7 +8709,9 @@ class CustomerController extends \BaseController {
 			'customer_id'=>$customer_id,
 			'finder_id'=>intval($finder_id),
 			'type'=>$type,
-            'unverified'=>!empty($_GET['type']) ? true : false
+			'unverified'=>!empty($_GET['type']) ? true : false,
+			'status' => false,
+			'device_id' => $this->device_id
         ];
 
         if(!empty($_GET['receipt'])){
@@ -8731,9 +8733,10 @@ class CustomerController extends \BaseController {
         }
 		
 		
-		Finder::$withoutAppends = true;
+		// Finder::$withoutAppends = true;
 		
-		$finder = Finder::find($finder_id, ['title']);
+		// $finder = Finder::find($finder_id, ['title']);
+		$finder = $finder_data;
 		
 		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200 || (!empty($schedule_session['status']) && $schedule_session['status'] == 200)){
 
@@ -9608,47 +9611,121 @@ class CustomerController extends \BaseController {
 		sin($dLon/2) * sin($dLon/2);
 		$c = 2 * atan2(sqrt(a), sqrt(1-a)); 
   		$d = 6371 * c; // Distance in km
-  		return d;
+  		return d *1000;
 	}
 
-	public function checkForOperationalDayAndTime($finder){
-		$serviceDetails = $order['service_id'];
-		$trialschedules = $serviceDetails['trialschedules'];
-		$currentDay = date("D");
-		$currentTime = date("H:i:s");
-		$matched= false;
-		foreach($trialschedules as $index =>$value){
-			if($value['weekday']== $currentDay){
-
+	public function checkForOperationalDayAndTime($finder_id){
+		$finder_service = Service :: where('finder_id', $finder_id)-select()->get();
+		$finder_gym_service  = [];
+		$todayDate= new Date();
+		$today = $todayDate->format('D');
+		$minutes = $todayDate->format('i');
+		$hour= $todayDate->format('H');
+		$status= false;
+		if(isset($finder_service['trialschedules'])){
+			foreach($finder_service['trialschedules'] as $key=> $value){
+				if(strtolower($today) == strtolower($value['weekday'])){
+					foreach($finder_service['trialschedules'][$key]['slots'] as $key1=> $value1){
+						if($hour >=$value1['start_time_24_hour_format'] && $hour < $value1['end_time_24_hour_format']){
+							$status= true;
+							break;
+						}
+					}
+				}
+				if($status){
+					break;
+				}
 			}
-		}
-	}
-
-	public function checkForCheckinFromDevice($device_id, $time){
-		$date =new dateTime();
-		Log::info('modified date::::::::', [$date->modify('-1 days')], 'actual Date::::::', [$date]);
-		$checkins= Checkin::where('device_id', $device_id)->where('created_at', '>', $date->modify('-1 days'))->select('customer_id', 'created_at')->get();
-		$res = ["status"=> true];
-		//->where('created_at', '<', $date->modify('-2 hours'))
-		$d = date("h:i:s", $checkins[0]['created_at']);
-		$seconds = $d->format('h')* 60 + $d->format('i')*60 + $d->format('s');
-		Log::info('chekin time ->>>>>>> seconds',[$seconds], 'hours::::->', [$d->format('h')]);
-		$cd = new Date();
-		$currentSeconds = $cd->format('h')* 60 + $cd->format('i')*60 + $cd->format('s');
-		Log::info('chekin time current ->>>>>>> seconds',[$currentSeconds], 'hours::::->', [$cd->format('h')], 'difference', [$currentSeconds - $seconds]);
-
-		if($currentSeconds - $seconds <= 120 * 60){
-			
-		}
-		else if($currentSeconds - $seconds > 120 * 60){
-
 		}
 		else{
-			if(count($checkins)>0){
-				$res = ["status"=>false, "message"=>"You have already checked-in for the day."];
+			return ['status'=> false, "message"=>"No Service Available."];
+		}
+
+		if($status){
+			return ["status"=> true];
+		}else{
+			return ["status"=> false, "message"=>"No Slots availabe right now. try later."];
+		}
+	}
+
+	public function checkForCheckinFromDevice($finder_id, $device_id, $finder){
+		$date =new dateTime();
+		Log::info('modified date::::::::', [$date->modify('-1 days')], 'actual Date::::::', [$date]);
+		$checkins= Checkin::where('device_id', $device_id)->where('created_at', '>', $date->modify('-1 days'))->select('customer_id', 'created_at', 'status')->get();
+		$res = ["status"=> true];
+		//->where('created_at', '<', $date->modify('-2 hours'))
+
+		if(count($checkins)>0){
+			//checkingout
+			$d = date("h:i:s", $checkins[0]['created_at']);
+			$seconds = $d->format('h')* 60 + $d->format('i')*60 + $d->format('s');
+			Log::info('chekin time ->>>>>>> seconds',[$seconds], 'hours::::->', [$d->format('h')]);
+			$cd = new Date();
+			$currentSeconds = $cd->format('h')* 60 + $cd->format('i')*60 + $cd->format('s');
+			Log::info('chekin time current ->>>>>>> seconds',[$currentSeconds], 'hours::::->', [$cd->format('h')], 'difference', [$currentSeconds - $seconds]);
+			if($checkins['status']){
+				//allreday checkdout
+				return $res = ["status"=>false, "message"=>"You have already checked-in for the day."];
+			
 			}
+			else if(($currentSeconds - $seconds < 45 * 60)){
+				//session is not complitated
+				return $res = ["status"=>false, "message"=>"session is not completed."];
+			}
+			else if(($currentSeconds - $seconds > 45 * 60) &&($currentSeconds - $seconds <= 120 * 60)){
+				//checking out ----
+				return checkoutInitiate($finder_id);
+				//$res = ["status"=>true, "message"=>" checking- out for the day."];
+			}
+			else if($currentSeconds - $seconds > 120 * 60){
+				//times up not accaptable
+				return $res = ["status"=>false, "message"=>"Times Up to checkout for the day."];
+			}
+		}
+		else{
+			//just checkinss ->>>>>> start checkoins
+			return checkinInitiate($finder_id, $finder);
 		}
 
 		return $res;
+	}
+
+	public function markCheckin($finder_id){
+		
+		$customer_geo = [];
+		$finder_geo = [];
+
+		Finder::$withoutAppends = true;
+		$finder = Finder::find($finder_id, ['title']);
+		
+		if(!empty(\Input::get('lat')) && !empty(\Input::get('lon'))){
+			$customer_geo['lat'] = floatval(\Input::get('lat'));
+			$customer_geo['lon'] = floatval(\Input::get('lon'));
+		}
+
+		if(isset($finder['lat']) && isset($finder['lon'])){
+			$finder_geo['lat'] = $finder['lat'];
+			$finder_geo['lon'] = $finder['lon'];
+		}
+
+		$distanceStatus  = distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 500 ? true : false;
+		if($distanceStatus){
+			$oprtionalDays = checkForOperationalDayAndTime($finder_id);
+			if($oprtionalDays['status']){
+				return checkForCheckinFromDevice($finder_id, $this->device_id, $finder);
+			}
+			else{
+				return $oprtionalDays;
+			}
+		}
+		else{
+			// return for use high accurary
+			return ["status"=> false, "message"=>"Pleaseput your device in high accuracy."];
+		}
+		
+	}
+
+	public function checkoutInitiate($customer){
+
 	}
 }
