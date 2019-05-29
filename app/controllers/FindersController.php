@@ -6760,7 +6760,6 @@ class FindersController extends \BaseController {
                     foreach($s[$ratecard_key] as &$r){
 						//Log::info('ratecards:::::::::::::::::: ');
                         if($r['type'] == 'extended validity'){
-							$r['type'] = 'studio_extended_validity';
 							$r[ "button_color"] = Config::get('app.ratecard_button_color');
 							$r['pps_image'] = Config::get('app.pps_image');
 							Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
@@ -6931,6 +6930,7 @@ class FindersController extends \BaseController {
 			foreach($extended['ratecard'] as &$ratecards){
 				//Log::info('before extended studio condition', [$ratecard]);
 				if(!empty($ratecards['studio_extended_validity'])){
+					$ratecards['type'] = 'studio_extended_validity';
 					Log::info('inside setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
 					//$ratecards['pps_image'] = 'http://b.fitn.in/global/fexbutton.png';
 					$ratecards['pps_title'] = "Flexi Membership";
