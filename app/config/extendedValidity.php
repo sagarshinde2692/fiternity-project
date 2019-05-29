@@ -4,61 +4,83 @@ return array(
     "finder_banner" =>[
         "data"=> [
             "image"=> "http://b.fitn.in/global/fexbutton.png",
-            "header"=> "Most effective way to avail a membership at vendor_name",
-            "text"=> "",
-            "description"=> "Unlimited Validity Membership gives you the ability to workout at vendor_name for a longer validity period by buying a workout session pack of your choice. This is a Fitternity exclusive feature which allows you to maximize on your spends on Fitness by giving you the flexibility to book sessions as per your convenience over a longer period of time than a standard membership",
+            "header"=> "GET EXCLUSIVE ACCESS TO EXTEND YOUR MEMBERSHIP",
+            "text"=> "Get exclusive access to extending your membership to complete all your sessions. So don't worry if you miss any of the class, we have got you covered!",
+            "description"=> "",
             "how_it_works"=> [
                 "header"=> "How it works",
-                "text"=> "All you need to do is book your slot everytime you want to workout",
+                "text"=> "",
                 "data"=> [
                             [
-                            "image"=> "",
-                            "header"=> "Easy to book",
-                            "text"=> "Everytime you want to workout, you can prebook your sessions only on Fitternity app or scan the QR code available at the gym/studio."
+                                "image"=> "",
+                                "header"=> "",
+                                "text"=> "This membership offers you extended validity which gives you the flexibility of attending all your workout sessions as per your convenience."
                             ],
                             [
-                            "image"=> "",
-                            "header"=> "Track Your Usage",
-                            "text"=> "Check the workout counter in your Fitternity profile."
+                                "image"=> "",
+                                "header"=> "",
+                                "text"=> "All the sessions should be schdeuled basis the schedule/batch of the service that you have purchased."
                             ],
                             [
-                            "image"=> "",
-                            "header"=> "Easy cancellation",
-                            "text"=> "Don't lose out on your workout with easy cancellation until 1 hour prior to your session time. Available only on Fitternity app."
+                                "image"=> "",
+                                "header"=> "",
+                                "text"=> "Flexi membership is a app only feature. Please download the app post buying to track your sessions."
+                            ],
+                            [
+                                "image"=> "",
+                                "header"=> "",
+                                "text"=> "Not able to attend? Cancel on the go, 60 minutes prior to your session time through your user profile on the Fitternity App / Reminder notification prior to your session."
+                            ],
+                            [
+                                "image"=> "",
+                                "header"=> "",
+                                "text"=> "Cancelled sessions can be rebooked later as per your convinience."
                             ]
+
                 ]
             ],
-        "terms"=> "T&C Apply- Direct entry without booking or scanning a QR code at the gym will not be facilitated."
+        "terms"=> ""
         ]
     ], 
     "finder_banner_app" =>[ 
         "data"=> [
             "image"=> "http://b.fitn.in/global/fexbutton.png",
-            "header"=> "Most effective way to avail a membership at vendor_name",
-            "text"=> "",
-            "description"=> "Unlimited Validity Membership gives you the ability to workout at vendor_name for a longer validity period by buying a workout session pack of your choice. This is a Fitternity exclusive feature which allows you to maximize on your spends on Fitness by giving you the flexibility to book sessions as per your convenience over a longer period of time than a standard membership",
+            "header"=> "GET EXCLUSIVE ACCESS TO EXTEND YOUR MEMBERSHIP",
+            "text"=> "Get exclusive access to extending your membership to complete all your sessions. So don't worry if you miss any of the class, we have got you covered!",
+            "description"=> "",
             "how_it_works"=> [
                 "header"=> "How it works",
-                "text"=> "All you need to do is book your slot everytime you want to workout",
+                "text"=> "",
                 "data"=> [
                             [
-                            "image"=> "",
-                            "header"=> "Easy to book",
-                            "text"=> "Everytime you want to workout, you can prebook your sessions only on Fitternity app or scan the QR code available at the gym/studio."
+                                "image"=> "",
+                                "header"=> "",
+                                "text"=> "This membership offers you extended validity which gives you the flexibility of attending all your workout sessions as per your convenience."
                             ],
                             [
-                            "image"=> "",
-                            "header"=> "Track Your Usage",
-                            "text"=> "Check the workout counter in your Fitternity profile."
+                                "image"=> "",
+                                "header"=> "",
+                                "text"=> "All the sessions should be schdeuled basis the schedule/batch of the service that you have purchased."
                             ],
                             [
-                            "image"=> "",
-                            "header"=> "Easy cancellation",
-                            "text"=> "Don't lose out on your workout with easy cancellation until 1 hour prior to your session time. Available only on Fitternity app."
+                                "image"=> "",
+                                "header"=> "",
+                                "text"=> "Flexi membership is a app only feature. Please download the app post buying to track your sessions."
+                            ],
+                            [
+                                "image"=> "",
+                                "header"=> "",
+                                "text"=> "Not able to attend? Cancel on the go, 60 minutes prior to your session time through your user profile on the Fitternity App / Reminder notification prior to your session."
+                            ],
+                            [
+                                "image"=> "",
+                                "header"=> "",
+                                "text"=> "Cancelled sessions can be rebooked later as per your convinience."
                             ]
+
                 ]
             ],
-        "terms"=> "T&C Apply- Direct entry without booking or scanning a QR code at the gym will not be facilitated."
+        "terms"=> ""
         ]
     ]
         
