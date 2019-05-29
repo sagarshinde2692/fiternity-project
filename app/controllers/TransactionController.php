@@ -8991,7 +8991,13 @@ class TransactionController extends \BaseController {
                 "finder_city",
                 "finder_location"
             ]);
-            
+            $order = $data['data'];
+            if(!(empty($data['type'])) && $data['type']=='booktrial') {
+                $order = Order::where('booktrial_id', $data['data']['_id'])->first();
+            }
+
+            $ratecard = Ratecard::where('_id', $order['ratecard_id'])->first();
+
             if(!empty($post_data['customer_name'])) {
                 $nameArr = explode(' ', $post_data['customer_name']);
                 if(!empty($nameArr) && count($nameArr)>0) {
@@ -9006,9 +9012,18 @@ class TransactionController extends \BaseController {
             $post_data['tenantid'] = 45;
             $post_data['authkey'] = 'FFT_D_45';
             
-            $post_data['productid'] = 34767;
+            // $post_data['productid'] = 34767;
             // $post_data['packageid'] = 45;
             // $post_data['campaignid'] = 45;
+
+            $post_data['productid'] = $ratecard['flags']['ff_product_id'];
+            if(!empty($ratecard['flags']['ff_package_id'])) {
+                $post_data['packageid'] = $ratecard['flags']['ff_package_id'];
+            }
+            if(!empty($ratecard['flags']['ff_campaign_id'])) {
+                $post_data['campaignid'] = $ratecard['flags']['ff_campaign_id'];
+            }
+
             $post_data['purchasedate'] = date('Y-m-d',strtotime($data['data']['created_at'])); // '2019-05-29';
             if(!(empty($data['type'])) && $data['type']=='booktrial') {
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['schedule_date_time']));
@@ -9017,11 +9032,11 @@ class TransactionController extends \BaseController {
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['preferred_starting_date'])); // '2019-05-29';
             }
             $post_data['total'] = $post_data['amount'];
-            $post_data['productprice'] = $post_data['amount'];
+            $post_data['productprice'] = $ratecard['price'];
             $post_data['paymentmode'] = 'gymtrekker';
             $post_data['amountpaid'] = $post_data['amount'];
-            $post_data['addpaymentids'] = '13731'; // Ganesh  Dhumal said they will be making this non-mandatory, keep it for now...
-            $post_data['addpaymentvalues'] = '0'; // Ganesh  Dhumal said they will be making this non-mandatory, keep it for now...
+            $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
+            $post_data['addpaymentvalues'] = '0'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
 
             Log::info('fitnessForce: ', $post_data);
 
