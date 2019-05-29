@@ -2,7 +2,6 @@
 
 return array(
     "finder_banner" =>[
-        "data"=> [
             "image"=> "http://b.fitn.in/global/fexbutton.png",
             "header"=> "GET EXCLUSIVE ACCESS TO EXTEND YOUR MEMBERSHIP",
             "text"=> "Get exclusive access to extending your membership to complete all your sessions. So don't worry if you miss any of the class, we have got you covered!",
@@ -40,7 +39,6 @@ return array(
                 ]
             ],
         "terms"=> ""
-        ]
     ], 
     "finder_banner_app" =>[ 
             "image"=> "http://b.fitn.in/global/fexbutton.png",

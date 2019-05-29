@@ -6923,8 +6923,8 @@ class FindersController extends \BaseController {
         //     }
 		// }
 		$getExtendedValidityBanner = $this->getExtendedValidityBanner();
-		$getExtendedValidityBanner['header'] = strtr($getExtendedValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
-		$getExtendedValidityBanner['description'] = strtr($getExtendedValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
+		//$getExtendedValidityBanner['header'] = strtr($getExtendedValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
+		//$getExtendedValidityBanner['description'] = strtr($getExtendedValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
 		Log::info('before setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', [$getExtendedValidityBanner]);
 		foreach($data['finder']['services'] as &$extended){
 			foreach($extended['ratecard'] as &$ratecards){
@@ -7574,7 +7574,6 @@ class FindersController extends \BaseController {
             }
 
             $service['serviceratecard'] =  $all_ratecards;
-            
         }
     }
 
