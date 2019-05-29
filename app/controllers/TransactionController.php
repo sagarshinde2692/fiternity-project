@@ -8995,7 +8995,8 @@ class TransactionController extends \BaseController {
             $client = new GuzzleClient( ['debug' => false, 'base_uri' => "https://hooks.zapier.com/"] );
 
             if($data['type'] == 'trial'){
-                $url = 'hooks/catch/961068/jrdw9y';
+                // $url = 'hooks/catch/961068/jrdw9y';
+                $url = 'hooks/catch/5070121/v10106';
                 $post_data['type'] = "trial";
             }else{
                 $url = 'hooks/catch/961068/jr55ko';
