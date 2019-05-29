@@ -9010,7 +9010,7 @@ class TransactionController extends \BaseController {
             // $post_data['packageid'] = 45;
             // $post_data['campaignid'] = 45;
             $post_data['purchasedate'] = date('Y-m-d',strtotime($data['data']['created_at'])); // '2019-05-29';
-            if(!empty($data['data']) && array_search($data['data']['type'], ['workout-session', 'trial'])>=0) {
+            if(!(empty($data['type'])) && $data['type']=='booktrial') {
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['schedule_date_time']));
             }
             else {
@@ -9020,8 +9020,8 @@ class TransactionController extends \BaseController {
             $post_data['productprice'] = $post_data['amount'];
             $post_data['paymentmode'] = 'gymtrekker';
             $post_data['amountpaid'] = $post_data['amount'];
-            $post_data['addpaymentids'] = '13731';
-            $post_data['addpaymentvalues'] = '0';
+            $post_data['addpaymentids'] = '13731'; // Ganesh  Dhumal said they will be making this non-mandatory, keep it for now...
+            $post_data['addpaymentvalues'] = '0'; // Ganesh  Dhumal said they will be making this non-mandatory, keep it for now...
 
             Log::info('fitnessForce: ', $post_data);
 
