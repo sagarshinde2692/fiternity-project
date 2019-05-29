@@ -10722,6 +10722,12 @@ public function yes($msg){
         
     }
 
+    public function testcodesnippet(){
+        $customer = Customer::find(87977);
+        $customer->x = $customer->x+1;
+        $customer->update();
+    }
+
 
 }
 
