@@ -1599,7 +1599,8 @@ class TransactionController extends \BaseController {
         // if(!empty($data['studio_extended_validity']) && $data['studio_extended_validity']) {
         //     $this->utilities->scheduleStudioBookings(null, $order_id);
         // }
-
+        Log::info("capture response");
+        Log::info($resp);
         return $resp;
 
     }
