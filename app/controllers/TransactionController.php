@@ -6111,11 +6111,17 @@ class TransactionController extends \BaseController {
         $payment_modes = [];
 
 
-        $payment_options['payment_options_order'] = ["wallet", "cards", "netbanking", "emi"];
+        $payment_options['payment_options_order'] = ["wallet", "cards", "netbanking", "emi","upi"];
 
         if(!empty($order['type']) && $order['type'] == 'memberships'){
-            $payment_options['payment_options_order'] = ["cards", "wallet", "netbanking", "emi"];
+            $payment_options['payment_options_order'] = ["cards", "wallet", "netbanking", "emi","upi"];
         }
+
+        $payment_options['upi'] = [
+            'title' => 'UPI',
+            'subtitle' => "Note: In the next step you will be redirected to the bank's website to verify yourself",
+            'offer_text' => 'Transact online with UPI',
+        ];
         
         $payment_options['wallet'] = [
             'title' => 'Wallet',
