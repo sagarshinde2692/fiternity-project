@@ -7419,8 +7419,8 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['title'] = "<span style='text-align: center;font-weight: 900;'>Get ".$cashbackRate." cashback + Exciting Rewards</span>";
 				$data['fitsquad']['subtitle'] = null;
 				// $data['fitsquad']['description_title'] = "Buy a membership through Fitternity &";
-				// $data['fitsquad']['description'] = ['GET EXCLUSIVE ACCESS TO '.$cashbackRate." CASHBACK + EXCITING REWARDS WORTH ₹20,000 ON ACHIEVING MILESTONES OF", $cashbackDays, "WORKOUTS"];
-				$data['fitsquad']['description'] = '<span><span style="font-weight: 500">Buy a membership through Fitternity &</span><br/><span>GET EXCLUSIVE ACCESS TO '.$cashbackRate." CASHBACK + EXCITING REWARDS WORTH ₹20,000 ON ACHIEVING MILESTONES OF <span style='text-align: center;'>".$cashbackDays."</span></span> WORKOUTS</span>";
+				$data['fitsquad']['description'] = ['GET EXCLUSIVE ACCESS TO '.$cashbackRate." CASHBACK + EXCITING REWARDS WORTH ₹20,000 ON ACHIEVING MILESTONES OF", $cashbackDays, "WORKOUTS"];
+				//$data['fitsquad']['description'] = '<span><span style="font-weight: 500">Buy a membership through Fitternity &</span><br/><span>GET EXCLUSIVE ACCESS TO '.$cashbackRate." CASHBACK + EXCITING REWARDS WORTH ₹20,000 ON ACHIEVING MILESTONES OF <span style='text-align: center;'>".$cashbackDays."</span></span> WORKOUTS</span>";
 
 				$jumpToService = null;
 				$jumpToRatecard = null;
