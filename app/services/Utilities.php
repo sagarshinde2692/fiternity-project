@@ -4428,7 +4428,7 @@ Class Utilities {
             if($customer['_id'] != $customer_id){
             
                 
-                $customer_email = Input::get('customer_email');
+                $customer_email = Input::json()->get('customer_email');
                 
                 if(!empty($customer_email)){
                     
