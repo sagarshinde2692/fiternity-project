@@ -9631,8 +9631,10 @@ class CustomerController extends \BaseController {
 		$res = ["status"=> true];
 		//->where('created_at', '<', $date->modify('-2 hours'))
 		$d = date("h:i:s", $checkins[0]['created_at']);
-		$second = $d->format('h')* 60 + $d->format('i')*60 + $d->format('s');
-		
+		$seconds = $d->format('h')* 60 + $d->format('i')*60 + $d->format('s');
+		Log::info();
+		$cd = new Date();
+		$currentSeconds = $cd->format('h')* 60 + $cd->format('i')*60 + $cd->format('s');
 		if(count($checkins)>0){
 			$res = ["status"=>false, "message"=>"You have already checked-in for the day."];
 		}
