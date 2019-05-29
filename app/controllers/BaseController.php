@@ -13,6 +13,7 @@ class BaseController extends Controller {
      * @constructor
      */
     public function __construct() {
+        Log::info('headers:::::::', [Request::header('Device-Type'), Request::header('App-Version')]);
         $this->device_type = Request::header('Device-Type');
         $this->app_version = Request::header('App-Version');
         $this->authorization = Request::header('Authorization');
