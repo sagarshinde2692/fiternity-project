@@ -8992,8 +8992,8 @@ class TransactionController extends \BaseController {
                 "finder_location"
             ]);
             $order = $data['data'];
-            Log::info('fitnessforce $data[data]: ', [$data['data']]);
-            if(!(empty($data['type'])) && $data['type']=='booktrial') {
+            Log::info('fitnessforce $data: ', [$data]);
+            if(!(empty($data['type'])) && $data['type']=='workout-session') {
                 $order = Order::where('_id', $data['data']['order_id'])->first();
             }
             Log::info('fitnessforce $order: ', [$order]);
