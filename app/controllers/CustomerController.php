@@ -9636,12 +9636,19 @@ class CustomerController extends \BaseController {
 		$cd = new Date();
 		$currentSeconds = $cd->format('h')* 60 + $cd->format('i')*60 + $cd->format('s');
 		Log::info('chekin time current ->>>>>>> seconds',[$currentSeconds], 'hours::::->', [$cd->format('h')], 'difference', [$currentSeconds - $seconds]);
+
 		if($currentSeconds - $seconds <= 120 * 60){
 			
 		}
-		if(count($checkins)>0){
-			$res = ["status"=>false, "message"=>"You have already checked-in for the day."];
+		else if($currentSeconds - $seconds > 120 * 60){
+
 		}
+		else{
+			if(count($checkins)>0){
+				$res = ["status"=>false, "message"=>"You have already checked-in for the day."];
+			}
+		}
+
 		return $res;
 	}
 }
