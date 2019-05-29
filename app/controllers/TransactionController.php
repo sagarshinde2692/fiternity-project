@@ -9002,19 +9002,26 @@ class TransactionController extends \BaseController {
                     }
                 }
             }
-            $post_data['source'] = 'payme';
+            $post_data['source'] = 'gymtrekker';
             $post_data['tenantid'] = 45;
             $post_data['authkey'] = 'FFT_D_45';
             
             $post_data['productid'] = 34767;
             // $post_data['packageid'] = 45;
             // $post_data['campaignid'] = 45;
-            $post_data['purchasedate'] = '2019-05-29';
-            $post_data['activationdate'] = '2019-05-29';
-            $post_data['total'] = 2609;
-            $post_data['productprice'] = 2609;
-            $post_data['paymentmode'] = 'payme';
-            $post_data['amountpaid'] = 2609;
+            $post_data['purchasedate'] = date('d-M-Y',strtotime($data['created_at'])); // '2019-05-29';
+            if(!empty($data['data']) && array_search($data['data']['type'], ['workout-session', 'trial'])>=0) {
+                // $post_data['purchasedate'] = date('d-M-Y',strtotime($data['schedule_date_time']));
+                $post_data['activationdate'] = date('d-M-Y',strtotime($data['preferred_starting_date'])); // '2019-05-29';
+            }
+            $post_data['total'] = $post_data['amount'];
+            $post_data['productprice'] = $post_data['amount'];
+            $post_data['paymentmode'] = 'gymtrekker';
+            $post_data['amountpaid'] = $post_data['amount'];
+            $post_data['addpaymentids'] = '13731';
+            $post_data['addpaymentvalues'] = '0';
+
+            Log::info('fitnessForce: ', $post_data);
 
             $client = new GuzzleClient( ['debug' => false, 'base_uri' => "https://hooks.zapier.com/"] );
 
