@@ -6767,7 +6767,7 @@ class FindersController extends \BaseController {
 								$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
 								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
 								$r['data']  = $getNonValidityBanner;
-								$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+								//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
 							}
 							else{
 								$getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
@@ -6783,7 +6783,7 @@ class FindersController extends \BaseController {
 								if(!empty($getNonValidityBanner['title1'])){
 									$getNonValidityBanner['title1'] = strtr($getNonValidityBanner['title1'], ['__ext_validity_type'=>($extended_validity_type)]);
 								}
-								$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+								//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
 								$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
 								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
 								$r['non_validity_ratecard']  = $getNonValidityBanner;
