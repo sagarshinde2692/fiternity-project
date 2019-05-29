@@ -6674,6 +6674,7 @@ class FindersController extends \BaseController {
                 $data['finder']['extended_validity'] = true;
 
 				foreach($service[$ratecard_key] as $key1 => $ratecard){
+					//Log::info('ratecard type::::::: ', [$ratecard['type']]);
                     if($ratecard['type'] == 'membership'){
 
                         $duration_day = $this->utilities->getDurationDay($ratecard);
@@ -6750,53 +6751,17 @@ class FindersController extends \BaseController {
                 array_push($extended_services, $service);
             }
         }
-
-        $extended_services_map = [];
-
-        foreach($extended_services as $ext_ser){
-            $extended_services_map[$ext_ser['_id']] = $ext_ser;
-        }
-
-        $merged_services = [];
-        
-        foreach($data['finder']['services'] as $ser_key => $ser_value){
-            array_push($merged_services, $ser_value);
-            if(!empty($extended_services_map[$ser_value['_id']])){
-                array_push($merged_services, $extended_services_map[$ser_value['_id']]);
-            }
-        }
-
-        $data['finder']['services'] = $merged_services;
-        try{
-
+		
+		try{
+			$getNonValidityBanner = $this->getNonValidityBanner();
             foreach($data['finder']['services'] as &$s){
+				Log::info('services:::::::::::::::::: ');
                     foreach($s[$ratecard_key] as &$r){
+						Log::info('ratecards:::::::::::::::::: ');
                         if($r['type'] == 'extended validity'){
-                            // $price = $this->utilities->getRatecardPrice($r);
-                            // $sessions = $r['duration'];
-                            // $mem_ratecard = null;
-                            // foreach($duration_session_map as $key => $value){
-                            // 	if( $sessions > $value['low'] &&  $sessions <= $value['high']){
-                            // 		if(!empty($memberships[strval($s['_id'])][$key])){
-                            // 			foreach($memberships[strval($s['_id'])][$key] as $m){
-                            // 				if(!empty($m['final_price']) && $m['final_price'] > $price){
-                            // 					$mem_ratecard = $m;
-                            // 					break;
-                            // 				}
-                            // 			}
-                            // 		}
-                            // 	}
-                            // }
-    
-                            // if(empty($mem_ratecard)){
-                            // 	continue;
-                            // }
-    
-                            
-                            $getNonValidityBanner = $this->getNonValidityBanner();
-                            // $mem_ratecard_duration_day = $this->utilities->getDurationDay($mem_ratecard);
-                            // $mem_ratecard_price = $this->utilities->getRatecardPrice($mem_ratecard);
-                            // $price = $this->utilities->getRatecardPrice($r);
+							$r[ "button_color"] = Config::get('app.ratecard_button_color');
+							$r['pps_image'] = 'http://b.fitn.in/global/fexbutton.png';
+							Log::info('extended ratecard:::::::::::::::::: ');
 							$extended_validity_type = $this->getExtendedValidityType($r);
 							if($this->app_version > '5.1.7'){
 								$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
@@ -6806,11 +6771,6 @@ class FindersController extends \BaseController {
 							}
 							else{
 								$getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
-									// "__membership_price"=>$mem_ratecard_price,
-									// "__membership_months"=>$mem_ratecard_duration_day/30,
-									// "__extended_sessions_count"=>$r['duration'],
-									// "__extended_sessions_price"=>$price,
-									// "__sessions_validity_months"=>$r['ext_validity'],
 									"__vendor_name"=>$data['finder']['title'],
 									"__ext_validity_type"=> $extended_validity_type
 								]);
@@ -6828,7 +6788,7 @@ class FindersController extends \BaseController {
 								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
 								$r['non_validity_ratecard']  = $getNonValidityBanner;
 							}
-                            Log::info('non validity ratecard:::::::::::', [$r['non_validity_ratecard']]);
+                            Log::info('non validity ratecard:::::::::::');
     
                         }
                     }
@@ -6839,38 +6799,128 @@ class FindersController extends \BaseController {
         
         }
 
-        foreach($data['finder']['services'] as &$ser){
-            foreach($ser[$ratecard_key] as &$rate_c){
-				if(!empty($ser['type']) && $ser['type'] == 'extended validity'){
+        // $extended_services_map = [];
 
-					if(!empty($ser['unlimited_validity'])){
+        // foreach($extended_services as $ext_ser){
+        //     $extended_services_map[$ext_ser['_id']] = $ext_ser;
+        // }
+
+        // $merged_services = [];
+        
+        // foreach($data['finder']['services'] as $ser_key => $ser_value){
+        //     array_push($merged_services, $ser_value);
+        //     if(!empty($extended_services_map[$ser_value['_id']])){
+        //         array_push($merged_services, $extended_services_map[$ser_value['_id']]);
+        //     }
+        // }
+
+        // $data['finder']['services'] = $merged_services;
+        // try{
+		// 	Log::info('ratecard keys::::::::::::::', [$ratecard_key]);
+        //     foreach($data['finder']['services'] as &$s){
+		// 		Log::info('services:::::::::::::::::: ');
+        //             foreach($s[$ratecard_key] as &$r){
+		// 				Log::info('ratecards:::::::::::::::::: ');
+        //                 if($r['type'] == 'extended validity'){
+        //                     // $price = $this->utilities->getRatecardPrice($r);
+        //                     // $sessions = $r['duration'];
+        //                     // $mem_ratecard = null;
+        //                     // foreach($duration_session_map as $key => $value){
+        //                     // 	if( $sessions > $value['low'] &&  $sessions <= $value['high']){
+        //                     // 		if(!empty($memberships[strval($s['_id'])][$key])){
+        //                     // 			foreach($memberships[strval($s['_id'])][$key] as $m){
+        //                     // 				if(!empty($m['final_price']) && $m['final_price'] > $price){
+        //                     // 					$mem_ratecard = $m;
+        //                     // 					break;
+        //                     // 				}
+        //                     // 			}
+        //                     // 		}
+        //                     // 	}
+        //                     // }
+    
+        //                     // if(empty($mem_ratecard)){
+        //                     // 	continue;
+        //                     // }
+    
+		// 					Log::info('extended ratecard:::::::::::::::::: ');
+        //                     $getNonValidityBanner = $this->getNonValidityBanner();
+        //                     // $mem_ratecard_duration_day = $this->utilities->getDurationDay($mem_ratecard);
+        //                     // $mem_ratecard_price = $this->utilities->getRatecardPrice($mem_ratecard);
+        //                     // $price = $this->utilities->getRatecardPrice($r);
+		// 					$extended_validity_type = $this->getExtendedValidityType($r);
+		// 					if($this->app_version > '5.1.7'){
+		// 						$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
+		// 						$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
+		// 						$r['data']  = $getNonValidityBanner;
+		// 						$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+		// 					}
+		// 					else{
+		// 						$getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
+		// 							// "__membership_price"=>$mem_ratecard_price,
+		// 							// "__membership_months"=>$mem_ratecard_duration_day/30,
+		// 							// "__extended_sessions_count"=>$r['duration'],
+		// 							// "__extended_sessions_price"=>$price,
+		// 							// "__sessions_validity_months"=>$r['ext_validity'],
+		// 							"__vendor_name"=>$data['finder']['title'],
+		// 							"__ext_validity_type"=> $extended_validity_type
+		// 						]);
+		
+		// 						if(!empty($getNonValidityBanner['how_it_works'])){
+		// 							$getNonValidityBanner['how_it_works']['description'] = strtr($getNonValidityBanner['how_it_works']['description'], ['__vendor_name'=>$data['finder']['title']]);
+		// 						}
+		
+		// 						$getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>($extended_validity_type)]);
+		// 						if(!empty($getNonValidityBanner['title1'])){
+		// 							$getNonValidityBanner['title1'] = strtr($getNonValidityBanner['title1'], ['__ext_validity_type'=>($extended_validity_type)]);
+		// 						}
+		// 						$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+		// 						$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
+		// 						$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
+		// 						$r['non_validity_ratecard']  = $getNonValidityBanner;
+		// 					}
+        //                     Log::info('non validity ratecard:::::::::::', [$r['non_validity_ratecard']]);
+    
+        //                 }
+        //             }
+        //     }
+        // }catch(Exception $e){
+            
+        //     Log::info("Non validity description breaking", [$e]);
+        
+        // }
+
+        // foreach($data['finder']['services'] as &$ser){
+        //     foreach($ser[$ratecard_key] as &$rate_c){
+		// 		if(!empty($ser['type']) && $ser['type'] == 'extended validity'){
+
+		// 			if(!empty($ser['unlimited_validity'])){
 	
-						if(!empty($rate_c['flags']['unlimited_validity']) && !empty($rate_c['non_validity_ratecard'])){
-							$ser['non_validity'] = $rate_c['non_validity_ratecard_copy'];
-							$ser['non_validity']['description'] = $ser['non_validity']['description'].Config::get('nonvalidity.service_footer');
-							break;
-						}
-					}else{
-						if(!empty($rate_c['non_validity_ratecard']) && !empty($ser['type'])){
-							$ser['non_validity'] = $rate_c['non_validity_ratecard_copy'];
-							$ser['non_validity']['description'] = $ser['non_validity']['description'].Config::get('nonvalidity.service_footer');
-							break;
-						}
-					}
-				}
+		// 				if(!empty($rate_c['flags']['unlimited_validity']) && !empty($rate_c['non_validity_ratecard'])){
+		// 					$ser['non_validity'] = $rate_c['non_validity_ratecard_copy'];
+		// 					$ser['non_validity']['description'] = $ser['non_validity']['description'].Config::get('nonvalidity.service_footer');
+		// 					break;
+		// 				}
+		// 			}else{
+		// 				if(!empty($rate_c['non_validity_ratecard']) && !empty($ser['type'])){
+		// 					$ser['non_validity'] = $rate_c['non_validity_ratecard_copy'];
+		// 					$ser['non_validity']['description'] = $ser['non_validity']['description'].Config::get('nonvalidity.service_footer');
+		// 					break;
+		// 				}
+		// 			}
+		// 		}
 				
                 
-            }
-        }
+        //     }
+        // }
 
-        foreach($data['finder']['services'] as &$ser1){
-            foreach($ser1[$ratecard_key] as &$rate_c1){
-                if(!empty($ser1['type']) && $ser1['type'] == 'extended validity'){
-    				unset($rate_c1['non_validity_ratecard']);
-				}
-				unset($rate_c1['non_validity_ratecard_copy']);
-            }
-		}
+        // foreach($data['finder']['services'] as &$ser1){
+        //     foreach($ser1[$ratecard_key] as &$rate_c1){
+        //         if(!empty($ser1['type']) && $ser1['type'] == 'extended validity'){
+    	// 			unset($rate_c1['non_validity_ratecard']);
+		// 		}
+		// 		unset($rate_c1['non_validity_ratecard_copy']);
+        //     }
+		// }
 		$getExtendedValidityBanner = $this->getExtendedValidityBanner();
 		$getExtendedValidityBanner['data']['header'] = strtr($getExtendedValidityBanner['data']['header'], ['vendor_name'=>($data['finder']['title'])]);	
 		$getExtendedValidityBanner['data']['description'] = strtr($getExtendedValidityBanner['data']['description'], ['vendor_name'=>($data['finder']['title'])]);
@@ -6880,6 +6930,8 @@ class FindersController extends \BaseController {
 				//Log::info('before extended studio condition', [$ratecard]);
 				if(!empty($ratecards['studio_extended_validity'])){
 					Log::info('inside setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+					//$ratecards['pps_image'] = 'http://b.fitn.in/global/fexbutton.png';
+					$ratecards['pps_title'] = "Flexi Membership";
 					$ratecards['studio_extended_ratecard'] = $getExtendedValidityBanner;		
 				}
 			}
