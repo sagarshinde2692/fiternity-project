@@ -6764,10 +6764,10 @@ class FindersController extends \BaseController {
 							$r['pps_image'] = Config::get('app.pps_image');
 							Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
 							$extended_validity_type = $this->getExtendedValidityType($r);
-							if($this->app_version > '5.1.7'){
+							if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.2.4')){
 								$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
 								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
-								$r['data']  = $getNonValidityBanner;
+								$r['popup_data']  = $getNonValidityBanner;
 								//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
 							}
 							else{
@@ -6923,8 +6923,8 @@ class FindersController extends \BaseController {
         //     }
 		// }
 		$getExtendedValidityBanner = $this->getExtendedValidityBanner();
-		$getExtendedValidityBanner['data']['header'] = strtr($getExtendedValidityBanner['data']['header'], ['vendor_name'=>($data['finder']['title'])]);	
-		$getExtendedValidityBanner['data']['description'] = strtr($getExtendedValidityBanner['data']['description'], ['vendor_name'=>($data['finder']['title'])]);
+		$getExtendedValidityBanner['header'] = strtr($getExtendedValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
+		$getExtendedValidityBanner['description'] = strtr($getExtendedValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
 		Log::info('before setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', [$getExtendedValidityBanner]);
 		foreach($data['finder']['services'] as &$extended){
 			foreach($extended['ratecard'] as &$ratecards){
@@ -6933,7 +6933,7 @@ class FindersController extends \BaseController {
 					Log::info('inside setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
 					//$ratecards['pps_image'] = 'http://b.fitn.in/global/fexbutton.png';
 					$ratecards['pps_title'] = "Flexi Membership";
-					$ratecards['studio_extended_ratecard'] = $getExtendedValidityBanner;		
+					$ratecards['popup_data'] = $getExtendedValidityBanner;		
 				}
 			}
 		}
@@ -6943,7 +6943,7 @@ class FindersController extends \BaseController {
     public function getNonValidityBanner(){
 		Log::info('values:::::::', [$this->device_type, $this->app_version]);
         if(in_array($this->device_type, ['android', 'ios'])){
-			if($this->app_version > '5.1.7'){
+			if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.2.4')){
 				Log::info('values:::::::', [$this->device_type, $this->app_version]);
 				return Config::get('nonvalidity.finder_banner_app_data');
 			}
