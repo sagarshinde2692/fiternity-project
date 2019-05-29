@@ -6753,6 +6753,7 @@ class FindersController extends \BaseController {
         }
 		
 		try{
+			Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
 			$getNonValidityBanner = $this->getNonValidityBanner();
             foreach($data['finder']['services'] as &$s){
 				Log::info('services:::::::::::::::::: ');
@@ -6761,7 +6762,7 @@ class FindersController extends \BaseController {
                         if($r['type'] == 'extended validity'){
 							$r[ "button_color"] = Config::get('app.ratecard_button_color');
 							$r['pps_image'] = Config::get('app.pps_image');
-							Log::info('extended ratecard:::::::::::::::::: ');
+							Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
 							$extended_validity_type = $this->getExtendedValidityType($r);
 							if($this->app_version > '5.1.7'){
 								$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
