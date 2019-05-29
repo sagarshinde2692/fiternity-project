@@ -1356,3 +1356,4 @@ Route::get('testSpinResult/{number}','EmailSmsApiController@testSpinResult');
 Route::post('spinthewheelreg','EmailSmsApiController@spinTheWheelReg');
 Route::get('fitpassComparison', 'DebugController@fitpassComparison');
 Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
+Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
