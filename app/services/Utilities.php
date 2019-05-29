@@ -6317,7 +6317,7 @@ Class Utilities {
     } 
     
     public function assignVoucher($customer, $voucher_category){
-
+        
         $already_assigned_voucher = \LoyaltyVoucher::
                 where('milestone', $voucher_category->milestone)
                 ->where('voucher_category', $voucher_category->_id)
@@ -6331,7 +6331,7 @@ Class Utilities {
         }
 
         if(!empty($voucher_category['flags']['manual_redemption'])){
-            // Log::info("manual_redemption");
+            
             $new_voucher =  $this->assignManualVoucher($customer, $voucher_category);
         
         }else{
@@ -7487,7 +7487,7 @@ Class Utilities {
     }
 
     public function assignManualVoucher($customer, $voucher_category){
-
+        
         $voucher_data = [
             'voucher_category'=>$voucher_category['_id'],
             'status'=>"1",
@@ -7496,6 +7496,10 @@ Class Utilities {
             'expiry_date'=>date('Y-m-d H:i:s',strtotime('+1 month')),
             'code'=>$voucher_category['name'],
         ];
+
+        if(isset($voucher_category['link'])){
+            $voucher_data['link'] = $voucher_category['link'];
+        }
 
         if(!empty($voucher_category['flags']['diet_plan'])){
         

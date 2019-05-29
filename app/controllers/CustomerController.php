@@ -8591,8 +8591,8 @@ class CustomerController extends \BaseController {
             }else{
 
                 $voucher_category = VoucherCategory::find($_id);
-
-                if(!empty($milestones[$voucher_category['milestone']-1]) && !empty($milestones[$voucher_category['milestone']-1]['verified'])){
+				
+				if(!empty($milestones[$voucher_category['milestone']-1]) && !empty($milestones[$voucher_category['milestone']-1]['verified'])){
 
     				/* if(!empty($milestones[$voucher_category['milestone']-1]['claimed'])){
     
@@ -8656,8 +8656,14 @@ class CustomerController extends \BaseController {
                 ]
             ];
             if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
-                $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
-                $resp['voucher_data']['header']= "REWARD UNLOCKED";
+				$resp['voucher_data']['coupon_text']= $voucherAttached['name'];
+				$resp['voucher_data']['header']= "REWARD UNLOCKED";
+				
+				if(isset($voucherAttached['link'])){
+					$resp['voucher_data']['sub_header']= "You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name'])."<br> Share your details & get your insurance policy activated. " : "");
+					$resp['voucher_data']['coupon_text']= $voucherAttached['link'];
+				}
+                
             }
 
             if(!empty($voucher_category['email_text'])){
@@ -8665,7 +8671,7 @@ class CustomerController extends \BaseController {
             }
             $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
             if(!empty($communication)){
-                $redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
+				$redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
             }
 
             return $resp;
@@ -9291,10 +9297,11 @@ class CustomerController extends \BaseController {
     }
 
     public function voucherCommunication($job,$data){
-
+		Log::info("voucherCommunication");
         $job->delete();
 
         try{
+			Log::info("voucherCommunication customermailer");
             $this->customermailer->externalVoucher($data);
         }catch(Exception $e){
             Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);            
