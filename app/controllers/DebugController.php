@@ -10723,9 +10723,36 @@ public function yes($msg){
     }
 
     public function testcodesnippet(){
-        $customer = Customer::find(87977);
-        $customer->x = $customer->x+1;
-        $customer->update();
+        Customer::$withoutAppends = true;
+        // $self_coupons = Customer::where('contact_no', "9819142148")->lists('referral_code');
+        // return DB::table('orders')->where('status', '1')->where('customer_phone', "9819142148")->groupBy('coupon_code')->get();
+        return $orders_phone_number = Order::raw(function($query){
+
+            $aggregate = [
+                [
+                    '$match'=>[
+                        'status'=>'1',
+                        // 'customer_phone'=>"9819142148",
+                        'coupon_code'=>['$regex'=>new \MongoDB\BSON\Regex("/^[a-zA-Z0-9*]{*}$/")]
+                        // 'coupon_code'=>['$regex'=>"/^[a-zA-Z0-9*]{8}[rR]{1}$/"]
+                        // 'coupon_code'=>['$exists'=>true]
+                    ],
+                ],
+                [
+                    '$group'=>[
+                        '_id'=>'$coupon_code',
+                        'count'=>['$sum'=>1]
+                    ]
+                ]
+            ];
+
+            return $query->aggregate($aggregate,[
+                'cursor'=> [ 'batchSize'=> 1000 ]
+            ]);
+
+        });
+        // $x = new Regex("/^[a-zA-Z0-9*]{*}$/)
+        
     }
 
 

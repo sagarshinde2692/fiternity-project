@@ -4417,13 +4417,23 @@ Class Utilities {
 
         $customer = Customer::active()->where('pps_referral_code', strtoupper($code))->first();
         
-        
-
         if($customer){
-        
+
             if(!empty($customer['pps_referral_credits']) && $customer['pps_referral_credits'] >= 5){
                 return ['status'=>400, 'message'=>'The referral limit has been exceeded', 'customer'=>$customer];
             }
+            
+           
+
+
+            Order::$withoutAppends = true;
+            
+            $orders_count = Order::active()->where("coupon_code", 'like', $code)->count();
+
+            if($orders_count >= 10){
+                return ['status'=>400, 'message'=>'The referral limit has been exceeded', 'customer'=>$customer];
+            }
+        
             
             if($customer['_id'] != $customer_id){
             
@@ -4434,7 +4444,8 @@ Class Utilities {
                     
                     Customer::$withoutAppends = true;
                     $current_customer = Customer::where('email', strtolower($customer_email))->first();
-                    $customer_id = $current_customer->_id;
+                    $customer_id = $current_customer['_id'];
+                    $customer_phone = $current_customer['customer_phone'];
 
                 }else{
 
@@ -4448,10 +4459,57 @@ Class Utilities {
                     
                         if(!empty($order['customer_id'])){
                             $customer_id = $order['customer_id'];
+                            $customer_phone = $order['customer_phone'];
                         }
                     
                     }   
                 }
+                
+            }
+
+            if(!empty($customer_phone)){
+                
+                Customer::$withoutAppends = true;
+                $self_coupons = Customer::where('contact_no', $customer_phone)->lists('referral_code');
+
+                $orders_phone_number = Order::raw(function($query) use ($self_coupons){
+
+                    $aggregate = [
+                        [
+                            '$match'=>[
+                                'status'=>'1',
+                                'customer_phone'=>"9819142148",
+                                'coupon_code'=>['$regex'=>"/^[a-zA-Z0-9*]{8}[rR]{1}$/"]
+                                // 'coupon_code'=>['$exists'=>true]
+                            ],
+                        ],
+                        [
+                            '$addFields'=>[
+                                'coupon_code'=>['$uppercase'=>'$coupon_code']
+                            ]
+                        ],
+                        [
+                            '$addFields'=>[
+                                'coupon_type'=>[
+                                    '$cond'=>[
+                                        ['$in'=>['$coupon_code',$self_coupons]],
+                                        'self',
+                                        'other'
+                                    ]
+                                    ],
+                                
+                            ]
+                        ],
+                    ];
+        
+                    return $query->aggregate($aggregate,[
+                        'cursor'=> [ 'batchSize'=> 0 ]
+                    ]);
+        
+                });
+
+
+
                 
             }
 
