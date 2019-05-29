@@ -4510,7 +4510,7 @@ Class Utilities {
 
     public function isPPSReferralCode($code){
         $code = strtoupper($code);
-		$assholeCodes = ["NIRA7325R","GAUR7726R","GAUR2025R","GAUR8976R","GAUR7374R","GAUR1952R","GAUR4066R","GAUR8183R","GAUR9928R","GAUR8907R","GAUR7850R","GAUR3786R","GAUR8213R","GAUR2389R","GAUR2098R","GAUR3549R","GAUR1798R","GAUR3347R","GAUR4958R","GAUR6830R","GAUR7014R","GAUR7675R","GAUR9502R","GAUR3739R","RAJ5078R","RAHU2157R","RAJ1993R","GAUR2466R","GAUR8731R","RAHU4004R","RAJU6022R","GAUR3393R","GORU5013R","RAJ2108R","GAUR3839R","GAUR8786R","RAJ7506R","GAUR1239R","GORU8493R","RAJA9388R","RAHU2224R","RAM8335R","RAGH2992R","RAJ2752R","RAMA9818R","GAUR7926R","GAUR4087R","GANE6913R","GAUR1360R","RAVI1022R","RAIN7225R","RAJE4631R","RAVI7890R","RAGI5524R","DIVY4144R","RAVI7741R","RAVI5252R","RAMA3692R","PRIY2800R","RAM3154R","POOJ5073R","KRIS4965R","SHIV1177R","GAUT9460R","ROHI5588R","RAJE4868R","SNEH7426R","DHAR8793R","ANUJ5700R","AJAY8632R","KANH9604R","PURO8073R","HITE8333R","RAJR7176R","GAUR2482R","RAJE3868R","RAKE5575R","GAUR1404R","RAMG3131R","NIRA8347R","ROBI6419R","GAUT6627R","AMAN9183R","GANP9123R","RAMK8355R","RAJE2832R","RAMR6998R","HEMA1578R","KAMA7471R","GANP4203R","RAVI7593R","JAYA5318R","AMIT6423R","RAJU9276R","NAKU7625R","HARM5287R","NIKI1409R","RAJM9073R","YOGE5696R","BHAV2629R","SHRU6579R","RAJA1533R","SUDH2075R","DIVY3193R"];
+		$assholeCodes = ["NIRA7325R","GAUR7726R","GAUR2025R","GAUR8976R","GAUR7374R","GAUR1952R","GAUR4066R","GAUR8183R","GAUR9928R","GAUR8907R","GAUR7850R","GAUR3786R","GAUR8213R","GAUR2389R","GAUR2098R","GAUR3549R","GAUR1798R","GAUR3347R","GAUR4958R","GAUR6830R","GAUR7014R","GAUR7675R","GAUR9502R","GAUR3739R","RAJ5078R","RAHU2157R","RAJ1993R","GAUR2466R","GAUR8731R","RAHU4004R","RAJU6022R","GAUR3393R","GORU5013R","RAJ2108R","GAUR3839R","GAUR8786R","RAJ7506R","GAUR1239R","GORU8493R","RAJA9388R","RAHU2224R","RAM8335R","RAGH2992R","RAJ2752R","RAMA9818R","GAUR7926R","GAUR4087R","GANE6913R","GAUR1360R","RAVI1022R","RAIN7225R","RAJE4631R","RAVI7890R","RAGI5524R","DIVY4144R","RAVI7741R","RAVI5252R","RAMA3692R","PRIY2800R","RAM3154R","POOJ5073R","KRIS4965R","SHIV1177R","GAUT9460R","ROHI5588R","RAJE4868R","SNEH7426R","DHAR8793R","ANUJ5700R","AJAY8632R","KANH9604R","PURO8073R","HITE8333R","RAJR7176R","GAUR2482R","RAJE3868R","RAKE5575R","GAUR1404R","RAMG3131R","NIRA8347R","ROBI6419R","GAUT6627R","AMAN9183R","GANP9123R","RAMK8355R","RAJE2832R","RAMR6998R","HEMA1578R","KAMA7471R","GANP4203R","RAVI7593R","JAYA5318R","AMIT6423R","RAJU9276R","NAKU7625R","HARM5287R","NIKI1409R","RAJM9073R","YOGE5696R","BHAV2629R","SHRU6579R","RAJA1533R","SUDH2075R","DIVY3193R","GAUR3666R"];
 		if(in_array($code, $assholeCodes)){
 			return false;
 		}
@@ -6317,7 +6317,7 @@ Class Utilities {
     } 
     
     public function assignVoucher($customer, $voucher_category){
-
+        
         $already_assigned_voucher = \LoyaltyVoucher::
                 where('milestone', $voucher_category->milestone)
                 ->where('voucher_category', $voucher_category->_id)
@@ -6326,15 +6326,16 @@ Class Utilities {
                 ->first();
 
         if($already_assigned_voucher){
+            // Log::info("already_assigned_voucher");
             return $already_assigned_voucher;
         }
 
         if(!empty($voucher_category['flags']['manual_redemption'])){
-
+            
             $new_voucher =  $this->assignManualVoucher($customer, $voucher_category);
         
         }else{
-
+            // Log::info("new".$voucher_category->_id);
             $new_voucher = \LoyaltyVoucher::active()
                 ->where('voucher_category', $voucher_category->_id)
                 ->where('customer_id', null)
@@ -6343,8 +6344,11 @@ Class Utilities {
                 ->first();
             
             if(!$new_voucher){
+                // Log::info("empty new_voucher");
                 return;
             }
+
+            // Log::info("new_voucher :: ", [$new_voucher]);
         
         }
 
@@ -6356,6 +6360,9 @@ Class Utilities {
         $new_voucher->claim_date = new \MongoDate();
         $new_voucher->selected_voucher = $voucher_category['_id'];
         $new_voucher->milestone = !empty($voucher_category['milestone']) ? $voucher_category['milestone'] : null;
+        if(!empty($voucher_category->fitcash)){
+            $new_voucher->code = $new_voucher->code.". Fitcash ".$voucher_category->fitcash." Added.";
+        }
 
         if(isset($voucher_category['flags'])){
             $new_voucher->flags = $voucher_category['flags'];
@@ -7480,7 +7487,7 @@ Class Utilities {
     }
 
     public function assignManualVoucher($customer, $voucher_category){
-
+        
         $voucher_data = [
             'voucher_category'=>$voucher_category['_id'],
             'status'=>"1",
@@ -7489,6 +7496,10 @@ Class Utilities {
             'expiry_date'=>date('Y-m-d H:i:s',strtotime('+1 month')),
             'code'=>$voucher_category['name'],
         ];
+
+        if(isset($voucher_category['link'])){
+            $voucher_data['link'] = $voucher_category['link'];
+        }
 
         if(!empty($voucher_category['flags']['diet_plan'])){
         
