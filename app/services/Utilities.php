@@ -6445,7 +6445,9 @@ Class Utilities {
 			$checkin->finder_id = $data['finder_id'];
 			$checkin->customer_id = $customer_id;
             $checkin->date = new \DateTime(date('d-m-Y', time()));
-            
+            $checkin->checkout_status = $data['checkout_status'];
+            $checkin->device_id = $data['device_id'];
+
             if(!empty($_GET['lat']) && !empty($_GET['lon'])){
                 $data['lat'] = floatval($_GET['lat']);
                 $data['lon'] = floatval($_GET['lon']);
