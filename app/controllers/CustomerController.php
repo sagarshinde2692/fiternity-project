@@ -9655,35 +9655,34 @@ class CustomerController extends \BaseController {
 	}
 
 	public function checkForCheckinFromDevice($finder_id, $device_id, $finder){
-		$date =new dateTime();
-		Log::info('modified date::::::::', [$date->modify('-1 days'), $device_id], 'actual Date::::::', [$date]);
-		$checkins= Checkin::where('device_id', $device_id)->where('created_at', '>', $date->modify('-1 days'))->select('customer_id', 'created_at', 'status', 'device_id')->first();
+		$date = date('d-m-Y', time());
+		$date  = gmdate('Y-m-d H:i:s', strtotime($date)).'.000Z';
+		//$date = date('Y-m-d H:i:s',strtotime('+18 hour +30 minutes +00 seconds +000',strtotime($date))).'Z';
+		Log::info('modified date::::::::', [$device_id, $date]);
+		$checkins= Checkin::where('device_id', $device_id)->where('date', '==', $date)->select('customer_id', 'created_at', 'status', 'device_id', 'checkout_status')->first();
 		$res = ["status"=> true];
 		//->where('created_at', '<', $date->modify('-2 hours'))
 		Log::info('chekcins:::::::::::;', [$checkins]);
 		if(count($checkins)>0){
-			//checkingout
-			$d = strtotime($checkins[0]['created_at']);
-			$seconds = date('H', $d)* 60 + date('i', $d)*60 + date('s', $d);
-			Log::info('chekin time ->>>>>>> seconds',[$seconds, $d, date('h', $d), date('i', $d), date('s', $d)]);
-			$cd = strtotime(date('d:m:Y H:i:s'));
-			$currentSeconds = date('H', $cd)* 60 + date('i', $cd)*60 + date('s', $cd);
-			Log::info('chekin time current ->>>>>>> seconds',[$currentSeconds, date('H', $cd), date('i', $cd), date('s', $cd)]);
-			if($checkins[0]['checkout_status']){
+			$d = strtotime($checkins['created_at']);	
+			$cd = strtotime(date("Y-m-d H:i:s"));
+			$difference = $cd -$d;
+			Log::info('differece:::::::::::', [$difference]);
+			if($checkins['checkout_status']){
 				//allreday checkdout
-				return $res = ["status"=>false, "message"=>"You have already checked-in for the day."];
+				return $res = ["status"=>false, "message"=>"You have already checked-out for the day."];
 			
 			}
-			else if(($currentSeconds - $seconds < 45 * 60)){
+			else if($difference< 45 * 60){
 				//session is not complitated
 				return $res = ["status"=>false, "message"=>"session is not completed."];
 			}
-			else if(($currentSeconds - $seconds > 45 * 60) &&($currentSeconds - $seconds <= 120 * 60)){
+			else if(($difference > 45 * 60) &&($difference <= 120 * 60)){
 				//checking out ----
-				return checkoutInitiate($finder_id);
+				return $this->checkoutInitiate($checkins['_id']);
 				//$res = ["status"=>true, "message"=>" checking- out for the day."];
 			}
-			else if($currentSeconds - $seconds > 120 * 60){
+			else if($difference > 120 * 60){
 				//times up not accaptable
 				return $res = ["status"=>false, "message"=>"Times Up to checkout for the day."];
 			}
@@ -9733,7 +9732,17 @@ class CustomerController extends \BaseController {
 		
 	}
 
-	public function checkoutInitiate($customer){
-
+	public function checkoutInitiate($id){
+		Log::info('checing out::::::::');
+		$checkout = Checkin::where('_id', $id)->first();
+			$checkout->checkout_status=true;
+		try{
+			$checkout->update();
+			return ['status'=> true, "message"=> "Succesfully checkedout"];
+		}catch(Exception $err){
+			Log::info("error occured::::::::::::", [$err]);
+			return ["status"=>false, "message"=>"Please Try again. Something went wrong."];
+		}
+		
 	}
 }
