@@ -1620,14 +1620,7 @@ Class CustomerReward {
         
         if($utilities->isPPSReferralCode($couponCode)){
 
-            Order::$withoutAppends = true;
             
-            $orders_count = Order::active()->where("coupon_code", 'like', $couponCode)->count();
-
-            if($orders_count >= 10){
-                return array("referral_coupon"=>true, "data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => 0, "only_discount" => $price), "coupon_applied" => false, "message"=>'Coupon is invalid or expired');
-
-            }
 
             if(!(isset($ratecard) && isset($ratecard['type']) && $ratecard['type'] == 'workout session')){
                 
