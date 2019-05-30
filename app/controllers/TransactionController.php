@@ -9032,10 +9032,10 @@ class TransactionController extends \BaseController {
             else {
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['preferred_starting_date'])); // '2019-05-29';
             }
-            $post_data['total'] = $order['amount_customer'];
-            $post_data['productprice'] = ((100 * $order['amount_customer'])/118); // total - 18% GST
+            $post_data['total'] = $order['amount_transferred_to_vendor'];
+            $post_data['productprice'] = ((100 * $order['amount_transferred_to_vendor'])/118); // total - 18% GST
             $post_data['paymentmode'] = 'gymtrekker';
-            $post_data['amountpaid'] = $order['amount_customer'];
+            $post_data['amountpaid'] = $order['amount_transferred_to_vendor'];
             $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
             $post_data['addpaymentvalues'] = '0'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
 
