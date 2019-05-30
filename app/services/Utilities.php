@@ -4479,7 +4479,7 @@ Class Utilities {
                             '$match'=>[
                                 'status'=>'1',
                                 'customer_phone'=>"9819142148",
-                                'coupon_code'=>['$regex'=>"/^[a-zA-Z0-9*]{8}[rR]{1}$/"]
+                                'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{8}[rR]{1}$"]
                                 // 'coupon_code'=>['$exists'=>true]
                             ],
                         ],

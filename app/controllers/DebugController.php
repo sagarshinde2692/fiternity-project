@@ -10724,23 +10724,44 @@ public function yes($msg){
 
     public function testcodesnippet(){
         Customer::$withoutAppends = true;
-        // $self_coupons = Customer::where('contact_no', "9819142148")->lists('referral_code');
+        $self_coupons = Customer::where('contact_no', "9819142148")->lists('referral_code');
         // return DB::table('orders')->where('status', '1')->where('customer_phone', "9819142148")->groupBy('coupon_code')->get();
-        return $orders_phone_number = Order::raw(function($query){
+        return $orders_phone_number = Order::raw(function($query) use ($self_coupons){
 
             $aggregate = [
                 [
                     '$match'=>[
                         'status'=>'1',
-                        // 'customer_phone'=>"9819142148",
-                        'coupon_code'=>['$regex'=>new \MongoDB\BSON\Regex("/^[a-zA-Z0-9*]{*}$/")]
+                        'customer_phone'=>"9819142148",
+                        // 'coupon_code'=>['$regex'=>new \MongoDB\BSON\Regex("/^[a-zA-Z0-9*]{*}$/")]
+                        // 'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{*}$"]
                         // 'coupon_code'=>['$regex'=>"/^[a-zA-Z0-9*]{8}[rR]{1}$/"]
+                        'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{8}[rR]$"]
                         // 'coupon_code'=>['$exists'=>true]
                     ],
                 ],
                 [
+                    '$project'=>[
+                        'coupon_uppercase'=>['$toUpper'=>'$coupon_code'],
+                        'self'=>[
+                            '$cond'=>[
+                                ['$in'=>['$']]
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    '$addFields'=>[
+                        'self'=>[
+                            '$cond'=>[
+                                ['$in'=>['$coupon_uppercase', $self_coupons]]
+                            ]
+                        ]
+                    ]
+                ],
+                [
                     '$group'=>[
-                        '_id'=>'$coupon_code',
+                        '_id'=>'$coupon_uppercase',
                         'count'=>['$sum'=>1]
                     ]
                 ]
