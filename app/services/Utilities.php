@@ -4472,45 +4472,53 @@ Class Utilities {
                 Customer::$withoutAppends = true;
                 $self_coupons = Customer::where('contact_no', $customer_phone)->lists('referral_code');
 
-                $orders_phone_number = Order::raw(function($query) use ($self_coupons){
+                $orders_phone_number = Order::raw(function($query) use ($self_coupons, $customer_phone){
 
                     $aggregate = [
                         [
                             '$match'=>[
                                 'status'=>'1',
-                                'customer_phone'=>"9819142148",
-                                'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{8}[rR]{1}$"]
-                                // 'coupon_code'=>['$exists'=>true]
+                                'customer_phone'=>$customer_phone,
+                                'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{8}[rR]$"]
                             ],
                         ],
                         [
-                            '$addFields'=>[
-                                'coupon_code'=>['$uppercase'=>'$coupon_code']
+                            '$project'=>[
+                                'coupon_uppercase'=>['$toUpper'=>'$coupon_code']
                             ]
                         ],
                         [
                             '$addFields'=>[
-                                'coupon_type'=>[
+                                'referral_type'=>[
                                     '$cond'=>[
-                                        ['$in'=>['$coupon_code',$self_coupons]],
+                                        ['$in'=>['$coupon_uppercase', $self_coupons]],
                                         'self',
                                         'other'
                                     ]
-                                    ],
-                                
+                                ]
                             ]
                         ],
+                        [
+                            '$group'=>[
+                                '_id'=>['referral_type'=>'$referral_type'],
+                                'count'=>['$sum'=>1]
+                            ]
+                        ]
                     ];
         
-                    return $query->aggregate($aggregate,[
-                        'cursor'=> [ 'batchSize'=> 0 ]
-                    ]);
+                    return $query->aggregate($aggregate);
         
                 });
-
-
-
                 
+                $orders_phone_number = $orders_phone_number['result'];
+                
+                foreach($orders_phone_number as $x){
+                    
+                    if(($x['_id']['referral_type'] == 'other' && $x['count'] >= 1) || ($x['_id']['referral_type'] == 'self' && $x['count'] >= 5)){
+                        return ['status'=>400, 'message'=>'You have exhausted the limit of this coupon'];
+                    }
+                
+                }
             }
 
             if($customer['_id'] == $customer_id){

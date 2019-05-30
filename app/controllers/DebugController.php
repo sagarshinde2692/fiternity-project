@@ -10726,13 +10726,14 @@ public function yes($msg){
         Customer::$withoutAppends = true;
         $self_coupons = Customer::where('contact_no', "9819142148")->lists('referral_code');
         // return DB::table('orders')->where('status', '1')->where('customer_phone', "9819142148")->groupBy('coupon_code')->get();
-        return $orders_phone_number = Order::raw(function($query) use ($self_coupons){
+        $customer_phone = "9819142148";
+        return $orders_phone_number = Order::raw(function($query) use ($self_coupons, $customer_phone){
 
             $aggregate = [
                 [
                     '$match'=>[
                         'status'=>'1',
-                        'customer_phone'=>"9819142148",
+                        'customer_phone'=>$customer_phone,
                         // 'coupon_code'=>['$regex'=>new \MongoDB\BSON\Regex("/^[a-zA-Z0-9*]{*}$/")]
                         // 'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{*}$"]
                         // 'coupon_code'=>['$regex'=>"/^[a-zA-Z0-9*]{8}[rR]{1}$/"]
@@ -10742,37 +10743,31 @@ public function yes($msg){
                 ],
                 [
                     '$project'=>[
-                        'coupon_uppercase'=>['$toUpper'=>'$coupon_code'],
-                        'self'=>[
-                            '$cond'=>[
-                                ['$in'=>['$']]
-                            ]
-                        ]
+                        'coupon_uppercase'=>['$toUpper'=>'$coupon_code']
                     ]
                 ],
                 [
                     '$addFields'=>[
-                        'self'=>[
+                        'referral_type'=>[
                             '$cond'=>[
-                                ['$in'=>['$coupon_uppercase', $self_coupons]]
+                                ['$in'=>['$coupon_uppercase', $self_coupons]],
+                                'self',
+                                'other'
                             ]
                         ]
                     ]
                 ],
                 [
                     '$group'=>[
-                        '_id'=>'$coupon_uppercase',
+                        '_id'=>['referral_type'=>'$referral_type'],
                         'count'=>['$sum'=>1]
                     ]
                 ]
             ];
 
-            return $query->aggregate($aggregate,[
-                'cursor'=> [ 'batchSize'=> 1000 ]
-            ]);
+            return $query->aggregate($aggregate);
 
         });
-        // $x = new Regex("/^[a-zA-Z0-9*]{*}$/)
         
     }
 
