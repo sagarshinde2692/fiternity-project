@@ -9033,9 +9033,9 @@ class TransactionController extends \BaseController {
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['preferred_starting_date'])); // '2019-05-29';
             }
             $post_data['total'] = $order['amount_customer'];
-            $post_data['productprice'] = ((82/100)*$order['amount_customer']); // $order['amount_customer'];
+            $post_data['productprice'] = $order['amount_customer'];
             $post_data['paymentmode'] = 'gymtrekker';
-            $post_data['amountpaid'] = (!empty($post_data['amount']))?$post_data['amount']:0;
+            $post_data['amountpaid'] = $order['amount_customer'];
             $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
             $post_data['addpaymentvalues'] = '0'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
 
