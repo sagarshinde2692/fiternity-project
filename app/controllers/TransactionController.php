@@ -8991,11 +8991,11 @@ class TransactionController extends \BaseController {
                 "finder_city",
                 "finder_location"
             ]);
-            $order = $data['data'];
+            // $order = $data['data'];
             Log::info('fitnessforce $data: ', [$data]);
-            if(!(empty($data['type'])) && $data['type']=='workout-session') {
+            // if(!(empty($data['type'])) && $data['type']=='workout-session') {
                 $order = Order::where('_id', $data['data']['order_id'])->first();
-            }
+            // }
             Log::info('fitnessforce $order: ', [$order]);
             $ratecard = Ratecard::where('_id', $order['ratecard_id'])->first();
 
