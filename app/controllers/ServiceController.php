@@ -1233,9 +1233,10 @@ class ServiceController extends \BaseController {
                     }
 
                 }
-            }
-
-			$data['slots'] = App(FindersController::class)->orderSummarySlots($data['slots']);
+			}
+			if(!empty($data['slots'])){
+				$data['slots'] = App(FindersController::class)->orderSummarySlots($data['slots']);
+			}
 	        return Response::json($data,200);
         }
 
