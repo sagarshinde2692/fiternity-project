@@ -9113,15 +9113,15 @@ class TransactionController extends \BaseController {
                 
                 if(!empty($response) && $response['isSuccess']) {
                     $fflogParam['success'] = true;
-                    if(!empty($response['billid'])) {
-                        $fflogParam['ff_bill_id'] = $response['billid'];
+                    if(!empty($response['response']['billid'])) {
+                        $fflogParam['ff_bill_id'] = $response['response']['billid'];
                     }
                     if(!empty($response['receiptid'])) {
-                        $fflogParam['ff_receipt_id'] = $response['receiptid'];
+                        $fflogParam['ff_receipt_id'] = $response['response']['receiptid'];
                     }
 
                     $fflogParam['success'] = true;
-                    Order::where('_id', $order['_id'])->update(['ff_bill_id'=>$response['billid'],'ff_receipt_id'=>['receiptid']]);
+                    Order::where('_id', $order['_id'])->update(['ff_bill_id'=>$response['response']['billid'],'ff_receipt_id'=>['receiptid']]);
                     if(!empty($order['booktrial_id'])) {
                         Booktrial::where('_id', $order['booktrial_id'])->update(['ff_bill_id'=>$response['billid'],'ff_receipt_id'=>['receiptid']]);
                     }
