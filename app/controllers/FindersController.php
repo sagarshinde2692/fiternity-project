@@ -7594,18 +7594,16 @@ class FindersController extends \BaseController {
 		$orderHistory['header'] = strtr($orderHistory['header'], ['vendor_name'=>$finder_name]);
 		$title =  $orderHistory['title'];
 		foreach($services as &$service){
-			foreach($service['ratecard'] As &$rc){
+			foreach($service['ratecard'] as &$rc){
 				$orderHistory['header'] = strtr($orderHistory['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]);
 				$orderHistory['title'] = $title;
-				$rc['orderHistory'] = $orderHistory;
+				$rc['order_history'] = $orderHistory;
 				if(isset($rc['remarks']) && $rc['remarks'] != ""){
-					$orderHistory['remark_data'] = strtr($orderHistory['remark_data'], ['ratecard_remark'=>$rc['remarks']]); 
-					$rc['orderHistory']['remark_data'] = $orderHistory['remark_data']; 
+					$rc['order_history']['remark_data'] = strtr($orderHistory['remark_data'], ['ratecard_remark'=>$rc['remarks']]);
 				}
 				else{
-					unset($rc['orderHistory']['title']);
-					unset($rc['orderHistory']['remark_data']);
-					//$rc['orderHistory'] = $orderHistory;
+					unset($rc['order_history']['title']);
+					unset($rc['order_history']['remark_data']);
 				}
 			}
 		}
