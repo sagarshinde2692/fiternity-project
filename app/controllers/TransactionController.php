@@ -9043,7 +9043,9 @@ class TransactionController extends \BaseController {
 
             $fitnessForceData = ['form_params' => []];
             $fitnessForceData['form_params']['firstname'] = $post_data['first_name'];
-            $fitnessForceData['form_params']['lastname'] = $post_data['last_name'];
+            if(!empty($post_data['last_name'])) {
+                $fitnessForceData['form_params']['lastname'] = $post_data['last_name'];
+            }
             $fitnessForceData['form_params']['mobileno'] = $post_data['customer_phone'];
             $fitnessForceData['form_params']['emailid'] = $post_data['customer_email'];
             $fitnessForceData['form_params']['productprice'] = $post_data['productprice'];
