@@ -9067,7 +9067,7 @@ class TransactionController extends \BaseController {
                 // 'base_uri' => "https://hooks.zapier.com/"
             ] );
 
-            $url = 'https://demo.fitnessforce.com/WebPurchase/WebTransaction.aspx?source='.$fitnessForceData['form_params']['paymentmode'].'&tenantid=45&authkey=FFT_D_45';
+            $url = 'https://demo.fitnessforce.com/WebPurchase/WebTransaction.aspx?source='.$post_data['source'].'&tenantid='.$post_data['tenantid'].'&authkey='.$post_data['authkey'];
 
             // if($data['type'] == 'trial'){
             //     $url = 'hooks/catch/961068/jrdw9y';
@@ -9084,8 +9084,56 @@ class TransactionController extends \BaseController {
             //     'json'=>$post_data
             // ];
             $payload = $fitnessForceData;
-            $response = $client->post($url,$payload)->getBody()->getContents();
-            Log::info('fitnessForce Response: ', [$response]);
+            $responseString = $client->post($url,$payload)->getBody()->getContents();
+            Log::info('fitnessForce Response String: ', [$responseString]);
+
+            $fflogParam = [
+                'url' => $url,
+                'requestQuery' => [
+                    'source' => $post_data['source'],
+                    'tenantid' => $post_data['tenantid'],
+                    'authkey' => $post_data['authkey']
+                ],
+                'requestBody' => $fitnessForceData['form_params'],
+                'response' => $responseString,
+                'type' => 'trans_succ',
+                'success' => false,
+                'order_id' => $order['_id'],
+            ];
+
+            if(!empty($responseString)) {
+                $response = json_decode($responseString);
+                Log::info('fitnessForce Response: ', [$response]);
+                
+                $fflogParam = [
+                    'response' => $response,    
+                ];
+                
+                if(!empty($response) && $response['isSuccess']) {
+                    $fflogParam['success'] = true;
+                    if(!empty($response['billid'])) {
+                        $fflogParam['ff_bill_id'] = $response['billid'];
+                    }
+                    if(!empty($response['receiptid'])) {
+                        $fflogParam['ff_receipt_id'] = $response['receiptid'];
+                    }
+
+                    $fflogParam['success'] = true;
+                    Order::where('_id', $order['_id'])->update(['ff_bill_id'=>$response['billid'],'ff_receipt_id'=>['receiptid']]);
+                    if(!empty($order['booktrial_id'])) {
+                        Booktrial::where('_id', $order['booktrial_id'])->update(['ff_bill_id'=>$response['billid'],'ff_receipt_id'=>['receiptid']]);
+                    }
+                }
+            }
+                
+            if(!empty($order['booktrial_id'])) {
+                $fflogParam['booktrial_id'] = $order['booktrial_id'];
+            }
+
+            $fflog = new FitnessForceAPILog($fflogParam);
+            $fflog.save();
+
+
             return $response;
     }
 
