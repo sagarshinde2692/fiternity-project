@@ -9351,7 +9351,7 @@ class CustomerController extends \BaseController {
 
         }
 
-        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags','studio_extended_validity', 'studio_sessions', 'studio_membership_duration']);
+        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags','studio_extended_validity', 'studio_sessions', 'studio_membership_duration', 'all_service_id']);
 
         $orders = $this->formatSessionPackList($orders);
 
@@ -9373,7 +9373,10 @@ class CustomerController extends \BaseController {
         $order['active'] = true;
         if((!empty($order['ratecard_flags']['unlimited_validity']) || strtotime($order['end_date']) > time()) && !empty($order['sessions_left'])){
             $order['button_title'] = 'Book your next Session';
-            $order['button_type'] = 'book';
+			$order['button_type'] = 'book';
+			if(!empty($order['all_service_id'])){
+				$order['button_type'] = 'schedule';	
+			}
 
         }else{
             $order['active'] = false;

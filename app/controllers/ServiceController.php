@@ -674,13 +674,23 @@ class ServiceController extends \BaseController {
 		Service::$withoutAppends=true;
 		Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
 		
+		if(!empty($request['service_id'])){
+			$currentService = Service:: find($request['service_id'],['combine_service_ids']);
+			if(!empty($currentService['combine_service_ids'])){
+				$combine_service_ids = $currentService['combine_service_ids'];
+			}
+		}
+
         $query = Service::active()->whereNotIn('trial',['manual', 'manualauto','disable']);
 
         $query->where('servicecategory_id','!=',163);
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
-
-        (isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id',(int)$request['service_id']) : null;
+		if(!empty($combine_service_ids)){
+			$query->whereIn('_id',$combine_service_ids);
+		}else{ 
+			(isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id',(int)$request['service_id']) : null;
+		}
 
 		switch ($type) {
 			case 'workout-session':
