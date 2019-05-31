@@ -1239,9 +1239,9 @@ class FindersController extends \BaseController {
 				$response['defination']                     =       ['categorytags' => $categoryTagDefinationArr];
 				$response['nearby_same_category']           =       $nearby_same_category;
 				$response['nearby_other_category']          =       $nearby_other_category;
-				$response['show_reward_banner'] = true;
-				$response['finder_footer']				= 		$finder_footer;
-				$response['finder']['payment_options']				=		$this->getPaymentModes($payment_options_data);
+				$response['show_reward_banner'] 			= 		true;
+				$response['finder_footer']					= 		$finder_footer;
+				$response['finder']['payment_options']		=		$this->getPaymentModes($payment_options_data);
 				// if($campaign_offer){
 				// 	$response['vendor_stripe_data']	=	[
 				// 		'text'=> "#STRONGGETSSTRONGER | <strong>FLAT 30% OFF FOR WOMEN</strong>",
@@ -4976,6 +4976,12 @@ class FindersController extends \BaseController {
 			$finderData['status'] = 404;
 		}
 
+		try{
+			$this->orderRatecards($finderData, 'app');
+			//$finderData = $finderData1['finder']['service']['ratecard'];
+		}catch(Exception $e){
+			Log::info("Error while sorting ratecard", [$e]);
+		}
 		return Response::json($finderData,$finderData['status']);
 
 	}
@@ -6923,23 +6929,19 @@ class FindersController extends \BaseController {
         //     }
 		// }
 		$getExtendedValidityBanner = $this->getExtendedValidityBanner();
-		//$getExtendedValidityBanner['header'] = strtr($getExtendedValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
-		//$getExtendedValidityBanner['description'] = strtr($getExtendedValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
-		//Log::info('before setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', [$getExtendedValidityBanner]);
 		foreach($data['finder']['services'] as &$extended){
 			foreach($extended['ratecard'] as &$ratecards){
 				if(!empty($ratecards['studio_extended_validity'])){
 					$ratecards['type'] = 'studio_extended_validity';
-					Log::info('inside setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-					//$ratecards['pps_image'] = 'http://b.fitn.in/global/fexbutton.png';
 					$ratecards['pps_title'] = "Flexi Membership";
 					$ratecards['popup_data'] = $getExtendedValidityBanner;		
 				}
 			}
 		}
-		//Log::info('before:::::', [$data['finder']['services'][0]]);
+		foreach($data['finder']['services'] as &$service){
+			$service = $this->addingRemarkToDuplicate($service, 'app');
+		}
 		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title']);
-		//Log::info('after', [$data['finder']['services']]);
         return $data['finder'];
     }
 
@@ -7531,8 +7533,8 @@ class FindersController extends \BaseController {
 		
     }
     
-    public function orderRatecards(&$data){
-        
+    public function orderRatecards(&$data, $source='web'){
+        $serviceRatecards = $source=='web' ? 'serviceratecard' : 'ratecard';
         $duration_session_pack = [1=>1, 30=>7, 90=>20, 180=>75, 360=>120, 720=>500];
         
         function compareDuration($a, $b){
@@ -7549,15 +7551,15 @@ class FindersController extends \BaseController {
 
         foreach($data['finder']['services'] as &$service){
 
-            $ws_ratecards = array_filter($service['serviceratecard'], function($rc){
+            $ws_ratecards = array_filter($service[$serviceRatecards], function($rc){
                 return $rc['type'] == 'workout session';
             });
             
-            $membership_ratecards = array_filter($service['serviceratecard'], function($rc){
+            $membership_ratecards = array_filter($service[$serviceRatecards], function($rc){
                 return $rc['type'] == 'membership';
             });
 
-            $session_ratecards = array_filter($service['serviceratecard'], function($rc){
+            $session_ratecards = array_filter($service[$serviceRatecards], function($rc){
                 return $rc['type'] == 'extended validity' ;
             });
             
@@ -7576,8 +7578,8 @@ class FindersController extends \BaseController {
                 $all_ratecards = array_merge($all_ratecards, $session_buckets[$value], $membership_buckets[$key]);
             }
 
-            $service['serviceratecard'] =  $all_ratecards;
-        }
+            $service[$serviceRatecards] =  $all_ratecards;
+		}
     }
 
 	public function getExtendedValidityBanner(){
@@ -7643,4 +7645,34 @@ class FindersController extends \BaseController {
 		}
 		return $slotsdata;
 	}
+
+	public function addingRemarkToDuplicate($service, $source="web"){
+		$serviceRatecards = $source=='web' ? 'serviceratecard' : 'ratecard';
+		$dupDurationDays = [];
+		foreach ($service[$serviceRatecards] as $ratekey => $rateval){
+			$durationDays = $this->utilities->getDurationDay($rateval);
+			if($rateval['type']!='extended validity') {
+				if(empty($dupDurationDays[$durationDays])){
+					$dupDurationDays[$durationDays] = [];	
+				}
+				array_push($dupDurationDays[$durationDays], $ratekey);
+			}
+		}
+
+		$remarkImportantIndex = [];
+		foreach ($dupDurationDays as $record) {
+			if(count($record)>1) {
+				$remarkImportantIndex = array_merge($remarkImportantIndex, $record);
+			}
+		}
+
+		foreach ($remarkImportantIndex as $idx) {
+			if(!empty($service[$serviceRatecards][$idx])) {
+				$service[$serviceRatecards][$idx]['remarks_imp'] = true;
+				$service[$serviceRatecards][$idx]['remarks_imp_api'] = true;
+			}
+		}
+		return $service;
+	}
+
 }
