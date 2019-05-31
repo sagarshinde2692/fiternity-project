@@ -7598,8 +7598,10 @@ class FindersController extends \BaseController {
 				$orderSummary['header'] = strtr($orderSummary['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]);
 				$orderSummary['title'] = $title;
 				$rc['order_summary'] = $orderSummary;
+				$remark_data=[];
 				if(isset($rc['remarks']) && $rc['remarks'] != ""){
-					$rc['order_summary']['remark_data'] = strtr($orderSummary['remark_data'], ['ratecard_remark'=>$rc['remarks']]);
+					array_push($remark_data,  strtr($orderSummary['remark_data'], ['ratecard_remark'=>$rc['remarks']]));
+					$rc['order_summary']['remark_data'] = $remark_data;
 				}
 				else{
 					unset($rc['order_summary']['title']);
