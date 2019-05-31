@@ -9055,8 +9055,12 @@ class TransactionController extends \BaseController {
             $fitnessForceData['form_params']['productprice'] = $post_data['productprice'];
             $fitnessForceData['form_params']['purchasedate'] = $post_data['purchasedate'];
             $fitnessForceData['form_params']['productid'] = $post_data['productid'];
-            $fitnessForceData['form_params']['packageid'] = $post_data['packageid'];
-            $fitnessForceData['form_params']['campaignid'] = $post_data['campaignid'];
+            if(!empty($post_data['packageid'])) {
+                $fitnessForceData['form_params']['packageid'] = $post_data['packageid'];
+            }
+            if(!empty($post_data['packageid'])) {
+                $fitnessForceData['form_params']['campaignid'] = $post_data['campaignid'];
+            }
 
             $client = new GuzzleClient( ['debug' => false, 
                 // 'base_uri' => "https://hooks.zapier.com/"
