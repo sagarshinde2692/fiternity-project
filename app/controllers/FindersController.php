@@ -6925,10 +6925,9 @@ class FindersController extends \BaseController {
 		$getExtendedValidityBanner = $this->getExtendedValidityBanner();
 		//$getExtendedValidityBanner['header'] = strtr($getExtendedValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
 		//$getExtendedValidityBanner['description'] = strtr($getExtendedValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
-		Log::info('before setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', [$getExtendedValidityBanner]);
+		//Log::info('before setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', [$getExtendedValidityBanner]);
 		foreach($data['finder']['services'] as &$extended){
 			foreach($extended['ratecard'] as &$ratecards){
-				//Log::info('before extended studio condition', [$ratecard]);
 				if(!empty($ratecards['studio_extended_validity'])){
 					$ratecards['type'] = 'studio_extended_validity';
 					Log::info('inside setting extended ratecard:::::::::::::::::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
@@ -6938,6 +6937,9 @@ class FindersController extends \BaseController {
 				}
 			}
 		}
+		//Log::info('before:::::', [$data['finder']['services'][0]]);
+		$data['finder']['services'] = $this->orderHistory($data['finder']['services'], $data['finder']['title']);
+		//Log::info('after', [$data['finder']['services']]);
         return $data['finder'];
     }
 
@@ -7587,4 +7589,26 @@ class FindersController extends \BaseController {
         }
     }
 	
+	public function orderHistory($services, $finder_name){
+        $orderHistory = Config::get('orderHistory.order_history');
+		$orderHistory['header'] = strtr($orderHistory['header'], ['vendor_name'=>$finder_name]);
+		$title =  $orderHistory['title'];
+		foreach($services as &$service){
+			foreach($service['ratecard'] As &$rc){
+				$orderHistory['header'] = strtr($orderHistory['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]);
+				$orderHistory['title'] = $title;
+				$rc['orderHistory'] = $orderHistory;
+				if(isset($rc['remarks']) && $rc['remarks'] != ""){
+					$orderHistory['remark_data'] = strtr($orderHistory['remark_data'], ['ratecard_remark'=>$rc['remarks']]); 
+					$rc['orderHistory']['remark_data'] = $orderHistory['remark_data']; 
+				}
+				else{
+					unset($rc['orderHistory']['title']);
+					unset($rc['orderHistory']['remark_data']);
+					//$rc['orderHistory'] = $orderHistory;
+				}
+			}
+		}
+		return $services;
+    }
 }
