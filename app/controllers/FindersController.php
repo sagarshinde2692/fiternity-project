@@ -6938,7 +6938,7 @@ class FindersController extends \BaseController {
 			}
 		}
 		//Log::info('before:::::', [$data['finder']['services'][0]]);
-		$data['finder']['services'] = $this->orderHistory($data['finder']['services'], $data['finder']['title']);
+		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title']);
 		//Log::info('after', [$data['finder']['services']]);
         return $data['finder'];
     }
@@ -7589,21 +7589,21 @@ class FindersController extends \BaseController {
         }
     }
 	
-	public function orderHistory($services, $finder_name){
-        $orderHistory = Config::get('orderHistory.order_history');
-		$orderHistory['header'] = strtr($orderHistory['header'], ['vendor_name'=>$finder_name]);
-		$title =  $orderHistory['title'];
+	public function orderSummary($services, $finder_name){
+        $orderSummary = Config::get('orderSummary.order_summary');
+		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$finder_name]);
+		$title =  $orderSummary['title'];
 		foreach($services as &$service){
 			foreach($service['ratecard'] as &$rc){
-				$orderHistory['header'] = strtr($orderHistory['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]);
-				$orderHistory['title'] = $title;
-				$rc['order_history'] = $orderHistory;
+				$orderSummary['header'] = strtr($orderSummary['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]);
+				$orderSummary['title'] = $title;
+				$rc['order_summary'] = $orderSummary;
 				if(isset($rc['remarks']) && $rc['remarks'] != ""){
-					$rc['order_history']['remark_data'] = strtr($orderHistory['remark_data'], ['ratecard_remark'=>$rc['remarks']]);
+					$rc['order_summary']['remark_data'] = strtr($orderSummary['remark_data'], ['ratecard_remark'=>$rc['remarks']]);
 				}
 				else{
-					unset($rc['order_history']['title']);
-					unset($rc['order_history']['remark_data']);
+					unset($rc['order_summary']['title']);
+					unset($rc['order_summary']['remark_data']);
 				}
 			}
 		}
