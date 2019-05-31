@@ -1239,11 +1239,11 @@ class ServiceController extends \BaseController {
 			Log::info('slots::::::::: type:::::::', [$type]);
 			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
 				foreach($data['schedules'] as &$schedule){
-					$schedule['slots'] = App(FindersController::class)->orderSummaryWorkoutSessionSlots($schedule['slots']);
+					$schedule['slots'] = App(FindersController::class)->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title']);
 				}
 			}
 			else if(!empty($data['slots']) && in_array($this->device_type, ['android', 'ios'])){
-				$data['slots'] = App(FindersController::class)->orderSummarySlots($data['slots']);
+				$data['slots'] = App(FindersController::class)->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'] );
 			}
 	        return Response::json($data,200);
         }
@@ -2048,7 +2048,7 @@ class ServiceController extends \BaseController {
 			$data['service'] = App(FindersController::class)->orderSummaryService($data['service']);
 		}
 		if(!empty($data['service']['slots'] && in_array($this->device_type, ['android', 'ios']))){
-			$data['service']['slots'] = App(FindersController::class)->orderSummarySlots($data['service']['slots']);
+			$data['service']['slots'] = App(FindersController::class)->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name']);
 		}
 		return Response::json(array('status'=>200, 'data'=> $data));
 
