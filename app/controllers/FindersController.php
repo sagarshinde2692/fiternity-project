@@ -6695,11 +6695,11 @@ class FindersController extends \BaseController {
                                 $cs_ratecard_price = $this->utilities->getRatecardPrice($cs_ratecard);
                                 if($cs_ratecard['duration'] > $sessions_range['low'] && $cs_ratecard['duration'] <= $sessions_range['high'] && $cs_ratecard_price <= $price * (1 + Config::get('nonvalidity.cross_sell_diff'))){
 
-                                    $this->formatCrossSellRatecard($cs_ratecard, $cs_ratecard_price);
+                                    //$this->formatCrossSellRatecard($cs_ratecard, $cs_ratecard_price);
 
                                     $this->formatRatecard($ratecard, $price);
 
-                                    $this->getCorssSellSection($data, $ratecard, $cs_ratecard, $key, $ratecard_key, $key1);
+                                    //$this->getCorssSellSection($data, $ratecard, $cs_ratecard, $key, $ratecard_key, $key1);
 
                                     break;
                                 }
@@ -7599,7 +7599,7 @@ class FindersController extends \BaseController {
 				$orderSummary['title'] = $title;
 				$rc['order_summary'] = $orderSummary;
 				$remark_data=[];
-				if(isset($rc['remarks']) && $rc['remarks'] != ""){
+				if(isset($rc['remarks']) && $rc['remarks'] != "" && (!isset($rc['remarks_imp']) || $rc['remarks_imp'])){
 					array_push($remark_data,  strtr($orderSummary['remark_data'], ['ratecard_remark'=>$rc['remarks']]));
 					$rc['order_summary']['remark_data'] = $remark_data;
 				}

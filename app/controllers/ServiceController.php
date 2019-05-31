@@ -8,7 +8,6 @@
  */
 use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
-
 class ServiceController extends \BaseController {
 
 	public function __construct(Utilities $utilities) {
@@ -16,7 +15,6 @@ class ServiceController extends \BaseController {
 		parent::__construct();
 
 		$this->utilities = $utilities;
-
 		$this->vendor_token = false;
         
         $vendor_token = Request::header('Authorization-Vendor');
@@ -2037,7 +2035,7 @@ class ServiceController extends \BaseController {
 		if(!$data['pending_payment']){
 			unset($data['pending_payment']);	
 		}
-
+		//$service_details = App(FindersController::class)->orderSummary($service_details, $service_details['finder_name']);
 		return Response::json(array('status'=>200, 'data'=> $data));
 
 	}
