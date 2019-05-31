@@ -9041,24 +9041,47 @@ class TransactionController extends \BaseController {
 
             Log::info('fitnessForce: ', $post_data);
 
-            $client = new GuzzleClient( ['debug' => false, 'base_uri' => "https://hooks.zapier.com/"] );
+            $fitnessForceData = ['form_params' => []];
+            $fitnessForceData['form_params']['firstname'] = $post_data['first_name'];
+            $fitnessForceData['form_params']['lastname'] = $post_data['last_name'];
+            $fitnessForceData['form_params']['mobileno'] = $post_data['customer_contact'];
+            $fitnessForceData['form_params']['emailid'] = $post_data['customer_email'];
+            $fitnessForceData['form_params']['productprice'] = $post_data['productprice'];
+            $fitnessForceData['form_params']['paymentmode'] = 'gymtrekker';
+            $fitnessForceData['form_params']['addpaymentvalues'] = $post_data['addpaymentids'];
+            $fitnessForceData['form_params']['addpaymentvalues'] = $post_data['addpaymentvalues'];
+            $fitnessForceData['form_params']['amountpaid'] = $post_data['amountpaid'];
+            $fitnessForceData['form_params']['total'] = $post_data['total'];
+            $fitnessForceData['form_params']['productprice'] = $post_data['productprice'];
+            $fitnessForceData['form_params']['purchasedate'] = $post_data['purchasedate'];
+            $fitnessForceData['form_params']['productid'] = $post_data['productid'];
+            $fitnessForceData['form_params']['packageid'] = $post_data['packageid'];
+            $fitnessForceData['form_params']['campaignid'] = $post_data['campaignid'];
 
-            if($data['type'] == 'trial'){
-                $url = 'hooks/catch/961068/jrdw9y';
-                $post_data['type'] = "trial";
-            }else{
-                // $url = 'hooks/catch/961068/jr55ko';
-                $url = 'hooks/catch/5070121/v10106';
-                $post_data['type'] = "order";
-            }
-            $payload = [
-                'headers'=>[
-                    'Content-Type' => 'application/json',
-                ],
-                'json'=>$post_data
-            ];
+            $client = new GuzzleClient( ['debug' => false, 
+                // 'base_uri' => "https://hooks.zapier.com/"
+            ] );
 
-            return $response = $client->post($url,$payload)->getBody()->getContents();
+            $url = 'https://demo.fitnessforce.com/WebPurchase/WebTransaction.aspx?source='.$fitnessForceData['form_params']['paymentmode'].'&tenantid=45&authkey=FFT_D_45';
+
+            // if($data['type'] == 'trial'){
+            //     $url = 'hooks/catch/961068/jrdw9y';
+            //     $post_data['type'] = "trial";
+            // }else{
+            //     // $url = 'hooks/catch/961068/jr55ko';
+            //     $url = 'hooks/catch/5070121/v10106';
+            //     $post_data['type'] = "order";
+            // }
+            // $payload = [
+            //     'headers'=>[
+            //         'Content-Type' => 'application/json',
+            //     ],
+            //     'json'=>$post_data
+            // ];
+            $payload = $fitnessForceData;
+            $response = $client->post($url,$payload)->getBody()->getContents();
+            Log::info('fitnessForce Response: ', [$response]);
+            return $response;
     }
 
 }
