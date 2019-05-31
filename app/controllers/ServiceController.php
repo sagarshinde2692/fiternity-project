@@ -670,7 +670,7 @@ class ServiceController extends \BaseController {
 
 		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id','flags');
 		Service::$withoutAppends=true;
-		 Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
+		Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
 		
         $query = Service::active()->whereNotIn('trial',['manual', 'manualauto','disable']);
 
@@ -1235,7 +1235,7 @@ class ServiceController extends \BaseController {
                 }
             }
 
-
+			$data['slots'] = App(FindersController::class)->orderSummarySlots($data['slots']);
 	        return Response::json($data,200);
         }
 
@@ -2035,7 +2035,8 @@ class ServiceController extends \BaseController {
 		if(!$data['pending_payment']){
 			unset($data['pending_payment']);	
 		}
-		//$service_details = App(FindersController::class)->orderSummary($service_details, $service_details['finder_name']);
+		$data['service'] = App(FindersController::class)->orderSummaryService($data['service']);
+		$data['service']['slots'] = App(FindersController::class)->orderSummarySlots($data['service']['slots']);
 		return Response::json(array('status'=>200, 'data'=> $data));
 
 	}

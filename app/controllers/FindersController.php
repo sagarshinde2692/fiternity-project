@@ -7610,5 +7610,22 @@ class FindersController extends \BaseController {
 			}
 		}
 		return $services;
-    }
+	}
+	
+	public function orderSummarySlots($slotsdata){
+		$orderSummary = Config::get('orderSummary.slot_summary');
+		//Log::info('order summary ::::::', [$orderSummary]);
+		foreach($slotsdata as &$slot){
+			foreach($slot['data'] as &$sd){
+				$sd['order_summary']['header'] = $orderSummary['header']; 
+			}
+		}
+		return $slotsdata;
+	}
+
+	public function orderSummaryService($service){
+		$summary= Config::get('orderSummary.service_summary');
+		$service['order_summary']['header']= $summary['header'];	
+		return $service;
+	}
 }
