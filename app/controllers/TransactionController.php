@@ -9102,7 +9102,7 @@ class TransactionController extends \BaseController {
             ];
 
             if(!empty($responseString)) {
-                $response = json_decode($responseString);
+                $response = json_decode($responseString, true);
                 Log::info('fitnessForce Response: ', [$response]);
                 
                 $fflogParam = [
