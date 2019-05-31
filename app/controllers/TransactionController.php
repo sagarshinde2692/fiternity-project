@@ -9048,7 +9048,7 @@ class TransactionController extends \BaseController {
             $fitnessForceData['form_params']['emailid'] = $post_data['customer_email'];
             $fitnessForceData['form_params']['productprice'] = $post_data['productprice'];
             $fitnessForceData['form_params']['paymentmode'] = 'gymtrekker';
-            $fitnessForceData['form_params']['addpaymentvalues'] = $post_data['addpaymentids'];
+            $fitnessForceData['form_params']['addpaymentids'] = $post_data['addpaymentids'];
             $fitnessForceData['form_params']['addpaymentvalues'] = $post_data['addpaymentvalues'];
             $fitnessForceData['form_params']['amountpaid'] = $post_data['amountpaid'];
             $fitnessForceData['form_params']['total'] = $post_data['total'];
