@@ -9133,7 +9133,7 @@ class TransactionController extends \BaseController {
             }
 
             $fflog = new FitnessForceAPILog($fflogParam);
-            $fflog.save();
+            $fflog->save();
 
 
             return $response;
