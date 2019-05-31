@@ -8730,46 +8730,8 @@ class CustomerController extends \BaseController {
             
             $addedCheckin = $this->utilities->addCheckin($checkin_data);
         
-        }
-		
-		
-		// Finder::$withoutAppends = true;
-		
-		// $finder = Finder::find($finder_id, ['title']);
-		$finder = $finder_data;
-		
-		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200 || (!empty($schedule_session['status']) && $schedule_session['status'] == 200)){
-
-            if(!empty($update_finder_ws_sessions)){
-                 // $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
-				// $customer->update(['loyalty'=>$loyalty]);
-				Customer::where('_id', $customer_id)->increment('loyalty.workout_sessions.'.$finder_id);
-            }elseif(!empty($update_finder_membership)){
-                if(empty($loyalty['memberships']) || !in_array($finder_id, $loyalty['memberships'])){
-                    array_push($loyalty['memberships'], $finder_id);
-                    $customer->update(['loyalty'=>$loyalty]);
-                }
-            }
-
-			$return =  [
-				'header'=>'CHECK-IN SUCCESSFUL!',
-				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
-				'milestones'=>$this->utilities->getMilestoneSection(),
-				'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
-				// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
-			];
-
-            if(!empty($addedCheckin['already_checked_in'])){
-                $return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';
-            }
-
-            return $return;
-		}else{
-			
-			return $addedCheckin;
-		
 		}
-
+		
 	}
 
 	public function uploadReceiptLoyalty(){
@@ -9655,13 +9617,9 @@ class CustomerController extends \BaseController {
 	}
 
 	public function checkForCheckinFromDevice($finder_id, $device_id, $finder){
-		$date = date('d-m-Y', time());
-		$date  = gmdate('Y-m-d H:i:s', strtotime($date)).'.000Z';
-		//$date = date('Y-m-d H:i:s',strtotime('+18 hour +30 minutes +00 seconds +000',strtotime($date))).'Z';
-		Log::info('modified date::::::::', [$device_id, $date]);
-		$checkins= Checkin::where('device_id', $device_id)->where('date', '==', $date)->select('customer_id', 'created_at', 'status', 'device_id', 'checkout_status')->first();
+		$date = date('Y-m-d', time());
+		$checkins= Checkin::where('device_id', $device_id)->where('date', '=', new MongoDate(strtotime($date)))->select('customer_id', 'created_at', 'status', 'device_id', 'checkout_status')->first();
 		$res = ["status"=> true];
-		//->where('created_at', '<', $date->modify('-2 hours'))
 		Log::info('chekcins:::::::::::;', [$checkins]);
 		if(count($checkins)>0){
 			$d = strtotime($checkins['created_at']);	
@@ -9671,7 +9629,6 @@ class CustomerController extends \BaseController {
 			if($checkins['checkout_status']){
 				//allreday checkdout
 				return $res = ["status"=>false, "message"=>"You have already checked-out for the day."];
-			
 			}
 			else if($difference< 45 * 60){
 				//session is not complitated
@@ -9689,7 +9646,7 @@ class CustomerController extends \BaseController {
 		}
 		else{
 			//just checkinss ->>>>>> start checkoins
-			//return $this->checkinInitiate($finder_id, $finder);
+			return $this->checkinInitiate($finder_id, $finder);
 		}
 
 		return $res;
@@ -9732,12 +9689,42 @@ class CustomerController extends \BaseController {
 		
 	}
 
-	public function checkoutInitiate($id){
+	public function checkoutInitiate($id, $finder_data){
 		Log::info('checing out::::::::');
 		$checkout = Checkin::where('_id', $id)->first();
 			$checkout->checkout_status=true;
 		try{
 			$checkout->update();
+			// Finder::$withoutAppends = true;
+		
+		// $finder = Finder::find($finder_id, ['title']);
+			$finder = $finder_data;
+			
+			if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200 || (!empty($schedule_session['status']) && $schedule_session['status'] == 200)){
+				if(!empty($update_finder_ws_sessions)){
+					// $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
+					// $customer->update(['loyalty'=>$loyalty]);
+					Customer::where('_id', $customer_id)->increment('loyalty.workout_sessions.'.$finder_id);
+				}elseif(!empty($update_finder_membership)){
+					if(empty($loyalty['memberships']) || !in_array($finder_id, $loyalty['memberships'])){
+						array_push($loyalty['memberships'], $finder_id);
+						$customer->update(['loyalty'=>$loyalty]);
+					}
+				}
+
+				$return =  [
+					'header'=>'CHECK-IN SUCCESSFUL!',
+					'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
+					'milestones'=>$this->utilities->getMilestoneSection(),
+					'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
+					// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
+				];
+				return $return;
+			}else{
+				
+				return $addedCheckin;
+			
+			}
 			return ['status'=> true, "message"=> "Succesfully checkedout"];
 		}catch(Exception $err){
 			Log::info("error occured::::::::::::", [$err]);
