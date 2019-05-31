@@ -2036,8 +2036,12 @@ class ServiceController extends \BaseController {
 		if(!$data['pending_payment']){
 			unset($data['pending_payment']);	
 		}
-		$data['service'] = App(FindersController::class)->orderSummaryService($data['service']);
-		$data['service']['slots'] = App(FindersController::class)->orderSummarySlots($data['service']['slots']);
+		if(!empty($data['service']) && in_array($this->device_type, ['android', 'ios'])){
+			$data['service'] = App(FindersController::class)->orderSummaryService($data['service']);
+		}
+		if(!empty($data['service']['slots'] && in_array($this->device_type, ['android', 'ios']))){
+			$data['service']['slots'] = App(FindersController::class)->orderSummarySlots($data['service']['slots']);
+		}
 		return Response::json(array('status'=>200, 'data'=> $data));
 
 	}
