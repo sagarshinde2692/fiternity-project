@@ -9091,12 +9091,12 @@ class TransactionController extends \BaseController {
 
             $fflogParam = [
                 'url' => $url,
-                'requestQuery' => [
+                'request_query' => [
                     'source' => $post_data['source'],
                     'tenantid' => $post_data['tenantid'],
                     'authkey' => $post_data['authkey']
                 ],
-                'requestBody' => $fitnessForceData['form_params'],
+                'request_body' => $fitnessForceData['form_params'],
                 'response' => $responseString,
                 'type' => 'trans_succ',
                 'success' => false,
