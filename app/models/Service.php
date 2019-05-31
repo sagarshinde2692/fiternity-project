@@ -299,12 +299,10 @@ class Service extends \Basemodel{
 						}
                         
                         Log::info('setting  slots for 13901');
-						if(in_array($finder->_id, [13901])){
-                            
-                            $ratecardoffer['offer_text']    =  "";
                         
-                        }else{
-							$orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
+                        if(!in_array($finder->_id, [13901])){
+                            
+                            $orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
 							if(isset($orderVariable["available_slots_end_date"]) && time() >= $orderVariable["available_slots_end_date"]){
 								$futureExpiry = (date('d',$orderVariable["end_time"])-intval(date('d', time())));
 								$ratecardoffer['offer_text']    =  ($difference->days == 1 || $futureExpiry == 0) ? "Expires Today" : (($difference->days > 7 || $difference->days == 0) ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
@@ -313,7 +311,8 @@ class Service extends \Basemodel{
 									$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
 								}
 							}
-						}
+                        
+                        }
 
 						if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
 
