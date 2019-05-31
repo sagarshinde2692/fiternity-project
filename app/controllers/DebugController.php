@@ -10722,54 +10722,101 @@ public function yes($msg){
         
     }
 
-    public function testcodesnippet(){
-        Customer::$withoutAppends = true;
-        $self_coupons = Customer::where('contact_no', "9819142148")->lists('referral_code');
-        // return DB::table('orders')->where('status', '1')->where('customer_phone', "9819142148")->groupBy('coupon_code')->get();
-        $customer_phone = "9819142148";
-        return $orders_phone_number = Order::raw(function($query) use ($self_coupons, $customer_phone){
+    public function createBulkCoupons(){
+        // Customer::$withoutAppends = true;
+        // $self_coupons = Customer::where('contact_no', "9819142148")->lists('referral_code');
+        // // return DB::table('orders')->where('status', '1')->where('customer_phone', "9819142148")->groupBy('coupon_code')->get();
+        // $customer_phone = "9819142148";
+        // return $orders_phone_number = Order::raw(function($query) use ($self_coupons, $customer_phone){
 
-            $aggregate = [
-                [
-                    '$match'=>[
-                        'status'=>'1',
-                        'customer_phone'=>$customer_phone,
-                        // 'coupon_code'=>['$regex'=>new \MongoDB\BSON\Regex("/^[a-zA-Z0-9*]{*}$/")]
-                        // 'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{*}$"]
-                        // 'coupon_code'=>['$regex'=>"/^[a-zA-Z0-9*]{8}[rR]{1}$/"]
-                        'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{8}[rR]$"]
-                        // 'coupon_code'=>['$exists'=>true]
-                    ],
+        //     $aggregate = [
+        //         [
+        //             '$match'=>[
+        //                 'status'=>'1',
+        //                 'customer_phone'=>$customer_phone,
+        //                 // 'coupon_code'=>['$regex'=>new \MongoDB\BSON\Regex("/^[a-zA-Z0-9*]{*}$/")]
+        //                 // 'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{*}$"]
+        //                 // 'coupon_code'=>['$regex'=>"/^[a-zA-Z0-9*]{8}[rR]{1}$/"]
+        //                 'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{8}[rR]$"]
+        //                 // 'coupon_code'=>['$exists'=>true]
+        //             ],
+        //         ],
+        //         [
+        //             '$project'=>[
+        //                 'coupon_uppercase'=>['$toUpper'=>'$coupon_code']
+        //             ]
+        //         ],
+        //         [
+        //             '$addFields'=>[
+        //                 'referral_type'=>[
+        //                     '$cond'=>[
+        //                         ['$in'=>['$coupon_uppercase', $self_coupons]],
+        //                         'self',
+        //                         'other'
+        //                     ]
+        //                 ]
+        //             ]
+        //         ],
+        //         [
+        //             '$group'=>[
+        //                 '_id'=>['referral_type'=>'$referral_type'],
+        //                 'count'=>['$sum'=>1]
+        //             ]
+        //         ]
+        //     ];
+
+        //     return $query->aggregate($aggregate);
+
+        // });
+
+        // $a=[];
+        // $utilities = new Utilities();
+        // for($i=1;$i<=200;$i++){
+        //     array_push($a, $utilities->generateRandomString(4));
+        // }
+        // return $a;
+
+        $codes = ["brpqcc8fit","brpvnpbfit","brp63zbfit","brp7t8sfit","brpquo5fit","brpmzjofit","brpm7c5fit","brp14hsfit","brpgt0bfit","brpgqnnfit","brptmy1fit","brpf7u5fit","brp2iapfit","brpiud4fit","brp2pa3fit","brpurwafit","brpkwm1fit","brpm9pgfit","brpvoibfit","brpvchyfit","brpvsndfit","brpm0iofit","brpqsskfit","brpkpv5fit","brpmi69fit","brpswpnfit","brpk8zgfit","brpkgegfit","brp91tvfit","brp2cksfit","brp4ddofit","brp28tpfit","brpq0yifit","brpxn6hfit","brpw6ygfit","brpncxwfit","brpeqrgfit","brp2c87fit","brpqlwtfit","brpuqilfit","brprg3ofit","brp4a60fit","brpg4h3fit","brpgezufit","brp5ra7fit","brp4jfvfit","brp5bo0fit","brp27ltfit","brpoohsfit","brpzntgfit","brprak8fit","brpok2tfit","brpcd1gfit","brpxhb3fit","brpt03vfit","brp8oowfit","brpd6pcfit","brpuitmfit","brpsduhfit","brpxxb9fit","brpbdq9fit","brpu2cnfit","brp3fjbfit","brp488hfit","brpfxu9fit","brpfnw8fit","brp1rqzfit","brpo180fit","brpfza9fit","brp1mx4fit","brp2hg6fit","brppoo4fit","brpmie1fit","brp6aa7fit","brp106qfit","brp2fqhfit","brpe0rgfit","brpnplqfit","brp61wwfit","brpql0cfit","brp3ee9fit","brpoohqfit","brppogsfit","brp37aifit","brp82yvfit","brprklyfit","brpmiucfit","brp3vp7fit","brp93hyfit","brpszoifit","brpn5aqfit","brpck9kfit","brpm8fefit","brps1cefit","brpk7rofit","brp2hwcfit","brpldbdfit","brpc0v0fit","brp56qhfit","brpqz1dfit","brp8hs0fit","brpj4f4fit","brpc7sefit","brpoor9fit","brp22nffit","brp2jf8fit","brpp6qgfit","brp6suefit","brpametfit","brprux3fit","brp1qiqfit","brpf9zhfit","brpcnwffit","brp6bnwfit","brphednfit","brp682gfit","brpugamfit","brpa7pcfit","brpy82dfit","brpi2uufit","brpprawfit","brp3ytlfit","brpc79jfit","brpfbz9fit","brpr9w2fit","brphmeffit","brpuhtdfit","brpjo88fit","brpfi5jfit","brphy4tfit","brp5dclfit","brpocugfit","brplri3fit","brpdxj7fit","brpeckyfit","brp0s7gfit","brpbczsfit","brpb3mhfit","brpgy25fit","brpaxlwfit","brpo4z1fit","brp2i9hfit","brpvtfvfit","brpmmcyfit","brpybqafit","brpfcrwfit","brpbt1mfit","brpqnjefit","brprifufit","brp1obwfit","brpiqs5fit","brpd43bfit","brpgulvfit","brp6drifit","brp6s4wfit","brpfnb7fit","brp6r18fit","brpgd4zfit","brp4x4hfit","brp28sifit","brp2ed9fit","brpr4ryfit","brpxwvdfit","brpk7lqfit","brpynyffit","brp30000fit","brp1jm3fit","brprflufit","brptz3lfit","brp3vk1fit","brpsffcfit","brpm03lfit","brpo20ofit","brp5et6fit","brpxfapfit","brpuvkofit","brpuoayfit","brpjuzcfit","brpafoxfit","brpfri3fit","brptiszfit","brpxm6vfit","brp2glwfit","brpb5l6fit","brptw4dfit","brpq4p1fit","brpjeyzfit","brp5h3zfit","brpzvyxfit","brpi4skfit","brpldhwfit","brpj22cfit","brpz7qqfit","brpbgrvfit","brpuqu0fit","brp7yz6fit","brpty3bfit","brp3wwofit","brpadltfit","brpgo6ffit"];
+
+        $coupons = [];
+        $id = Coupon::max('_id')+1;
+        foreach($codes as $code){
+            $coupon = [
+                "name" => "Burrp World Cup Campaign",
+                "code" => "burrpfit",
+                "description" => "Get Rs. 500 to use on 2 sessions using PPS. ",
+                "discount_percent" => 0,
+                "discount_max" => 250,
+                "discount_amount" => 500,
+                "burp" =>true,
+                "city_id" => "6",
+                "total_available" => 200,
+                "validity" => 0,
+                "success_message" => "",
+                "failure_message" => "",
+                "campaign_success_message" => "",
+                "campaign_discount_percent" => "",
+                "campaign_discount_max" => "",
+                "campaign_discount_amount" => "",
+                "ratecard_type" => [ 
+                    "workout session"
                 ],
-                [
-                    '$project'=>[
-                        'coupon_uppercase'=>['$toUpper'=>'$coupon_code']
-                    ]
-                ],
-                [
-                    '$addFields'=>[
-                        'referral_type'=>[
-                            '$cond'=>[
-                                ['$in'=>['$coupon_uppercase', $self_coupons]],
-                                'self',
-                                'other'
-                            ]
-                        ]
-                    ]
-                ],
-                [
-                    '$group'=>[
-                        '_id'=>['referral_type'=>'$referral_type'],
-                        'count'=>['$sum'=>1]
-                    ]
-                ]
+                "status" => "1",
+                "total_used" => 0,
+                "campaign_only" => "0",
             ];
-
-            return $query->aggregate($aggregate);
-
-        });
+            
+            $coupon['_id'] = $id++;
+            $coupon['code'] = $code;
+            array_push($coupons, $coupon);
+        }
+        Coupon::insert($coupons);
+        return $coupons;
         
     }
+
+
+
 
 
 }
