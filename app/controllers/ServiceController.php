@@ -8,6 +8,8 @@
  */
 use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
+use Indatus\Dispatcher\Scheduling\Schedulable;
+
 class ServiceController extends \BaseController {
 
 	public function __construct(Utilities $utilities) {
@@ -1234,7 +1236,13 @@ class ServiceController extends \BaseController {
 
                 }
 			}
-			if(!empty($data['slots'])){
+			Log::info('slots::::::::: type:::::::', [$type]);
+			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
+				foreach($data['schedules'] as &$schedule){
+					$schedule['slots'] = App(FindersController::class)->orderSummaryWorkoutSessionSlots($schedule['slots']);
+				}
+			}
+			else if(!empty($data['slots']) && in_array($this->device_type, ['android', 'ios'])){
 				$data['slots'] = App(FindersController::class)->orderSummarySlots($data['slots']);
 			}
 	        return Response::json($data,200);

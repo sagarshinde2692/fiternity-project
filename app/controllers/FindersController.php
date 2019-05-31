@@ -7628,4 +7628,13 @@ class FindersController extends \BaseController {
 		$service['order_summary']['header']= $summary['header'];	
 		return $service;
 	}
+
+	public function orderSummaryWorkoutSessionSlots($slotsdata){
+		$orderSummary = Config::get('orderSummary.slot_summary');
+		//Log::info('order summary ::::::', [$orderSummary]);
+		foreach($slotsdata as &$slot){
+				$slot['order_summary']['header'] = $orderSummary['header']; 
+		}
+		return $slotsdata;
+	}
 }
