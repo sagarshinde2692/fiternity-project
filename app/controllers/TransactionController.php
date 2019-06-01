@@ -6119,8 +6119,7 @@ class TransactionController extends \BaseController {
 
         $payment_options['upi'] = [
             'title' => 'UPI',
-            'subtitle' => "Note: In the next step you will be redirected to the bank's website to verify yourself",
-            'offer_text' => 'Transact online with UPI',
+            'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
         ];
         
         $payment_options['wallet'] = [
