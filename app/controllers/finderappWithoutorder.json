@@ -1,0 +1,634 @@
+{
+    "ratecard": [
+        {
+            "_id": 144819,
+            "finder_id": 9427,
+            "service_id": 13906,
+            "type": "extended validity",
+            "price": 10000,
+            "special_price": 8000,
+            "direct_payment_enable": "1",
+            "remarks": "",
+            "discount_amount": 0,
+            "order": 0,
+            "validity": 0,
+            "duration": 20,
+            "duration_type": "sessions\n(Valid for 2 months)",
+            "created_at": "2019-05-24 21:23:03",
+            "updated_at": "2019-05-24 21:23:03",
+            "flags": {
+                "upgradable": false,
+                "free_sp": false,
+                "top_service": false,
+                "enable_vendor_ext_validity_comm": false,
+                "unlimited_validity": false,
+                "no_pps_algo": false,
+                "campaign_offer": false,
+                "addonServiceOther": "",
+                "addonService": "",
+                "addon_duration": 0,
+                "addon": false,
+                "offerFor": "",
+                "discother": false,
+                "disc25or50": false
+            },
+            "offers": [],
+            "campaign_offer": "20% off",
+            "campaign_color": "#43a047",
+            "ext_validity": "Valid for 2 months",
+            "validity_copy": 2,
+            "validity_type_copy": "months",
+            "button_color": "#53b7b7",
+            "pps_image": "http://b.fitn.in/global/fexbutton.png",
+            "popup_data": {
+                "image": "https://b.fitn.in/global/fexbutton.png",
+                "header": "Most effective way to avail a membership at Shivfit Bandra",
+                "text": "",
+                "description": "Unlimited Validity Membership gives you the ability to workout at Shivfit Bandra for a longer validity period by buying a workout session pack of your choice. This is a Fitternity exclusive feature which allows you to maximize on your spends on Fitness by giving you the flexibility to book sessions as per your convenience over a longer period of time than a standard membership",
+                "how_it_works": {
+                    "header": "How it works",
+                    "text": "All you need to do is book your slot everytime you want to workout",
+                    "data": [
+                        {
+                            "image": "https://b.fitn.in/non-validity/success-page/mob%20icon%201.png",
+                            "header": "Easy to book",
+                            "text": "Everytime you want to workout, you can prebook your sessions only on Fitternity app or scan the QR code available at the gym/studio."
+                        },
+                        {
+                            "image": "https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png",
+                            "header": "Track Your Usage",
+                            "text": "Check the workout counter in your Fitternity profile."
+                        },
+                        {
+                            "image": "https://b.fitn.in/non-validity/success-page/mob%20icon%203.png",
+                            "header": "Easy cancellation",
+                            "text": "Don't lose out on your workout with easy cancellation until 1 hour prior to your session time. Available only on Fitternity app."
+                        }
+                    ]
+                },
+                "terms": "T&C Apply- Direct entry without booking or scanning a QR code at the gym will not be facilitated."
+            },
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA"
+            }
+        },
+        {
+            "_id": 43432,
+            "service_id": 13906,
+            "finder_id": 9427,
+            "type": "workout session",
+            "price": 800,
+            "special_price": 499,
+            "duration_type": "session",
+            "duration": 1,
+            "validity_type": "days",
+            "validity": 1,
+            "direct_payment_enable": "1",
+            "monsoon_sale_enable": "0",
+            "hot_deals": "0",
+            "remarks": "Book multiple sessions at this price. ",
+            "order": 2,
+            "discount_amount": 0,
+            "updated_at": "2019-05-24 19:37:08",
+            "created_at": "2016-08-22 15:50:20",
+            "flags": {
+                "campaign_offer": false,
+                "no_pps_algo": true
+            },
+            "convinience_from_false_set_manually": true,
+            "vendor_price": 499,
+            "offers": [],
+            "button_color": "#53b7b7",
+            "pps_know_more": true,
+            "pps_title": "Pay Per Session",
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA",
+                "title": "THINGS TO KEEP IN MIND",
+                "remark_data": [
+                    "BOOK MULTIPLE SESSIONS AT THIS PRICE. "
+                ]
+            },
+            "cashback_on_trial": ""
+        },
+        {
+            "_id": 99111,
+            "finder_id": 9427,
+            "service_id": 13906,
+            "type": "membership",
+            "price": 8500,
+            "special_price": 0,
+            "direct_payment_enable": "1",
+            "remarks": "Renewal Rates",
+            "discount_amount": 0,
+            "order": 3,
+            "validity": 1,
+            "validity_type": "months",
+            "duration": 0,
+            "duration_type": "",
+            "created_at": "2018-02-16 16:02:48",
+            "updated_at": "2018-02-16 16:02:48",
+            "flags": {
+                "addonServiceOther": "",
+                "addonService": "",
+                "addon_duration": 0,
+                "addon": false,
+                "offerFor": "",
+                "discother": false,
+                "disc25or50": false
+            },
+            "offers": [],
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA",
+                "title": "THINGS TO KEEP IN MIND",
+                "remark_data": [
+                    "RENEWAL RATES"
+                ]
+            }
+        },
+        {
+            "_id": 43433,
+            "service_id": 13906,
+            "finder_id": 9427,
+            "type": "studio_extended_validity",
+            "price": 10000,
+            "special_price": 8499,
+            "duration_type": "sessions",
+            "duration": 12,
+            "validity_type": "months",
+            "validity": 1,
+            "direct_payment_enable": "1",
+            "monsoon_sale_enable": "0",
+            "hot_deals": "0",
+            "remarks": "",
+            "order": 3,
+            "discount_amount": 0,
+            "updated_at": "2019-05-24 19:37:08",
+            "created_at": "2016-08-22 15:50:43",
+            "flags": {
+                "campaign_offer": false
+            },
+            "convinience_from_false_set_manually": true,
+            "vendor_price": 8499,
+            "studio_extended_validity": {
+                "num_days_extended": 15
+            },
+            "offers": [],
+            "campaign_offer": "16% off",
+            "campaign_color": "#43a047",
+            "pps_title": "Flexi Membership",
+            "popup_data": {
+                "header": "Flexi Membership",
+                "text": "<b>GET EXCLUSIVE ACCESS TO EXTEND YOUR MEMBERSHIP</b><br/>Get exclusive access to extending your membership to complete all your sessions. So don't worry if you miss any of the class, we have got you covered!<br/><br/><b>How it works?</b><br/><ul><li>This membership offers you extended validity which gives you the flexibility of attending all your workout sessions as per your convenience.</li><li>All the sessions should be schdeuled basis the schedule/batch of the service that you have purchased.</li><li>Flexi membership is a app only feature. Please download the app post buying to track your sessions.</li><li>Not able to attend? Cancel on the go, 60 minutes prior to your session time through your user profile on the Fitternity App / Reminder notification prior to your session.</li><li>Cancelled sessions can be rebooked later as per your convinience.</li></ul>"
+            },
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA"
+            }
+        },
+        {
+            "_id": 99112,
+            "finder_id": 9427,
+            "service_id": 13906,
+            "type": "membership",
+            "price": 21500,
+            "special_price": 0,
+            "direct_payment_enable": "1",
+            "remarks": "Renewal Rates",
+            "discount_amount": 0,
+            "order": 4,
+            "validity": 3,
+            "validity_type": "months",
+            "duration": 0,
+            "duration_type": "",
+            "created_at": "2018-02-16 16:03:23",
+            "updated_at": "2018-02-16 16:03:23",
+            "flags": {
+                "addonServiceOther": "",
+                "addonService": "",
+                "addon_duration": 0,
+                "addon": false,
+                "offerFor": "",
+                "discother": false,
+                "disc25or50": false
+            },
+            "offers": [],
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA",
+                "title": "THINGS TO KEEP IN MIND",
+                "remark_data": [
+                    "RENEWAL RATES"
+                ]
+            }
+        },
+        {
+            "_id": 43434,
+            "service_id": 13906,
+            "finder_id": 9427,
+            "type": "membership",
+            "price": 25000,
+            "special_price": 21499,
+            "duration_type": "session",
+            "duration": 0,
+            "validity_type": "months",
+            "validity": 3,
+            "direct_payment_enable": "1",
+            "monsoon_sale_enable": "0",
+            "hot_deals": "0",
+            "remarks": "",
+            "order": 4,
+            "discount_amount": 0,
+            "updated_at": "2019-05-24 19:37:08",
+            "created_at": "2016-08-22 15:51:11",
+            "flags": {
+                "campaign_offer": false
+            },
+            "convinience_from_false_set_manually": true,
+            "vendor_price": 21499,
+            "offers": [],
+            "campaign_offer": "15% off",
+            "campaign_color": "#43a047",
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA"
+            }
+        },
+        {
+            "_id": 99113,
+            "finder_id": 9427,
+            "service_id": 13906,
+            "type": "membership",
+            "price": 30500,
+            "special_price": 0,
+            "direct_payment_enable": "1",
+            "remarks": "Renewal Rates",
+            "discount_amount": 0,
+            "order": 5,
+            "validity": 6,
+            "validity_type": "months",
+            "duration": 0,
+            "duration_type": "",
+            "created_at": "2018-02-16 16:04:00",
+            "updated_at": "2018-02-16 16:04:00",
+            "flags": {
+                "addonServiceOther": "",
+                "addonService": "",
+                "addon_duration": 0,
+                "addon": false,
+                "offerFor": "",
+                "discother": false,
+                "disc25or50": false
+            },
+            "offers": [],
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA",
+                "title": "THINGS TO KEEP IN MIND",
+                "remark_data": [
+                    "RENEWAL RATES"
+                ]
+            }
+        },
+        {
+            "_id": 43435,
+            "service_id": 13906,
+            "finder_id": 9427,
+            "type": "membership",
+            "price": 35400,
+            "special_price": 30499,
+            "duration_type": "session",
+            "duration": 0,
+            "validity_type": "months",
+            "validity": 6,
+            "direct_payment_enable": "1",
+            "monsoon_sale_enable": "0",
+            "hot_deals": "0",
+            "remarks": "",
+            "order": 5,
+            "discount_amount": 0,
+            "updated_at": "2019-05-24 19:37:08",
+            "created_at": "2016-08-22 15:51:43",
+            "flags": {
+                "campaign_offer": false
+            },
+            "convinience_from_false_set_manually": true,
+            "vendor_price": 30499,
+            "offers": [],
+            "campaign_offer": "14% off",
+            "campaign_color": "#43a047",
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA"
+            }
+        },
+        {
+            "_id": 110500,
+            "finder_id": 9427,
+            "service_id": 13906,
+            "type": "membership",
+            "price": 30500,
+            "special_price": 0,
+            "direct_payment_enable": "1",
+            "remarks": "Renewal Rate",
+            "discount_amount": 0,
+            "order": 5,
+            "validity": 6,
+            "validity_type": "months",
+            "duration": 0,
+            "duration_type": "session",
+            "created_at": "2018-06-15 12:37:20",
+            "updated_at": "2018-06-15 12:37:20",
+            "flags": {
+                "campaign_offer": false,
+                "addonServiceOther": "",
+                "addonService": "",
+                "addon_duration": 0,
+                "addon": false,
+                "offerFor": "",
+                "discother": false,
+                "disc25or50": false
+            },
+            "offers": [],
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA",
+                "title": "THINGS TO KEEP IN MIND",
+                "remark_data": [
+                    "RENEWAL RATE"
+                ]
+            }
+        },
+        {
+            "_id": 99114,
+            "finder_id": 9427,
+            "service_id": 13906,
+            "type": "membership",
+            "price": 45500,
+            "special_price": 0,
+            "direct_payment_enable": "1",
+            "remarks": "Renewal Rates",
+            "discount_amount": 0,
+            "order": 6,
+            "validity": 1,
+            "validity_type": "year",
+            "duration": 0,
+            "duration_type": "",
+            "created_at": "2018-02-16 16:04:44",
+            "updated_at": "2018-02-16 16:04:44",
+            "flags": {
+                "addonServiceOther": "",
+                "addonService": "",
+                "addon_duration": 0,
+                "addon": false,
+                "offerFor": "",
+                "discother": false,
+                "disc25or50": false
+            },
+            "available_slots": 33,
+            "total_slots_created": 33,
+            "available_slots_update_at": 1532700112,
+            "available_slots_default": false,
+            "offers": [],
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA",
+                "title": "THINGS TO KEEP IN MIND",
+                "remark_data": [
+                    "RENEWAL RATES"
+                ]
+            }
+        },
+        {
+            "_id": 43436,
+            "service_id": 13906,
+            "finder_id": 9427,
+            "type": "membership",
+            "price": 59000,
+            "special_price": 45500,
+            "duration_type": "session",
+            "duration": 0,
+            "validity_type": "year",
+            "validity": 1,
+            "direct_payment_enable": "1",
+            "monsoon_sale_enable": "0",
+            "hot_deals": "0",
+            "remarks": "",
+            "order": 6,
+            "discount_amount": 0,
+            "updated_at": "2019-05-24 19:37:08",
+            "created_at": "2016-08-22 15:52:08",
+            "flags": {
+                "campaign_offer": false
+            },
+            "convinience_from_false_set_manually": true,
+            "vendor_price": 45500,
+            "offers": [],
+            "campaign_offer": "23% off",
+            "campaign_color": "#43a047",
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA"
+            }
+        },
+        {
+            "_id": 110501,
+            "finder_id": 9427,
+            "service_id": 13906,
+            "type": "membership",
+            "price": 45500,
+            "special_price": 0,
+            "direct_payment_enable": "1",
+            "remarks": "Renewal Rate",
+            "discount_amount": 0,
+            "order": 6,
+            "validity": 1,
+            "validity_type": "year",
+            "duration": 0,
+            "duration_type": "session",
+            "created_at": "2018-06-15 12:37:34",
+            "updated_at": "2018-06-15 12:37:34",
+            "flags": {
+                "campaign_offer": false,
+                "addonServiceOther": "",
+                "addonService": "",
+                "addon_duration": 0,
+                "addon": false,
+                "offerFor": "",
+                "discother": false,
+                "disc25or50": false
+            },
+            "offers": [],
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA",
+                "title": "THINGS TO KEEP IN MIND",
+                "remark_data": [
+                    "RENEWAL RATE"
+                ]
+            }
+        },
+        {
+            "_id": 94816,
+            "finder_id": 9427,
+            "service_id": 13906,
+            "type": "membership",
+            "price": 8500,
+            "special_price": 0,
+            "direct_payment_enable": "1",
+            "remarks": "Renewal Rates",
+            "discount_amount": 0,
+            "order": 7,
+            "validity": 1,
+            "validity_type": "months",
+            "duration": 0,
+            "duration_type": "",
+            "created_at": "2017-12-29 12:06:42",
+            "updated_at": "2017-12-29 12:09:26",
+            "flags": {
+                "addonServiceOther": "",
+                "addonService": "",
+                "addon_duration": 0,
+                "addon": false,
+                "offerFor": "",
+                "discother": false,
+                "disc25or50": false
+            },
+            "offers": [],
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA",
+                "title": "THINGS TO KEEP IN MIND",
+                "remark_data": [
+                    "RENEWAL RATES"
+                ]
+            }
+        },
+        {
+            "_id": 94817,
+            "finder_id": 9427,
+            "service_id": 13906,
+            "type": "membership",
+            "price": 21500,
+            "special_price": 0,
+            "direct_payment_enable": "1",
+            "remarks": "Renewal Rates",
+            "discount_amount": 0,
+            "order": 8,
+            "validity": 3,
+            "validity_type": "months",
+            "duration": 0,
+            "duration_type": "",
+            "created_at": "2017-12-29 12:07:28",
+            "updated_at": "2017-12-29 12:09:36",
+            "flags": {
+                "addonServiceOther": "",
+                "addonService": "",
+                "addon_duration": 0,
+                "addon": false,
+                "offerFor": "",
+                "discother": false,
+                "disc25or50": false
+            },
+            "offers": [],
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA",
+                "title": "THINGS TO KEEP IN MIND",
+                "remark_data": [
+                    "RENEWAL RATES"
+                ]
+            }
+        },
+        {
+            "_id": 94818,
+            "finder_id": 9427,
+            "service_id": 13906,
+            "type": "membership",
+            "price": 30500,
+            "special_price": 0,
+            "direct_payment_enable": "1",
+            "remarks": "Renewal Rates",
+            "discount_amount": 0,
+            "order": 9,
+            "validity": 6,
+            "validity_type": "months",
+            "duration": 0,
+            "duration_type": "",
+            "created_at": "2017-12-29 12:07:54",
+            "updated_at": "2017-12-29 12:09:45",
+            "flags": {
+                "addonServiceOther": "",
+                "addonService": "",
+                "addon_duration": 0,
+                "addon": false,
+                "offerFor": "",
+                "discother": false,
+                "disc25or50": false
+            },
+            "offers": [],
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA",
+                "title": "THINGS TO KEEP IN MIND",
+                "remark_data": [
+                    "RENEWAL RATES"
+                ]
+            }
+        },
+        {
+            "_id": 94819,
+            "finder_id": 9427,
+            "service_id": 13906,
+            "type": "membership",
+            "price": 45500,
+            "special_price": 0,
+            "direct_payment_enable": "1",
+            "remarks": "Renewal Rates",
+            "discount_amount": 0,
+            "order": 10,
+            "validity": 1,
+            "validity_type": "year",
+            "duration": 0,
+            "duration_type": "",
+            "created_at": "2017-12-29 12:09:04",
+            "updated_at": "2017-12-29 12:09:58",
+            "flags": {
+                "addonServiceOther": "",
+                "addonService": "",
+                "addon_duration": 0,
+                "addon": false,
+                "offerFor": "",
+                "discother": false,
+                "disc25or50": false
+            },
+            "available_slots": 33,
+            "total_slots_created": 33,
+            "available_slots_update_at": 1532700112,
+            "available_slots_default": false,
+            "offers": [],
+            "remarks_imp": true,
+            "remarks_imp_api": true,
+            "order_summary": {
+                "header": "YOU ARE CURRENTLY BUYING 20 SESSIONS\n(VALID FOR 2 MONTHS) FITNESS STUDIOS MEMBERSHIP AT SHIVFIT BANDRA",
+                "title": "THINGS TO KEEP IN MIND",
+                "remark_data": [
+                    "RENEWAL RATES"
+                ]
+            }
+        }
+    ]
+}

@@ -4978,7 +4978,6 @@ class FindersController extends \BaseController {
 
 		try{
 			$this->orderRatecards($finderData, 'app');
-			//$finderData = $finderData1['finder']['service']['ratecard'];
 		}catch(Exception $e){
 			Log::info("Error while sorting ratecard", [$e]);
 		}
@@ -7562,7 +7561,11 @@ class FindersController extends \BaseController {
             $session_ratecards = array_filter($service[$serviceRatecards], function($rc){
                 return $rc['type'] == 'extended validity' ;
             });
-            
+			
+			$studio_extended_validity = array_filter($service[$serviceRatecards], function($rc){
+                return $rc['type'] == 'studio_extended_validity' ;
+			});
+			
             usort($membership_ratecards, "compareDuration");
             usort($session_ratecards, "compareSessions");
             // return $session_ratecards;
@@ -7575,7 +7578,7 @@ class FindersController extends \BaseController {
             $membership_buckets = createBucket($membership_ratecards, 'duration_day', array_keys($duration_session_pack));
 
             foreach($duration_session_pack as $key => $value){
-                $all_ratecards = array_merge($all_ratecards, $session_buckets[$value], $membership_buckets[$key]);
+                $all_ratecards = array_merge($all_ratecards, $studio_extended_validity, $session_buckets[$value], $membership_buckets[$key]);
             }
 
             $service[$serviceRatecards] =  $all_ratecards;
