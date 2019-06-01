@@ -7568,6 +7568,7 @@ class FindersController extends \BaseController {
 			
             usort($membership_ratecards, "compareDuration");
             usort($session_ratecards, "compareSessions");
+            usort($studio_extended_validity, "compareSessions");
             // return $session_ratecards;
             $all_ratecards = $ws_ratecards;
 
@@ -7577,8 +7578,10 @@ class FindersController extends \BaseController {
             
             $membership_buckets = createBucket($membership_ratecards, 'duration_day', array_keys($duration_session_pack));
 
+			$studio_extended_buckets = createBucket($studio_extended_validity, 'duration', array_keys($duration_session_pack));
+			//Log::info('studio extended at order ratecard::::::', [$studio_extended_buckets]);
             foreach($duration_session_pack as $key => $value){
-                $all_ratecards = array_merge($all_ratecards, $studio_extended_validity, $session_buckets[$value], $membership_buckets[$key]);
+                $all_ratecards = array_merge($all_ratecards, $studio_extended_buckets[$key], $session_buckets[$value], $membership_buckets[$key]);
             }
 
             $service[$serviceRatecards] =  $all_ratecards;
