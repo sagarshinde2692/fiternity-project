@@ -38,7 +38,7 @@ return array(
 	'mobikwik_sandbox'=>true,
 	'paytm_sandbox'=>true,
 	'paypal_sandbox'=>true,
-	"pps_image"=> 'http://b.fitn.in/global/fexbutton.png',
+	"pps_image"=> 'https://b.fitn.in/fit_exclusive.png',
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://beta.fitn.in',
