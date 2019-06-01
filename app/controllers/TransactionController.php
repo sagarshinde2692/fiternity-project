@@ -1599,7 +1599,8 @@ class TransactionController extends \BaseController {
         // if(!empty($data['studio_extended_validity']) && $data['studio_extended_validity']) {
         //     $this->utilities->scheduleStudioBookings(null, $order_id);
         // }
-
+        Log::info("capture response");
+        Log::info($resp);
         return $resp;
 
     }
@@ -6110,11 +6111,17 @@ class TransactionController extends \BaseController {
         $payment_modes = [];
 
 
-        $payment_options['payment_options_order'] = ["wallet", "cards", "netbanking", "emi"];
+        $payment_options['payment_options_order'] = ["wallet", "cards", "netbanking", "emi","upi"];
 
         if(!empty($order['type']) && $order['type'] == 'memberships'){
-            $payment_options['payment_options_order'] = ["cards", "wallet", "netbanking", "emi"];
+            $payment_options['payment_options_order'] = ["cards", "wallet", "netbanking", "emi","upi"];
         }
+
+        $payment_options['upi'] = [
+            'title' => 'UPI',
+            'subtitle' => "Note: In the next step you will be redirected to the bank's website to verify yourself",
+            'offer_text' => 'Transact online with UPI',
+        ];
         
         $payment_options['wallet'] = [
             'title' => 'Wallet',

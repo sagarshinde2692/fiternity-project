@@ -33,6 +33,7 @@ use FinderMilestone;
 use MongoDate;
 use Coupon;
 use \GuzzleHttp\Client;
+use Input;
 
 use App\Services\Fitnessforce as Fitnessforce;
 
@@ -4427,19 +4428,31 @@ Class Utilities {
             if($customer['_id'] != $customer_id){
             
                 
-                $order_id = \Input::get('order_id');        
+                $customer_email = Input::json()->get('customer_email');
                 
-                if(!empty($order_id)){
+                if(!empty($customer_email)){
+                    
+                    Customer::$withoutAppends = true;
+                    $current_customer = Customer::where('email', strtolower($customer_email))->first();
+                    $customer_id = $current_customer->_id;
+
+                }else{
+
+                    $order_id = \Input::get('order_id');        
+                    
+                    if(!empty($order_id)){
+                    
+                        \Order::$withoutAppends = true;
+                    
+                        $order = \Order::find(intval($order_id), ['customer_id']);
+                    
+                        if(!empty($order['customer_id'])){
+                            $customer_id = $order['customer_id'];
+                        }
+                    
+                    }   
+                }
                 
-                    \Order::$withoutAppends = true;
-                
-                    $order = \Order::find(intval($order_id), ['customer_id']);
-                
-                    if(!empty($order['customer_id'])){
-                        $customer_id = $order['customer_id'];
-                    }
-                
-                }   
             }
 
             if($customer['_id'] == $customer_id){
@@ -4497,7 +4510,7 @@ Class Utilities {
 
     public function isPPSReferralCode($code){
         $code = strtoupper($code);
-		$assholeCodes = ["NIRA7325R","GAUR7726R","GAUR2025R","GAUR8976R","GAUR7374R","GAUR1952R","GAUR4066R","GAUR8183R","GAUR9928R","GAUR8907R","GAUR7850R","GAUR3786R","GAUR8213R","GAUR2389R","GAUR2098R","GAUR3549R","GAUR1798R","GAUR3347R","GAUR4958R","GAUR6830R","GAUR7014R","GAUR7675R","GAUR9502R","GAUR3739R","RAJ5078R","RAHU2157R","RAJ1993R","GAUR2466R","GAUR8731R","RAHU4004R","RAJU6022R","GAUR3393R","GORU5013R","RAJ2108R","GAUR3839R","GAUR8786R","RAJ7506R","GAUR1239R","GORU8493R","RAJA9388R","RAHU2224R","RAM8335R","RAGH2992R","RAJ2752R","RAMA9818R","GAUR7926R","GAUR4087R","GANE6913R","GAUR1360R","RAVI1022R","RAIN7225R","RAJE4631R","RAVI7890R","RAGI5524R","DIVY4144R","RAVI7741R","RAVI5252R","RAMA3692R","PRIY2800R","RAM3154R","POOJ5073R","KRIS4965R","SHIV1177R","GAUT9460R","ROHI5588R","RAJE4868R","SNEH7426R","DHAR8793R","ANUJ5700R","AJAY8632R","KANH9604R","PURO8073R","HITE8333R","RAJR7176R","GAUR2482R","RAJE3868R","RAKE5575R","GAUR1404R","RAMG3131R","NIRA8347R","ROBI6419R","GAUT6627R","AMAN9183R","GANP9123R","RAMK8355R","RAJE2832R","RAMR6998R","HEMA1578R","KAMA7471R","GANP4203R","RAVI7593R","JAYA5318R","AMIT6423R","RAJU9276R","NAKU7625R","HARM5287R","NIKI1409R","RAJM9073R","YOGE5696R","BHAV2629R","SHRU6579R","RAJA1533R","SUDH2075R","DIVY3193R"];
+		$assholeCodes = ["NIRA7325R","GAUR7726R","GAUR2025R","GAUR8976R","GAUR7374R","GAUR1952R","GAUR4066R","GAUR8183R","GAUR9928R","GAUR8907R","GAUR7850R","GAUR3786R","GAUR8213R","GAUR2389R","GAUR2098R","GAUR3549R","GAUR1798R","GAUR3347R","GAUR4958R","GAUR6830R","GAUR7014R","GAUR7675R","GAUR9502R","GAUR3739R","RAJ5078R","RAHU2157R","RAJ1993R","GAUR2466R","GAUR8731R","RAHU4004R","RAJU6022R","GAUR3393R","GORU5013R","RAJ2108R","GAUR3839R","GAUR8786R","RAJ7506R","GAUR1239R","GORU8493R","RAJA9388R","RAHU2224R","RAM8335R","RAGH2992R","RAJ2752R","RAMA9818R","GAUR7926R","GAUR4087R","GANE6913R","GAUR1360R","RAVI1022R","RAIN7225R","RAJE4631R","RAVI7890R","RAGI5524R","DIVY4144R","RAVI7741R","RAVI5252R","RAMA3692R","PRIY2800R","RAM3154R","POOJ5073R","KRIS4965R","SHIV1177R","GAUT9460R","ROHI5588R","RAJE4868R","SNEH7426R","DHAR8793R","ANUJ5700R","AJAY8632R","KANH9604R","PURO8073R","HITE8333R","RAJR7176R","GAUR2482R","RAJE3868R","RAKE5575R","GAUR1404R","RAMG3131R","NIRA8347R","ROBI6419R","GAUT6627R","AMAN9183R","GANP9123R","RAMK8355R","RAJE2832R","RAMR6998R","HEMA1578R","KAMA7471R","GANP4203R","RAVI7593R","JAYA5318R","AMIT6423R","RAJU9276R","NAKU7625R","HARM5287R","NIKI1409R","RAJM9073R","YOGE5696R","BHAV2629R","SHRU6579R","RAJA1533R","SUDH2075R","DIVY3193R","GAUR3666R"];
 		if(in_array($code, $assholeCodes)){
 			return false;
 		}
