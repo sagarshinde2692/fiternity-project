@@ -7598,9 +7598,9 @@ class FindersController extends \BaseController {
 		$title =  strtoupper($orderSummary['title']);
 		foreach($services as &$service){
 			foreach($service['ratecard'] as &$rc){
-				$orderSummary['header'] = strtr($orderSummary['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]);
-				$orderSummary['title'] = $title;
-				$rc['order_summary'] = strtoupper($orderSummary);
+				$orderSummary['header'] = strtoupper(strtr($orderSummary['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]));
+				$orderSummary['title'] = strtoupper($title);
+				$rc['order_summary'] = $orderSummary;
 				$remark_data=[];
 				if(isset($rc['remarks']) && $rc['remarks'] != "" && (!isset($rc['remarks_imp']) || $rc['remarks_imp'])){
 					array_push($remark_data,  strtoupper(strtr($orderSummary['remark_data'], ['ratecard_remark'=>$rc['remarks']])));
