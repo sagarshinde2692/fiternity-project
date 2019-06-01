@@ -7593,16 +7593,16 @@ class FindersController extends \BaseController {
 	
 	public function orderSummary($services, $finder_name){
         $orderSummary = Config::get('orderSummary.order_summary');
-		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$finder_name]);
-		$title =  $orderSummary['title'];
+		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['vendor_name'=>$finder_name]));
+		$title =  ucwords($orderSummary['title']);
 		foreach($services as &$service){
 			foreach($service['ratecard'] as &$rc){
-				$orderSummary['header'] = strtr($orderSummary['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]);
+				$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]));
 				$orderSummary['title'] = $title;
 				$rc['order_summary'] = $orderSummary;
 				$remark_data=[];
 				if(isset($rc['remarks']) && $rc['remarks'] != "" && (!isset($rc['remarks_imp']) || $rc['remarks_imp'])){
-					array_push($remark_data,  strtr($orderSummary['remark_data'], ['ratecard_remark'=>$rc['remarks']]));
+					array_push($remark_data,  ucwords(strtr($orderSummary['remark_data'], ['ratecard_remark'=>$rc['remarks']])));
 					$rc['order_summary']['remark_data'] = $remark_data;
 				}
 				else{
