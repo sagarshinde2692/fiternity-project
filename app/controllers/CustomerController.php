@@ -9376,6 +9376,7 @@ class CustomerController extends \BaseController {
 			$order['button_type'] = 'book';
 			if(!empty($order['all_service_id'])){
 				$order['button_type'] = 'schedule';	
+				$order['button_title'] = 'Book a Session';
 			}
 
         }else{
@@ -9461,7 +9462,7 @@ class CustomerController extends \BaseController {
                 ->with(['service'=>function($query){
                     $query->select('slug');
                 }])
-                ->find($id, ['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags']);
+                ->find($id, ['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags', 'all_service_id']);
 
 
         return $this->formatSessionPack($order);
