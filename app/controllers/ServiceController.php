@@ -706,7 +706,7 @@ class ServiceController extends \BaseController {
 
 		//  $items = $query->get()->toArray();
 
-		return DB::getQueryLog();
+		//return DB::getQueryLog();
 		
 
         if(count($items) == 0){

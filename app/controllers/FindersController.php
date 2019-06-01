@@ -7593,16 +7593,17 @@ class FindersController extends \BaseController {
 	
 	public function orderSummary($services, $finder_name){
         $orderSummary = Config::get('orderSummary.order_summary');
-		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['vendor_name'=>$finder_name]));
-		$title =  ucwords($orderSummary['title']);
+		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$finder_name]);
+
+		$title =  strtoupper($orderSummary['title']);
 		foreach($services as &$service){
 			foreach($service['ratecard'] as &$rc){
-				$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]));
+				$orderSummary['header'] = strtr($orderSummary['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]);
 				$orderSummary['title'] = $title;
-				$rc['order_summary'] = $orderSummary;
+				$rc['order_summary'] = strtoupper($orderSummary);
 				$remark_data=[];
 				if(isset($rc['remarks']) && $rc['remarks'] != "" && (!isset($rc['remarks_imp']) || $rc['remarks_imp'])){
-					array_push($remark_data,  ucwords(strtr($orderSummary['remark_data'], ['ratecard_remark'=>$rc['remarks']])));
+					array_push($remark_data,  strtoupper(strtr($orderSummary['remark_data'], ['ratecard_remark'=>$rc['remarks']])));
 					$rc['order_summary']['remark_data'] = $remark_data;
 				}
 				else{
@@ -7617,31 +7618,33 @@ class FindersController extends \BaseController {
 	public function orderSummarySlots($slotsdata, $service_name, $vendor_name){
 		$orderSummary = Config::get('orderSummary.slot_summary');
 		//Log::info('order summary ::::::', [$orderSummary]);
-		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['vendor_name'=>$vendor_name]));
-		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['service_name'=>$service_name]));
+		$orderSummary['header'] = (strtr($orderSummary['header'], ['vendor_name'=>$vendor_name]));
+		$orderSummary['header'] = (strtr($orderSummary['header'], ['service_name'=>$service_name]));
 		foreach($slotsdata as &$slot){
 			foreach($slot['data'] as &$sd){
-				$sd['order_summary']['header'] = $orderSummary['header']; 
+				$sd['order_summary']['header'] = strtoupper($orderSummary['header']); 
 			}
 		}
 		return $slotsdata;
 	}
 
 	public function orderSummaryService($service){
+		Log::info('service name at order summary', [$service['name']]);
 		$summary= Config::get('orderSummary.service_summary');
-		$summary['header'] = ucwords(strtr($summary['header'], ['vendor_name'=>$service['finder_name']]));
-		$summary['header'] = ucwords(strtr($summary['header'], ['service_name'=>$service['name']]));
-		$service['order_summary']['header']= $summary['header'];	
+		$summary['header'] = (strtr($summary['header'], ['vendor_name'=>$service['finder_name']]));
+		$summary['header'] = (strtr($summary['header'], ['service_name'=>$service['name']]));
+		$service['order_summary']['header']= strtoupper($summary['header']);	
 		return $service;
 	}
 
 	public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name){
 		$orderSummary = Config::get('orderSummary.slot_summary');
-		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['vendor_name'=>$vendor_name]));
-		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['service_name'=>$service_name]));
+		Log::info('service name', [$service_name]);
+		$orderSummary['header'] = (strtr($orderSummary['header'], ['vendor_name'=>$vendor_name]));
+		$orderSummary['header'] = (strtr($orderSummary['header'], ['service_name'=>$service_name]));
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
-				$slot['order_summary']['header'] = $orderSummary['header']; 
+				$slot['order_summary']['header'] = strtoupper($orderSummary['header']); 
 		}
 		return $slotsdata;
 	}
