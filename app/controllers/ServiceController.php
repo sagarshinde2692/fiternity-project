@@ -675,12 +675,12 @@ class ServiceController extends \BaseController {
 		Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
 		
 		if(!empty($request['service_id'])){
-			$currentService = Service:: find($request['service_id'],['combine_service_ids']);
+			$currentService = Service:: find((int)$request['service_id'],['combine_service_ids']);
 			if(!empty($currentService['combine_service_ids'])){
 				$combine_service_ids = $currentService['combine_service_ids'];
+				Log::info('combine service ids:::::::::', [$combine_service_ids]);
 			}
 		}
-
         $query = Service::active()->whereNotIn('trial',['manual', 'manualauto','disable']);
 
         $query->where('servicecategory_id','!=',163);

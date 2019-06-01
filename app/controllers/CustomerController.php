@@ -9445,7 +9445,7 @@ class CustomerController extends \BaseController {
         if(!empty($order['service']['slug'])){
             $order['service_slug'] = $order['service']['slug'];
         }
-
+		Log::info('orders at get session pack list:::::::;', [$order]);
 
 
         return $order;
