@@ -2261,7 +2261,10 @@ class ServiceController extends \BaseController {
 		$session_count = 0;
 		foreach($timings as $timing){
 			$session_count += $timing["count"];
-		}
+        }
+        
+        $timings[1]['count'] += $timings[0]['count'];
+
 		return $data = array("header"=> "When would you like to workout?","subheader"=>$subheader, "categories" => $timings, "session_count"=> $session_count);
 	}
 
