@@ -5038,7 +5038,7 @@ class FindersController extends \BaseController {
 				foreach ($finderservice['ratecard'] as $ratecard){
                     //Log::info($ratecard);
 					if(in_array($ratecard["type"],["workout session", "trial"])){
-
+						unset($ratecard['remarks']);
 						if($type == "workout session" && in_array($ratecard["type"],["trial"])){
 							continue;
 						}

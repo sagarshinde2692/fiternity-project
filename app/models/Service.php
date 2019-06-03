@@ -396,6 +396,7 @@ class Service extends \Basemodel{
 				   $value[ "pps_know_more"] = true;
 				   $value['pps_title'] = "Pay Per Session";
 				   $value['title'] = '1 Workout';
+				   //unset($value['remarks']);
 				}
 
                 if($value['type'] == 'membership' && !empty($GLOBALS['finder_commission'])){
