@@ -2739,3 +2739,4 @@ Route::get('salesFinderDetails','DebugController@salesFinderDetails');
 Route::get('fitcashCouponMigration','DebugController@fitcashCouponMigration');
 Route::get('couponsValidMigration','DebugController@couponsValidMigration');
 Route::get('testcodesnippet','DebugController@testcodesnippet');
+Route::get('corporateCoupons','DebugController@corporateCoupons');
