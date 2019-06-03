@@ -7600,15 +7600,19 @@ class FindersController extends \BaseController {
     }
 	
 	public function orderSummary($services, $finder_name){
-        $orderSummary1 = Config::get('orderSummary.order_summary');
-		$orderSummary1['header'] = strtr($orderSummary1['header'], ['vendor_name'=>$finder_name]);
+        $orderSummary2 = Config::get('orderSummary.order_summary');
+		$orderSummary2['header'] = strtr($orderSummary2['header'], ['vendor_name'=>$finder_name]);
 
-		$title =  strtolower($orderSummary1['title']);
+		$title =  strtolower($orderSummary2['title']);
 		foreach($services as &$service){
+			$orderSummary2['header'] = strtr($orderSummary2['header'], ['service_name'=>$service['service_name']]);
 			foreach($service['ratecard'] as &$rc){
-				$orderSummary = $orderSummary1;
+				$orderSummary = $orderSummary2;
 				Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
-				$orderSummary['header'] = strtolower(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
+				if($rc['type']=='membership')
+					$orderSummary['header'] = strtolower(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
+				else
+					$orderSummary['header'] = strtolower(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
 				$orderSummary['title'] = strtolower($title);
 				$rc['order_summary'] = $orderSummary;
 				$remark_data=[];
