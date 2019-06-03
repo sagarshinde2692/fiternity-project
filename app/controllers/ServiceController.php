@@ -1668,12 +1668,13 @@ class ServiceController extends \BaseController {
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
 
 
+            $service_details['price'] = $service_details['amount'];
 
-            if((!empty($finder['category_id']) && $finder['category_id'] == 47) || !empty($service_details['flags']['disable_dynamic_pricing'])){
-                $service_details['price'] = "Starting at ₹".$service_details['amount'];
-            }else{
-                $service_details['price'] = "Starting at ₹".floor($service_details['amount'] * Config::get('app.non_peak_hours.off'));
-            }
+            // if((!empty($finder['category_id']) && $finder['category_id'] == 47) || !empty($service_details['flags']['disable_dynamic_pricing'])){
+            //     $service_details['price'] = "Starting at ₹".$service_details['amount'];
+            // }else{
+            //     $service_details['price'] = "Starting at ₹".floor($service_details['amount'] * Config::get('app.non_peak_hours.off'));
+            // }
 
 			$service_details['contact'] = [
 				'address'=>''
