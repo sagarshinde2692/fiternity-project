@@ -6938,11 +6938,12 @@ class FindersController extends \BaseController {
 			}
 		}
 
-		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title']);
-
 		foreach($data['finder']['services'] as &$service){
 			$service = $this->addingRemarkToDuplicate($service, 'app');
 		}
+
+		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title']);
+
         return $data['finder'];
     }
 
@@ -7623,6 +7624,11 @@ class FindersController extends \BaseController {
 				else{
 					unset($rc['order_summary']['title']);
 					unset($rc['order_summary']['remark_data']);
+					
+				}
+				// deleting remark from ratecard if it is not important
+				if(!(isset($rc['remarks_imp']) && $rc['remarks_imp'])){
+					unset($rc['remarks']);
 				}
 			}
 		}
