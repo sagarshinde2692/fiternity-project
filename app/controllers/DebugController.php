@@ -10815,9 +10815,118 @@ public function yes($msg){
         
     }
 
+	public function corporateCoupons(){
 
+		try{
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
 
+			$corporateCoupons = ['gofit', 'hulfit', 'cokefit', 'olafit', 'acgfit', 'novafit', 'airtelfit', 'skfit', 'cokepps', 'bshfit', 'infineon', 'mckinsey', 'syncron', 'fitact'];
+			
+			$flags = array("flags" => array("corporate_coupon" => true));
 
+			Coupon::whereIn('code', $corporateCoupons)->update($flags);
+			Fitcashcoupon::whereIn('code', $corporateCoupons)->update($flags);
+			Wallet::whereIn('coupon', $corporateCoupons)->update($flags);
+
+			// $wallet = Wallet::where('flags.corporate_coupon',true)->lists('_id');
+			$wallet = Wallet::where('flags.corporate_coupon',true)->get()->toArray();
+
+			$walletIds = array();
+			$wallets = array();
+			foreach($wallet as $kw => $vw){
+				array_push($walletIds, $vw['_id']);
+				$wallets[$vw['_id']] = $vw;
+			}
+
+			$coupon = Coupon::where('flags.corporate_coupon',true)->get()->toArray();
+			$coupons = array();
+			foreach($coupon as $kc => $vc){
+				$coupons[$vc['code']] = $vc;
+			}
+
+			// return $walletIds;
+			// return $wallets;
+
+			Log::info("walletIds ::: ", [$walletIds]);
+			$totalOrder = Order::whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $walletIds)->count();
+			// return $totalOrder;
+			$limit = 50;
+			$offset = ceil($totalOrder / $limit);
+			Log::info("totalOrder :: ",[$totalOrder]);
+			Log::info("limit :: ",[$limit]);
+			Log::info("offset :: ",[$offset]);
+			// return;
+			for($i = 0;$i < $offset;$i++){
+				$skip = $i*$limit;
+				Log::info("skip :: ",[$skip]);
+				$order = Order::whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $walletIds)->skip($skip)->take($limit)->get();
+				
+				foreach($order as $k => $v){
+					$one_order = array();
+					$one_order = $v;
+					Log::info("order_id",[$one_order['_id']]);
+					$wallet_transaction_debit = $one_order['wallet_transaction_debit'];
+					
+					$flag_arr = array();
+					foreach($wallet_transaction_debit['wallet_transaction'] as $k1 => $v1){
+						if(in_array($v1['wallet_id'], $walletIds)){
+							$v1['coupon'] = $wallets[$v1['wallet_id']]['coupon'];
+							$v1['fitcashcoupon_flags'] = $wallets[$v1['wallet_id']]['flags'];
+							
+							array_push($flag_arr, 1);
+						}
+						$wallet_transaction_debit['wallet_transaction'][$k1] = $v1;
+					}
+					
+					$one_order['wallet_transaction_debit'] = $wallet_transaction_debit;
+					
+					if(!empty($flag_arr) && in_array(1, $flag_arr)){
+						$one_order['corporate_coupon'] = true;
+					}
+				
+					$one_order->update();
+				}
+			}
+
+			$totalOrder1 = Order::whereIn('coupon_code', $corporateCoupons)->count();
+			// return $totalOrder1;
+			$limit1 = 50;
+			$offset1 = ceil($totalOrder1 / $limit1);
+			Log::info("totalOrder1 :: ",[$totalOrder1]);
+			Log::info("limit1 :: ",[$limit1]);
+			Log::info("offset1 :: ",[$offset1]);
+			// return;
+			for($i1 = 0;$i1 < $offset1;$i1++){
+				$skip1 = $i1*$limit1;
+				Log::info("skip1 :: ",[$skip1]);
+				$order1 = Order::whereIn('coupon_code', $corporateCoupons)->skip($skip)->take($limit)->get();
+				
+				foreach($order1 as $k11 => $v11){
+					$one_order11 = array();
+					$one_order11 = $v11;
+					Log::info("order_id11",[$one_order11['_id']]);
+					// Log::info("coupon11 :: ",[$coupons[$v11['coupon_code']]]);
+					$one_order11['coupon_flags'] = $coupons[$v11['coupon_code']]['flags'];
+					$one_order11['corporate_coupon'] = true;
+					$one_order11->update();
+					// exit();
+				}
+			}
+
+			$return = array('status'=>'done');
+		}catch(Exception $exception){
+			$message = array(
+				'type'    => get_class($exception),
+				'message' => $exception->getMessage(),
+				'file'    => $exception->getFile(),
+				'line'    => $exception->getLine(),
+			);
+			Log::error($exception);
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+		print_r($return);
+	} 
 
 }
 

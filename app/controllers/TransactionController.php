@@ -2328,6 +2328,7 @@ class TransactionController extends \BaseController {
         }
       
         $hash_verified = $this->utilities->verifyOrder($data,$order);
+        
         Log::info("successCommon ",[$hash_verified]);
         if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
@@ -3588,6 +3589,14 @@ class TransactionController extends \BaseController {
                     $data['amount_finder'] -= $data["coupon_discount_amount"];
                 }
 
+                if(!empty($couponCheck['flags'])){
+                    $data['coupon_flags'] = $couponCheck['flags'];
+                }
+
+                if(!empty($couponCheck['flags']) && $couponCheck['flags']['corporate_coupon'] == true){
+                    $data['corporate_coupon'] = true;
+                }
+
                 // if(strtolower($data["coupon_code"]) == 'fit2018'){
                 //     $data['routed_order'] = "1";
                 // }
@@ -3625,7 +3634,7 @@ class TransactionController extends \BaseController {
             $amount -= $data['customer_discount_amount'];
 
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type'],$data);
-
+            Log::info("cashback_detail",[$cashback_detail]);
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $amount -= $data['cashback_detail']['amount_discounted'];
             }
@@ -3659,6 +3668,16 @@ class TransactionController extends \BaseController {
                     if($walletTransactionResponse['status'] != 200){
                         return $walletTransactionResponse;
                     }else{
+
+                        if(isset($walletTransactionResponse['wallet_transaction_debit']['wallet_transaction'])){
+                            foreach($walletTransactionResponse['wallet_transaction_debit']['wallet_transaction'] as $k => $v){
+                                if(isset($v['fitcashcoupon_flags'])){
+                                    $data['corporate_coupon'] = true;
+                                    break;
+                                }
+                            }
+                        }
+
                         $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
                     }
 

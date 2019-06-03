@@ -1913,6 +1913,10 @@ Class Utilities {
             $wallet->validity = 0;
             $wallet->type = $type;
 
+            if(isset($request['flags'])){
+                $wallet->flags = $request['flags'];
+            }
+
             if(isset($request['order_id']) && $request['order_id'] != ""){
                 $wallet->order_id = (int)$request['order_id'];
             }
@@ -2091,7 +2095,9 @@ Class Utilities {
                 }
 
                 if(count($walletData) > 0){
+                    Log::info("walletData > 0 :: ");
 
+                    $paid_wallet_amount = 0;
                     $amount_used = 0;
                     $amount_balance = (int)$amount;
 
@@ -2164,6 +2170,16 @@ Class Utilities {
                         if(!empty($value['coupon'])){
                             $walletTransactionDebitEntry['coupon'] = $value['coupon'];
                         }
+
+                        if(!empty($value['for']) && $value['for'] == 'wallet_recharge'){
+                            $walletTransactionDebitEntry['paid_wallet'] = true;
+                            $paid_wallet_amount += $walletTransactionData['amount'];
+                        }
+
+                        if(!empty($value['flags'])){
+                            Log::info("flags  present :: ");
+                            $walletTransactionDebitEntry['fitcashcoupon_flags'] = $value['flags'];
+                        }
                         
                         $walletTransactionDebit[] =  $walletTransactionDebitEntry;
 
@@ -2180,7 +2196,7 @@ Class Utilities {
 
                     if(isset($request['order_id']) && $request['order_id'] != ""){
 
-                        return ['status' => 200,'message' => 'Success Updated Wallet','wallet_transaction_debit'=>['amount'=>$amount,'wallet_transaction'=>$walletTransactionDebit]];
+                        return ['status' => 200,'message' => 'Success Updated Wallet','wallet_transaction_debit'=>['amount'=>$amount,'total_paid_wallet_amount' => $paid_wallet_amount,'wallet_transaction'=>$walletTransactionDebit]];
                     }
 
                 }else{

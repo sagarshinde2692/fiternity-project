@@ -4645,8 +4645,7 @@ class CustomerController extends \BaseController {
 
 		$code = trim(strtolower($data['code']));
 
-		$fitcashcode = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
-
+        $fitcashcode = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
 
 		if (!isset($fitcashcode) || $fitcashcode == "") {
 			$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
@@ -4772,6 +4771,10 @@ class CustomerController extends \BaseController {
 					"entry"=>'credit',
 					"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
 				);
+
+				if(!empty($fitcashcode['flags'])){
+					$walletData['flags'] = $fitcashcode['flags'];
+				}
 
 				if($fitcashcode['type'] == "restricted"){
 					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
