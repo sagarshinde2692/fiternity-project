@@ -3731,7 +3731,7 @@ class CustomerController extends \BaseController {
         try{
             $active_session_packs = [];
             if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
-                $active_session_packs = $this->getSessionPacks(null, null, true, $customer_id)['data'];
+                $active_session_packs = $this->getSessionPacks(null, null, true, $customer_id, 'home')['data'];
             }
 
         }catch(Exception $e){
@@ -5358,7 +5358,7 @@ class CustomerController extends \BaseController {
 
 
         if(!empty($order['extended_validity'])){
-			$action['book_session'] = $this->sessionPackDetail($order['_id']);
+			$action['book_session'] = $this->sessionPackDetail($order['_id'], 'profile');
 			$action['book_session']['sessions_left'] = $action['book_session']['sessions_left'].' sessions left';
             //  if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
             //     $action['book_session'] = [
@@ -9307,8 +9307,10 @@ class CustomerController extends \BaseController {
         return $this->createToken($customer);
     }
 
-    public function getSessionPacks($offset = 0, $limit = 10, $active = false, $customer_id = null){
-    
+    public function getSessionPacks($offset = 0, $limit = 10, $active = false, $customer_id = null, $path=null){
+		Log::info('value of path variable:::::', [$path]);
+		if($path== null)
+			$path='profile';
         $jwt_token = Request::header('Authorization');
 
 		if(!empty($jwt_token)){
@@ -9328,10 +9330,14 @@ class CustomerController extends \BaseController {
         
         $orders = Order::active()
                 ->where('customer_id', $customer_id)
-                ->where(function($query){
-                    $query
-                    ->orWhere('extended_validity', true)
-                    ->orWhere('studio_extended_validity', true);
+                ->where(function($query) use($path){
+					if($path=='profile')
+                    	$query
+                    	->orWhere('extended_validity', true)
+						->orWhere('studio_extended_validity', true);
+					else
+						$query
+						->orWhere('extended_validity', true);
                 })
                 
                 ->with(['finder'=>function($query){
@@ -9353,23 +9359,23 @@ class CustomerController extends \BaseController {
 
         $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags','studio_extended_validity', 'studio_sessions', 'studio_membership_duration', 'all_service_id']);
 
-        $orders = $this->formatSessionPackList($orders);
+        $orders = $this->formatSessionPackList($orders, $path);
 
         return ['status'=>200, 'data'=>$orders];          
 		
     }
 
-    public function formatSessionPackList($orders){
+    public function formatSessionPackList($orders, $path){
         foreach($orders as &$order){
            
-            $order = $this->formatSessionPack($order);
+            $order = $this->formatSessionPack($order, $path);
             
         }
         return $orders;
     }
 
-    public function formatSessionPack($order){
-        
+    public function formatSessionPack($order, $path='profile'){
+		Log::info('value of path variable:::::', [$path]);
         $order['active'] = true;
         if((!empty($order['ratecard_flags']['unlimited_validity']) || strtotime($order['end_date']) > time()) && !empty($order['sessions_left'])){
             $order['button_title'] = 'Book your next Session';
@@ -9378,7 +9384,7 @@ class CustomerController extends \BaseController {
 				$order['button_type'] = 'schedule';
 				$api_name = explode("/", $_SERVER['REQUEST_URI']);
 				Log::info('uri::::::', [$api_name]);
-				if($api_name[2]=='orderdetail')
+				if($path=='profile')
 					$order['button_title'] = 'Book a Session';
 			}
 
@@ -9433,8 +9439,8 @@ class CustomerController extends \BaseController {
         $order['total_session_text'] = $order['no_of_sessions']." Session pack";
         $order['left_text'] = "left";
         if(!empty($order['studio_extended_validity'])){
-			$order['total_session_text'] = $order['no_of_sessions']." Session - Flexi membership";
-
+			if($path && $path=='profile')
+				$order['total_session_text'] = $order['no_of_sessions']." Session - Flexi membership";
             $order['left_text'] = "booked";
             $order['sessions_left'] =  $order['studio_sessions']['total'];
             $order['total_session_text'] = $order['studio_sessions']['total']." Session pack";

@@ -6665,97 +6665,97 @@ class FindersController extends \BaseController {
         {
             return $a['validity_copy'] <= $b['validity_copy'];
         }
-        foreach($data['finder']['services'] as $key => $service){
-            $no_validity_exists = false;
-			$no_validity_ratecards = [];
-            $no_validity_ratecards_all = [];
+        // foreach($data['finder']['services'] as $key => $service){
+        //     $no_validity_exists = false;
+		// 	$no_validity_ratecards = [];
+        //     $no_validity_ratecards_all = [];
 
-            $this->extractNonValidityRatecards($service, $ratecard_key, $no_validity_ratecards, $ratecard, $duration_day, $no_validity_exists, $no_validity_ratecards_all);
+        //     $this->extractNonValidityRatecards($service, $ratecard_key, $no_validity_ratecards, $ratecard, $duration_day, $no_validity_exists, $no_validity_ratecards_all);
 
-            usort($no_validity_ratecards_all, "cmpSessions");
+        //     usort($no_validity_ratecards_all, "cmpSessions");
 
-            if(!empty($no_validity_ratecards)){
+        //     if(!empty($no_validity_ratecards)){
 
-                $data['finder']['extended_validity'] = true;
+        //         $data['finder']['extended_validity'] = true;
 
-				foreach($service[$ratecard_key] as $key1 => $ratecard){
-					//Log::info('ratecard type::::::: ', [$ratecard['type']]);
-                    if($ratecard['type'] == 'membership'){
+		// 		foreach($service[$ratecard_key] as $key1 => $ratecard){
+		// 			//Log::info('ratecard type::::::: ', [$ratecard['type']]);
+        //             if($ratecard['type'] == 'membership'){
 
-                        $duration_day = $this->utilities->getDurationDay($ratecard);
+        //                 $duration_day = $this->utilities->getDurationDay($ratecard);
 
-						$price = $this->utilities->getRatecardPrice($ratecard);
+		// 				$price = $this->utilities->getRatecardPrice($ratecard);
 						
-						$ratecard['final_price'] = $price;
+		// 				$ratecard['final_price'] = $price;
                         
-                        if(empty($memberships[$service['_id']][$duration_day])){
-                             $memberships[$service['_id']][$duration_day] = [];
-                        }
-						array_push($memberships[$service['_id']][$duration_day], $ratecard) ;
+        //                 if(empty($memberships[$service['_id']][$duration_day])){
+        //                      $memberships[$service['_id']][$duration_day] = [];
+        //                 }
+		// 				array_push($memberships[$service['_id']][$duration_day], $ratecard) ;
 
-                        if(!empty($duration_session_map[strval($duration_day)])){
+        //                 if(!empty($duration_session_map[strval($duration_day)])){
                             
-                            $sessions_range = $duration_session_map[strval($duration_day)];
-                            foreach($no_validity_ratecards_all as $cs_ratecard){
-                                $cs_ratecard_price = $this->utilities->getRatecardPrice($cs_ratecard);
-                                if($cs_ratecard['duration'] > $sessions_range['low'] && $cs_ratecard['duration'] <= $sessions_range['high'] && $cs_ratecard_price <= $price * (1 + Config::get('nonvalidity.cross_sell_diff'))){
+        //                     $sessions_range = $duration_session_map[strval($duration_day)];
+        //                     foreach($no_validity_ratecards_all as $cs_ratecard){
+        //                         $cs_ratecard_price = $this->utilities->getRatecardPrice($cs_ratecard);
+        //                         if($cs_ratecard['duration'] > $sessions_range['low'] && $cs_ratecard['duration'] <= $sessions_range['high'] && $cs_ratecard_price <= $price * (1 + Config::get('nonvalidity.cross_sell_diff'))){
 
-                                    //$this->formatCrossSellRatecard($cs_ratecard, $cs_ratecard_price);
+        //                             //$this->formatCrossSellRatecard($cs_ratecard, $cs_ratecard_price);
 
-                                    $this->formatRatecard($ratecard, $price);
+        //                             $this->formatRatecard($ratecard, $price);
 
-                                    //$this->getCorssSellSection($data, $ratecard, $cs_ratecard, $key, $ratecard_key, $key1);
+        //                             //$this->getCorssSellSection($data, $ratecard, $cs_ratecard, $key, $ratecard_key, $key1);
 
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if($ratecard['type'] == 'extended validity'){
-                        $duration_day = $this->utilities->getDurationDay($ratecard);
-                        $price = $this->utilities->getRatecardPrice($ratecard);
+        //                             break;
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //             if($ratecard['type'] == 'extended validity'){
+        //                 $duration_day = $this->utilities->getDurationDay($ratecard);
+        //                 $price = $this->utilities->getRatecardPrice($ratecard);
                         
-                        if(!empty($ratecard['flags']['unlimited_validity'])){
-                            $ext_validity = "Unlimited Validity";
-                        }else{
-                            $ext_validity = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
-                        }
+        //                 if(!empty($ratecard['flags']['unlimited_validity'])){
+        //                     $ext_validity = "Unlimited Validity";
+        //                 }else{
+        //                     $ext_validity = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
+        //                 }
 
-                        $this->formatServiceRatecard($data, $ext_validity, $key, $ratecard_key, $key1, $ratecard, $service);
+        //                 $this->formatServiceRatecard($data, $ext_validity, $key, $ratecard_key, $key1, $ratecard, $service);
 
-                    }
-				}
+        //             }
+		// 		}
                 
-                $service['recommended'] = Config::get('nonvalidity.recommnded_block');
-                $service['service_name_display'] = $service[$service_name_key];
-				$post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
+        //         $service['recommended'] = Config::get('nonvalidity.recommnded_block');
+        //         $service['service_name_display'] = $service[$service_name_key];
+		// 		$post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
 						
-                if(!empty($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] < '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.6'))){
-				    $service[$service_name_key] = $service[$service_name_key]." - ".$post_name;
-                }else{	
-					if(!empty($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
-						$service['post_name'] = " - ".$post_name;
-					}else{
-						$service['post_name'] = $post_name;
-					}
+        //         if(!empty($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] < '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.6'))){
+		// 		    $service[$service_name_key] = $service[$service_name_key]." - ".$post_name;
+        //         }else{	
+		// 			if(!empty($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
+		// 				$service['post_name'] = " - ".$post_name;
+		// 			}else{
+		// 				$service['post_name'] = $post_name;
+		// 			}
 
-                    $service['post_name_color'] = Config::get('app.ratecard_button_color');
+        //             $service['post_name_color'] = Config::get('app.ratecard_button_color');
 				
-				}
-				$service['unlimited_validity'] = $no_validity_exists;
-				$no_validity_ratecards_service = [];
+		// 		}
+		// 		$service['unlimited_validity'] = $no_validity_exists;
+		// 		$no_validity_ratecards_service = [];
 
-				foreach(array_values($no_validity_ratecards) as $nvc){
-					$no_validity_ratecards_service = array_merge($no_validity_ratecards_service, $nvc);
-				}
+		// 		foreach(array_values($no_validity_ratecards) as $nvc){
+		// 			$no_validity_ratecards_service = array_merge($no_validity_ratecards_service, $nvc);
+		// 		}
 
-                $service[$ratecard_key] = $no_validity_ratecards_service;
-                $service['type'] = 'extended validity';
+        //         $service[$ratecard_key] = $no_validity_ratecards_service;
+        //         $service['type'] = 'extended validity';
 				
 
-                array_push($extended_services, $service);
-            }
-        }
+        //         array_push($extended_services, $service);
+        //     }
+        // }
 		
 		try{
 			Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
@@ -6937,10 +6937,12 @@ class FindersController extends \BaseController {
 				}
 			}
 		}
+
+		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title']);
+
 		foreach($data['finder']['services'] as &$service){
 			$service = $this->addingRemarkToDuplicate($service, 'app');
 		}
-		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title']);
         return $data['finder'];
     }
 
@@ -7598,18 +7600,20 @@ class FindersController extends \BaseController {
     }
 	
 	public function orderSummary($services, $finder_name){
-        $orderSummary = Config::get('orderSummary.order_summary');
-		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$finder_name]);
+        $orderSummary1 = Config::get('orderSummary.order_summary');
+		$orderSummary1['header'] = strtr($orderSummary1['header'], ['vendor_name'=>$finder_name]);
 
-		$title =  strtoupper($orderSummary['title']);
+		$title =  strtolower($orderSummary1['title']);
 		foreach($services as &$service){
 			foreach($service['ratecard'] as &$rc){
-				$orderSummary['header'] = strtoupper(strtr($orderSummary['header'], ['ratecard_name'=>$rc['duration'].' '.$rc['duration_type']]));
-				$orderSummary['title'] = strtoupper($title);
+				$orderSummary = $orderSummary1;
+				Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
+				$orderSummary['header'] = strtolower(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
+				$orderSummary['title'] = strtolower($title);
 				$rc['order_summary'] = $orderSummary;
 				$remark_data=[];
 				if(isset($rc['remarks']) && $rc['remarks'] != "" && (!isset($rc['remarks_imp']) || $rc['remarks_imp'])){
-					array_push($remark_data,  strtoupper(strtr($orderSummary['remark_data'], ['ratecard_remark'=>$rc['remarks']])));
+					array_push($remark_data,  strtolower(strtr($orderSummary['remark_data'], ['ratecard_remark'=>$rc['remarks']])));
 					$rc['order_summary']['remark_data'] = $remark_data;
 				}
 				else{
@@ -7628,7 +7632,7 @@ class FindersController extends \BaseController {
 		$orderSummary['header'] = (strtr($orderSummary['header'], ['service_name'=>$service_name]));
 		foreach($slotsdata as &$slot){
 			foreach($slot['data'] as &$sd){
-				$sd['order_summary']['header'] = strtoupper($orderSummary['header']); 
+				$sd['order_summary']['header'] = strtolower($orderSummary['header']); 
 			}
 		}
 		return $slotsdata;
@@ -7639,7 +7643,7 @@ class FindersController extends \BaseController {
 		$summary= Config::get('orderSummary.service_summary');
 		$summary['header'] = (strtr($summary['header'], ['vendor_name'=>$service['finder_name']]));
 		$summary['header'] = (strtr($summary['header'], ['service_name'=>$service['name']]));
-		$service['order_summary']['header']= strtoupper($summary['header']);	
+		$service['order_summary']['header']= strtolower($summary['header']);	
 		return $service;
 	}
 
@@ -7650,7 +7654,7 @@ class FindersController extends \BaseController {
 		$orderSummary['header'] = (strtr($orderSummary['header'], ['service_name'=>$service_name]));
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
-				$slot['order_summary']['header'] = strtoupper($orderSummary['header']); 
+				$slot['order_summary']['header'] = strtolower($orderSummary['header']); 
 		}
 		return $slotsdata;
 	}
