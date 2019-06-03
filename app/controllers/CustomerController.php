@@ -9433,6 +9433,8 @@ class CustomerController extends \BaseController {
         $order['total_session_text'] = $order['no_of_sessions']." Session pack";
         $order['left_text'] = "left";
         if(!empty($order['studio_extended_validity'])){
+			$order['total_session_text'] = $order['no_of_sessions']." Session - Flexi membership";
+
             $order['left_text'] = "booked";
             $order['sessions_left'] =  $order['studio_sessions']['total'];
             $order['total_session_text'] = $order['studio_sessions']['total']." Session pack";
