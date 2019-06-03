@@ -1780,6 +1780,14 @@ class SchedulebooktrialsController extends \BaseController {
 
             $order        = 	Order::findOrFail((int)$order_id);
 
+            if(!empty($order['schedule_slot'])){
+                $data['schedule_slot'] = $order['schedule_slot'];
+            }
+
+            if(!empty($order['schedule_date'])){
+                $data['schedule_date'] = $order['schedule_date'];
+            }
+
             if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought' && !isset($data['order_success_flag'])){
 
                 $resp 	= 	array('status' => 200, 'order_id' => $order_id, 'message' => "Already Status Successfull");
