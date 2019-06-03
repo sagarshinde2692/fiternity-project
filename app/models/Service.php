@@ -395,6 +395,7 @@ class Service extends \Basemodel{
                    $value[ "button_color"] = Config::get('app.ratecard_button_color');
 				   $value[ "pps_know_more"] = true;
 				   $value['pps_title'] = "Pay Per Session";
+				   $value['title'] = '1 Workout';
 				}
 
                 if($value['type'] == 'membership' && !empty($GLOBALS['finder_commission'])){
