@@ -4610,7 +4610,7 @@ class CustomerController extends \BaseController {
 	}*/
 
 	public function applyPromotionCode(){
-		Log::info("applyPromotionCode");
+
 		$data = Input::json()->all();
 		
 		if(empty(Request::header('Authorization'))){
@@ -4645,9 +4645,7 @@ class CustomerController extends \BaseController {
 
 		$code = trim(strtolower($data['code']));
 
-		// $fitcashcode = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
-		$fitcashcode = Fitcashcoupon::where('code',$code)->first();
-		Log::info("fitcashcode ::",[$fitcashcode]);
+        $fitcashcode = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
 
 		if (!isset($fitcashcode) || $fitcashcode == "") {
 			$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
