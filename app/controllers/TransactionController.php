@@ -292,13 +292,13 @@ class TransactionController extends \BaseController {
             'type'=>'required'
         );
 
-        $asshole_numbers = ["7838038094","7982850036","8220720704","8510829603","9990099996","8368952443","7021874658"];
+        $asshole_numbers = ["7838038094","7982850036","8220720704","8510829603","9990099996","8368952443","7021874658","9819142148","9726299714"];
         
         if(isset($data["customer_phone"]) && in_array(substr($data["customer_phone"], -10), $asshole_numbers)){
             return Response::json(['status'=>400, 'message'=>"Can't book anything for you."], $this->error_status);
         }
 
-        $asshole_emails = ["vasuk573@gmail.com","vasukatara01@gmail.com"];
+        $asshole_emails = ["vasuk573@gmail.com","vasukatara01@gmail.com","gauravkhaturiaofficial@gmail.com","gauravactor11@gmail.com","khaturiagaurav@gmail.com","gauravactor515@gmail.com"];
         
         if(isset($data["customer_email"]) && in_array(strtolower($data["customer_email"]),$asshole_emails)){
             return Response::json(['status'=>400, 'message'=>"Can't book anything for you."], $this->error_status);            
