@@ -6768,7 +6768,7 @@ class FindersController extends \BaseController {
 							$r[ "button_color"] = Config::get('app.ratecard_button_color');
 							$r['pps_image'] = Config::get('app.pps_image');
 							$extended_validity_type = $this->getExtendedValidityType($r);
-							if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.2.4')){
+							if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.24')){
 								$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
 								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
 								$r['popup_data']  = $getNonValidityBanner;
@@ -6954,7 +6954,7 @@ class FindersController extends \BaseController {
     public function getNonValidityBanner(){
 		Log::info('values:::::::', [$this->device_type, $this->app_version]);
         if(in_array($this->device_type, ['android', 'ios'])){
-			if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.2.4')){
+			if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.24')){
 				Log::info('values:::::::', [$this->device_type, $this->app_version]);
 				return Config::get('nonvalidity.finder_banner_app_data');
 			}
@@ -7714,7 +7714,7 @@ class FindersController extends \BaseController {
 							$r[ "button_color"] = Config::get('app.ratecard_button_color');
 							$r['pps_image'] = Config::get('app.pps_image');
 							$extended_validity_type = $this->getExtendedValidityType($r);
-							if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.2.4')){
+							if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.24')){
 								$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
 								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
 								$r['popup_data']  = $getNonValidityBanner;
