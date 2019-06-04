@@ -7180,6 +7180,8 @@ class FindersController extends \BaseController {
 
 		$thumbsUpImage = 'https://b.fitn.in/global/web%20payment%20page%20thumbs%20up%20icon%403x.png';
 		$thumbsUpBackImage = 'https://b.fitn.in/global/web%20payment%20page%20background_app%403x.png';
+		if(in_array($this->device_type, ['android', 'ios']))
+			$thumbsUpBackImage = "https://b.fitn.in/mobile_checkout_background.png"; 
 		if((!empty($finderDetails['brand_id'])) && in_array($finderDetails['brand_id'], $brandsList) && in_array($finderRewardType, [2, 4, 6])){
 			// fitsquad
 			$data['fitsquad']['image'] = $fitsquadLogo;
