@@ -9406,9 +9406,9 @@ class CustomerController extends \BaseController {
                 unset($order['button_title']);
                 unset($order['button_type']);
                 if(requestFtomApp()){
-                    $order['active'] = false;
-                    $order['button_title'] = 'Renew Pack';
-                    $order['button_type'] = 'renew';
+                    // $order['active'] = false;
+                    // $order['button_title'] = 'Renew Pack';
+                    // $order['button_type'] = 'renew';
                 }
             }else{
                 
