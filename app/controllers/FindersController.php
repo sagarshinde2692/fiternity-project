@@ -6760,20 +6760,25 @@ class FindersController extends \BaseController {
 		try{
 			Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
 			$getNonValidityBanner = $this->getNonValidityBanner();
+			$extended_validity_count =0;
             foreach($data['finder']['services'] as &$s){
-				//Log::info('services:::::::::::::::::: ');
                     foreach($s[$ratecard_key] as &$r){
-						//Log::info('ratecards:::::::::::::::::: ');
                         if($r['type'] == 'extended validity'){
 							$r[ "button_color"] = Config::get('app.ratecard_button_color');
 							$r['pps_image'] = Config::get('app.pps_image');
-							Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
 							$extended_validity_type = $this->getExtendedValidityType($r);
 							if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.2.4')){
 								$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
 								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
 								$r['popup_data']  = $getNonValidityBanner;
 								//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+								if($r['type'] == 'extended validity'){
+									if($extended_validity_count<=2)
+										$extended_validity_count++;
+									else if($extended_validity_count==3){
+										$data['finder']['fit_ex'] = $getNonValidityBanner;
+									}
+								}
 							}
 							else{
 								$getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
@@ -6794,7 +6799,6 @@ class FindersController extends \BaseController {
 								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
 								$r['non_validity_ratecard']  = $getNonValidityBanner;
 							}
-                            Log::info('non validity ratecard:::::::::::');
     
                         }
                     }
@@ -6943,7 +6947,6 @@ class FindersController extends \BaseController {
 		}
 
 		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title']);
-
         return $data['finder'];
     }
 
@@ -7603,13 +7606,13 @@ class FindersController extends \BaseController {
 	public function orderSummary($services, $finder_name){
         $orderSummary2 = Config::get('orderSummary.order_summary');
 		$orderSummary2['header'] = strtr($orderSummary2['header'], ['vendor_name'=>$finder_name]);
-
 		$title =  strtolower($orderSummary2['title']);
+		
 		foreach($services as &$service){
 			$orderSummary2['header'] = strtr($orderSummary2['header'], ['service_name'=>$service['service_name']]);
 			foreach($service['ratecard'] as &$rc){
 				$orderSummary = $orderSummary2;
-				Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
+				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				if($rc['type']=='membership')
 					$orderSummary['header'] = strtolower(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
 				else
@@ -7630,6 +7633,7 @@ class FindersController extends \BaseController {
 				if(!(isset($rc['remarks_imp']) && $rc['remarks_imp'])){
 					unset($rc['remarks']);
 				}
+				// adding extended validity branding for vendor they have more then two ratecards of extended validity
 			}
 		}
 		return $services;
