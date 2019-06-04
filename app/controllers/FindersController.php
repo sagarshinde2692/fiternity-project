@@ -4981,6 +4981,7 @@ class FindersController extends \BaseController {
 		}catch(Exception $e){
 			Log::info("Error while sorting ratecard", [$e]);
 		}
+		//Log::info('fibder',[$finderData]);
 		return Response::json($finderData,$finderData['status']);
 
 	}
@@ -6756,58 +6757,58 @@ class FindersController extends \BaseController {
         //         array_push($extended_services, $service);
         //     }
         // }
-		$data = $this->getExtendedValidityTypeToRateCards($data, $ratecard_key);
-		// try{
-		// 	Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
-		// 	$getNonValidityBanner = $this->getNonValidityBanner();
-		// 	$extended_validity_count =0;
-        //     foreach($data['finder']['services'] as &$s){
-        //             foreach($s[$ratecard_key] as &$r){
-        //                 if($r['type'] == 'extended validity'){
-		// 					$r[ "button_color"] = Config::get('app.ratecard_button_color');
-		// 					$r['pps_image'] = Config::get('app.pps_image');
-		// 					$extended_validity_type = $this->getExtendedValidityType($r);
-		// 					if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.2.4')){
-		// 						$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
-		// 						$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
-		// 						$r['popup_data']  = $getNonValidityBanner;
-		// 						//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
-		// 						if($r['type'] == 'extended validity'){
-		// 							if($extended_validity_count<=2)
-		// 								$extended_validity_count++;
-		// 							else if($extended_validity_count==3){
-		// 								$data['finder']['fit_ex'] = $getNonValidityBanner;
-		// 							}
-		// 						}
-		// 					}
-		// 					else{
-		// 						$getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
-		// 							"__vendor_name"=>$data['finder']['title'],
-		// 							"__ext_validity_type"=> $extended_validity_type
-		// 						]);
+		//$data = $this->getExtendedValidityTypeToRateCards($data, $ratecard_key);
+		try{
+			Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
+			$getNonValidityBanner = $this->getNonValidityBanner();
+			$extended_validity_count =0;
+            foreach($data['finder']['services'] as &$s){
+                    foreach($s[$ratecard_key] as &$r){
+                        if($r['type'] == 'extended validity'){
+							$r[ "button_color"] = Config::get('app.ratecard_button_color');
+							$r['pps_image'] = Config::get('app.pps_image');
+							$extended_validity_type = $this->getExtendedValidityType($r);
+							if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.2.4')){
+								$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
+								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
+								$r['popup_data']  = $getNonValidityBanner;
+								//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+								if($r['type'] == 'extended validity'){
+									if($extended_validity_count<=2)
+										$extended_validity_count++;
+									else if($extended_validity_count==3){
+										$data['finder']['fit_ex'] = $getNonValidityBanner;
+									}
+								}
+							}
+							else{
+								$getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
+									"__vendor_name"=>$data['finder']['title'],
+									"__ext_validity_type"=> $extended_validity_type
+								]);
 		
-		// 						if(!empty($getNonValidityBanner['how_it_works'])){
-		// 							$getNonValidityBanner['how_it_works']['description'] = strtr($getNonValidityBanner['how_it_works']['description'], ['__vendor_name'=>$data['finder']['title']]);
-		// 						}
+								if(!empty($getNonValidityBanner['how_it_works'])){
+									$getNonValidityBanner['how_it_works']['description'] = strtr($getNonValidityBanner['how_it_works']['description'], ['__vendor_name'=>$data['finder']['title']]);
+								}
 		
-		// 						$getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>($extended_validity_type)]);
-		// 						if(!empty($getNonValidityBanner['title1'])){
-		// 							$getNonValidityBanner['title1'] = strtr($getNonValidityBanner['title1'], ['__ext_validity_type'=>($extended_validity_type)]);
-		// 						}
-		// 						//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
-		// 						$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
-		// 						$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
-		// 						$r['non_validity_ratecard']  = $getNonValidityBanner;
-		// 					}
+								$getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>($extended_validity_type)]);
+								if(!empty($getNonValidityBanner['title1'])){
+									$getNonValidityBanner['title1'] = strtr($getNonValidityBanner['title1'], ['__ext_validity_type'=>($extended_validity_type)]);
+								}
+								//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+								$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
+								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
+								$r['non_validity_ratecard']  = $getNonValidityBanner;
+							}
     
-        //                 }
-        //             }
-        //     }
-        // }catch(Exception $e){
+                        }
+                    }
+            }
+        }catch(Exception $e){
             
-        //     Log::info("Non validity description breaking", [$e]);
+            Log::info("Non validity description breaking", [$e]);
         
-        // }
+        }
 
         // $extended_services_map = [];
 
