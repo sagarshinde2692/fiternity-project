@@ -7173,7 +7173,7 @@ class FindersController extends \BaseController {
 		$finderDetails = $data['finder'];
 		$finderRewardType = (!empty($data['finder']['flags']['reward_type']))?$data['finder']['flags']['reward_type']:2;
 		$finderCashbackType =(!empty($data['finder']['flags']['cashback_type']))?$data['finder']['flags']['cashback_type']:null;
-		$fitsquadHeader = 'Fitsquad';
+		$fitsquadHeader = 'Become a member of Fitsquad';
 		$fitsquadLogo = 'http://b.fitn.in/global/pps/fitsquadlogo.png';
 		$powByFit = 'POWERED BY FITTERNITY';
 		$fitsquadTitle = "TO GET EXCLUSIVE ACCESS TO INDIA'S BIGGEST REWARDS CLUB FITSQUAD, BUY / RENEW YOUR MEMBERSHIP NOW";
@@ -7215,9 +7215,9 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['description'] = 'GET EXCITING REWARDS ON ACHIEVING MILESTONES OF 10, 45, 75, 150, 225 WORKOUTS';
 				//$data['fitsquad']['description'] = "<span>GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> WORKOUTS";
 				
-				$data['fitsquad']['reward_images'] = [
-					"https://b.fitn.in/global/uber.jpg"
-				];
+				// $data['fitsquad']['reward_images'] = [
+				// 	"https://b.fitn.in/global/uber.jpg"
+				// ];
 				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
 				$data['fitsquad']['checkout_summary']['line1'] = 'On buying this, you get exclusive access into FitSquad Gold';
 			}
@@ -7241,17 +7241,17 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['subtitle'] = "Workout and Earn ₹20,000 worth of rewards";
 				$data['fitsquad']['description'] = 'GET EXCITING REWARDS ON ACHIEVING MILESTONES OF 10, 45, 75, 150, 250 WORKOUTS';
 				//$data['fitsquad']['description'] = "<span>GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <span style='color: #f7a81e'>10, 45, 75, 150, 250</span> WORKOUTS";
-				$data['fitsquad']['reward_images'] = [
-					"https://b.fitn.in/global/cashback/rewards/UberEats-Logo-OnWhite-Color-H.png"
-				];
+				// $data['fitsquad']['reward_images'] = [
+				// 	"https://b.fitn.in/global/cashback/rewards/UberEats-Logo-OnWhite-Color-H.png"
+				// ];
 				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/hanman/download2.jpeg';
 			}
 
 			$data['fitsquad']['checkout_summary']['checkout_button']['image'] = $data['fitsquad']['checkout_button']['image'];
 
-			array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png");
-			array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/external-vouchers1/gnc.png");
-			array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/external-vouchers1/cleartrip.png");
+			// array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png");
+			// array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/external-vouchers1/gnc.png");
+			// array_push($data['fitsquad']['reward_images'], "https://b.fitn.in/external-vouchers1/cleartrip.png");
 
 		}
 		else {
@@ -7265,14 +7265,14 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['description'] = "Just Workout for 10, 30, 75, 150, 225 Days & Earn Rs. 25,000 Worth of Rewards";
 
 				$data['fitsquad']['reward_title'] = "Proud Reward Partners";
-				$data['fitsquad']['reward_images'] = [
-					"https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
-					"https://b.fitn.in/global/uber.jpg",
-					"https://b.fitn.in/external-vouchers1/book%20my%20show.png",
-					"https://b.fitn.in/external-vouchers1/cleartrip.png",
-					"https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
-					"https://b.fitn.in/external-vouchers1/JCB.png"
-				];
+				// $data['fitsquad']['reward_images'] = [
+				// 	"https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
+				// 	"https://b.fitn.in/global/uber.jpg",
+				// 	"https://b.fitn.in/external-vouchers1/book%20my%20show.png",
+				// 	"https://b.fitn.in/external-vouchers1/cleartrip.png",
+				// 	"https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
+				// 	"https://b.fitn.in/external-vouchers1/JCB.png"
+				// ];
 
 				$data['fitsquad']['know_more_button'] = [
 					'text'=>'KNOW MORE',
@@ -7443,12 +7443,12 @@ class FindersController extends \BaseController {
 				}
 
 				$data['fitsquad']['reward_title'] = "Proud Reward Partners";
-				$data['fitsquad']['reward_images'] = [
-					"https://b.fitn.in/global/cashback/rewards/UberEats-Logo-OnWhite-Color-H.png",
-					"https://b.fitn.in/global/amazon-logo-vendor-page.png",
-					"https://b.fitn.in/external-vouchers1/gnc.png",
-					"https://b.fitn.in/external-vouchers1/cleartrip.png"
-				];
+				// $data['fitsquad']['reward_images'] = [
+				// 	"https://b.fitn.in/global/cashback/rewards/UberEats-Logo-OnWhite-Color-H.png",
+				// 	"https://b.fitn.in/global/amazon-logo-vendor-page.png",
+				// 	"https://b.fitn.in/external-vouchers1/gnc.png",
+				// 	"https://b.fitn.in/external-vouchers1/cleartrip.png"
+				// ];
 
 
 				if(!empty($jumpToService) && !empty($jumpToRatecard)){
