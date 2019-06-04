@@ -2122,7 +2122,7 @@ class HomeController extends BaseController {
             
             if(!empty($extended_message)){
                 $resp['studio_extended_validity_message']= $extended_message;
-                if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.24')){{
+                if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.24')){
                     $resp['flexi_data'] = Config::get('extendedValidity.finder_banner_app');
                 }
                 
