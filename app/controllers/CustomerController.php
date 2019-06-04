@@ -9421,8 +9421,18 @@ class CustomerController extends \BaseController {
                     unset($order['button_type']);
                 }
             }
-        }
-
+		}
+		
+		if(!empty($order['studio_extended_validity'])){
+            if(time() >$order['studio_membership_duration']['end_date']->sec  && time() < $order['studio_membership_duration']['end_date_extended']->sec){
+				//if time is grater than extended ---> do not send
+				//if time is greater than end date and allowed canced session is there then booking option otherwise renew
+				if(requestFtomApp() && $order['studio_sessions']['cancelled'] > 0){
+					$order['button_title'] = 'Book a Session';
+					$order['button_type'] = 'book';	
+				}	
+			}
+		}			
         $order['start_date'] = strtotime($order['start_date']);
         $order['starting_date'] = date('d M, Y', strtotime($order['start_date']));
         $order['starting_text'] = "Starts from: ";
