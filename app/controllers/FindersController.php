@@ -7344,11 +7344,11 @@ class FindersController extends \BaseController {
 				$cashbackRate = (isset($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_rate']:"";
 				$cashbackDays = (isset($finderDetails['flags']['cashback_type']))?$cashbackImageMap[$finderDetails['flags']['cashback_type']]['cashback_days']:"";
 
-				$data['fitsquad']['title'] = "Get instant complimentary rewards".$cashbackRate. " cashback";
+				$data['fitsquad']['title'] = "Get instant complimentary rewards  ".$cashbackRate. " cashback";
 				// $data['fitsquad']['title_2'] = "+ ".$cashbackRate." cashback";
 				//$data['fitsquad']['title'] = "<span style='text-align: center;font-weight: 900;'><span style='color: #f7a81e;'>Get instant complimentary rewards</span><br/><span>+ ".$cashbackRate." cashback</span></span>";
 				$data['fitsquad']['subtitle'] = "Workout & earn ".$cashbackRate." cashback on your membership amount";
-				$data['fitsquad']['description'] = "BUY A MEMBERSHIP THROUGH FITTERNITY & GET EXCLUSIVE ACCESS TO INSTANT REWARDS + ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF".$cashbackDays."WORKOUTS";
+				$data['fitsquad']['description'] = "BUY A MEMBERSHIP THROUGH FITTERNITY & GET EXCLUSIVE ACCESS TO INSTANT REWARDS + ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF ".$cashbackDays." WORKOUTS";
 				//$data['fitsquad']['description'] = "<span>BUY A MEMBERSHIP THROUGH FITTERNITY & GET EXCLUSIVE ACCESS TO INSTANT REWARDS + ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF <span style='color: #f7a81e;font-weight: 900;'>".$cashbackDays."</span> WORKOUTS</span>";
 
 				$jumpToService = null;
@@ -7420,7 +7420,7 @@ class FindersController extends \BaseController {
 				//$data['fitsquad']['title'] = "<span style='text-align: center;font-weight: 900;'>Get ".$cashbackRate." cashback + Exciting Rewards</span>";
 				$data['fitsquad']['subtitle'] = null;
 				// $data['fitsquad']['description_title'] = "Buy a membership through Fitternity &";
-				$data['fitsquad']['description'] = 'GET EXCLUSIVE ACCESS TO '.$cashbackRate." CASHBACK + EXCITING REWARDS WORTH ₹20,000 ON ACHIEVING MILESTONES OF".$cashbackDays. "WORKOUTS";
+				$data['fitsquad']['description'] = 'GET EXCLUSIVE ACCESS TO '.$cashbackRate." CASHBACK + EXCITING REWARDS WORTH ₹20,000 ON ACHIEVING MILESTONES OF ".$cashbackDays. "WORKOUTS";
 				//$data['fitsquad']['description'] = '<span><span style="font-weight: 500">Buy a membership through Fitternity &</span><br/><span>GET EXCLUSIVE ACCESS TO '.$cashbackRate." CASHBACK + EXCITING REWARDS WORTH ₹20,000 ON ACHIEVING MILESTONES OF <span style='text-align: center;'>".$cashbackDays."</span></span> WORKOUTS</span>";
 
 				$jumpToService = null;
@@ -7493,7 +7493,7 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['title'] = "Get ".$cashbackRate." cashback";
 				//$data['fitsquad']['title'] = "<span style='color: #f7a81e;font-weight: 900;'>GET ".$cashbackRate." CASHBACK</span>";
 				
-				$data['fitsquad']['description'] = "Buy a membership through Fitternity & GET EXCLUSIVE ACCESS TO ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF".$cashbackDays."WORKOUTS";
+				$data['fitsquad']['description'] = "Buy a membership through Fitternity & GET EXCLUSIVE ACCESS TO ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF ".$cashbackDays." WORKOUTS";
 				//$data['fitsquad']['description'] = "<span>BUY A MEMBERSHIP THROUGH FITTERNITY & GET EXCLUSIVE ACCESS TO ".$cashbackRate." CASHBACK ON ACHIEVING MILESTONES OF <span style='color: #f7a81e;'>".$cashbackDays."</span> WORKOUTS</span>";
 
 				$jumpToService = null;
