@@ -92,7 +92,7 @@ class CustomerController extends \BaseController {
 				if(!empty($order['studio_sessions'])){
 					$avail = $order['studio_sessions']['total_cancel_allowed'] - $order['studio_sessions']['cancelled'];
 					$avail = ($avail<0)?0:$avail;
-					array_set($trial, 'type_text', 'WS');
+					array_set($trial, 'type_text', 'Workout Session');
 					if($avail>0){
 						$trial['finder_name'] .= ' - '.$avail.'/'.$order['studio_sessions']['total_cancel_allowed'].' cancellations available';
 					}
