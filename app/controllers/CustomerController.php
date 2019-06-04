@@ -9358,7 +9358,7 @@ class CustomerController extends \BaseController {
         }
 
         $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags','studio_extended_validity', 'studio_sessions', 'studio_membership_duration', 'all_service_id']);
-
+		Log::info('path::::::::',[$path, count($orders)]);
         $orders = $this->formatSessionPackList($orders, $path);
 
         return ['status'=>200, 'data'=>$orders];          

@@ -217,6 +217,16 @@ class Service extends \Basemodel{
 			// 						->toArray();
 
 			$serviceoffers = Offer::getActiveV1('vendorservice_id', intval($this->_id), $finder)->toArray();
+			$workoutSession = [];
+			$extendedRatecards = [];
+			foreach ($ratecardsarr as $key => $value) {
+				if($value=='workout session'){
+					array_push($value['_id'], $workoutSession);
+				}
+				if($value=='extended validity'){
+					array_push($value['_id'], $extendedRatecards);
+				}
+			}
 			foreach ($ratecardsarr as $key => $value) {
                 
                 $days = getDurationDay($value);
@@ -233,13 +243,12 @@ class Service extends \Basemodel{
 				// }
 				
             	$ratecardoffers 	= 	[];
-									// Log::info($serviceoffers);
+				// Log::info($serviceoffers);
                 if(!empty($value['_id']) && isset($value['_id'])){
 					
 					$studioExtValidity = (!in_array($this->servicecategory_id, Config::get('app.non_flexi_service_cat', [111, 65, 5]))) && (!empty($this->batches) && count($this->batches)>0) && in_array($days, [30, 90]) && (!empty($value['duration_type']) && $value['duration_type']=='session' && !empty($value['duration']));
 
-
-					if(!empty($studioExtValidity) && $studioExtValidity && ($value['type']!='extended validity')){
+					if(!empty($studioExtValidity) && $studioExtValidity && ($value['type']!='extended validity') && !empty($workoutSession) && empty($extendedRatecards)){
 						$numOfDays = (in_array($value['validity_type'], ['month', 'months']))?$value['validity']*30:$value['validity'];
 						
 						$numOfDays = (in_array($value['validity_type'], ['year', 'years']))?$value['validity']*360:$numOfDays;
