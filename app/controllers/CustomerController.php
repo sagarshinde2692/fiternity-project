@@ -9563,7 +9563,7 @@ class CustomerController extends \BaseController {
 			Log::info('url and apis::::::::::::::',[$baseURl, $upgradeApi, $cancelApi]);
 			$fitsquad_image = $this->openrewardlist('1', $newGrid['brand_id'], $newGrid['city']);
 			$fitSquadUpgrade = array(
-				"header"=> "Fitsquad Upgrade Available",
+				"header"=> "Become a member of Fitsquad",
 				"title"=> "Fitsquad Upgrade",
 				"logo"=> "https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png",
 				"text_home" => "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>You are ".$newGrid['checkins_left_next_milestone']." check-ins away from the next Milestone.<b><br/><br/> Fitsquad Upgrade Available",
