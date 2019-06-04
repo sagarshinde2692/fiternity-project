@@ -9528,7 +9528,7 @@ class CustomerController extends \BaseController {
 
 							$this->utilities->deactivateCheckins($cust['_id'], $reason);
 
-							$resp = ['status'=>200, 'message'=>'Successfully appropriated the loyalty of the customer'];
+							$resp = ['status'=>200, 'message'=>'Congratulations, your Fitsquad is upgraded to '. $newLoyalty['cashback_type'].' cashback'];
 						}
 						else {
 							$resp = ['status'=>400, 'message'=>'order details are missing'];
