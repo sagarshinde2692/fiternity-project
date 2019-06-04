@@ -2120,8 +2120,13 @@ class HomeController extends BaseController {
                 'loyalty_success_msg' => $loyaltySuccessMsg
             ];
             
-            if(!empty($extended_message))
+            if(!empty($extended_message)){
                 $resp['studio_extended_validity_message']= $extended_message;
+                if(in_array($this->device_type, ['android', 'ios'])){
+                    $resp['flexi_Data'] = Config::get('extendedValidity.finder_banner_app');
+                }
+                
+            }
             if(empty($finder) && !empty($itemData['finder_id'])){
                 $finder = Finder::find($itemData['finder_id']);
             }

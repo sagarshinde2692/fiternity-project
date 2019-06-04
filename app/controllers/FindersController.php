@@ -6662,10 +6662,10 @@ class FindersController extends \BaseController {
         // // $session_pack_duration_map =  Config::get('nonvalidity.session_pack_duration_map');
         $duration_session_map =  Config::get('nonvalidity.duration_session_map');
 
-        function cmpSessions($a, $b)
-        {
-            return $a['validity_copy'] <= $b['validity_copy'];
-        }
+        // function cmpSessions($a, $b)
+        // {
+        //     return $a['validity_copy'] <= $b['validity_copy'];
+        // }
         // foreach($data['finder']['services'] as $key => $service){
         //     $no_validity_exists = false;
 		// 	$no_validity_ratecards = [];
@@ -7615,9 +7615,9 @@ class FindersController extends \BaseController {
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				if($rc['type']=='membership')
-					$orderSummary['header'] = strtolower(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
+					$orderSummary['header'] = (strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
 				else
-					$orderSummary['header'] = strtolower(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
+					$orderSummary['header'] = (strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
 				$orderSummary['title'] = strtolower($title);
 				$rc['order_summary'] = $orderSummary;
 				$remark_data=[];
