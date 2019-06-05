@@ -7214,11 +7214,6 @@ Class Utilities {
                 $loyalty = array_merge($loyalty, $fields_to_add);
                 $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
                 $duration = $duration > 180 ? 360 : $duration;
-
-                Log::info("duration",[$duration]);
-                Log::info("order_id",[$data['order_id']]);
-                Log::info("finder_id",[$data['finder_id']]);
-                Log::info("type",[$data['type']]);
                 
                 if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
                     if(empty($finder)){
