@@ -28,10 +28,7 @@ App::after(function($request, $response)
 {
     Log::info("after filter");
     $reqClient = Request::all();
-    // Log::info('$reqClient: ', [$reqClient]);
-    if(!empty($response)){
-        Log::info($response);
-    }
+
     if(!(isset($reqClient) && isset($reqClient['third_party']) && $reqClient['third_party'])) {
         refreshToken($response);
     }
