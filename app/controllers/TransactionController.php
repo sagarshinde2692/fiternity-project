@@ -892,7 +892,7 @@ class TransactionController extends \BaseController {
         $data['amount_final'] = $data["amount_finder"];
 
         //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
-        if(empty($data['service_flags']['disable_dynamic_pricing']) && (isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment']) || (empty($_GET['device_type'])) || $_GET['device_type'] == 'website'){
+        if(empty($data['service_flags']['disable_dynamic_pricing']) && ((isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment']) || (empty($_GET['device_type'])) || $_GET['device_type'] == 'website')){
             if($data['type'] == 'workout-session')
              {
              try {
