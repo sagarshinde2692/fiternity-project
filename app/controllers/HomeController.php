@@ -786,7 +786,13 @@ class HomeController extends BaseController {
                     Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity']]);
                     $extended_message = $itemData['studio_membership_duration']['num_of_days_extended'];
                 }
-                
+                if(isset($itemData['studio_extended_validity_order_id'])){
+                    Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity_order_id']]);
+                    if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.24')){
+                        Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity_order_id']]);
+                        $flexi_data = Config::get('extendedValidity.finder_banner_app');
+                    }
+                }
                 // order section 
                 
                 if(isset($itemData['customer_source'])&&$itemData['customer_source']=='website'&&isset($itemData['rx_user'])&&$itemData['rx_user']==true)
@@ -995,7 +1001,7 @@ class HomeController extends BaseController {
             $finder_location = "";
             $finder_address = "";
             $all_options_url = "";
-
+            //return 123455;
             if(isset($itemData['finder_id']) && $itemData['finder_id'] != ""){
 
                 $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id','brand_id'));
@@ -1098,6 +1104,10 @@ class HomeController extends BaseController {
 
                 if(!empty($finder) && isset($finder['brand_id'])){
                     $response['brand_id'] = !empty($finder['brand_id']);                    
+                }
+                
+                if(!empty($flexi_data)){
+                    $response['flexi_data'] = $flexi_data;                    
                 }
                 
                 if(!empty($customer_id)){
@@ -1323,7 +1333,7 @@ class HomeController extends BaseController {
                     
                     break;
             }
-
+            
             if($this->utilities->checkCorporateLogin()){
                     $subline = "Customer will be sent an email and an sms confirmation with the subscription code. Same will be marked to vg@fitmein.in";
             }
@@ -1965,7 +1975,7 @@ class HomeController extends BaseController {
             $conclusion = $this->getConclusionData();
 
             $feedback = $this->getFeedbackData();
-
+            
             $reward_details = null;
 
             if(isset($item['customer_reward_id']) && $item['customer_reward_id'] != ""){
@@ -2087,7 +2097,7 @@ class HomeController extends BaseController {
             if(empty($near_by_vendor)){
                 $show_other_vendor = false;
             }
-
+            Log::info('response ::::::::::::::::::;;');
             $resp = [
                 'status'    =>  200,
                 'item'      =>  null,
@@ -2122,10 +2132,11 @@ class HomeController extends BaseController {
             
             if(!empty($extended_message)){
                 $resp['studio_extended_validity_message']= $extended_message;
-                if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.24')){
-                    $resp['flexi_data'] = Config::get('extendedValidity.finder_banner_app');
-                }
-                
+            }
+            Log::info("inside setting flexxi data",[$flexi_data]);
+            if(!empty($flexi_data)){
+                Log::info("inside setting flexxi data");
+                $resp['flexi_data'] = $flexi_data;
             }
             if(empty($finder) && !empty($itemData['finder_id'])){
                 $finder = Finder::find($itemData['finder_id']);
