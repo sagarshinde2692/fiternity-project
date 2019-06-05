@@ -8884,7 +8884,7 @@ Class Utilities {
                             $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)), true);
                         }
                         Log::info('booking done....');
-                        sleep(20);
+                        sleep(3);
                     }
                 }
                 Log::info('....All bookings done....');
