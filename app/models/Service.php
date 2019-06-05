@@ -220,11 +220,11 @@ class Service extends \Basemodel{
 			$workoutSession = [];
 			$extendedRatecards = [];
 			foreach ($ratecardsarr as $key => $value) {
-				if($value=='workout session'){
-					array_push($value['_id'], $workoutSession);
+				if($value['type']=='workout session'){
+					array_push($workoutSession, $value['_id']);
 				}
-				if($value=='extended validity'){
-					array_push($value['_id'], $extendedRatecards);
+				if($value['type']=='extended validity'){
+					array_push($extendedRatecards, $value['_id']);
 				}
 			}
 			foreach ($ratecardsarr as $key => $value) {
@@ -244,6 +244,8 @@ class Service extends \Basemodel{
 				
             	$ratecardoffers 	= 	[];
 				// Log::info($serviceoffers);
+				//&& !empty($workoutSession) && empty($extendedRatecards)
+				//Log::info('workout sessions and extended ratecardsL:::::::::', [$ratecardsarr, $workoutSession, $extendedRatecards]);
                 if(!empty($value['_id']) && isset($value['_id'])){
 					
 					$studioExtValidity = (!in_array($this->servicecategory_id, Config::get('app.non_flexi_service_cat', [111, 65, 5]))) && (!empty($this->batches) && count($this->batches)>0) && in_array($days, [30, 90]) && (!empty($value['duration_type']) && $value['duration_type']=='session' && !empty($value['duration']));

@@ -49,9 +49,9 @@ class Offer extends \Basemodel {
 		$gmv1Flag = false;
 
 		if(is_object($finder_id)){
-			Log::info("full finder");
+			//Log::info("full finder");
 			if(!empty($finder_id['flags']['gmv1'])){
-				Log::info("full finder gmv");
+				//Log::info("full finder gmv");
 				$gmv1Flag = $finder_id['flags']['gmv1'];
 			}
 		}else{
