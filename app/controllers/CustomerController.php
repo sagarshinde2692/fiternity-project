@@ -9308,7 +9308,7 @@ class CustomerController extends \BaseController {
     }
 
     public function getSessionPacks($offset = 0, $limit = 10, $active = false, $customer_id = null, $path=null){
-		Log::info('value of path variable:::::', [$path]);
+		//Log::info('value of path variable:::::', [$path]);
 		if($path== null)
 			$path='profile';
         $jwt_token = Request::header('Authorization');
@@ -9366,16 +9366,20 @@ class CustomerController extends \BaseController {
     }
 
     public function formatSessionPackList($orders, $path){
-        foreach($orders as &$order){
+		$orders1 =[];
+        foreach($orders as $key =>$order){
            
-            $order = $this->formatSessionPack($order, $path);
-            
+			$order = $this->formatSessionPack($order, $path);
+			if( ! (isset($order['remove_current_order']) && $order['remove_current_order'])){
+				//Log::info('expired:::::::: studio extended session packs::::',[$order['_id']]);
+				array_push($orders1, $order);
+			}			
         }
-        return $orders;
+        return $orders1;
     }
 
     public function formatSessionPack($order, $path='profile'){
-		Log::info('value of path variable:::::', [$path]);
+		//Log::info('value of path variable:::::', [$path]);
         $order['active'] = true;
         if((!empty($order['ratecard_flags']['unlimited_validity']) || strtotime($order['end_date']) > time()) && !empty($order['sessions_left'])){
             $order['button_title'] = 'Book your next Session';
@@ -9413,26 +9417,21 @@ class CustomerController extends \BaseController {
             }else{
                 
                 if(requestFtomApp()){
-                    $order['button_title'] = 'Book your next Session';
+                    $order['button_title'] = 'Book a Session';
                     $order['button_type'] = 'book';
                     
                 }else{
                     unset($order['button_title']);
                     unset($order['button_type']);
                 }
-            }
-		}
-		
-		if(!empty($order['studio_extended_validity'])){
-            if(time() >$order['studio_membership_duration']['end_date']->sec  && time() < $order['studio_membership_duration']['end_date_extended']->sec){
-				//if time is grater than extended ---> do not send
-				//if time is greater than end date and allowed canced session is there then booking option otherwise renew
-				if(requestFtomApp() && $order['studio_sessions']['cancelled'] > 0){
-					$order['button_title'] = 'Book a Session';
-					$order['button_type'] = 'book';	
-				}	
 			}
-		}			
+			// removing expired flexi session packs
+			if(time() > $order['studio_membership_duration']['end_date_extended']->sec){			
+				$order['remove_current_order']= true;
+				return $order;
+			}
+		}
+				
         $order['start_date'] = strtotime($order['start_date']);
         $order['starting_date'] = date('d M, Y', strtotime($order['start_date']));
         $order['starting_text'] = "Starts from: ";
