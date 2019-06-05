@@ -8282,7 +8282,7 @@ Class Utilities {
                 else {
                     $brandIdTypeChk = empty($order['brand_id'])||in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'));
                     Log::info('at brand checking++++++++>>>>>>>>============ at finder', [$brandIdTypeChk, $finder['brand_id'], $retObj]);
-                    $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type']))) || $customer['loyalty']['reward_type']==2));
+                    $isDowngrade = (!((empty($finder['flags']['reward_type']) || ($finder['flags']['reward_type']!=2)) && (empty($customer['loyalty']['reward_type']) || $customer['loyalty']['reward_type']==2)));
                     //$isSameGrid = ((empty($finder['flags']['reward_type']) || $finder['flags']['reward_type']==2) && (empty($customer['loyalty']['reward_type']) || $customer['loyalty']['reward_type']==2));
                     $isSameGrid = (((empty($finder['flags']['reward_type']) || $finder['flags']['reward_type']==2) && empty($finder['brand_id'])) && (empty($customer['loyalty']['reward_type']) || $customer['loyalty']['reward_type']==2));
 
