@@ -674,7 +674,9 @@ class ServiceController extends \BaseController {
 		Service::$withoutAppends=true;
 		 Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
 		
-        $query = Service::active()->whereNotIn('trial',['manual', 'manualauto','disable']);
+        $query = Service::active()->where("trial", '!=', 'disable')->where(function($query){
+            $query->whereNotIn('trial',['manual', 'manualauto'])->orWhere('flags.enable_manual_booking_pps.status', true);
+        });
 
         $query->where('servicecategory_id','!=',163);
 
@@ -697,7 +699,7 @@ class ServiceController extends \BaseController {
 		//  $items = $query->get()->toArray();
 
 
-		
+
 
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
@@ -710,7 +712,7 @@ class ServiceController extends \BaseController {
 		// $finder = Finder::find($finder_id, array('inoperational_dates'));
         $finder = Finder::find($finder_id);
         
-        if(!empty($finder['trial']) && in_array($finder['trial'], ['manual', 'manualauto'])){
+        if(!empty($finder['trial']) && (in_array($finder['trial'], ['manual', 'manualauto']) && empty($finder['flags']['enable_manual_booking_pps']['status']))){
     		return Response::json(array('status'=>401,'message'=>'Please contact customer support to book a session here'),401);
     	}
 
@@ -1902,7 +1904,7 @@ class ServiceController extends \BaseController {
 			// $service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 3);
 		}
 		// $service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 7);
-		unset($service_details['workoutsessionschedules']);
+        unset($service_details['workoutsessionschedules']);
 		$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()), true);
 		
 		if($schedule['status'] != 200){
