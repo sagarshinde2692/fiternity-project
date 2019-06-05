@@ -751,7 +751,11 @@ class ServiceController extends \BaseController {
 				}));
 			}
 			
-			$time_in_seconds = time_passed_check($item['servicecategory_id']);
+            $time_in_seconds = time_passed_check($item['servicecategory_id']);
+            
+            if(!empty($finder['flags']['enable_manual_booking_pps']['status']) && !empty($item['flags']['enable_manual_booking_pps']['status'])){
+                $time_in_seconds = 60*60*24;
+            }
 			
 			if(isset($request['time_interval']) && $request['time_interval']){
 				$time_in_seconds = $request['time_interval'];
