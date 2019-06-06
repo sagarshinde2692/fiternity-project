@@ -9457,7 +9457,7 @@ class CustomerController extends \BaseController {
         if(!empty($order['studio_extended_validity'])){
             $order['left_text'] = "booked";
             $order['sessions_left'] =  $order['studio_sessions']['total'];
-            $order['total_session_text'] = $order['studio_sessions']['total']." Session pack";
+            $order['total_session_text'] = $order['studio_sessions']['total']." Session Flexi Membership";
             $extended_count = Order::active()->where('studio_extended_validity_order_id', $order['_id'])->where('studio_extended_session', true)->count();
             $order['finder_address'] = ($order['studio_sessions']['cancelled']-$extended_count)."/".$order['studio_sessions']['total_cancel_allowed']." sessions can be extended for free after ".date('d-m-Y' ,$order['studio_membership_duration']['end_date']->sec);
         }
