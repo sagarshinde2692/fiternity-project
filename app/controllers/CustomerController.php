@@ -9561,7 +9561,12 @@ class CustomerController extends \BaseController {
 			$upgradeApi = Config::get('app.fitsquad_upgrade_api');
 			$cancelApi = Config::get('app.fitsquad_cancel_api');
 			Log::info('url and apis::::::::::::::',[$baseURl, $upgradeApi, $cancelApi]);
-			$fitsquad_image = $this->openrewardlist('1', $newGrid['brand_id'], $newGrid['city']);
+			if(!empty($newGrid['brand_id'])){
+				$fitsquad_image = $this->openrewardlist('1', $newGrid['brand_id'], $newGrid['city']);
+			}
+			else {
+				$fitsquad_image = '';
+			}
 			$fitSquadUpgrade = array(
 				"header"=> "Fitsquad Upgrade Available",
 				"title"=> "Fitsquad Upgrade",
