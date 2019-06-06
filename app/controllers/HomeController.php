@@ -785,15 +785,12 @@ class HomeController extends BaseController {
                 if($itemData['studio_extended_validity']==true ){
                     Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity']]);
                     $extended_message = $itemData['studio_membership_duration']['num_of_days_extended'];
-                }
-                if(isset($itemData['studio_extended_validity_order_id'])){
                     Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity_order_id']]);
                     if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.24')){
-                        Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity_order_id']]);
+                        Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity']]);
                         $flexi_data = Config::get('extendedValidity.finder_banner_app');
                     }
                 }
-                // order section 
                 
                 if(isset($itemData['customer_source'])&&$itemData['customer_source']=='website'&&isset($itemData['rx_user'])&&$itemData['rx_user']==true)
                 {
@@ -1101,7 +1098,7 @@ class HomeController extends BaseController {
                 if(isset($item['extended_validity_order_id']) && (($device_type=='android' && $app_version > '5.17') || ($device_type=='ios' && $app_version > '5.1.4'))){
                     unset($response['streak']);
                 }
-
+                
                 if(!empty($finder) && isset($finder['brand_id'])){
                     $response['brand_id'] = !empty($finder['brand_id']);                    
                 }
@@ -1785,8 +1782,9 @@ class HomeController extends BaseController {
             }
 
             
+            Log::info('header at membership confirmed',[$type]);            
             if(in_array($type,["membershipwithpg","membershipwithoutpg","healthytiffinmembership"])){
-                
+                Log::info('header at membership confirmed');
                 $header = "Membership Confirmed";
                 $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
 

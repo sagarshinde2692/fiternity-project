@@ -4508,11 +4508,10 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
                     if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
-						$data1  = $this->applyNonValidity($data, 'app');
-						$data['finder']  = $data1['finder'];
-						if(!empty($data['fit_ex'])){
-							$data['fit_ex'] = $data1['fit_ex'];
-						}
+						$data['finder']  = $this->applyNonValidity($data, 'app');
+						// if(!empty($data['fit_ex'])){
+						// 	$data['fit_ex'] = $data1['fit_ex'];
+						// }
                         $this->insertWSNonValidtiy($data, 'app');
                     }
                     
@@ -4868,7 +4867,7 @@ class FindersController extends \BaseController {
                     //         ];
                     //     }
 					// }
-					if($_GET['app_version'] > '5.1.3'){
+					if(($this->device_type=='ios' && $this->app_version > '5.1.3') || ($this->device_type=='android')){
 						if(!empty($finderData['finder']['extended_validity'])){
                             // $finderData['finder']['services'] = $pps_stripe;
                             $finderData['fit_ex'] =[
