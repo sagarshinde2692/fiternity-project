@@ -8315,11 +8315,24 @@ Class Utilities {
         Log::info('----- Entered getLoyaltyAppropriationConsentMsg -----');
         $device_type = Request::header('Device-Type');
         $cashbackMap = ['A','B','C','D','E','F'];
-        $order = Order::active()->where('_id', intval($order_id))->first();
+        $retObj = null;
+        if(empty($order_id) && empty($customer_id)){
+            return $retObj;
+        }
+        else if(empty($order_id) && isset($customer_id)){
+            Log::info('----- finding order for customer -----');
+            $order = Order::active()->where('customer_id', $customer_id)->where('type', 'memberships')
+            ->where('end_date', '>' ,new MongoDate(time()))->orderBy('_id', 'desc')->first();
+            if(empty($order)){
+                return $retObj;
+            }
+        }
+        else{
+            $order = Order::active()->where('_id', intval($order_id))->first();
+        }
         $customer = Customer::active()
                             ->where('email', $order['customer_email'])
                             ->first();
-        $retObj = null;
         if(!empty($customer) && (!isset($order['loyalty_registration']) || !$order['loyalty_registration'])){
             // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
             $existingLoyalty = null;
