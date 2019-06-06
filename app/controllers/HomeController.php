@@ -2133,7 +2133,7 @@ class HomeController extends BaseController {
             if(!empty($extended_message)){
                 $resp['studio_extended_validity_message']= $extended_message;
             }
-            Log::info("inside setting flexxi data",[$flexi_data]);
+
             if(!empty($flexi_data)){
                 Log::info("inside setting flexxi data");
                 $resp['flexi_data'] = $flexi_data;
