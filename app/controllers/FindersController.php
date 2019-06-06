@@ -6906,8 +6906,10 @@ class FindersController extends \BaseController {
 					}else{
 						$ratecard['duration_type'] = $ratecard['duration_type']. " Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
 					}
+					$ratecard['validity_copy'] = $ratecard['validity'];
+					$ratecard['validity_type_copy'] = $ratecard['validity_type'];
 					unset($ratecard['validity_type'] );
-					unset($ratecard['validity'] );
+					$ratecard['validity']= 0;
 				}
 			}
 		}
