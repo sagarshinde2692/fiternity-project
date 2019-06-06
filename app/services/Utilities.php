@@ -8075,7 +8075,7 @@ Class Utilities {
 		Log::info('----- Completed deactivateCheckins -----');
 	}
 
-    public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false){
+    /*public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false){
         Log::info('----- Entered getLoyaltyAppropriationConsentMsg -----');
         $device_type = Request::header('Device-Type');
         $cashbackMap = ['A','B','C','D','E','F'];
@@ -8273,7 +8273,7 @@ Class Utilities {
                     $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];//$order['brand_id'];
                     if($brandIdTypeChk){
                         $brand_loyalty_data = $this->buildBrandLoyaltyInfoFromOrder($finder, $order);
-                        $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$finder['brand_id']/*$brand_loyalty_data['brand_id']*/
+                        $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$finder['brand_id']//$brand_loyalty_data['brand_id']
                         && $customer['loyalty']['brand_loyalty_duration']==$brand_loyalty_data['brand_loyalty_duration']
                         && $customer['loyalty']['brand_loyalty_city']==$brand_loyalty_data['brand_loyalty_city']
                         && $customer['loyalty']['brand_version']==$brand_loyalty_data['brand_version'];
@@ -8309,7 +8309,219 @@ Class Utilities {
         else {
             return null;
         }
+    }*/
+
+    public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false){
+        Log::info('----- Entered getLoyaltyAppropriationConsentMsg -----');
+        $device_type = Request::header('Device-Type');
+        $cashbackMap = ['A','B','C','D','E','F'];
+        $order = Order::active()->where('_id', intval($order_id))->first();
+        $customer = Customer::active()
+                            ->where('email', $order['customer_email'])
+                            ->first();
+        $retObj = null;
+        if(!empty($customer) && (!isset($order['loyalty_registration']) || !$order['loyalty_registration'])){
+            // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
+            $existingLoyalty = null;
+            $message = null;
+            $newMessage = null;
+            if(!empty($customer['loyalty'])){
+                $retObj = [];
+                if(!empty($customer['loyalty']['brand_loyalty']) && !in_array($order['finder_id'], \Config::get('app.brand_finder_without_loyalty'))){
+                    $finderMilestone = FinderMilestone::where('duration', $customer['loyalty']['brand_loyalty_duration'])
+                                            ->where('brand_id', $customer['loyalty']['brand_loyalty'])
+                                            ->where('brand_version', $customer['loyalty']['brand_version'])
+                                            ->first();
+                }
+                else if (!empty($customer['loyalty']['reward_type'])) {
+                    if($customer['loyalty']['reward_type']==2){
+                        $finderMilestone = Config::get('loyalty_constants');
+                    }
+                    else {
+                        $query = FinderMilestone::where('reward_type', $customer['loyalty']['reward_type']);
+                        if(!empty($customer['loyalty']['cashback_type'])){
+                            $query->where('cashback_type', $customer['loyalty']['cashback_type']);
+                        }
+                        $finderMilestone = $query->first();
+                    }
+                }
+                else {
+                    $finderMilestone = Config::get('loyalty_constants');
+                }
+
+                $existingLoyalty = [
+                    'checkins' => (!empty($customer['loyalty']['checkins']))?$customer['loyalty']['checkins']:0,
+                    'end_date' => null,
+                    'finder_name' => null,
+                    'reward_type' => 2,
+                    'cashback_type' => null,
+                    'cashback_type_num' => null,
+                    'new_end_date' => null
+                ];
+
+                $retObj['next_milestone'] = null;
+                $retObj['checkins_left_next_milestone'] = null;
+
+                if(!empty($finderMilestone['milestones'])){
+                    $finderMilestone = $finderMilestone['milestones'];
+                    $milestone = array_filter($finderMilestone, function($mile) use ($existingLoyalty){
+                        return $existingLoyalty['checkins']>=$mile['count'] && (empty($mile['next_count']) || $existingLoyalty['checkins']<$mile['next_count']);
+                    });
+                    $milestone = (!empty($milestone))?array_values($milestone)[0]:$milestone;
+                    if(!empty($milestone['next_count'])){
+                        $retObj['next_milestone'] = ($milestone['milestone']<5)?($milestone['milestone'] + 1):0;
+                        $retObj['checkins_left_next_milestone'] = $milestone['next_count'] - $existingLoyalty['checkins'];
+                    }
+                    else {
+                        $retObj['next_milestone'] = 0;
+                        $retObj['checkins_left_next_milestone'] = 0;
+                    }
+                }
+
+                if(!empty($customer['loyalty']['end_date'])){
+                    $endDateType = gettype($customer['loyalty']['end_date']);
+                    if($endDateType=='string'){
+                        $existingLoyalty['end_date'] = date('d-m-Y', strtotime(substr($customer['loyalty']['end_date'],0,10)));
+                    }
+                    else {
+                        $existingLoyalty['end_date'] = date('d-m-Y', $customer['loyalty']['end_date']->sec);
+                    }
+                }
+            // }
+            // if(!empty($existingLoyalty)){
+                if(empty($existingLoyalty['end_date'])){
+                    $existingLoyalty['end_date'] = date('d-m-Y', strtotime('midnight', strtotime('+1 year',$customer['loyalty']['start_date']->sec)));
+                }
+                
+                if(!empty($order)){
+                    if(!empty($order['finder_name'])) {
+                        $existingLoyalty['finder_name'] = $order['finder_name'];
+                    }
+                    if(!empty($order['finder_flags']['reward_type'])) {
+                        $existingLoyalty['reward_type'] = $order['finder_flags']['reward_type'];
+                    }
+                    if(!empty($order['finder_flags']['cashback_type']) && $order['finder_flags']['cashback_type']>0) {
+                        $existingLoyalty['cashback_type'] = $cashbackMap[$order['finder_flags']['cashback_type'] - 1];
+                        $existingLoyalty['cashback_type_num'] = $order['finder_flags']['cashback_type'];
+                    }
+                    if(!empty($order['end_date'])) {
+                        $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime('+1 year', strtotime($order['start_date']))));
+                    }
+                }
+                // "Hi, ".$customer_name.",<br>
+                // $message = "<br>Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. <br>Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b><br>You are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.<br>Do you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
+                $rewardsExist = false;
+
+                $retObj['checkins'] = $existingLoyalty["checkins"];
+
+                if(!empty($existingLoyalty['end_date'])) {
+                    $retObj['end_date'] = $existingLoyalty["end_date"];
+                }
+                if(!empty($existingLoyalty['finder_name'])) {
+                    $retObj['finder_name'] = $existingLoyalty["finder_name"];
+                }
+                if(!empty($existingLoyalty['new_end_date'])) {
+                    $retObj['new_end_date'] = $existingLoyalty['new_end_date'];
+                }
+                $retObj['reward'] = false;
+                $retObj['cashback'] = false;
+                if(in_array($existingLoyalty['reward_type'],[1,2,3,4])){
+                    $retObj['reward'] = true;
+                    $retObj['reward_type'] = $existingLoyalty['reward_type'];
+                    $retObj['cashback_type'] = $existingLoyalty['cashback_type'];
+                    $retObj['cashback_type_num'] = $existingLoyalty['cashback_type_num'];
+                    if(!empty($device_type) && in_array($device_type, ['android', 'ios'])){
+                        // $message .= "rewards (<a onclick=''>Checkout Rewards</a>)";
+                        $retObj['finder_name'] = $existingLoyalty["finder_name"];
+                    }
+                    else {
+                        // $message .= "rewards (<a onclick=\"cashbackPopup('".$existingLoyalty['reward_type']."', '".$cashbackMap[intval($existingLoyalty['cashback_type'])-1]."')\">Checkout Rewards</a>)";
+                    }
+                    $rewardsExist = true;
+                }
+                if(in_array($existingLoyalty['reward_type'],[3,4,5,6])){
+                    $retObj['cashback'] = true;
+                    $retObj['reward_type'] = $existingLoyalty['reward_type'];
+                    $retObj['cashback_type'] = $existingLoyalty['cashback_type'];
+                    $retObj['cashback_type_num'] = $existingLoyalty['cashback_type_num'];
+                    if($rewardsExist){
+                        // $message .= " & ";
+                    }
+                    if(in_array($existingLoyalty['cashback_type'],['A', 'B'])){
+                        $retObj['cashback_percent'] = 120;
+                        // $message .= "<b>120%</b> cashback";
+                    }
+                    else {
+                        $retObj['cashback_percent'] = 100;
+                        // $message .= '<b>100%</b> cashback';
+                    }
+                }
+                // $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till <b>".$existingLoyalty['new_end_date']."</b>";
+                // $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
+
+                $newMessage = "As you have purchased ".$order['finder_name']." membership, upgrading your Fitsquad will let you unlock new reward & increase the Fitsquad validity. However, you will loose your current check-in streak (check-ins done till now: ".$retObj['checkins'].")";
+
+                $message = "Current check-ins: ".$retObj['checkins'].".<br/>Your workout counter will reset on ".$retObj['end_date'].".";
+                if($retObj['next_milestone']==0){
+                    $message .= "<br/>You have reached the final milestone.";
+                }
+                else {
+                    $message .= "<br/>You are ".$retObj['checkins_left_next_milestone']." check-ins away from milestone ".$retObj['next_milestone'].".";
+                }
+                
+                $newEndDate = (!empty($retObj['new_end_date']))?$retObj['new_end_date']:'';
+
+                $message .= "<br/>You can upgrade to ".$retObj['finder_name']." specific rewards by visiting the profile section of your account on the website.<br/>Please note : On switching, your check-in counter will reset to 0 with a check-in validity till ".$newEndDate.".";
+                
+                if(!empty($customer['loyalty']['reward_type'])){
+                    $rewTypeChk = $customer['loyalty']['reward_type']==$retObj['reward_type'];
+                }
+                else {
+                    $rewTypeChk = empty($retObj['reward_type']);
+                }
+                if(!empty($customer['loyalty']['cashback_type'])){
+                    $cbkTypeChk = $customer['loyalty']['cashback_type']==$retObj['cashback_type_num'];
+                }
+                else {
+                    $cbkTypeChk = empty($retObj['cashback_type']);
+                }
+                $finder = Finder::active()->where('_id', $order['finder_id'])->first();
+                $isDowngrade = false;
+                if(!empty($customer['loyalty']['brand_loyalty'])){
+                    $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$order['brand_id'];
+                    if($brandIdTypeChk){
+                        $brand_loyalty_data = $this->buildBrandLoyaltyInfoFromOrder($finder, $order);
+                        $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$brand_loyalty_data['brand_id']
+                        && $customer['loyalty']['brand_loyalty_duration']==$brand_loyalty_data['brand_loyalty_duration']
+                        && $customer['loyalty']['brand_loyalty_city']==$brand_loyalty_data['brand_loyalty_city']
+                        && $customer['loyalty']['brand_version']==$brand_loyalty_data['brand_version'];
+                        Log::info('$brand_loyalty_data: ', [$brand_loyalty_data]);
+                    }
+                }
+                else {
+                    $brandIdTypeChk = empty($finder['brand_id'])||in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'));
+
+                    $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2))) && $brandIdTypeChk;
+                }
+                
+                Log::info('$rewTypeChk: ', [$rewTypeChk]);
+                Log::info('$cbkTypeChk: ', [$cbkTypeChk]);
+                Log::info('$brandIdTypeChk: ', [$brandIdTypeChk]);
+                Log::info('$isDowngrade: ', [$isDowngrade]);
+
+                if(($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
+                    // same grid - no need to upgrade
+                    $retObj = null;
+                }
+            }
+            // return $message;
+            return ($messageOnly)?$newMessage:$retObj;
+        }
+        else {
+            return null;
+        }
     }
+
 
     public function buildBrandLoyaltyInfoFromOrder($finder, $order){
 		$data = null;
