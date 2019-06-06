@@ -7690,7 +7690,7 @@ class FindersController extends \BaseController {
 									if($extended_validity_count<=2)
 										$extended_validity_count++;
 									else if($extended_validity_count==3){
-										$data['finder']['fit_ex'] = $getNonValidityBanner;
+										$data['fit_ex'] = $getNonValidityBanner;
 									}
 								}
 							}
