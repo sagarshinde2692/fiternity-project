@@ -2698,7 +2698,9 @@ Class Utilities {
             
                 $duration = isset($GLOBALS['order_duration']) ? $GLOBALS['order_duration'] : 0;
 
-                $query->where('upgradable_to_session_pack', '!=', 'false')->where('session_pack_duration_gt', '<', $duration);
+                $query->where('upgradable_to_session_pack', '!=', 'false')->where(function($query) use ($duration){
+                    $query->orWhere('session_pack_duration_gt', '<', $duration)->orWhere('session_pack_duration_gt', 'exists', false);
+                });
             
             }else{
             
