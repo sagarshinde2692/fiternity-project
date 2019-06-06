@@ -6902,10 +6902,11 @@ class FindersController extends \BaseController {
 				if($ratecard['type'] == 'extended validity'){
 					Log::info('inside setting ext_validity');
 					if(!empty($ratecard['flags']['unlimited_validity'])){
-						$ratecard['duration_type'] = "Unlimited Validity";
+						$ratecard['ext_validity'] = "Unlimited Validity";
 					}else{
-						$ratecard['duration_type'] = $ratecard['duration_type']. " Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
+						$ratecard['ext_validity']  = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'].")";
 					}
+					$ratecard['duration_type'] = $ratecard['duration_type']."\n (". $ratecard['ext_validity']. ")";
 					$ratecard['validity_copy'] = $ratecard['validity'];
 					$ratecard['validity_type_copy'] = $ratecard['validity_type'];
 					unset($ratecard['validity_type'] );
