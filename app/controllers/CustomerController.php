@@ -650,11 +650,13 @@ class CustomerController extends \BaseController {
 
 		}else{
 
-			$customerNoEmail = Customer::active()->where('contact_no', substr($data['contact_no'], -10))
-			->where(function($query) use($data) {
-				$query->orWhere('email', 'exists', false)->orWhere('email','=','');
-			})
-			->first();
+            if(!empty($data['contact_no'])){
+                $customerNoEmail = Customer::active()->where('contact_no', substr($data['contact_no'], -10))
+                ->where(function($query) use($data) {
+                    $query->orWhere('email', 'exists', false)->orWhere('email','=','');
+                })
+                ->first();
+            }
 
 			if(!empty($customerNoEmail)){
 				$checkIfEmailExists = Customer::active()
