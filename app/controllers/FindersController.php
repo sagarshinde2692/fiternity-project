@@ -6904,8 +6904,10 @@ class FindersController extends \BaseController {
 					if(!empty($ratecard['flags']['unlimited_validity'])){
 						$ratecard['duration_type'] = "Unlimited Validity";
 					}else{
-						$ratecard['duration_type'] = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
+						$ratecard['duration_type'] = $ratecard['duration_type']. " Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
 					}
+					unset($ratecard['validity_type'] );
+					unset($ratecard['validity'] );
 				}
 			}
 		}
