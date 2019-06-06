@@ -6662,153 +6662,153 @@ class FindersController extends \BaseController {
         // // $session_pack_duration_map =  Config::get('nonvalidity.session_pack_duration_map');
         $duration_session_map =  Config::get('nonvalidity.duration_session_map');
 
-        // function cmpSessions($a, $b)
-        // {
-        //     return $a['validity_copy'] <= $b['validity_copy'];
-        // }
-        // foreach($data['finder']['services'] as $key => $service){
-        //     $no_validity_exists = false;
-		// 	$no_validity_ratecards = [];
-        //     $no_validity_ratecards_all = [];
+        function cmpSessions($a, $b)
+        {
+            return $a['validity_copy'] <= $b['validity_copy'];
+        }
+        foreach($data['finder']['services'] as $key => $service){
+            $no_validity_exists = false;
+			$no_validity_ratecards = [];
+            $no_validity_ratecards_all = [];
 
-        //     $this->extractNonValidityRatecards($service, $ratecard_key, $no_validity_ratecards, $ratecard, $duration_day, $no_validity_exists, $no_validity_ratecards_all);
+            $this->extractNonValidityRatecards($service, $ratecard_key, $no_validity_ratecards, $ratecard, $duration_day, $no_validity_exists, $no_validity_ratecards_all);
 
-        //     usort($no_validity_ratecards_all, "cmpSessions");
+            usort($no_validity_ratecards_all, "cmpSessions");
 
-        //     if(!empty($no_validity_ratecards)){
+            if(!empty($no_validity_ratecards)){
 
-        //         $data['finder']['extended_validity'] = true;
+                $data['finder']['extended_validity'] = true;
 
-		// 		foreach($service[$ratecard_key] as $key1 => $ratecard){
-		// 			//Log::info('ratecard type::::::: ', [$ratecard['type']]);
-        //             if($ratecard['type'] == 'membership'){
+				foreach($service[$ratecard_key] as $key1 => $ratecard){
+					//Log::info('ratecard type::::::: ', [$ratecard['type']]);
+                    if($ratecard['type'] == 'membership'){
 
-        //                 $duration_day = $this->utilities->getDurationDay($ratecard);
+                        $duration_day = $this->utilities->getDurationDay($ratecard);
 
-		// 				$price = $this->utilities->getRatecardPrice($ratecard);
+						$price = $this->utilities->getRatecardPrice($ratecard);
 						
-		// 				$ratecard['final_price'] = $price;
+						$ratecard['final_price'] = $price;
                         
-        //                 if(empty($memberships[$service['_id']][$duration_day])){
-        //                      $memberships[$service['_id']][$duration_day] = [];
-        //                 }
-		// 				array_push($memberships[$service['_id']][$duration_day], $ratecard) ;
+                        if(empty($memberships[$service['_id']][$duration_day])){
+                             $memberships[$service['_id']][$duration_day] = [];
+                        }
+						array_push($memberships[$service['_id']][$duration_day], $ratecard) ;
 
-        //                 if(!empty($duration_session_map[strval($duration_day)])){
+                        if(!empty($duration_session_map[strval($duration_day)])){
                             
-        //                     $sessions_range = $duration_session_map[strval($duration_day)];
-        //                     foreach($no_validity_ratecards_all as $cs_ratecard){
-        //                         $cs_ratecard_price = $this->utilities->getRatecardPrice($cs_ratecard);
-        //                         if($cs_ratecard['duration'] > $sessions_range['low'] && $cs_ratecard['duration'] <= $sessions_range['high'] && $cs_ratecard_price <= $price * (1 + Config::get('nonvalidity.cross_sell_diff'))){
+                            $sessions_range = $duration_session_map[strval($duration_day)];
+                            foreach($no_validity_ratecards_all as $cs_ratecard){
+                                $cs_ratecard_price = $this->utilities->getRatecardPrice($cs_ratecard);
+                                if($cs_ratecard['duration'] > $sessions_range['low'] && $cs_ratecard['duration'] <= $sessions_range['high'] && $cs_ratecard_price <= $price * (1 + Config::get('nonvalidity.cross_sell_diff'))){
 
-        //                             //$this->formatCrossSellRatecard($cs_ratecard, $cs_ratecard_price);
+                                    //$this->formatCrossSellRatecard($cs_ratecard, $cs_ratecard_price);
 
-        //                             $this->formatRatecard($ratecard, $price);
+                                    $this->formatRatecard($ratecard, $price);
 
-        //                             //$this->getCorssSellSection($data, $ratecard, $cs_ratecard, $key, $ratecard_key, $key1);
+                                    //$this->getCorssSellSection($data, $ratecard, $cs_ratecard, $key, $ratecard_key, $key1);
 
-        //                             break;
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //             if($ratecard['type'] == 'extended validity'){
-        //                 $duration_day = $this->utilities->getDurationDay($ratecard);
-        //                 $price = $this->utilities->getRatecardPrice($ratecard);
-                        
-        //                 if(!empty($ratecard['flags']['unlimited_validity'])){
-        //                     $ext_validity = "Unlimited Validity";
-        //                 }else{
-        //                     $ext_validity = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
-        //                 }
-
-        //                 $this->formatServiceRatecard($data, $ext_validity, $key, $ratecard_key, $key1, $ratecard, $service);
-
-        //             }
-		// 		}
-                
-        //         $service['recommended'] = Config::get('nonvalidity.recommnded_block');
-        //         $service['service_name_display'] = $service[$service_name_key];
-		// 		$post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
-						
-        //         if(!empty($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] < '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.6'))){
-		// 		    $service[$service_name_key] = $service[$service_name_key]." - ".$post_name;
-        //         }else{	
-		// 			if(!empty($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
-		// 				$service['post_name'] = " - ".$post_name;
-		// 			}else{
-		// 				$service['post_name'] = $post_name;
-		// 			}
-
-        //             $service['post_name_color'] = Config::get('app.ratecard_button_color');
-				
-		// 		}
-		// 		$service['unlimited_validity'] = $no_validity_exists;
-		// 		$no_validity_ratecards_service = [];
-
-		// 		foreach(array_values($no_validity_ratecards) as $nvc){
-		// 			$no_validity_ratecards_service = array_merge($no_validity_ratecards_service, $nvc);
-		// 		}
-
-        //         $service[$ratecard_key] = $no_validity_ratecards_service;
-        //         $service['type'] = 'extended validity';
-				
-
-        //         array_push($extended_services, $service);
-        //     }
-        // }
-		//$data = $this->getExtendedValidityTypeToRateCards($data, $ratecard_key);
-		try{
-			Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
-			$getNonValidityBanner = $this->getNonValidityBanner();
-			$extended_validity_count =0;
-            foreach($data['finder']['services'] as &$s){
-                    foreach($s[$ratecard_key] as &$r){
-                        if($r['type'] == 'extended validity'){
-							$r[ "button_color"] = Config::get('app.ratecard_button_color');
-							$r['pps_image'] = Config::get('app.pps_image');
-							$extended_validity_type = $this->getExtendedValidityType($r);
-							if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.23')){
-								$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
-								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
-								$r['popup_data']  = $getNonValidityBanner;
-								//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
-								if($r['type'] == 'extended validity'){
-									if($extended_validity_count<=2)
-										$extended_validity_count++;
-									else if($extended_validity_count==3){
-										$data['finder']['fit_ex'] = $getNonValidityBanner;
-									}
-								}
-							}
-							else{
-								$getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
-									"__vendor_name"=>$data['finder']['title'],
-									"__ext_validity_type"=> $extended_validity_type
-								]);
-		
-								if(!empty($getNonValidityBanner['how_it_works'])){
-									$getNonValidityBanner['how_it_works']['description'] = strtr($getNonValidityBanner['how_it_works']['description'], ['__vendor_name'=>$data['finder']['title']]);
-								}
-		
-								$getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>($extended_validity_type)]);
-								if(!empty($getNonValidityBanner['title1'])){
-									$getNonValidityBanner['title1'] = strtr($getNonValidityBanner['title1'], ['__ext_validity_type'=>($extended_validity_type)]);
-								}
-								//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
-								$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
-								$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
-								$r['non_validity_ratecard']  = $getNonValidityBanner;
-							}
-    
+                                    break;
+                                }
+                            }
                         }
                     }
+                    if($ratecard['type'] == 'extended validity'){
+                        $duration_day = $this->utilities->getDurationDay($ratecard);
+                        $price = $this->utilities->getRatecardPrice($ratecard);
+                        
+                        if(!empty($ratecard['flags']['unlimited_validity'])){
+                            $ext_validity = "Unlimited Validity";
+                        }else{
+                            $ext_validity = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
+                        }
+
+                        $this->formatServiceRatecard($data, $ext_validity, $key, $ratecard_key, $key1, $ratecard, $service);
+
+                    }
+				}
+                
+                $service['recommended'] = Config::get('nonvalidity.recommnded_block');
+                $service['service_name_display'] = $service[$service_name_key];
+				$post_name = (!empty($no_validity_exists) ? "Unlimited" : "Extended")." Validity Membership";
+						
+                if(!empty($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] < '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] < '5.1.6'))){
+				    $service[$service_name_key] = $service[$service_name_key]." - ".$post_name;
+                }else{	
+					if(!empty($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
+						$service['post_name'] = " - ".$post_name;
+					}else{
+						$service['post_name'] = $post_name;
+					}
+
+                    $service['post_name_color'] = Config::get('app.ratecard_button_color');
+				
+				}
+				$service['unlimited_validity'] = $no_validity_exists;
+				$no_validity_ratecards_service = [];
+
+				foreach(array_values($no_validity_ratecards) as $nvc){
+					$no_validity_ratecards_service = array_merge($no_validity_ratecards_service, $nvc);
+				}
+
+                $service[$ratecard_key] = $no_validity_ratecards_service;
+                $service['type'] = 'extended validity';
+				
+
+                array_push($extended_services, $service);
             }
-        }catch(Exception $e){
-            
-            Log::info("Non validity description breaking", [$e]);
-        
         }
+		$data = $this->getExtendedValidityTypeToRateCards($data, $ratecard_key);
+		// try{
+		// 	Log::info('extended ratecard:::::::::::::::::: ', [$this->app_version]);
+		// 	$getNonValidityBanner = $this->getNonValidityBanner();
+		// 	$extended_validity_count =0;
+        //     foreach($data['finder']['services'] as &$s){
+        //             foreach($s[$ratecard_key] as &$r){
+        //                 if($r['type'] == 'extended validity'){
+		// 					$r[ "button_color"] = Config::get('app.ratecard_button_color');
+		// 					$r['pps_image'] = Config::get('app.pps_image');
+		// 					$extended_validity_type = $this->getExtendedValidityType($r);
+		// 					if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.23')){
+		// 						$getNonValidityBanner['header'] = strtr($getNonValidityBanner['header'], ['vendor_name'=>($data['finder']['title'])]);	
+		// 						$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['vendor_name'=>($data['finder']['title'])]);
+		// 						$r['popup_data']  = $getNonValidityBanner;
+		// 						//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+		// 						if($r['type'] == 'extended validity'){
+		// 							if($extended_validity_count<=2)
+		// 								$extended_validity_count++;
+		// 							else if($extended_validity_count==3){
+		// 								$data['finder']['fit_ex'] = $getNonValidityBanner;
+		// 							}
+		// 						}
+		// 					}
+		// 					else{
+		// 						$getNonValidityBanner['description'] = strtr( $getNonValidityBanner['description'], [
+		// 							"__vendor_name"=>$data['finder']['title'],
+		// 							"__ext_validity_type"=> $extended_validity_type
+		// 						]);
+		
+		// 						if(!empty($getNonValidityBanner['how_it_works'])){
+		// 							$getNonValidityBanner['how_it_works']['description'] = strtr($getNonValidityBanner['how_it_works']['description'], ['__vendor_name'=>$data['finder']['title']]);
+		// 						}
+		
+		// 						$getNonValidityBanner['title'] = strtr($getNonValidityBanner['title'], ['__ext_validity_type'=>($extended_validity_type)]);
+		// 						if(!empty($getNonValidityBanner['title1'])){
+		// 							$getNonValidityBanner['title1'] = strtr($getNonValidityBanner['title1'], ['__ext_validity_type'=>($extended_validity_type)]);
+		// 						}
+		// 						//$r['non_validity_ratecard_copy'] = $getNonValidityBanner;
+		// 						$getNonValidityBanner['description'] = $getNonValidityBanner['description'].Config::get('nonvalidity.how_works');
+		// 						$getNonValidityBanner['description'] = strtr($getNonValidityBanner['description'], ['no_of_sessions'=>$r['duration']]);
+		// 						$r['non_validity_ratecard']  = $getNonValidityBanner;
+		// 					}
+    
+        //                 }
+        //             }
+        //     }
+        // }catch(Exception $e){
+            
+        //     Log::info("Non validity description breaking", [$e]);
+        
+        // }
 
         // $extended_services_map = [];
 
