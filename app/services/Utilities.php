@@ -8335,12 +8335,12 @@ Class Utilities {
                             ->first();
         if(!empty($customer) && (!isset($order['loyalty_registration']) || !$order['loyalty_registration'])){
             // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
-            $retObj['customer_name'] = $customer['name'];
             $existingLoyalty = null;
             $message = null;
             $newMessage = null;
             if(!empty($customer['loyalty'])){
                 $retObj = [];
+                $retObj['customer_name'] = $customer['name'];
                 if(!empty($customer['loyalty']['brand_loyalty']) && !in_array($order['finder_id'], \Config::get('app.brand_finder_without_loyalty'))){
                     $finderMilestone = FinderMilestone::where('duration', $customer['loyalty']['brand_loyalty_duration'])
                                             ->where('brand_id', $customer['loyalty']['brand_loyalty'])
