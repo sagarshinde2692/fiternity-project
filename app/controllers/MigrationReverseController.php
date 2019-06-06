@@ -1089,7 +1089,10 @@ class MigrationReverseController extends \BaseController {
             if(isset($data['membership_end_date'])){
                 $insertData['membership_end_date'] = $data['membership_end_date'];
             }
-
+            
+            if(isset($data['pps_non_peak_hours_time_range'])){
+                $insertData['pps_non_peak_hours_time_range'] = $data['pps_non_peak_hours_time_range'];
+            }
 //            return $insertData;
 
             $service_exists = Service::on($this->fitadmin)->find(intval($id));
