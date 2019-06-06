@@ -9528,7 +9528,22 @@ class CustomerController extends \BaseController {
 
 							$this->utilities->deactivateCheckins($cust['_id'], $reason);
 
-							$resp = ['status'=>200, 'message'=>'Congratulations, your Fitsquad is upgraded to '. $newLoyalty['cashback_type'].' cashback'];
+							if(empty($newLoyalty['cashback_type'])) {
+								$newLoyalty['cashback'] = '';
+								if(!empty($newLoyalty['brand_loyalty'])){
+									$newLoyalty['cashback'] = '100%';
+								}	
+							}
+							else if(!empty($newLoyalty['reward_type']) && !in_array($newLoyalty['reward_type'], [4, 6])){
+								$cashbackMap = [ "100%", "120%", "120%", "100%", "100%", "100%", "100%" ];
+								$newLoyalty['cashback'] = $cashbackMap[$newLoyalty['cashback_type'] - 1];
+							}
+							if(!empty($newLoyalty['cashback'])) {
+								$resp = ['status'=>200, 'message'=>'Congratulations, your Fitsquad is upgraded to '.$newLoyalty['cashback'].' cashback.'];
+							}
+							else {
+								$resp = ['status'=>200, 'message'=>'Congratulations, your Fitsquad is upgraded.'];
+							}
 						}
 						else {
 							$resp = ['status'=>400, 'message'=>'order details are missing'];
