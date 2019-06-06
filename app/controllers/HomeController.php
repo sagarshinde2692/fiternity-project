@@ -1829,7 +1829,7 @@ class HomeController extends BaseController {
                     if(isset($item['loyalty_email_content'])){
                         $subline = $subline."<br>".$item['loyalty_email_content'];
                         // $subline = $subline."<br>".$this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
-                         // $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                         $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
                     }
                 }
                 else {
