@@ -8335,6 +8335,7 @@ Class Utilities {
                             ->first();
         if(!empty($customer) && (!isset($order['loyalty_registration']) || !$order['loyalty_registration'])){
             // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
+            $retObj['customer_name'] = $customer['name'];
             $existingLoyalty = null;
             $message = null;
             $newMessage = null;
