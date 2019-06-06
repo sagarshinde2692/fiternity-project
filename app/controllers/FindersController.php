@@ -6757,18 +6757,6 @@ class FindersController extends \BaseController {
         //         array_push($extended_services, $service);
         //     }
 		// }
-		foreach($data['finder']['services'] as &$service){
-			foreach($service[$ratecard_key] as $key1=>&$ratecard){
-				if($ratecard['type'] == 'extended validity'){
-					Log::info('inside setting ext_validity');
-					if(!empty($ratecard['flags']['unlimited_validity'])){
-						$ratecard['ext_validity'] = "Unlimited Validity";
-					}else{
-						$ratecard['ext_validity'] = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
-					}
-				}
-			}
-		}
 		$data = $this->getExtendedValidityTypeToRateCards($data, $ratecard_key);
         // $extended_services_map = [];
 
@@ -6908,6 +6896,20 @@ class FindersController extends \BaseController {
 		}
 
 		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title']);
+		//updating duration name for extended validity ratecards
+		foreach($data['finder']['services'] as &$service){
+			foreach($service[$ratecard_key] as $key1=>&$ratecard){
+				if($ratecard['type'] == 'extended validity'){
+					Log::info('inside setting ext_validity');
+					if(!empty($ratecard['flags']['unlimited_validity'])){
+						$ratecard['duration_type'] = "Unlimited Validity";
+					}else{
+						$ratecard['duration_type'] = "Valid for ".$service[$ratecard_key][$key1]['validity'].' '.$service[$ratecard_key][$key1]['validity_type'];
+					}
+				}
+			}
+		}
+
         return $data['finder'];
     }
 
