@@ -23,6 +23,7 @@ use JWT;
 use Finder;
 use Input;
 use Service;
+use Order;
 
 
 Class CustomerReward {
@@ -785,7 +786,7 @@ Class CustomerReward {
                 $utilities->setPPSReferralData($order->toArray());
             }
 
-            $utilities->giveFitcashforUpgrade($order);
+            // $utilities->giveFitcashforUpgrade($order);
             
             
         }
@@ -1619,6 +1620,8 @@ Class CustomerReward {
         
         if($utilities->isPPSReferralCode($couponCode)){
 
+            
+
             if(!(isset($ratecard) && isset($ratecard['type']) && $ratecard['type'] == 'workout session')){
                 
                 return array("referral_coupon"=>true, "data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => 0, "only_discount" => $price), "coupon_applied" => false, "message"=>'Coupon is applicable only on workout sessions');
@@ -2007,6 +2010,21 @@ Class CustomerReward {
                 }
             }
 
+            if(!empty($coupon['usage_per_user']) && is_integer($coupon['usage_per_user'])){
+
+                \Order::$withoutAppends = true;
+
+                $order_count = \Order::active()->where('customer_email',$customer_email)->where('coupon_code','like',strtolower($couponCode))->count();
+
+                if($order_count > $coupon['usage_per_user']){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"This coupon is applicable only ".$coupon['usage_per_user']." time per user","user_login_error"=>true);
+
+                    return $resp;
+                }
+            
+            }
+
             if(isset($coupon['type']) && $coupon['type'] == 'syncron'){
                 
                 if(empty($customer_email) && !in_array($this->device_type, ['ios', 'android'])){
@@ -2179,18 +2197,30 @@ Class CustomerReward {
                         if(!empty($condition['key']) && !empty($condition['operator']) && !empty($condition['values'])){
                             // print_r($condition['key']);
                             $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
-                            // exit();
-                            
                             if($condition['operator'] == 'in'){
                                 if(empty($embedded_value)){
                                     $and_condition = false;
                                     break;
                                 }
-                                if(!in_array($embedded_value, $condition['values'])){
-                                    $and_condition = false;
-                                    break;
-
+                                if(!empty($condition['values'][0]['valid_till'])){
+                        
+                                    $values = array_column($condition['values'], 'value');
+                                    $dates = array_column($condition['values'], 'valid_till');
+                                    
+                                    if(!in_array($embedded_value, $values) || time() > $dates[array_search($embedded_value, $values)]->sec){
+                                        $and_condition = false;
+                                        break;
+                                    }
+                                    
+                                }else{
+                                    
+                                    if(!in_array($embedded_value, $condition['values'])){
+                                        $and_condition = false;
+                                        break;
+                                    }
+                                
                                 }
+                            
                             }else if($condition['operator'] == 'nin'){
                                 if(!empty($embedded_value) && in_array($embedded_value, $condition['values'])){
                                     $and_condition = false;
@@ -2363,12 +2393,12 @@ Class CustomerReward {
                 Log::info("changing price");
                 Log::info($price);
             }
-            $discount_amount = $coupon["discount_amount"];
+            $discount_amount = $coupon["discount_amount"] <= $price ? $coupon["discount_amount"] : $price;
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
             
-
+            $GLOBALS['coupon_applied'] = true;
             $discount_price = $price - $discount_amount;
             $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
             $vendor_routed_coupon = isset($coupon["vendor_routed_coupon"]) ? $coupon["vendor_routed_coupon"] : false;

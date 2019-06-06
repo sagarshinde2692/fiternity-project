@@ -317,22 +317,32 @@ return array(
 	//currently used only for vip trials rolling builds and search api.
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
-	//Production
-	'es' =>array(
-		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
-		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
-		'port'		=>			8050,
-		'default_index' => 	'fitternity',
-		'default_type' 	=> 	'finder',
-	),
-	//stage
+	//Production - Old
 	// 'es' =>array(
-	//  	'url'		=> 			'139.59.16.74:1243',
-	//  	'host'		=> 			'139.59.16.74',
-	//  	'port'		=>			1243,
-	//  	'default_index' => 	'fitternity',
-	//  	'default_type' 	=> 	'finder',
+	// 	'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+	// 	'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+	// 	'port'		=>			8050,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
 	// ),
+
+	// Production
+	// 'es' =>array(
+	// 	'url'		=> 			'ESAdmin:fitternity2020@13.233.237.28:8050',
+	// 	'host'		=> 			'ESAdmin:fitternity2020@13.233.237.28',
+	// 	'port'		=>			8050,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
+	// ),
+
+	//stage
+	'es' =>array(
+	 	'url'		=> 			'139.59.16.74:1243',
+	 	'host'		=> 			'139.59.16.74',
+	 	'port'		=>			1243,
+	 	'default_index' => 	'fitternity',
+	 	'default_type' 	=> 	'finder',
+	),
 	//local
 	// 'es' =>array(
 	// 	'url'		=> 			'localhost:9200',
@@ -374,8 +384,8 @@ return array(
 	),
 
 	'aws' => array(
-		'key' 								=> 'AKIAIRQP65VEX5N23QRQ',
-		'secret' 							=> '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',
+		'key' 								=> 'AKIATSZWJ7JFA747DICW',
+		'secret' 							=> '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',
 		'region' 							=> 'ap-southeast-1',
 		'bucket'							=> 'b.fitn.in',
 		'ozonetel' =>array(
@@ -752,7 +762,7 @@ return array(
                 "rate"=>14
             )
         ),
-	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','rohitvarade@fitternity.com'],	
+	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','surajpalai@fitternity.com','kedarkhanvilkar@fitternity.com'],	
     
 	'test_vendors' => ['fitternity-test-page', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym'],
 	'hide_from_search' => [11128, 6332, 6865, 7146, 9309, 9329, 9379, 9381, 9403, 9623, 9863, 9869, 9891, 10037, 11128, 12110],
@@ -836,7 +846,7 @@ return array(
 		'offhours_instant_td_mins'=>5,
 		'offhours_fixed_time_1'=>22,
 		'offhours_fixed_time_2'=>20,
-		'full_day_weekend'=>['Sunday'],
+		'full_day_weekend'=>['Sunday', 'Saturday'],
 		'begin_weekend'=>['Saturday'],
 		'end_weekend'=>['Monday'],
 	],
@@ -901,8 +911,8 @@ return array(
 	'slotAllowance' =>['vendors'=>[1584],'services'=>[17626],'types'=>['workout-session','booktrials']],
 	'add_wallet_extra'=>10,
     'renewal_ids'=>[],
-	'brand_loyalty'=>[135,166,88,56],
-	'brand_finder_without_loyalty'=>[579,1233,1261,1260,1262,1874,2105,5742,10675,9178,9171,13549,1259,1263,1266,2545,6525,12226,7651,9198],
+	'brand_loyalty'=>[135,166,88,56,40],
+	'brand_finder_without_loyalty'=>[579,1233,1261,1260,1262,1874,2105,5742,10675,9178,9171,13549,1259,1263,1266,2545,6525,12226,7651,9198,12077,5743,5741],
 	'first_free_string'=>' (First session Free)',
     'eoys_excluded_vendor_ids'=>[8546,11230,11810,10466,941,12157,1020,613,9427,10965,1429,718,9432,4534,13660,9988,3184,9400,3192,13327,13328,13332,7010,3350,3351,3449,3450,11025,11352,3975,11988,12690,12101,6156,9579,11251,13271,14422,11456,5200,6411,7014,5601,5617,7136,5769,5833,5300,7013,5444,7012,10987,4929,7541,7616,6697,7649,5348,7585,8094,10537,4878,5688,9354,9341,5634,6578,9880,9878,4924,6214,9375,10974,5008,7832,6680,9395,8141,10975,4968,9417,9454,5108,5647,10983,7344,9487,9489,6213,5125,5347,9624,9905,9904,6477,9967,9763,9385,10549,9912,9483,5947,7395,10757,5633,10591,11370,10949,6912,12120,11043,5625,8598,8613,6475,11017,11012,11169,11171,11170,11137,11136,11185,11071,11134,5031,11236,5521,11405,11442,11499,11501,13693,11503,11517,11519,11521,11521,7368,5381,11884,11895,11901,10200,6331,11960,12062,12061,12065,10733,10507,10512,10517,10518,11934,11965,12760,7356,6564,6624,11036,12873,12885,13104,4997,7403,7174,12442,10849,13205,13213,13690,11818,13267,6052,13992,9215,9260,14065,14075,14135,9238,12449,14180,14199,14256,13398,12868,12869,13577,12848,13668,13084,13289,13291,13296,13596,14191,14192,14195,14196,14197,12862,14110,12872,14148,10932,12430,14123,14289,13823,13822,12968,13378,14357,12908,12909,14339,13673,14461,9185,14382,14432,9212,14779,14435,14412,14926,],
     'ratecard_button_color'=>'#53b7b7',
@@ -960,12 +970,20 @@ return array(
 
     'multifit_email'=>'info@multifit.co.in',
     
-    'no_convinience_finder_ids'=>[1259, 1263, 1266],
+    'no_convinience_finder_ids'=>[1259, 1263, 1266, 12986],
 
     'discount_vendors'=>[12592,13251,13252,14526,11437,15882,12793,13941,12794,12803,13282,11397,14206,13265,13266,14168,11580,14230,14278,12730,14274,14226,14439,14803,11778,13441,14529,11622,13963,14046,11622,13342,13345,13349,13352,11409,13382,12371,11613,14292,11372,13099,14119,14438,14293],
 
     'discount_vendors_duration' => [180, 360],
 
-    'powerworld_finder_ids'=>[10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900,12246,12247,12250,12252,12254,12256,12258,12260,12261,13878,13879,13881,13883,13884,13886,13887,13899,13900,13902]
+    'powerworld_finder_ids'=>[10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900,12246,12247,12250,12252,12254,12256,12258,12260,12261,13878,13879,13881,13883,13884,13886,13887,13899,13900,13902],
+
+    'sucheta_pal_finder_ids'=>[16452, 12986, 1493],
+    
+    'sucheta_pal_service_ids'=>[16452, 12986, 1493],
+
+    'anytime_finder_ids'=> [7335,5745,5728,8821,8871,5747,12221,5748,5746,6250,9480,8823,10570,10568,7909,13124,11363,7907,11103,12516,15103,11037,11129,11742,7902,16209,13980,15103,15384,13031,],
+    
+    'non_flexi_service_cat'=>[111, 65, 5]
     
 );

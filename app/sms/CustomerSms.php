@@ -582,7 +582,7 @@ Class CustomerSms extends VersionNextSms{
 			case 'renew-membership': $label = 'RenewMembership-Customer';break;
 			case 'upgrade-membership': $label = 'UpgradeMembership-Customer';break;
 			default:return "no email sms";break;
-		}
+        }
 
 		$to = $data['phone'];
 
@@ -1336,6 +1336,9 @@ Class CustomerSms extends VersionNextSms{
 			}
 		}
 
+		if(!empty($data['multifit']) && $label != 'Generic-Otp-Customer'){
+			$sender = 'MULTIF';
+		}
 		$message = $this->bladeCompile($template->sms_text,$data);
 
 		$otp = false;

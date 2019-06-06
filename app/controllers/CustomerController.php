@@ -61,7 +61,7 @@ class CustomerController extends \BaseController {
 			->whereIn('booktrial_type', array('auto'))
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
-			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(time()))
+			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')))
 			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
 			->get($selectfields);
 		}
@@ -71,7 +71,7 @@ class CustomerController extends \BaseController {
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
 			->where('going_status_txt','!=','cancel')
-			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(time()))
+			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')))
 			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
 			->get($selectfields);
 	}
@@ -650,11 +650,13 @@ class CustomerController extends \BaseController {
 
 		}else{
 
-			$customerNoEmail = Customer::active()->where('contact_no', substr($data['contact_no'], -10))
-			->where(function($query) use($data) {
-				$query->orWhere('email', 'exists', false)->orWhere('email','=','');
-			})
-			->first();
+            if(!empty($data['contact_no'])){
+                $customerNoEmail = Customer::active()->where('contact_no', substr($data['contact_no'], -10))
+                ->where(function($query) use($data) {
+                    $query->orWhere('email', 'exists', false)->orWhere('email','=','');
+                })
+                ->first();
+            }
 
 			if(!empty($customerNoEmail)){
 				$checkIfEmailExists = Customer::active()
@@ -671,6 +673,7 @@ class CustomerController extends \BaseController {
 					$customerNoEmail->old_customer = true;
 					$customerNoEmail->email = $data['email'];
 					$customerNoEmail->identity = $data['identity'];
+					$customerNoEmail->demonetisation = time();
 					$customerNoEmail->update();
 					$customer_data = array('name'=>ucwords($customerNoEmail['name']),'email'=>$customerNoEmail['email']);
 					if(isset($data['password'])){
@@ -1836,7 +1839,7 @@ class CustomerController extends \BaseController {
 		$orders 			=  	[];
 		$membership_types 		= Config::get('app.membership_types');
 
-		$orderData 			= 	Order::where('extended_validity', '!=', true)->where(function($query){$query->where('status', '1')->orWhere('cod_otp', 'exists', true)->orWhere(function($q1){$q1->where("payment_mode", "at the studio")->where("customer_source","website");});})->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+		$orderData 			= 	Order::where("studio_extended_validity", '!=', true)->where('extended_validity', '!=', true)->where(function($query){$query->where('status', '1')->orWhere('cod_otp', 'exists', true)->orWhere(function($q1){$q1->where("payment_mode", "at the studio")->where("customer_source","website");});})->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
 
 		if(count($orderData) > 0){
@@ -3892,8 +3895,8 @@ class CustomerController extends \BaseController {
 				$homepage = Homepage::where('city_id', $city_id['_id'])->first();
 
 				$campaigns = [];
-				//Log::info('after after homepage campain finding:::::::::::::::::', [$homepage]);
-               if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
+
+               if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners']) && count($homepage['app_banners']) >= 2){
 
                    $app_banners = $homepage['app_banners'];
 
@@ -3906,6 +3909,10 @@ class CustomerController extends \BaseController {
 
                        if($_GET['device_type'] == 'android' && !empty($banner['link_android'])){
                            $banner['link'] = $banner['link_android'];
+                       }
+
+                       if($_REQUEST['device_type'] == 'ios' && !empty($banner['only_android'])){
+                           continue;
                        }
 
                        array_push($campaigns, $banner);
@@ -4647,8 +4654,7 @@ class CustomerController extends \BaseController {
 
 		$code = trim(strtolower($data['code']));
 
-		$fitcashcode = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
-
+        $fitcashcode = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
 
 		if (!isset($fitcashcode) || $fitcashcode == "") {
 			$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
@@ -4705,13 +4711,29 @@ class CustomerController extends \BaseController {
 		
 			if (is_array($fitcashcode->customer_phones)) {
 				
-				if(empty($customer_phone) || !in_array(strtolower($customer_phone), $fitcashcode->customer_phones)){
-					$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
-					return Response::json($resp,404);
-				}
+				
+                if(!empty($fitcashcode->customer_phones[0]['valid_till'])){
+                        
+                    $values = array_column($fitcashcode->customer_phones, 'value');
+                    $dates = array_column($fitcashcode->customer_phones, 'valid_till');
+                    
+                    if(empty($customer_phone) || !in_array($customer_phone, $values) || time() > $dates[array_search($customer_phone, $values)]->sec){
+                        $resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
+                        return Response::json($resp,404);
+                    }
+                    
+                }else{
+                    
+                    if(empty($customer_phone) || !in_array($customer_phone, $fitcashcode->customer_phones)){
+                        $resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
+                        return Response::json($resp,404);
+                    }
+
+                }
 			}
 
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
+			// $customer_update 	=	1;
 			$cashback_amount = 0;
 
 			if($customer_update){
@@ -4759,6 +4781,10 @@ class CustomerController extends \BaseController {
 					"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
 				);
 
+				if(!empty($fitcashcode['flags'])){
+					$walletData['flags'] = $fitcashcode['flags'];
+				}
+
 				if($fitcashcode['type'] == "restricted"){
 					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
 					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$cashback_amount);
@@ -4776,11 +4802,20 @@ class CustomerController extends \BaseController {
 					$walletData["type"] = "FITCASHPLUS";
 					$walletData["amount_fitcash"] = 0;
 					$walletData["amount_fitcash_plus"] = $cashback_amount;
-					$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
-					if(isset($fitcashcode["valid_till"])){
-						$walletData["validity"] = $fitcashcode["valid_till"];
+                    $walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
+                    
+
+                    if(isset($fitcashcode["valid_till_secs"])){
+                        
+                        $walletData["validity"] = strtotime('midnight', time() + $fitcashcode["valid_till_secs"]);
 						$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount.". Expires On : ".date('d-m-Y', strtotime('-1 day',$walletData["validity"]));
-					}
+
+                    }else if(isset($fitcashcode["valid_till"])){
+                        
+                        $walletData["validity"] = $fitcashcode["valid_till"];
+						$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount.". Expires On : ".date('d-m-Y', strtotime('-1 day',$walletData["validity"]));
+                    
+                    }
 				}
 
 				if((!empty($fitcashcode['valid_finder_id']))){
@@ -7740,7 +7775,7 @@ class CustomerController extends \BaseController {
 		$pps_referral_credits_used = isset($customer->pps_referral_credits_used) ? $customer->pps_referral_credits_used : 0;
 
 		if($pps_referral_credits){
-			$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>true, 'data'=>[$pps_referral_credits.' friends have used your code.', $pps_referral_credits_used.' session used out of '.$pps_referral_credits.' earned.']];
+			$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>true, 'data'=>[$pps_referral_credits.' friends have used your code.', $pps_referral_credits_used.' session used out of '.($pps_referral_credits <= 5 ? $pps_referral_credits : 5 ).' earned.']];
 		}else{
 			$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>true, 'data'=>['0 friends have used your code', 'Invite friends to get 5 free workouts']];
 		}
@@ -7862,18 +7897,26 @@ class CustomerController extends \BaseController {
 				
 				if(empty($data['vendor_id'])||empty($data['owner'])||$data['owner']!='fitternity') return ['status' => 400,'message' =>"Invalid Qr Code"];
 				$cur=new DateTime(date('Y-m-d H:i:s',strtotime("+2 hours")));
-				$twoHours=new DateTime(date('Y-m-d H:i:s',strtotime("-2 hours")));
-				$booktrial = Booktrial::where('customer_id',$customer_id)
+                $twoHours=new DateTime(date('Y-m-d H:i:s',strtotime("-2 hours")));
+                $booktrial = Booktrial::where('customer_id',$customer_id)
 				->whereIn('type',['booktrials','3daystrial', 'workout-session'])
-				->where('finder_id',intval($data['vendor_id']))
 				->whereIn('post_trial_status_updated_by_fitcode',[null, ''])
 				->whereIn('post_trial_status_updated_by_qrcode',[null, ''])
 				->whereIn('post_trial_status_updated_by_lostfitcode',[null, ''])
 				->whereIn('post_trial_status',[null, ''])
 				->where('schedule_date_time', '<=',$cur)
 				->where('schedule_date_time', '>=',$twoHours)
-				->orderBy('schedule_date_time','desc')
-				->get();
+				->orderBy('schedule_date_time','desc');
+                
+                if(in_array($data['vendor_id'], Config::get('app.sucheta_pal_finder_ids', []))){
+                    $booktrial->where(function($query) use ($data){
+                        $query->orWhere('finder_id',intval($data['vendor_id']))->orWhereIn('service_id', Config::get('app.sucheta_pal_service_ids', []));
+                    });
+                }else{
+                    $booktrial->where('finder_id',intval($data['vendor_id']));
+                }
+
+				$booktrial = $booktrial->get();
 				
 				if(!empty($booktrial)&&count($booktrial)>0)
 				{
@@ -8366,9 +8409,12 @@ class CustomerController extends \BaseController {
             $customer = Customer::active()->where('_id', $customer->_id)->where('loyalty', 'exists', true)->first();
             $filter = $this->utilities->getMilestoneFilterData($customer);
 
-			if($customer){
+			if($customer && !empty($customer['loyalty'])){
 				$post = true;
 			}
+
+			// Log::info("customer_id:   ".$customer->_id);
+			// Log::info("customer_email:   ".$customer->email);
         }
         
         $voucher_categories = $this->utilities->getVoucherCategoriesAggregate($filter);
@@ -8567,8 +8613,8 @@ class CustomerController extends \BaseController {
             }else{
 
                 $voucher_category = VoucherCategory::find($_id);
-
-                if(!empty($milestones[$voucher_category['milestone']-1]) && !empty($milestones[$voucher_category['milestone']-1]['verified'])){
+				
+				if(!empty($milestones[$voucher_category['milestone']-1]) && !empty($milestones[$voucher_category['milestone']-1]['verified'])){
 
     				/* if(!empty($milestones[$voucher_category['milestone']-1]['claimed'])){
     
@@ -8632,8 +8678,14 @@ class CustomerController extends \BaseController {
                 ]
             ];
             if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
-                $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
-                $resp['voucher_data']['header']= "REWARD UNLOCKED";
+				$resp['voucher_data']['coupon_text']= $voucherAttached['name'];
+				$resp['voucher_data']['header']= "REWARD UNLOCKED";
+				
+				if(isset($voucherAttached['link'])){
+					$resp['voucher_data']['sub_header']= "You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name'])."<br> Share your details & get your insurance policy activated. " : "");
+					$resp['voucher_data']['coupon_text']= $voucherAttached['link'];
+				}
+                
             }
 
             if(!empty($voucher_category['email_text'])){
@@ -8641,7 +8693,7 @@ class CustomerController extends \BaseController {
             }
             $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
             if(!empty($communication)){
-                $redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
+				$redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
             }
 
             return $resp;
@@ -9267,10 +9319,11 @@ class CustomerController extends \BaseController {
     }
 
     public function voucherCommunication($job,$data){
-
+		Log::info("voucherCommunication");
         $job->delete();
 
         try{
+			Log::info("voucherCommunication customermailer");
             $this->customermailer->externalVoucher($data);
         }catch(Exception $e){
             Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);            
@@ -9304,7 +9357,12 @@ class CustomerController extends \BaseController {
         
         $orders = Order::active()
                 ->where('customer_id', $customer_id)
-                ->where('extended_validity', true)
+                ->where(function($query){
+                    $query
+                    ->orWhere('extended_validity', true)
+                    ->orWhere('studio_extended_validity', true);
+                })
+                
                 ->with(['finder'=>function($query){
                     $query->select('slug');
                 }])
@@ -9322,7 +9380,7 @@ class CustomerController extends \BaseController {
 
         }
 
-        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags']);
+        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags','studio_extended_validity', 'studio_sessions', 'studio_membership_duration']);
 
         $orders = $this->formatSessionPackList($orders);
 
@@ -9352,6 +9410,35 @@ class CustomerController extends \BaseController {
             $order['button_type'] = 'renew';
         }
 
+        if(!empty($order['studio_extended_validity'])){
+        
+            if(
+                time() < $order['studio_membership_duration']['end_date']->sec 
+                // || 
+                // $order['studio_sessions']['cancelled'] >= $order['studio_sessions']['total_cancel_allowed'] 
+                || 
+                time() > $order['studio_membership_duration']['end_date_extended']->sec
+            ){
+                unset($order['button_title']);
+                unset($order['button_type']);
+                if(requestFtomApp()){
+                    $order['active'] = false;
+                    $order['button_title'] = 'Renew Pack';
+                    $order['button_type'] = 'renew';
+                }
+            }else{
+                
+                if(requestFtomApp()){
+                    $order['button_title'] = 'Book your next Session';
+                    $order['button_type'] = 'book';
+                    
+                }else{
+                    unset($order['button_title']);
+                    unset($order['button_type']);
+                }
+            }
+        }
+
         $order['start_date'] = strtotime($order['start_date']);
         $order['starting_date'] = date('d M, Y', strtotime($order['start_date']));
         $order['starting_text'] = "Starts from: ";
@@ -9367,6 +9454,13 @@ class CustomerController extends \BaseController {
         $order['detail_text'] = "VIEW DETAILS";
         $order['total_session_text'] = $order['no_of_sessions']." Session pack";
         $order['left_text'] = "left";
+        if(!empty($order['studio_extended_validity'])){
+            $order['left_text'] = "booked";
+            $order['sessions_left'] =  $order['studio_sessions']['total'];
+            $order['total_session_text'] = $order['studio_sessions']['total']." Session pack";
+            $extended_count = Order::active()->where('studio_extended_validity_order_id', $order['_id'])->where('studio_extended_session', true)->count();
+            $order['finder_address'] = ($order['studio_sessions']['cancelled']-$extended_count)."/".$order['studio_sessions']['total_cancel_allowed']." sessions can be extended for free after ".date('d-m-Y' ,$order['studio_membership_duration']['end_date']->sec);
+        }
         $order['session_active'] = "SESSION PACK ACTIVE";
         // if(strtotime($order['start_date']) >= time()){
         //     $order['before_start_message'] = "Your session pack start from ".date('d M, Y', strtotime($order['start_date'])).". Session pack will not be applied to bookings before the start date";

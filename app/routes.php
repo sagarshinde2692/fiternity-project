@@ -17,7 +17,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 
 
-//require __DIR__.'/debug_routes.php';
+// require __DIR__.'/debug_routes.php';
 require __DIR__.'/analytics_routes.php';
 require __DIR__.'/testing_routes.php';
 
@@ -438,7 +438,7 @@ Route::get('v1/rollingfinderindex', array('as' => 'elasticsearch.rollingbuildfin
 Route::get('v1/rollingserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
 //Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
 Route::get('indexfinderdocument/{id}','RankingController@IndexFinderDocument');
-Route::get('locationcity/{value}','SearchController@locationCity');
+Route::get('locationcity/{value?}','SearchController@locationCity');
 
 Route::get('updatescheduleinsearch/{finderid}','ServiceRankingController@UpdateScheduleOfThisFinderInSessionSearch');
 
@@ -1267,8 +1267,8 @@ Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
 Route::post('inviteforevent','EventsController@inviteForEvent');
 
 // Music Run
-Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
-Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
+// Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
+// Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
 
 
 Route::get('checkexistinguser/mobikwik/{cell}','PaymentGatewayController@checkExistingUserMobikwik');
@@ -1355,3 +1355,7 @@ Route::get('home/getLoyaltyAppropriationConsentMsg/{customer_id}/{order_id}','Ho
 Route::get('testSpinResult/{number}','EmailSmsApiController@testSpinResult');
 Route::post('spinthewheelreg','EmailSmsApiController@spinTheWheelReg');
 Route::match(array('PUT', 'POST'), 'customer/remaincurrentloyalty', 'CustomerController@fitSquadUpgradeRemainLoyalty');
+Route::get('fitpassComparison', 'DebugController@fitpassComparison');
+Route::get('fixCustomerQuantity', 'DebugController@fixCustomerQuantity');
+Route::get('fixFinanceCustomerQuantity', 'DebugController@fixFinanceCustomerQuantity');
+Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');

@@ -8742,9 +8742,13 @@ public function yes($msg){
                 $finder = Finder::find($data['finder_id'], ['flags', 'brand_id', 'city_id'])->toArray();
 
                 Log::info('Finder :: ',[$finder]);
-                Log::info('Finder brand_id :: ',[isset($finder['brand_id'])? $finder['brand_id'] : 'null' ]);
+				Log::info('Finder brand_id :: ',[isset($finder['brand_id'])? $finder['brand_id'] : 'null' ]);
+				
+				if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
+					$duration = 0;
+				}
                 
-                if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))){
+                if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
 
                     Log::info('if if');
                     // Log::info('reward :: ',[$loyalty['start_date']]);
@@ -9314,6 +9318,1615 @@ public function yes($msg){
         return $data;
         
     }
+
+    public function GMVData(){
+
+        
+        $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+
+
+        $gym_finder_ids = Finder::integrated()
+        ->whereIn('_id', $gym_service_finders)
+        ->where('created_at', '<=', new DateTime('01-07-2018'))
+        ->whereIn('city_id', [1,2,3, 4])
+        ->lists('_id');
+        
+        $studio_finder_ids = Finder::integrated()
+        ->whereNotIn('_id', $gym_service_finders)
+        ->whereNotIn('category_id', [42,45,40,25,41, 26])
+        ->where('created_at', '<=', new DateTime('01-07-2018'))
+        ->whereIn('city_id', [1,2,3, 4])
+        ->lists('_id');
+
+        // $gym_finder_ids = array_values(array_unique(Finder::integrated()->whereIn('_id', $gym_service_finders)->lists('_id')));
+        // $studio_finder_ids = array_values(array_unique(Finder::integrated()->whereNotIn('category_id', [42,45,40,25,41, 26])->whereNotIn('_id', $gym_service_finders)->lists('_id')));
+
+        
+        $gym_aggregate = Order::raw(function($collection) use ($gym_finder_ids){
+
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['$or'=>[
+                            ['status'=>'1', 'success_date'=>['$gt'=>new MongoDate(strtotime('01-07-2018')), '$lt'=>new MongoDate(strtotime('01-10-2018'))]],
+                            ['pay_later'=>true, 'created_at'=>['$gt'=>new MongoDate(strtotime('01-07-2018')), '$lt'=>new MongoDate(strtotime('01-10-2018'))]],
+                        ]],
+                        ['finder_id'=>['$in'=>$gym_finder_ids]],
+                        ['amount_finder'=>['$gt'=>0]],
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$finder_id',
+                    'amount_finder'=>['$sum'=>'$amount_finder']
+                ]
+            ];
+            $aggregate[] = $group;
+
+            $match1 = [
+                '$match'=>['amount_finder'=>['$gt'=>45000]]
+            ];
+
+            $aggregate[] = $match1;
+
+            $project = [
+                '$project'=>['group1'=> ['$cond'=> [ 'if'=>[ '$gt'=>[ '$amount_finder', 250000 ] ], 'then'=>'>25', 'else'=> ['$cond'=> [ 'if'=>[ '$gt'=>[ '$amount_finder', 120000 ] ], 'then'=>'>12', 'else'=>['$cond'=> [ 'if'=>[ '$gt'=>[ '$amount_finder', 45000 ] ], 'then'=>'>45', 'else'=>'>15']]]] ]]]
+            ];  
+            $aggregate[] = $project;
+
+            $group1 = [
+                '$group'=>[
+                    '_id'=>'$group1',
+                    'count'=>['$sum'=>1]
+                ]
+            ];
+
+            $aggregate[] = $group1;
+
+
+            $aggregate = [
+                $match,
+                $group,
+                $match1,
+                $project,
+                $group1
+            ];
+
+            return $collection->aggregate($aggregate);
+
+
+
+        });
+
+        $studio_aggregate = Order::raw(function($collection) use ($studio_finder_ids){
+
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['$or'=>[
+                            ['status'=>'1', 'success_date'=>['$gt'=>new MongoDate(strtotime('01-07-2018')), '$lt'=>new MongoDate(strtotime('01-10-2018'))]],
+                            ['pay_later'=>true, 'created_at'=>['$gt'=>new MongoDate(strtotime('01-07-2018')), '$lt'=>new MongoDate(strtotime('01-10-2018'))]],
+                        ]],
+                        ['finder_id'=>['$in'=>$studio_finder_ids]],
+                        ['amount_finder'=>['$gt'=>0]],
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$finder_id',
+                    'amount_finder'=>['$sum'=>'$amount_finder']
+                ]
+            ];
+            $aggregate[] = $group;
+
+            $match1 = [
+                '$match'=>['amount_finder'=>['$gt'=>5000]]
+            ];
+
+            $aggregate[] = $match1;
+
+            $project = [
+                '$project'=>['group1'=> ['$cond'=> [ 'if'=>[ '$gt'=>[ '$amount_finder', 50000 ] ], 'then'=>'>50', 'else'=> ['$cond'=> [ 'if'=>[ '$gt'=>[ '$amount_finder', 33000 ] ], 'then'=>'>33', 'else'=>['$cond'=> [ 'if'=>[ '$gt'=>[ '$amount_finder', 16000 ] ], 'then'=>'>16', 'else'=>['$cond'=> [ 'if'=>[ '$gt'=>[ '$amount_finder', 8000 ] ], 'then'=>'>8', 'else'=>'>5']]]]]] ]]]
+            ];  
+            $aggregate[] = $project;
+
+            $group1 = [
+                '$group'=>[
+                    '_id'=>'$group1',
+                    'count'=>['$sum'=>1]
+                ]
+            ];
+
+            $aggregate[] = $group1;
+
+
+            $aggregate = [
+                $match,
+                $group,
+                $match1,
+                $project,
+                $group1
+            ];
+
+            return $collection->aggregate($aggregate);
+
+
+
+        });
+
+        return [
+            'gyms'=>count($gym_finder_ids),
+            'studio'=>count($studio_finder_ids),
+            'studio_aggregate'=>$studio_aggregate,
+            'gym_aggregate'=>$gym_aggregate,
+        ];
+
+
+    }
+
+    public function salesGMVServices(){
+
+        $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+
+        $integrated_vendors = Finder::integrated()->whereNotIn('category_id', [42,45,40,25,41, 26])->lists('_id');
+        // $integrated_vendors = Finder::integrated()->whereIn('_id', $gym_service_finders)->lists('_id');
+
+         $aggreagte = Order::raw(function($collection) use ($integrated_vendors){
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['$or'=>[
+                            
+                        ]],
+                        ['finder_id'=>['$in'=>$integrated_vendors]],
+                        ['amount_finder'=>['$gt'=>0]],
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>null,
+                    'finder'=>['$addToSet'=>'$finder_id'],
+                    'sales'=>['$sum'=>1],
+                    'sales_amount'=>['$sum'=>'$amount_finder'],
+                ]
+            ];
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        return ['total'=> count(array_values(array_unique($integrated_vendors))), 'aggregate'=>$aggreagte];
+
+    
+    
+    }
+
+    public function salesGMVFinders(){
+
+        $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+
+        $gym_integrated_vendors = Finder::integrated()->whereIn('_id', $gym_service_finders)
+        // ->whereIn('city_id', [1,2,3, 4])
+        ->lists('_id');
+        
+        $studio_integrated_vendors = Finder::integrated()
+        ->whereNotIn('_id', $gym_service_finders)
+        ->whereNotIn('category_id', [42,45,40,25,41, 26])
+        // ->whereIn('city_id', [1,2,3, 4])
+        ->lists('_id');
+        
+        $integrated_vendors= array_merge($gym_integrated_vendors, $studio_integrated_vendors);
+
+        // return count(array_values(array_unique($integrated_services)));
+        $aggregate = Order::raw(function($collection) use ($studio_integrated_vendors){
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['$or'=>[
+                            ['status'=>'1', 'success_date'=>['$gt'=>new MongoDate(strtotime('-365 days'))]],
+                            ['pay_later'=>true, 'created_at'=>['$gt'=>new MongoDate(strtotime('-365 days'))]],
+                        ]],
+                        ['finder_id'=>['$in'=>$studio_integrated_vendors]],
+                        ['amount_finder'=>['$gt'=>0]],
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>null,
+                    'finder'=>['$addToSet'=>'$finder_id'],
+                    'sales'=>['$sum'=>1],
+                    'sales_amount'=>['$sum'=>'$amount_finder'],
+                ]
+            ];
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        return ['total_g'=>count($gym_integrated_vendors), 'total_s'=>count($studio_integrated_vendors), 'agg'=>$aggregate];
+
+    
+    
+    }
+
+    public function salesRangeFindersall(){
+
+        $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+
+        $gym_integrated_vendors = Finder::integrated()->whereIn('_id', $gym_service_finders)
+        // ->whereIn('city_id', [1,2,3, 4])
+        ->lists('_id');
+        
+        $studio_integrated_vendors = Finder::integrated()
+        ->whereNotIn('_id', $gym_service_finders)
+        ->whereNotIn('category_id', [42,45,40,25,41, 26])
+        // ->whereIn('city_id', [1,2,3, 4])
+        ->lists('_id');
+        
+        $integrated_vendors= array_merge($gym_integrated_vendors, $studio_integrated_vendors);
+
+        // return count(array_values(array_unique($integrated_services)));
+        $aggregate = Order::raw(function($collection) use ($integrated_vendors){
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['$or'=>[
+                            ['status'=>'1', 'success_date'=>['$gt'=>new MongoDate(strtotime('-365 days'))]],
+                            ['pay_later'=>true, 'created_at'=>['$gt'=>new MongoDate(strtotime('-365 days'))]],
+                        ]],
+                        ['finder_id'=>['$in'=>$integrated_vendors]],
+                        ['amount_finder'=>['$gt'=>0]],
+                    ]
+                ]
+            ];
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$finder_id',
+                    'sales'=>['$sum'=>'$amount_finder'],
+                ]
+            ];
+            
+            $aggregate[] = $group;
+
+            $project = [
+                '$project'=>['group1'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 1000000 ] ], 'then'=>'>10L', 'else'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 500000 ] ], 'then'=>'>5L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 100000 ] ], 'then'=>'>1L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 10000 ] ], 'then'=>'>10000', 'else'=>'blank']]]]]] ]]]
+            ];
+
+            $aggregate[] = $project;
+
+            $group1 = [
+                '$group'=>[
+                    '_id'=>'$group1',
+                    'count'=>['$sum'=>1],
+                ]
+            ];
+            
+            $aggregate[] = $group1;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        return ['total_g'=>count($gym_integrated_vendors), 'total_s'=>count($studio_integrated_vendors), 'agg'=>$aggregate];
+
+    
+    
+    }
+
+    public function salesRangeFindersGyms(){
+
+        $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+
+        $gym_integrated_vendors = Finder::integrated()
+        ->whereIn('_id', $gym_service_finders)
+        ->where('created_at', '<=', new DateTime('01-12-2018'))
+        ->whereIn('city_id', [1])
+        ->lists('_id');
+        
+        // return count(array_values(array_unique($integrated_services)));
+        $aggregate = Order::raw(function($collection) use ($gym_integrated_vendors){
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['$or'=>[
+                            ['status'=>'1', 'success_date'=>['$gt'=>new MongoDate(strtotime('01-12-2017')), '$lt'=>new MongoDate(strtotime('01-12-2018'))]],
+                            ['pay_later'=>true, 'created_at'=>['$gt'=>new MongoDate(strtotime('01-12-2017')), '$lt'=>new MongoDate(strtotime('01-12-2018'))]],
+                        ]],
+                        ['finder_id'=>['$in'=>$gym_integrated_vendors]],
+                        ['amount_finder'=>['$gt'=>0]],
+                    ]
+                ]
+            ];
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$finder_id',
+                    'sales'=>['$sum'=>'$amount_finder'],
+                ]
+            ];
+            
+            $aggregate[] = $group;
+
+            $project = [
+                '$project'=>['group1'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 2500000 ] ], 'then'=>'>25L', 'else'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 2000000 ] ], 'then'=>'>20L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 1500000 ] ], 'then'=>'>15L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 1000000 ] ], 'then'=>'>10L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 500000 ] ], 'then'=>'>5L', 'else'=>'blank']]]]]]]] ]]]
+            ];
+
+            $aggregate[] = $project;
+
+            $group1 = [
+                '$group'=>[
+                    '_id'=>'$group1',
+                    'count'=>['$sum'=>1],
+                ]
+            ];
+            
+            $aggregate[] = $group1;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        return ['total_g'=>count($gym_integrated_vendors), 'agg'=>$aggregate];
+
+    
+    
+    }
+
+    public function salesRangeFindersStudio(){
+
+        $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+        
+        return count($studio_integrated_vendors = Finder::integrated()
+        ->whereNotIn('_id', $gym_service_finders)
+        ->whereNotIn('category_id', [42,45,40,25,41, 26])
+        ->whereIn('city_id', [1])
+        ->where('created_at', '<=', new DateTime('01-12-2018'))
+        ->lists('_id'));
+
+        // return count(array_values(array_unique($integrated_services)));
+        $aggregate = Order::raw(function($collection) use ($studio_integrated_vendors){
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['$or'=>[
+                            ['status'=>'1', 'success_date'=>['$gt'=>new MongoDate(strtotime('01-12-2017')), '$lt'=>new MongoDate(strtotime('01-12-2018'))]],
+                            ['pay_later'=>true, 'created_at'=>['$gt'=>new MongoDate(strtotime('01-12-2017')), '$lt'=>new MongoDate(strtotime('01-12-2018'))]],
+                        ]],
+                        ['finder_id'=>['$in'=>$studio_integrated_vendors]],
+                        ['amount_finder'=>['$gt'=>0]],
+                    ]
+                ]
+            ];
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$finder_id',
+                    'sales'=>['$sum'=>'$amount_finder'],
+                ]
+            ];
+            
+            $aggregate[] = $group;
+
+            $project = [
+                '$project'=>['group1'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 2000000 ] ], 'then'=>'>20L', 'else'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 1200000 ] ], 'then'=>'>12L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 800000 ] ], 'then'=>'>8L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 400000 ] ], 'then'=>'>4L', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$sales', 200000 ] ], 'then'=>'>2L', 'else'=>'blank']]]]]]]] ]]]
+            ];
+
+            $aggregate[] = $project;
+
+            $group1 = [
+                '$group'=>[
+                    '_id'=>'$group1',
+                    'count'=>['$sum'=>1],
+                ]
+            ];
+            
+            $aggregate[] = $group1;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        return ['total_s'=>count($studio_integrated_vendors), 'agg'=>$aggregate];
+
+    
+    
+    }
+
+    public function leadsTrials(){
+        
+        $integrated_vendors = Finder::integrated()->lists('_id');
+
+
+        $integrated_services = Service::integratedMembership()->whereIn('finder_id', $integrated_vendors)->lists('_id');
+
+        return count(array_values(array_unique($integrated_services)));
+        return $aggreagte = Booktrial::raw(function($collection) use ($integrated_vendors, $integrated_services){
+           
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['type'=>['$nin'=>['workout-session']]],
+                        ['finder_id'=>['$in'=>$integrated_vendors]],
+                        ['service_id'=>['$in'=>$integrated_services]],
+                        ['created_at'=>['$gt'=>new MongoDate(strtotime('-365 days'))]]
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>null,
+                    'finders'=>['$addToSet'=>'$finder_id'],
+                    'services'=>['$addToSet'=>'$service_id'],
+                    'enquiries'=>['$sum'=>1],
+                ]
+            ];
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+    }
+     public function leadsCaptures(){
+
+         
+
+        $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+
+        $gym_integrated_vendors = Finder::integrated()->whereIn('_id', $gym_service_finders)
+        // ->whereIn('city_id', [1,2,3, 4])
+        ->lists('_id');
+        
+        $studio_integrated_vendors = Finder::integrated()
+        ->whereNotIn('_id', $gym_service_finders)
+        ->whereNotIn('category_id', [42,45,40,25,41, 26])
+        // ->whereIn('city_id', [1,2,3, 4])
+        ->lists('_id');
+        
+        $integrated_vendors= array_merge($gym_integrated_vendors, $studio_integrated_vendors);
+
+        $aggreagte = Capture::raw(function($collection){
+           
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['capture_type'=>['$in'=>["renewalCallback","renewal","renewalMissedcall","FakeBuy","walkthrough","sendVendorNumber","FitternityIncoming","OzonetelIncomingCall", "customise_membership","trial-gone-wrong", "cult_enquiry", "exit_intent", "upgrade-membership"]]],
+                        ['finder_id'=>['$exists'=>true]],
+                        ['created_at'=>['$gt'=>new MongoDate(strtotime('-365 days'))]]
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+            $project = [
+                '$project'=>[
+                    'finder_id'=>1,
+                    'service_id'=>1
+                ]
+            ];
+
+            $aggregate[] = $project;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        $captures = $aggreagte['result'];
+        $data = [];
+        foreach($captures as $capture){
+            $capture['finder_id'] = $finder_id = $capture['finder_id'];
+            $capture['service_id'] = $service_id = !empty($capture['service_id'])?$capture['service_id']:0;
+            if(is_string($finder_id)){
+                $finder_id = intval($finder_id);
+            }
+            if(is_string($service_id)){
+                $service_id = intval($service_id);
+            }
+
+            if(in_array($finder_id, $integrated_vendors) && (empty($service_id) || in_array($service_id, $integrated_services))){
+                array_push($data, $capture);
+            }
+        }
+        return ['count'=>count($data), 
+        'finders'=>array_values(array_unique(array_column($data, 'finder_id'))),
+        'services'=>array_values(array_unique(array_column($data, 'service_id')))
+        ];
+
+
+    }
+
+    public function otherLeads(){
+
+ 
+        $integrated_vendors = Finder::integrated()->lists('_id');
+
+
+        $integrated_services = Service::integratedMembership()->whereIn('finder_id', $integrated_vendors)->lists('_id');
+
+
+        return $calls_aggregate = Knowlarityvendorcapture::raw(function($collection) use ($integrated_vendors){
+            
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['vendor_id'=>['$in'=>$integrated_vendors]],
+                        ['created_at'=>['$gt'=>new MongoDate(strtotime('-365 days'))]]
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+
+
+            $group = [
+                '$group'=>[
+                    '_id'=>null,
+                    'finder'=>['$addToSet'=>'$vendor_id'],
+                    'calls'=>['$sum'=>1],
+                ]
+            ];
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+
+
+        });
+
+
+
+
+    }
+
+
+    public function reviews(){
+
+ 
+        $integrated_vendors = Finder::integrated()->lists('_id');
+
+
+        $integrated_services = Service::integratedMembership()->whereIn('finder_id', $integrated_vendors)->lists('_id');
+
+
+        return $calls_aggregate = Review::raw(function($collection) use ($integrated_vendors){
+            
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['finder_id'=>['$in'=>$integrated_vendors]],
+                        ['created_at'=>['$gt'=>new MongoDate(strtotime('-365 days'))]]
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+
+
+            $group = [
+                '$group'=>[
+                    '_id'=>null,
+                    'finder'=>['$addToSet'=>'$finder_id'],
+                    'services'=>['$addToSet'=>'$service_id'],
+                    'calls'=>['$sum'=>1],
+                ]
+            ];
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+
+
+        });
+
+
+
+
+    }
+
+    public function abandoncart(){
+
+ 
+        $integrated_vendors = Finder::integrated()->lists('_id');
+
+
+        $integrated_services = Service::integratedMembership()->whereIn('finder_id', $integrated_vendors)->lists('_id');
+
+
+        return $calls_aggregate = Order::raw(function($collection) use ($integrated_vendors, $integrated_services){
+            
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['status'=>"0"],
+                        ['finder_id'=>['$in'=>$integrated_vendors]],
+                        ['service_id'=>['$in'=>$integrated_services]],
+                        ['created_at'=>['$gt'=>new MongoDate(strtotime('-365 days'))]]
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+
+
+            $group = [
+                '$group'=>[
+                    '_id'=>null,
+                    'finder'=>['$addToSet'=>'$finder_id'],
+                    'services'=>['$addToSet'=>'$service_id'],
+                    'calls'=>['$sum'=>1],
+                ]
+            ];
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+
+
+        });
+
+
+
+
+    }
+
+    public function fitpassComparison() {
+        $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+        $gym_integrated_vendors = Finder::integrated()->whereIn('_id', $gym_service_finders)->lists('_id');
+        $studio_integrated_vendors = Finder::integrated()->whereNotIn('_id', $gym_service_finders)->whereNotIn('category_id', [42,45,40,25,41, 26])->lists('_id');
+
+        $integrated_vendors_list = Finder::raw(function($collection) use ($gym_integrated_vendors, $studio_integrated_vendors){
+            $aggregate = [
+                ['$match'=>[
+                    '_id'=>['$in'=>$studio_integrated_vendors],
+                    'status' => '1'
+                ]],
+                ['$lookup' => [
+                    'from' => 'cities',
+                    'localField' => 'city_id',
+                    'foreignField' => '_id',
+                    'as' => 'city'
+                ]],
+                ['$project' => [
+                    '_id' => '$_id',
+                    'name' => '$title',
+                    'city' => ['$arrayElemAt' => ['$city.name',0]]
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });  
+
+
+        $citywiseGymFinders = Finder::raw(function($collection) use ($gym_integrated_vendors){    
+            $aggregate = [
+                ['$match' => [
+                    '_id' => ['$in' => $gym_integrated_vendors],
+                    'status' => '1'
+                ]],
+                ['$group' => [
+                    '_id' => '$city_id',
+                    'count' => ['$sum' => 1]
+                ]],
+                ['$lookup' => [
+                    'from' => 'cities',
+                    'localField' => '_id',
+                    'foreignField' => '_id',
+                    'as' => 'city'
+                ]],
+                ['$project' => [
+                    '_id' => 1,
+                    'city_name' => ['$arrayElemAt' => ['$city.name',0]],
+                    'count' => 1
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+        $citywiseStudioFinders = Finder::raw(function($collection) use ($studio_integrated_vendors){    
+            $aggregate = [
+                ['$match' => [
+                    '_id' => ['$in' => $studio_integrated_vendors],
+                    'status' => '1'
+                ]],
+                ['$group' => [
+                    '_id' => '$city_id',
+                    'count' => ['$sum' => 1]
+                ]],
+                ['$lookup' => [
+                    'from' => 'cities',
+                    'localField' => '_id',
+                    'foreignField' => '_id',
+                    'as' => 'city'
+                ]],
+                ['$project' => [
+                    '_id' => 1,
+                    'city_name' => ['$arrayElemAt' => ['$city.name',0]],
+                    'count' => 1
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+        $servicesBookableGym = Service::raw(function($collection) use ($gym_integrated_vendors, $studio_integrated_vendors){    
+            $aggregate = [
+                ['$match' => [
+                    'status' => '1',
+                    // 'showOnFront' => ['$nin' => [[], ['kiosk']]],
+                    '$or' => [['membership'=>['$ne'=>'disable']], ['trial'=>['$ne'=>'disable']]],                    
+                    '$or'=>[['finder_id'=>['$in' => $gym_integrated_vendors]], ['finder_id'=>['$in'=>$studio_integrated_vendors]]],
+                    'servicecategory_id' => 65
+                ]],
+                ['$group' => [
+                    '_id' => '$city_id',
+                    'count' => ['$sum' => 1]
+                ]],
+                ['$lookup' => [
+                    'from' => 'cities',
+                    'localField' => '_id',
+                    'foreignField' => '_id',
+                    'as' => 'city'
+                ]],
+                ['$project' => [
+                    '_id' => 1,
+                    'city_name' => ['$arrayElemAt' => ['$city.name',0]],
+                    'count' => 1
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+        $servicesBookableStudio = Service::raw(function($collection) use ($gym_integrated_vendors, $studio_integrated_vendors){    
+            $aggregate = [
+                ['$match' => [
+                    'status' => '1',
+                    // 'showOnFront' => ['$nin' => [[], ['kiosk']]],
+                    '$or' => [['membership'=>['$ne'=>'disable']], ['trial'=>['$ne'=>'disable']]],
+                    '$or'=>[['finder_id'=>['$in' => $gym_integrated_vendors]], ['finder_id'=>['$in'=>$studio_integrated_vendors]]],
+                    'servicecategory_id' => ['$ne' => 65]
+                ]],
+                ['$group' => [
+                    '_id' => '$city_id',
+                    'count' => ['$sum' => 1]
+                ]],
+                ['$lookup' => [
+                    'from' => 'cities',
+                    'localField' => '_id',
+                    'foreignField' => '_id',
+                    'as' => 'city'
+                ]],
+                ['$project' => [
+                    '_id' => 1,
+                    'city_name' => ['$arrayElemAt' => ['$city.name',0]],
+                    'count' => 1
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+        return [
+            'citywiseGymFinders' => $citywiseGymFinders,
+            'citywiseStudioFinders' => $citywiseStudioFinders,
+            'servicesBookableGym' => $servicesBookableGym,
+            'servicesBookableStudio' => $servicesBookableStudio
+            // 'integrated_vendors_list' => $integrated_vendors_list
+        ];
+    }
+
+
+    public function commission(){
+
+         $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+
+        $gym_integrated_vendors = Finder::integrated()->whereIn('_id', $gym_service_finders)
+        // ->whereIn('city_id', [1,2,3, 4])
+        ->lists('_id');
+        
+        $studio_integrated_vendors = Finder::integrated()
+        ->whereNotIn('_id', $gym_service_finders)
+        ->whereNotIn('category_id', [42,45,40,25,41, 26])
+        // ->whereIn('city_id', [1,2,3, 4])
+        ->lists('_id');
+        
+        $integrated_vendors= array_merge($gym_integrated_vendors, $studio_integrated_vendors);
+        
+
+        $aggregate = VendorCommercial::raw(function($collection) use ($integrated_vendors){
+            $match = [
+                '$match'=>[
+                    'vendor_id'=>['$in'=>$integrated_vendors]
+                ]
+            ];
+            $aggregate[] = $match;
+
+            $project = [
+                '$project'=>['group1'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$commision', 19 ] ], 'then'=>'>19', 'else'=> ['$cond'=> [ 'if'=>[ '$gte'=>[ '$commision', 12 ] ], 'then'=>'>12', 'else'=>['$cond'=> [ 'if'=>[ '$gte'=>[ '$commision', 8 ] ], 'then'=>'>8', 'else'=>['$cond'=> [ 'if'=>[ '$gt'=>[ '$commision', 0 ] ], 'then'=>'<8', 'else'=>'blank']]]]]] ]]]
+            ];
+
+            $aggregate[] = $project;
+
+
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$group1',
+                    'count'=>['$sum'=>1]
+                ]
+            ];
+
+            $aggregate[] = $group;
+
+
+            return $collection->aggregate($aggregate);
+
+
+
+        });
+
+        return ['total'=>$integrated_vendors, 'aggre'=>$aggregate];
+
+    }
+
+    public function integratedSplit(){
+
+        Finder::$withoutAppends = true;
+        Service::$withoutAppends = true;
+
+
+        $cities = [1, 2, 3, 4, 5, 6, 8, 9, 10000];
+
+        $all = [];
+    $i=0;
+        foreach($cities as $city_id){
+            $gym_service_finders = Service::integrated()->where('servicecategory_id', 65)->lists('finder_id');
+
+        $gym_integrated_vendors = Finder::integrated()->whereIn('_id', $gym_service_finders)
+        // ->where('created_at', '>', new DateTime('01-04-2017'))
+        // ->where('city_id', $city_id)
+        ->whereIn('city_id', [7, 11, 12])
+        ->get(['created_at', 'city_id']);
+        
+        $studio_integrated_vendors = Finder::integrated()->whereNotIn('_id', $gym_service_finders)->whereNotIn('category_id', [42,45,40,25,41, 26])
+        //  ->where('created_at', '>', new DateTime('01-04-2017')),
+        // ->where('city_id', $city_id)
+        ->whereIn('city_id', [7, 11, 12])
+         ->get(['created_at', 'city_id']);
+
+        return  count($integrated_vendors= array_merge($gym_integrated_vendors->toArray(), $studio_integrated_vendors->toArray()));
+        $integrated_vendors= array_merge($gym_integrated_vendors->toArray(), $studio_integrated_vendors->toArray());
+
+        return array_unique(array_column($integrated_vendors, 'city_id'));
+        
+        
+        $data = [
+            ["mon"=>"4-17", "val"=>0],
+            ["mon"=>"5-17", "val"=>0],
+            ["mon"=>"6-17", "val"=>0],
+            ["mon"=>"7-17", "val"=>0],
+            ["mon"=>"8-17", "val"=>0],
+            ["mon"=>"9-17", "val"=>0],
+            ["mon"=>"10-17", "val"=>0],
+            ["mon"=>"11-17", "val"=>0],
+            ["mon"=>"12-17", "val"=>0],
+            ["mon"=>"1-18", "val"=>0],
+            ["mon"=>"2-18", "val"=>0],
+            ["mon"=>"3-18", "val"=>0],
+            ["mon"=>"4-18", "val"=>0],
+            ["mon"=>"5-18", "val"=>0],
+            ["mon"=>"6-18", "val"=>0],
+            ["mon"=>"7-18", "val"=>0],
+            ["mon"=>"8-18", "val"=>0],
+            ["mon"=>"9-18", "val"=>0],
+            ["mon"=>"10-18", "val"=>0],
+            ["mon"=>"11-18", "val"=>0],
+            ["mon"=>"12-18", "val"=>0],
+            
+        ];
+
+
+
+        foreach($integrated_vendors as $vendor){
+            if(strtotime($vendor['created_at']) <= strtotime('01-04-2017')){
+                foreach($data as $key=>$x){
+                    $data[$key]['val']++;
+                    $i++;
+                    // return "asdas";
+                }
+
+            } else{
+                $exists = false;
+                $month = intval(date('m', strtotime($vendor['created_at'])));
+                $year = intval(date('y', strtotime($vendor['created_at'])));
+
+                $mon = $month."-".$year;
+
+                foreach($data as $key=>$x){
+                    
+                    if($x['mon']==$mon){
+                        $exists = true;
+                    }
+
+                    if(!empty($exists)){
+                        $data[$key]['val']++;
+                        $i++;
+
+                    }
+                }
+
+
+                
+            }
+        }
+
+
+
+    // return $i;
+        $all['city-'.$city_id]  = array_column(array_values($data), 'val');
+
+        }
+
+        return $all;
+        
+    }
+
+
+    public function salesFinderDetails(){
+
+
+
+        $aggregate = Order::raw(function($collection){
+            $match = [
+                '$match'=>[
+                    '$and'=>[
+                        ['status'=>'1', 'success_date'=>['$gt'=>new MongoDate(strtotime('-90 days'))], 'type'=>'memberships', 'amount_finder'=>['$gt'=>0]],
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$finder_id',
+                    'sales'=>['$sum'=>1],
+                    'sales_amount'=>['$sum'=>'$amount_finder'],
+                ]
+            ];
+
+            $aggregate[] = $group;
+
+            $sort = ['$sort'=>['sales_amount'=>-1]];
+
+            $aggregate[] = $sort;
+
+            return $collection->aggregate($aggregate);
+        });
+
+        $aggregate = $aggregate['result'];
+        $finder_ids = array_column($aggregate, '_id');
+        Finder::$withoutAppends = true;
+        $finders = Finder::whereIn('_id', $finder_ids)->with(['city'=>function($query){$query->select('name');}])->with(['location'=>function($query){$query->select('name');}])->get(['title', 'city_id', 'location_id']);
+
+        $data = [];
+
+        foreach($finders as $x){
+            $data[strval($x['_id'])] = $x;
+        }
+
+        foreach($aggregate as &$a){
+            $a['title'] = $data[strval($a['_id'])]['title'];
+            $a['city'] = ucwords($data[strval($a['_id'])]['city']['name']);
+            $a['location'] = ucwords($data[strval($a['_id'])]['location']['name']);
+        }
+        return $aggregate;
+
+    }
+
+    public function salesOrganicFinderDetails(){
+
+
+
+        $aggregate = Order::raw(function($collection){
+            $match = [
+                '$match'=>[
+                    // '$and'=>[
+                        // [
+                            'status'=>'1', 
+                            'success_date'=>['$gt'=>new MongoDate(strtotime('-90 days'))], 
+                            'type'=>'memberships', 
+                            'amount_finder'=>['$gt'=>0],
+                            "routed_order"=>['$eq'=>"1"]
+                        // ],
+                    // ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+
+            $group = [
+                '$group'=>[
+                    '_id'=>'$finder_id',
+                    'sales'=>['$sum'=>1],
+                    'sales_amount'=>['$sum'=>'$amount_finder'],
+                ]
+            ];
+
+            $aggregate[] = $group;
+
+            $sort = ['$sort'=>['sales_amount'=>-1]];
+
+            $aggregate[] = $sort;
+
+            return $collection->aggregate($aggregate);
+        });
+
+        $aggregate = $aggregate['result'];
+        $finder_ids = array_column($aggregate, '_id');
+        Finder::$withoutAppends = true;
+        $finders = Finder::whereIn('_id', $finder_ids)->with(['city'=>function($query){$query->select('name');}])->with(['location'=>function($query){$query->select('name');}])->get(['title', 'city_id', 'location_id']);
+
+        $data = [];
+
+        foreach($finders as $x){
+            $data[strval($x['_id'])] = $x;
+        }
+
+        foreach($aggregate as &$a){
+            $a['title'] = $data[strval($a['_id'])]['title'];
+            $a['city'] = ucwords($data[strval($a['_id'])]['city']['name']);
+            $a['location'] = ucwords($data[strval($a['_id'])]['location']['name']);
+        }
+        return $aggregate;
+
+    }
+
+    public function fitcashCouponMigration(){
+
+        ini_set('max_execution_time', 300);
+        $i = 1;
+        
+        // try{
+            $wallet_ids = Order::raw(function($query){
+                $aggregate = [
+                    [
+                        '$project'=>[
+                            'wallet_transaction_debit'=>1
+                        ]
+                    ],
+                    [
+                        '$match'=>['wallet_transaction_debit.wallet_transaction.wallet_id'=>['$exists'=>true]]
+                    ],
+                    // [
+                    //     '$limit'=>10
+                    // ],
+                    [
+                        '$unwind'=>'$wallet_transaction_debit'
+                    ],
+                    [
+                        '$unwind'=>'$wallet_transaction_debit.wallet_transaction'
+                    ],
+                    [
+                        '$group'=>['_id'=>null, 'wallet_ids'=>['$addToSet'=>'$wallet_transaction_debit.wallet_transaction.wallet_id']]
+                    ]
+                ];
+
+                return $query->aggregate($aggregate);
+
+            });
+
+            Log::info("DOne wallet_ids");
+            $wallet_ids = $wallet_ids['result'][0]['wallet_ids'];
+            // return $wallet_ids;
+            // ->lists("wallet_transaction_debit.wallet_transaction.wallet_id");
+            $codes = Wallet::raw(function($query) use ($wallet_ids){
+    
+                $aggregate = [
+    
+                    [
+                        '$match'=>[
+                            'coupon'=>[ '$nin' => ['', null]],
+                            '_id'=>['$in'=>  $wallet_ids]
+                        ]
+                    ],
+    
+                    [
+                        '$group'=>[
+                            '_id'=>'$coupon',
+                            'wallet_ids'=>[
+                                '$push'=>'$_id'
+                            ]
+                        ]
+                            ],
+                            // [
+                            //     '$limit'=>10
+                            // ]
+                ];
+                return $query->aggregate($aggregate);
+            });
+            Log::info('Code Got');
+            $codes = $codes['result'];
+            $updates = [];
+            foreach($codes as $code){
+                
+                array_push($updates, [
+                    "q"=>['wallet_transaction_debit.wallet_transaction.wallet_id'=> ['$in'=>$code['wallet_ids']]],
+                    "u"=>[
+                        '$addToSet'=>[
+                            'fitcash_coupons'=>$code['_id']
+                        ]
+                    ],
+                    'multi' => true
+                ]);
+                // return $updates;
+                if(count($updates) == 1){
+                    $update = $this->batchUpdate('mongodb', 'orders', $updates);
+                    $updates =[];
+                }
+            }
+            // return $updates;
+            Log::info("Updating");
+            return "Done";
+        // }catch(Exception $e){
+        //     Log::info("iteration", [++$i]);
+        //     $this->fitcashCouponMigration();
+        
+        // }
+
+    }
+
+    public function couponsValidMigration(){
+        $coupons = Coupon::where("spin_coupon", 'exists', true)->where('and_conditions.key', 'logged_in_customer.contact_no')->where('and_conditions.values.valid_till', 'exists', false)->get();
+
+        if($coupons){
+
+            foreach($coupons as $coupon){
+                $couponArray = $coupon->toArray();
+                $and_condition1 = $couponArray['and_conditions'];
+                
+                foreach($and_condition1 as &$condition){
+                    if($condition['key'] == 'logged_in_customer.contact_no'){
+                        
+                        foreach($condition['values'] as $key => $value){
+                            $condition['values'][$key] = ['value'=>$value, 'valid_till'=>new MongoDate(strtotime('+2 days'))];
+                        }
+    
+                    }
+                }
+                
+                $couponArray['and_conditions1'] = $and_condition1;
+                $coupon->update($couponArray);
+    
+            }
+        }
+        // return "done";
+        $coupons = Fitcashcoupon::where("spin_coupon", 'exists', true)->where('customer_phones', 'exists', true)->get();
+        
+        foreach($coupons as $coupon){
+            $couponArray = $coupon->toArray();
+            $customer_phones1 = $couponArray['customer_phones'];
+            
+            foreach($customer_phones1 as $key => $value){
+                    
+                $customer_phones1[$key] = ['value'=>$value, 'valid_till'=>new MongoDate(strtotime('+2 days'))];
+
+            }
+            
+            $couponArray['customer_phones1'] = $customer_phones1;
+            $coupon->update($couponArray);
+
+        }
+
+        return "Done";
+    }
+
+
+    public function fixCustomerQuantity(){
+
+        return $orders = Order::raw(function($query){
+
+            $aggregate = [
+                [
+                    '$match'=>[
+                        'customer_quantity'=>['$type'=>'string']
+                    ]
+                ],
+                [
+                    '$project'=>[
+                        'customer_quantity'=>1
+                    ]
+                ],
+                [
+                    '$group'=>[
+                        '_id'=>null,
+                        'count'=>['$sum'=>1],
+                        'data'=>['$push'=>'$$ROOT']
+                    ]
+                ]
+                
+            ];
+
+            return $query->aggregate($aggregate);
+        });
+        $time = time();
+        $orders = $orders['result'][0]['data'];
+        $update = [];
+        foreach($orders as $x){
+			array_push($update, [
+                "q"=>['_id'=> $x['_id']],
+                "u"=>[
+                    '$set'=>[
+                        'customer_quantity'=>intval($x['customer_quantity']),
+                        'old_customer_quantity'=>$x['customer_quantity'],
+                        'customer_quantity_by_script'=>$time
+                    ]
+                ],
+                'multi' => false
+
+            ]);
+        }
+        return $update;
+		return $this->batchUpdate('mongodb','orders',$update);
+
+    }
+
+    public function fixFinanceCustomerQuantity(){
+        
+        $orders = Order::raw(function($query){
+
+            $aggregate = [
+                [
+                    '$match'=>[
+                        'customer_quantity'=>['$type'=>'string'],
+                        'finance_status'=>['$ne'=>"settled"],
+                        'status'=>"1", 'customer_quantity'=>['$gt'=>1],
+                        'success_date'=>['$ne'=>null],
+                        'vendor_price'=>['$ne'=>null]
+
+                    ]
+                ],
+                [
+                    '$project'=>[
+                        'ratecard_amount'=>1, 'vendor_price'=>1, 'customer_quantity'=>1, 'amount_finder'=>1, 'original_amount_finder'=>1, 'success_date'=>['$dateToString'=>['format'=> "%Y-%m-%d", 'date'=>'$success_date']], 'type'=>1,'non_peak'=>1, 'non_peak_discount'=>1,
+                        'diff'=>[
+                            '$cmp'=>[
+                                '$amount_finder',
+                                [
+                                    '$multiply'=>[
+                                        [
+                                            '$cond'=>[
+                                                [
+                                                    '$gt'=>[
+                                                        '$non_peak_discount',
+                                                        0
+                                                    ]
+                                                ],
+                                                [
+                                                    '$add'=>[
+                                                        '$ratecard_amount', 
+                                                        '$non_peak_discount'
+                                                    ]
+                                                ], 
+                                                '$ratecard_amount'
+                                            ]
+                                        ],
+                                        '$customer_quantity'
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                [
+                    '$match'=>[
+                        'diff'=>['$ne'=>0]
+                    ]
+                ],
+            ];
+
+            return $query->aggregate($aggregate);
+        });
+
+        $orders = $orders['result'];
+        $update = [];
+        $time = time();
+        foreach($orders as $x){
+			array_push($update, [
+                "q"=>['_id'=> $x['_id']],
+                "u"=>[
+                    '$set'=>[
+                        'amount_finder_before_script'=>$x['amount_finder'],
+                        'amount_finder'=>$x['customer_quantity']*(!empty($x['vendor_price']) ? $x['vendor_price'] : $x['amount_finder']),
+                        'amount_finder_updated_by_script'=>$time,
+                    ]
+                ],
+                'multi' => false
+
+            ]);
+        }
+        return $update;
+		return $this->batchUpdate('mongodb','orders',$update);
+
+    }
+
+
+    public function fixAmountCustomer(){
+        $orders = Order::raw(function($query){
+        $aggregate = [
+            [
+                '$match'=>[
+                    'amount_customer'=>['$type'=>'string']
+
+                ]
+            ],
+            [
+                '$project'=>[
+                        'amount_customer'=>1
+                    ]
+                ]
+            ];
+            return $query->aggregate($aggregate);
+        });
+        $orders = $orders['result'];
+
+        return count($orders);
+        $updates = [];
+        foreach($orders as $x){
+            
+            array_push($updates, [
+                "q"=>['_id'=> $x['_id']],
+                "u"=>[
+                    '$set'=>[
+                        'old_amount_customer'=>$x['amount_customer'],
+                        'amount_customer'=>intval($x['amount_customer'])
+                    ]
+                ],
+                'multi' => false
+            ]);
+            // if(count($updates) == 5000){
+                // return $updates;
+                // $updates =[];
+                // }
+        }
+            
+        $update = $this->batchUpdate('mongodb', 'orders', $updates);
+        
+        return "Done";
+        
+    }
+
+    public function createBulkCoupons(){
+        // Customer::$withoutAppends = true;
+        // $self_coupons = Customer::where('contact_no', "9819142148")->lists('referral_code');
+        // // return DB::table('orders')->where('status', '1')->where('customer_phone', "9819142148")->groupBy('coupon_code')->get();
+        // $customer_phone = "9819142148";
+        // return $orders_phone_number = Order::raw(function($query) use ($self_coupons, $customer_phone){
+
+        //     $aggregate = [
+        //         [
+        //             '$match'=>[
+        //                 'status'=>'1',
+        //                 'customer_phone'=>$customer_phone,
+        //                 // 'coupon_code'=>['$regex'=>new \MongoDB\BSON\Regex("/^[a-zA-Z0-9*]{*}$/")]
+        //                 // 'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{*}$"]
+        //                 // 'coupon_code'=>['$regex'=>"/^[a-zA-Z0-9*]{8}[rR]{1}$/"]
+        //                 'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{8}[rR]$"]
+        //                 // 'coupon_code'=>['$exists'=>true]
+        //             ],
+        //         ],
+        //         [
+        //             '$project'=>[
+        //                 'coupon_uppercase'=>['$toUpper'=>'$coupon_code']
+        //             ]
+        //         ],
+        //         [
+        //             '$addFields'=>[
+        //                 'referral_type'=>[
+        //                     '$cond'=>[
+        //                         ['$in'=>['$coupon_uppercase', $self_coupons]],
+        //                         'self',
+        //                         'other'
+        //                     ]
+        //                 ]
+        //             ]
+        //         ],
+        //         [
+        //             '$group'=>[
+        //                 '_id'=>['referral_type'=>'$referral_type'],
+        //                 'count'=>['$sum'=>1]
+        //             ]
+        //         ]
+        //     ];
+
+        //     return $query->aggregate($aggregate);
+
+        // });
+
+        // $a=[];
+        // $utilities = new Utilities();
+        // for($i=1;$i<=200;$i++){
+        //     array_push($a, $utilities->generateRandomString(4));
+        // }
+        // return $a;
+
+        $codes = ["brpqcc8fit","brpvnpbfit","brp63zbfit","brp7t8sfit","brpquo5fit","brpmzjofit","brpm7c5fit","brp14hsfit","brpgt0bfit","brpgqnnfit","brptmy1fit","brpf7u5fit","brp2iapfit","brpiud4fit","brp2pa3fit","brpurwafit","brpkwm1fit","brpm9pgfit","brpvoibfit","brpvchyfit","brpvsndfit","brpm0iofit","brpqsskfit","brpkpv5fit","brpmi69fit","brpswpnfit","brpk8zgfit","brpkgegfit","brp91tvfit","brp2cksfit","brp4ddofit","brp28tpfit","brpq0yifit","brpxn6hfit","brpw6ygfit","brpncxwfit","brpeqrgfit","brp2c87fit","brpqlwtfit","brpuqilfit","brprg3ofit","brp4a60fit","brpg4h3fit","brpgezufit","brp5ra7fit","brp4jfvfit","brp5bo0fit","brp27ltfit","brpoohsfit","brpzntgfit","brprak8fit","brpok2tfit","brpcd1gfit","brpxhb3fit","brpt03vfit","brp8oowfit","brpd6pcfit","brpuitmfit","brpsduhfit","brpxxb9fit","brpbdq9fit","brpu2cnfit","brp3fjbfit","brp488hfit","brpfxu9fit","brpfnw8fit","brp1rqzfit","brpo180fit","brpfza9fit","brp1mx4fit","brp2hg6fit","brppoo4fit","brpmie1fit","brp6aa7fit","brp106qfit","brp2fqhfit","brpe0rgfit","brpnplqfit","brp61wwfit","brpql0cfit","brp3ee9fit","brpoohqfit","brppogsfit","brp37aifit","brp82yvfit","brprklyfit","brpmiucfit","brp3vp7fit","brp93hyfit","brpszoifit","brpn5aqfit","brpck9kfit","brpm8fefit","brps1cefit","brpk7rofit","brp2hwcfit","brpldbdfit","brpc0v0fit","brp56qhfit","brpqz1dfit","brp8hs0fit","brpj4f4fit","brpc7sefit","brpoor9fit","brp22nffit","brp2jf8fit","brpp6qgfit","brp6suefit","brpametfit","brprux3fit","brp1qiqfit","brpf9zhfit","brpcnwffit","brp6bnwfit","brphednfit","brp682gfit","brpugamfit","brpa7pcfit","brpy82dfit","brpi2uufit","brpprawfit","brp3ytlfit","brpc79jfit","brpfbz9fit","brpr9w2fit","brphmeffit","brpuhtdfit","brpjo88fit","brpfi5jfit","brphy4tfit","brp5dclfit","brpocugfit","brplri3fit","brpdxj7fit","brpeckyfit","brp0s7gfit","brpbczsfit","brpb3mhfit","brpgy25fit","brpaxlwfit","brpo4z1fit","brp2i9hfit","brpvtfvfit","brpmmcyfit","brpybqafit","brpfcrwfit","brpbt1mfit","brpqnjefit","brprifufit","brp1obwfit","brpiqs5fit","brpd43bfit","brpgulvfit","brp6drifit","brp6s4wfit","brpfnb7fit","brp6r18fit","brpgd4zfit","brp4x4hfit","brp28sifit","brp2ed9fit","brpr4ryfit","brpxwvdfit","brpk7lqfit","brpynyffit","brp30000fit","brp1jm3fit","brprflufit","brptz3lfit","brp3vk1fit","brpsffcfit","brpm03lfit","brpo20ofit","brp5et6fit","brpxfapfit","brpuvkofit","brpuoayfit","brpjuzcfit","brpafoxfit","brpfri3fit","brptiszfit","brpxm6vfit","brp2glwfit","brpb5l6fit","brptw4dfit","brpq4p1fit","brpjeyzfit","brp5h3zfit","brpzvyxfit","brpi4skfit","brpldhwfit","brpj22cfit","brpz7qqfit","brpbgrvfit","brpuqu0fit","brp7yz6fit","brpty3bfit","brp3wwofit","brpadltfit","brpgo6ffit"];
+
+        $coupons = [];
+        $id = Coupon::max('_id')+1;
+        foreach($codes as $code){
+            $coupon = [
+                "name" => "Burrp World Cup Campaign",
+                "code" => "burrpfit",
+                "description" => "Get Rs. 500 to use on 2 sessions using PPS. ",
+                "discount_percent" => 0,
+                "discount_max" => 250,
+                "discount_amount" => 500,
+                "burp" =>true,
+                "city_id" => "6",
+                "total_available" => 200,
+                "validity" => 0,
+                "success_message" => "",
+                "failure_message" => "",
+                "campaign_success_message" => "",
+                "campaign_discount_percent" => "",
+                "campaign_discount_max" => "",
+                "campaign_discount_amount" => "",
+                "ratecard_type" => [ 
+                    "workout session"
+                ],
+                "status" => "1",
+                "total_used" => 0,
+                "campaign_only" => "0",
+            ];
+            
+            $coupon['_id'] = $id++;
+            $coupon['code'] = $code;
+            array_push($coupons, $coupon);
+        }
+        Coupon::insert($coupons);
+        return $coupons;
+        
+    }
+
+	public function corporateCoupons(){
+
+		try{
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$corporateCoupons = ['gofit', 'hulfit', 'cokefit', 'olafit', 'acgfit', 'novafit', 'airtelfit', 'skfit', 'cokepps', 'bshfit', 'infineon', 'mckinsey', 'syncron', 'fitact'];
+			
+			$flags = array("flags" => array("corporate_coupon" => true));
+
+			Coupon::whereIn('code', $corporateCoupons)->update($flags);
+			Fitcashcoupon::whereIn('code', $corporateCoupons)->update($flags);
+			Wallet::whereIn('coupon', $corporateCoupons)->update($flags);
+
+			// $wallet = Wallet::where('flags.corporate_coupon',true)->lists('_id');
+			$wallet = Wallet::where('flags.corporate_coupon',true)->get()->toArray();
+
+			$walletIds = array();
+			$wallets = array();
+			foreach($wallet as $kw => $vw){
+				array_push($walletIds, $vw['_id']);
+				$wallets[$vw['_id']] = $vw;
+			}
+
+			$coupon = Coupon::where('flags.corporate_coupon',true)->get()->toArray();
+			$coupons = array();
+			foreach($coupon as $kc => $vc){
+				$coupons[$vc['code']] = $vc;
+			}
+
+			// return $walletIds;
+			// return $wallets;
+
+			Log::info("walletIds ::: ", [$walletIds]);
+			$totalOrder = Order::whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $walletIds)->count();
+			// return $totalOrder;
+			$limit = 50;
+			$offset = ceil($totalOrder / $limit);
+			Log::info("totalOrder :: ",[$totalOrder]);
+			Log::info("limit :: ",[$limit]);
+			Log::info("offset :: ",[$offset]);
+			// return;
+			for($i = 0;$i < $offset;$i++){
+				$skip = $i*$limit;
+				Log::info("skip :: ",[$skip]);
+				$order = Order::whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $walletIds)->skip($skip)->take($limit)->get();
+				
+				foreach($order as $k => $v){
+					$one_order = array();
+					$one_order = $v;
+					Log::info("order_id",[$one_order['_id']]);
+					$wallet_transaction_debit = $one_order['wallet_transaction_debit'];
+					
+					$flag_arr = array();
+					foreach($wallet_transaction_debit['wallet_transaction'] as $k1 => $v1){
+						if(in_array($v1['wallet_id'], $walletIds)){
+							$v1['coupon'] = $wallets[$v1['wallet_id']]['coupon'];
+							$v1['fitcashcoupon_flags'] = $wallets[$v1['wallet_id']]['flags'];
+							
+							array_push($flag_arr, 1);
+						}
+						$wallet_transaction_debit['wallet_transaction'][$k1] = $v1;
+					}
+					
+					$one_order['wallet_transaction_debit'] = $wallet_transaction_debit;
+					
+					if(!empty($flag_arr) && in_array(1, $flag_arr)){
+						$one_order['corporate_coupon'] = true;
+					}
+				
+					$one_order->update();
+				}
+			}
+
+			$totalOrder1 = Order::whereIn('coupon_code', $corporateCoupons)->count();
+			// return $totalOrder1;
+			$limit1 = 50;
+			$offset1 = ceil($totalOrder1 / $limit1);
+			Log::info("totalOrder1 :: ",[$totalOrder1]);
+			Log::info("limit1 :: ",[$limit1]);
+			Log::info("offset1 :: ",[$offset1]);
+			// return;
+			for($i1 = 0;$i1 < $offset1;$i1++){
+				$skip1 = $i1*$limit1;
+				Log::info("skip1 :: ",[$skip1]);
+				$order1 = Order::whereIn('coupon_code', $corporateCoupons)->skip($skip)->take($limit)->get();
+				
+				foreach($order1 as $k11 => $v11){
+					$one_order11 = array();
+					$one_order11 = $v11;
+					Log::info("order_id11",[$one_order11['_id']]);
+					// Log::info("coupon11 :: ",[$coupons[$v11['coupon_code']]]);
+					$one_order11['coupon_flags'] = $coupons[$v11['coupon_code']]['flags'];
+					$one_order11['corporate_coupon'] = true;
+					$one_order11->update();
+					// exit();
+				}
+			}
+
+			$return = array('status'=>'done');
+		}catch(Exception $exception){
+			$message = array(
+				'type'    => get_class($exception),
+				'message' => $exception->getMessage(),
+				'file'    => $exception->getFile(),
+				'line'    => $exception->getLine(),
+			);
+			Log::error($exception);
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+		print_r($return);
+	} 
 
 }
 

@@ -12,22 +12,37 @@
 */
 
 App::before(function($request)
-{
-    Log::info($_SERVER['REQUEST_URI']);
-    if(!empty(Input::all())){
-        Log::info("API Hit" , Input::all());
+{   
+    try{
+        Log::info($_SERVER['REQUEST_URI']);
+        Log::info("Before filter");
+        if(!empty(Input::all())){
+            Log::info("API Hit" , Input::all());
+        }else if(!empty(Input::json()->all())){
+            Log::info("API Hit" , Input::json()->all());
+        }
+        Log::info(apache_request_headers());
+    }catch(Exception $e){
+        Log::info("Error in before filter");
+        Log::info($e);
     }
-    Log::info(apache_request_headers());
 });
 
 
 App::after(function($request, $response)
-{
-    $reqClient = Request::all();
-    // Log::info('$reqClient: ', [$reqClient]);
-    if(!(isset($reqClient) && isset($reqClient['third_party']) && $reqClient['third_party'])) {
-        refreshToken($response);
+{   
+    try{
+        Log::info("after filter");
+        $reqClient = Request::all();
+    
+        if(!(isset($reqClient) && isset($reqClient['third_party']) && $reqClient['third_party'])) {
+            refreshToken($response);
+        }
+    }catch(Exception $e){
+        Log::info($e);
+        Log::info("Error in after filter");
     }
+    
 });
 
 /*

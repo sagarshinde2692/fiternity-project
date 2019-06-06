@@ -674,9 +674,11 @@ class ServiceController extends \BaseController {
 		Service::$withoutAppends=true;
 		 Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
 		
-        $query = Service::active()->whereNotIn('trial',['manual', 'manualauto','disable']);
+        $query = Service::active()->where("trial", '!=', 'disable')->where(function($query){
+            $query->whereNotIn('trial',['manual', 'manualauto'])->orWhere('flags.enable_manual_booking_pps.status', true);
+        });
 
-
+        $query->where('servicecategory_id','!=',163);
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
 
@@ -697,7 +699,7 @@ class ServiceController extends \BaseController {
 		//  $items = $query->get()->toArray();
 
 
-		
+
 
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
@@ -710,7 +712,7 @@ class ServiceController extends \BaseController {
 		// $finder = Finder::find($finder_id, array('inoperational_dates'));
         $finder = Finder::find($finder_id);
         
-        if(!empty($finder['trial']) && in_array($finder['trial'], ['manual', 'manualauto'])){
+        if(!empty($finder['trial']) && (in_array($finder['trial'], ['manual', 'manualauto']) && empty($finder['flags']['enable_manual_booking_pps']['status']))){
     		return Response::json(array('status'=>401,'message'=>'Please contact customer support to book a session here'),401);
     	}
 
@@ -751,7 +753,11 @@ class ServiceController extends \BaseController {
 				}));
 			}
 			
-			$time_in_seconds = time_passed_check($item['servicecategory_id']);
+            $time_in_seconds = time_passed_check($item['servicecategory_id']);
+            
+            if(!empty($finder['flags']['enable_manual_booking_pps']['status']) && !empty($item['flags']['enable_manual_booking_pps']['status'])){
+                $time_in_seconds = 60*60*24;
+            }
 			
 			if(isset($request['time_interval']) && $request['time_interval']){
 				$time_in_seconds = $request['time_interval'];
@@ -783,7 +789,7 @@ class ServiceController extends \BaseController {
                 'free_trial_available'=>!empty($item['freeTrialRatecards'])
 			);
 
-			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
 
 				$service['cost'] = 'Free';
 			}
@@ -954,7 +960,8 @@ class ServiceController extends \BaseController {
                             $decoded = decode_customer_token();
                             $customer_email = $decoded->customer->email;
                             $extended_validity_order =  $this->utilities->getExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
-                            $service['extended_validity'] = !empty($extended_validity_order);
+                            // $studio_extended_validity_order =  $this->utilities->getStudioExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
+                            $service['extended_validity'] = !empty($extended_validity_order) || !empty($studio_extended_validity_order);
                         }
 
                         if($finder['category_id'] != 47 && empty($service['extended_validity']) && empty($item['flags']['disable_dynamic_pricing'])){
@@ -1604,7 +1611,7 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules', 'short_description','servicesubcategory_id']);
+			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules', 'short_description','servicesubcategory_id','flags']);
 			
 			if(!empty($service_details['short_description'])){
 				
@@ -1667,12 +1674,13 @@ class ServiceController extends \BaseController {
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
 
 
+            $service_details['price'] = "₹".$service_details['amount'];
 
-            if(!empty($finder['category_id']) && $finder['category_id'] == 47){
-                $service_details['price'] = "Starting at ₹".$service_details['amount'];
-            }else{
-                $service_details['price'] = "Starting at ₹".floor($service_details['amount'] * Config::get('app.non_peak_hours.off'));
-            }
+            // if((!empty($finder['category_id']) && $finder['category_id'] == 47) || !empty($service_details['flags']['disable_dynamic_pricing'])){
+            //     $service_details['price'] = "Starting at ₹".$service_details['amount'];
+            // }else{
+            //     $service_details['price'] = "Starting at ₹".floor($service_details['amount'] * Config::get('app.non_peak_hours.off'));
+            // }
 
 			$service_details['contact'] = [
 				'address'=>''
@@ -1726,8 +1734,13 @@ class ServiceController extends \BaseController {
 
 			}
 	
+			$reviewCounts = Review::where('status','=','1')->where('description', '!=', "")->where('finder_id', $finder['_id'])->count();
+			if(empty($reviewCounts)) {
+				$reviewCounts = 0;
+			}
+
 			$service_details['reviews'] = [
-				'count'=>isset($finder['total_rating_count']) ? $finder['total_rating_count'] : 0,
+				'count'=>$reviewCounts,
 				'reviews'=>$reviews
 			];
 
@@ -1891,7 +1904,7 @@ class ServiceController extends \BaseController {
 			// $service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 3);
 		}
 		// $service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 7);
-		unset($service_details['workoutsessionschedules']);
+        unset($service_details['workoutsessionschedules']);
 		$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()), true);
 		
 		if($schedule['status'] != 200){
@@ -2255,7 +2268,10 @@ class ServiceController extends \BaseController {
 		$session_count = 0;
 		foreach($timings as $timing){
 			$session_count += $timing["count"];
-		}
+        }
+        
+        $timings[1]['count'] += $timings[0]['count'];
+
 		return $data = array("header"=> "When would you like to workout?","subheader"=>$subheader, "categories" => $timings, "session_count"=> $session_count);
 	}
 

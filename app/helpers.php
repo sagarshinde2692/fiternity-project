@@ -2444,7 +2444,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     Log::info("autoRegisterCustomer");
 					Log::info(print_r($data,true));
 
-                	$customer= Customer::active()->where('email', $data['customer_email'])->first();
+                	$customer= Customer::active()->where('email', 'like', $data['customer_email'])->first();
                     
                     if (!$customer) {
 
@@ -2790,7 +2790,8 @@ if (!function_exists(('time_passed_check'))){
     {      
         $service_category_id = array(2,19,65, 123);
 
-        return (in_array((int)$servicecategory_id,$service_category_id)) ? 15*60 : 90*60 ;
+        // return (in_array((int)$servicecategory_id,$service_category_id)) ? 15*60 : 90*60 ;
+        return 15*60;
     }
 }
 
@@ -3172,9 +3173,13 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null){
 
-        $inoperational_dates = ['2019-03-21'];
+        $inoperational_dates = ['2019-05-01'];
 
-        if( in_array($date, $inoperational_dates)){
+        if( in_array($date, $inoperational_dates) && in_array($city_id, [1,2])){
+            return false;
+        }
+
+        if( in_array($date, $inoperational_dates) && in_array($city_id, [3,5]) && !in_array($findercategory_id, [5])){
             return false;
         }
         
@@ -4319,15 +4324,17 @@ if (!function_exists('upgradeMembershipCondition')) {
 
         $days = getDurationDay($value);
         return $value['type'] == 'membership' 
-        && in_array($days, Config::get('upgrade_membership.duration', [30])) 
-        && in_array($service->servicecategory_id, Config::get('upgrade_membership.service_cat', [65, 111]));
+        && (in_array($days, Config::get('upgrade_membership.duration', [30, 90])) || $days < 30)
+        && in_array($service->servicecategory_id, Config::get('upgrade_membership.service_cat', [65, 111]))
+        && !(isset($value['upgradable']) && empty($value['upgradable']));
     }
 }
 if (!function_exists('upgradeSessionPackCondtion')) {
 
     function upgradeSessionPackCondtion($value, $service)
     {
-        return $value['type'] == 'extended validity' && in_array($service->finder['_id'], Config::get('app.upgrade_session_finder_id', []));
+        return  $value['type'] == 'extended validity' 
+                && !empty($value['flags']['upgradable']);
     }
 
 }
@@ -4372,4 +4379,46 @@ if (!function_exists('getSpinArray')) {
     }
 
 }
+if (!function_exists('getArrayValue')) {
+
+    function getArrayValue($array, $key){
+        
+        return isset($array['key']) ? $array['key'] : null;
+    }
+
+}
+if (!function_exists('requestFtomApp')) {
+
+    function requestFtomApp(){
+        
+        return !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios']);
+    }
+
+}
+
+if (!function_exists('createBucket')) {
+
+    function createBucket($array, $key, $range){
+        
+        $buckets = [];
+
+        foreach($range as $r){
+            $buckets[$r] = [];
+            foreach($array as &$x){
+                if($x[$key] <= $r && empty($x['pushed'])){
+                    array_push($buckets[$r], $x);
+                    $x['pushed'] = true;
+                }
+            }
+        }
+
+        return $buckets;
+        
+        
+    
+    }
+
+}
+
+
 ?>
