@@ -582,7 +582,7 @@ Class CustomerSms extends VersionNextSms{
 			case 'renew-membership': $label = 'RenewMembership-Customer';break;
 			case 'upgrade-membership': $label = 'UpgradeMembership-Customer';break;
 			default:return "no email sms";break;
-		}
+        }
 
 		$to = $data['phone'];
 
