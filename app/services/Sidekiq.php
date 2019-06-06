@@ -3,6 +3,7 @@
 use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
 use \Log;
+use \Response;
 
 Class Sidekiq {
     
