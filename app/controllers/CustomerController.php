@@ -9671,10 +9671,12 @@ class CustomerController extends \BaseController {
 			$cancelApi = Config::get('app.fitsquad_cancel_api');
 			Log::info('url and apis::::::::::::::',[$baseURl, $upgradeApi, $cancelApi]);
 			if(!empty($newGrid['brand_id'])){
-				$fitsquad_image = $this->openrewardlist('1', $newGrid['brand_id'], $newGrid['city']);
+				$brand_id = (empty($newGrid['brand_id']))?null:$newGrid['brand_id'];
+				$city = (empty($newGrid['city']))?null:$newGrid['city'];
+				$fitsquad_image = $this->openrewardlist('1', $brand_id, $city);
 			}
 			else {
-				$fitsquad_image = '';
+				$fitsquad_image = $this->utilities->getRewardGridImages($newGrid['reward_type'], $newGrid['cashback_type_num']);
 			}
 			$fitSquadUpgrade = array(
 				"header"=> "Fitsquad Upgrade Available",
@@ -9728,15 +9730,16 @@ class CustomerController extends \BaseController {
 
 	public function openrewardlist($value, $id, $curcity){
 		$rewardDuration = $value;
+		$curcity = (empty($curcity))?'':$curcity;
 		//$('.gold-fit-rewards').find('.mui-row').addClass('hide');
 		$reward_image = '';
-		if ($id == '88') {
+		if (!(empty($id)) && $id == '88') {
 			//$('.gold-fit-rewards .multifit').removeClass('hide');
 			$reward_image = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
-		}else if ($id == '166') {
+		}else if (!(empty($id)) && $id == '166') {
 			//$('.gold-fit-rewards .shivfit').removeClass('hide');
 			$reward_image = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
-		} else if ($id == '56') {
+		} else if (!(empty($id)) && $id == '56') {
 			//$('.gold-fit-rewards .hanman').removeClass('hide');
 			$reward_image = 'https://b.fitn.in/hanman/download2.jpeg';
 		} else {
