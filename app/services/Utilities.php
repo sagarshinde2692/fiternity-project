@@ -8794,7 +8794,7 @@ Class Utilities {
                     }
                 }
                 else {
-                    $brandIdTypeChk = empty($finder['brand_id'])||!in_array($finder['brand_id'], Config::get('app.brand_loyalty'))||in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'));
+                    $brandIdTypeChk = empty($finder['brand_id'])||!in_array($finder['brand_id'], Config::get('app.brand_loyalty'))||!in_array($order['duration'], [180, 360])||in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'));
 
                     $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2))) && $brandIdTypeChk;
                 }
