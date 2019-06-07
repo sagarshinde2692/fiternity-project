@@ -2260,7 +2260,7 @@ class ServiceController extends \BaseController {
 			]
 		];
 		$pay_per_session = payPerSession($pay_persession_request);
-		$subheader = $pay_per_session["request"]["category_name"] . " sessions in " . $pay_per_session["request"]["location_name"];
+		$subheader = $pay_per_session["request"]["category_name"] . " sessions in " . $pay_per_session["request"]["location_name"].(!empty($data['location']['geo']['radius'])?' within '.$data['location']['geo']['radius']:'');
 		$timings = $pay_per_session["aggregations"]["time_range"];
 		$tomorrow = date('l', strtotime(' +1 day'));
 		$tomorrow_date = date('d-m-Y', strtotime(' +1 day'));

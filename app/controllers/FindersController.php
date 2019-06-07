@@ -7217,7 +7217,7 @@ class FindersController extends \BaseController {
 
 								
 	}
-
+    
     public function applyFitsquadSection(&$data){
 
         $data['fitsquad'] = [
