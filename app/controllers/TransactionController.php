@@ -6130,11 +6130,13 @@ class TransactionController extends \BaseController {
         $payment_modes = [];
 
 
-        $payment_options['payment_options_order'] = ["wallet", "upi", "cards", "netbanking", "emi"];
+        $payment_options['payment_options_order'] = ["wallet", "cards", "netbanking", "emi"];
 
         if(!empty($order['type']) && $order['type'] == 'memberships'){
-            $payment_options['payment_options_order'] = ["cards", "upi", "wallet", "netbanking", "emi"];
+            $payment_options['payment_options_order'] = ["cards", "wallet", "netbanking", "emi"];
         }
+
+        
     
         $payment_options['wallet'] = [
             'title' => 'Wallet',
@@ -6168,10 +6170,53 @@ class TransactionController extends \BaseController {
                     ]
             ]
         ];
-        $payment_options['upi'] = [
-            'title' => 'UPI',
-            'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
-        ];
+
+        if(($this->get_device_type=='ios' &&$this->get_app_version > '5.1.7') || ($this->get_device_type=='android' &&$this->get_app_version > '5.24')){
+            $payment_options['payment_options_order'] = ["wallet", "upi", "cards", "netbanking", "emi"];
+
+            if(!empty($order['type']) && $order['type'] == 'memberships'){
+                $payment_options['payment_options_order'] = ["cards", "upi", "wallet", "netbanking", "emi"];
+            }
+
+            $payment_options['upi'] = [
+                'title' => 'UPI',
+                'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
+            ];
+
+            $payment_options['wallet'] = [
+                'title' => 'Wallet',
+                'subtitle' => 'Transact online with Wallets',
+                'value'=>'wallet',
+                'options'=>[
+                        [
+                                'title' => 'Paypal',
+                                // 'subtitle' => 'Paypal',
+                                'value' => 'paypal'
+                        ],
+                        [
+                                'title' => 'Paytm',
+                                // 'subtitle' => 'Paytm',
+                                'value' => 'paytm'
+                        ],
+                        [
+                                'title' => 'AmazonPay',
+                                // 'subtitle' => 'AmazonPay',
+                                'value' => 'amazonpay'
+                        ],
+                        [
+                                'title' => 'Mobikwik',
+                                // 'subtitle' => 'Mobikwik',
+                                'value' => 'mobikwik'
+                        ],
+                        [
+                                'title' => 'PayU',
+                                // 'subtitle' => 'PayU',
+                                'value' => 'payu'
+                        ]
+                ]
+            ];
+        }
+        
         $os_version = intval(Request::header('Os-Version'));
         
         if($os_version >= 9 && $this->device_type == 'android'){
