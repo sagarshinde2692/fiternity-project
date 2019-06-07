@@ -9628,7 +9628,7 @@ class CustomerController extends \BaseController {
 									$newLoyalty['cashback'] = '100%';
 								}	
 							}
-							else if(!empty($newLoyalty['reward_type']) && !in_array($newLoyalty['reward_type'], [4, 6])){
+							else if(!empty($newLoyalty['reward_type']) && in_array($newLoyalty['reward_type'], [3, 4, 5, 6])){
 								$cashbackMap = [ "100%", "120%", "120%", "100%", "100%", "100%", "100%" ];
 								$newLoyalty['cashback'] = $cashbackMap[$newLoyalty['cashback_type'] - 1];
 							}
