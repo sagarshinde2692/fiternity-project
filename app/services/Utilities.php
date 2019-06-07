@@ -8780,11 +8780,13 @@ Class Utilities {
                 }
                 $finder = Finder::active()->where('_id', $order['finder_id'])->first();
                 $isDowngrade = false;
+                $brandIdTypeChk = false;
+                $sameBrand = false;
                 if(!empty($customer['loyalty']['brand_loyalty'])){
-                    $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$order['brand_id'];
-                    if($brandIdTypeChk){
+                    $sameBrand = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];
+                    if($sameBrand){
                         $brand_loyalty_data = $this->buildBrandLoyaltyInfoFromOrder($finder, $order);
-                        $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$brand_loyalty_data['brand_id']
+                        $sameBrand = $customer['loyalty']['brand_loyalty']==$brand_loyalty_data['brand_loyalty']
                         && $customer['loyalty']['brand_loyalty_duration']==$brand_loyalty_data['brand_loyalty_duration']
                         && $customer['loyalty']['brand_loyalty_city']==$brand_loyalty_data['brand_loyalty_city']
                         && $customer['loyalty']['brand_version']==$brand_loyalty_data['brand_version'];
@@ -8797,12 +8799,13 @@ Class Utilities {
                     $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2))) && $brandIdTypeChk;
                 }
                 
+                Log::info('$sameBrand: ', [$sameBrand]);
                 Log::info('$rewTypeChk: ', [$rewTypeChk]);
                 Log::info('$cbkTypeChk: ', [$cbkTypeChk]);
                 Log::info('$brandIdTypeChk: ', [$brandIdTypeChk]);
                 Log::info('$isDowngrade: ', [$isDowngrade]);
 
-                if(($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
+                if($sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
                     // same grid - no need to upgrade
                     $retObj = null;
                 }
