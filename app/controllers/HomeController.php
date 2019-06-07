@@ -786,7 +786,7 @@ class HomeController extends BaseController {
                     Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity']]);
                     $extended_message = $itemData['studio_membership_duration']['num_of_days_extended'];
                     Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity_order_id']]);
-                    if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.24')){
+                    if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.23')){
                         Log::info('checking for studio extendrd validity order id',[$itemData['studio_extended_validity']]);
                         $flexi_data = Config::get('extendedValidity.finder_banner_app');
                     }
