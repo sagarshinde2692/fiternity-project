@@ -3455,6 +3455,7 @@ class CustomerController extends \BaseController {
 			try {
 
 				$decoded = $this->customerTokenDecode($jwt_token);
+				Log::info('token values',[$decoded]);
 
                 // if(empty($decoded->customer)){
                 //     return ['isSessionExpired'=>true];
@@ -3881,14 +3882,14 @@ class CustomerController extends \BaseController {
 		// }
 		
 		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
-                
+			Log::info('inside campain finding:::::::::::::::::');
 			$city_id = City::where('slug', $city)->first(['_id']);
 			
 			// return $city_id;
 			$campaigns = [];
 			/***************************Banners start********************** */
 			// commented below on 26 Jan - start
-
+			Log::info('after city query campain finding:::::::::::::::::', [$city_id]);
 			if($city){
 
 				$homepage = Homepage::where('city_id', $city_id['_id'])->first();
@@ -3929,7 +3930,6 @@ class CustomerController extends \BaseController {
             // commented above on 26 Jan - end
             
             /***************************Banners end********************** */
-
 			$result['campaigns'] =  $campaigns;
 			// $result['campaigns'] =  [];
 
@@ -4082,7 +4082,14 @@ class CustomerController extends \BaseController {
 	            ]
 	        ];
             $geoLocationFinder = geoLocationFinder($near_by_vendor_request, 'customerhome');
-	        $result['near_by_vendor'] = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
+			$result['near_by_vendor'] = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
+			//checking for fitsquad upgrade
+			if(isset($customer_id)){
+				$fitsquadUpgradeOrder = $this->fitSquadUpgradeAvailability($customer_id);
+				if($fitsquadUpgradeOrder){
+					$result['fitsquad_upgrade'] = $fitsquadUpgradeOrder;
+				}
+			}
 		}
         
 		$result['categoryheader'] = "Discover | Try | Buy";
@@ -8396,7 +8403,7 @@ class CustomerController extends \BaseController {
         $filter = [];
         
         $customer = $this->utilities->getCustomerFromTokenAsObject();
-
+		
         if(!empty($customer->_id)){
 
             $customer = Customer::active()->where('_id', $customer->_id)->where('loyalty', 'exists', true)->first();
@@ -8420,14 +8427,24 @@ class CustomerController extends \BaseController {
                 $voucher_categories_map[$vc['_id']][0]['max_amount'] = $vc['amount'];
             }
         }
-		
-		if($post){
-
-            return $this->postLoyaltyRegistration($customer, $voucher_categories_map);
+		//check onece for it should availabe with postloyaltyregistration and preloyalty registration or with both ->>>>>>>>>> now sendoing with both
+		$fitsquad_upgrade= null;
+		//if((isset($_REQUEST['device_type']) || isset($_REQUEST['Device_Type'])) && (in_array($_REQUEST['device_type'],['ios','android']) || in_array($_REQUEST['Device_type'],['ios','android'])) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
+			Log::info('inside calling fitsquadupgrade',[$customer['id']]);
+			$fitsquadUpgradeOrder = $this->fitSquadUpgradeAvailability($customer['id']);
+			if($fitsquadUpgradeOrder){
+				$fitsquad_upgrade = $fitsquadUpgradeOrder;
+			}
+		//}
+        if($post){
+			$postloyalty = $this->postLoyaltyRegistration($customer, $voucher_categories_map);
+			if($fitsquad_upgrade)
+				$postloyalty['post_register']['fitsquad_upgrade'] = $fitsquad_upgrade;
+			return $postloyalty;
 
 		}else{
 
-            return $this->preLoyaltyRegistration($voucher_categories_map);
+        	return $this->preLoyaltyRegistration($voucher_categories_map);
 			
 			
 		}
@@ -9440,7 +9457,7 @@ class CustomerController extends \BaseController {
         if(!empty($order['studio_extended_validity'])){
             $order['left_text'] = "booked";
             $order['sessions_left'] =  $order['studio_sessions']['total'];
-            $order['total_session_text'] = $order['studio_sessions']['total']." Session pack";
+            $order['total_session_text'] = $order['studio_sessions']['total']." Session Flexi Membership";
             $extended_count = Order::active()->where('studio_extended_validity_order_id', $order['_id'])->where('studio_extended_session', true)->count();
             $order['finder_address'] = ($order['studio_sessions']['cancelled']-$extended_count)."/".$order['studio_sessions']['total_cancel_allowed']." sessions can be extended for free after ".date('d-m-Y' ,$order['studio_membership_duration']['end_date']->sec);
         }
@@ -9554,6 +9571,22 @@ class CustomerController extends \BaseController {
 		$data = Input::all();
 		Log::info('loyaltyAppropriation data: ', [$data]);
 		$resp = ['status' => 500, 'messsage' => 'Something went wrong'];
+		if(empty($data['customer_id'])){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+				//Log::info('_device_filter_jwt_token : '.$jwt_token);
+
+				$decoded = customerTokenDecode($jwt_token);
+				$data['customer_id'] = (int)$decoded->customer->_id;
+				//$data['type'] = 'memberships';
+			}
+			else{
+				$resp['status']=400;
+				$resp['message'] = "Invalid Request";
+				return $resp;
+			}
+		}
 		$order = null;
 		try{
 			if((empty($data) || empty($data['order_id'])) && !empty($data['type']) && $data['type']=='profile'){
@@ -9575,8 +9608,10 @@ class CustomerController extends \BaseController {
 
 						$oldLoyalty = $cust['loyalty'];
 
-						Log::info('ready to prepareLoyaltyData.....');
+						
 						$newLoyalty = $this->prepareLoyaltyData($order);
+						$newLoyalty['loyalty_upgraded'] = true;
+						Log::info('ready to prepareLoyaltyData.....',[$newLoyalty]);
 						if(!empty($newLoyalty)){
 							$archiveData = ['loyalty' => $oldLoyalty];
 							
@@ -9587,7 +9622,22 @@ class CustomerController extends \BaseController {
 
 							$this->utilities->deactivateCheckins($cust['_id'], $reason);
 
-							$resp = ['status'=>200, 'message'=>'Successfully appropriated the loyalty of the customer'];
+							if(empty($newLoyalty['cashback_type'])) {
+								$newLoyalty['cashback'] = '';
+								if(!empty($newLoyalty['brand_loyalty'])){
+									$newLoyalty['cashback'] = '100%';
+								}	
+							}
+							else if(!empty($newLoyalty['reward_type']) && in_array($newLoyalty['reward_type'], [3, 4, 5, 6])){
+								$cashbackMap = [ "100%", "120%", "120%", "100%", "100%", "100%", "100%" ];
+								$newLoyalty['cashback'] = $cashbackMap[$newLoyalty['cashback_type'] - 1];
+							}
+							if(!empty($newLoyalty['cashback'])) {
+								$resp = ['status'=>200, 'message'=>'Congratulations, your Fitsquad is upgraded to '.$newLoyalty['cashback'].' cashback.'];
+							}
+							else {
+								$resp = ['status'=>200, 'message'=>'Congratulations, your Fitsquad is upgraded.'];
+							}
 						}
 						else {
 							$resp = ['status'=>400, 'message'=>'order details are missing'];
@@ -9611,4 +9661,127 @@ class CustomerController extends \BaseController {
 		return Response::json($resp, $resp['status']);
 	}
 
+	public function fitSquadUpgradeAvailability($customer_id){
+		$newGrid = $this->utilities->getLoyaltyAppropriationConsentMsg($customer_id, null,false);
+		Log::info('checking new grid',[$newGrid]);
+		$fitSquadUpgrade=null;
+		if($newGrid){
+			$baseURl = Config::get('app.url');
+			$upgradeApi = Config::get('app.fitsquad_upgrade_api');
+			$cancelApi = Config::get('app.fitsquad_cancel_api');
+			Log::info('url and apis::::::::::::::',[$baseURl, $upgradeApi, $cancelApi]);
+			if(!empty($newGrid['brand_id'])){
+				$brand_id = (empty($newGrid['brand_id']))?null:$newGrid['brand_id'];
+				$city = (empty($newGrid['city']))?null:$newGrid['city'];
+				$fitsquad_image = $this->openrewardlist('1', $brand_id, $city);
+			}
+			else {
+				$fitsquad_image = $this->utilities->getRewardGridImages($newGrid['reward_type'], $newGrid['cashback_type_num']);
+			}
+			$fitSquadUpgrade = array(
+				"header"=> "Fitsquad Upgrade Available",
+				"title"=> "Fitsquad Upgrade",
+				"logo"=> "https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png",
+				"text_home" => "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>You are ".$newGrid['checkins_left_next_milestone']." check-ins away from the next Milestone.<b><br/><br/> Fitsquad Upgrade Available",
+				"text"=> "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>It looks like you recently purchased <b>".$newGrid['finder_name']."</b> membership. Upgrading to ".$newGrid['finder_name']." Fitsquad will let you unlock new rewards. However, you will lose your current check-in streak.<br/><br/><b>New check-in validity</b> ".date('d-M-Y', strtotime($newGrid['new_end_date']))."<br/><br/>New rewards",
+				"background_image"=> "https://b.fitn.in/loyalty/banner.jpg",
+				"ratio"=> 0.36,
+				"reward_image"=>$fitsquad_image,
+				"reward_ratio"=>1.05,
+				"upgrade_button"=> array(
+					"text"=> "Upgrade Ftsquad",
+					"url"=> $baseURl.$upgradeApi.'?type=profile'
+				),
+				"continue_button"=> array(
+					"text" => "No Thanks",
+					"url"=> $baseURl.$cancelApi
+				)
+				);
+		}
+		return $fitSquadUpgrade;
+	}
+
+	public function fitSquadUpgradeRemainLoyalty(){
+		$input = Input::All();
+		if(empty($input['customer_id'])){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+				Log::info('_device_filter_jwt_token : '.$jwt_token);
+
+				$decoded = customerTokenDecode($jwt_token);
+				$input['customer_id'] = (int)$decoded->customer->_id;
+			}
+			else{
+				$resp['status']=400;
+				$resp['message'] = "Invalid Request";
+				return $resp;
+			}
+		}
+		$customerUpdate = Customer::find($input['customer_id']);
+		$loyalty = $customerUpdate['loyalty'];
+		$loyalty['loyalty_upgraded']=false;
+		//$customerUpdate['loyalty']['loyalty_upgraded']= false;
+		$customerUpdate->loyalty = $loyalty;
+		$customerUpdate->update();
+		return array("status"=>200, "message"=>"Success");
+		//'loyalty.loyalty_upgraded'=false
+	}
+
+	public function openrewardlist($value, $id, $curcity){
+		$rewardDuration = $value;
+		$curcity = (empty($curcity))?'':$curcity;
+		//$('.gold-fit-rewards').find('.mui-row').addClass('hide');
+		$reward_image = '';
+		if (!(empty($id)) && $id == '88') {
+			//$('.gold-fit-rewards .multifit').removeClass('hide');
+			$reward_image = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+		}else if (!(empty($id)) && $id == '166') {
+			//$('.gold-fit-rewards .shivfit').removeClass('hide');
+			$reward_image = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
+		} else if (!(empty($id)) && $id == '56') {
+			//$('.gold-fit-rewards .hanman').removeClass('hide');
+			$reward_image = 'https://b.fitn.in/hanman/download2.jpeg';
+		} else {
+			if ($rewardDuration == '0') {
+				//$('.gold-fit-rewards .allvendors').removeClass('hide');
+				$reward_image = 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final%20%281%29%20%281%29.jpg';
+			} else if ($curcity == "mumbai" || $curcity == "pune") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixmum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvemum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else if ($curcity == "delhi" || $curcity == "noida" || $curcity == "gurgaon") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixdel').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvedel').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else if ($curcity == "bangalore") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixbang').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvebang').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixmum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvemum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			}
+		}
+		return $reward_image;
+		// openPopUp('gold-fit-rewards');
+		//customOpenPopup('gold-fit-rewards');
+	}
 }

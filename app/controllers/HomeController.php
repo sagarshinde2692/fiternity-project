@@ -1825,12 +1825,13 @@ class HomeController extends BaseController {
                         $booking_details_data = array_only($booking_details_data, ['booking_id','address','poc', 'validity']);
                     }
                 }
+                // Log::info('getLoyaltyAppropriationConsentMsg', [$item['loyalty_email_content']]);
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
-                    if(isset($item['loyalty_email_content'])){
-                        $subline = $subline."<br>".$item['loyalty_email_content'];
+                    // if(isset($item['loyalty_email_content'])){
+                        // $subline = $subline."<br>".$item['loyalty_email_content'];
                         // $subline = $subline."<br>".$this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
-                         // $loyaltySuccessMsg = $this->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
-                    }
+                         $loyaltySuccessMsg = $this->utilities->getLoyaltyAppropriationConsentMsg($customer['_id'], $id);
+                    // }
                 }
                 else {
                     // if(isset($item['loyalty_email_content'])){
