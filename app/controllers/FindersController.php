@@ -4904,8 +4904,11 @@ class FindersController extends \BaseController {
 							}
 						}
 					}
-				}
-				if($finderData['finder']['commercial_type'] == 0){
+                }
+                
+                $this->serviceRemoveFlexiIfExtendedPresent($finderData, "app");
+                
+                if($finderData['finder']['commercial_type'] == 0){
 					$finderData['finder']['trial'] = "disable";
 					$finderData['finder']['membership'] = "disable";
 				}
@@ -7902,21 +7905,28 @@ class FindersController extends \BaseController {
 		}
 	}
     
-    public function serviceRemoveFlexiIfExtendedPresent(&$data){
+    public function serviceRemoveFlexiIfExtendedPresent(&$data, $source="web"){
+
+        $ratecard_key = 'ratecard';
+	
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
+        
         foreach($data['finder']['services'] as &$service){
             $extended_validity = false;
             
-            foreach($service['serviceratecard'] as &$ratecard){
+            foreach($service[$ratecard_key] as &$ratecard){
                 if($ratecard['type'] == 'extended validity'){
                     $extended_validity = true;
                     break;
                 }
             }
 
-            if(empty($extended_validity)){
-                if($ratecard['type'] == 'extended validity'){
-                    if(!empty($ratecard['studio_extended_validity'])){
-                        unset($ratecard['studio_extended_validity']);
+            if(!empty($extended_validity)){
+                foreach($service[$ratecard_key] as &$ratecard1){
+                    if(!empty($ratecard1['studio_extended_validity'])){
+                        unset($ratecard1['studio_extended_validity']);
                     }
                 }
             }
