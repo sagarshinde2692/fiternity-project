@@ -7928,7 +7928,11 @@ class FindersController extends \BaseController {
                     if(!empty($ratecard1['studio_extended_validity'])){
                         unset($ratecard1['studio_extended_validity']);
                     }
+                    if(!empty($ratecard1['type']) && $ratecard1['type']=='studio_extended_validity'){
+                        $ratecard1['type'] = 'membership';
+                    }
                 }
+
             }
 		
 		}
