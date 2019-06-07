@@ -1104,7 +1104,9 @@ class HomeController extends BaseController {
                 }
                 
                 if(!empty($flexi_data)){
-                    $response['flexi_data'] = $flexi_data;                    
+                    $response['flexi_data']["popup_data"] = $flexi_data;                    
+                    $response['flexi_data']["header"] = "You have purchased Flexi Membership";
+                    $response['flexi_data']["button_title"] = "Know more";
                 }
                 
                 if(!empty($customer_id)){
