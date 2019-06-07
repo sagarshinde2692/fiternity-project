@@ -8,6 +8,7 @@
  */
 use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
+use Indatus\Dispatcher\Scheduling\Schedulable;
 
 class ServiceController extends \BaseController {
 
@@ -16,7 +17,6 @@ class ServiceController extends \BaseController {
 		parent::__construct();
 
 		$this->utilities = $utilities;
-
 		$this->vendor_token = false;
         
         $vendor_token = Request::header('Authorization-Vendor');
@@ -672,8 +672,15 @@ class ServiceController extends \BaseController {
 
 		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id','flags');
 		Service::$withoutAppends=true;
-		 Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
+		Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
 		
+		if(!empty($request['service_id'])){
+			$currentService = Service:: find((int)$request['service_id'],['combine_service_ids']);
+			if(!empty($currentService['combine_service_ids'])){
+				$combine_service_ids = $currentService['combine_service_ids'];
+				Log::info('combine service ids:::::::::', [$combine_service_ids]);
+			}
+		}
         $query = Service::active()->where("trial", '!=', 'disable')->where(function($query){
             $query->whereNotIn('trial',['manual', 'manualauto'])->orWhere('flags.enable_manual_booking_pps.status', true);
         });
@@ -681,8 +688,11 @@ class ServiceController extends \BaseController {
         $query->where('servicecategory_id','!=',163);
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
-
-        (isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id',(int)$request['service_id']) : null;
+		if(!empty($combine_service_ids)){
+			$query->whereIn('_id',$combine_service_ids);
+		}else{ 
+			(isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id',(int)$request['service_id']) : null;
+		}
 
 		switch ($type) {
 			case 'workout-session':
@@ -697,9 +707,6 @@ class ServiceController extends \BaseController {
 		}))->get($selectedFieldsForService)->toArray();
 
 		//  $items = $query->get()->toArray();
-
-
-
 
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
@@ -1241,9 +1248,16 @@ class ServiceController extends \BaseController {
                     }
 
                 }
-            }
-
-
+			}
+			Log::info('slots::::::::: type:::::::', [$type]);
+			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
+				foreach($data['schedules'] as &$schedule){
+					$schedule['slots'] = App(FindersController::class)->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title']);
+				}
+			}
+			else if(!empty($data['slots']) && in_array($this->device_type, ['android', 'ios'])){
+				$data['slots'] = App(FindersController::class)->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'] );
+			}
 	        return Response::json($data,200);
         }
 
@@ -2044,7 +2058,12 @@ class ServiceController extends \BaseController {
 		if(!$data['pending_payment']){
 			unset($data['pending_payment']);	
 		}
-
+		if(!empty($data['service']) && in_array($this->device_type, ['android', 'ios'])){
+			$data['service'] = App(FindersController::class)->orderSummaryService($data['service']);
+		}
+		if(!empty($data['service']['slots'] && in_array($this->device_type, ['android', 'ios']))){
+			$data['service']['slots'] = App(FindersController::class)->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name']);
+		}
 		return Response::json(array('status'=>200, 'data'=> $data));
 
 	}

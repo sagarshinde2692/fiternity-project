@@ -6130,12 +6130,12 @@ class TransactionController extends \BaseController {
         $payment_modes = [];
 
 
-        $payment_options['payment_options_order'] = ["wallet", "cards", "netbanking", "emi"];
+        $payment_options['payment_options_order'] = ["wallet", "upi", "cards", "netbanking", "emi"];
 
         if(!empty($order['type']) && $order['type'] == 'memberships'){
-            $payment_options['payment_options_order'] = ["cards", "wallet", "netbanking", "emi"];
+            $payment_options['payment_options_order'] = ["cards", "upi", "wallet", "netbanking", "emi"];
         }
-        
+    
         $payment_options['wallet'] = [
             'title' => 'Wallet',
             'subtitle' => 'Transact online with Wallets',
@@ -6167,6 +6167,10 @@ class TransactionController extends \BaseController {
                             'value' => 'payu'
                     ]
             ]
+        ];
+        $payment_options['upi'] = [
+            'title' => 'UPI',
+            'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
         ];
         $os_version = intval(Request::header('Os-Version'));
         
