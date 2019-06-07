@@ -2137,6 +2137,10 @@ class HomeController extends BaseController {
             if(!empty($flexi_data)){
                 Log::info("inside setting flexxi data");
                 $resp['flexi_data'] = $flexi_data;
+                $resp['flexi_data']["popup_data"] = $flexi_data;                    
+                $resp['flexi_data']["header"] = "You have purchased Flexi Membership";
+                $resp['flexi_data']["button_title"] = "Know more";
+                
             }
             if(empty($finder) && !empty($itemData['finder_id'])){
                 $finder = Finder::find($itemData['finder_id']);
