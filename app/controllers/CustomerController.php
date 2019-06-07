@@ -9346,8 +9346,10 @@ class CustomerController extends \BaseController {
                 ->with(['service'=>function($query){
                     $query->select('slug');
                 }])
-                ->skip($offset)
-                ->take($limit)
+                ->where(function($query){
+                    $query->orWhere('studio_extended_validity', '!=', true)
+                    ->orWhere('studio_membership_duration.end_date_extended', '>', new MongoDate());
+                })
                 ->orderBy('_id', 'desc');
 
         if(!empty($active)){
@@ -9357,8 +9359,10 @@ class CustomerController extends \BaseController {
 
         }
 
-        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags','studio_extended_validity', 'studio_sessions', 'studio_membership_duration', 'all_service_id']);
-		Log::info('path::::::::',[$path, count($orders)]);
+        $orders =  $orders
+        ->skip($offset)
+        ->take($limit)->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags','studio_extended_validity', 'studio_sessions', 'studio_membership_duration', 'all_service_id']);
+        Log::info('path::::::::',[$path, count($orders)]);
         $orders = $this->formatSessionPackList($orders, $path);
 
         return ['status'=>200, 'data'=>$orders];          
@@ -9366,16 +9370,12 @@ class CustomerController extends \BaseController {
     }
 
     public function formatSessionPackList($orders, $path){
-		$orders1 =[];
         foreach($orders as $key =>$order){
            
 			$order = $this->formatSessionPack($order, $path);
-			if( ! (isset($order['remove_current_order']) && $order['remove_current_order'])){
-				//Log::info('expired:::::::: studio extended session packs::::',[$order['_id']]);
-				array_push($orders1, $order);
-			}			
+		
         }
-        return $orders1;
+        return $orders;
     }
 
     public function formatSessionPack($order, $path='profile'){
@@ -9424,11 +9424,6 @@ class CustomerController extends \BaseController {
                     unset($order['button_title']);
                     unset($order['button_type']);
                 }
-			}
-			// removing expired flexi session packs
-			if(time() > $order['studio_membership_duration']['end_date_extended']->sec){			
-				$order['remove_current_order']= true;
-				return $order;
 			}
 		}
 				
