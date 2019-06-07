@@ -9408,15 +9408,15 @@ class CustomerController extends \BaseController {
     }
 
     public function formatSessionPack($order, $path='profile'){
-		//Log::info('value of path variable:::::', [$path]);
+		
         $order['active'] = true;
+        
         if((!empty($order['ratecard_flags']['unlimited_validity']) || strtotime($order['end_date']) > time()) && !empty($order['sessions_left'])){
             $order['button_title'] = 'Book your next Session';
 			$order['button_type'] = 'book';
 			if(!empty($order['all_service_id'])){
 				$order['button_type'] = 'schedule';
-				$api_name = explode("/", $_SERVER['REQUEST_URI']);
-				Log::info('uri::::::', [$api_name]);
+				
 				if($path=='profile')
 					$order['button_title'] = 'Book a Session';
 			}

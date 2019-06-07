@@ -8,7 +8,7 @@
  */
 use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
-use Indatus\Dispatcher\Scheduling\Schedulable;
+
 
 class ServiceController extends \BaseController {
 
