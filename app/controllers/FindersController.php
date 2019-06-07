@@ -4509,9 +4509,6 @@ class FindersController extends \BaseController {
 					}
                     if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
 						$data['finder']  = $this->applyNonValidity($data, 'app');
-						// if(!empty($data['fit_ex'])){
-						// 	$data['fit_ex'] = $data1['fit_ex'];
-						// }
                         $this->insertWSNonValidtiy($data, 'app');
                     }
                     
@@ -4868,36 +4865,44 @@ class FindersController extends \BaseController {
                     //     }
 					// }
 					if(($this->device_type=='ios' && $this->app_version > '5.1.3') || ($this->device_type=='android')){
-						if(!empty($finderData['finder']['extended_validity'])){
-                            // $finderData['finder']['services'] = $pps_stripe;
-                            $finderData['fit_ex'] =[
-                                'title'=>"Most effective way to workout at ".$finderData['finder']['title']." is here!",
-                                'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
-                                'image'=>'https://b.fitn.in/global/fitex-logo.png',
-                                'data'=>[
-                                    [
-                                        'title'=>"Unlimited Validity Membership",
-                                        'subtitle'=>"Buy a sessions pack and use it over a longer duration",
-                                        'image'=>'https://b.fitn.in/global/web%20NVM%403x.png'
-                                    ],
-                                    [
-                                        'title'=>"Money Saver",
-                                        'subtitle'=>"Pay only for the days you workout",
-                                        'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
-                                    ],
-                                    [
-                                        'title'=>"Easy to Book",
-                                        'subtitle'=>"Book your workout through the app or scan QR code at gym/studio",
-                                        'image'=>'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
-                                    ],
-                                    [
-                                        'title'=>"Track Your Usage",
-                                        'subtitle'=>"Check the workout counter in your Fitternity profile",
-                                        'image'=>'https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png'
-                                    ],
-                                ]
-                            ];
-                        }
+						$extended_validity_count =0;
+						foreach($finderData['finder']['services'] as $s){
+							foreach($s['ratecard'] as $r){
+								if($r['type'] == 'extended validity'){
+									if($extended_validity_count<=2)
+										$extended_validity_count++;
+									else if($extended_validity_count==3){
+										$finderData['fit_ex'] =[
+											'title'=>"Most effective way to workout at ".$finderData['finder']['title']." is here!",
+											'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
+											'image'=>'https://b.fitn.in/global/fitex-logo.png',
+											'data'=>[
+												[
+													'title'=>"Unlimited Validity Membership",
+													'subtitle'=>"Buy a sessions pack and use it over a longer duration",
+													'image'=>'https://b.fitn.in/global/web%20NVM%403x.png'
+												],
+												[
+													'title'=>"Money Saver",
+													'subtitle'=>"Pay only for the days you workout",
+													'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
+												],
+												[
+													'title'=>"Easy to Book",
+													'subtitle'=>"Book your workout through the app or scan QR code at gym/studio",
+													'image'=>'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
+												],
+												[
+													'title'=>"Track Your Usage",
+													'subtitle'=>"Check the workout counter in your Fitternity profile",
+													'image'=>'https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png'
+												],
+											]
+										];
+									}
+								}
+							}
+						}
 					}
 				}
 				if($finderData['finder']['commercial_type'] == 0){
@@ -6921,7 +6926,7 @@ class FindersController extends \BaseController {
 		foreach($data['finder']['services'] as &$service){
 			foreach($service[$ratecard_key] as $key1=>&$ratecard){
 				if($ratecard['type'] == 'extended validity'){
-					Log::info('inside setting ext_validity');
+					//Log::info('inside setting ext_validity');
 					if(!empty($ratecard['flags']['unlimited_validity'])){
 						$ratecard['ext_validity'] = "Unlimited Validity";
 					}else{
