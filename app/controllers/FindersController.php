@@ -4883,7 +4883,7 @@ class FindersController extends \BaseController {
                         $finderData['fit_ex'] =[
                             'title'=>"Now working out at ".$finderData['finder']['title']." is possible without buying a membership",
                             'subtitle'=>"Use Fitternity's Pay-Per-Session to workout here and pay session by session",
-                            'image'=>'https://b.fitn.in/non-validity/finderpage/NO%20VALIDITY%20MOBILE.png',
+                            'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20188%403x.png',
                             'data'=>[
                                 [
                                     'title'=>"Money Saver",
