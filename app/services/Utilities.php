@@ -8567,6 +8567,11 @@ Class Utilities {
                     // same grid - no need to upgrade
                     $retObj = null;
                 }
+                else {
+                    if(!empty($finder['brand_id'])){
+                        $retObj['brand_id'] = $finder['brand_id'];
+                    }
+                }
             }
             // return $message;
             return ($messageOnly)?$newMessage:$retObj;

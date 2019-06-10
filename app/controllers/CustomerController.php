@@ -9702,7 +9702,7 @@ class CustomerController extends \BaseController {
 				"title"=> "Fitsquad Upgrade",
 				"logo"=> "https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png",
 				"text_home" => "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>You are ".$newGrid['checkins_left_next_milestone']." check-ins away from the next Milestone.<b><br/><br/> Fitsquad Upgrade Available",
-				"text"=> "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>It looks like you recently purchased <b>".$newGrid['finder_name']."</b> membership. Upgrading to ".$newGrid['finder_name']." Fitsquad will let you unlock new rewards. However, you will lose your current check-in streak.<br/><br/><b>New check-in validity</b> ".date('d-M-Y', strtotime($newGrid['new_end_date']))."<br/><br/>New rewards",
+				"text"=> "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>It looks like you recently purchased <b>".$newGrid['finder_name']."</b> membership. Upgrading to ".$newGrid['finder_name']." Fitsquad will let you unlock new rewards. However, you will lose your current check-in streak.<br/><br/><b>New check-in validity</b> ".date('d-M-Y', strtotime($newGrid['new_end_date'])),
 				"background_image"=> "https://b.fitn.in/loyalty/banner.jpg",
 				"ratio"=> 0.36,
 				"reward_image"=>$fitsquad_image,
