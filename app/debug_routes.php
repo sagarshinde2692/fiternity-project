@@ -2740,3 +2740,4 @@ Route::get('fitcashCouponMigration','DebugController@fitcashCouponMigration');
 Route::get('couponsValidMigration','DebugController@couponsValidMigration');
 Route::get('testcodesnippet','DebugController@testcodesnippet');
 Route::get('corporateCoupons','DebugController@corporateCoupons');
+Route::get('rewardDistributionAndClaim', 'DebugController@rewardDistributionAndClaim');
