@@ -8566,6 +8566,10 @@ Class Utilities {
                 if($sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
                     // same grid - no need to upgrade
                     $retObj = null;
+                } else {
+                    if(!empty($finder['brand_id'])){
+                        $retObj['brand_id'] = $finder['brand_id'];
+                    }
                 }
                 else {
                     if(!empty($finder['brand_id'])){
