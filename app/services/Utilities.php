@@ -9114,7 +9114,7 @@ Class Utilities {
 			//$('.gold-fit-rewards .hanman').removeClass('hide');
 			$reward_image = 'https://b.fitn.in/hanman/download2.jpeg';
         } else if (!(empty($id)) && $id == '40') {    
-            $reward_image = 'https://b.fitn.in/global/fitsquad-hype-logo.png';
+            $reward_image = 'https://b.fitn.in/global/Hype-Grid-Website.jpg';
 		} else {
 			if ($rewardDuration == '0') {
 				//$('.gold-fit-rewards .allvendors').removeClass('hide');
