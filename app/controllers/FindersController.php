@@ -4881,29 +4881,29 @@ class FindersController extends \BaseController {
                     if($pps_stripe){
                         
                         $finderData['fit_ex'] =[
-                            'title'=>"Now work out at ".$finderData['finder']['title']."  at your own pace",
-                            'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
+                            'title'=>"Now working out at ".$finderData['finder']['title']." is possible without buying a membership",
+                            'subtitle'=>"Use Fitternity's Pay-Per-Session to workout here and pay session by session",
                             'image'=>'https://b.fitn.in/non-validity/finderpage/NO%20VALIDITY%20MOBILE.png',
                             'data'=>[
                                 [
                                     'title'=>"Money Saver",
                                     'subtitle'=>"Pay only for the days you workout",
-                                    'image'=>'https://b.fitn.in/non-validity/finderpage/MONEY%20SAVER%20MOBILE.png'
+                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
                                 ],
                                 [
-                                    'title'=>"Super Easy One-Click Booking",
-                                    'subtitle'=>"Book before your workout through the QR code at gym/studio or your profile.",
-                                    'image'=>'https://b.fitn.in/non-validity/finderpage/ONE%20CLICK%20MOBILE.png'
+                                    'title'=>"Super Easy",
+                                    'subtitle'=>"Book, Reschedule, Cancel on the go",
+                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20325%403x.png'
                                 ],
                                 [
-                                    'title'=>"Track Your Workouts & Map Usage",
-                                    'subtitle'=>"View session details under My Session Packs in your profile",
-                                    'image'=>'https://b.fitn.in/non-validity/finderpage/TRACK%20YOUR%20WORKOUT%20MOBILE.png'
+                                    'title'=>"Unlimited Access",
+                                    'subtitle'=>"Book multiple sessions.",
+                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20323%403x.png'
                                 ],
                                 [
-                                    'title'=>"Easy Re-scheduling & Cancellations",
-                                    'subtitle'=>"Don’t lose out on your workouts with easy cancellations through your profile",
-                                    'image'=>'https://b.fitn.in/non-validity/finderpage/RESCHEDULE%20MOBILE.png'
+                                    'title'=>"Get Addicted",
+                                    'subtitle'=>"Book, Burn & get rewarded on every workout",
+                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20322%403x.png'
                                 ],
                             ]
                         ];
