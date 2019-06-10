@@ -10926,7 +10926,66 @@ public function yes($msg){
 			$return = array('status'=>'fail','error_message'=>$message);
 		}
 		print_r($return);
-	} 
+    } 
+    
+    public function rewardDistributionAndClaim(){
+        
+        Order::$withoutAppends = true;
+        return $cashback_orders = Order::active()->where('reward_type', 'cashback')->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->count();
+        $total_rewards = Order::active()->whereNotIn('reward_ids', [[], null])->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->with(['customerreward'=>function($query){
+            $query->with(['rewardcategory'=>function($query){
+                $query->select('title');
+            }])->select('rewardcategory_id', 'claimed');
+        }])->remember(600)->get(['customer_reward_id','customerreward']);
+
+        $dist = [];
+
+        foreach($total_rewards as $order){
+
+            if(empty($dist[$order['customerreward']['rewardcategory_id']])){
+                $dist[$order['customerreward']['rewardcategory_id']] = [
+                    "total"=>0,
+                    "claimed"=>0,
+                    "title"=>$order['customerreward']['rewardcategory']['title'],
+                ];
+            }
+
+            $dist[$order['customerreward']['rewardcategory_id']]['total']++;
+
+            if(!empty($order['customerreward']['claimed'])){
+                $dist[$order['customerreward']['rewardcategory_id']]['claimed']++;
+            }
+
+
+        }
+
+        
+        // return $dist = array_values($dist);
+        $dist['generic']  = [
+            "total"=> 0,
+            "claimed"=> 0,
+            "title"=> "Fitness generic"
+        ];
+        // array_push($dist, [
+            // return $dist;
+        //     "total"=> 0,
+        //     "claimed"=> 0,
+        //     "title"=> "Fitness generic"
+        // ]);
+        // return $dist['1000'];
+        foreach($dist as $key => $value){
+
+            if(preg_match('/Fitness/', $value['title']) && $key != 'generic'){
+                // return "Ads";
+                $dist['generic']['total']+= $value['total'];
+                $dist['generic']['claimed']+= $value['claimed'];
+                unset($dist[$key]);
+            }
+        }
+
+        return $dist;
+    
+    }
 
 }
 
