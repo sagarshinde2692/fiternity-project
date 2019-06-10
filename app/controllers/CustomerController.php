@@ -697,7 +697,7 @@ class CustomerController extends \BaseController {
 				}
 			}
 			else {
-				Log::info('customerNoEmail: ', [$customerNoEmail]);
+				// Log::info('customerNoEmail: ', [$customerNoEmail]);
 				$customer = Customer::active()->where('email','=',$data['email'])->where('identity','!=','email')->first();
 
 				/*if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
