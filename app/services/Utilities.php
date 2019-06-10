@@ -9113,6 +9113,8 @@ Class Utilities {
 		} else if (!(empty($id)) && $id == '56') {
 			//$('.gold-fit-rewards .hanman').removeClass('hide');
 			$reward_image = 'https://b.fitn.in/hanman/download2.jpeg';
+        } else if (!(empty($id)) && $id == '40') {    
+            $reward_image = 'https://b.fitn.in/global/fitsquad-hype-logo.png';
 		} else {
 			if ($rewardDuration == '0') {
 				//$('.gold-fit-rewards .allvendors').removeClass('hide');
