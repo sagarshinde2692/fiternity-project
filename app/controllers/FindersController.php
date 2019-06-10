@@ -4630,7 +4630,7 @@ class FindersController extends \BaseController {
 
 				$data['finder']['review_url'] = Config::get('app.url').'/finderreviewdata/'.$data['finder']['_id'];
                 $data['show_membership_bargain'] = false;
-
+				$data['finder']['city_name'] = strtolower($finderarr["city"]["name"]);
 				if($this->utilities->isIntegratedVendor($data['finder'])){
                 	$this->applyFitsquadSection($data);
 				}
@@ -7327,7 +7327,8 @@ class FindersController extends \BaseController {
 				// $data['fitsquad']['reward_images'] = [
 				// 	"https://b.fitn.in/global/uber.jpg"
 				// ];
-				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				// $data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				$data['fitsquad']['checkout_button']['image'] = $data['fitsquad']['image'] = $this->utilities->openrewardlist('1', $finderDetails['brand_id'], $finderDetails['city_name']);
 				$data['fitsquad']['checkout_summary']['line1'] = 'On buying this, you get exclusive access into FitSquad Gold';
 			}
 			else if($brandsMap['multifit']==$finderDetails['brand_id']) {
@@ -7335,14 +7336,16 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['title'] = "GET 120% CASHBACK + REWARDS";
 				$data['fitsquad']['subtitle'] = 'Buy/Renew a membership at '.$finderDetails['title'].' & earn ₹35,000 worth of rewards.';
 				//$data['fitsquad']['description'] = "<span>Just Workout for <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> Days & Earn Rewards Worth of ₹35,000";
-				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+				// $data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+				$data['fitsquad']['checkout_button']['image'] = $data['fitsquad']['image'] = $this->utilities->openrewardlist('1', $finderDetails['brand_id'], $finderDetails['city_name']);
 			}
 			else if($brandsMap['shivfit']==$finderDetails['brand_id']) {
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/SHIVFIT-LOGO---VENDOR-PAGE.png";
 				$data['fitsquad']['title'] = "TO GET EXCLUSIVE ACCESS TO FITSQUAD SHIVFIT BUY / RENEW YOUR MEMBERSHIP AT ".strtoupper($finderDetails['title']);
 				//$data['fitsquad']['description'] = 'Just Workout for 10, 45, 75, 150, 225 Days & Earn Rewards Worth of ₹35,000';
 				//$data['fitsquad']['description'] = "<span>Just Workout for <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> Days & Earn Rewards Worth of ₹35,000";
-				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
+				// $data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
+				$data['fitsquad']['checkout_button']['image'] = $data['fitsquad']['image'] = $this->utilities->openrewardlist('1', $finderDetails['brand_id'], $finderDetails['city_name']);
 			}
 			else if($brandsMap['hanman']==$finderDetails['brand_id']) {
 				$data['fitsquad']['image'] = "http://b.fitn.in/global/pps/fitsquadlogo.png";
@@ -7353,10 +7356,14 @@ class FindersController extends \BaseController {
 				// $data['fitsquad']['reward_images'] = [
 				// 	"https://b.fitn.in/global/cashback/rewards/UberEats-Logo-OnWhite-Color-H.png"
 				// ];
-				$data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/hanman/download2.jpeg';
+				// $data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/hanman/download2.jpeg';
+				$data['fitsquad']['checkout_button']['image'] = $data['fitsquad']['image'] = $this->utilities->openrewardlist('1', $finderDetails['brand_id'], $finderDetails['city_name']);
 			}
 			else if($brandsMap['hype']==$finderDetails['brand_id']) {
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/fitsquad-hype-logo.png";
+				$data['fitsquad']['title'] = "GET 100% CASHBACK + REWARDS";
+				$data['fitsquad']['subtitle'] = 'Buy/Renew a membership at '.$finderDetails['title'].' & earn ₹35,000 worth of rewards.';
+				$data['fitsquad']['checkout_button']['image'] = $data['fitsquad']['image'] = $this->utilities->openrewardlist('1', $finderDetails['brand_id'], $finderDetails['city_name']);
 			}
 
 			$data['fitsquad']['checkout_summary']['checkout_button']['image'] = $data['fitsquad']['checkout_button']['image'];

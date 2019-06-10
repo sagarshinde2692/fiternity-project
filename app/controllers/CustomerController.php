@@ -9692,7 +9692,7 @@ class CustomerController extends \BaseController {
 			if(!empty($newGrid['brand_id'])){
 				$brand_id = (empty($newGrid['brand_id']))?null:$newGrid['brand_id'];
 				$city = (empty($newGrid['city']))?null:$newGrid['city'];
-				$fitsquad_image = $this->openrewardlist('1', $brand_id, $city);
+				$fitsquad_image = $this->utilities->openrewardlist('1', $brand_id, $city);
 			}
 			else {
 				$fitsquad_image = $this->utilities->getRewardGridImages($newGrid['reward_type'], $newGrid['cashback_type_num']);
@@ -9745,62 +9745,5 @@ class CustomerController extends \BaseController {
 		$customerUpdate->update();
 		return array("status"=>200, "message"=>"Success");
 		//'loyalty.loyalty_upgraded'=false
-	}
-
-	public function openrewardlist($value, $id, $curcity){
-		$rewardDuration = $value;
-		$curcity = (empty($curcity))?'':$curcity;
-		//$('.gold-fit-rewards').find('.mui-row').addClass('hide');
-		$reward_image = '';
-		if (!(empty($id)) && $id == '88') {
-			//$('.gold-fit-rewards .multifit').removeClass('hide');
-			$reward_image = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
-		}else if (!(empty($id)) && $id == '166') {
-			//$('.gold-fit-rewards .shivfit').removeClass('hide');
-			$reward_image = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
-		} else if (!(empty($id)) && $id == '56') {
-			//$('.gold-fit-rewards .hanman').removeClass('hide');
-			$reward_image = 'https://b.fitn.in/hanman/download2.jpeg';
-		} else {
-			if ($rewardDuration == '0') {
-				//$('.gold-fit-rewards .allvendors').removeClass('hide');
-				$reward_image = 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final%20%281%29%20%281%29.jpg';
-			} else if ($curcity == "mumbai" || $curcity == "pune") {
-				if ($rewardDuration == '6') {
-					//$('.gold-fit-rewards .sixmum').removeClass('hide');
-					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
-				} else {
-					//$('.gold-fit-rewards .twelvemum').removeClass('hide');
-					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
-				}
-			} else if ($curcity == "delhi" || $curcity == "noida" || $curcity == "gurgaon") {
-				if ($rewardDuration == '6') {
-					//$('.gold-fit-rewards .sixdel').removeClass('hide');
-					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
-				} else {
-					//$('.gold-fit-rewards .twelvedel').removeClass('hide');
-					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
-				}
-			} else if ($curcity == "bangalore") {
-				if ($rewardDuration == '6') {
-					//$('.gold-fit-rewards .sixbang').removeClass('hide');
-					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
-				} else {
-					//$('.gold-fit-rewards .twelvebang').removeClass('hide');
-					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
-				}
-			} else {
-				if ($rewardDuration == '6') {
-					//$('.gold-fit-rewards .sixmum').removeClass('hide');
-					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
-				} else {
-					//$('.gold-fit-rewards .twelvemum').removeClass('hide');
-					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
-				}
-			}
-		}
-		return $reward_image;
-		// openPopUp('gold-fit-rewards');
-		//customOpenPopup('gold-fit-rewards');
 	}
 }
