@@ -3395,7 +3395,7 @@ class FindersController extends \BaseController {
 
 			}else{
 
-				if(!empty(Request::header('Vendor-Token'))){
+				if(!empty(Request::header('Authorization-Vendor'))){
 					$membership_services = Ratecard::active()->where('finder_id', $finder_id)->whereIn('type',['membership', 'packages', 'extended validity'])->lists('service_id');
 				}else{
 					$membership_services = Ratecard::active()->where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
