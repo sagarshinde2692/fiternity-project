@@ -3777,7 +3777,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = true){
+	public function finderDetailApp($slug, $cache = false){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -7661,6 +7661,8 @@ class FindersController extends \BaseController {
 						'image' => $cashbackImageMap[$finderDetails['flags']['cashback_type']]['image']
 					];
 				}
+			} else if(!empty($data['fitsquad'])) {
+				unset($data['fitsquad']);
 			}
         }
     }
