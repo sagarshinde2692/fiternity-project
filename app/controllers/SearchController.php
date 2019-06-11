@@ -1248,9 +1248,18 @@ public function getFindersJsonData() {
 
 }
 
-public function locationCity($value){
+public function locationCity($value=null){
+    
+    if(empty($value)){
+        return Response::json(
+            array(
+                'status' => 200,
+                'location' => []
+            ),200
+        );
+    }
 
-	$location = array();
+    $location = array();
 
 	$data = Input::all();
 

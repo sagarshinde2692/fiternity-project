@@ -220,9 +220,9 @@ class Service extends \Basemodel{
 			foreach ($ratecardsarr as $key => $value) {
                 
                 $days = getDurationDay($value);
-                if(!empty($finder['flags']['april5']) && in_array($days, Config::get('app.discount_vendors_duration', [180, 360]))){
-                    $value['coupon_text'] = 'Addnl 5% off - Use code MAY5';
-                }
+                // if(!empty($finder['flags']['april5']) && in_array($days, Config::get('app.discount_vendors_duration', [180, 360]))){
+                //     $value['coupon_text'] = 'Addnl 5% off - Use code MAY5';
+                // }
 
 				// if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
 				// 	$index--;
@@ -236,7 +236,7 @@ class Service extends \Basemodel{
 									// Log::info($serviceoffers);
                 if(!empty($value['_id']) && isset($value['_id'])){
 					
-					$studioExtValidity = (!empty($this->batches) && count($this->batches)>0) && in_array($days, [30, 90]) && (!empty($value['duration_type']) && $value['duration_type']=='session' && !empty($value['duration']));
+					$studioExtValidity = (!in_array($this->servicecategory_id, Config::get('app.non_flexi_service_cat', [111, 65, 5]))) && (!empty($this->batches) && count($this->batches)>0) && in_array($days, [30, 90]) && (!empty($value['duration_type']) && $value['duration_type']=='session' && !empty($value['duration']));
 
 
 					if(!empty($studioExtValidity) && $studioExtValidity && ($value['type']!='extended validity')){
@@ -297,17 +297,22 @@ class Service extends \Basemodel{
                         if($difference->days <= 15 && $difference->days != 0){
                             $ratecardoffer['offer_text']    =  ($difference->days == 1) ? "Expires Today" : ($difference->days > 7 ? "Expires soon" : "Expires in ".$difference->days." days");
 						}
-						
-						$orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
-						if(isset($orderVariable["available_slots_end_date"]) && time() >= $orderVariable["available_slots_end_date"]){
-							$futureExpiry = (date('d',$orderVariable["end_time"])-intval(date('d', time())));
-							$ratecardoffer['offer_text']    =  ($difference->days == 1 || $futureExpiry == 0) ? "Expires Today" : (($difference->days > 7 || $difference->days == 0) ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
-						}else{
-							if($this->available_slots > 0 && time() >= $orderVariable["start_time"] && $key == count($ratecardsarr)-1){
-								$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
+                        
+                        Log::info('setting  slots for 13901');
+                        
+                        if(!in_array($finder->_id, [13901])){
+                            
+                            $orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
+							if(isset($orderVariable["available_slots_end_date"]) && time() >= $orderVariable["available_slots_end_date"]){
+								$futureExpiry = (date('d',$orderVariable["end_time"])-intval(date('d', time())));
+								$ratecardoffer['offer_text']    =  ($difference->days == 1 || $futureExpiry == 0) ? "Expires Today" : (($difference->days > 7 || $difference->days == 0) ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
+							}else{
+								if($this->available_slots > 0 && time() >= $orderVariable["start_time"] && $key == count($ratecardsarr)-1){
+									$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
+								}
 							}
-						}
-
+                        
+                        }
 
 						if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
 
@@ -372,7 +377,7 @@ class Service extends \Basemodel{
 
 				
 				
-				appendUpgradeData($value, $this);
+				// appendUpgradeData($value, $this);
                 
                 // if($value["type"] == "workout session" && $finder->category_id != 47){
                 //     if($value["special_price"] > 0){

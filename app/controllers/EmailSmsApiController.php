@@ -693,7 +693,9 @@ class EmailSmsApiController extends \BaseController {
             if(!empty($decoded->customer)&&!empty($decoded->customer->referral_code))
             	$data['referral_code'] = $decoded->customer->referral_code;
             $data['customer_email'] = $decoded->customer->email;
-            $data['customer_phone'] = $decoded->customer->contact_no;
+            if(!empty($decoded->customer->contact_no)){
+                $data['customer_phone'] = $decoded->customer->contact_no;
+            }
         }
 
         if(isset($data['studio_name'])){
@@ -714,6 +716,14 @@ class EmailSmsApiController extends \BaseController {
 
             if(isset($order->city_id)){
                 $data['city_id'] = $order->city_id;
+            }
+            
+            if(isset($order->city_id)){
+                $data['phone'] = $order->customer_phone;
+            }
+            
+            if(isset($order->customer_name)){
+                $data['name'] = $order->customer_name;
             }
 
             if($data["capture_type"] == "renew-membership"){

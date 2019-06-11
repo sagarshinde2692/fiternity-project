@@ -438,7 +438,7 @@ Route::get('v1/rollingfinderindex', array('as' => 'elasticsearch.rollingbuildfin
 Route::get('v1/rollingserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
 //Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
 Route::get('indexfinderdocument/{id}','RankingController@IndexFinderDocument');
-Route::get('locationcity/{value}','SearchController@locationCity');
+Route::get('locationcity/{value?}','SearchController@locationCity');
 
 Route::get('updatescheduleinsearch/{finderid}','ServiceRankingController@UpdateScheduleOfThisFinderInSessionSearch');
 
@@ -1356,3 +1356,6 @@ Route::get('home/getLoyaltyAppropriationConsentMsg/{customer_id}/{order_id}','Ho
 Route::get('testSpinResult/{number}','EmailSmsApiController@testSpinResult');
 Route::post('spinthewheelreg','EmailSmsApiController@spinTheWheelReg');
 Route::get('fitpassComparison', 'DebugController@fitpassComparison');
+Route::get('fixCustomerQuantity', 'DebugController@fixCustomerQuantity');
+Route::get('fixFinanceCustomerQuantity', 'DebugController@fixFinanceCustomerQuantity');
+Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');

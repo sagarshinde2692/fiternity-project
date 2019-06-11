@@ -229,6 +229,10 @@ abstract Class Mailer {
 		$message_data['user_name'] = preg_replace('/[^A-Za-z0-9 \-\']/', '', $message_data['user_name']);
 		
 		$payload = array('to'=>$to,'email_html'=>$email_template,'user_data'=>$message_data,'delay'=>$delay,'label' => $label);
+		
+		if(!empty($message_data['fromemail'])){
+			$payload['fromemail']= $message_data['fromemail'];
+		}
 
 		$route	= 'email';
 		$result  = $sidekiq->sendToQueue($payload,$route);
