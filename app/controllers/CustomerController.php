@@ -3896,7 +3896,8 @@ class CustomerController extends \BaseController {
 
 				$campaigns = [];
 
-               if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners']) && count($homepage['app_banners']) >= 2){
+               if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
+            //    if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners']) && count($homepage['app_banners']) >= 2){
 
                    $app_banners = $homepage['app_banners'];
 
