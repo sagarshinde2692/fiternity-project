@@ -71,8 +71,15 @@ class Order extends \Basemodel {
 		Log::info("yo");
 		return $this->hasMany('TrainerSlotBooking','order_id');
 	}
-	public function ticket(){
+    
+    public function ticket(){
 		return $this->belongsTo('Ticket');
-	}
+    }
+    
+    public function customerreward(){
+		return $this->belongsTo('Myreward', 'customer_reward_id');
+    }
+    
+    
 	
 }
