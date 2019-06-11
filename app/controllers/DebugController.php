@@ -10931,6 +10931,8 @@ public function yes($msg){
     public function rewardDistributionAndClaim(){
         
         Order::$withoutAppends = true;
+        return $total_orders = Order::active()->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->count();
+
         return $cashback_orders = Order::active()->where('reward_type', 'cashback')->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->count();
         $total_rewards = Order::active()->whereNotIn('reward_ids', [[], null])->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->with(['customerreward'=>function($query){
             $query->with(['rewardcategory'=>function($query){
