@@ -1114,14 +1114,14 @@ class HomeController extends BaseController {
                     $customer = Customer::find($customer_id, ['loyalty']);
                     
                     if(!empty($customer['loyalty'])){
-                        $response['milestones'] = $this->utilities->getMilestoneSection();
+                        // $response['milestones'] = $this->utilities->getMilestoneSection();
                     }
                     
                 }
                 
                 
                 if(!empty($item['loyalty_registration']) && $this->utilities->sendLoyaltyCommunication($item)){
-                    // $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
+                    $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
                     $cashback_type_map = Config::get('app.cashback_type_map');
                     $response['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 2;
                     $response['fitsquad_sub_type'] = !empty($item['finder_flags']['cashback_type']) ?  $cashback_type_map[strval($item['finder_flags']['cashback_type'])] : null;
