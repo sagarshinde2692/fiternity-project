@@ -4683,8 +4683,8 @@ class FindersController extends \BaseController {
 					$nearby_other_category = [];
 				}
 
-				$data['nearby_same_category']['title'] = 'Gyms Near '.$finderarr['location']['name'];
-				$data['nearby_same_category']['description'] = 'Check out Fitternity recommended handpicked gyms in '.$finderarr['location']['name'].' with great offers and services which you may like. Take trials with instant booking and get memberships with lowest price guarantee and assured rewards. You can also compare options basis reviews, pictures & prices .Give it a shot !';
+				$data['nearby_same_category']['title'] = ucwords($finderarr["category"]["name"]).' Near '.$finderarr['location']['name'];
+				$data['nearby_same_category']['description'] = 'Check out Fitternity recommended handpicked '.strtolower($finderarr["category"]["name"]).' in '.$finderarr['location']['name'].' with great offers and services which you may like. Take trials with instant booking and get memberships with lowest price guarantee and assured rewards. You can also compare options basis reviews, pictures & prices .Give it a shot !';
 				$data['nearby_same_category']['near_by_vendor'] = $nearby_same_category;
 
                 $data['recommended_vendor']['title'] = "Other popular options in ".$finderarr["location"]["name"];
