@@ -3498,7 +3498,7 @@ class FindersController extends \BaseController {
 					$extra_info[] = array(
 						'title'=>'Results',
 						'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
-						'description'=> $workoutResult
+						'description'=> implode(' | ', $workoutResult)
 					);
 				}
 			}	
