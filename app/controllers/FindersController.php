@@ -3475,7 +3475,7 @@ class FindersController extends \BaseController {
                 // );
             }
 			
-			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6') && !empty($item['short_description'])){
+			if(((isset($_GET['device_type']) && $_GET['device_type'] == 'android') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6')) && !empty($item['short_description'])){
 			
 				$extra_info[] = array(
 					'title'=>'Description',
@@ -3483,6 +3483,8 @@ class FindersController extends \BaseController {
 					'description'=> $item['short_description']
 				);
 			
+			} else if (empty($item['short_description'])) {
+				$extra_info = null;
 			}
 
 			if($category && ($category["_id"] == 42 || $category["_id"] == 45)){
