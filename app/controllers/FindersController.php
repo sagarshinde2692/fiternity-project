@@ -5020,9 +5020,9 @@ class FindersController extends \BaseController {
 			Log::info("Error while sorting ratecard", [$e]);
 		}
 		//adding static data for hanman fitness
-		// if($finderData['finder']['brand_id']==56){
-		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
-		// }
+		if(!empty($finderData['finder']) && !empty($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
+			$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
+		}
 		//Log::info('fibder',[$finderData]);
 		return Response::json($finderData,$finderData['status']);
 
