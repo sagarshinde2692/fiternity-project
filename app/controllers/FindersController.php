@@ -4576,7 +4576,8 @@ class FindersController extends \BaseController {
 					}
 
 					if(!empty($data['finder']['flags']) && !empty($data['finder']['flags']['state']) && $data['finder']['flags']['state'] == 'temporarily_shut'){
-						$data['finder']['overlayimage'] = 'https://b.fitn.in/global/finder/temp-shut.png';
+						// $data['finder']['overlayimage'] = 'https://b.fitn.in/global/finder/temp-shut.png';
+						$data['finder']['overlayimage'] = 'https://b.fitn.in/global/temporarily%20closed.png';
 					}
 
                 }
