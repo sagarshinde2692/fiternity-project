@@ -3804,7 +3804,9 @@ class FindersController extends \BaseController {
 			166 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹35,000 worth of rewards'
 		];
 
-		if (!empty($data['finder']['brand_id']) && !in_array($data['finder']['_id'], Config::get('app.brand_finder_without_loyalty'))) {
+		$brandsList = [135, 88, 166];
+
+		if (!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], $brandsList) && !in_array($data['finder']['_id'], Config::get('app.brand_finder_without_loyalty'))) {
 			if(!empty($brandMap[$data['finder']['brand_id']])){
 				return $brandMap[$data['finder']['brand_id']];
 			}
@@ -5147,9 +5149,9 @@ class FindersController extends \BaseController {
 			Log::info("Error while sorting ratecard", [$e]);
 		}
 		//adding static data for hanman fitness
-		if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
-			$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
-		}
+		// if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
+		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
+		// }
 		//Log::info('finder',[$finderData['finder']]);
 		return Response::json($finderData,$finderData['status']);
 
