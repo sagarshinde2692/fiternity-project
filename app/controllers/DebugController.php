@@ -10931,9 +10931,22 @@ public function yes($msg){
     public function rewardDistributionAndClaim(){
         
         Order::$withoutAppends = true;
+        
+        $cashback_orders = Order::active()->where('reward_type', 'cashback')->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->where('success_date', '<', new DateTime('2019-06-11'))->lists('_id');
+
+        // Wallet::$withoutappends = true;
+
+        $wallet_ids = Wallet::whereIn('order_id', $cashback_orders)->where('type', 'CASHBACK')->lists('_id');
+
+        // return Order::active()->whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)->lists('amount_customer');
+        return Order::active()->whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)->sum('amount_customer');
+
+        // $cashback_wallet_orders = Order::whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)
+
+        return $mixed_rewards_orders = Order::active()->where('reward_type', 'mixed')->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->where('success_date', '<', new DateTime('2019-06-11'))->count();
+        
         return $total_orders = Order::active()->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->count();
 
-        return $cashback_orders = Order::active()->where('reward_type', 'cashback')->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->count();
         $total_rewards = Order::active()->whereNotIn('reward_ids', [[], null])->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->with(['customerreward'=>function($query){
             $query->with(['rewardcategory'=>function($query){
                 $query->select('title');
