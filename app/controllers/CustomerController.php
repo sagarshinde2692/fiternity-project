@@ -9583,85 +9583,112 @@ class CustomerController extends \BaseController {
 
 	public function distanceCalculationOfCheckinsCheckouts($coordinates, $vendorCoordinates){
 		$p = 0.017453292519943295;    // Math.PI / 180
+
 		$dLat = ($vendorCoordinates['lat'] - $coordinates['lat']) * $p;
 		$dLon = ($vendorCoordinates['lon'] - $coordinates['lon']) * $p;
-		$a = sin($dLat/2) * sin($dLat/2) +
-		cos($coordinates['lat'] * $p) * cos($vendorCoordinates['lat'] * $p) * 
-		sin($dLon/2) * sin($dLon/2);
+		$a = sin($dLat/2) * sin($dLat/2) + cos($coordinates['lat'] * $p) * cos($vendorCoordinates['lat'] * $p) * sin($dLon/2) * sin($dLon/2);
 		$c = 2 * atan2(sqrt($a), sqrt(1-$a)); 
 		$d = 6371 * $c; // Distance in km
+		
 		Log::info('distance in kmsss', [$d]); 
   		return $d *1000;
 	}
 
 	public function checkForOperationalDayAndTime($finder_id){
-		Log::info('finder Service', [$finder_id]);
+		//Log::info('finder Service', [$finder_id]);
 		Service::$withoutAppends = true;
 		$finder_service = Service::where('finder_id', $finder_id)->where('status', "1")->select('trialschedules')->get();
 		//Log::info('finder Service', [$finder_service['trialschedules']]);
+
 		$todayDate= strtotime(date('d:m:Y H:i:s'));
 		$today = date('D', $todayDate);
 		$minutes = date('i', $todayDate);
 		$hour= date('H', $todayDate);
 		Log::info('today date', [$todayDate, $today, $minutes, $hour]);
+
 		$status= false;
-		if(count($finder_service)>0){
-			foreach($finder_service as $key0=> $value0){
-				foreach($value0['trialschedules'] as $key=> $value){
-					if(strtolower($today) == strtolower(substr($value['weekday'], 0,3))){
-						foreach($value['slots'] as $key1=> $value1){
-							if($hour >=$value1['start_time_24_hour_format'] && $hour < $value1['end_time_24_hour_format']){
+
+		if(count($finder_service)>0)
+		{	
+
+			foreach($finder_service as $key0=> $value0)
+			{
+				foreach($value0['trialschedules'] as $key=> $value)
+				{
+					if(strtolower($today) == strtolower(substr($value['weekday'], 0,3)))
+					{
+						foreach($value['slots'] as $key1=> $value1)
+						{
+							if($hour >=$value1['start_time_24_hour_format'] && $hour < $value1['end_time_24_hour_format'])
+							{
 								$status= true;
 								break;
 							}
 						}
 					}
-					if($status){
+					if($status)
+					{
 						break;
 					}
 				}
 			}
 		}
-		else{
+		else
+		{
 			return ['status'=> false, "message"=>"No Service Available."];
 		}
 
-		if($status){
+		if($status)
+		{
 			return ["status"=> true];
-		}else{
+		}
+		else
+		{
 			return ["status"=> false, "message"=>"No Slots availabe right now. try later."];
 		}
 	}
 
 	public function checkForCheckinFromDevice($finder_id, $device_id, $finder){
+
 		$date = date('Y-m-d', time());
-		$checkins= Checkin::where('device_id', $device_id)->where('date', '=', new MongoDate(strtotime($date)))->select('customer_id', 'created_at', 'status', 'device_id', 'checkout_status')->first();
+
+		$checkins= Checkin::where('device_id', $device_id)->where('date', '=', new MongoDate(strtotime($date)))
+							->select('customer_id', 'created_at', 'status', 'device_id', 'checkout_status')->first();
+
 		$res = ["status"=> true];
-		Log::info('chekcins:::::::::::;', [$checkins]);
-		if(count($checkins)>0){
+
+		//Log::info('chekcins:::::::::::;', [$checkins]);
+
+		if(count($checkins)>0)
+		{
 			$d = strtotime($checkins['created_at']);	
 			$cd = strtotime(date("Y-m-d H:i:s"));
 			$difference = $cd -$d;
 			Log::info('differece:::::::::::', [$difference]);
-			if($checkins['checkout_status']){
+			if($checkins['checkout_status'])
+			{
 				//allreday checkdout
 				return $res = ["status"=>false, "message"=>"You have already checked-out for the day."];
 			}
-			else if($difference< 45 * 60){
+			else if($difference< 45 * 60)
+			{
 				//session is not complitated
 				return $res = ["status"=>false, "message"=>"session is not completed."];
 			}
-			else if(($difference > 45 * 60) &&($difference <= 120 * 60)){
+			else if(($difference > 45 * 60) &&($difference <= 120 * 60))
+			{
 				//checking out ----
 				return $this->checkoutInitiate($checkins['_id'], $finder, $finder_id);
 				//$res = ["status"=>true, "message"=>" checking- out for the day."];
 			}
-			else if($difference > 120 * 60){
+			else if($difference > 120 * 60)
+			{
 				//times up not accaptable
 				return $res = ["status"=>false, "message"=>"Times Up to checkout for the day."];
 			}
 		}
-		else{
+		else
+		{
 			//just checkinss ->>>>>> start checkoins
 			return $this->checkinInitiate($finder_id, $finder);
 		}
@@ -9676,6 +9703,7 @@ class CustomerController extends \BaseController {
 
 		//Finder::$withoutAppends = true;
 		$finder = Finder::find($finder_id, ['title', 'lat', 'lon']);
+
 		//Log::info('finder ddetails::::::::', [$finder_id,$finder]);
 		if(!empty(\Input::get('lat')) && !empty(\Input::get('lon'))){
 			$customer_geo['lat'] = floatval(\Input::get('lat'));
@@ -9686,6 +9714,7 @@ class CustomerController extends \BaseController {
 			$finder_geo['lat'] = $finder['lat'];
 			$finder_geo['lon'] = $finder['lon'];
 		}
+
 		//Log::info('geo coordinates of :::::::::::;', [$customer_geo, $finder_geo]);
 		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 500 ? true : false;
 		Log::info('distance status', [$distanceStatus]);
@@ -9712,6 +9741,8 @@ class CustomerController extends \BaseController {
 			$checkout->checkout_status=true;
 		try{
 			$checkout->update();
+
+			$finder_id = intval($finder_id);
 			$session_pack = !empty($_GET['session_pack']) ? $_GET['session_pack'] : null;
 			$finder_id = intval($finder_id);
 
@@ -9723,12 +9754,35 @@ class CustomerController extends \BaseController {
 			$type = !empty($_GET['type']) ? $_GET['type'] : null;
 			$customer_update = \Customer::where('_id', $customer_id)->increment('loyalty.checkins');
 
+			if(!empty($type) && $type == 'workout-session'){
+				$loyalty = $customer->loyalty;
+				$finder_ws_sessions = !empty($loyalty['workout_sessions'][(string)$finder_id]) ? $loyalty['workout_sessions'][(string)$finder_id] : 0;
+				
+				if($finder_ws_sessions >= 5){
+					$type = 'membership';
+					$update_finder_membership = true;
+				}else{
+					$update_finder_ws_sessions = true;
+				}
+			}
+			Log::info('customer_updates',[$customer_update]);
+			if(!empty($update_finder_ws_sessions)){
+				// $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
+				// $customer->update(['loyalty'=>$loyalty]);
+				Customer::where('_id', $customer_id)->increment('loyalty.workout_sessions.'.$finder_id);
+			}elseif(!empty($update_finder_membership)){
+				if(empty($loyalty['memberships']) || !in_array($finder_id, $loyalty['memberships'])){
+					array_push($loyalty['memberships'], $finder_id);
+					$customer->update(['loyalty'=>$loyalty]);
+				}
+			}
+
+			$customer_update = \Customer::where('_id', $customer_id)->increment('loyalty.checkins');
 			$return =  [
 				'header'=>'CHECK-OUT SUCCESSFUL!',
 				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
 				'milestones'=>$this->utilities->getMilestoneSection(),
-				'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
-				// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
+				'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png'
 			];
 			return $return;
 		}catch(Exception $err){
