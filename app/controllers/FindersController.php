@@ -3957,7 +3957,7 @@ class FindersController extends \BaseController {
 
 				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
-				->with(array('reviews'=>function($query){$query->where('status','=','1')->where('description','!=', "")->select('_id','finder_id','customer_id','rating','description','updated_at')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
+				->with(array('reviews'=>function($query){$query->where('status','=','1')->where('description','!=', "")->select('_id','finder_id','customer_id','rating','description','updated_at','tag')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
                 ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews','brand_id'));
                 
             
@@ -8184,40 +8184,6 @@ class FindersController extends \BaseController {
 		return $services;
 	}
 	
-	public function orderSummarySlots($slotsdata, $service_name, $vendor_name){
-		$orderSummary = Config::get('orderSummary.slot_summary');
-		//Log::info('order summary ::::::', [$orderSummary]);
-		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['vendor_name'=>$vendor_name]));
-		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['service_name'=>$service_name]));
-		foreach($slotsdata as &$slot){
-			foreach($slot['data'] as &$sd){
-				$sd['order_summary']['header'] = ucwords($orderSummary['header']); 
-			}
-		}
-		return $slotsdata;
-	}
-
-	public function orderSummaryService($service){
-		Log::info('service name at order summary', [$service['name']]);
-		$summary= Config::get('orderSummary.service_summary');
-		$summary['header'] = (strtr($summary['header'], ['vendor_name'=>$service['finder_name']]));
-		$summary['header'] = (strtr($summary['header'], ['service_name'=>$service['name']]));
-		$service['order_summary']['header']= ucwords($summary['header']);	
-		return $service;
-	}
-
-	public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name){
-		$orderSummary = Config::get('orderSummary.slot_summary');
-		Log::info('service name', [$service_name]);
-		$orderSummary['header'] = (strtr($orderSummary['header'], ['vendor_name'=>$vendor_name]));
-		$orderSummary['header'] = (strtr($orderSummary['header'], ['service_name'=>$service_name]));
-		//Log::info('order summary ::::::', [$orderSummary]);
-		foreach($slotsdata as &$slot){
-				$slot['order_summary']['header'] = ucwords($orderSummary['header']); 
-		}
-		return $slotsdata;
-	}
-
 	public function addingRemarkToDuplicate($service, $source="web"){
 		$serviceRatecards = $source=='web' ? 'serviceratecard' : 'ratecard';
 		$dupDurationDays = [];
