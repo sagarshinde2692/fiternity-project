@@ -5024,14 +5024,14 @@ class FindersController extends \BaseController {
                                     'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
                                 ],
                                 [
-                                    'title'=>"Super Easy",
-                                    'subtitle'=>"Book, Reschedule, Cancel on the go",
-                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20325%403x.png'
-                                ],
-                                [
                                     'title'=>"Unlimited Access",
                                     'subtitle'=>"Book multiple sessions.",
                                     'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20323%403x.png'
+                                ],
+                                [
+                                    'title'=>"Super Easy",
+                                    'subtitle'=>"Book, Reschedule, Cancel on the go",
+                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20325%403x.png'
                                 ],
                                 [
                                     'title'=>"Get Addicted",
