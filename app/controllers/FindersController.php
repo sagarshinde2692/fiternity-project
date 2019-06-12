@@ -3777,7 +3777,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = false){
+	public function finderDetailApp($slug, $cache = true){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -4457,6 +4457,9 @@ class FindersController extends \BaseController {
 					$data['finder']['services'] = $this->sortNoMembershipServices($data['finder']['services'], 'finderDetailApp');
 
 					foreach($data['finder']['services'] as &$serviceObj){
+						if (empty($serviceObj['short_description'])) {
+							unset($serviceObj['short_description']);
+						}
 						if((isset($finder['membership']) && $finder['membership']=='disable') || (isset($serviceObj['membership']) && $serviceObj['membership']=='disable')){
 							$serviceObj['offer_available'] = false;
 						}
