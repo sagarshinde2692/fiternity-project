@@ -448,7 +448,7 @@ class Service extends \Basemodel{
 
                 if($offer_price !== 0 && $offer_price < $cost_price && !in_array($value['type'], ['workout session', 'trial']) && !(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable')){
 
-                	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
+                	$offf_percentage = floor((($cost_price - $offer_price)/$cost_price)*100);
 
                     // if($offf_percentage < 50){
                     //     $value['price'] = 2*$value['special_price'];
