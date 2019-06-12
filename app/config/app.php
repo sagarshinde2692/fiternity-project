@@ -76,7 +76,7 @@ return array(
 	// 'paytm_sandbox'=>false,
     // 'paypal_sandbox'=>false,
     
-	"pps_image"=> 'https://b.fitn.in/fit_exclusive.png',    
+	"pps_image"=> 'https://b.fitn.in/global/fit-exclusive-new.png',    
     'fitsquad_upgrade_api'=> '/customer/loyaltyAppropriation',
 	'fitsquad_cancel_api'=>'/customer/remaincurrentloyalty',
     "core_key"=> "FITITRNTY",
