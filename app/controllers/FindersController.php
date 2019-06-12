@@ -3475,7 +3475,7 @@ class FindersController extends \BaseController {
                 // );
             }
 			
-			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6')){
+			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6') && !empty($item['short_description'])){
 			
 				$extra_info[] = array(
 					'title'=>'Description',
@@ -4457,9 +4457,6 @@ class FindersController extends \BaseController {
 					$data['finder']['services'] = $this->sortNoMembershipServices($data['finder']['services'], 'finderDetailApp');
 
 					foreach($data['finder']['services'] as &$serviceObj){
-						if (empty($serviceObj['short_description'])) {
-							unset($serviceObj['short_description']);
-						}
 						if((isset($finder['membership']) && $finder['membership']=='disable') || (isset($serviceObj['membership']) && $serviceObj['membership']=='disable')){
 							$serviceObj['offer_available'] = false;
 						}
@@ -5021,9 +5018,9 @@ class FindersController extends \BaseController {
 			Log::info("Error while sorting ratecard", [$e]);
 		}
 		//adding static data for hanman fitness
-		if($finderData['finder']['brand_id']==56){
-			$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
-		}
+		// if($finderData['finder']['brand_id']==56){
+		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
+		// }
 		//Log::info('fibder',[$finderData]);
 		return Response::json($finderData,$finderData['status']);
 
