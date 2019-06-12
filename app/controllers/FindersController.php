@@ -3392,7 +3392,7 @@ class FindersController extends \BaseController {
 			Service::$setAppends=['active_weekdays','serviceratecard'];
 			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 
-				$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id', 'offer_available', 'ad', 'showOnFront','calorie_burn'))->toArray();
+				$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id', 'offer_available', 'ad', 'showOnFront','calorie_burn','workout_results'))->toArray();
 
 
 			}else{
@@ -3404,14 +3404,14 @@ class FindersController extends \BaseController {
 				}
 				$membership_services = array_map('intval',$membership_services);
 
-				$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn'))->toArray();
+				$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn','workout_results'))->toArray();
 
 
 			}
 		}else{
 			$items = $finder["services"];
 
-			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn', 'slug', 'location','non_validity'));
+			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn', 'slug', 'location','non_validity','workout_results'));
 			
 		}
 
@@ -3420,6 +3420,7 @@ class FindersController extends \BaseController {
 		}
 
 		$scheduleservices = array();
+		$sericecategorysWorkoutResultArr        =   Config::get('app.workout_results_categorywise');
 
 		foreach ($items as $k => $item) {
 
@@ -3473,19 +3474,35 @@ class FindersController extends \BaseController {
                 // 	'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
                 // 	'description'=>'Burn Fat | Super Cardio'
                 // );
-            }
-			
+			}
+			$workoutResult = null;
+			if(!empty($sericecategorysWorkoutResultArr[$service_category_id])){
+				$workoutResult = $sericecategorysWorkoutResultArr[$service_category_id];
+			}
 			if(((isset($_GET['device_type']) && $_GET['device_type'] == 'android') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6')) && !empty($item['short_description'])){
-			
+
 				$extra_info[] = array(
 					'title'=>'Description',
 					'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
 					'description'=> $item['short_description']
 				);
-			
-			} else if (empty($item['short_description'])) {
-				$extra_info = null;
-			}
+
+				if(((isset($_GET['device_type']) && $_GET['device_type'] == 'android') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6')) && (!empty($category_calorie_burn) && $category_calorie_burn>0)) {
+					$extra_info[] = array(
+						'title'=>'Avg. Calorie Burn',
+						'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
+						'description'=>$category_calorie_burn.' Kcal'
+					);
+				}
+				if(((isset($_GET['device_type']) && $_GET['device_type'] == 'android') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.6')) && (!empty($workoutResult))) {
+					$extra_info[] = array(
+						'title'=>'Results',
+						'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
+						'description'=> $workoutResult
+					);
+				}
+			}	
+				
 
 			if($category && ($category["_id"] == 42 || $category["_id"] == 45)){
 
