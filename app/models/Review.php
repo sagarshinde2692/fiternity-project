@@ -50,8 +50,8 @@ class Review extends  \Basemodel {
 	}
     
     public function getVerifiedTagAttribute(){
-        
-        if(empty($this->tag)){
+
+        if(empty($this->tag) || !is_string($this->tag)){
             return [];
         }
         $tag = strtolower($this->tag);
