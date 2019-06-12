@@ -3837,7 +3837,7 @@ class FindersController extends \BaseController {
 					3 => 'Buy a membership through Fitternity & get exclusive access to 100% cashback + exciting rewards worth ₹20,000'
 				]
 			];
-			$cbVal = (!!$data['finder']['flags']['cashback_type'] && $data['finder']['flags']['cashback_type']<3)?($data['finder']['flags']['cashback_type']):3;
+			$cbVal = (!empty($data['finder']['flags']['cashback_type']) && $data['finder']['flags']['cashback_type']<3)?($data['finder']['flags']['cashback_type']):3;
 			return $rewardMap[$data['finder']['flags']['reward_type']][$cbVal];
 		}
 
