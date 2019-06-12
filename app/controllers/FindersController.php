@@ -5023,7 +5023,7 @@ class FindersController extends \BaseController {
 		if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
 			$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
 		}
-		Log::info('finder',[$finderData['finder']['brand_id']]);
+		//Log::info('finder',[$finderData['finder']]);
 		return Response::json($finderData,$finderData['status']);
 
 	}
