@@ -7358,9 +7358,6 @@ class TransactionController extends \BaseController {
 
 		}else{
 
-            Log::info("elelelelelelel");
-            
-
             $order_id = $data['order_id'];
     
             $order = Order::find(intval($order_id));
@@ -7445,8 +7442,12 @@ class TransactionController extends \BaseController {
 
                 }
             }
-
-            if(!empty($data['coupon'])){
+            
+            if(!empty($order['ratecard_id'])){
+                $ratecard = Ratecard::where('_id',$order['ratecard_id'])->first();
+            }
+            
+            if(!empty($data['coupon']) && !empty($ratecard)){
                 
                 $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
 
