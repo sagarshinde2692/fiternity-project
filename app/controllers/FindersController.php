@@ -6680,7 +6680,7 @@ class FindersController extends \BaseController {
 					
 					if(isset($ratecard['type']) && $ratecard['type'] == 'workout session'){
 						$pps_exists = true;
-                        $ratecard['start_price_text'] = 'Starting at';
+                        // $ratecard['start_price_text'] = 'Starting at';
 						// $pps_ratecard = $ratecard;
 					}
 	
