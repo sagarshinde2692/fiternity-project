@@ -3805,7 +3805,10 @@ class FindersController extends \BaseController {
 		];
 
 		if (!empty($data['finder']['brand_id'])) {
-			return $brandMap[$data['finder']['brand_id']] || 'Buy a membership & get exclusive access to Fitsquad to Earn ₹25,000 worth of rewards';
+			if(!empty($brandMap[$data['finder']['brand_id']])){
+				return $brandMap[$data['finder']['brand_id']];
+			}
+			return 'Buy a membership & get exclusive access to Fitsquad to Earn ₹25,000 worth of rewards';
 		}
 		else {
 			if(empty($data['finder']['flags']['reward_type'])) {
@@ -4749,7 +4752,7 @@ class FindersController extends \BaseController {
 				$data['finder']['city_name'] = strtolower($finderarr["city"]["name"]);
 				if($this->utilities->isIntegratedVendor($data['finder'])){
 					$this->applyFitsquadSection($data);
-					$data['finder_one_line'] = $this->getFinderOneLiner($data);
+					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
 				
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
