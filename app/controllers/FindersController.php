@@ -4606,7 +4606,36 @@ class FindersController extends \BaseController {
 
                 /********** Flash Offer Section Start**********/
 
-                
+                $nearby_same_category_request = [
+                    "offset" => 0,
+                    "limit" => 2,
+                    "radius" => "3km",
+                    "category"=>newcategorymapping($finderarr["category"]["name"]),
+                    "lat"=>$finderarr["lat"],
+                    "lon"=>$finderarr["lon"],
+                    "city"=>strtolower($finderarr["city"]["name"]),
+                    "keys"=>[
+                      "average_rating",
+                      "total_rating_count",
+                      "business_type",
+                      "commercial_type",
+                      "coverimage",
+                      "location",
+					  "subcategories",
+					  "categorytags",
+                      "slug",
+                      "name",
+                      "id",
+                      "city",
+                      "category",
+					  "overlayimage",
+					  "featured"
+                    ],
+                    "not"=>[
+                    	"vendor"=>[(int)$finderarr["_id"]],
+                    ],
+                    "only_featured"=>true
+                ];
 
 				$nearby_other_category_request = [
                     "offset" => 0,
@@ -4636,7 +4665,27 @@ class FindersController extends \BaseController {
                     "only_featured"=>true
                 ];
 
+				if(!$this->utilities->isIntegratedVendor($finderarr)){
+					$nearby_same_category['limit'] = $nearby_other_category['limit'] = 4;
+					unset($nearby_same_category['only_featured']);
+					unset($nearby_other_category['only_featured']);
+				}else{
+					Log::info("Integrated vendor");
+				}
+
+				$nearby_same_category = geoLocationFinder($nearby_same_category_request);
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
+
+				if($finderarr['city_id'] == 10000){
+					$finderarr['city']['name'] = $finderarr['custom_city'];
+					$finderarr['location']['name'] = $finderarr['custom_location'];
+					$nearby_same_category = [];
+					$nearby_other_category = [];
+				}
+
+				$data['nearby_same_category']['title'] = 'Gyms Near '.$finderarr['location']['name'];
+				$data['nearby_same_category']['description'] = 'Check out Fitternity recommended handpicked gyms in '.$finderarr['location']['name'].' with great offers and services which you may like. Take trials with instant booking and get memberships with lowest price guarantee and assured rewards. You can also compare options basis reviews, pictures & prices .Give it a shot !';
+				$data['nearby_same_category']['near_by_vendor'] = $nearby_same_category;
 
                 $data['recommended_vendor']['title'] = "Other popular options in ".$finderarr["location"]["name"];
                 $data['recommended_vendor']['description'] = "Checkout fitness services near you";
