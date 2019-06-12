@@ -70,7 +70,7 @@ class CustomerController extends \BaseController {
 			->whereIn('booktrial_type', array('auto'))
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
-			->where('going_status_txt','!=','cancel')
+			// ->where('going_status_txt','!=','cancel')
 			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')))
 			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
 			->get($selectfields);
@@ -171,7 +171,13 @@ class CustomerController extends \BaseController {
 
 				}
 			}
-			$trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
+            $trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
+            
+            
+            if(!empty($trial["going_status"]) && $trial["going_status"] == 2){
+                $trial["overlay_image"] = "https://b.fitn.in/global/cancelled%20stamp.png";
+            }
+
 			try{
 				$trial['fitcash_text'] = "Enter your Fitcode to get  Rs.".$this->utilities->getFitcash($trial)." Fitcash.";
 			}catch(Exception $e){
