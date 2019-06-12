@@ -386,7 +386,7 @@ class FindersController extends \BaseController {
                                       // return "$opening_hour  -- $closing_hour";
 										//   $finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
 										//   $finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr)
-										Log::info('opening and closing hours:', [$opening_hour, $closing_hour]);
+										//Log::info('opening and closing hours:', [$opening_hour, $closing_hour]);
 										if($today_weekday == $weekday){
 											$finder['today_opening_hour'] =  date("g:i A", strtotime(str_replace(".",":",$opening_hour)));
 											$finder['today_closing_hour'] = date("g:i A", strtotime(str_replace(".",":",$closing_hour)));
@@ -4048,7 +4048,7 @@ class FindersController extends \BaseController {
 										array_push($slots_end_time_24_hour_format_Arr, $end_time);
 
 									}
-									Log::info('at before of formating:::',[$slots_start_time_24_hour_format_Arr]);
+									//Log::info('at before of formating:::',[$slots_start_time_24_hour_format_Arr]);
 									if(!empty($slots_start_time_24_hour_format_Arr) && !empty($slots_end_time_24_hour_format_Arr)){
 										$opening_hour_arr       = explode(".",min($slots_start_time_24_hour_format_Arr));
 										$opening_hour_surfix    = "";
@@ -4071,14 +4071,14 @@ class FindersController extends \BaseController {
 										//   $finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
 										//   $finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr)
 										if($today_weekday == $weekday){
-											Log::info('opening and closing toime::', [$opening_hour, $closing_hour]);
+											//Log::info('opening and closing toime::', [$opening_hour, $closing_hour]);
 											$finder['today_opening_hour'] =  date("g:i A", strtotime(str_replace(".",":",$opening_hour)));
 											$finder['today_closing_hour'] = date("g:i A", strtotime(str_replace(".",":",$closing_hour)));
 										}
-										Log::info('opening and closing toime::', [$opening_hour,  date("g:i A", strtotime(str_replace(".",":","6:00"))),$closing_hour]);
+										//Log::info('opening and closing toime::', [$opening_hour,  date("g:i A", strtotime(str_replace(".",":","6:00"))),$closing_hour]);
 										$whole_week_open_close_hour[$weekday]['opening_hour'] = date("g:i A", strtotime(str_replace(".",":",$opening_hour)));
 										$whole_week_open_close_hour[$weekday]['closing_hour'] = date("g:i A", strtotime(str_replace(".",":",$closing_hour)));
-										Log::info('opening and closing toime::', [$whole_week_open_close_hour, $whole_week_open_close_hour]);
+										//Log::info('opening and closing toime::', [$whole_week_open_close_hour, $whole_week_open_close_hour]);
 										array_push($whole_week_open_close_hour_Arr, $whole_week_open_close_hour);
 									}
 
@@ -4121,7 +4121,7 @@ class FindersController extends \BaseController {
 				}
 
 				if($finder['today_opening_hour'] != NULL && $finder['today_closing_hour'] != NULL){
-					Log::info('opening and closing time :', [$finder['today_opening_hour'], $finder['today_closing_hour']]);
+					//Log::info('opening and closing time :', [$finder['today_opening_hour'], $finder['today_closing_hour']]);
 					$status = false;
 					$startTime = DateTime::createFromFormat('h:i A', $finder['today_opening_hour'])->format('Y-m-d H:i:s');
 					$endTime   = DateTime::createFromFormat('h:i A', $finder['today_closing_hour'])->format('Y-m-d H:i:s');
@@ -5037,10 +5037,10 @@ class FindersController extends \BaseController {
 			Log::info("Error while sorting ratecard", [$e]);
 		}
 		//adding static data for hanman fitness
-		// if($finderData['finder']['brand_id']==56){
-		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
-		// }
-		//Log::info('fibder',[$finderData]);
+		if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
+			$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
+		}
+		//Log::info('finder',[$finderData['finder']]);
 		return Response::json($finderData,$finderData['status']);
 
 	}
