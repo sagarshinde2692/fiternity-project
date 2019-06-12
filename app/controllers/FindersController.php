@@ -3804,7 +3804,9 @@ class FindersController extends \BaseController {
 			166 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹35,000 worth of rewards'
 		];
 
-		if (!empty($data['finder']['brand_id']) && !in_array($data['finder']['_id'], Config::get('app.brand_finder_without_loyalty'))) {
+		$brandsList = [135, 88, 166];
+
+		if (!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], $brandsList) && !in_array($data['finder']['_id'], Config::get('app.brand_finder_without_loyalty'))) {
 			if(!empty($brandMap[$data['finder']['brand_id']])){
 				return $brandMap[$data['finder']['brand_id']];
 			}
