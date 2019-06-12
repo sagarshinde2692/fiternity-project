@@ -3796,6 +3796,52 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
+	public function getFinderOneLiner($data) {
+
+		$brandMap = [
+			135 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹20,000 worth of rewards',
+			88 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹35,000 worth of rewards',
+			166 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹35,000 worth of rewards'
+		];
+
+		if (!empty($data['finder']['brand_id'])) {
+			return $brandMap[$data['finder']['brand_id']] || 'Buy a membership & get exclusive access to Fitsquad to Earn ₹25,000 worth of rewards';
+		}
+		else {
+			if(empty($data['finder']['flags']['reward_type'])) {
+				$data['finder']['flags']['reward_type'] = 2;
+			}
+
+			$rewardMap = [
+				3 => [
+					1 => 'Buy a membership through Fitternity & get exclusive access to  instant rewards + 120% cashback',
+					2 => 'Buy a membership through Fitternity & get exclusive access to  instant rewards + 120% cashback',
+					3 => 'Buy a membership through Fitternity & get exclusive access to  instant rewards + 100% cashback'
+				],
+				4 => [
+					1 => 'Buy a membership through Fitternity & get exclusive access to 120% cashback + exciting rewards worth ₹20,000',
+					2 => 'Buy a membership through Fitternity & get exclusive access to 120% cashback + exciting rewards worth ₹20,000',
+					3 => 'Buy a membership through Fitternity & get exclusive access to 100% cashback + exciting rewards worth ₹20,000'
+				],
+				5 => [
+					1 => 'Buy a membership through Fitternity & get exclusive access to 120% cashback',
+					2 => 'Buy a membership through Fitternity & get exclusive access to 120% cashback',
+					3 => 'Buy a membership through Fitternity & get exclusive access to 100% cashback'
+				],
+				6 => [
+					1 => 'Buy a membership through Fitternity & get exclusive access to 120% cashback + exciting rewards worth ₹20,000',
+					2 => 'Buy a membership through Fitternity & get exclusive access to 120% cashback + exciting rewards worth ₹20,000',
+					3 => 'Buy a membership through Fitternity & get exclusive access to 100% cashback + exciting rewards worth ₹20,000'
+				]
+			];
+			$cbVal = (!!$data['finder']['flags']['cashback_type'] && $data['finder']['flags']['cashback_type']<3)?($data['finder']['flags']['cashback_type']):3;
+			return $rewardMap[$data['finder']['flags']['reward_type']][$cbVal];
+		}
+
+
+
+	}
+
 	public function finderDetailApp($slug, $cache = true){
 
 		Log::info($_SERVER['REQUEST_URI']);
@@ -4684,9 +4730,11 @@ class FindersController extends \BaseController {
 					$nearby_other_category = [];
 				}
 
-				$data['nearby_same_category']['title'] = ucwords($finderarr["category"]["name"]).' Near '.$finderarr['location']['name'];
-				$data['nearby_same_category']['description'] = 'Check out Fitternity recommended handpicked '.strtolower($finderarr["category"]["name"]).' in '.$finderarr['location']['name'].' with great offers and services which you may like. Take trials with instant booking and get memberships with lowest price guarantee and assured rewards. You can also compare options basis reviews, pictures & prices .Give it a shot !';
-				$data['nearby_same_category']['near_by_vendor'] = $nearby_same_category;
+				if(!$this->utilities->isIntegratedVendor($finderarr)){
+					$data['nearby_same_category']['title'] = ucwords($finderarr["category"]["name"]).' Near '.$finderarr['location']['name'];
+					$data['nearby_same_category']['description'] = 'Check out Fitternity recommended handpicked '.strtolower($finderarr["category"]["name"]).' in '.$finderarr['location']['name'].' with great offers and services which you may like. Take trials with instant booking and get memberships with lowest price guarantee and assured rewards. You can also compare options basis reviews, pictures & prices .Give it a shot !';
+					$data['nearby_same_category']['near_by_vendor'] = $nearby_same_category;
+				}
 
                 $data['recommended_vendor']['title'] = "Other popular options in ".$finderarr["location"]["name"];
                 $data['recommended_vendor']['description'] = "Checkout fitness services near you";
@@ -4701,7 +4749,8 @@ class FindersController extends \BaseController {
                 $data['show_membership_bargain'] = false;
 				$data['finder']['city_name'] = strtolower($finderarr["city"]["name"]);
 				if($this->utilities->isIntegratedVendor($data['finder'])){
-                	$this->applyFitsquadSection($data);
+					$this->applyFitsquadSection($data);
+					$data['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
 				
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
