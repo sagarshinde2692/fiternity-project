@@ -3663,7 +3663,7 @@ class TransactionController extends \BaseController {
                         'extended_validity'=>!empty($data['extended_validity']) || !empty($order['extended_validity'])
                     );
 
-                    $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                    $walletTransactionResponse = $this->utilities->walletTransactionNew($req, $data);
                     
                     if($walletTransactionResponse['status'] != 200){
                         return $walletTransactionResponse;
@@ -6824,7 +6824,7 @@ class TransactionController extends \BaseController {
                 
                 return Response::json(array('status'=>400, 'message'=>'Order id or Ratecard id is required'), $this->error_status);
         }
-
+        
         if(!isset($data['ratecard_id']) && isset($data['order_id'])){
 
             $order = Order::find(intval($data['order_id']));
@@ -7110,6 +7110,13 @@ class TransactionController extends \BaseController {
                     if(isset($ratecard) && isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] == True){
                         $data['wallet_balance'] = 0;
                     }else{
+
+                        Log::info("customer   email ::: ", [$data['customer_email']]);
+                        if(!empty($data['customer_email']) && $data['customer_email'] != $decoded->customer->email){
+                            Log::info("checkoutsummary email is differ");
+                            $getWalletBalanceData['buy_for_other'] = true;
+                        }
+
                         $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
                     }
                 }

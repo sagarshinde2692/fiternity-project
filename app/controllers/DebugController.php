@@ -11004,6 +11004,7 @@ public function yes($msg){
 			foreach ($csv_to_array as $key => $value) {
 
 				if(!empty($value['customer_phone']) && !empty($value['customer_name'])  && !empty($value['amount'])){
+					Log::info('Key :: '.$key);
 					$customersms->goldFitcash($value);
 				}
 			}

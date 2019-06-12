@@ -1012,7 +1012,7 @@ Class CustomerReward {
     }
 
    public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false,$order_data=null){
-
+        
         $current_wallet_balance = 0;
         $wallet = 0;
         $wallet_fitcash_plus = 0;
@@ -1053,8 +1053,14 @@ Class CustomerReward {
                $request['extended_validity'] = $order_data['extended_validity'];
             }
 
+            Log::info("customer   email ::: ", [$customer['email']]);
+            if(!empty($order_data['customer_email']) && $order_data['customer_email'] != $customer['email']){
+                Log::info("customer reward email is differ");
+                $request['buy_for_other'] = true;
+            }
+
             $query = $utilities->getWalletQuery($request);
-            
+
             $current_wallet_balance = $query->sum('balance');/*
 
             if(isset($customer->demonetisation)){
