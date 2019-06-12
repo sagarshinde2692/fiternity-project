@@ -3804,7 +3804,7 @@ class FindersController extends \BaseController {
 			166 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹35,000 worth of rewards'
 		];
 
-		if (!empty($data['finder']['brand_id'])) {
+		if (!empty($data['finder']['brand_id']) && !in_array($data['finder']['_id'], Config::get('app.brand_finder_without_loyalty'))) {
 			if(!empty($brandMap[$data['finder']['brand_id']])){
 				return $brandMap[$data['finder']['brand_id']];
 			}
@@ -7418,7 +7418,7 @@ class FindersController extends \BaseController {
 		}
 		// $brandIdCheck = in_array($finderDetails['brand_id'], $nonHanmanBrandsList) && !in_array($finderDetails['brand_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($finderRewardType, [2]);
 		// $brandIdHanmanCheck = in_array($finderDetails['brand_id'], [56]) && !in_array($finderDetails['brand_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($finderRewardType, [6]);
-		if((!empty($finderDetails['brand_id'])) && in_array($finderDetails['brand_id'], $brandsList) && !in_array($finderDetails['brand_id'], Config::get('app.brand_finder_without_loyalty'))){
+		if((!empty($finderDetails['brand_id'])) && in_array($finderDetails['brand_id'], $brandsList) && !in_array($finderDetails['_id'], Config::get('app.brand_finder_without_loyalty'))){
 			// fitsquad
 			$data['fitsquad']['image'] = $fitsquadLogo;
 			$data['fitsquad']['header'] = $fitsquadHeader;
