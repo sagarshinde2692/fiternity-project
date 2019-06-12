@@ -3816,6 +3816,8 @@ class FindersController extends \BaseController {
 			}
 
 			$rewardMap = [
+				1 => null,
+				2 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹25,000 worth of rewards',
 				3 => [
 					1 => 'Buy a membership through Fitternity & get exclusive access to  instant rewards + 120% cashback',
 					2 => 'Buy a membership through Fitternity & get exclusive access to  instant rewards + 120% cashback',
