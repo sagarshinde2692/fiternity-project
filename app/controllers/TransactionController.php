@@ -6190,7 +6190,7 @@ class TransactionController extends \BaseController {
                 'options'=>[
                         [
                                 'title' => 'Paypal',
-                                // 'subtitle' => 'Paypal',
+                                'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
                                 'value' => 'paypal'
                         ],
                         [

@@ -8135,40 +8135,6 @@ class FindersController extends \BaseController {
 		return $services;
 	}
 	
-	public function orderSummarySlots($slotsdata, $service_name, $vendor_name){
-		$orderSummary = Config::get('orderSummary.slot_summary');
-		//Log::info('order summary ::::::', [$orderSummary]);
-		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['vendor_name'=>$vendor_name]));
-		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['service_name'=>$service_name]));
-		foreach($slotsdata as &$slot){
-			foreach($slot['data'] as &$sd){
-				$sd['order_summary']['header'] = ucwords($orderSummary['header']); 
-			}
-		}
-		return $slotsdata;
-	}
-
-	public function orderSummaryService($service){
-		Log::info('service name at order summary', [$service['name']]);
-		$summary= Config::get('orderSummary.service_summary');
-		$summary['header'] = (strtr($summary['header'], ['vendor_name'=>$service['finder_name']]));
-		$summary['header'] = (strtr($summary['header'], ['service_name'=>$service['name']]));
-		$service['order_summary']['header']= ucwords($summary['header']);	
-		return $service;
-	}
-
-	public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name){
-		$orderSummary = Config::get('orderSummary.slot_summary');
-		Log::info('service name', [$service_name]);
-		$orderSummary['header'] = (strtr($orderSummary['header'], ['vendor_name'=>$vendor_name]));
-		$orderSummary['header'] = (strtr($orderSummary['header'], ['service_name'=>$service_name]));
-		//Log::info('order summary ::::::', [$orderSummary]);
-		foreach($slotsdata as &$slot){
-				$slot['order_summary']['header'] = ucwords($orderSummary['header']); 
-		}
-		return $slotsdata;
-	}
-
 	public function addingRemarkToDuplicate($service, $source="web"){
 		$serviceRatecards = $source=='web' ? 'serviceratecard' : 'ratecard';
 		$dupDurationDays = [];
