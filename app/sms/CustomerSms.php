@@ -530,12 +530,10 @@ Class CustomerSms extends VersionNextSms{
 
 		$utilities = new Utilities();
 		$multifitWebsiteHeader = $utilities->getMultifitWebsiteHeader();
-		Log::info("getMultifitWebsiteHeader", [$multifitWebsiteHeader == 'multifit']);
 		$headreKiosk = $this->multifitUserHeader();
 		if($multifitWebsiteHeader == 'multifit' || $headreKiosk == true){
 			$label = 'Generic-Otp-Multifit-Customer';
 			$data['multifit'] = true;
-			Log::info('checking for multfit website customer');
 		}
 		
 		$to = $data['customer_phone'];
@@ -1348,7 +1346,6 @@ Class CustomerSms extends VersionNextSms{
 		if(isset($data['otp_route']) && $data['otp_route']){
 			$otp = true;
 		}
-		Log::info('sender:::::::::', [$sender, $otp]);
 		return $this->sendToWorker($to, $message, $label, $delay, $otp, $sender);
 	}
 
