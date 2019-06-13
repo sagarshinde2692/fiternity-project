@@ -5363,7 +5363,7 @@ class HomeController extends BaseController {
     
                 $crashlog = new ApiCrashLog($data);
     
-                if(!empty($data["post_data"]["res_header"]) && (empty($data["post_data"]["res_header"]['Status']) || $data["post_data"]["res_header"]['Status'] != "200 OK")){
+                if(empty(Config::get('app.debug')) && !empty($data["post_data"]["res_header"]) && (empty($data["post_data"]["res_header"]['Status']) || $data["post_data"]["res_header"]['Status'] != "200 OK")){
                     $crashlog->save();
                     $message = json_encode(["text"=>strtoupper($data['header_data']['Device-Type'])."----".$crashlog['post_data']['url']]);
                     // $message = json_encode(['text'=?""]);
