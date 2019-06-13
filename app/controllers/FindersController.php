@@ -215,15 +215,15 @@ class FindersController extends \BaseController {
 				// $ratecards           =   Ratecard::with('serviceoffers')->where('finder_id', intval($finder_id))->orderBy('_id', 'desc')->get();
 				$finderarr = $finderarr->toArray();
 				
-				if(count($finderarr['reviews']) < 5){
-					$initial_review_count = count($finderarr['reviews']);
-					$reviews = Review::where('finder_id', $finderarr['_id'])->where('description', "")->orderBy('updated_at', 'DESC')->limit(5-$initial_review_count)->get();
-					if(count($reviews)){
-						$initial_reviews = $finderarr['reviews'];
-						$initial_reviews = array_merge($initial_reviews, $reviews->toArray());
-						$finderarr['reviews'] = $initial_reviews;
-					}
-				}			
+				// if(count($finderarr['reviews']) < 5){
+				// 	$initial_review_count = count($finderarr['reviews']);
+				// 	$reviews = Review::where('finder_id', $finderarr['_id'])->where('description', "")->orderBy('updated_at', 'DESC')->limit(5-$initial_review_count)->get();
+				// 	if(count($reviews)){
+				// 		$initial_reviews = $finderarr['reviews'];
+				// 		$initial_reviews = array_merge($initial_reviews, $reviews->toArray());
+				// 		$finderarr['reviews'] = $initial_reviews;
+				// 	}
+				// }			
 				if(isset($finderarr['commercial_type']) && $finderarr['commercial_type']==0){
 					if(isset($finderarr['budget'])){
 						if($finderarr['budget'] < 1000){
