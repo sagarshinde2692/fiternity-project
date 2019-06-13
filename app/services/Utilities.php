@@ -8926,7 +8926,9 @@ Class Utilities {
     }
 
     public function getMultifitWebsiteHeader(){
+        
         $source = Request::header('Source');
+
         if(!empty($source)){
             return $source;
         }

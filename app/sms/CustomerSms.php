@@ -530,6 +530,7 @@ Class CustomerSms extends VersionNextSms{
 
 		$utilities = new Utilities();
 		$multifitWebsiteHeader = $utilities->getMultifitWebsiteHeader();
+		
 		$headreKiosk = $this->multifitUserHeader();
 		if($multifitWebsiteHeader == 'multifit' || $headreKiosk == true){
 			$label = 'Generic-Otp-Multifit-Customer';
