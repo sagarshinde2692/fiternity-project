@@ -976,7 +976,9 @@ class ServiceController extends \BaseController {
 						    $ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
 
                         }else{
+                            
                             $ck=['peak'=>true];
+                        
                         }
 
 						if(!$slot['passed']){
@@ -1257,8 +1259,13 @@ class ServiceController extends \BaseController {
 			}
 			else if(!empty($data['slots']) && in_array($this->device_type, ['android', 'ios'])){
 				$data['slots'] = $this->utilities->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'] );
-			}
-	        return Response::json($data,200);
+            }
+            
+            if(!empty($data['slots']) && count($data['slots']) == 1 && !empty($data['slots'][0]['title'])){
+                $data['slots'][0]['title'] = "Select a slot";
+            }
+            
+            return Response::json($data,200);
         }
 
     }
