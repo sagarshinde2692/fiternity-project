@@ -314,7 +314,6 @@ abstract Class VersionNextSms {
                 $route = 'otptp';
             }
         }
-
         $result  = $sidekiq->sendToQueue($payload,$route);
 
         if($result['status'] == 200){

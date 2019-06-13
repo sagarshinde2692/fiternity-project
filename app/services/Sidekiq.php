@@ -45,6 +45,8 @@ Class Sidekiq {
                 \Log::info("Sendinf from stage");
                 $this->client = new Client( ['debug' => false, 'base_uri' => 'http://kick.fitn.in/'] );
             }
+
+            \Log::info('checking route type:::::::::: in sidekiq::::::::::::', [$route, $payload]);
             $response = json_decode($this->client->post($route,['json'=>$payload])->getBody()->getContents());
             $return  = ['status'=>200,
                         'task_id'=>$response->jid
