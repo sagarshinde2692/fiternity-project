@@ -175,7 +175,7 @@ class CustomerController extends \BaseController {
             
             
             if(!empty($trial["going_status"]) && $trial["going_status"] == 2){
-                $trial["overlay_image"] = "https://b.fitn.in/global/cancelled%20stamp.png";
+                $trial["overlay_image"] = "https://b.fitn.in.s3.amazonaws.com/Cancel%20icon1.png";
             }
 
 			try{
