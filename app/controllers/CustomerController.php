@@ -8162,7 +8162,7 @@ class CustomerController extends \BaseController {
                     }
 
                     if(!empty($value['mark'])){
-						$this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id']]);
+						$this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'], "checkout_status"=> false, 'device_id' => $this->device_id]);
 					}
 
 					
@@ -8479,7 +8479,9 @@ class CustomerController extends \BaseController {
 					'customer_id'=>$customer_id,
 					'finder_id'=>intval($qr_finder_id),
 					'type'=>'workout-session',
-					'unverified'=>false
+					'unverified'=>false,
+					"checkout_status"=> false,
+					'device_id' => $this->device_id
 				];
 
 				$addedCheckin = $this->utilities->addCheckin($checkin_data);
@@ -8686,20 +8688,20 @@ class CustomerController extends \BaseController {
 
         $type = !empty($_GET['type']) ? $_GET['type'] : null;
         $session_pack = !empty($_GET['session_pack']) ? $_GET['session_pack'] : null;
-        $unverified = !empty($_GET['type']) ? true : false;
-        $customer = Customer::find($customer_id);
+        //$unverified = !empty($_GET['type']) ? true : false;
+        //$customer = Customer::find($customer_id);
 
-        if(!empty($type) && $type == 'workout-session'){
-            $loyalty = $customer->loyalty;
-            $finder_ws_sessions = !empty($loyalty['workout_sessions'][(string)$finder_id]) ? $loyalty['workout_sessions'][(string)$finder_id] : 0;
+        // if(!empty($type) && $type == 'workout-session'){
+        //     $loyalty = $customer->loyalty;
+        //     $finder_ws_sessions = !empty($loyalty['workout_sessions'][(string)$finder_id]) ? $loyalty['workout_sessions'][(string)$finder_id] : 0;
             
-            if($finder_ws_sessions >= 5){
-                $type = 'membership';
-                $update_finder_membership = true;
-            }else{
-                $update_finder_ws_sessions = true;
-            }
-        }
+        //     if($finder_ws_sessions >= 5){
+        //         $type = 'membership';
+        //         $update_finder_membership = true;
+        //     }else{
+        //         $update_finder_ws_sessions = true;
+        //     }
+        // }
 		
 		$checkin_data = [
 			'customer_id'=>$customer_id,
@@ -8709,7 +8711,7 @@ class CustomerController extends \BaseController {
 			'checkout_status' => false,
 			'device_id' => $this->device_id
         ];
-
+		//Log::info('before schedule_sessions::::::::::::: device id',[$this->device_id]);
         if(!empty($_GET['receipt'])){
             $checkin_data['receipt'] = true;
         }
@@ -8718,16 +8720,17 @@ class CustomerController extends \BaseController {
             $order_id = intval($_GET['session_pack']);
             
             $schedule_session = $this->utilities->scheduleSessionFromOrder($order_id);
-        
+			//Log::info('schedule_sessions:::::::::::::',[$schedule_session, $this->device_id]);
 		}
         
         if(empty($schedule_session['status']) || $schedule_session['status'] != 200){
             
-            $addedCheckin = $this->utilities->addCheckin($checkin_data);
+			$addedCheckin = $this->utilities->addCheckin($checkin_data);
+			//Log::info('adedcheckins:::::::::::::',[$addedCheckin]);
         
 		}
 		$finder = $finder_data;	
-		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200){
+		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200 || (!empty($schedule_session['status']) && $schedule_session['status'] == 200)){
 			// if(!empty($update_finder_ws_sessions)){
 			// 	// $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
 			// 	// $customer->update(['loyalty'=>$loyalty]);
@@ -8739,12 +8742,15 @@ class CustomerController extends \BaseController {
 			// 	}
 			// }
 			$return =  [
-			'header'=>'CHECK-IN SUCCESSFUL!',
-			'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
-			'milestones'=>$this->utilities->getMilestoneSection(),
-			'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
-			// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
-		];
+				'header'=>'CHECK-IN SUCCESSFUL!',
+				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
+				'milestones'=>$this->utilities->getMilestoneSection(),
+				'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
+				// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
+			];
+			if(!empty($addedCheckin['already_checked_in'])){
+                $return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';
+            }
 			return $return;
 		}else{	
 			return $addedCheckin;
@@ -9715,12 +9721,12 @@ class CustomerController extends \BaseController {
 			$finder_geo['lon'] = $finder['lon'];
 		}
 
-		//Log::info('geo coordinates of :::::::::::;', [$customer_geo, $finder_geo]);
+		Log::info('geo coordinates of :::::::::::;', [$customer_geo, $finder_geo]);
 		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 500 ? true : false;
 		Log::info('distance status', [$distanceStatus]);
 		if($distanceStatus){
 			$oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
-			if($oprtionalDays['status']){
+			if(!$oprtionalDays['status']){
 				Log::info('device ids:::::::::', [$this->device_id]);
 				return $this->checkForCheckinFromDevice($finder_id, $this->device_id, $finder);
 			}
@@ -9752,32 +9758,33 @@ class CustomerController extends \BaseController {
 			$customer_id = $decoded->customer->_id;
 			$customer = Customer::find($customer_id);
 			$type = !empty($_GET['type']) ? $_GET['type'] : null;
-			$customer_update = \Customer::where('_id', $customer_id)->increment('loyalty.checkins');
-
-			if(!empty($type) && $type == 'workout-session'){
-				$loyalty = $customer->loyalty;
-				$finder_ws_sessions = !empty($loyalty['workout_sessions'][(string)$finder_id]) ? $loyalty['workout_sessions'][(string)$finder_id] : 0;
-				
-				if($finder_ws_sessions >= 5){
-					$type = 'membership';
-					$update_finder_membership = true;
-				}else{
-					$update_finder_ws_sessions = true;
+			$customer_update = \Customer::where('_id', $customer_id)->increment('loyalty.checkins');	
+			//Log::info('customer_updates',[$customer_update]);
+			if($customer_update)
+			{
+				if(!empty($type) && $type == 'workout-session'){
+					$loyalty = $customer->loyalty;
+					$finder_ws_sessions = !empty($loyalty['workout_sessions'][(string)$finder_id]) ? $loyalty['workout_sessions'][(string)$finder_id] : 0;
+					
+					if($finder_ws_sessions >= 5){
+						$type = 'membership';
+						$update_finder_membership = true;
+					}else{
+						$update_finder_ws_sessions = true;
+					}
+				}
+				if(!empty($update_finder_ws_sessions)){
+					// $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
+					// $customer->update(['loyalty'=>$loyalty]);
+					Customer::where('_id', $customer_id)->increment('loyalty.workout_sessions.'.$finder_id);
+				}elseif(!empty($update_finder_membership)){
+					if(empty($loyalty['memberships']) || !in_array($finder_id, $loyalty['memberships'])){
+						array_push($loyalty['memberships'], $finder_id);
+						$customer->update(['loyalty'=>$loyalty]);
+					}
 				}
 			}
-			Log::info('customer_updates',[$customer_update]);
-			if(!empty($update_finder_ws_sessions)){
-				// $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
-				// $customer->update(['loyalty'=>$loyalty]);
-				Customer::where('_id', $customer_id)->increment('loyalty.workout_sessions.'.$finder_id);
-			}elseif(!empty($update_finder_membership)){
-				if(empty($loyalty['memberships']) || !in_array($finder_id, $loyalty['memberships'])){
-					array_push($loyalty['memberships'], $finder_id);
-					$customer->update(['loyalty'=>$loyalty]);
-				}
-			}
 
-			$customer_update = \Customer::where('_id', $customer_id)->increment('loyalty.checkins');
 			$return =  [
 				'header'=>'CHECK-OUT SUCCESSFUL!',
 				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",

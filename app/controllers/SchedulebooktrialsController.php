@@ -2552,7 +2552,7 @@ class SchedulebooktrialsController extends \BaseController {
             try{
                 $after_booking_response = $this->utilities->afterTranSuccess($booktrial->toArray(), 'booktrial');
             }catch(Exception $e){
-                Log::info("afterTranSuccess error");
+                Log::info("afterTranSuccess error", [$e]);
             }    
                 
             Log::info("after_booking_response");
@@ -2635,7 +2635,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $this->utilities->addAmountToReferrer($order);
         
-        Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
+        //Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
         if(isset($data['temp_id'])){
             $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();
@@ -7482,8 +7482,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'booktrial_id'=> (int)$booktrial['_id'],
                 'fitcash'=>$fitcash
             ];
-
-            $this->utilities->addCheckin(['customer_id'=>$booktrial['customer_id'], 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id']]);
+            Log::info('auto checins:::::::');
+            $this->utilities->addCheckin(['customer_id'=>$booktrial['customer_id'], 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'], "checkout_status"=> false, 'device_id' => $this->device_id]);
         }
 
         return Response::json($response,200);

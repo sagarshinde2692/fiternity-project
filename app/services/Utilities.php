@@ -53,7 +53,7 @@ Class Utilities {
    public function __construct() {
     
     $this->device_type = Request::header('Device-Type');
-    
+    $this->device_id = Request::header('Device-Id');
     $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
     $this->vendor_token = false;
         
@@ -3084,7 +3084,7 @@ Class Utilities {
      public function isConvinienceFeeApplicable($data, $type="order"){
         Log::info(debug_backtrace()[1]['function']);
         Log::info("Data for isConvinienceFeeApplicable");
-        Log::info($data);
+        //Log::info($data);
         
         if($type == "order"){
             $flags = isset($data['ratecard_flags']) ? $data['ratecard_flags'] : array();
@@ -4273,7 +4273,7 @@ Class Utilities {
         Log::info(__FUNCTION__." called from ".debug_backtrace()[1]['function']);
 
         Log::info("booktrialData");
-        Log::info($booktrialData);
+        //Log::info($booktrialData);
         $fitcash =  $this->getWorkoutSessionLevel($booktrialData['customer_id'])['current_level']['cashback'];
         return $fitcash;
         
@@ -5869,14 +5869,14 @@ Class Utilities {
 						if(isset($service)&&!empty($service->workoutsessionschedules))
 						{
 							$r=array_values(array_filter($service->workoutsessionschedules, function($a) use ($day){return !empty($a['weekday'])&&$a['weekday']==$day;}));
-                            Log::info($r);
+                            //Log::info($r);
 							if(!empty($r[0])&&!empty($r[0]['slots']))
 									{
                                         Log::info('$rzdcsc');
 
 										$r=$r[0]['slots'];
                                         $r=array_values(array_filter($r, function($a) use ($start,$end){return isset($a['start_time_24_hour_format'])&&isset($a['end_time_24_hour_format'])&&$a['start_time_24_hour_format'] >=$start&&$a['end_time_24_hour_format'] <=$end;}));
-                                        Log::info($r);
+                                        //Log::info($r);
                                         return $price = $this->getPeakAndNonPeakPrice($r, $this->getPrimaryCategory(null,$service['_id']));
 										// return (!empty($r[0])&&isset($r[0]['price']))?$r[0]['price']:null;
 									}else return null;
@@ -6434,7 +6434,7 @@ Class Utilities {
             $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
             $brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
 
-
+            Log::info('add checkin called from schedule session for extended ');
 
             if(empty($customer)){
 				return ['status'=>400, 'message'=>'Customer not registered'];
@@ -6475,7 +6475,7 @@ Class Utilities {
             }
 
             $milestones = Config::get('loyalty_constants.milestones', []);
-
+            
             if(is_numeric($brand_loyalty) && is_numeric($brand_loyalty_duration)){
                 if(!empty($brand_version)){
                     $finder_milestones = FinderMilestone::where('brand_id', $brand_loyalty)->where('duration', $brand_loyalty_duration)->where('brand_version', $brand_version)->first();
@@ -6491,8 +6491,13 @@ Class Utilities {
                 }
 
             }
-
-			$checkin->save();
+            Log::info('CHECING SAVE DATA:::::::::::',[$checkin]);
+            try{
+                $checkin->save();
+            }catch(\Exception $e){
+                Log::info('error while saving checkins:::::::',[$e]);
+            }
+		
             
             if(!empty($data['finder_id']) && !empty($data['type']) && $data['type'] == 'membership'){
                 if(empty($customer)){
@@ -6596,8 +6601,9 @@ Class Utilities {
         }else if($type == 'booktrial' && !isset($data['third_party_details'])){
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
+            //Log::info('device_id at aftertransaction success:::::::::::::', [$this->device_id, Request::header('Device-Id')]);
             if((!empty($data['qrcodepayment']) || !empty($data['checkin_booking'])) && empty($data['checkin'])){
-                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null ]);
+                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null, "checkout_status"=> false, 'device_id'=>$this->device_id ]);
             }
         }
 
@@ -8872,7 +8878,7 @@ Class Utilities {
         ];
         // return app(\TransactionController::class)->capture($captureReq);
         $captureRes = json_decode(json_encode(app(\TransactionController::class)->capture($captureReq)), true);
-
+        //Log::info('captuew ewsponae::::::::::', [$captureRes]);
         if(!(empty($captureRes['status']) || $captureRes['status'] != 200 || empty($captureRes['data']['orderid']) || empty($captureRes['data']['email']))){
             
             $booktrialReq = [
