@@ -3979,15 +3979,15 @@ class FindersController extends \BaseController {
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
 
-				if(count($finderarr['reviews']) < 1){
-					$initial_review_count = count($finderarr['reviews']);
-					$reviews = Review::where('finder_id', $finderarr['_id'])->where('description', "")->orderBy('updated_at', 'DESC')->limit(1-$initial_review_count)->get();
-					if(count($reviews)){
-						$initial_reviews = $finderarr['reviews'];
-						$initial_reviews = array_merge($initial_reviews, $reviews->toArray());
-						$finderarr['reviews'] = $initial_reviews;
-					}
-				}
+				// if(count($finderarr['reviews']) < 1){
+				// 	$initial_review_count = count($finderarr['reviews']);
+				// 	$reviews = Review::where('finder_id', $finderarr['_id'])->where('description', "")->orderBy('updated_at', 'DESC')->limit(1-$initial_review_count)->get();
+				// 	if(count($reviews)){
+				// 		$initial_reviews = $finderarr['reviews'];
+				// 		$initial_reviews = array_merge($initial_reviews, $reviews->toArray());
+				// 		$finderarr['reviews'] = $initial_reviews;
+				// 	}
+				// }
 
 				if(isset($finderarr['trial']) && $finderarr['trial']=='manual'){
 					$finderarr['manual_trial_enable'] = '1';
