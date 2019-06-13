@@ -2059,6 +2059,12 @@ Class Utilities {
 
             $amount = $request['amount'];
 
+            Log::info("customer   email ::: ", [$customer['email']]);
+            if(!empty($data['customer_email']) && $data['customer_email'] != $customer['email']){
+                Log::info("walletTransactionNew email is differ");
+                $request['buy_for_other'] = true;
+            }
+
             $query =  $this->getWalletQuery($request);
 
             //Log::info("query ::            ", [$query]);
@@ -2413,6 +2419,11 @@ Class Utilities {
 
         if($this->checkCouponApplied()){
             $query->where('for', 'wallet_recharge');
+        }
+
+        if(isset($data['buy_for_other']) && $data['buy_for_other'] == true ){
+            Log::info("wallet balance buy for other true");
+            $query->where(function($query){$query->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
         }
 
         $wallet_balance = $query->sum('balance');
@@ -2790,6 +2801,11 @@ Class Utilities {
             
             if(!empty($GLOBALS['ratecard_id_for_wallet'])){
                 $query->where(function($query){$query->orwhere('ratecard_id', 'exists', false)->orWhere('ratecard_id', $GLOBALS['ratecard_id_for_wallet']);});
+            }
+
+            if(isset($request['buy_for_other']) && $request['buy_for_other'] == true ){
+                Log::info("wallet query buy for other true");
+                $query->where(function($query){$query->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
             }
     
             Log::info("wallet debit query");
