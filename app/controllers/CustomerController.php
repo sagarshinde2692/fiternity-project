@@ -8748,9 +8748,10 @@ class CustomerController extends \BaseController {
 				'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
 				// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
 			];
-			if(!empty($addedCheckin['already_checked_in'])){
-                $return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';
-            }
+			// $this->checkinCheckoutSuccessMsg($finder);
+			// if(!empty($addedCheckin['already_checked_in'])){
+            //     $return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';
+            // }
 			return $return;
 		}else{	
 			return $addedCheckin;
@@ -9674,11 +9675,14 @@ class CustomerController extends \BaseController {
 			if($checkins['checkout_status'])
 			{
 				//allreday checkdout
+				//$this->checkinCheckoutSuccessMsg($finder);
+				//$return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';
 				return $res = ["status"=>false, "message"=>"You have already checked-out for the day."];
 			}
 			else if($difference< 45 * 60)
 			{
 				//session is not complitated
+				//$this->checkinCheckoutSuccessMsg($finder);
 				return $res = ["status"=>false, "message"=>"session is not completed."];
 			}
 			else if(($difference > 45 * 60) &&($difference <= 120 * 60))
@@ -9690,6 +9694,7 @@ class CustomerController extends \BaseController {
 			else if($difference > 120 * 60)
 			{
 				//times up not accaptable
+				//$this->checkinCheckoutSuccessMsg($finder);
 				return $res = ["status"=>false, "message"=>"Times Up to checkout for the day."];
 			}
 		}
@@ -9736,6 +9741,7 @@ class CustomerController extends \BaseController {
 		}
 		else{
 			// return for use high accurary
+			// $this->checkinCheckoutSuccessMsg($finder);
 			return ["status"=> false, "message"=>"Put your device in high accuracy."];
 		}
 		
@@ -9784,7 +9790,7 @@ class CustomerController extends \BaseController {
 					}
 				}
 			}
-
+			// $this->checkinCheckoutSuccessMsg($finder);
 			$return =  [
 				'header'=>'CHECK-OUT SUCCESSFUL!',
 				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
@@ -9797,5 +9803,16 @@ class CustomerController extends \BaseController {
 			return ["status"=>false, "message"=>"Please Try again. Something went wrong."];
 		}
 		
+	}
+
+	public function checkinCheckoutSuccessMsg($finder){
+		$return =  [
+			'header'=>'CHECK-IN SUCCESSFUL!',
+			'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
+			'milestones'=>$this->utilities->getMilestoneSection(),
+			'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
+			// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
+		];
+		return $return;
 	}
 }
