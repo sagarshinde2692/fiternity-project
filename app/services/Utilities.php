@@ -6434,7 +6434,7 @@ Class Utilities {
             $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
             $brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
 
-            Log::info('add checkin called from schedule session for extended ');
+            //Log::info('add checkin called from schedule session for extended ');
 
             if(empty($customer)){
 				return ['status'=>400, 'message'=>'Customer not registered'];
@@ -6491,7 +6491,7 @@ Class Utilities {
                 }
 
             }
-            Log::info('CHECING SAVE DATA:::::::::::',[$checkin]);
+            //Log::info('CHECING SAVE DATA:::::::::::',[$checkin]);
             try{
                 $checkin->save();
             }catch(\Exception $e){
