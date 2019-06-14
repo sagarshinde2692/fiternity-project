@@ -2354,6 +2354,7 @@ class FindersController extends \BaseController {
 		}
 
 		$finder = Finder::find(intval($data['finder_id']));
+		$category = FinderCategory::find(intval($finder['category_id']));
 
 		$review = Review::where('finder_id', intval($data['finder_id']))->where('customer_id', intval($data['customer_id']))->first();
 
@@ -2500,14 +2501,24 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('review_by_finder_list',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_3_2',$finder->slug);
-		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug.'-'.$finder->location_id);
-		$this->cacheapi->flushTagKey('finder_detail_ios_3_2',$finder->slug.'-'.$finder->location_id);
-		$this->cacheapi->flushTagKey('finder_detail_ios_4_4_3',$finder->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_ios_3_2',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_3_2',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_3_2',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_ios_4_4_3',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_4_4_3',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_4_4_3',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_4_4_3',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_1_8',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_1_9',$finder->slug);
-		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_5',$finder->slug.'-'.$finder->location_id);
-		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_5',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_5',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_5',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		
 		if(!empty($reviewdata['service_id'])){
 			$service = Service::find($reviewdata['service_id'], ['slug']);
