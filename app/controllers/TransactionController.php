@@ -7153,6 +7153,7 @@ class TransactionController extends \BaseController {
                     $getWalletBalanceData = [
                         'finder_id'=>$ratecard['finder_id'],
                         'order_type'=>$ratecard['type'],
+                        'city_id'=>!empty($data['city_id']) ? $data['city_id'] : null,
                         'service_id'=>!empty($data['service_id']) ? $data['service_id'] : null,
                         'duration_day'=>!empty($data['duration_day']) ? $data['duration_day'] : null
                     ];
@@ -7160,8 +7161,9 @@ class TransactionController extends \BaseController {
                         $data['wallet_balance'] = 0;
                     }else{
 
-                        Log::info("customer   email ::: ", [$data['customer_email']]);
-                        if(!empty($data['customer_email']) && $data['customer_email'] != $decoded->customer->email){
+                        Log::info("customer   email ::: ", [$decoded->customer->email]);
+                        Log::info("order customer   email ::: ", [$data['order_customer_email']]);
+                        if(!empty($data['order_customer_email']) && $data['order_customer_email'] != $decoded->customer->email){
                             Log::info("checkoutsummary email is differ");
                             $getWalletBalanceData['buy_for_other'] = true;
                         }
@@ -7482,8 +7484,16 @@ class TransactionController extends \BaseController {
 
                 $getWalletBalanceData = [
                     'finder_id'=>$order['finder_id'],
-                    'order_type'=>$order['type']
+                    'order_type'=>$order['type'],
+                    'city_id' => $order['city_id'],
                 ];
+
+                Log::info("customer   email ::: ", [$decoded->customer->email]);
+                Log::info("order customer   email ::: ", [$order['customer_email']]);
+                if(!empty($order['customer_email']) && $order['customer_email'] != $decoded->customer->email){
+                Log::info("checkoutsummary else email is differ");
+                    $getWalletBalanceData['buy_for_other'] = true;
+                }
 
                 $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
 
