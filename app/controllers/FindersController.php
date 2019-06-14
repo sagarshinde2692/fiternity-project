@@ -3573,6 +3573,10 @@ class FindersController extends \BaseController {
 				'location'=>isset($item['location']) ? $item['location'] : null
 				// 'showOnFront'=>(isset($item['showOnFront'])) ? $item['showOnFront'] : []
 			);
+
+			if(empty($service['extra_info']) || count($service['extra_info'])<1) {
+				unset($service['extra_info']);
+			}
 			
 			foreach($service['ratecard'] as $rateval){
 				if((!empty($service['batches']) && count($service['batches'])>0 ) && !empty($rateval['studio_extended_validity']) && $rateval['studio_extended_validity']) {
