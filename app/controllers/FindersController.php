@@ -4983,8 +4983,10 @@ class FindersController extends \BaseController {
                 if($pps_stripe = $this->addPPSStripe($finderData['finder'])){
                     $finderData['finder']['services'] = $pps_stripe;
                 }
-                
-                if($extended_validity_ratecards >= 2){
+				
+				$isIntegratedVendor = $this->utilities->isIntegratedVendor($finderData['finder']);
+
+                if($extended_validity_ratecards >= 2 && $isIntegratedVendor){
                     
                     $finderData['fit_ex'] =[
                         'title'=>"Most effective way to workout at ".$finderData['finder']['title']." is here!",
@@ -5013,7 +5015,7 @@ class FindersController extends \BaseController {
                             ],
                         ]
                     ];
-                }else{
+                }else if($isIntegratedVendor){
                     
                     if($pps_stripe){
                         
