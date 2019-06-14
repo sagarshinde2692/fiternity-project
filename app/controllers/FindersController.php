@@ -2503,9 +2503,11 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('review_by_finder_list',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android',$finder->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_3_2',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_3_2',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_3_2',$finder->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_3_2',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug.'-'.$category->slug);
@@ -2518,12 +2520,15 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('finder_detail_ios_4_4_3',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_4_4_3',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_4_4_3',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_4_4_3',$finder->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_4_4_3',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_1_8',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_1_8',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_1_8',$finder->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_1_8',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_1_9',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_1_9',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_1_9',$finder->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_1_9',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_5',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_5',$finder->slug.'-'.$category->slug);
@@ -4216,9 +4221,18 @@ class FindersController extends \BaseController {
 					$startTime = DateTime::createFromFormat('h:i A', $finder['today_opening_hour'])->format('Y-m-d H:i:s');
 					$endTime   = DateTime::createFromFormat('h:i A', $finder['today_closing_hour'])->format('Y-m-d H:i:s');
 
-					if($finder['today_closing_hour'] == "12:00 AM"){
+
+					$chSplitColon = explode(':', $finder['today_closing_hour']);
+					$chSplitSpace = explode(' ', $finder['today_closing_hour']);
+					$isTwelve = $chSplitColon[0] == 12;
+					$isAm = in_array($chSplitSpace[1], ['AM', 'am']);
+					if($isTwelve && $isAm) {
 						$endTime = date('Y-m-d H:i:s',strtotime('+1 days',strtotime($endTime)));
 					}
+
+					// if($finder['today_closing_hour'] == "12:00 AM"){
+					// 	$endTime = date('Y-m-d H:i:s',strtotime('+1 days',strtotime($endTime)));
+					// }
 
 					if (time() >= strtotime($startTime) && time() <= strtotime($endTime)) {
 						$status = true;

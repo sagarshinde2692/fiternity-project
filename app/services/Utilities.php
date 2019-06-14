@@ -2802,7 +2802,7 @@ Class Utilities {
                 
                 if(!empty($request['type']) && $request['type'] != "workout-session" && !empty($request['city_id']) && $request['city_id'] != '3'){
                     $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id)->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
-                }else if(!empty($request['type']) && ($request['type'] == "workout-session" || $data['order_type'] == "workout session") && !empty($request['city_id']) && $request['city_id'] == '3'){
+                }else if(!empty($request['type']) && ($request['type'] == "workout-session" || $request['type'] == "workout session") && !empty($request['city_id']) && $request['city_id'] == '3'){
                     
                 }else{
                     $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
@@ -5934,23 +5934,23 @@ Class Utilities {
 		return null;
 	}
 	public function getWSNonPeakPrice($start=null,$end=null,$workoutSessionPrice=null,$service_cat=null,$just_tag=false) {
-		Log::info(func_get_args());
+        
 		try {
 			$peak=true;
 			if(!empty($start)&&!empty($end)&&!empty($service_cat))
 			{   
 				if($service_cat=='gym')
-				{
+				{   
 					if(intval($start)>=Config::get('app.non_peak_hours.gym.start')&&intval($end)<=Config::get('app.non_peak_hours.gym.end'))
 					{
 						(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.gym.off')*intval($workoutSessionPrice):"";$peak=false;
 					}
 				}
 				else if(intval($start)>=Config::get('app.non_peak_hours.studios.start')&&intval($end)<=Config::get('app.non_peak_hours.studios.end'))
-				{
+				{   
 					(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.studios.off')*intval($workoutSessionPrice):"";$peak=false;
 				}			
-			}
+            }
 			return ['wsprice'=>$workoutSessionPrice,'peak'=>$peak];
 		} catch (Exception $e) {
 			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
@@ -9202,7 +9202,6 @@ Class Utilities {
 
     public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name){
 		$orderSummary = Config::get('orderSummary.slot_summary');
-		Log::info('service name11', [$service_name]);
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		//Log::info('order summary ::::::', [$orderSummary]);
@@ -9214,14 +9213,11 @@ Class Utilities {
     
     public function orderSummarySlots($slotsdata, $service_name, $vendor_name){
         $orderSummary = Config::get('orderSummary.slot_summary');
-        Log::info("service name at order summary2");
-		//Log::info('order summary ::::::', [$orderSummary]);
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		foreach($slotsdata as &$slot){
 			foreach($slot['data'] as &$sd){
                 $sd['order_summary']['header'] = $orderSummary['header']; 
-                Log::info($orderSummary['header']);
 			}
 		}
 		return $slotsdata;
