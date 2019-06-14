@@ -2406,7 +2406,7 @@ Class Utilities {
 
         if($finder_id && $finder_id != ""){
 
-            if($data['order_type'] != "workout-session" && $data['city_id'] != '3'){
+            if(!empty($data['order_type']) && $data['order_type'] != "workout-session" && !empty($data['city_id']) && $data['city_id'] != '3'){
                 $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id)->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
             }
 
