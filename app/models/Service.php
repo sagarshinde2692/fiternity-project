@@ -443,6 +443,10 @@ class Service extends \Basemodel{
 					}
 				}
 
+				if(intval($value['validity']) == 1 && $value['validity_type'] == 'months') {
+					$value['validity_type'] = "month";
+				}
+
 				$offer_price = (!empty($value['special_price'])) ? $value['special_price'] : 0 ;
 				$cost_price = (!empty($value['price'])) ? $value['price'] : 0 ;
 
