@@ -8249,8 +8249,10 @@ class FindersController extends \BaseController {
 							$r[ "button_color"] = Config::get('app.ratecard_button_color');
 							$r['pps_image'] = Config::get('app.pps_image');
 							$r['recommended'] = Config::get('nonvalidity.recommnded_block');
-							if(empty($r['offer_text']) && ($this->device_type=='ios')) {
-								$r['offer_text'] = $r['recommended']['text'];
+							if(empty($r['offers']) && ($this->device_type=='ios')) {
+								$r['offers'] = [
+									'offer_text' => $r['recommended']['text']
+								];
 							}
 							$extended_validity_type = $this->getExtendedValidityType($r);
 
