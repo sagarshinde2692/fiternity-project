@@ -2504,7 +2504,9 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('finder_detail_ios_3_2',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_4_4_3',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_4_4_3',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_1_8',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_1_9',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_5',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug);
 		
 		if(!empty($reviewdata['service_id'])){
@@ -8247,6 +8249,9 @@ class FindersController extends \BaseController {
 							$r[ "button_color"] = Config::get('app.ratecard_button_color');
 							$r['pps_image'] = Config::get('app.pps_image');
 							$r['recommended'] = Config::get('nonvalidity.recommnded_block');
+							if(empty($r['offer_text']) && ($this->device_type=='ios')) {
+								$r['offer_text'] = Config::get('nonvalidity.recommnded_block');
+							}
 							$extended_validity_type = $this->getExtendedValidityType($r);
 
 							if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.23')){
