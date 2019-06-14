@@ -828,7 +828,7 @@ class FindersController extends \BaseController {
 
 							if(!$pay_per_session){
                                 $finder['pay_per_session'] = false;
-                                $finder['trial'] = false;
+                                $finder['trial'] = 'disable';
                                 
 							}
 
