@@ -8250,9 +8250,9 @@ class FindersController extends \BaseController {
 							$r['pps_image'] = Config::get('app.pps_image');
 							$r['recommended'] = Config::get('nonvalidity.recommnded_block');
 							if(empty($r['offers']) && ($this->device_type=='ios')) {
-								$r['offers'] = [
+								$r['offers'] = [[
 									'offer_text' => $r['recommended']['text']
-								];
+								]];
 							}
 							$extended_validity_type = $this->getExtendedValidityType($r);
 
