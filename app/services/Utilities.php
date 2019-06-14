@@ -5934,24 +5934,23 @@ Class Utilities {
 		return null;
 	}
 	public function getWSNonPeakPrice($start=null,$end=null,$workoutSessionPrice=null,$service_cat=null,$just_tag=false) {
-		Log::info('at non peak hours:::::',[$workoutSessionPrice]);
+        
 		try {
 			$peak=true;
 			if(!empty($start)&&!empty($end)&&!empty($service_cat))
 			{   
 				if($service_cat=='gym')
-				{   Log::info('at non peak hours::::: in gym');
+				{   
 					if(intval($start)>=Config::get('app.non_peak_hours.gym.start')&&intval($end)<=Config::get('app.non_peak_hours.gym.end'))
 					{
 						(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.gym.off')*intval($workoutSessionPrice):"";$peak=false;
 					}
 				}
 				else if(intval($start)>=Config::get('app.non_peak_hours.studios.start')&&intval($end)<=Config::get('app.non_peak_hours.studios.end'))
-				{   Log::info('at non peak hours::::: in studio', [!$just_tag]);
+				{   
 					(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.studios.off')*intval($workoutSessionPrice):"";$peak=false;
 				}			
             }
-            Log::info('at non peak hours::::: after price', [$workoutSessionPrice, Config::get('app.non_peak_hours.studios.off')]);
 			return ['wsprice'=>$workoutSessionPrice,'peak'=>$peak];
 		} catch (Exception $e) {
 			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
