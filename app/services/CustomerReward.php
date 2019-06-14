@@ -1059,6 +1059,14 @@ Class CustomerReward {
                 $request['buy_for_other'] = true;
             }
 
+            if(!empty($order_data['type'])){
+                $request['type'] = $order_data['type'];
+            }
+
+            if(!empty($order_data['city_id'])){
+                $request['city_id'] = $order_data['city_id'];
+            }
+
             $query = $utilities->getWalletQuery($request);
 
             $current_wallet_balance = $query->sum('balance');/*
