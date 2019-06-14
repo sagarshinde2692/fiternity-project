@@ -4749,7 +4749,7 @@ class FindersController extends \BaseController {
 
 				if(!$this->utilities->isIntegratedVendor($finderarr)){
 					$data['nearby_same_category']['title'] = ucwords($finderarr["category"]["name"]).' Near '.$finderarr['location']['name'];
-					$data['nearby_same_category']['description'] = 'Check out Fitternity recommended handpicked '.strtolower($finderarr["category"]["name"]).' in '.$finderarr['location']['name'].' with great offers and services which you may like. Take trials with instant booking and get memberships with lowest price guarantee and assured rewards. You can also compare options basis reviews, pictures & prices .Give it a shot !';
+					$data['nearby_same_category']['description'] = 'Check out Fitternity recommended handpicked '.strtolower($finderarr["category"]["name"]).' in '.$finderarr['location']['name'].' near you...';
 					$data['nearby_same_category']['near_by_vendor'] = $nearby_same_category;
 				}
 
