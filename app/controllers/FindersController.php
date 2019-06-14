@@ -4221,9 +4221,18 @@ class FindersController extends \BaseController {
 					$startTime = DateTime::createFromFormat('h:i A', $finder['today_opening_hour'])->format('Y-m-d H:i:s');
 					$endTime   = DateTime::createFromFormat('h:i A', $finder['today_closing_hour'])->format('Y-m-d H:i:s');
 
-					if($finder['today_closing_hour'] == "12:00 AM"){
+
+					$chSplitColon = explode(':', $finder['today_closing_hour']);
+					$chSplitSpace = explode(' ', $finder['today_closing_hour']);
+					$isTwelve = $chSplitColon[0] == 12;
+					$isAm = in_array($chSplitSpace[1], ['AM', 'am']);
+					if($isTwelve && $isAm) {
 						$endTime = date('Y-m-d H:i:s',strtotime('+1 days',strtotime($endTime)));
 					}
+
+					// if($finder['today_closing_hour'] == "12:00 AM"){
+					// 	$endTime = date('Y-m-d H:i:s',strtotime('+1 days',strtotime($endTime)));
+					// }
 
 					if (time() >= strtotime($startTime) && time() <= strtotime($endTime)) {
 						$status = true;
