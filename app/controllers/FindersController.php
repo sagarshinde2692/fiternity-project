@@ -829,7 +829,9 @@ class FindersController extends \BaseController {
 							}
 
 							if(!$pay_per_session){
-								$finder['pay_per_session'] = false;
+                                $finder['pay_per_session'] = false;
+                                $finder['trial'] = 'disable';
+                                
 							}
 
 							if(isset($service['category']) && $service['category'] && $service['category']['_id'] == 184){
