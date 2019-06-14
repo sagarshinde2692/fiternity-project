@@ -854,10 +854,6 @@ class TransactionController extends \BaseController {
             $finder = Finder::where('_id', $data['finder_id'])->first(['title']);
             if($finder){
                 $data['finder_name'] = $finder->title;
-                if(!empty($finder->flags->disable_dynamic_pricing))
-                {
-                    $data['finder_disable_dynamic_price'] = $finder->flags->disable_dynamic_pricing;
-                }
             }
 
             $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug','mfp','contact','venue']);
@@ -896,7 +892,7 @@ class TransactionController extends \BaseController {
         $data['amount_final'] = $data["amount_finder"];
 
         //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
-        if((empty($data['finder_disable_dynamic_price']) || empty($data['service_flags']['disable_dynamic_pricing'])) && ((isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment']) || (empty($_GET['device_type'])) || $_GET['device_type'] == 'website')){
+        if((empty($finder->flags->disable_dynamic_pricing) || empty($data['service_flags']['disable_dynamic_pricing'])) && ((isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment']) || (empty($_GET['device_type'])) || $_GET['device_type'] == 'website')){
             if($data['type'] == 'workout-session')
              {
              try {

@@ -970,23 +970,16 @@ class ServiceController extends \BaseController {
                             $service['extended_validity'] = !empty($extended_validity_order) || !empty($studio_extended_validity_order);
 						}
 						
-						if($finder['category_id'] != 47 && empty($finder['flags']['disable_dynamic_pricing']))
-						{
+						if($finder['category_id'] != 47 && empty($service['extended_validity']) && (empty($item['flags']['disable_dynamic_pricing']) || empty($finder['flags']['disable_dynamic_pricing']))){
+
 							$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
-						}
-						else
-						{
-							if($finder['category_id'] != 47 && empty($service['extended_validity']) && empty($item['flags']['disable_dynamic_pricing'])){
 
-								$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
-	
-							}else{
-								
-								$ck=['peak'=>true];
+						}else{
 							
-							}
+							$ck=['peak'=>true];
+						
 						}
-
+						
 						if(!$slot['passed']){
 							$total_slots_available_count +=1;
  							//return $ck;
@@ -1257,7 +1250,7 @@ class ServiceController extends \BaseController {
 
                 }
 			}
-			
+
 			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
 				foreach($data['schedules'] as &$schedule){
 					$schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title']);
