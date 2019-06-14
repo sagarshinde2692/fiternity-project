@@ -3911,7 +3911,7 @@ class HomeController extends BaseController {
         return $result  = $this->sidekiq->sendToQueue($notificationData,$route);
     }
 
-    public function ifcity($city){
+    public function ifcity($city=null){
         Log::info("ifcity");
         Log::info($city);
         $response = ifCityPresent($city);
