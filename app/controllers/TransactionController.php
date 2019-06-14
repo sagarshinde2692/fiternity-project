@@ -7162,7 +7162,6 @@ class TransactionController extends \BaseController {
                     }else{
 
                         Log::info("customer   email ::: ", [$decoded->customer->email]);
-                        Log::info("order customer   email ::: ", [$data['order_customer_email']]);
                         if(!empty($data['order_customer_email']) && $data['order_customer_email'] != $decoded->customer->email){
                             Log::info("checkoutsummary email is differ");
                             $getWalletBalanceData['buy_for_other'] = true;
