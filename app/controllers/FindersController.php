@@ -2354,7 +2354,7 @@ class FindersController extends \BaseController {
 		}
 
 		$finder = Finder::find(intval($data['finder_id']));
-		$category = \FinderCategory::find(intval($finder['category_id']));
+		$category = Findercategory::find(intval($finder['category_id']));
 
 		$review = Review::where('finder_id', intval($data['finder_id']))->where('customer_id', intval($data['customer_id']))->first();
 
