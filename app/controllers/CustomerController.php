@@ -8741,18 +8741,18 @@ class CustomerController extends \BaseController {
 			// 		$customer->update(['loyalty'=>$loyalty]);
 			// 	}
 			// }
-			$return =  [
-				'header'=>'CHECK-IN SUCCESSFUL!',
-				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
-				'milestones'=>$this->utilities->getMilestoneSection(),
-				'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
-				// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
-			];
-			// $this->checkinCheckoutSuccessMsg($finder);
+			// $return =  [
+			// 	'header'=>'CHECK-IN SUCCESSFUL!',
+			// 	'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
+			// 	'milestones'=>$this->utilities->getMilestoneSection(),
+			// 	'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
+			// 	// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
+			// ];
+			return $this->checkinCheckoutSuccessMsg($finder);
 			// if(!empty($addedCheckin['already_checked_in'])){
             //     $return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';
             // }
-			return $return;
+			// return $return;
 		}else{	
 			return $addedCheckin;
 		}
@@ -9675,15 +9675,18 @@ class CustomerController extends \BaseController {
 			if($checkins['checkout_status'])
 			{
 				//allreday checkdout
-				//$this->checkinCheckoutSuccessMsg($finder);
-				//$return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';
-				return $res = ["status"=>false, "message"=>"You have already checked-out for the day."];
+				$return = $this->checkinCheckoutSuccessMsg($finder);
+				$return['header'] = 'CHECK-OUT ALREADY MARKED FOR TODAY';
+				return $return;
+				//return $res = ["status"=>false, "message"=>"You have already checked-out for the day."];
 			}
 			else if($difference< 45 * 60)
 			{
 				//session is not complitated
-				//$this->checkinCheckoutSuccessMsg($finder);
-				return $res = ["status"=>false, "message"=>"session is not completed."];
+				$return = $this->checkinCheckoutSuccessMsg($finder);
+				$return['header'] = "session is not completed.";
+				return $return;
+				//return $res = ["status"=>false, "message"=>"session is not completed."];
 			}
 			else if(($difference > 45 * 60) &&($difference <= 120 * 60))
 			{
@@ -9694,8 +9697,10 @@ class CustomerController extends \BaseController {
 			else if($difference > 120 * 60)
 			{
 				//times up not accaptable
-				//$this->checkinCheckoutSuccessMsg($finder);
-				return $res = ["status"=>false, "message"=>"Times Up to checkout for the day."];
+				$return  = $this->checkinCheckoutSuccessMsg($finder);
+				$return['header'] = "Times Up to checkout for the day.";
+				return $return;
+				//return $res = ["status"=>false, "message"=>"Times Up to checkout for the day."];
 			}
 		}
 		else
@@ -9731,18 +9736,24 @@ class CustomerController extends \BaseController {
 		Log::info('distance status', [$distanceStatus]);
 		if($distanceStatus){
 			$oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
-			if(!$oprtionalDays['status']){
+			if(!$oprtionalDays['status']){ // need to remove ! 
 				Log::info('device ids:::::::::', [$this->device_id]);
 				return $this->checkForCheckinFromDevice($finder_id, $this->device_id, $finder);
 			}
 			else{
-				return $oprtionalDays;
+				// return for now you are checking in for non operational day or time
+				$return = $this->checkinCheckoutSuccessMsg($finder);
+				$return['header'] = 'Sorry you are checking at non operational Time.';
+				return $return;
+				//return $oprtionalDays;
 			}
 		}
 		else{
 			// return for use high accurary
-			// $this->checkinCheckoutSuccessMsg($finder);
-			return ["status"=> false, "message"=>"Put your device in high accuracy."];
+			$return  = $this->checkinCheckoutSuccessMsg($finder);
+			$return['header']= "Put your device in high accuracy.";
+			return $return;
+			//return ["status"=> false, "message"=>"Put your device in high accuracy."];
 		}
 		
 	}
@@ -9790,13 +9801,14 @@ class CustomerController extends \BaseController {
 					}
 				}
 			}
-			// $this->checkinCheckoutSuccessMsg($finder);
-			$return =  [
-				'header'=>'CHECK-OUT SUCCESSFUL!',
-				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
-				'milestones'=>$this->utilities->getMilestoneSection(),
-				'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png'
-			];
+			$return =$this->checkinCheckoutSuccessMsg($finder);
+			$return['header'] = "CHECK-OUT SUCCESSFULL";
+			// $return =  [
+			// 	'header'=>'CHECK-OUT SUCCESSFUL!',
+			// 	'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
+			// 	'milestones'=>$this->utilities->getMilestoneSection(),
+			// 	'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png'
+			// ];
 			return $return;
 		}catch(Exception $err){
 			Log::info("error occured::::::::::::", [$err]);

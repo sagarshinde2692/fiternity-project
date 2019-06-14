@@ -6572,7 +6572,9 @@ Class Utilities {
                 $customer->update();
             }
 
-            //$customer_update = \Customer::where('_id', $data['customer_id'])->increment('loyalty.checkins');
+            if(isset($data['checkout_status']) && $data['checkout_status']){
+                $customer_update = \Customer::where('_id', $data['customer_id'])->increment('loyalty.checkins');
+            }
 
             //Log::info($customer_update);
 
