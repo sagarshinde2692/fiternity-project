@@ -5934,23 +5934,24 @@ Class Utilities {
 		return null;
 	}
 	public function getWSNonPeakPrice($start=null,$end=null,$workoutSessionPrice=null,$service_cat=null,$just_tag=false) {
-		Log::info(func_get_args());
+		Log::info('at non peak hours:::::',[$workoutSessionPrice]);
 		try {
 			$peak=true;
 			if(!empty($start)&&!empty($end)&&!empty($service_cat))
 			{   
 				if($service_cat=='gym')
-				{
+				{   Log::info('at non peak hours::::: in gym');
 					if(intval($start)>=Config::get('app.non_peak_hours.gym.start')&&intval($end)<=Config::get('app.non_peak_hours.gym.end'))
 					{
 						(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.gym.off')*intval($workoutSessionPrice):"";$peak=false;
 					}
 				}
 				else if(intval($start)>=Config::get('app.non_peak_hours.studios.start')&&intval($end)<=Config::get('app.non_peak_hours.studios.end'))
-				{
+				{   Log::info('at non peak hours::::: in studio', [!$just_tag]);
 					(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.studios.off')*intval($workoutSessionPrice):"";$peak=false;
 				}			
-			}
+            }
+            Log::info('at non peak hours::::: after price', [$workoutSessionPrice, Config::get('app.non_peak_hours.studios.off')]);
 			return ['wsprice'=>$workoutSessionPrice,'peak'=>$peak];
 		} catch (Exception $e) {
 			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
@@ -9202,7 +9203,6 @@ Class Utilities {
 
     public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name){
 		$orderSummary = Config::get('orderSummary.slot_summary');
-		Log::info('service name11', [$service_name]);
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		//Log::info('order summary ::::::', [$orderSummary]);
@@ -9214,14 +9214,11 @@ Class Utilities {
     
     public function orderSummarySlots($slotsdata, $service_name, $vendor_name){
         $orderSummary = Config::get('orderSummary.slot_summary');
-        Log::info("service name at order summary2");
-		//Log::info('order summary ::::::', [$orderSummary]);
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		foreach($slotsdata as &$slot){
 			foreach($slot['data'] as &$sd){
                 $sd['order_summary']['header'] = $orderSummary['header']; 
-                Log::info($orderSummary['header']);
 			}
 		}
 		return $slotsdata;
