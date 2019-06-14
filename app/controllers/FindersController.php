@@ -8244,6 +8244,7 @@ class FindersController extends \BaseController {
                         if($r['type'] == 'extended validity'){
 							$r[ "button_color"] = Config::get('app.ratecard_button_color');
 							$r['pps_image'] = Config::get('app.pps_image');
+							$r['recommended'] = Config::get('nonvalidity.recommnded_block');
 							$extended_validity_type = $this->getExtendedValidityType($r);
 
 							if(($this->device_type=='ios' &&$this->app_version > '5.1.7') || ($this->device_type=='android' &&$this->app_version > '5.23')){
