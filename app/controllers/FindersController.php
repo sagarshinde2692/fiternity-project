@@ -3392,8 +3392,7 @@ class FindersController extends \BaseController {
 		if(!$finder){
 			Service::$withoutAppends=true;
 			Service::$setAppends=['active_weekdays','serviceratecard'];
-			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
-
+			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && empty(Request::header('Authorization-Vendor'))){	
 				$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id', 'offer_available', 'ad', 'showOnFront','calorie_burn'))->toArray();
 
 
@@ -3684,7 +3683,7 @@ class FindersController extends \BaseController {
 					/*if($category->_id == 42){
 						array_push($ratecardArr, $rateval);
 					}else{*/
-						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages' || (!empty(Request::header('Authorization-Vendor')) && $rateval['type'] == 'extended validity' && in_array($rateval['finder_id'], Config::get('app.upgrade_session_finder_id')))){
+						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages' || (!empty(Request::header('Authorization-Vendor')) && $rateval['type'] == 'extended validity' && $rateval['finder_id'] == 1490)){
 							
 							$appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
 
