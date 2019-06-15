@@ -1315,7 +1315,18 @@ Class CustomerSms extends VersionNextSms{
         if(in_array($data['finder_id'], $allMultifitFinderId) && !empty($data["customer_source"]) && $data["customer_source"] == "kiosk"){
             return true;
         }
-    }
+	}
+	
+	public function goldFitcash($data){
+		
+		
+		$label = 'Golds-Fitcash-Customer';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);
+		
+	}
 	
 	public function common($label,$to,$data,$delay = 0){
 
