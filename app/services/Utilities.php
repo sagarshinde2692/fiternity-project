@@ -2059,6 +2059,20 @@ Class Utilities {
 
             $amount = $request['amount'];
 
+            Log::info("customer   email ::: ", [$customer['email']]);
+            if(!empty($data['customer_email']) && $data['customer_email'] != $customer['email']){
+                Log::info("walletTransactionNew email is differ");
+                $request['buy_for_other'] = true;
+            }
+
+            if(!empty($data['type'])){
+                $request['type'] = $data['type'];
+            }
+
+            if(!empty($data['city_id'])){
+                $request['city_id'] = $data['city_id'];
+            }
+
             $query =  $this->getWalletQuery($request);
 
             //Log::info("query ::            ", [$query]);
@@ -2380,6 +2394,9 @@ Class Utilities {
 
    public function getWalletBalance($customer_id,$data = false){
 
+        Log::info("getWalletBalance");
+        Log::info("getWalletBalance data ::: ", [$data]);
+
         $customer_id = (int) $customer_id;
 
         $finder_id = ($data && isset($data['finder_id']) && $data['finder_id'] != "") ? (int)$data['finder_id'] : "";
@@ -2389,8 +2406,13 @@ Class Utilities {
 
         if($finder_id && $finder_id != ""){
 
-            $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
-
+            if(!empty($data['order_type']) && $data['order_type'] != "workout-session" && !empty($data['city_id']) && $data['city_id'] != '3'){
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id)->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
+            }else if(!empty($data['order_type']) && ($data['order_type'] == "workout-session" || $data['order_type'] == "workout session") && !empty($data['city_id']) && $data['city_id'] == '3'){
+                
+            }else{
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
+            }
 
         }else{
 
@@ -2413,6 +2435,11 @@ Class Utilities {
 
         if($this->checkCouponApplied()){
             $query->where('for', 'wallet_recharge');
+        }
+
+        if(isset($data['buy_for_other']) && $data['buy_for_other'] == true ){
+            Log::info("wallet balance buy for other true");
+            $query->where(function($query){$query->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
         }
 
         $wallet_balance = $query->sum('balance');
@@ -2713,6 +2740,7 @@ Class Utilities {
             }
     
             if(isset($request['finder_id']) && $request['finder_id'] != ""){
+                Log::info("request finder_id :::::: ");
     
                 $finder_id = (int)$request['finder_id'];
     
@@ -2770,13 +2798,18 @@ Class Utilities {
     
                     }
                 }
-    
-    
-                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
-    
+
+                
+                if(!empty($request['type']) && $request['type'] != "workout-session" && !empty($request['city_id']) && $request['city_id'] != '3'){
+                    $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id)->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
+                }else if(!empty($request['type']) && ($request['type'] == "workout-session" || $request['type'] == "workout session") && !empty($request['city_id']) && $request['city_id'] == '3'){
+                    
+                }else{
+                    $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
+                }
     
             }else{
-    
+                
                 $query->where('valid_finder_id','exists',false);
             }
     
@@ -2790,6 +2823,11 @@ Class Utilities {
             
             if(!empty($GLOBALS['ratecard_id_for_wallet'])){
                 $query->where(function($query){$query->orwhere('ratecard_id', 'exists', false)->orWhere('ratecard_id', $GLOBALS['ratecard_id_for_wallet']);});
+            }
+
+            if(isset($request['buy_for_other']) && $request['buy_for_other'] == true ){
+                Log::info("wallet query buy for other true");
+                $query->where(function($query){$query->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
             }
     
             Log::info("wallet debit query");
