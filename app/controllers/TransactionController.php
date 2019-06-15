@@ -892,7 +892,7 @@ class TransactionController extends \BaseController {
         $data['amount_final'] = $data["amount_finder"];
 
         //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
-        if((empty($finder->flags->disable_dynamic_pricing) || empty($data['service_flags']['disable_dynamic_pricing'])) && ((isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment']) || (empty($_GET['device_type'])) || $_GET['device_type'] == 'website')){
+        if(((!isset($finder->flags->disable_dynamic_pricing) ||empty($finder->flags->disable_dynamic_pricing)) || (isset($data['service_flags']['disable_dynamic_pricing']) && empty($data['service_flags']['disable_dynamic_pricing']))) && ((isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment']) || (empty($_GET['device_type'])) || $_GET['device_type'] == 'website')){
             if($data['type'] == 'workout-session')
              {
              try {
@@ -6990,7 +6990,7 @@ class TransactionController extends \BaseController {
 
             
 
-            if((empty($data['finder_flags']['disable_dynamic_pricing']) || empty($data['service_flags']['disable_dynamic_pricing'])) && $data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
+            if(((!isset($data['finder_flags']['disable_dynamic_pricing']) || empty($data['finder_flags']['disable_dynamic_pricing'])) || (isset($data['service_flags']['disable_dynamic_pricing']) && empty($data['service_flags']['disable_dynamic_pricing']))) && $data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
             {
                 $start_time = explode('-', $data['slot']['slot_time'])[0];
                 $end_time = explode('-', $data['slot']['slot_time'])[1];
