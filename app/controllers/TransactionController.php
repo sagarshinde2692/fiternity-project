@@ -9040,8 +9040,8 @@ class TransactionController extends \BaseController {
             $post_data['amountpaid'] = $order['amount'];
             // $post_data['paymentmode'] = 'gymtrekker';
             // $post_data['amountpaid'] = $order['amount_transferred_to_vendor'];
-            $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
-            $post_data['addpaymentvalues'] = '0'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
+            // $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
+            // $post_data['addpaymentvalues'] = '0'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
 
             Log::info('fitnessForce: ', $post_data);
 
@@ -9053,9 +9053,9 @@ class TransactionController extends \BaseController {
             $fitnessForceData['form_params']['mobileno'] = $post_data['customer_phone'];
             $fitnessForceData['form_params']['emailid'] = $post_data['customer_email'];
             $fitnessForceData['form_params']['productprice'] = $post_data['productprice'];
-            $fitnessForceData['form_params']['paymentmode'] = 'gymtrekker';
-            $fitnessForceData['form_params']['addpaymentids'] = $post_data['addpaymentids'];
-            $fitnessForceData['form_params']['addpaymentvalues'] = $post_data['addpaymentvalues'];
+            $fitnessForceData['form_params']['paymentmode'] = 'fitternity';//'gymtrekker';
+            // $fitnessForceData['form_params']['addpaymentids'] = $post_data['addpaymentids'];
+            // $fitnessForceData['form_params']['addpaymentvalues'] = $post_data['addpaymentvalues'];
             $fitnessForceData['form_params']['amountpaid'] = $post_data['amountpaid'];
             $fitnessForceData['form_params']['total'] = $post_data['total'];
             $fitnessForceData['form_params']['productprice'] = $post_data['productprice'];
