@@ -516,10 +516,6 @@ class EmailSmsApiController extends \BaseController {
             $capture['specialinstructions'] = $data["specialinstructions"];
             $capture->save();
             $resp = array('status' => 200,'message' => "Instructions saved successfully");
-            $decodeKioskVendorToken = decodeKioskVendorToken();
-            if(!empty($decodeKioskVendorToken['vendor']) && !empty($decodeKioskVendorToken['location'])) {
-                $this->utilities->sendEnquiryToFitnessForce($capture, $decodeKioskVendorToken['vendor'], $decodeKioskVendorToken['location']);
-            }
             return Response::json($resp,$resp['status']);
         }
         $resp = array('status' => 400,'message' => "Bad request");
@@ -528,6 +524,8 @@ class EmailSmsApiController extends \BaseController {
     public function landingpagecallback(){
 
         $data = Input::json()->all();
+
+        $captureData = clone($data);
 
         Log::info("landingpagecallback");
         Log::info($data);
@@ -1039,6 +1037,10 @@ class EmailSmsApiController extends \BaseController {
         }
 
         $resp  = array('status' => 200,'message'=>$message,'capture'=>$storecapture);
+
+        if(!empty($decodeKioskVendorToken['vendor']) && !empty($decodeKioskVendorToken['location'])) {
+            $this->utilities->sendEnquiryToFitnessForce($captureData, $decodeKioskVendorToken['vendor'], $decodeKioskVendorToken['location']);
+        }
 
         return Response::json($resp);
     }
