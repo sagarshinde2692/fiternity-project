@@ -516,6 +516,10 @@ class EmailSmsApiController extends \BaseController {
             $capture['specialinstructions'] = $data["specialinstructions"];
             $capture->save();
             $resp = array('status' => 200,'message' => "Instructions saved successfully");
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+            if(!empty($decodeKioskVendorToken['vendor'])) {
+                $this->utilities->sendEnquiryToFitnessForce($capture, $decodeKioskVendorToken['vendor']);
+            }
             return Response::json($resp,$resp['status']);
         }
         $resp = array('status' => 400,'message' => "Bad request");

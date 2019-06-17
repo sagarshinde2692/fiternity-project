@@ -8742,5 +8742,84 @@ Class Utilities {
                        
         }
     }
+
+    public function sendEnquiryToFitnessForce($captureData, $vendor, $location) {
+
+        Log::info('----- inside sendEnquiryToFitnessForce -----');
+
+        $client = new GuzzleClient( ['debug' => false] );
+        Finder::$withoutAppends = true;
+        $finder = Finder::where('_id', $vendor['_id'])->first(['_id', 'title']);
+        $captureData['finder_id'] = $vendor['_id'];
+        $captureData['finder_name'] = $finder['title'];
+        $captureData['finder_slug'] = $vendor['slug'];
+        $captureData['location_id'] = $location['_id'];
+        $captureData['location_name'] = $location['name'];
+        $captureData['source'] = Config::get('app.finderDetails.source');
+        $captureData['tenantid'] = $finder['flags']['ff_tenant_id'];
+        $captureData['authkey'] = $finder['flags']['ff_auth_key'];
+
+        $url = Config::get('app.ffEnquiryAPI').$captureData['source'].'&tenantid='.$captureData['tenantid'].'&authkey='.$captureData['authkey'];
+
+        $responseString = $client->post($url,$captureData)->getBody()->getContents();
+        Log::info('fitnessForce Enquiry Response String: ', [$responseString]);
+
+        if(!empty($captureData['customer_name'])) {
+            $nameArr = explode(' ', $captureData['customer_name']);
+            if(!empty($nameArr) && count($nameArr)>0) {
+                $countNameArr = count($nameArr);
+                $captureData['first_name'] = $nameArr[0];
+                if($countNameArr>1) {
+                    $captureData['last_name'] = $nameArr[$countNameArr-1];
+                }
+            }
+        }
+
+        $fitnessForceData = ['form_params' => []];
+        $fitnessForceData['form_params']['firstname'] = $captureData['first_name'];
+        if(!empty($captureData['last_name'])) {
+            $fitnessForceData['form_params']['lastname'] = $captureData['last_name'];
+        }
+
+        $fflogParam = [
+            'url' => $url,
+            'request_query' => [
+                'source' => $captureData['source'],
+                'tenantid' => $captureData['tenantid'],
+                'authkey' => $captureData['authkey']
+            ],
+            'request_body' => $fitnessForceData['form_params'],
+            'response' => $responseString,
+            'type' => 'enquiry_succ',
+            'success' => false,
+            'capture_id' => $captureData['capture_id'],
+            'finder_id' => $captureData['finder_id']
+        ];
+
+        if(!empty($responseString)) {
+            $response = json_decode($responseString, true);
+            Log::info('fitnessForce Response: ', [$response]);
+            
+            $fflogParam['response'] = $response;
+            
+            if(!empty($response) && $response['isSuccess']) {
+                $fflogParam['success'] = true;
+                if(!empty($response['response'][0]['billid'])) {
+                    $fflogParam['ff_bill_id'] = $response['response'][0]['billid'];
+                }
+                if(!empty($response['response'][0]['receiptid'])) {
+                    $fflogParam['ff_receipt_id'] = $response['response'][0]['receiptid'];
+                }
+
+                $fflogParam['success'] = true;
+                Capture::where('_id', $captureData['_id'])->update(['ff_bill_id'=>$response['response'][0]['billid'],'ff_receipt_id'=>$response['response'][0]['receiptid']]);
+            }
+        }
+
+        $fflog = new FitnessForceAPILog($fflogParam);
+        $fflog->save();
+
+        return $response;
+    }
       
 }

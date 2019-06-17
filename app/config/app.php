@@ -20,6 +20,8 @@ return array(
 	'mobikwik_sandbox'=>true,
 	'paytm_sandbox'=>true,
 	'paypal_sandbox'=>true,
+	'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	'ffEnquiryAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -74,7 +76,12 @@ return array(
 	// 'mobikwik_sandbox'=>false,
 	// 'paytm_sandbox'=>false,
     // 'paypal_sandbox'=>false,
-    
+	
+	'ffDetails' => [
+		'source' => 'fitternity',
+		'paymentmode' => 'fitternity'
+	],
+
     "core_key"=> "FITITRNTY",
 	'non_peak_hours' => ["off"=>0.6,"non_peak_title1"=>"Look for this sign to book a slot for ", "non_peak_title"=>"NON RUSH HOUR (40% OFF)", "gym"=>["off"=>0.6,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.6]],
     'product_delivery_charges' => 50,
