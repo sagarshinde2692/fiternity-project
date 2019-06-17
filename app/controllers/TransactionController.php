@@ -9092,9 +9092,7 @@ class TransactionController extends \BaseController {
             $campaign_reg->save();
         }
 
-        if(empty(Config::get('app.debug'))){
-            $this->fitnessForce(['data'=>$data, 'type'=>$type]);
-        }
+        $this->fitnessForce(['data'=>$data, 'type'=>$type]);
 
 
     }
