@@ -2342,7 +2342,8 @@ class ServiceController extends \BaseController {
 		
 	}
 
-	public function ppsPriceOffer($data, $service_id, $type){
+	public function ppsPriceOffer($data, $service_id, $type)
+	{
 		$offers = Offer :: where('vendorservice_id', $service_id)->where('type', $type)->orderBy('_id', 'desc')->select('price')->first();
 
 		if(count($offers))
