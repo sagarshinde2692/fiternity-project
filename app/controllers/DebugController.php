@@ -10914,6 +10914,12 @@ public function yes($msg){
 				}
 			}
 
+			$totalOrder2 = Order::where('corporate_coupon', 'exists', true)->where('corporate_coupon', true)->whereIn('type', ['booktrials', 'workout-session'])->lists('_id');
+			Log::info("totalOrder2 :: ",[$totalOrder2]);
+			$return = array();
+			$return['corporate_coupon'] = true;
+			Booktrial::whereIn('order_id',$totalOrder2)->update($return);
+
 			$return = array('status'=>'done');
 		}catch(Exception $exception){
 			$message = array(
