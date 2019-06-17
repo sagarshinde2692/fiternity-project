@@ -477,6 +477,7 @@ if(!function_exists('ifCityPresent')){
             case "vashi":
             case "bhiwandi":
             case "navi mumbai":
+            case "mira bhayandar":
                 $send_city = "mumbai";
                 $ifcity = true;
                 break;
