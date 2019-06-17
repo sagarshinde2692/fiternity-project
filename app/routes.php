@@ -17,7 +17,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 
 
-// require __DIR__.'/debug_routes.php';
+require __DIR__.'/debug_routes.php';
 require __DIR__.'/analytics_routes.php';
 require __DIR__.'/testing_routes.php';
 
@@ -1360,3 +1360,5 @@ Route::get('fixCustomerQuantity', 'DebugController@fixCustomerQuantity');
 Route::get('fixFinanceCustomerQuantity', 'DebugController@fixFinanceCustomerQuantity');
 Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');
 Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
+Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
+Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
