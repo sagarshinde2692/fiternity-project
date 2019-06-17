@@ -31,7 +31,7 @@ return array(
 	'vendor_communication' => false,
 	'env' => 'stage',
 	'debug' => TRUE,
-	'metropolis' => 'http://apisatge.fitn.in:8989',
+	'metropolis' => 'http://apistage.fitn.in:8989',
 	'amazonpay_isSandbox' => 'true',
 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
