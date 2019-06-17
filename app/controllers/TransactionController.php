@@ -9162,10 +9162,10 @@ class TransactionController extends \BaseController {
             }
             // $post_data['total'] = $order['amount_transferred_to_vendor'];
             // $post_data['productprice'] = ((100 * $order['amount_transferred_to_vendor'])/118); // total - 18% GST
-            $post_data['total'] = 5800;//$order['amount'];
+            $post_data['total'] = $order['amount'];
             $post_data['productprice'] = ((100 * $order['amount'])/118); // total - 18% GST
             $post_data['paymentmode'] = 'fitternity';
-            $post_data['amountpaid'] = 5800;//$order['amount'];
+            $post_data['amountpaid'] = $order['amount'];
             // $post_data['paymentmode'] = 'gymtrekker';
             // $post_data['amountpaid'] = $order['amount_transferred_to_vendor'];
             // $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
