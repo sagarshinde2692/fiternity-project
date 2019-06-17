@@ -11000,6 +11000,30 @@ public function yes($msg){
 
         return $dist;
     
+	}
+	
+	public function goldsFitcashMessage(){
+
+		$destinationPath = public_path();
+		$fileName = "gold_fitcash.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$customersms = new CustomerSms();
+
+		$csv_to_array = $this->csv_to_array($filePath);
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if(!empty($value['customer_phone']) && !empty($value['customer_name'])  && !empty($value['amount'])){
+					Log::info('Key :: '.$key);
+					$customersms->goldFitcash($value);
+				}
+			}
+		}
+
+		echo "done";	
     }
 
 }

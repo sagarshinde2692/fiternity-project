@@ -171,7 +171,7 @@ Route::get('getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfi
 Route::get('getlocations/{city?}', 'HomeController@getCityLocation');
 Route::get('getcategories/{city?}', 'HomeController@getCityCategorys');
 Route::get('getcities', 'HomeController@getCities');
-Route::get('ifcity/{city}', 'HomeController@ifCity');
+Route::get('ifcity/{city?}', 'HomeController@ifCity');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
@@ -1358,3 +1358,4 @@ Route::get('fitpassComparison', 'DebugController@fitpassComparison');
 Route::get('fixCustomerQuantity', 'DebugController@fixCustomerQuantity');
 Route::get('fixFinanceCustomerQuantity', 'DebugController@fixFinanceCustomerQuantity');
 Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');
+Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');

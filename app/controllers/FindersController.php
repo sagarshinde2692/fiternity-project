@@ -252,6 +252,10 @@ class FindersController extends \BaseController {
 
 							$finderarr['reviews'][$rev_key]['customer'] = array("id"=>0,"name"=>"A Fitternity User","picture"=>"https://www.gravatar.com/avatar/0573c7399ef3cf8e1c215cdd730f02ec?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png");
 						}
+
+						if((!empty($rev_value['description'])) && $rev_value['rating']==0) {
+							$finderarr['reviews'][$rev_key]['rating'] = 5;
+						}
 					}
 				}
 
@@ -3388,14 +3392,13 @@ class FindersController extends \BaseController {
 		if(!$finder){
 			Service::$withoutAppends=true;
 			Service::$setAppends=['active_weekdays','serviceratecard'];
-			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
-
+			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && empty(Request::header('Authorization-Vendor'))){	
 				$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id', 'offer_available', 'ad', 'showOnFront','calorie_burn'))->toArray();
 
 
 			}else{
 
-				if(!empty(Request::header('Vendor-Token'))){
+				if(!empty(Request::header('Authorization-Vendor'))){
 					$membership_services = Ratecard::active()->where('finder_id', $finder_id)->whereIn('type',['membership', 'packages', 'extended validity'])->lists('service_id');
 				}else{
 					$membership_services = Ratecard::active()->where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
@@ -3680,7 +3683,7 @@ class FindersController extends \BaseController {
 					/*if($category->_id == 42){
 						array_push($ratecardArr, $rateval);
 					}else{*/
-						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages' || (!empty(Request::header('Authorization-Vendor')) && $rateval['type'] == 'extended validity' && in_array($rateval['finder_id'], Config::get('app.upgrade_session_finder_id')))){
+						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages' || (!empty(Request::header('Authorization-Vendor')) && $rateval['type'] == 'extended validity' && $rateval['finder_id'] == 1490)){
 							
 							$appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
 
@@ -3920,6 +3923,9 @@ class FindersController extends \BaseController {
 						if($rev_value['customer'] == null){
 							
 							$finderarr['reviews'][$rev_key]['customer'] = array("id"=>0,"name"=>"A Fitternity User","picture"=>"https://www.gravatar.com/avatar/0573c7399ef3cf8e1c215cdd730f02ec?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png");
+						}
+						if(!empty($rev_value['description']) && $rev_value['rating']==0) {
+							$finderarr['reviews'][$rev_key]['rating'] = 5;
 						}
 					}
 				}

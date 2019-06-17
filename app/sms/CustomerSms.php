@@ -530,12 +530,13 @@ Class CustomerSms extends VersionNextSms{
 
 		$utilities = new Utilities();
 		$multifitWebsiteHeader = $utilities->getMultifitWebsiteHeader();
-
+		
 		$headreKiosk = $this->multifitUserHeader();
 		if($multifitWebsiteHeader == 'multifit' || $headreKiosk == true){
 			$label = 'Generic-Otp-Multifit-Customer';
+			$data['multifit'] = true;
 		}
-
+		
 		$to = $data['customer_phone'];
 
 		$data['otp_route'] = true;
@@ -1314,7 +1315,18 @@ Class CustomerSms extends VersionNextSms{
         if(in_array($data['finder_id'], $allMultifitFinderId) && !empty($data["customer_source"]) && $data["customer_source"] == "kiosk"){
             return true;
         }
-    }
+	}
+	
+	public function goldFitcash($data){
+		
+		
+		$label = 'Golds-Fitcash-Customer';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);
+		
+	}
 	
 	public function common($label,$to,$data,$delay = 0){
 
@@ -1346,7 +1358,6 @@ Class CustomerSms extends VersionNextSms{
 		if(isset($data['otp_route']) && $data['otp_route']){
 			$otp = true;
 		}
-
 		return $this->sendToWorker($to, $message, $label, $delay, $otp, $sender);
 	}
 
