@@ -517,8 +517,8 @@ class EmailSmsApiController extends \BaseController {
             $capture->save();
             $resp = array('status' => 200,'message' => "Instructions saved successfully");
             $decodeKioskVendorToken = decodeKioskVendorToken();
-            if(!empty($decodeKioskVendorToken['vendor'])) {
-                $this->utilities->sendEnquiryToFitnessForce($capture, $decodeKioskVendorToken['vendor']);
+            if(!empty($decodeKioskVendorToken['vendor']) && !empty($decodeKioskVendorToken['location'])) {
+                $this->utilities->sendEnquiryToFitnessForce($capture, $decodeKioskVendorToken['vendor'], $decodeKioskVendorToken['location']);
             }
             return Response::json($resp,$resp['status']);
         }
