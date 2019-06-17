@@ -9040,8 +9040,8 @@ class TransactionController extends \BaseController {
             $post_data['amountpaid'] = $order['amount'];
             // $post_data['paymentmode'] = 'gymtrekker';
             // $post_data['amountpaid'] = $order['amount_transferred_to_vendor'];
-            // $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
-            // $post_data['addpaymentvalues'] = '0'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
+            $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
+            $post_data['addpaymentvalues'] = '0'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
 
             Log::info('fitnessForce: ', $post_data);
 
@@ -9073,6 +9073,7 @@ class TransactionController extends \BaseController {
                 // 'base_uri' => "https://hooks.zapier.com/"
             ] );
 
+            // $url = 'https://demo.fitnessforce.com/WebPurchase/WebTransaction.aspx?source='.$post_data['source'].'&tenantid='.$post_data['tenantid'].'&authkey='.$post_data['authkey'];
             $url = 'https://demo.fitnessforce.com/WebPurchase/WebTransaction.aspx?source='.$post_data['source'].'&tenantid='.$post_data['tenantid'].'&authkey='.$post_data['authkey'];
 
             // if($data['type'] == 'trial'){
