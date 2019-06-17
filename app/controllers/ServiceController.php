@@ -670,9 +670,9 @@ class ServiceController extends \BaseController {
         // $type                   =   'workout-session';
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
-		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id','flags');
+		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id','flags', 'inoperational_dates');
 		Service::$withoutAppends=true;
-		 Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
+		 Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards', 'service_inoperational_dates_array'];
 		
         $query = Service::active()->where("trial", '!=', 'disable')->where(function($query){
             $query->whereNotIn('trial',['manual', 'manualauto'])->orWhere('flags.enable_manual_booking_pps.status', true);
@@ -697,7 +697,7 @@ class ServiceController extends \BaseController {
 		}))->get($selectedFieldsForService)->toArray();
 
 		//  $items = $query->get()->toArray();
-
+		
 
 
 
@@ -744,16 +744,18 @@ class ServiceController extends \BaseController {
 
 			$weekdayslots = false;
 
-
-			if(!in_array($timestamp, $finder['inoperational_dates_array'])){
-				$weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
-					if($value['weekday'] == $weekday){
-						return $value;
-					}
-				}));
-			}
 			
-            $time_in_seconds = time_passed_check($item['servicecategory_id']);
+			if(!in_array($timestamp, $finder['inoperational_dates_array'])){
+				if(!in_array($timestamp, $item['service_inoperational_dates_array'])){
+					$weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
+						if($value['weekday'] == $weekday){
+							return $value;
+						}
+					}));
+				}
+			}
+
+			$time_in_seconds = time_passed_check($item['servicecategory_id']);
             
             if(!empty($finder['flags']['enable_manual_booking_pps']['status']) && !empty($item['flags']['enable_manual_booking_pps']['status'])){
                 $time_in_seconds = 60*60*24;
@@ -783,6 +785,7 @@ class ServiceController extends \BaseController {
 				'workoutsession_active_weekdays' => $item["workoutsession_active_weekdays"],
 				'trial_active_weekdays' => $item["trial_active_weekdays"],
 				'inoperational_dates_array' => $finder['inoperational_dates_array'],
+				'service_inoperational_dates_array' => $item['service_inoperational_dates_array'],
 				'cost'=>'Free Via Fitternity',
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
 				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : "",
@@ -1365,7 +1368,7 @@ class ServiceController extends \BaseController {
 			$nextweekday     			=   strtolower(date( "l", strtotime("+".$i." days",$timestamp)));
 			// Log::info($nextweekday." ++ ".$service["service_name"]);
 			// Log::info($active_weekdays);
-			if(in_array($nextweekday,$active_weekdays) && !in_array(strtotime("+".$i." days",$timestamp), $service['inoperational_dates_array'])){
+			if(in_array($nextweekday,$active_weekdays) && !in_array(strtotime("+".$i." days",$timestamp), $service['inoperational_dates_array'])  && !in_array(strtotime("+".$i." days",$timestamp), $service['service_inoperational_dates_array'])){
 				// Log::info("available timestamp:".strtotime("+".$i." days",$timestamp));
 				$v = date("Y-m-d",strtotime("+".$i." days",$timestamp));
 				Log::info("Yahan".$v);
