@@ -9009,7 +9009,7 @@ class TransactionController extends \BaseController {
                     }
                 }
             }
-            $post_data['source'] = 'gymtrekker';
+            $post_data['source'] = 'fitternity';//'gymtrekker';
             $post_data['tenantid'] = 45;
             $post_data['authkey'] = 'FFT_D_45';
             
@@ -9032,12 +9032,16 @@ class TransactionController extends \BaseController {
             else {
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['preferred_starting_date'])); // '2019-05-29';
             }
-            $post_data['total'] = $order['amount_transferred_to_vendor'];
-            $post_data['productprice'] = ((100 * $order['amount_transferred_to_vendor'])/118); // total - 18% GST
-            $post_data['paymentmode'] = 'gymtrekker';
-            $post_data['amountpaid'] = $order['amount_transferred_to_vendor'];
-            $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
-            $post_data['addpaymentvalues'] = '0'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
+            // $post_data['total'] = $order['amount_transferred_to_vendor'];
+            // $post_data['productprice'] = ((100 * $order['amount_transferred_to_vendor'])/118); // total - 18% GST
+            $post_data['total'] = $order['amount'];
+            $post_data['productprice'] = ((100 * $order['amount'])/118); // total - 18% GST
+            $post_data['paymentmode'] = 'fitternity';
+            $post_data['amountpaid'] = $order['amount'];
+            // $post_data['paymentmode'] = 'gymtrekker';
+            // $post_data['amountpaid'] = $order['amount_transferred_to_vendor'];
+            // $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
+            // $post_data['addpaymentvalues'] = '0'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
 
             Log::info('fitnessForce: ', $post_data);
 
