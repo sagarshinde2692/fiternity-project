@@ -1260,7 +1260,7 @@ class ServiceController extends \BaseController {
                 }
 			}
 			
-			$data['slots'] = $this->ppsPriceOffer($data['slots'], $item['_id'], 'pps_offer');
+			// $data['slots'] = $this->ppsPriceOffer($data['slots'], $item['_id'], 'pps_offer');
 
 	        return Response::json($data,200);
         }
