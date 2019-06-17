@@ -525,7 +525,7 @@ class EmailSmsApiController extends \BaseController {
 
         $data = Input::json()->all();
 
-        $captureData = clone($data);
+        $captureData = $data;
 
         Log::info("landingpagecallback");
         Log::info($data);
