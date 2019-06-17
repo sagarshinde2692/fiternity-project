@@ -606,4 +606,16 @@ class Service extends \Basemodel{
 		return $query->where('status','=','1')->whereNotIn('showOnFront', [[], ['kiosk']])->where('trial', '!=', 'disable');
 	}
 
+	public function getServiceInoperationalDatesArrayAttribute(){
+		
+		$inopertaional_dates = isset($this->inoperational_dates) ? $this->inoperational_dates : [];
+
+		$inopertaional_dates = array_map(function($value){
+			return $value->sec; 
+		}, $inopertaional_dates);
+
+		return $inopertaional_dates;
+		
+	}
+
 }
