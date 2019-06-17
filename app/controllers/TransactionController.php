@@ -9010,8 +9010,8 @@ class TransactionController extends \BaseController {
                 }
             }
             $post_data['source'] = 'fitternity';//'gymtrekker';
-            $post_data['tenantid'] = 45;
-            $post_data['authkey'] = 'FFT_F_45';
+            $post_data['tenantid'] = 1926;
+            $post_data['authkey'] = 'FFT_M_1926';
             
             // $post_data['productid'] = 34767;
             // $post_data['packageid'] = 45;
@@ -9074,7 +9074,7 @@ class TransactionController extends \BaseController {
             ] );
 
             // $url = 'https://demo.fitnessforce.com/WebPurchase/WebTransaction.aspx?source='.$post_data['source'].'&tenantid='.$post_data['tenantid'].'&authkey='.$post_data['authkey'];
-            $url = 'https://demo.fitnessforce.com/WebPurchase/WebTransaction.aspx?source='.$post_data['source'].'&tenantid='.$post_data['tenantid'].'&authkey='.$post_data['authkey'];
+            $url = 'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source='.$post_data['source'].'&tenantid='.$post_data['tenantid'].'&authkey='.$post_data['authkey'];
 
             // if($data['type'] == 'trial'){
             //     $url = 'hooks/catch/961068/jrdw9y';
