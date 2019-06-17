@@ -9011,7 +9011,7 @@ class TransactionController extends \BaseController {
             }
             $post_data['source'] = 'fitternity';//'gymtrekker';
             $post_data['tenantid'] = 45;
-            $post_data['authkey'] = 'FFT_D_45';
+            $post_data['authkey'] = 'FFT_F_45';
             
             // $post_data['productid'] = 34767;
             // $post_data['packageid'] = 45;
