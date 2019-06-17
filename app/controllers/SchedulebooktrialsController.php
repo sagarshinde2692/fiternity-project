@@ -743,7 +743,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         // return $data	= Input::json()->all();
-        $booktrialid 		       =	Booktrial::max('_id') + 1;
+        $booktrialid 		       =	Booktrial::maxId() + 1;
 
         $finder_id 			       = 	(int) Input::json()->get('finder_id');
         $city_id 			       =	(int) Input::json()->get('city_id');
@@ -1029,7 +1029,7 @@ class SchedulebooktrialsController extends \BaseController {
             array_set($insertdata, 'finder_name', $finder_names[$key]);
             // return $insertdata;
 
-            $booktrialid	=	Booktrial::max('_id') + 1;
+            $booktrialid	=	Booktrial::maxId() + 1;
             $booktrial        = new Booktrial($insertdata);
             $booktrial->_id = $booktrialid;
             $trialbooked = $booktrial->save();
@@ -1900,7 +1900,7 @@ class SchedulebooktrialsController extends \BaseController {
             if(isset($order->booktrial_id)){
                 $booktrialid = (int)$order->booktrial_id;
             }else{
-                $booktrialid                       =    Booktrial::max('_id') + 1;
+                $booktrialid                       =    Booktrial::maxId() + 1;
             }
 
             $finderid 					       = 	(int) $data['finder_id'];
@@ -3195,7 +3195,7 @@ class SchedulebooktrialsController extends \BaseController {
                     return array('status' => 500, 'message' => "Fitcash cannot be used for this booking");
                 }
             }
-            $booktrialid = Booktrial::max('_id') + 1;
+            $booktrialid = Booktrial::maxId() + 1;
             isset($data['finder_id']) ? $finderid = (int)$data['finder_id'] : null;
             $finder = Finder::with(array('location' => function ($query) {
                 $query->select('_id', 'name', 'slug');

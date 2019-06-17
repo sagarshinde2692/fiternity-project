@@ -1,4 +1,5 @@
 <?php
+use Aws\CloudFront\Exception\Exception;
 
 class Booktrial extends \Basemodel {
 
@@ -51,6 +52,10 @@ class Booktrial extends \Basemodel {
 
 	public function findercategory(){
 		return $this->hasOne('Findercategory', 'findercategory_id');
-	}
+    }
+    
+    public static function maxId(){
+        return Identitycounter::where('model', 'Booktrial')->where('field', '_id')->increment('count');
+    }
 
 }
