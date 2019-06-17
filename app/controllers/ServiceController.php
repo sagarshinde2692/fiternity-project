@@ -511,7 +511,7 @@ class ServiceController extends \BaseController {
 			$data['weekday'] = $weekday;
 			
 		}
-
+		
 		return Response::json($data,200);
         
     }
@@ -1246,6 +1246,9 @@ class ServiceController extends \BaseController {
                 }
             }
 
+			Log::info('pps price offer checking::::::::::', [$item['_id']]);
+
+			$data['slots'] = $this->ppsPriceOffer($data['slots'], $item['_id'], 'pps_offer');
 
 	        return Response::json($data,200);
         }
@@ -2341,5 +2344,21 @@ class ServiceController extends \BaseController {
 		
 	}
 
+	public function ppsPriceOffer($data, $service_id, $type){
+		$offers = Offer :: where('vendorservice_id', $service_id)->where('type', $type)->orderBy('_id', 'desc')->select('price')->first();
+		Log::info('offers:::::', [ $offers]);
+		if(count($offers))
+		{
+			foreach($data as $key=>$value)
+			{	Log::info('value::::::', [$offers]);
+				$data[$key]['price'] = "₹ ".$offers['price'];
+				foreach($value['data'] as $key1 => $value1)
+				{
+					$data[$key]['data'][$key1]['price'] = $offers['price'];
+				}
+			}
+		}
+		return $data;
+	}
 
 }
