@@ -1046,7 +1046,8 @@ class EmailSmsApiController extends \BaseController {
         Log::info('before checking decodeKioskVendorToken: ', [$decodeKioskVendorToken]);
         if(!empty($decodeKioskVendorToken->vendor) && !empty($decodeKioskVendorToken->vendor->location)) {
             Log::info('decodeKioskVendorToken vendor and location exists');
-            $captureData['capture_id'] = $storecapture;
+            $captureData['capture_id'] = $storecapture['_id'];
+            $captureData['customer_id'] = $storecapture['customer_id'];
             $this->utilities->sendEnquiryToFitnessForce($captureData, $decodeKioskVendorToken->vendor, $decodeKioskVendorToken->vendor->location);
         }
 

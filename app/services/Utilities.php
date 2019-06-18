@@ -8814,17 +8814,10 @@ Class Utilities {
             
             $fflogParam['response'] = $response;
             
-            if(!empty($response) && $response['isSuccess']) {
+            if(!empty($response) && !empty($response['success'])) {
                 $fflogParam['success'] = true;
-                if(!empty($response['response'][0]['billid'])) {
-                    $fflogParam['ff_bill_id'] = $response['response'][0]['billid'];
-                }
-                if(!empty($response['response'][0]['receiptid'])) {
-                    $fflogParam['ff_receipt_id'] = $response['response'][0]['receiptid'];
-                }
-
-                $fflogParam['success'] = true;
-                Capture::where('_id', $captureData['capture_id'])->update(['ff_bill_id'=>$response['response'][0]['billid'],'ff_receipt_id'=>$response['response'][0]['receiptid']]);
+                Customer::where('_id', $captureData['customer_id'])->update(['ff_member_id'=>$response['success'][0]['memberid']]);
+                Capture::where('_id', $captureData['capture_id'])->update(['ff_member_id'=>$response['success'][0]['memberid']]);
             }
         }
 
