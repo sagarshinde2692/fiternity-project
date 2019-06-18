@@ -33,6 +33,7 @@ use FinderMilestone;
 use MongoDate;
 use Coupon;
 use \GuzzleHttp\Client;
+use \GuzzleHttp\Client as GuzzleClient;
 
 use App\Services\Fitnessforce as Fitnessforce;
 
