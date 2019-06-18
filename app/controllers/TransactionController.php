@@ -2431,7 +2431,7 @@ class TransactionController extends \BaseController {
 
     
             }
-            else if($data['payment_mode'] == 'cod') {
+            else if($order['payment_mode'] == 'cod') {
                 Log::info('payment mode cod, going for fitnessForce');
                 $this->fitnessForce(['data'=>$data, 'type'=>$order->type]);
             }
