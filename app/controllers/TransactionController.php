@@ -2431,6 +2431,10 @@ class TransactionController extends \BaseController {
 
     
             }
+            else if($data['payment_mode'] == 'cod') {
+                Log::info('payment mode cod, going for fitnessForce');
+                $this->fitnessForce(['data'=>$data, 'type'=>$order->type]);
+            }
 
             if(isset($order['previous_booktrial_id']) && $order['previous_booktrial_id'] != ""){
 
@@ -8977,7 +8981,6 @@ class TransactionController extends \BaseController {
                 "customer_phone",
                 "customer_email",
                 "customer_gender",
-                "order_id",
                 "service_name",
                 "service_category_id",
                 "service_category",
@@ -8995,8 +8998,8 @@ class TransactionController extends \BaseController {
         $order = Order::where('_id', $data['data']['order_id'])->first();
         Log::info('fitnessforce $order: ', [$order['_id']]);
 
-        if(!empty($order['studio_extended_validity_order_id'])) {
-            Log::info('fitnessforce $studio_extended_validity_order_id: ', [$order['studio_extended_validity_order_id']]);
+        if((!empty($order['studio_extended_validity_order_id']) && empty($order['studio_extended_session'])) || (!empty($order['extended_validity_order_id'])) || (!empty($order['third_party_details'])) ) {
+            Log::info('fitnessforce studio_extended_validity_order_id or extended_validity_order_id or ABW');
             return;
         }
 
