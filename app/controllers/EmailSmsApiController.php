@@ -1044,8 +1044,8 @@ class EmailSmsApiController extends \BaseController {
 
         $resp  = array('status' => 200,'message'=>$message,'capture'=>$storecapture);
 
-        if(!empty($decodeKioskVendorToken['vendor']) && !empty($decodeKioskVendorToken['location'])) {
-            $this->utilities->sendEnquiryToFitnessForce($captureData, $decodeKioskVendorToken['vendor'], $decodeKioskVendorToken['location']);
+        if(!empty($decodeKioskVendorToken->vendor) && !empty($decodeKioskVendorToken->location)) {
+            $this->utilities->sendEnquiryToFitnessForce($captureData, $$decodeKioskVendorToken->vendor, $decodeKioskVendorToken->location);
         }
 
         return Response::json($resp);
