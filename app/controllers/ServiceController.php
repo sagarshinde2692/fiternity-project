@@ -694,8 +694,10 @@ class ServiceController extends \BaseController {
 			 $query->where('type',$ratecard_type);
 		 }))->with(array('category'=>function($query){
 			$query->select('name');
+		}))->with(array('offers'=>function($query){
+			$query->select('price');
 		}))->get($selectedFieldsForService)->toArray();
-
+		
 		//  $items = $query->get()->toArray();
 		
 
@@ -832,12 +834,23 @@ class ServiceController extends \BaseController {
 	        $slot_passed_flag = true;
 			
             if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
-				if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
-					$ratecard_price = $ratecard['special_price'];
-                }else{
-					$ratecard_price = $ratecard['price'];
-                }
 
+				$offer_price = $this->ppsPriceOffer($ratecard['_id'], $weekdayslots['slots']);
+
+				if($offer_price['price'] == 0)
+				{
+					if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+						$ratecard_price = $ratecard['special_price'];
+					}else{
+						$ratecard_price = $ratecard['price'];
+					}
+				}
+				else
+				{
+					$weekdayslots['slots']= $offer_price['slots'];
+					$ratecard_price = $offer_price['price'];
+				}
+				
 				if($type == "workoutsessionschedules"){
 					$service["workout_session"] = [
 							"available" => true,
@@ -859,7 +872,7 @@ class ServiceController extends \BaseController {
 		    		
 		    		$p_np=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 		    		if(!empty($p_np))
-		    		{
+		    		{	
 		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):"";
 		    			$nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
 		    		}
@@ -957,7 +970,7 @@ class ServiceController extends \BaseController {
 						// if(isset($_GET['source']) && $_GET['source'] == 'pps')
                         $jwt_token = Request::header('Authorization');
 
-                        Log::info('jwt_token : '.$jwt_token);
+                        //Log::info('jwt_token : '.$jwt_token);
 
                         if(!empty($jwt_token)){
                             $decoded = decode_customer_token();
@@ -1246,14 +1259,14 @@ class ServiceController extends \BaseController {
                 }
 			}
 			
-			if(isset($data['slots']))
-			{
-				$data['slots'] = $this->ppsPriceOffer($data['slots'], $item['_id'], $ratecard['_id'], 'pps_offer', 'data');
-			}
-			else if(isset($data['schedules']))
-			{	Log::info('schedules updating');
-				$data['schedules'] = $this->ppsPriceOffer($data['schedules'], $item['_id'], $ratecard['_id'], 'pps_offer', 'slots');
-			}
+			// if(isset($data['slots']))
+			// {
+			// 	$data['slots'] = $this->ppsPriceOffer($data['slots'], $item['_id'], $ratecard['_id'], 'pps_offer', 'data');
+			// }
+			// else if(isset($data['schedules']))
+			// {	Log::info('schedules updating');
+			// 	$data['schedules'] = $this->ppsPriceOffer($data['schedules'], $item['_id'], $ratecard['_id'], 'pps_offer', 'slots');
+			// }
 
 	        return Response::json($data,200);
         }
@@ -1309,7 +1322,7 @@ class ServiceController extends \BaseController {
     	$customer_id = "";
         $jwt_token = Request::header('Authorization');
 
-        Log::info('jwt_token : '.$jwt_token);
+        //Log::info('jwt_token : '.$jwt_token);
 
         if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
             $decoded = decode_customer_token();
@@ -2349,38 +2362,25 @@ class ServiceController extends \BaseController {
 		
 	}
 
-	public function ppsPriceOffer($data, $service_id, $ratecard_id, $type, $service_type='data')
+	public function ppsPriceOffer($ratecard_id, $slots/*, $service_id, $ratecard_id, $type, $service_type='data'*/)
 	{	
 		$date = date('Y-m-d 00:00:00');
-
-		$offers = Offer :: where('vendorservice_id', $service_id)
-						->where('ratecard_id', $ratecard_id)
+		$offers = Offer :: where('ratecard_id', $ratecard_id)
 						->where('start_date', '<=', new MongoDate(strtotime($date)))
 						->where('end_date', '>', new MongoDate(strtotime($date)))
 						->orderBy('_id', 'desc')
 						->select('price')->first();
+		$offer_price=0;
 
 		if(count($offers))
 		{	
-			foreach($data as $key=>$value)
+			$offer_price = $offers['price'];
+			foreach($slots as $key=>$value)
 			{	
-				if($service_type == 'slots')
-				{
-					$data[$key]['workout_session']['amount'] = $offers['price'];
-					$data[$key]['cost'] =  "₹ ".$offers['price'];
-				}
-				else
-				{
-					$data[$key]['price'] = "₹ ".$offers['price'];
-				}
-
-				foreach($value[$service_type] as $key1 => $value1)
-				{
-					$data[$key]['data'][$key1]['price'] = $offers['price'];
-				}
+				$slots[$key]['price'] = $offer_price;
 			}
 		}
-		return $data;
+		return array("price"=>$offer_price, "slots"=> $slots);
 	}
 
 }

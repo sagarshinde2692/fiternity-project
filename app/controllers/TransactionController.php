@@ -4423,6 +4423,10 @@ class TransactionController extends \BaseController {
             if(isset($offer->remarks) && $offer->remarks != ""){
                 $data['ratecard_remarks'] = $offer->remarks;
             }
+            if(isset($offer->vendor_price))
+            {
+                $data['amount_finder'] = $offer->vendor_price;
+            }
         }
 
         if(isset($data['manual_order']) && $data['manual_order']){

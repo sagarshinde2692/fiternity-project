@@ -618,4 +618,8 @@ class Service extends \Basemodel{
 		
 	}
 
+	public function offers(){
+		return $this->belongsTo('Offer','vendorservice_id');
+	}
+
 }
