@@ -43,7 +43,7 @@ use App\Services\CustomerInfo as CustomerInfo;
 
 use App\Services\Jwtauth as Jwtauth;
 
-use App\Services\FitnessForceAPILog as FitnessForceAPILog;
+use FitnessForceAPILog;
 
 use Booktrial;
 
