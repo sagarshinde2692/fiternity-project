@@ -8795,12 +8795,6 @@ Class Utilities {
             }
         }
 
-        $fitnessForceData = ['form_params' => []];
-        $fitnessForceData['form_params']['firstname'] = $captureData['first_name'];
-        if(!empty($captureData['last_name'])) {
-            $fitnessForceData['form_params']['lastname'] = $captureData['last_name'];
-        }
-
         $fflogParam = [
             'url' => $url,
             'request_query' => [
@@ -8808,7 +8802,7 @@ Class Utilities {
                 'tenantid' => (!empty($captureData['tenantid']))?$captureData['tenantid']:null,
                 'authkey' => (!empty($captureData['authkey']))?$captureData['authkey']:null
             ],
-            'request_body' => $fitnessForceData['form_params'],
+            'request_body' => $enquiryData,
             'response' => $responseString,
             'type' => 'enquiry_succ',
             'success' => false,
@@ -8823,7 +8817,7 @@ Class Utilities {
             $response = json_decode($responseString, true);
             Log::info('fitnessForce Response: ', [$response]);
             
-            $fflogParam['response'] = $response;
+            $fflogParam['response'] = (!empty($response))?$response:$fflogParam['response'];
             
             if(!empty($response) && !empty($response['success'])) {
                 $fflogParam['success'] = true;
