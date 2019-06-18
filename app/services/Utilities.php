@@ -8777,7 +8777,11 @@ Class Utilities {
         // $url = Config::get('app.ffEnquiryAPI').$captureData['source'].'&tenantid='.$captureData['tenantid'].'&authkey='.$captureData['authkey'];
         $url = Config::get('app.ffEnquiryAPI').$captureData['source'];
 
-        $responseString = $client->post($url,['json' => $enquiryData, 'headers' => ['authenticationKey' => '08fd2194-91c3-11e9-8be9-0218670e4092']])->getBody()->getContents();
+        try {
+            $responseString = $client->post($url,['json' => $enquiryData, 'headers' => ['authenticationKey' => '08fd2194-91c3-11e9-8be9-0218670e4092']])->getBody()->getContents();
+        }catch (Exception $ex){
+            $responseString = $ex->getMessage();
+        }
         Log::info('fitnessForce Enquiry Response String: ', [$responseString]);
 
         if(!empty($captureData['customer_name'])) {
