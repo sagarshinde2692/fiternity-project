@@ -2671,10 +2671,6 @@ class OrderController extends \BaseController {
                 $this->customermailer->orderUpdatePaymentAtVendor($order->toArray());
             }
 
-            if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
-                $this->utilities->fitnessForce(['data'=>$order->toArray(), 'type'=>$order->type]);
-            }
-
             $resp   =   array(
                 'status' => 200,
                 'data' => $result,
