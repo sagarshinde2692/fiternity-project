@@ -4511,6 +4511,7 @@ class TransactionController extends \BaseController {
         
         $data['batch_time'] = "";
         
+        
         if(isset($data['batch']) && $data['batch'] != ""){
                 
                 if(is_array($data['batch'])){
