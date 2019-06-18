@@ -2339,6 +2339,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['coupon_discount_amount'] = $order['coupon_discount_amount'];
             }
 
+            if(!empty($order['service_flags'])){
+                $booktrialdata['service_flags'] = $order['service_flags'];
+            }
+
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
             if($is_tab_active){
