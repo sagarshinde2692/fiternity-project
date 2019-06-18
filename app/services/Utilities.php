@@ -8750,12 +8750,12 @@ Class Utilities {
 
         $client = new GuzzleClient( ['debug' => false] );
         Finder::$withoutAppends = true;
-        $finder = Finder::where('_id', $vendor['_id'])->first(['_id', 'title']);
-        $captureData['finder_id'] = $vendor['_id'];
+        $finder = Finder::where('_id', $vendor->_id)->first(['_id', 'title']);
+        $captureData['finder_id'] = $vendor->_id;
         $captureData['finder_name'] = $finder['title'];
-        $captureData['finder_slug'] = $vendor['slug'];
-        $captureData['location_id'] = $location['_id'];
-        $captureData['location_name'] = $location['name'];
+        $captureData['finder_slug'] = $vendor->slug;
+        $captureData['location_id'] = $location->_id;
+        $captureData['location_name'] = $location->name;
         $captureData['source'] = Config::get('app.finderDetails.source');
         $captureData['tenantid'] = $finder['flags']['ff_tenant_id'];
         $captureData['authkey'] = $finder['flags']['ff_auth_key'];
