@@ -741,7 +741,9 @@ class ServiceController extends \BaseController {
         
                     foreach($workoutsessionschedules as &$value){
                         foreach($value['slots'] as &$slot){
-                            $slot['price'] = 99;
+                            if(empty($slot['price']) || $slot['price'] > 99){
+                                $slot['price'] = 99;
+                            }
                         }
                     }
                 }
