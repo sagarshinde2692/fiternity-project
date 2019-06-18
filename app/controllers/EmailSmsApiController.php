@@ -1040,10 +1040,12 @@ class EmailSmsApiController extends \BaseController {
             'customer_phone' => $data['customer_phone'],
             'customer_email' => $data['customer_email'],
             'capture_type' => $data['capture_type'],
-            'gender' => $data['gender'],
             'capture_id' => $storecapture['_id'],
             'customer_id' => $storecapture['customer_id']
         ];
+        if(!empty($data['gender'])) {
+            $capture['gender'] = $data['gender'];
+        }
         Log::info('before checking decodeKioskVendorToken');
         if(!empty($decodeKioskVendorToken->vendor) && !empty($decodeKioskVendorToken->vendor->location)) {
             Log::info('decodeKioskVendorToken vendor and location exists');
