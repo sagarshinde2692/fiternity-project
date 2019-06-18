@@ -1035,7 +1035,6 @@ class EmailSmsApiController extends \BaseController {
         }
 
         $resp  = array('status' => 200,'message'=>$message,'capture'=>$storecapture);
-        Log::info('before checking decodeKioskVendorToken: ', [$decodeKioskVendorToken]);
         $captureData = [
             'customer_name' => $data['customer_name'],
             'customer_phone' => $data['customer_phone'],
