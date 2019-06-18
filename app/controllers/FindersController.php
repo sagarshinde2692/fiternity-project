@@ -1410,7 +1410,7 @@ class FindersController extends \BaseController {
                         }elseif(!empty($finder['flags']['sfit'])){
                             $response['vendor_stripe_data']	=	[
                                 
-                                'text1'=> "BEAT THE HEAT THIS SUMMER WITH ADDNL 10% OFF ON THE LOWEST PRICE | CODE: SFIT - *T&C APPLICABLE",
+                                'text1'=> "MONSOON FITNESS MANIA | LIGHTNING DEALS ON MEMBERSHIPS | UPTO 50% OFF + ADDNL 10% OFF | USE CODE: MFIT  *T&C APPLY",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',

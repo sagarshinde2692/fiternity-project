@@ -364,7 +364,7 @@ class Service extends \Basemodel{
 
                 // if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  ){
                 if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  && isFinderIntegrated($finder) && isServiceIntegrated($this)){
-                	
+					
                     $value['special_price'] = $ratecardoffers[0]['price'];
 
                     ($value['price'] == $ratecardoffers[0]['price']) ? $value['special_price'] = 0 : null;
@@ -477,6 +477,11 @@ class Service extends \Basemodel{
                     }else{
                         $value['remarks'] =  "Book multiple sessions at this price. ".(!empty($value['remarks']) ? $value['remarks'] : "");
                     }
+                }
+
+                if($this->servicecategory_id == 1 && $value['special_price'] == 99 && $value['type'] == "workout session" && isFinderIntegrated($finder) && isServiceIntegrated($this)){
+                    $value['remarks'] =  "The Ultimate Yoga Fest. Book Multiple Sessions at Flat ₹99/session";
+                    $value['remarks_imp'] =  true;
                 }
 
 				unset($value['flags']['convinience_fee_applicable']);

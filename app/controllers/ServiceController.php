@@ -511,7 +511,7 @@ class ServiceController extends \BaseController {
 			$data['weekday'] = $weekday;
 			
 		}
-
+		
 		return Response::json($data,200);
         
     }
@@ -672,7 +672,7 @@ class ServiceController extends \BaseController {
 
 		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id','flags', 'inoperational_dates');
 		Service::$withoutAppends=true;
-		 Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards', 'service_inoperational_dates_array'];
+        Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards', 'service_inoperational_dates_array'];
 		
         $query = Service::active()->where("trial", '!=', 'disable')->where(function($query){
             $query->whereNotIn('trial',['manual', 'manualauto'])->orWhere('flags.enable_manual_booking_pps.status', true);
@@ -691,11 +691,11 @@ class ServiceController extends \BaseController {
         	default: $ratecard_type = 'trial'; array_push($selectedFieldsForService,'trialschedules');break;
         }
      	 $items = $query->with(array('serviceratecards'=> function($query) use ($ratecard_type){
-			 $query->where('type',$ratecard_type);
+			$query->where('type',$ratecard_type);
 		 }))->with(array('category'=>function($query){
 			$query->select('name');
 		}))->get($selectedFieldsForService)->toArray();
-
+		
 		//  $items = $query->get()->toArray();
 		
 
@@ -734,6 +734,22 @@ class ServiceController extends \BaseController {
 		
 
         foreach ($items as $k => $item) {
+
+            if(!empty($item['workoutsessionschedules'])){
+                $workoutsessionschedules = $item['workoutsessionschedules'];
+                if($item['servicecategory_id'] == 1){
+        
+                    foreach($workoutsessionschedules as &$value){
+                        foreach($value['slots'] as &$slot){
+                            if(empty($slot['price']) || $slot['price'] > 99){
+                                $slot['price'] = 99;
+                            }
+                        }
+                    }
+                }
+        
+                $item['workoutsessionschedules'] = $workoutsessionschedules;
+            }
 
         	$item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
             $item['vip_trial'] = "";//isset($item['vip_trial']) ? $item['vip_trial'] : "";
@@ -832,12 +848,23 @@ class ServiceController extends \BaseController {
 	        $slot_passed_flag = true;
 			
             if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
-				if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
-					$ratecard_price = $ratecard['special_price'];
-                }else{
-					$ratecard_price = $ratecard['price'];
-                }
 
+				$offer_price = $this->ppsPriceOffer($ratecard['_id'], $weekdayslots['slots']);
+
+				if($offer_price['price'] == 0)
+				{
+					if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+						$ratecard_price = $ratecard['special_price'];
+					}else{
+						$ratecard_price = $ratecard['price'];
+					}
+				}
+				else
+				{
+					$weekdayslots['slots']= $offer_price['slots'];
+					$ratecard_price = $offer_price['price'];
+				}
+				
 				if($type == "workoutsessionschedules"){
 					$service["workout_session"] = [
 							"available" => true,
@@ -852,14 +879,14 @@ class ServiceController extends \BaseController {
 				}
 				
 				
-				
-		    	if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
+                
+                if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
 		    	{
-		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@2x%20%281%29.png', 'slot_type'=>1];$nrsh=["title"=>Config::get('app.non_peak_hours.non_peak_title'),"price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png', 'slot_type'=>0];
+                    $rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@2x%20%281%29.png', 'slot_type'=>1];$nrsh=["title"=>Config::get('app.non_peak_hours.non_peak_title'),"price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png', 'slot_type'=>0];
 		    		
 		    		$p_np=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 		    		if(!empty($p_np))
-		    		{
+		    		{	
 		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):"";
 		    			$nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
 		    		}
@@ -957,7 +984,7 @@ class ServiceController extends \BaseController {
 						// if(isset($_GET['source']) && $_GET['source'] == 'pps')
                         $jwt_token = Request::header('Authorization');
 
-                        Log::info('jwt_token : '.$jwt_token);
+                        //Log::info('jwt_token : '.$jwt_token);
 
                         if(!empty($jwt_token)){
                             $decoded = decode_customer_token();
@@ -1055,7 +1082,7 @@ class ServiceController extends \BaseController {
 			
 			// if(!empty($ratecard_price) && !empty($peak_exists)){
 			// 	$service['peak_text'] = "RUSH HOURS ₹. <b style=\"color:#4fa3a4;\">".$ratecard_price."</b>";
-			// }
+            // }
 			if(!empty($ratecard_price) && !empty($non_peak_exists)){
                 if(!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])){
 				    
@@ -1066,7 +1093,7 @@ class ServiceController extends \BaseController {
                     $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
 
                 }
-			}
+            }
 			
 			$peak_exists = false;
 			$non_peak_exists = false;
@@ -1244,8 +1271,7 @@ class ServiceController extends \BaseController {
                     }
 
                 }
-            }
-
+			}
 
 	        return Response::json($data,200);
         }
@@ -1301,7 +1327,7 @@ class ServiceController extends \BaseController {
     	$customer_id = "";
         $jwt_token = Request::header('Authorization');
 
-        Log::info('jwt_token : '.$jwt_token);
+        //Log::info('jwt_token : '.$jwt_token);
 
         if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
             $decoded = decode_customer_token();
@@ -2341,5 +2367,25 @@ class ServiceController extends \BaseController {
 		
 	}
 
+	public function ppsPriceOffer($ratecard_id, $slots/*, $service_id, $ratecard_id, $type, $service_type='data'*/)
+	{	
+		$date = date('Y-m-d 00:00:00');
+		$offers = Offer :: where('ratecard_id', $ratecard_id)
+						->where('start_date', '<=', new MongoDate(strtotime($date)))
+						->where('end_date', '>', new MongoDate(strtotime($date)))
+						->orderBy('_id', 'desc')
+						->select('price')->first();
+		$offer_price=0;
+
+		if(count($offers))
+		{	
+			$offer_price = $offers['price'];
+			foreach($slots as $key=>$value)
+			{	
+				$slots[$key]['price'] = $offer_price;
+			}
+		}
+		return array("price"=>$offer_price, "slots"=> $slots);
+	}
 
 }
