@@ -8750,6 +8750,7 @@ Class Utilities {
 
         Log::info('----- inside sendEnquiryToFitnessForce -----');
 
+        $enquiryData = [];
         $client = new GuzzleClient( ['debug' => false] );
         Finder::$withoutAppends = true;
         $finder = Finder::where('_id', $vendor->_id)->first(['_id', 'title']);
@@ -8761,10 +8762,18 @@ Class Utilities {
         $captureData['source'] = Config::get('app.finderDetails.source');
         $captureData['tenantid'] = $finder['flags']['ff_tenant_id'];
         $captureData['authkey'] = $finder['flags']['ff_auth_key'];
+        
+        $enquiryData['authenticationkey'] = '08fd2194-91c3-11e9-8be9-0218670e4092';
+        $enquiryData['name'] = $captureData['customer_name'];
+        $enquiryData['mobileno'] = $captureData['mobileno'];
+        $enquiryData['emailaddress'] = $captureData['emailaddress'];
+        $enquiryData['enquirytype'] = $captureData['capture_type'];
+        $enquiryData['enquirysource'] = 'fitternity';
 
-        $url = Config::get('app.ffEnquiryAPI').$captureData['source'].'&tenantid='.$captureData['tenantid'].'&authkey='.$captureData['authkey'];
+        // $url = Config::get('app.ffEnquiryAPI').$captureData['source'].'&tenantid='.$captureData['tenantid'].'&authkey='.$captureData['authkey'];
+        $url = Config::get('app.ffEnquiryAPI').$captureData['source'];
 
-        $responseString = $client->post($url,$captureData)->getBody()->getContents();
+        $responseString = $client->post($url,['json' => $enquiryData, 'headers' => ['authenticationKey' => '08fd2194-91c3-11e9-8be9-0218670e4092']])->getBody()->getContents();
         Log::info('fitnessForce Enquiry Response String: ', [$responseString]);
 
         if(!empty($captureData['customer_name'])) {

@@ -21,7 +21,7 @@ return array(
 	'paytm_sandbox'=>true,
 	'paypal_sandbox'=>true,
 	'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
-	'ffEnquiryAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
