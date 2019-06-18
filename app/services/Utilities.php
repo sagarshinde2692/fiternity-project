@@ -8765,8 +8765,8 @@ Class Utilities {
         
         $enquiryData['authenticationkey'] = '08fd2194-91c3-11e9-8be9-0218670e4092';
         $enquiryData['name'] = $captureData['customer_name'];
-        $enquiryData['mobileno'] = $captureData['mobileno'];
-        $enquiryData['emailaddress'] = $captureData['emailaddress'];
+        $enquiryData['mobileno'] = $captureData['customer_phone'];
+        $enquiryData['emailaddress'] = $captureData['customer_email'];
         $enquiryData['enquirytype'] = $captureData['capture_type'];
         $enquiryData['enquirysource'] = 'fitternity';
 
