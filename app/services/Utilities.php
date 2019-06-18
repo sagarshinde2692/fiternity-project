@@ -8805,8 +8805,8 @@ Class Utilities {
             'url' => $url,
             'request_query' => [
                 'source' => $captureData['source'],
-                'tenantid' => $captureData['tenantid'],
-                'authkey' => $captureData['authkey']
+                'tenantid' => (!empty($captureData['tenantid']))?$captureData['tenantid']:null,
+                'authkey' => (!empty($captureData['authkey']))?$captureData['authkey']:null
             ],
             'request_body' => $fitnessForceData['form_params'],
             'response' => $responseString,
