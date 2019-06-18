@@ -1246,7 +1246,14 @@ class ServiceController extends \BaseController {
                 }
 			}
 			
-			$data['slots'] = $this->ppsPriceOffer($data['slots'], $item['_id'], 'pps_offer');
+			if(isset($data['slots']))
+			{
+				$data['slots'] = $this->ppsPriceOffer($data['slots'], $item['_id'], $ratecard['_id'], 'pps_offer', 'data');
+			}
+			else if(isset($data['schedules']))
+			{	Log::info('schedules updating');
+				$data['schedules'] = $this->ppsPriceOffer($data['schedules'], $item['_id'], $ratecard['_id'], 'pps_offer', 'slots');
+			}
 
 	        return Response::json($data,200);
         }
@@ -2342,16 +2349,32 @@ class ServiceController extends \BaseController {
 		
 	}
 
-	public function ppsPriceOffer($data, $service_id, $type)
-	{
-		$offers = Offer :: where('vendorservice_id', $service_id)->where('type', $type)->orderBy('_id', 'desc')->select('price')->first();
+	public function ppsPriceOffer($data, $service_id, $ratecard_id, $type, $service_type='data')
+	{	
+		$date = date('Y-m-d 00:00:00');
+
+		$offers = Offer :: where('vendorservice_id', $service_id)
+						->where('ratecard_id', $ratecard_id)
+						->where('start_date', '<=', new MongoDate(strtotime($date)))
+						->where('end_date', '>', new MongoDate(strtotime($date)))
+						->orderBy('_id', 'desc')
+						->select('price')->first();
 
 		if(count($offers))
-		{
+		{	
 			foreach($data as $key=>$value)
-			{
-				$data[$key]['price'] = "₹ ".$offers['price'];
-				foreach($value['data'] as $key1 => $value1)
+			{	
+				if($service_type == 'slots')
+				{
+					$data[$key]['workout_session']['amount'] = $offers['price'];
+					$data[$key]['cost'] =  "₹ ".$offers['price'];
+				}
+				else
+				{
+					$data[$key]['price'] = "₹ ".$offers['price'];
+				}
+
+				foreach($value[$service_type] as $key1 => $value1)
 				{
 					$data[$key]['data'][$key1]['price'] = $offers['price'];
 				}

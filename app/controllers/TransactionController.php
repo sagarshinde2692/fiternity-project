@@ -4410,7 +4410,7 @@ class TransactionController extends \BaseController {
         //         ->first();
 
         $offer = Offer::getActiveV1('ratecard_id', intval($ratecard['_id']), intval($ratecard['finder_id']))->first();
-
+        
         if($offer){
             if(isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"]){
                 $ratecard['offer_convinience_fee'] = $data['offer_convinience_fee'] = false;    
