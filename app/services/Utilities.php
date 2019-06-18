@@ -8815,7 +8815,7 @@ Class Utilities {
                 }
 
                 $fflogParam['success'] = true;
-                Capture::where('_id', $captureData['_id'])->update(['ff_bill_id'=>$response['response'][0]['billid'],'ff_receipt_id'=>$response['response'][0]['receiptid']]);
+                Capture::where('_id', $captureData['capture_id'])->update(['ff_bill_id'=>$response['response'][0]['billid'],'ff_receipt_id'=>$response['response'][0]['receiptid']]);
             }
         }
 
