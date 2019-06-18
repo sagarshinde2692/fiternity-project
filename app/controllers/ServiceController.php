@@ -691,11 +691,9 @@ class ServiceController extends \BaseController {
         	default: $ratecard_type = 'trial'; array_push($selectedFieldsForService,'trialschedules');break;
         }
      	 $items = $query->with(array('serviceratecards'=> function($query) use ($ratecard_type){
-			 $query->where('type',$ratecard_type);
+			$query->where('type',$ratecard_type);
 		 }))->with(array('category'=>function($query){
 			$query->select('name');
-		}))->with(array('offers'=>function($query){
-			$query->select('price');
 		}))->get($selectedFieldsForService)->toArray();
 		
 		//  $items = $query->get()->toArray();
