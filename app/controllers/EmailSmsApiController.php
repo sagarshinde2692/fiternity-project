@@ -525,7 +525,13 @@ class EmailSmsApiController extends \BaseController {
 
         $data = Input::json()->all();
 
-        $captureData = $data;
+        $captureData = [
+            'customer_name' => $data->customer_name,
+            'customer_phone' => $data->customer_phone,
+            'customer_email' => $data->customer_email,
+            'capture_type' => $data->capture_type,
+            'gender' => $data->gender
+        ];
 
         Log::info("landingpagecallback");
         Log::info($data);
