@@ -8747,7 +8747,7 @@ Class Utilities {
         }
     }
 
-    public function sendEnquiryToFitnessForce($captureData, $vendor, $location) {
+    public function sendEnquiryToFitnessForce($captureData, $vendor=null, $location=null) {
 
         Log::info('----- inside sendEnquiryToFitnessForce -----');
 

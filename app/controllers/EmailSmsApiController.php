@@ -1052,7 +1052,7 @@ class EmailSmsApiController extends \BaseController {
             $this->utilities->sendEnquiryToFitnessForce($captureData, $decodeKioskVendorToken->vendor, $decodeKioskVendorToken->vendor->location);
         }
         else {
-            $this->utilities->sendEnquiryToFitnessForce($captureData, $decodeKioskVendorToken->vendor, $decodeKioskVendorToken->vendor->location);
+            $this->utilities->sendEnquiryToFitnessForce($captureData);
         }
 
         return Response::json($resp);
