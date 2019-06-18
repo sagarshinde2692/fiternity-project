@@ -4425,7 +4425,7 @@ class TransactionController extends \BaseController {
             }
             if(isset($offer->vendor_price))
             {
-                $data['amount_finder'] = $offer->vendor_price;
+                $data['vendor_price'] = $offer->vendor_price;
             }
         }
 
@@ -4457,6 +4457,7 @@ class TransactionController extends \BaseController {
         }
         
         $data['amount'] = $data['amount_finder'];
+        
 
         if($ratecard['type'] == 'extended validity'){
             $data['type'] = 'memberships';
@@ -6876,7 +6877,7 @@ class TransactionController extends \BaseController {
             Log::info("idifiifififififi");
 
             $ratecardDetail = $this->getRatecardDetail($data);
-
+            
             if($ratecardDetail['status'] != 200){
                 return Response::json($ratecardDetail,$this->error_status);
             }
@@ -6979,7 +6980,7 @@ class TransactionController extends \BaseController {
 
             $data['ratecard_price'] = $ratecard['price'];
             
-            
+
             
             $result['payment_details']['amount_summary'][] = [
                 'field' => 'Total Amount',

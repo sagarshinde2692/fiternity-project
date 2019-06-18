@@ -364,7 +364,6 @@ class Service extends \Basemodel{
 
                 // if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  ){
                 if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  && isFinderIntegrated($finder) && isServiceIntegrated($this)){
-                	
                     $value['special_price'] = $ratecardoffers[0]['price'];
 
                     ($value['price'] == $ratecardoffers[0]['price']) ? $value['special_price'] = 0 : null;
