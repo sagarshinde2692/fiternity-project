@@ -44,6 +44,7 @@ use App\Services\CustomerInfo as CustomerInfo;
 use App\Services\Jwtauth as Jwtauth;
 
 use FitnessForceAPILog;
+use Capture;
 
 use Booktrial;
 
