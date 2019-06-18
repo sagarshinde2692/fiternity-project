@@ -8759,15 +8759,14 @@ Class Utilities {
             $captureData['finder_id'] = $vendor->_id;
             $captureData['finder_name'] = $finder['title'];
             $captureData['finder_slug'] = $vendor->slug;
+            $captureData['tenantid'] = $finder['flags']['ff_tenant_id'];
+            $captureData['authkey'] = $finder['flags']['ff_auth_key'];
         }
         if(!empty($location)) {
             $captureData['location_id'] = $location->_id;
             $captureData['location_name'] = $location->name;
         }
         $captureData['source'] = Config::get('app.finderDetails.source');
-        $captureData['tenantid'] = $finder['flags']['ff_tenant_id'];
-        $captureData['authkey'] = $finder['flags']['ff_auth_key'];
-        
         $enquiryData['authenticationkey'] = '08fd2194-91c3-11e9-8be9-0218670e4092';
         $enquiryData['name'] = $captureData['customer_name'];
         $enquiryData['mobileno'] = $captureData['customer_phone'];
@@ -8810,8 +8809,11 @@ Class Utilities {
             'type' => 'enquiry_succ',
             'success' => false,
             'capture_id' => $captureData['capture_id'],
-            'finder_id' => $captureData['finder_id']
         ];
+
+        if(!empty($captureData['finder_id'])){
+            $fflogParam['finder_id'] = $captureData['finder_id'];
+        }
 
         if(!empty($responseString)) {
             $response = json_decode($responseString, true);
