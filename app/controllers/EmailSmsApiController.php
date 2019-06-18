@@ -1036,17 +1036,21 @@ class EmailSmsApiController extends \BaseController {
 
         $resp  = array('status' => 200,'message'=>$message,'capture'=>$storecapture);
         Log::info('before checking decodeKioskVendorToken: ', [$decodeKioskVendorToken]);
+        $captureData = [
+            'customer_name' => $data['customer_name'],
+            'customer_phone' => $data['customer_phone'],
+            'customer_email' => $data['customer_email'],
+            'capture_type' => $data['capture_type'],
+            'gender' => $data['gender'],
+            'capture_id' => $storecapture['_id'],
+            'customer_id' => $storecapture['customer_id']
+        ];
+        Log::info('before checking decodeKioskVendorToken');
         if(!empty($decodeKioskVendorToken->vendor) && !empty($decodeKioskVendorToken->vendor->location)) {
             Log::info('decodeKioskVendorToken vendor and location exists');
-            $captureData = [
-                'customer_name' => $data['customer_name'],
-                'customer_phone' => $data['customer_phone'],
-                'customer_email' => $data['customer_email'],
-                'capture_type' => $data['capture_type'],
-                'gender' => $data['gender'],
-                'capture_id' => $storecapture['_id'],
-                'customer_id' => $storecapture['customer_id']
-            ];
+            $this->utilities->sendEnquiryToFitnessForce($captureData, $decodeKioskVendorToken->vendor, $decodeKioskVendorToken->vendor->location);
+        }
+        else {
             $this->utilities->sendEnquiryToFitnessForce($captureData, $decodeKioskVendorToken->vendor, $decodeKioskVendorToken->vendor->location);
         }
 
