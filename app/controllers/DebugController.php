@@ -10900,7 +10900,7 @@ public function yes($msg){
 			for($i1 = 0;$i1 < $offset1;$i1++){
 				$skip1 = $i1*$limit1;
 				Log::info("skip1 :: ",[$skip1]);
-				$order1 = Order::whereIn('coupon_code', $corporateCoupons)->skip($skip)->take($limit)->get();
+				$order1 = Order::whereIn('coupon_code', $corporateCoupons)->skip($skip1)->take($limit1)->get();
 				
 				foreach($order1 as $k11 => $v11){
 					$one_order11 = array();
@@ -10913,6 +10913,12 @@ public function yes($msg){
 					// exit();
 				}
 			}
+
+			$totalOrder2 = Order::where('corporate_coupon', 'exists', true)->where('corporate_coupon', true)->whereIn('type', ['booktrials', 'workout-session'])->lists('_id');
+			Log::info("totalOrder2 :: ",[$totalOrder2]);
+			$return = array();
+			$return['corporate_coupon'] = true;
+			Booktrial::whereIn('order_id',$totalOrder2)->update($return);
 
 			$return = array('status'=>'done');
 		}catch(Exception $exception){

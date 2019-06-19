@@ -3671,7 +3671,7 @@ class TransactionController extends \BaseController {
 
                         if(isset($walletTransactionResponse['wallet_transaction_debit']['wallet_transaction'])){
                             foreach($walletTransactionResponse['wallet_transaction_debit']['wallet_transaction'] as $k => $v){
-                                if(isset($v['fitcashcoupon_flags'])){
+                                if(isset($v['fitcashcoupon_flags']) && $v['fitcashcoupon_flags']['corporate_coupon'] == true){
                                     $data['corporate_coupon'] = true;
                                     break;
                                 }
