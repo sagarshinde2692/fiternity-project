@@ -11046,7 +11046,7 @@ public function yes($msg){
 			->where('status', '1')->count();
 			Log::info("totalOrder ::", [$totalOrder]);
 
-			$limit = 500;
+			$limit = 10000;
 			$offset = ceil($totalOrder / $limit);
 			Log::info("totalOrder :: ",[$totalOrder]);
 			Log::info("limit :: ",[$limit]);
@@ -11056,7 +11056,9 @@ public function yes($msg){
 				$skip = $i*$limit;
 				Log::info("skip :: ",[$skip]);
 
-				$orders = Order::whereNotIn('type', ['product', 'wallet'])
+                $orders = Order::whereNotIn('type', ['product', 'wallet'])
+                ->where('amount_transferred_to_vendor', 'exists', true)
+                ->where('amount_transferred_to_vendor', '!=', 0)
 				->where(function($query){ 
 					return $query->orWhere('status', '1')
 					->orWhere(function($query){
