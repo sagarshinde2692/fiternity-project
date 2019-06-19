@@ -92,6 +92,10 @@ class FindersController extends \BaseController {
 	}
 
 	public function finderdetail($slug, $cache = true){
+        // for($i=0;$i<=1000;$i++){
+            return Booktrial::maxId();
+        // }
+        // return "Done";
 
 		$thirdPartySector = Request::header('sector');
 		$isThirdParty = (isset($thirdPartySector) && in_array($thirdPartySector, ['multiply', 'health']));
