@@ -55,7 +55,17 @@ class Booktrial extends \Basemodel {
     }
     
     public static function maxId(){
-        return Identitycounter::where('model', 'Booktrial')->where('field', '_id')->increment('count');
+        
+        $identitycounter =  Identitycounter::where('model', 'Booktrial')->where('field', '_id')->first();
+        
+        $update = Identitycounter::where('model', 'Booktrial')->where('field', '_id')->where('count', $identitycounter->count)->increment('count');
+
+        if($update){
+            Log::info("returning::".strval($identitycounter->count));
+            return $identitycounter->count;
+        }
+        Log::info("reiterating::".strval($identitycounter->count));
+        return $this->maxId();
     }
 
 }
