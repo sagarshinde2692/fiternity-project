@@ -9606,8 +9606,7 @@ class CustomerController extends \BaseController {
 		Service::$withoutAppends = true;
 		$finder_service = Service::where('finder_id', $finder_id)->where('status', "1")->select('trialschedules')->get();
 		//Log::info('finder Service', [$finder_service['trialschedules']]);
-
-		$todayDate= strtotime(date('d:m:Y H:i:s'));
+		$todayDate= strtotime("now");
 		$today = date('D', $todayDate);
 		$minutes = date('i', $todayDate);
 		$hour= date('H', $todayDate);
@@ -9617,7 +9616,6 @@ class CustomerController extends \BaseController {
 
 		if(count($finder_service)>0)
 		{	
-
 			foreach($finder_service as $key0=> $value0)
 			{
 				foreach($value0['trialschedules'] as $key=> $value)
@@ -9627,7 +9625,7 @@ class CustomerController extends \BaseController {
 						foreach($value['slots'] as $key1=> $value1)
 						{
 							if($hour >=$value1['start_time_24_hour_format'] && $hour < $value1['end_time_24_hour_format'])
-							{
+							{	
 								$status= true;
 								break;
 							}
