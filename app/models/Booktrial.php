@@ -1,5 +1,4 @@
 <?php
-use Aws\CloudFront\Exception\Exception;
 
 class Booktrial extends \Basemodel {
 
