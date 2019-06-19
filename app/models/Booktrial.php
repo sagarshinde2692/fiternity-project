@@ -58,7 +58,6 @@ class Booktrial extends \Basemodel {
         
         $identitycounter =  Identitycounter::where('model', 'Booktrial')->where('field', '_id')->first();
         $identitycounter_count =  $identitycounter->count;
-        // $identitycounter_count =  1451;
         
         $update = Identitycounter::where('model', 'Booktrial')->where('field', '_id')->where('count', $identitycounter_count)->increment('count');
 
