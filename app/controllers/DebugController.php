@@ -11024,6 +11024,96 @@ public function yes($msg){
 		}
 
 		echo "done";	
+	}
+
+	public function addAmountTransferToVendorBreakup(){
+
+		try{
+			ini_set('max_execution_time', 0);
+			
+			Order::$withoutAppends=true;
+			
+			$totalOrder = Order::whereNotIn('type', ['product', 'wallet'])
+			->where(function($query){ 
+				return $query->orWhere('status', '1')
+				->orWhere(function($query){
+					$query->where('pay_later', true)
+					->where('qrcodepayment', true);
+				});
+			})
+			->whereIn('payment_mode', ['paymentgateway', 'cod'])
+			->where('amount_transferred_to_vendor_breakup', 'exists', false)
+			->where('status', '1')->count();
+			Log::info("totalOrder ::", [$totalOrder]);
+
+			$limit = 500;
+			$offset = ceil($totalOrder / $limit);
+			Log::info("totalOrder :: ",[$totalOrder]);
+			Log::info("limit :: ",[$limit]);
+			Log::info("offset :: ",[$offset]);
+			// return;
+			for($i = 0;$i < $offset;$i++){
+				$skip = $i*$limit;
+				Log::info("skip :: ",[$skip]);
+
+				$orders = Order::whereNotIn('type', ['product', 'wallet'])
+				->where(function($query){ 
+					return $query->orWhere('status', '1')
+					->orWhere(function($query){
+						$query->where('pay_later', true)
+						->where('qrcodepayment', true);
+					});
+				})
+				->whereIn('payment_mode', ['paymentgateway', 'cod'])
+				->where('amount_transferred_to_vendor_breakup', 'exists', false)
+				->where('status', '1')->skip($skip)->take($limit)->orderBy('_id', 'desc')->get(['amount_transferred_to_vendor']);
+				// return $orders;
+				$updates = [];
+				foreach($orders as $k => $x){
+					
+					if(!empty($x['amount_transferred_to_vendor'])){
+
+						Log::info("order_id :: ",[$x['_id']]);
+
+						$amount_transferred_to_vendor = $x['amount_transferred_to_vendor'];
+						$base_amount = ($amount_transferred_to_vendor * 100) / 118;
+						$gst_amount = $base_amount * 0.18;
+
+						$arr = array();
+						$arr['base_amount'] = intval(round($base_amount));
+						$arr['gst_amount'] = intval(round($gst_amount));
+						// return $arr;
+
+						array_push($updates, [
+							"q"=>['_id'=> $x['_id']],
+							"u"=>[
+								'$set'=>[
+									'amount_transferred_to_vendor_breakup' => $arr
+								]
+							],
+							'multi' => false
+						]);
+					}
+
+				}
+					
+				$update = $this->batchUpdate('mongodb', 'orders', $updates);
+
+			}
+		
+			$return = array('status'=>'done');
+		}catch(Exception $exception){
+			$message = array(
+				'type'    => get_class($exception),
+				'message' => $exception->getMessage(),
+				'file'    => $exception->getFile(),
+				'line'    => $exception->getLine(),
+			);
+			Log::error($exception);
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+		
+		print_r($return);
     }
 
 }
