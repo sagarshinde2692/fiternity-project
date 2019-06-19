@@ -4275,6 +4275,17 @@ Class Utilities {
 
         $order->amount_transferred_to_vendor -= $order->gst_finder_amount;
 
+        if($order->amount_transferred_to_vendor > 0){
+            $base_amount = ($order->amount_transferred_to_vendor * 100) / 118;
+            $gst_amount = $base_amount * 0.18;
+            
+            $arr = array();
+			$arr['base_amount'] = intval(round($base_amount));
+            $arr['gst_amount'] = intval(round($gst_amount));
+            
+            $order->amount_transferred_to_vendor_breakup = $arr;
+        }
+
         $order->update();
     }
 
