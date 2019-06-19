@@ -9712,10 +9712,10 @@ class CustomerController extends \BaseController {
 		return $res;
 	}
 
-	public function markCheckin($finder_id){
+	public function markCheckin($finder_id=null){
 
 		$input = Input::all();
-		
+
 		$rules = [
 			'lat' => 'required',
 			'lon' => 'required'
@@ -9723,12 +9723,16 @@ class CustomerController extends \BaseController {
 
 		$validator = Validator::make($input,$rules);
 
-		if ($validator->fails()) {
-
+		if ($validator->fails())
+		{
 			return Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'),$this->error_status);
-
 		}
 
+		if(empty($finder_id))
+		{
+			return Response::json(array('status' => 400,'message' => 'Vendor is Empty.'),'Vendor is Empty');
+		}
+		
 		$finder_id = (int) $finder_id;
 		$customer_geo = [];
 		$finder_geo = [];
