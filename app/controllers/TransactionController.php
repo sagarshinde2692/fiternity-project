@@ -3671,7 +3671,7 @@ class TransactionController extends \BaseController {
 
                         if(isset($walletTransactionResponse['wallet_transaction_debit']['wallet_transaction'])){
                             foreach($walletTransactionResponse['wallet_transaction_debit']['wallet_transaction'] as $k => $v){
-                                if(isset($v['fitcashcoupon_flags'])){
+                                if(isset($v['fitcashcoupon_flags']) && $v['fitcashcoupon_flags']['corporate_coupon'] == true){
                                     $data['corporate_coupon'] = true;
                                     break;
                                 }
@@ -9050,7 +9050,50 @@ class TransactionController extends \BaseController {
             $campaign_reg->save();
         }
 
+        if($type == 'workout-session' && isset($data['service_flags']['bulk_purchase']) && $data['service_flags']['bulk_purchase']['status'] == true){
+            Log::info("bulk_purchase");
+            $this->updateBulkPurchase($data);
+        }
         
+    }
+
+    public function updateBulkPurchase($data){
+        Log::info("updateBulkPurchase");
+
+        $bulk_purchase = $data['service_flags']['bulk_purchase'];
+
+        $service_id = $data['service_id'];
+        $order_id = $data['order_id'];
+        $booktrial_id = $data['_id'];
+        $used = 0;
+        if(isset($bulk_purchase['used']) && $bulk_purchase['used'] != $bulk_purchase['quantity']){
+            Log::info('used != quantity');
+            
+            $used = $bulk_purchase['used'] + 1;
+            Log::info('used ::', [$used]);
+
+            $data = array();
+            $data['bulk_purchase'] = array('price' => $bulk_purchase['price']);
+            Order::where('_id',(int)$order_id)->update($data);
+            Booktrial::where('_id',(int)$booktrial_id)->update($data);
+            
+            $service = array();
+            Service::$withoutAppends = true;
+            $service = Service::where('_id', $service_id)->first();
+            $service_flag = $service['flags'];
+            $service_flag['bulk_purchase']['used'] = $used;
+            $service['flags'] = $service_flag;
+            $service->update();
+
+            $v_service = array();
+            $v_service = Vendorservice::where('_id', $service_id)->first();
+            $v_service_flag = $v_service['flags'];
+            $v_service_flag['bulk_purchase']['used'] = $used;
+            $v_service['flags'] = $v_service_flag;
+            $v_service->update();
+           
+        }
+
     }
 
     public function createSessionPack($data){

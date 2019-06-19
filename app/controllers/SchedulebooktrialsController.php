@@ -2333,10 +2333,18 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($order['checkin_booking'])){
                 $booktrialdata['checkin_booking'] = $order['checkin_booking'];
             }
+
+            if(isset($order['corporate_coupon']) && $order['corporate_coupon'] == true){
+                $booktrialdata['corporate_coupon'] = $order['corporate_coupon'];
+            }
             
             if(!empty($order['coupon_code']) && !empty($order['coupon_discount_amount'])){
                 $booktrialdata['coupon_code'] = $order['coupon_code'];
                 $booktrialdata['coupon_discount_amount'] = $order['coupon_discount_amount'];
+            }
+
+            if(!empty($order['service_flags'])){
+                $booktrialdata['service_flags'] = $order['service_flags'];
             }
 
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
