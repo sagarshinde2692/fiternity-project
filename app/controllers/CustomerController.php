@@ -9713,6 +9713,22 @@ class CustomerController extends \BaseController {
 	}
 
 	public function markCheckin($finder_id){
+
+		$input = Input::all();
+		
+		$rules = [
+			'lat' => 'required',
+			'lon' => 'required'
+		];
+
+		$validator = Validator::make($input,$rules);
+
+		if ($validator->fails()) {
+
+			return Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'),$this->error_status);
+
+		}
+
 		$finder_id = (int) $finder_id;
 		$customer_geo = [];
 		$finder_geo = [];
