@@ -8773,7 +8773,7 @@ Class Utilities {
             $captureData['location_id'] = $location->_id;
             $captureData['location_name'] = $location->name;
         }
-        $captureData['source'] = Config::get('app.finderDetails.source');
+        $captureData['source'] = Config::get('app.ffDetails.source');
         $enquiryData['authenticationkey'] = $captureData['authkey'];
         $enquiryData['name'] = $captureData['customer_name'];
         $enquiryData['mobileno'] = $captureData['customer_phone'];
