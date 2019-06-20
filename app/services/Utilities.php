@@ -9092,6 +9092,8 @@ Class Utilities {
         }
         else if(!empty($captureData) && $captureData['capture_type']=='multifit-contactuspage'){
             $vendorId = 1935; // multifit kalyani nagar
+        }else{
+            return;
         }
 
         Finder::$withoutAppends = true;
