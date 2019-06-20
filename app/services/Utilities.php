@@ -8753,15 +8753,22 @@ Class Utilities {
 
         $enquiryData = [];
         $client = new GuzzleClient( ['debug' => false] );
-        if(!empty($vendor)) {
-            Finder::$withoutAppends = true;
-            $finder = Finder::where('_id', $vendor->_id)->first(['_id', 'title']);
-            $captureData['finder_id'] = $vendor->_id;
-            $captureData['finder_name'] = $finder['title'];
-            $captureData['finder_slug'] = $vendor->slug;
-            $captureData['tenantid'] = $finder['flags']['ff_tenant_id'];
-            $captureData['authkey'] = $finder['flags']['ff_auth_key'];
+
+        if(empty($vendor)) {
+            $vendorId = $vendor->_id;
         }
+        else if(!empty($captureData) && $captureData['capture_type']=='multifit-contactuspage'){
+            $vendorId = 1935; // multifit kalyani nagar
+        }
+
+        Finder::$withoutAppends = true;
+        $finder = Finder::where('_id', $vendorId)->first(['_id', 'title', 'slug', 'flags']);
+        $captureData['finder_id'] = $finder['_id'];
+        $captureData['finder_name'] = $finder['title'];
+        $captureData['finder_slug'] = $finder['slug'];
+        $captureData['tenantid'] = $finder['flags']['ff_tenant_id'];
+        $captureData['authkey'] = $finder['flags']['ff_auth_key'];
+
         if(!empty($location)) {
             $captureData['location_id'] = $location->_id;
             $captureData['location_name'] = $location->name;
