@@ -8774,7 +8774,7 @@ Class Utilities {
             $captureData['location_name'] = $location->name;
         }
         $captureData['source'] = Config::get('app.finderDetails.source');
-        $enquiryData['authenticationkey'] = '08fd2194-91c3-11e9-8be9-0218670e4092';
+        $enquiryData['authenticationkey'] = $captureData['authkey'];
         $enquiryData['name'] = $captureData['customer_name'];
         $enquiryData['mobileno'] = $captureData['customer_phone'];
         $enquiryData['emailaddress'] = $captureData['customer_email'];
@@ -8785,7 +8785,7 @@ Class Utilities {
         $url = Config::get('app.ffEnquiryAPI').$captureData['source'];
 
         try {
-            $responseString = $client->post($url,['json' => $enquiryData, 'headers' => ['authenticationKey' => '08fd2194-91c3-11e9-8be9-0218670e4092']])->getBody()->getContents();
+            $responseString = $client->post($url,['json' => $enquiryData, 'headers' => ['authenticationKey' => $captureData['authkey']]])->getBody()->getContents();
         }catch (Exception $ex){
             $responseString = $ex->getMessage();
         }
