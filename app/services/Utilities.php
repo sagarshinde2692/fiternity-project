@@ -43,6 +43,9 @@ use App\Services\CustomerInfo as CustomerInfo;
 
 use App\Services\Jwtauth as Jwtauth;
 
+use FitnessForceAPILog;
+use Capture;
+
 use Booktrial;
 
 Class Utilities {
@@ -9076,5 +9079,278 @@ Class Utilities {
     public function getSuccessCommonInputFields(){
         return ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","finder_address","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","ratecard_id","customer_identity","customer_source","customer_location","customer_quantity","init_source","multifit","wallet"];
     }
-      
+
+    public function sendEnquiryToFitnessForce($captureData, $vendor=null, $location=null) {
+
+        Log::info('----- inside sendEnquiryToFitnessForce -----');
+
+        $enquiryData = [];
+        $client = new Client( ['debug' => false] );
+
+        if(!empty($vendor)) {
+            $vendorId = $vendor->_id;
+        }
+        else if(!empty($captureData) && $captureData['capture_type']=='multifit-contactuspage'){
+            $vendorId = 1935; // multifit kalyani nagar
+        }
+
+        Finder::$withoutAppends = true;
+        $finder = Finder::where('_id', $vendorId)->first(['_id', 'title', 'slug', 'flags']);
+        if(!empty($finder['flags']['ff_tenant_id'])) {
+            $captureData['finder_id'] = $finder['_id'];
+            $captureData['finder_name'] = $finder['title'];
+            $captureData['finder_slug'] = $finder['slug'];
+            $captureData['tenantid'] = $finder['flags']['ff_tenant_id'];
+            $captureData['authkey'] = $finder['flags']['ff_auth_key'];
+
+            if(!empty($location)) {
+                $captureData['location_id'] = $location->_id;
+                $captureData['location_name'] = $location->name;
+            }
+            $captureData['source'] = Config::get('app.ffDetails.source');
+            $enquiryData['authenticationkey'] = $captureData['authkey'];
+            $enquiryData['name'] = $captureData['customer_name'];
+            $enquiryData['mobileno'] = $captureData['customer_phone'];
+            $enquiryData['emailaddress'] = $captureData['customer_email'];
+            $enquiryData['enquirytype'] = $captureData['capture_type'];
+            $enquiryData['enquirysource'] = 'fitternity';
+
+            // $url = Config::get('app.ffEnquiryAPI').$captureData['source'].'&tenantid='.$captureData['tenantid'].'&authkey='.$captureData['authkey'];
+            $url = Config::get('app.ffEnquiryAPI');
+
+            try {
+                $responseString = $client->post($url,['json' => $enquiryData, 'headers' => ['authenticationKey' => $captureData['authkey']]])->getBody()->getContents();
+            }catch (Exception $ex){
+                $responseString = $ex->getMessage();
+            }
+            Log::info('fitnessForce Enquiry Response String: ', [$responseString]);
+
+            if(!empty($captureData['customer_name'])) {
+                $nameArr = explode(' ', $captureData['customer_name']);
+                if(!empty($nameArr) && count($nameArr)>0) {
+                    $countNameArr = count($nameArr);
+                    $captureData['first_name'] = $nameArr[0];
+                    if($countNameArr>1) {
+                        $captureData['last_name'] = $nameArr[$countNameArr-1];
+                    }
+                }
+            }
+
+            $fflogParam = [
+                'url' => $url,
+                'request_query' => [
+                    'source' => $captureData['source'],
+                    'tenantid' => (!empty($captureData['tenantid']))?$captureData['tenantid']:null,
+                    'authkey' => (!empty($captureData['authkey']))?$captureData['authkey']:null
+                ],
+                'request_body' => $enquiryData,
+                'response' => $responseString,
+                'type' => 'enquiry_succ',
+                'success' => false,
+                'capture_id' => $captureData['capture_id'],
+            ];
+
+            if(!empty($captureData['finder_id'])){
+                $fflogParam['finder_id'] = $captureData['finder_id'];
+            }
+
+            if(!empty($responseString)) {
+                $response = json_decode($responseString, true);
+                Log::info('fitnessForce Response: ', [$response]);
+                
+                $fflogParam['response'] = (!empty($response))?$response:$fflogParam['response'];
+                
+                if(!empty($response) && !empty($response['success'])) {
+                    $fflogParam['success'] = true;
+                    Customer::where('_id', $captureData['customer_id'])->update(['ff_member_id'=>$response['success'][0]['memberid']]);
+                    Capture::where('_id', $captureData['capture_id'])->update(['ff_member_id'=>$response['success'][0]['memberid']]);
+                }
+            }
+
+            $fflog = new FitnessForceAPILog($fflogParam);
+            $fflog->save();
+
+            return $response;
+        }
+        Log::info('Enquiry - FF tenant ID not found for the vendor');
+        return  null;
+    }
+ 
+    public function fitnessForce($data=null){
+        $post_data = array_only($data['data'],
+            [
+                "order_id",
+                "customer_name",
+                "customer_phone",
+                "customer_email",
+                "customer_gender",
+                "service_name",
+                "service_category_id",
+                "service_category",
+                "schedule_date_time",
+                "schedule_slot",
+                "amount",
+                "service_duration",
+                "start_date",
+                "finder_name",
+                "finder_city",
+                "finder_location"
+            ]
+        );
+        Log::info('fitnessforce $data: ', [$data]);
+        $order = Order::where('_id', $data['data']['order_id'])->first();
+        Log::info('fitnessforce $order: ', [$order['_id']]);
+
+        if((!empty($order['studio_extended_validity_order_id']) && empty($order['studio_extended_session'])) || (!empty($order['extended_validity_order_id'])) || (!empty($order['third_party_details'])) ) {
+            Log::info('fitnessforce studio_extended_validity_order_id or extended_validity_order_id or ABW');
+            return;
+        }
+
+        Ratecard::$withoutAppends = true;
+        Finder::$withoutAppends = true;
+        $ratecard = Ratecard::where('_id', $order['ratecard_id'])->first();
+        $finder = Finder::where('_id', $order['finder_id'])->first();
+
+        if(!empty($finder['flags']['ff_tenant_id'])) {
+            if(!empty($post_data['customer_name'])) {
+                $nameArr = explode(' ', $post_data['customer_name']);
+                if(!empty($nameArr) && count($nameArr)>0) {
+                    $countNameArr = count($nameArr);
+                    $post_data['first_name'] = $nameArr[0];
+                    if($countNameArr>1) {
+                        $post_data['last_name'] = $nameArr[$countNameArr-1];
+                    }
+                }
+            }
+            $post_data['source'] = Config::get('app.ffDetails.source');//'fitternity';//'gymtrekker';
+            $post_data['tenantid'] = $finder['flags']['ff_tenant_id']; //1909
+            $post_data['authkey'] = $finder['flags']['ff_auth_key']; //'FFT_M_1909'
+            
+            // $post_data['productid'] = 34767;
+            // $post_data['packageid'] = 45;
+            // $post_data['campaignid'] = 45;
+
+            $post_data['productid'] = $ratecard['flags']['ff_product_id'];
+            if(!empty($ratecard['flags']['ff_package_id'])) {
+                $post_data['packageid'] = $ratecard['flags']['ff_package_id'];
+            }
+            if(!empty($ratecard['flags']['ff_campaign_id'])) {
+                $post_data['campaignid'] = $ratecard['flags']['ff_campaign_id'];
+            }
+            Log::info('$order[success_date]::: ', [$order['success_date']]);
+            Log::info('strtotime($order[success_date])::: ', [strtotime($order['success_date'])]);
+            Log::info('strtotime($order[success_date])::: ', [strtotime($order['success_date'])]);
+            Log::info('date(Y-m-d,strtotime($order[success_date])):: ', [date('Y-m-d',strtotime($order['success_date']))]);
+            Log::info('gettype($order[success_date]):: ', [gettype($order['success_date'])]);
+            Log::info('get_class($order[success_date]):: ', [get_class($order['success_date'])]);
+            Log::info('ff order: ', [$order['_id']]);
+            if(empty($order['success_date'])) {
+                $post_data['purchasedate'] = date('Y-m-d',time());
+            }
+            else {
+                $post_data['purchasedate'] = date('Y-m-d',strtotime($order['success_date']));
+            }
+            if(!(empty($data['type'])) && $data['type']=='workout-session') {
+                $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['schedule_date_time']));
+            }
+            else {
+                $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['preferred_starting_date'])); // '2019-05-29';
+            }
+            // $post_data['total'] = $order['amount_transferred_to_vendor'];
+            // $post_data['productprice'] = ((100 * $order['amount_transferred_to_vendor'])/118); // total - 18% GST
+            $post_data['total'] = $order['amount'];
+            $post_data['productprice'] = ((100 * $order['amount'])/118); // total - 18% GST
+            $post_data['paymentmode'] = Config::get('app.ffDetails.paymentmode'); //'fitternity';
+            $post_data['amountpaid'] = $order['amount'];
+            // $post_data['paymentmode'] = 'gymtrekker';
+            // $post_data['amountpaid'] = $order['amount_transferred_to_vendor'];
+            // $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
+            // $post_data['addpaymentvalues'] = '0'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
+
+            Log::info('fitnessForce: ', $post_data);
+
+            $fitnessForceData = ['form_params' => []];
+            $fitnessForceData['form_params']['firstname'] = $post_data['first_name'];
+            if(!empty($post_data['last_name'])) {
+                $fitnessForceData['form_params']['lastname'] = $post_data['last_name'];
+            }
+            $fitnessForceData['form_params']['mobileno'] = $post_data['customer_phone'];
+            $fitnessForceData['form_params']['emailid'] = $post_data['customer_email'];
+            $fitnessForceData['form_params']['productprice'] = $post_data['productprice'];
+            $fitnessForceData['form_params']['paymentmode'] = $post_data['paymentmode'];//'gymtrekker';
+            // $fitnessForceData['form_params']['addpaymentids'] = $post_data['addpaymentids'];
+            // $fitnessForceData['form_params']['addpaymentvalues'] = $post_data['addpaymentvalues'];
+            $fitnessForceData['form_params']['amountpaid'] = $post_data['amountpaid'];
+            $fitnessForceData['form_params']['total'] = $post_data['total'];
+            $fitnessForceData['form_params']['productprice'] = $post_data['productprice'];
+            $fitnessForceData['form_params']['purchasedate'] = $post_data['purchasedate'];
+            $fitnessForceData['form_params']['activationdate'] = $post_data['activationdate'];
+            $fitnessForceData['form_params']['productid'] = $post_data['productid'];
+            if(!empty($post_data['packageid'])) {
+                $fitnessForceData['form_params']['packageid'] = $post_data['packageid'];
+            }
+            if(!empty($post_data['packageid'])) {
+                $fitnessForceData['form_params']['campaignid'] = $post_data['campaignid'];
+            }
+
+            $client = new Client( ['debug' => false ] );
+
+            $url = Config::get('app.ffTransactionAPI').$post_data['source'].'&tenantid='.$post_data['tenantid'].'&authkey='.$post_data['authkey'];
+
+            $payload = $fitnessForceData;
+            try {
+                $responseString = $client->post($url,$payload)->getBody()->getContents();
+            }catch (Exception $ex){
+                $responseString = $ex->getMessage();
+            }
+            Log::info('fitnessForce Response String: ', [$responseString]);
+
+            $fflogParam = [
+                'url' => $url,
+                'request_query' => [
+                    'source' => $post_data['source'],
+                    'tenantid' => $post_data['tenantid'],
+                    'authkey' => $post_data['authkey']
+                ],
+                'request_body' => $fitnessForceData['form_params'],
+                'response' => $responseString,
+                'type' => 'trans_succ',
+                'success' => false,
+                'order_id' => $order['_id'],
+            ];
+
+            if(!empty($responseString)) {
+                $response = json_decode($responseString, true);
+                Log::info('fitnessForce Response: ', [$response]);
+                
+                $fflogParam['response'] = !(empty($response))?$response:$fflogParam['response'];
+                
+                if(!empty($response) && $response['isSuccess']) {
+                    $fflogParam['success'] = true;
+                    if(!empty($response['response'][0]['billid'])) {
+                        $fflogParam['ff_bill_id'] = $response['response'][0]['billid'];
+                    }
+                    if(!empty($response['response'][0]['receiptid'])) {
+                        $fflogParam['ff_receipt_id'] = $response['response'][0]['receiptid'];
+                    }
+
+                    $fflogParam['success'] = true;
+                    Order::where('_id', $order['_id'])->update(['ff_bill_id'=>$response['response'][0]['billid'],'ff_receipt_id'=>$response['response'][0]['receiptid']]);
+                    if(!empty($order['booktrial_id'])) {
+                        Booktrial::where('_id', $order['booktrial_id'])->update(['ff_bill_id'=>$response['response'][0]['billid'],'ff_receipt_id'=>$response['response'][0]['receiptid']]);
+                    }
+                }
+            }
+                
+            if(!empty($order['booktrial_id'])) {
+                $fflogParam['booktrial_id'] = $order['booktrial_id'];
+            }
+
+            $fflog = new FitnessForceAPILog($fflogParam);
+            $fflog->save();
+
+            return $response;
+        }
+    }
+
 }

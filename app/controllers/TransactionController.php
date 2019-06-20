@@ -2449,7 +2449,7 @@ class TransactionController extends \BaseController {
 
     
             }
-
+            
             if(isset($order['previous_booktrial_id']) && $order['previous_booktrial_id'] != ""){
 
                 $booktrial = Booktrial::find((int) $order['previous_booktrial_id']);
@@ -9055,6 +9055,8 @@ class TransactionController extends \BaseController {
             $this->updateBulkPurchase($data);
         }
         
+        $this->utilities->fitnessForce(['data'=>$data, 'type'=>$type]);
+
     }
 
     public function updateBulkPurchase($data){
