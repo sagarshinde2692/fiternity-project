@@ -8905,9 +8905,14 @@ Class Utilities {
             Log::info('strtotime($order[success_date])::: ', [strtotime($order['success_date'])]);
             Log::info('date(Y-m-d,strtotime($order[success_date])):: ', [date('Y-m-d',strtotime($order['success_date']))]);
             Log::info('gettype($order[success_date]):: ', [gettype($order['success_date'])]);
-            Log::info('getclass($order[success_date]):: ', [getclass($order['success_date'])]);
+            Log::info('get_class($order[success_date]):: ', [get_class($order['success_date'])]);
             Log::info('ff order: ', $order['_id']);
-            $post_data['purchasedate'] = date('Y-m-d',strtotime($order['success_date'])); // '2019-05-29';
+            if(empty($order['success_date'])) {
+                $post_data['purchasedate'] = date('Y-m-d',time());
+            }
+            else {
+                $post_data['purchasedate'] = date('Y-m-d',strtotime($order['success_date']));
+            }
             if(!(empty($data['type'])) && $data['type']=='workout-session') {
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['schedule_date_time']));
             }
