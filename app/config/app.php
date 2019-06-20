@@ -40,6 +40,8 @@ return array(
 	// 'mobikwik_sandbox'=>true,
 	// 'paytm_sandbox'=>true,
 	// 'paypal_sandbox'=>true,
+	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -57,6 +59,8 @@ return array(
 	// 'website_deeplink' =>'https://ftrnty.com',
 	// 'mobikwik_sandbox'=>true,
 	// 'paytm_sandbox'=>true,
+	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
 
 	//live
 	// 'new_search_url' =>'http://c1.fitternity.com/',	
@@ -75,7 +79,9 @@ return array(
 	// 'website_deeplink' =>'https://ftrnty.com',
 	// 'mobikwik_sandbox'=>false,
 	// 'paytm_sandbox'=>false,
-    // 'paypal_sandbox'=>false,
+	// 'paypal_sandbox'=>false,
+	// 'ffTransactionAPI'=>'https://demo.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	// 'ffEnquiryAPI'=>'http://api.fitnessforce.com/prospect',
 	
 	'ffDetails' => [
 		'source' => 'fitternity',
