@@ -8901,7 +8901,7 @@ Class Utilities {
                 $post_data['campaignid'] = $ratecard['flags']['ff_campaign_id'];
             }
 
-            $post_data['purchasedate'] = date('Y-m-d',strtotime($order['success_date'])); // '2019-05-29';
+            $post_data['purchasedate'] = date('Y-m-d',$order['success_date']->sec); // '2019-05-29';
             if(!(empty($data['type'])) && $data['type']=='workout-session') {
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['schedule_date_time']));
             }
