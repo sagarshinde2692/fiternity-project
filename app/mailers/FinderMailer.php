@@ -136,7 +136,8 @@ Class FinderMailer extends Mailer {
 
 			$common = [
 				'siddharthshah@fitternity.com',
-				'dharmindersingh@fitternity.com'
+				'dharmindersingh@fitternity.com',
+				'priyankapatel@fitternity.com'
 			];
 
 			$user_email = array_merge($user_email,$common);
@@ -922,7 +923,8 @@ Class FinderMailer extends Mailer {
 						'kevalshah@fitternity.com',
 						'mitmehta@fitternity.com',
 						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com' 
+						'pranjalisalvi@fitternity.com',
+						'priyankapatel@fitternity.com' 
 					];
 					break;
 				case 2 : 
@@ -930,14 +932,16 @@ Class FinderMailer extends Mailer {
 						'mitmehta@fitternity.com',
 						'vishankkapoor@fitternity.com',
 						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com' 
+						'pranjalisalvi@fitternity.com',
+						'priyankapatel@fitternity.com' 
 					];
 					break;
 				case 3 : 
 					$data['fitternity_email'] = [
 						'silkeshakadam@fitternity.com',
 						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com' 
+						'pranjalisalvi@fitternity.com',
+						'priyankapatel@fitternity.com' 
 					];
 					break;
 				case 4 : 
@@ -954,7 +958,8 @@ Class FinderMailer extends Mailer {
 						"deepdesai@fitternity.com",
 						"shreyajain@fitternity.com",
 						"arfatinamdar@fitternity.com",
-						"anoliadhia@fitternity.com"
+						"anoliadhia@fitternity.com",
+						'priyankapatel@fitternity.com'
  
 					];
 					break;
@@ -969,7 +974,8 @@ Class FinderMailer extends Mailer {
 						"deepdesai@fitternity.com",
 						"shreyajain@fitternity.com",
 						"arfatinamdar@fitternity.com",
-						"anoliadhia@fitternity.com"
+						"anoliadhia@fitternity.com",
+						'priyankapatel@fitternity.com'
 					];
 					break;
 				default:
@@ -1005,7 +1011,8 @@ Class FinderMailer extends Mailer {
 						'kevalshah@fitternity.com',
 						'mitmehta@fitternity.com',
 						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com' 
+						'pranjalisalvi@fitternity.com',
+						'priyankapatel@fitternity.com' 
 					];
 					break;
 				case 2 : 
@@ -1013,14 +1020,16 @@ Class FinderMailer extends Mailer {
 						'mitmehta@fitternity.com',
 						'vishankkapoor@fitternity.com',
 						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com' 
+						'pranjalisalvi@fitternity.com',
+						'priyankapatel@fitternity.com' 
 					];
 					break;
 				case 3 : 
 					$data['fitternity_email'] = [
 						'silkeshakadam@fitternity.com',
 						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com' 
+						'pranjalisalvi@fitternity.com',
+						'priyankapatel@fitternity.com' 
 					];
 					break;
 				case 4 : 
@@ -1037,7 +1046,8 @@ Class FinderMailer extends Mailer {
 						"deepdesai@fitternity.com",
 						"shreyajain@fitternity.com",
 						"arfatinamdar@fitternity.com",
-						"anoliadhia@fitternity.com" 
+						"anoliadhia@fitternity.com",
+						'priyankapatel@fitternity.com' 
 					];
 					break;
 				case 6 : 
@@ -1063,7 +1073,8 @@ Class FinderMailer extends Mailer {
 						"deepdesai@fitternity.com",
 						"shreyajain@fitternity.com",
 						"arfatinamdar@fitternity.com",
-						"anoliadhia@fitternity.com"
+						"anoliadhia@fitternity.com",
+						'priyankapatel@fitternity.com'
 					];
 					break;	
 				default:
@@ -1244,7 +1255,7 @@ Class FinderMailer extends Mailer {
 			}
 		}
 		
-		$all_city_ids = ['vinichellani@fitternity.com', 'pranjalisalvi@fitternity.com', 'siddharthshah@fitternity.com'];
+		$all_city_ids = ['vinichellani@fitternity.com', 'pranjalisalvi@fitternity.com', 'siddharthshah@fitternity.com', 'priyankapatel@fitternity.com'];
 		
 		$data['fitternity_email'] = array_merge($data['fitternity_email'], $all_city_ids);
 
