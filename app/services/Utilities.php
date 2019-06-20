@@ -8906,7 +8906,7 @@ Class Utilities {
             Log::info('date(Y-m-d,strtotime($order[success_date])):: ', [date('Y-m-d',strtotime($order['success_date']))]);
             Log::info('gettype($order[success_date]):: ', [gettype($order['success_date'])]);
             Log::info('get_class($order[success_date]):: ', [get_class($order['success_date'])]);
-            Log::info('ff order: ', $order['_id']);
+            Log::info('ff order: ', [$order['_id']]);
             if(empty($order['success_date'])) {
                 $post_data['purchasedate'] = date('Y-m-d',time());
             }
