@@ -8782,7 +8782,7 @@ Class Utilities {
         $enquiryData['enquirysource'] = 'fitternity';
 
         // $url = Config::get('app.ffEnquiryAPI').$captureData['source'].'&tenantid='.$captureData['tenantid'].'&authkey='.$captureData['authkey'];
-        $url = Config::get('app.ffEnquiryAPI').$captureData['source'];
+        $url = Config::get('app.ffEnquiryAPI');
 
         try {
             $responseString = $client->post($url,['json' => $enquiryData, 'headers' => ['authenticationKey' => $captureData['authkey']]])->getBody()->getContents();
