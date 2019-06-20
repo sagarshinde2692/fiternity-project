@@ -8754,7 +8754,7 @@ Class Utilities {
         $enquiryData = [];
         $client = new GuzzleClient( ['debug' => false] );
 
-        if(empty($vendor)) {
+        if(!empty($vendor)) {
             $vendorId = $vendor->_id;
         }
         else if(!empty($captureData) && $captureData['capture_type']=='multifit-contactuspage'){
