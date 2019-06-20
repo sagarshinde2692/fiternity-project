@@ -9177,6 +9177,9 @@ Class Utilities {
     }
  
     public function fitnessForce($data=null){
+        if(empty($data['data']['order_id'])) {
+            return;
+        }
         $post_data = array_only($data['data'],
             [
                 "order_id",
