@@ -1359,3 +1359,4 @@ Route::get('fixCustomerQuantity', 'DebugController@fixCustomerQuantity');
 Route::get('fixFinanceCustomerQuantity', 'DebugController@fixFinanceCustomerQuantity');
 Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');
 Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
+Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');

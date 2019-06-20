@@ -2742,3 +2742,4 @@ Route::get('testcodesnippet','DebugController@testcodesnippet');
 Route::get('corporateCoupons','DebugController@corporateCoupons');
 Route::get('rewardDistributionAndClaim', 'DebugController@rewardDistributionAndClaim');
 Route::get('addAmountTransferToVendorBreakup', 'DebugController@addAmountTransferToVendorBreakup');
+Route::get('fitnessForce','TransactionController@fitnessForce');

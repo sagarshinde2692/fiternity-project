@@ -10547,6 +10547,12 @@ public function yes($msg){
         return "Done";
     }
 
+	function getFFOrderDetails() {
+		$reqBody = Input::all();
+		Log::info('inside getFFOrderDetails');
+		Log::info('getFFOrderDetails reqBody:: ', [$reqBody]);
+		return ['status' => 200, 'msg' => 'done'];
+	}
 
     public function fixCustomerQuantity(){
 
