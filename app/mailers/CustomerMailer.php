@@ -767,7 +767,7 @@ Class CustomerMailer extends Mailer {
 		}
 
 		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
-			$label = 'BookTrialReminderBefore10Min-Customer-Reliance	';
+			$label = 'BookTrialReminderBefore10Min-Customer-Reliance';
 		}
 		
 		$message_data 	= array(

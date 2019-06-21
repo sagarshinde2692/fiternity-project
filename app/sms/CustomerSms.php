@@ -1207,7 +1207,7 @@ Class CustomerSms extends VersionNextSms{
 		}
 
 		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
-			$label = 'BookTrialReminderBefore10Min-Customer-Reliance	';
+			$label = 'BookTrialReminderBefore10Min-Customer-Reliance';
 		}
 
 		$to = $data['customer_phone'];
