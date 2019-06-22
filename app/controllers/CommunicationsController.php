@@ -319,6 +319,7 @@ class CommunicationsController extends \BaseController {
         $data['download_app_link'] = Config::get('app.download_app_link');
         $data['diet_plan_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
 
+		$data['service_steps'] = 300;
 		if(isset($data['servicecategory_id']) && $data['servicecategory_id'] != ''){
 			Log::info("============================servicecategory_id");
 			$service_cat_steps_map = Config::get('health_config.service_cat_steps_map');

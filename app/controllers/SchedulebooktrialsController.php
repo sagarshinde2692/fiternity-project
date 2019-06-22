@@ -2700,11 +2700,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrialdata = $booktrial->toArray();
 
+            $booktrialdata['service_steps'] = 300;
             if(isset($booktrialdata['servicecategory_id']) && $booktrialdata['servicecategory_id'] != ''){
-                Log::info("============================servicecategory_id");
                 $service_cat_steps_map = Config::get('health_config.service_cat_steps_map');
                 if(in_array($booktrialdata['servicecategory_id'], array_keys($service_cat_steps_map))){
-                    Log::info("============================steps yes");
                     $booktrialdata['service_steps'] = $service_cat_steps_map[$booktrialdata['servicecategory_id']];
                 }
             }
@@ -7728,6 +7727,29 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
                 }
 
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+
+                    if($payment_done){
+                        unset($response['sub_header_1']);
+                        $response['sub_header_2'] = "300 Steps will be added into your steps counter post your workout.";
+
+                        $response['sub_header_2'] = $response['sub_header_2']."\n\n".$customer_level_data['current_level']['cashback']."% cashback is added into your Fitternity wallet. Use it to book more workouts to reach your steps goal faster";
+
+                        if(isset($booktrial['servicecategory_id']) && $booktrial['servicecategory_id'] != ''){
+                            $service_cat_steps_map = Config::get('health_config.service_cat_steps_map');
+                            if(in_array($booktrial['servicecategory_id'], array_keys($service_cat_steps_map))){
+                                $service_steps = $service_cat_steps_map[$booktrial['servicecategory_id']];
+                                $response['sub_header_2'] = $service_steps." Steps will be added into your steps counter post your workout.";
+
+                                $response['sub_header_2'] = $response['sub_header_2']."\n\n".$customer_level_data['current_level']['cashback']."% cashback is added into your Fitternity wallet. Use it to book more workouts to reach your steps goal faster";
+                            }
+                        }
+                    }else{
+                        $response['payment'] = $pending_payment;
+                    }
+                    
+                }
+
                 if(isset($_GET['source']) && $_GET['source'] == 'let_us_know'){
                     $response['header'] = 'GREAT';
                 }
@@ -7779,6 +7801,20 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
                 }
 
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                    $response['sub_header_1'] = "300 Steps";
+                        
+                    if(isset($booktrial['servicecategory_id']) && $booktrial['servicecategory_id'] != ''){
+                        $service_cat_steps_map = Config::get('health_config.service_cat_steps_map');
+                        if(in_array($booktrial['servicecategory_id'], array_keys($service_cat_steps_map))){
+                            $service_steps = $service_cat_steps_map[$booktrial['servicecategory_id']]; 
+                            $response['sub_header_1'] = $service_steps." Steps";       
+                        }
+                    }
+
+                    $response['sub_header_2'] = "will be added into your steps counter post verifying your attendance from gym/studio.";    
+                }
+
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
@@ -7818,6 +7854,10 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
 
                 }
+
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                    $response['sub_header_2'] = "Sorry, cancellation is available only 60 minutes prior to your session time.\n\nKeep booking workouts to get closer to your steps milestone.";
+                }
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
@@ -7852,6 +7892,16 @@ class SchedulebooktrialsController extends \BaseController {
                 if($booktrial->type=='booktrials'){
                     $response['reschedule_button'] = true;
                     $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
+                }
+
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                    if($payment_done){
+                        $response['sub_header_2'] = "Make sure you attend next time to earn steps into your steps counter to achieve your goal faster.";
+    
+                        if(!empty($booktrial->amount)){
+                            $response['sub_header_2'] = $response['sub_header_2']."\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
+                        }
+                    }  
                 }
                 $this->cancel($booktrial->_id);
             break;
@@ -7896,6 +7946,18 @@ class SchedulebooktrialsController extends \BaseController {
                     if($this->device_type=='android')
                         $response['attend']['sub_header_2']='Enjoy your session at '.$booktrial['finder_name'].'. Your workout checklist is ready';
                     
+                }
+
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                    $response['attend']['sub_header_2'] = 'Attend this sessionand earn 300 Steps.';
+                    
+                    if(isset($booktrial['servicecategory_id']) && $booktrial['servicecategory_id'] != ''){
+                        $service_cat_steps_map = Config::get('health_config.service_cat_steps_map');
+                        if(in_array($booktrial['servicecategory_id'], array_keys($service_cat_steps_map))){
+                            $service_steps = $service_cat_steps_map[$booktrial['servicecategory_id']];
+                            $response['attend']['sub_header_2'] = 'Attend this session and earn '.$service_steps.' Steps.';
+                        }
+                    }
                 }
             break;
             case 'cancel':
@@ -7943,6 +8005,10 @@ class SchedulebooktrialsController extends \BaseController {
                         $response['sub_header_2']  = 'Sorry, you have already availed '.$orderDetails['studio_sessions']['total_cancel_allowed'].' sessions extension of your membership.';  
                         $response['header']='Not Cancelled';
                     }
+                }
+
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                    $response['sub_header_2'] = "Make sure you attend next time to earn steps into your steps counter to achieve your goal faster.";
                 }
                 
             break;

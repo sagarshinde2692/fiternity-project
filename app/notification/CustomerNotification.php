@@ -75,6 +75,10 @@ Class CustomerNotification extends Notification{
 
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 
+		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
+			$label = 'AutoTrial-ReminderAfter2Hour-Customer-Reliance';
+		}
+
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+2", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know?notif_id=');
 		
