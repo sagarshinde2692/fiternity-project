@@ -769,6 +769,10 @@ class EmailSmsApiController extends \BaseController {
         if(isset($data['name']) && $data['name'] != ""){
             $data['customer_name'] = $data['name'];
         }
+        
+        if(isset($data['fullname']) && $data['fullname'] != ""){
+            $data['customer_name'] = $data['fullname'];
+        }
 
         if(isset($data['email']) && $data['email'] != ""){
             $data['customer_email'] = $data['email'];
