@@ -2346,7 +2346,7 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($order['service_flags'])){
                 $booktrialdata['service_flags'] = $order['service_flags'];
             }
-
+            
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
             if($is_tab_active){
@@ -2355,6 +2355,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($order['recommended_booktrial_id']) && $order['recommended_booktrial_id'] != ""){
                 $booktrialdata['recommended_booktrial_id'] = (int)$order['recommended_booktrial_id'];
+            }
+
+            if(isset($order['servicecategory_id']) && $order['servicecategory_id'] != ""){
+                $booktrialdata['servicecategory_id'] = (int)$order['servicecategory_id'];
             }
 
             $workout_session_fields = ['customers_list', 'pay_later'];
@@ -2695,6 +2699,15 @@ class SchedulebooktrialsController extends \BaseController {
             $this->firstTrial($booktrial->toArray()); // first trial communication
 
             $booktrialdata = $booktrial->toArray();
+
+            if(isset($booktrialdata['servicecategory_id']) && $booktrialdata['servicecategory_id'] != ''){
+                Log::info("============================servicecategory_id");
+                $service_cat_steps_map = Config::get('health_config.service_cat_steps_map');
+                if(in_array($booktrialdata['servicecategory_id'], array_keys($service_cat_steps_map))){
+                    Log::info("============================steps yes");
+                    $booktrialdata['service_steps'] = $service_cat_steps_map[$booktrialdata['servicecategory_id']];
+                }
+            }
 
             $currentDateTime 			       =	\Carbon\Carbon::now();
             $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
@@ -5086,6 +5099,10 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 $emaildata['third_party_details'] = $booktrial['third_party_details'];
             
+            }
+
+            if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                $emaildata['corporate_id'] = $booktrial['corporate_id'];
             }
 
 
