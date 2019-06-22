@@ -217,6 +217,16 @@ class Service extends \Basemodel{
 			// 						->toArray();
 
 			$serviceoffers = Offer::getActiveV1('vendorservice_id', intval($this->_id), $finder)->toArray();
+			$workoutSession = [];
+			$extendedRatecards = [];
+			foreach ($ratecardsarr as $key => $value) {
+				if($value['type']=='workout session'){
+					array_push($workoutSession, $value['_id']);
+				}
+				if($value['type']=='extended validity'){
+					array_push($extendedRatecards, $value['_id']);
+				}
+			}
 			foreach ($ratecardsarr as $key => $value) {
                 
                 $days = getDurationDay($value);
@@ -233,11 +243,12 @@ class Service extends \Basemodel{
 				// }
 				
             	$ratecardoffers 	= 	[];
-									// Log::info($serviceoffers);
+				// Log::info($serviceoffers);
+				//&& !empty($workoutSession) && empty($extendedRatecards)
+				//Log::info('workout sessions and extended ratecardsL:::::::::', [$ratecardsarr, $workoutSession, $extendedRatecards]);
                 if(!empty($value['_id']) && isset($value['_id'])){
 					
 					$studioExtValidity = (!in_array($this->servicecategory_id, Config::get('app.non_flexi_service_cat', [111, 65, 5]))) && (!empty($this->batches) && count($this->batches)>0) && in_array($days, [30, 90]) && (!empty($value['duration_type']) && $value['duration_type']=='session' && !empty($value['duration']));
-
 
 					if(!empty($studioExtValidity) && $studioExtValidity && ($value['type']!='extended validity')){
 						$numOfDays = (in_array($value['validity_type'], ['month', 'months']))?$value['validity']*30:$value['validity'];
@@ -393,6 +404,9 @@ class Service extends \Basemodel{
                 if($value["type"] == "workout session"){
                    $value[ "button_color"] = Config::get('app.ratecard_button_color');
 				   $value[ "pps_know_more"] = true;
+				   $value['pps_title'] = "Pay Per Session";
+				   $value['title'] = '1 Workout';
+				   //unset($value['remarks']);
 				}
 
                 if($value['type'] == 'membership' && !empty($GLOBALS['finder_commission'])){
@@ -429,12 +443,16 @@ class Service extends \Basemodel{
 					}
 				}
 
+				if(intval($value['validity']) == 1 && $value['validity_type'] == 'months') {
+					$value['validity_type'] = "month";
+				}
+
 				$offer_price = (!empty($value['special_price'])) ? $value['special_price'] : 0 ;
 				$cost_price = (!empty($value['price'])) ? $value['price'] : 0 ;
 
                 if($offer_price !== 0 && $offer_price < $cost_price && !in_array($value['type'], ['workout session', 'trial']) && !(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable')){
 
-                	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
+                	$offf_percentage = floor((($cost_price - $offer_price)/$cost_price)*100);
 
                     // if($offf_percentage < 50){
                     //     $value['price'] = 2*$value['special_price'];

@@ -892,7 +892,7 @@ class TransactionController extends \BaseController {
         $data['amount_final'] = $data["amount_finder"];
 
         //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
-        if(empty($data['service_flags']['disable_dynamic_pricing']) && ((isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment']) || (empty($_GET['device_type'])) || $_GET['device_type'] == 'website')){
+        if(((!isset($finder->flags->disable_dynamic_pricing) ||empty($finder->flags->disable_dynamic_pricing)) || (isset($data['service_flags']['disable_dynamic_pricing']) && empty($data['service_flags']['disable_dynamic_pricing']))) && ((isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment']) || (empty($_GET['device_type'])) || $_GET['device_type'] == 'website')){
             if($data['type'] == 'workout-session')
              {
              try {
@@ -6141,7 +6141,9 @@ class TransactionController extends \BaseController {
         if(!empty($order['type']) && $order['type'] == 'memberships'){
             $payment_options['payment_options_order'] = ["cards", "wallet", "netbanking", "emi"];
         }
+
         
+    
         $payment_options['wallet'] = [
             'title' => 'Wallet',
             'subtitle' => 'Transact online with Wallets',
@@ -6174,6 +6176,53 @@ class TransactionController extends \BaseController {
                     ]
             ]
         ];
+
+        if(($this->get_device_type=='ios' &&$this->get_app_version > '5.1.7') || ($this->get_device_type=='android' &&$this->get_app_version > '5.24')){
+            $payment_options['payment_options_order'] = ["wallet", "upi", "cards", "netbanking", "emi"];
+
+            if(!empty($order['type']) && $order['type'] == 'memberships'){
+                $payment_options['payment_options_order'] = ["cards", "upi", "wallet", "netbanking", "emi"];
+            }
+
+            $payment_options['upi'] = [
+                'title' => 'UPI',
+                'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
+            ];
+
+            $payment_options['wallet'] = [
+                'title' => 'Wallet',
+                'subtitle' => 'Transact online with Wallets',
+                'value'=>'wallet',
+                'options'=>[
+                        [
+                                'title' => 'Paypal',
+                                'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
+                                'value' => 'paypal'
+                        ],
+                        [
+                                'title' => 'Paytm',
+                                // 'subtitle' => 'Paytm',
+                                'value' => 'paytm'
+                        ],
+                        [
+                                'title' => 'AmazonPay',
+                                // 'subtitle' => 'AmazonPay',
+                                'value' => 'amazonpay'
+                        ],
+                        [
+                                'title' => 'Mobikwik',
+                                // 'subtitle' => 'Mobikwik',
+                                'value' => 'mobikwik'
+                        ],
+                        [
+                                'title' => 'PayU',
+                                // 'subtitle' => 'PayU',
+                                'value' => 'payu'
+                        ]
+                ]
+            ];
+        }
+        
         $os_version = intval(Request::header('Os-Version'));
         
         if($os_version >= 9 && $this->device_type == 'android'){
@@ -6949,7 +6998,7 @@ class TransactionController extends \BaseController {
 
             
 
-            if(empty($data['service_flags']['disable_dynamic_pricing']) && $data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
+            if(((!isset($data['finder_flags']['disable_dynamic_pricing']) || empty($data['finder_flags']['disable_dynamic_pricing'])) || (isset($data['service_flags']['disable_dynamic_pricing']) && empty($data['service_flags']['disable_dynamic_pricing']))) && $data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
             {
                 $start_time = explode('-', $data['slot']['slot_time'])[0];
                 $end_time = explode('-', $data['slot']['slot_time'])[1];
