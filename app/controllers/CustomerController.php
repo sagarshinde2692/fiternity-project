@@ -70,7 +70,7 @@ class CustomerController extends \BaseController {
 			->whereIn('booktrial_type', array('auto'))
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
-			->where('going_status_txt','!=','cancel')
+			// ->where('going_status_txt','!=','cancel')
 			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')))
 			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
 			->get($selectfields);
@@ -92,7 +92,7 @@ class CustomerController extends \BaseController {
 				if(!empty($order['studio_sessions'])){
 					$avail = $order['studio_sessions']['total_cancel_allowed'] - $order['studio_sessions']['cancelled'];
 					$avail = ($avail<0)?0:$avail;
-					array_set($trial, 'type_text', 'WS');
+					array_set($trial, 'type_text', 'Workout Session');
 					if($avail>0){
 						$trial['finder_name'] .= ' - '.$avail.'/'.$order['studio_sessions']['total_cancel_allowed'].' cancellations available';
 					}
@@ -171,7 +171,13 @@ class CustomerController extends \BaseController {
 
 				}
 			}
-			$trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
+            $trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
+            
+            
+            if(!empty($trial["going_status"]) && $trial["going_status"] == 2){
+                $trial["overlay_image"] = "https://b.fitn.in.s3.amazonaws.com/Cancel%20icon1.png";
+            }
+
 			try{
 				$trial['fitcash_text'] = "Enter your Fitcode to get  Rs.".$this->utilities->getFitcash($trial)." Fitcash.";
 			}catch(Exception $e){
@@ -3455,6 +3461,7 @@ class CustomerController extends \BaseController {
 			try {
 
 				$decoded = $this->customerTokenDecode($jwt_token);
+				Log::info('token values',[$decoded]);
 
                 // if(empty($decoded->customer)){
                 //     return ['isSessionExpired'=>true];
@@ -3733,7 +3740,7 @@ class CustomerController extends \BaseController {
         try{
             $active_session_packs = [];
             if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
-                $active_session_packs = $this->getSessionPacks(null, null, true, $customer_id)['data'];
+                $active_session_packs = $this->getSessionPacks(null, null, true, $customer_id, 'home')['data'];
             }
 
         }catch(Exception $e){
@@ -3881,20 +3888,21 @@ class CustomerController extends \BaseController {
 		// }
 		
 		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
-                
+			
 			$city_id = City::where('slug', $city)->first(['_id']);
 			
 			// return $city_id;
 			$campaigns = [];
 			/***************************Banners start********************** */
 			// commented below on 26 Jan - start
-
+			
 			if($city){
 
 				$homepage = Homepage::where('city_id', $city_id['_id'])->first();
 
 				$campaigns = [];
 
+            //    if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
                if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners']) && count($homepage['app_banners']) >= 2){
 
                    $app_banners = $homepage['app_banners'];
@@ -3930,7 +3938,7 @@ class CustomerController extends \BaseController {
             
             /***************************Banners end********************** */
 
-			$result['campaigns'] =  $campaigns;
+            $result['campaigns'] =  $campaigns;
 			// $result['campaigns'] =  [];
 
 			// $result['campaigns'][] = [
@@ -4082,7 +4090,14 @@ class CustomerController extends \BaseController {
 	            ]
 	        ];
             $geoLocationFinder = geoLocationFinder($near_by_vendor_request, 'customerhome');
-	        $result['near_by_vendor'] = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
+			$result['near_by_vendor'] = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
+			//checking for fitsquad upgrade
+			if(isset($customer_id)){
+				$fitsquadUpgradeOrder = $this->fitSquadUpgradeAvailability($customer_id);
+				if($fitsquadUpgradeOrder){
+					$result['fitsquad_upgrade'] = $fitsquadUpgradeOrder;
+				}
+			}
 		}
         
 		$result['categoryheader'] = "Discover | Try | Buy";
@@ -5363,7 +5378,7 @@ class CustomerController extends \BaseController {
 
 
         if(!empty($order['extended_validity'])){
-			$action['book_session'] = $this->sessionPackDetail($order['_id']);
+			$action['book_session'] = $this->sessionPackDetail($order['_id'], 'profile');
 			$action['book_session']['sessions_left'] = $action['book_session']['sessions_left'].' sessions left';
             //  if(strtotime($order['end_date']) > time() && !empty($order['sessions_left'])){
             //     $action['book_session'] = [
@@ -8396,7 +8411,7 @@ class CustomerController extends \BaseController {
         $filter = [];
         
         $customer = $this->utilities->getCustomerFromTokenAsObject();
-
+		
         if(!empty($customer->_id)){
 
             $customer = Customer::active()->where('_id', $customer->_id)->where('loyalty', 'exists', true)->first();
@@ -8420,14 +8435,24 @@ class CustomerController extends \BaseController {
                 $voucher_categories_map[$vc['_id']][0]['max_amount'] = $vc['amount'];
             }
         }
-		
-		if($post){
-
-            return $this->postLoyaltyRegistration($customer, $voucher_categories_map);
+		//check onece for it should availabe with postloyaltyregistration and preloyalty registration or with both ->>>>>>>>>> now sendoing with both
+		$fitsquad_upgrade= null;
+		//if((isset($_REQUEST['device_type']) || isset($_REQUEST['Device_Type'])) && (in_array($_REQUEST['device_type'],['ios','android']) || in_array($_REQUEST['Device_type'],['ios','android'])) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
+			Log::info('inside calling fitsquadupgrade',[$customer['id']]);
+			$fitsquadUpgradeOrder = $this->fitSquadUpgradeAvailability($customer['id']);
+			if($fitsquadUpgradeOrder){
+				$fitsquad_upgrade = $fitsquadUpgradeOrder;
+			}
+		//}
+        if($post){
+			$postloyalty = $this->postLoyaltyRegistration($customer, $voucher_categories_map);
+			if($fitsquad_upgrade)
+				$postloyalty['post_register']['fitsquad_upgrade'] = $fitsquad_upgrade;
+			return $postloyalty;
 
 		}else{
 
-            return $this->preLoyaltyRegistration($voucher_categories_map);
+        	return $this->preLoyaltyRegistration($voucher_categories_map);
 			
 			
 		}
@@ -9319,8 +9344,10 @@ class CustomerController extends \BaseController {
         return $this->createToken($customer);
     }
 
-    public function getSessionPacks($offset = 0, $limit = 10, $active = false, $customer_id = null){
-    
+    public function getSessionPacks($offset = 0, $limit = 10, $active = false, $customer_id = null, $path=null){
+		//Log::info('value of path variable:::::', [$path]);
+		if($path== null)
+			$path='profile';
         $jwt_token = Request::header('Authorization');
 
 		if(!empty($jwt_token)){
@@ -9340,10 +9367,14 @@ class CustomerController extends \BaseController {
         
         $orders = Order::active()
                 ->where('customer_id', $customer_id)
-                ->where(function($query){
-                    $query
-                    ->orWhere('extended_validity', true)
-                    ->orWhere('studio_extended_validity', true);
+                ->where(function($query) use($path){
+					if($path=='profile')
+                    	$query
+                    	->orWhere('extended_validity', true)
+						->orWhere('studio_extended_validity', true);
+					else
+						$query
+						->orWhere('extended_validity', true);
                 })
                 
                 ->with(['finder'=>function($query){
@@ -9352,8 +9383,10 @@ class CustomerController extends \BaseController {
                 ->with(['service'=>function($query){
                     $query->select('slug');
                 }])
-                ->skip($offset)
-                ->take($limit)
+                ->where(function($query){
+                    $query->orWhere('studio_extended_validity', '!=', true)
+                    ->orWhere('studio_membership_duration.end_date_extended', '>', new MongoDate());
+                })
                 ->orderBy('_id', 'desc');
 
         if(!empty($active)){
@@ -9363,29 +9396,38 @@ class CustomerController extends \BaseController {
 
         }
 
-        $orders =  $orders->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags','studio_extended_validity', 'studio_sessions', 'studio_membership_duration']);
-
-        $orders = $this->formatSessionPackList($orders);
+        $orders =  $orders
+        ->skip($offset)
+        ->take($limit)->get(['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags','studio_extended_validity', 'studio_sessions', 'studio_membership_duration', 'all_service_id']);
+        Log::info('path::::::::',[$path, count($orders)]);
+        $orders = $this->formatSessionPackList($orders, $path);
 
         return ['status'=>200, 'data'=>$orders];          
 		
     }
 
-    public function formatSessionPackList($orders){
-        foreach($orders as &$order){
+    public function formatSessionPackList($orders, $path){
+        foreach($orders as $key =>$order){
            
-            $order = $this->formatSessionPack($order);
-            
+			$order = $this->formatSessionPack($order, $path);
+		
         }
         return $orders;
     }
 
-    public function formatSessionPack($order){
-        
+    public function formatSessionPack($order, $path='profile'){
+		
         $order['active'] = true;
+        
         if((!empty($order['ratecard_flags']['unlimited_validity']) || strtotime($order['end_date']) > time()) && !empty($order['sessions_left'])){
             $order['button_title'] = 'Book your next Session';
-            $order['button_type'] = 'book';
+			$order['button_type'] = 'book';
+			if(!empty($order['all_service_id'])){
+				$order['button_type'] = 'schedule';
+				
+				if($path=='profile')
+					$order['button_title'] = 'Book a Session';
+			}
 
         }else{
             $order['active'] = false;
@@ -9405,23 +9447,23 @@ class CustomerController extends \BaseController {
                 unset($order['button_title']);
                 unset($order['button_type']);
                 if(requestFtomApp()){
-                    $order['active'] = false;
-                    $order['button_title'] = 'Renew Pack';
-                    $order['button_type'] = 'renew';
+                    // $order['active'] = false;
+                    // $order['button_title'] = 'Renew Pack';
+                    // $order['button_type'] = 'renew';
                 }
             }else{
                 
                 if(requestFtomApp()){
-                    $order['button_title'] = 'Book your next Session';
+                    $order['button_title'] = 'Book a Session';
                     $order['button_type'] = 'book';
                     
                 }else{
                     unset($order['button_title']);
                     unset($order['button_type']);
                 }
-            }
-        }
-
+			}
+		}
+				
         $order['start_date'] = strtotime($order['start_date']);
         $order['starting_date'] = date('d M, Y', strtotime($order['start_date']));
         $order['starting_text'] = "Starts from: ";
@@ -9438,9 +9480,11 @@ class CustomerController extends \BaseController {
         $order['total_session_text'] = $order['no_of_sessions']." Session pack";
         $order['left_text'] = "left";
         if(!empty($order['studio_extended_validity'])){
+			if($path && $path=='profile')
+				$order['total_session_text'] = $order['no_of_sessions']." Session - Flexi membership";
             $order['left_text'] = "booked";
             $order['sessions_left'] =  $order['studio_sessions']['total'];
-            $order['total_session_text'] = $order['studio_sessions']['total']." Session pack";
+            $order['total_session_text'] = $order['studio_sessions']['total']." Session Flexi Membership";
             $extended_count = Order::active()->where('studio_extended_validity_order_id', $order['_id'])->where('studio_extended_session', true)->count();
             $order['finder_address'] = ($order['studio_sessions']['cancelled']-$extended_count)."/".$order['studio_sessions']['total_cancel_allowed']." sessions can be extended for free after ".date('d-m-Y' ,$order['studio_membership_duration']['end_date']->sec);
         }
@@ -9454,7 +9498,7 @@ class CustomerController extends \BaseController {
         if(!empty($order['service']['slug'])){
             $order['service_slug'] = $order['service']['slug'];
         }
-
+		//Log::info('orders at get session pack list:::::::;', [$order]);
 
 
         return $order;
@@ -9470,7 +9514,7 @@ class CustomerController extends \BaseController {
                 ->with(['service'=>function($query){
                     $query->select('slug');
                 }])
-                ->find($id, ['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags']);
+                ->find($id, ['service_name', 'finder_name', 'sessions_left', 'no_of_sessions','start_date', 'end_date', 'finder_address','finder_id','service_id','finder_location','customer_id', 'ratecard_flags', 'all_service_id']);
 
 
         return $this->formatSessionPack($order);
@@ -9554,6 +9598,22 @@ class CustomerController extends \BaseController {
 		$data = Input::all();
 		Log::info('loyaltyAppropriation data: ', [$data]);
 		$resp = ['status' => 500, 'messsage' => 'Something went wrong'];
+		if(empty($data['customer_id'])){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+				//Log::info('_device_filter_jwt_token : '.$jwt_token);
+
+				$decoded = customerTokenDecode($jwt_token);
+				$data['customer_id'] = (int)$decoded->customer->_id;
+				//$data['type'] = 'memberships';
+			}
+			else{
+				$resp['status']=400;
+				$resp['message'] = "Invalid Request";
+				return $resp;
+			}
+		}
 		$order = null;
 		try{
 			if((empty($data) || empty($data['order_id'])) && !empty($data['type']) && $data['type']=='profile'){
@@ -9575,8 +9635,10 @@ class CustomerController extends \BaseController {
 
 						$oldLoyalty = $cust['loyalty'];
 
-						Log::info('ready to prepareLoyaltyData.....');
+						
 						$newLoyalty = $this->prepareLoyaltyData($order);
+						$newLoyalty['loyalty_upgraded'] = true;
+						Log::info('ready to prepareLoyaltyData.....',[$newLoyalty]);
 						if(!empty($newLoyalty)){
 							$archiveData = ['loyalty' => $oldLoyalty];
 							
@@ -9587,7 +9649,22 @@ class CustomerController extends \BaseController {
 
 							$this->utilities->deactivateCheckins($cust['_id'], $reason);
 
-							$resp = ['status'=>200, 'message'=>'Successfully appropriated the loyalty of the customer'];
+							if(empty($newLoyalty['cashback_type'])) {
+								$newLoyalty['cashback'] = '';
+								if(!empty($newLoyalty['brand_loyalty'])){
+									$newLoyalty['cashback'] = '100%';
+								}	
+							}
+							else if(!empty($newLoyalty['reward_type']) && in_array($newLoyalty['reward_type'], [3, 4, 5, 6])){
+								$cashbackMap = [ "100%", "120%", "120%", "100%", "100%", "100%", "100%" ];
+								$newLoyalty['cashback'] = $cashbackMap[$newLoyalty['cashback_type'] - 1];
+							}
+							if(!empty($newLoyalty['cashback'])) {
+								$resp = ['status'=>200, 'message'=>'Congratulations, your Fitsquad is upgraded to '.$newLoyalty['cashback'].' cashback.'];
+							}
+							else {
+								$resp = ['status'=>200, 'message'=>'Congratulations, your Fitsquad is upgraded.'];
+							}
 						}
 						else {
 							$resp = ['status'=>400, 'message'=>'order details are missing'];
@@ -9611,4 +9688,70 @@ class CustomerController extends \BaseController {
 		return Response::json($resp, $resp['status']);
 	}
 
+	public function fitSquadUpgradeAvailability($customer_id){
+		$newGrid = $this->utilities->getLoyaltyAppropriationConsentMsg($customer_id, null,false);
+		Log::info('checking new grid',[$newGrid]);
+		$fitSquadUpgrade=null;
+		if($newGrid){
+			$baseURl = Config::get('app.url');
+			$upgradeApi = Config::get('app.fitsquad_upgrade_api');
+			$cancelApi = Config::get('app.fitsquad_cancel_api');
+			Log::info('url and apis::::::::::::::',[$baseURl, $upgradeApi, $cancelApi]);
+			if(!empty($newGrid['brand_id'])){
+				$brand_id = (empty($newGrid['brand_id']))?null:$newGrid['brand_id'];
+				$city = (empty($newGrid['city']))?null:$newGrid['city'];
+				$fitsquad_image = $this->utilities->openrewardlist('1', $brand_id, $city);
+			}
+			else {
+				$fitsquad_image = $this->utilities->getRewardGridImages($newGrid['reward_type'], $newGrid['cashback_type_num']);
+			}
+			$fitSquadUpgrade = array(
+				"header"=> "Fitsquad Upgrade Available",
+				"title"=> "Fitsquad Upgrade",
+				"logo"=> "https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png",
+				"text_home" => "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>You are ".$newGrid['checkins_left_next_milestone']." check-ins away from the next Milestone.<b><br/><br/> Fitsquad Upgrade Available",
+				"text"=> "Hi <b>".$newGrid['customer_name']."</b>,<br/><br/>It looks like you recently purchased <b>".$newGrid['finder_name']."</b> membership. Upgrading to ".$newGrid['finder_name']." Fitsquad will let you unlock new rewards. However, you will lose your current check-in streak.<br/><br/><b>New check-in validity</b> ".date('d-M-Y', strtotime($newGrid['new_end_date'])),
+				"background_image"=> "https://b.fitn.in/loyalty/banner.jpg",
+				"ratio"=> 0.36,
+				"reward_image"=>$fitsquad_image,
+				"reward_ratio"=>1.05,
+				"upgrade_button"=> array(
+					"text"=> "Upgrade Ftsquad",
+					"url"=> $baseURl.$upgradeApi.'?type=profile'
+				),
+				"continue_button"=> array(
+					"text" => "No Thanks",
+					"url"=> $baseURl.$cancelApi
+				)
+				);
+		}
+		return $fitSquadUpgrade;
+	}
+
+	public function fitSquadUpgradeRemainLoyalty(){
+		$input = Input::All();
+		if(empty($input['customer_id'])){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+				Log::info('_device_filter_jwt_token : '.$jwt_token);
+
+				$decoded = customerTokenDecode($jwt_token);
+				$input['customer_id'] = (int)$decoded->customer->_id;
+			}
+			else{
+				$resp['status']=400;
+				$resp['message'] = "Invalid Request";
+				return $resp;
+			}
+		}
+		$customerUpdate = Customer::find($input['customer_id']);
+		$loyalty = $customerUpdate['loyalty'];
+		$loyalty['loyalty_upgraded']=false;
+		//$customerUpdate['loyalty']['loyalty_upgraded']= false;
+		$customerUpdate->loyalty = $loyalty;
+		$customerUpdate->update();
+		return array("status"=>200, "message"=>"Success");
+		//'loyalty.loyalty_upgraded'=false
+	}
 }

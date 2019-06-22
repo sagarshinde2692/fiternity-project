@@ -477,6 +477,7 @@ if(!function_exists('ifCityPresent')){
             case "vashi":
             case "bhiwandi":
             case "navi mumbai":
+            case "mira bhayandar":
                 $send_city = "mumbai";
                 $ifcity = true;
                 break;
@@ -3202,6 +3203,9 @@ if(!function_exists('payPerSession')){
         $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]['city']) ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]['city'])) : "";
         $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]['regions']) && count($response["request"]["location"]['regions']) > 0 ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]['regions'][0])) : $response["request"]["location_name"];
         $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]["selected_region"]) ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]["selected_region"])) : $response["request"]["location_name"];
+
+        $response['aggregations']['time_range'][1]['count'] += $response['aggregations']['time_range'][0]['count'];
+
         return $response;
     }
 }

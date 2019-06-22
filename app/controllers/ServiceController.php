@@ -9,6 +9,7 @@
 use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
 
+
 class ServiceController extends \BaseController {
 
 	public function __construct(Utilities $utilities) {
@@ -16,7 +17,6 @@ class ServiceController extends \BaseController {
 		parent::__construct();
 
 		$this->utilities = $utilities;
-
 		$this->vendor_token = false;
         
         $vendor_token = Request::header('Authorization-Vendor');
@@ -674,6 +674,12 @@ class ServiceController extends \BaseController {
 		Service::$withoutAppends=true;
         Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards', 'service_inoperational_dates_array'];
 		
+		if(!empty($request['service_id'])){
+			$currentService = Service:: find((int)$request['service_id'],['combine_service_ids']);
+			if(!empty($currentService['combine_service_ids'])){
+				$combine_service_ids = $currentService['combine_service_ids'];
+			}
+		}
         $query = Service::active()->where("trial", '!=', 'disable')->where(function($query){
             $query->whereNotIn('trial',['manual', 'manualauto'])->orWhere('flags.enable_manual_booking_pps.status', true);
         });
@@ -681,8 +687,11 @@ class ServiceController extends \BaseController {
         $query->where('servicecategory_id','!=',163);
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
-
-        (isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id',(int)$request['service_id']) : null;
+		if(!empty($combine_service_ids)){
+			$query->whereIn('_id',$combine_service_ids);
+		}else{ 
+			(isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id',(int)$request['service_id']) : null;
+		}
 
 		switch ($type) {
 			case 'workout-session':
@@ -697,9 +706,6 @@ class ServiceController extends \BaseController {
 		}))->get($selectedFieldsForService)->toArray();
 		
 		//  $items = $query->get()->toArray();
-		
-
-
 
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
@@ -992,19 +998,21 @@ class ServiceController extends \BaseController {
                             $extended_validity_order =  $this->utilities->getExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
                             // $studio_extended_validity_order =  $this->utilities->getStudioExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
                             $service['extended_validity'] = !empty($extended_validity_order) || !empty($studio_extended_validity_order);
-                        }
+						}
+						
+						if($finder['category_id'] != 47 && empty($service['extended_validity']) && ((isset($item['flags']['disable_dynamic_pricing']) && empty($item['flags']['disable_dynamic_pricing'])) || (!isset($finder['flags']['disable_dynamic_pricing']) || empty($finder['flags']['disable_dynamic_pricing'])))){
 
-                        if($finder['category_id'] != 47 && empty($service['extended_validity']) && empty($item['flags']['disable_dynamic_pricing'])){
+							$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
 
-						    $ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
-
-                        }else{
-                            $ck=['peak'=>true];
-                        }
-
+						}else{
+							
+							$ck=['peak'=>true];
+						
+						}
+						
 						if(!$slot['passed']){
 							$total_slots_available_count +=1;
-// 							return $ck;
+ 							//return $ck;
 							if(intval($slot['start_time_24_hour_format']) < 12){
 								array_push($slots_timewise['morning'], $slot);
 							}elseif(intval($slot['start_time_24_hour_format']) < 16){
@@ -1273,7 +1281,20 @@ class ServiceController extends \BaseController {
                 }
 			}
 
-	        return Response::json($data,200);
+			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
+				foreach($data['schedules'] as &$schedule){
+					$schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title']);
+				}
+			}
+			else if(!empty($data['slots']) && in_array($this->device_type, ['android', 'ios'])){
+				$data['slots'] = $this->utilities->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'] );
+            }
+            
+            if(!empty($data['slots']) && count($data['slots']) == 1 && !empty($data['slots'][0]['title'])){
+                $data['slots'][0]['title'] = "Select a slot";
+            }
+            
+            return Response::json($data,200);
         }
 
     }
@@ -2073,7 +2094,12 @@ class ServiceController extends \BaseController {
 		if(!$data['pending_payment']){
 			unset($data['pending_payment']);	
 		}
-
+		if(!empty($data['service']) && in_array($this->device_type, ['android', 'ios'])){
+			$data['service'] = $this->utilities->orderSummaryService($data['service']);
+		}
+		if(!empty($data['service']['slots'] && in_array($this->device_type, ['android', 'ios']))){
+			$data['service']['slots'] = $this->utilities->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name']);
+		}
 		return Response::json(array('status'=>200, 'data'=> $data));
 
 	}
@@ -2145,28 +2171,28 @@ class ServiceController extends \BaseController {
 		];
 		$cityId=City::where("slug",$city)->first(['_id']);
 		$cityCached=strtolower($city);
-		if(!empty($cityId))
-		{
-			$cityId=$cityId->_id;
-			if(!empty($slotsCountCache))
-			{
-				$gymCacheKey=$cityCached.'-'.'gym';
-				$zumbaCacheKey=$cityCached.'-'.'zumba';
-				$cfCacheKey=$cityCached.'-'.'crossfit';
-				$totCacheKey=$cityCached.'-'.'total';
-				$cche=true;
-			}
-			else {
-				$cfCacheKey=null;$totCacheKey=null;$zumbaCacheKey=null;$gymCacheKey=null;$cche=false;
-			}
+		// if(!empty($cityId))
+		// {
+		// 	$cityId=$cityId->_id;
+		// 	if(!empty($slotsCountCache))
+		// 	{
+		// 		$gymCacheKey=$cityCached.'-'.'gym';
+		// 		$zumbaCacheKey=$cityCached.'-'.'zumba';
+		// 		$cfCacheKey=$cityCached.'-'.'crossfit';
+		// 		$totCacheKey=$cityCached.'-'.'total';
+		// 		$cche=true;
+		// 	}
+		// 	else {
+		// 		$cfCacheKey=null;$totCacheKey=null;$zumbaCacheKey=null;$gymCacheKey=null;$cche=false;
+		// 	}
 			
-			$gymCount=$this->utilities->getSessionSlotsService($cityId,[65,82],$cche,$gymCacheKey);
-			$zumbaCount=$this->utilities->getSessionSlotsService($cityId,[19,20,21,132,133,189],$cche,$zumbaCacheKey);
-			$cfCount=$this->utilities->getSessionSlotsService($cityId,[5,111,112,10],$cche,$cfCacheKey);
-			$total=$this->utilities->getSessionSlotsService($cityId,[],$cche,$totCacheKey);
-			$data["stats_count"]=["crossfit"=>$cfCount,"zumba"=>$zumbaCount,"gym"=>$gymCount,"total"=>$total,"categories"=>count($included_ids)];
+		// 	$gymCount=$this->utilities->getSessionSlotsService($cityId,[65,82],$cche,$gymCacheKey);
+		// 	$zumbaCount=$this->utilities->getSessionSlotsService($cityId,[19,20,21,132,133,189],$cche,$zumbaCacheKey);
+		// 	$cfCount=$this->utilities->getSessionSlotsService($cityId,[5,111,112,10],$cche,$cfCacheKey);
+		// 	$total=$this->utilities->getSessionSlotsService($cityId,[],$cche,$totCacheKey);
+		// 	$data["stats_count"]=["crossfit"=>$cfCount,"zumba"=>$zumbaCount,"gym"=>$gymCount,"total"=>$total,"categories"=>count($included_ids)];
 			
-		}
+		// }
 		try{
 
 			if($this->authorization && !empty($this->app_version) ){
@@ -2270,7 +2296,7 @@ class ServiceController extends \BaseController {
 			]
 		];
 		$pay_per_session = payPerSession($pay_persession_request);
-		$subheader = $pay_per_session["request"]["category_name"] . " sessions in " . $pay_per_session["request"]["location_name"];
+		$subheader = $pay_per_session["request"]["category_name"] . " sessions in " . $pay_per_session["request"]["location_name"].(!empty($data['location']['geo']['radius'])?' within '.$data['location']['geo']['radius']:'');
 		$timings = $pay_per_session["aggregations"]["time_range"];
 		$tomorrow = date('l', strtotime(' +1 day'));
 		$tomorrow_date = date('d-m-Y', strtotime(' +1 day'));
