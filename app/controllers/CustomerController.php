@@ -7315,7 +7315,7 @@ class CustomerController extends \BaseController {
 						];
 						$response['block'] = true;
 
-						if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+						if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
 							$response['button_text']['activate']['text'] = "GET MY STEPS";
 						}
 
