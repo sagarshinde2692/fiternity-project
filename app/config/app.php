@@ -86,8 +86,11 @@ return array(
 	'ffDetails' => [
 		'source' => 'fitternity',
 		'paymentmode' => 'fitternity'
-	],
-
+    ],
+    
+    "pps_image"=> 'https://b.fitn.in/global/fit-exclusive-new-14-7-2019.png',    
+    'fitsquad_upgrade_api'=> '/customer/loyaltyAppropriation',
+	'fitsquad_cancel_api'=>'/customer/remaincurrentloyalty',
     "core_key"=> "FITITRNTY",
 	'non_peak_hours' => ["off"=>0.6,"non_peak_title1"=>"Look for this sign to book a slot for ", "non_peak_title"=>"NON RUSH HOUR (40% OFF)", "gym"=>["off"=>0.6,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.6]],
     'product_delivery_charges' => 50,
