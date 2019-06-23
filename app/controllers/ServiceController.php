@@ -1000,7 +1000,16 @@ class ServiceController extends \BaseController {
                             $service['extended_validity'] = !empty($extended_validity_order) || !empty($studio_extended_validity_order);
 						}
 						
-						if($finder['category_id'] != 47 && empty($service['extended_validity']) && ((isset($item['flags']['disable_dynamic_pricing']) && empty($item['flags']['disable_dynamic_pricing'])) || (!isset($finder['flags']['disable_dynamic_pricing']) || empty($finder['flags']['disable_dynamic_pricing'])))){
+						if(
+                            $finder['category_id'] != 47 
+                            && 
+                            empty($service['extended_validity']) 
+                            && 
+                            (
+                                (isset($item['flags']['disable_dynamic_pricing']) && empty($item['flags']['disable_dynamic_pricing'])) 
+                                || 
+                                (isset($finder['flags']['disable_dynamic_pricing']) && empty($finder['flags']['disable_dynamic_pricing'])))
+                            ){
 
 							$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
 
