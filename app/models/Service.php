@@ -494,8 +494,10 @@ class Service extends \Basemodel{
                 if(!empty($value['type']) && $value['type'] == "workout session"){
                     if(!empty($value['offers'][0]['remarks'])){
                         $value['offers'][0]['remarks'] = "100% Cashback";
+                        $value['remarks_imp'] =  true;
                     }else{
                         $value['remarks'] =  "100% Cashback";
+                        $value['remarks_imp'] =  true;
                     }
                 }
 
