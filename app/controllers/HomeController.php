@@ -3634,6 +3634,8 @@ class HomeController extends BaseController {
 
     public function getCategorytagsOfferings($city = 'mumbai'){
 
+        $city = getmy_city($city);
+
         $citydata 		=	City::where('slug', '=', strtolower($city))->first(array('name','slug'));
         if(!$citydata){
             return $this->responseNotFound('City does not exist');

@@ -4451,7 +4451,7 @@ class TransactionController extends \BaseController {
             if(isset($offer->remarks) && $offer->remarks != ""){
                 $data['ratecard_remarks'] = $offer->remarks;
             }
-            if(isset($offer->vendor_price))
+            if(!empty($offer->vendor_price))
             {
                 $data['vendor_price'] = $offer->vendor_price;
             }

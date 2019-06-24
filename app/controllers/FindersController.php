@@ -832,10 +832,9 @@ class FindersController extends \BaseController {
 								}
 							}
 
-							if(!$pay_per_session){
-                                $finder['pay_per_session'] = false;
-                                $finder['trial'] = 'disable';
-                                
+							if($pay_per_session){
+                                $finder['pay_per_session'] = true;
+                                // $finder['trial'] = 'disable';                                
 							}
 
 							if(isset($service['category']) && $service['category'] && $service['category']['_id'] == 184){
@@ -1406,7 +1405,7 @@ class FindersController extends \BaseController {
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
-                                'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
+                                'background'=> '#49bfb3'
                             ];
 
                         }elseif(!empty($finder['flags']['sfit'])){
@@ -1416,7 +1415,7 @@ class FindersController extends \BaseController {
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
-                                'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
+                                'background'=> '#49bfb3'
                             ];
                         }
 					
