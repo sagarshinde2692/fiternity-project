@@ -6283,12 +6283,22 @@ class TransactionController extends \BaseController {
             );
 
         }else{
-            $payment_modes[] = array(
-                'title' => 'Online Payment',
-                'subtitle' => 'Transact online with netbanking, card and wallet',
-                'value' => 'paymentgateway',
-                'payment_options'=>$payment_options
-            );
+            
+            if(isset($order['type']) && $order['type'] == 'workout-session'){
+                $payment_modes[] = array(
+                    'title' => 'Online Payment (100% Cashback)',
+                    'subtitle' => 'Transact online with netbanking, card and wallet',
+                    'value' => 'paymentgateway',
+                    'payment_options'=>$payment_options
+                );
+            }else{
+                $payment_modes[] = array(
+                    'title' => 'Online Payment',
+                    'subtitle' => 'Transact online with netbanking, card and wallet',
+                    'value' => 'paymentgateway',
+                    'payment_options'=>$payment_options
+                );
+            }
         }
 
 

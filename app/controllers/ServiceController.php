@@ -878,10 +878,10 @@ class ServiceController extends \BaseController {
 					];
 				}
 				if($ratecard_price > 0){
-					$service['cost'] = "₹ ".$ratecard_price;
+					$service['cost'] = "₹ ".$ratecard_price." (100% Cashback)";
 				}
 		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
-		    		$service['cost'] = "₹ ".$ratecard_price;
+		    		$service['cost'] = "₹ ".$ratecard_price." (100% Cashback)";
 				}
 				
 				
@@ -893,8 +893,8 @@ class ServiceController extends \BaseController {
 		    		$p_np=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 		    		if(!empty($p_np))
 		    		{	
-		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):"";
-		    			$nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
+		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak'])." (100% Cashback)":"";
+		    			$nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak'])." (100% Cashback)":"";
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
 				}
@@ -1103,11 +1103,11 @@ class ServiceController extends \BaseController {
 			if(!empty($ratecard_price) && !empty($non_peak_exists)){
                 if(!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])){
 				    
-                    $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title1'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
+                    $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title1'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off')))." (100% Cashback)",'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
 
                 }else{
 
-                    $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
+                    $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off')))." (100% Cashback)",'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
 
                 }
             }
@@ -1732,8 +1732,8 @@ class ServiceController extends \BaseController {
 			
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
 
-
-            $service_details['price'] = "₹".$service_details['amount'];
+			
+            $service_details['price'] = "₹".$service_details['amount']." (100% Cashback)";
 
             // if((!empty($finder['category_id']) && $finder['category_id'] == 47) || !empty($service_details['flags']['disable_dynamic_pricing'])){
             //     $service_details['price'] = "Starting at ₹".$service_details['amount'];
