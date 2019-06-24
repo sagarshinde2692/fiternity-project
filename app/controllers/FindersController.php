@@ -3741,7 +3741,7 @@ class FindersController extends \BaseController {
 					/*if($category->_id == 42){
 						array_push($ratecardArr, $rateval);
 					}else{*/
-						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages' || (!empty(Request::header('Authorization-Vendor')) && $rateval['type'] == 'extended validity' && $rateval['finder_id'] == 1490)){
+						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages' || (!empty(Request::header('Authorization-Vendor')) && $rateval['type'] == 'extended validity' && in_array($rateval['finder_id'], [1490, 424]))){
 							
 							$appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
 
