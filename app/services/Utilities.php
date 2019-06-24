@@ -9249,7 +9249,7 @@ Class Utilities {
         $ratecard = Ratecard::where('_id', $order['ratecard_id'])->first();
         $finder = Finder::where('_id', $order['finder_id'])->first();
 
-        if(!empty($finder['flags']['ff_tenant_id'])) {
+        if(!empty($finder['flags']['ff_tenant_id']) && !empty($ratecard['flags']['ff_product_id'])) {
             if(!empty($post_data['customer_name'])) {
                 $nameArr = explode(' ', $post_data['customer_name']);
                 if(!empty($nameArr) && count($nameArr)>0) {
