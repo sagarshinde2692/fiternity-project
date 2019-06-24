@@ -1294,7 +1294,7 @@ class FindersController extends \BaseController {
 						$response['vendor_stripe_data']	=	[
 							'text'=> $response['finder']['stripe_text'],
 							'text_color'=> '#ffffff',
-							'background'=> '#49bfb3',
+							'background'=> '-webkit-linear-gradient(left, #1392b3 0%, #20b690 100%)',
 							'background-color'=> ''
 						];
 					} else if(!empty($response['finder'])&&!empty($response['finder']['info'])&&!empty($response['finder']['info']['stripe'])&&!empty($response['finder']['info']['stripe']['text'])){
@@ -1406,7 +1406,7 @@ class FindersController extends \BaseController {
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
-                                'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
+                                'background'=> '#49bfb3'
                             ];
 
                         }elseif(!empty($finder['flags']['sfit'])){
@@ -1416,7 +1416,7 @@ class FindersController extends \BaseController {
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
-                                'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
+                                'background'=> '#49bfb3'
                             ];
                         }
 					
