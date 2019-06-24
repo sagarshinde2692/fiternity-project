@@ -143,7 +143,9 @@ class Service extends \Basemodel{
                 $offers  = [];
 
 
-
+				if(isset($value['type']) && $value['type'] == 'workout session'){
+					$value['remarks'] = $$value['remarks']." (100% Cashback)";
+				}
 
 				$ratecard = [
 				'order'=> (isset($value['order'])) ? $value['order'] : '0',
