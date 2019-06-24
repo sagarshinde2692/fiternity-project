@@ -3838,6 +3838,9 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
+        return "Monsoon Fitness Mania | Get Addnl 15% off | Use code: THUNDER | Limited Slots Applicable till 30th June 2019";
+        
+
 		$brandMap = [
 			135 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹20,000 worth of rewards',
 			88 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹35,000 worth of rewards',
