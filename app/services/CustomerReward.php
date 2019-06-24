@@ -2444,6 +2444,19 @@ Class CustomerReward {
                 Log::info($price);
             }
             $discount_amount = $coupon["discount_amount"] <= $price ? $coupon["discount_amount"] : $price;
+
+            if(!empty(Request::header('Device-Type')) && in_array(Request::header('Device-Type'), ['android', 'ios'])) {
+
+                if(!empty($coupon['app_discount_percent']) ){
+                    $coupon["discount_percent"] = $coupon['app_discount_percent'];
+                }
+                
+                if(!empty($coupon['app_discount_max']) ){
+                    $coupon["discount_max"] = $coupon["app_discount_max"];
+                }
+                
+            }
+            
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
