@@ -1402,7 +1402,7 @@ class FindersController extends \BaseController {
                             
                             $response['vendor_stripe_data']	=	[
                                 
-                                'text1'=> "BEAT THE HEAT THIS SUMMER WITH RS 500 OFF ON THE LOWEST PRICE | CODE: FITAF",
+                                'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | OFFER EXPIRES IN",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1412,7 +1412,7 @@ class FindersController extends \BaseController {
                         }elseif(!empty($finder['flags']['sfit'])){
                             $response['vendor_stripe_data']	=	[
                                 
-                                'text1'=> "Monsoon Fitness Mania | Flat 10% OFF + ADDNL 5% OFF On App Only | Offer Expires In",
+                                'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | OFFER EXPIRES IN",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
