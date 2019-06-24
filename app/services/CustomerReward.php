@@ -796,6 +796,7 @@ Class CustomerReward {
                         "amount_fitcash_plus" => intval($cashback_amount),
                         "type"=>'CASHBACK',
                         'entry'=>'credit',
+                        'order_type'=>['workout-session', 'workout session'],
                         "description"=> "100% Cashback on workout-session booking at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14)),
                         "validity"=>time()+(86400*14),
                     );
