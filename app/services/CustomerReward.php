@@ -2454,6 +2454,9 @@ Class CustomerReward {
                 if(!empty($coupon['app_discount_max']) ){
                     $coupon["discount_max"] = $coupon["app_discount_max"];
                 }
+                if(!empty($coupon['app_description']) ){
+                    $coupon["description"] = $coupon["app_description"];
+                }
                 
             }
             
