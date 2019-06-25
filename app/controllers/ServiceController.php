@@ -863,7 +863,10 @@ class ServiceController extends \BaseController {
 						$ratecard_price = $ratecard['special_price'];
 					}else{
 						$ratecard_price = $ratecard['price'];
-					}
+                    }
+                    foreach($weekdayslots['slots'] as &$weekdayslot){
+                        $weekdayslot['price'] = $ratecard_price;
+                    }
 				}
 				else
 				{
