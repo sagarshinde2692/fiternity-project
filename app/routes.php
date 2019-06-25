@@ -1363,3 +1363,8 @@ Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
 Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
 Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
 Route::get('brandwebsite/home/{brand_id}', 'DebugController@getBrandWebsiteHome');
+Route::get('brandwebsite/aboutus/{brand_id}', 'DebugController@getBrandWebsiteAboutUs');
+Route::get('brandwebsite/programs/{brand_id}', 'DebugController@getBrandWebsitePrograms');
+Route::get('brandwebsite/hiit/{brand_id}', 'DebugController@getBrandWebsiteHiit');
+Route::get('brandwebsite/contactus/{brand_id}', 'DebugController@getBrandWebsiteContactUs');
+Route::get('brandwebsite/ownfranchise/{brand_id}', 'DebugController@getBrandWebsiteOwnFranchise');

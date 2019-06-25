@@ -11145,9 +11145,103 @@ public function yes($msg){
 			return array('status'=>true, "data"=>$home);
 		}
 		else{
-			return [];
+			return array('status'=>true, "data"=>$home);
 		}
 	}
 
+	public function getBrandWebsiteAboutUs($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+		Log::info([$brand_id]);
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.overview_block','brand_website.founders_block', 'brand_website.fitness_studio','brand_website.gym_equipement','brand_website.training_software', 'brand_website.awards_list', 'brand_website.media_coverages')
+		->get();
+
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home);
+		}
+		else{
+			return array('status'=>true, "data"=>$home);
+		}
+	}
+
+	public function getBrandWebsitePrograms($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+		Log::info([$brand_id]);
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.programs')
+		->get();
+
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home);
+		}
+		else{
+			return array('status'=>true, "data"=>$home);
+		}
+	}
+
+	public function getBrandWebsiteHiit($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+		Log::info([$brand_id]);
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.hiit')
+		->get();
+
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home);
+		}
+		else{
+			return array('status'=>true, "data"=>$home);
+		}
+	}
+
+	public function getBrandWebsiteContactUs($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+		Log::info([$brand_id]);
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.contact_us')
+		->get();
+
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home);
+		}
+		else{
+			return array('status'=>true, "data"=>$home);
+		}
+	}
+
+	public function getBrandWebsiteOwnFranchise($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+		Log::info([$brand_id]);
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.own_franchise')
+		->get();
+
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home);
+		}
+		else{
+			return array('status'=>true, "data"=>$home);
+		}
+	}
 }
 
