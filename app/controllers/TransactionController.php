@@ -634,7 +634,7 @@ class TransactionController extends \BaseController {
             
                         // }
                         $data['amount_customer'] = 0; // discussed with Utkarsh
-	            		$order_id = Order::max('_id') + 1;
+	            		$order_id = Order::maxId() + 1;
 	            		$order = new Order($data);
 	            		$order->_id = $order_id;
 	            		$order->save();
@@ -790,7 +790,7 @@ class TransactionController extends \BaseController {
 
         }else{
 
-            $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+            $order_id = $data['_id'] = $data['order_id'] = Order::maxId() + 1;
             $order = new Order();
             $order->_id = $order_id;
             $order->save();
@@ -892,9 +892,37 @@ class TransactionController extends \BaseController {
         $data['amount_final'] = $data["amount_finder"];
 
         //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
-        if(empty($data['service_flags']['disable_dynamic_pricing']) && ((isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment']) || (empty($_GET['device_type'])) || $_GET['device_type'] == 'website')){
+        if(
+            (
+                (
+                    isset($finder->flags->disable_dynamic_pricing) 
+                    && empty($finder->flags->disable_dynamic_pricing)
+                ) 
+                || 
+                (
+                    isset($data['service_flags']['disable_dynamic_pricing']) 
+                    && 
+                    empty($data['service_flags']['disable_dynamic_pricing'])
+                )
+            ) 
+            && 
+            (
+                (
+                    isset($_GET['device_type']) 
+                    && 
+                    isset($_GET['app_version'])
+                    && 
+                    in_array($_GET['device_type'], ['android', 'ios'])
+                    && 
+                    $_GET['app_version'] >= '5'
+                ) 
+                || 
+                isset($data['qrcodepayment']) || 
+                (empty($_GET['device_type'])) || 
+                $_GET['device_type'] == 'website')
+        ){
             if($data['type'] == 'workout-session')
-             {
+            {
              try {
                  Log::info("dynamic price");
              (isset($data['start_time'])&&isset($data['start_date'])&&isset($data['service_id'])&&isset($data['end_time']))?
@@ -1746,7 +1774,7 @@ class TransactionController extends \BaseController {
     							else
     								return Response::json(['status'=>0,"message"=>"Not a valid order id."]);
     					}
-    					else $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+    					else $order_id = $data['_id'] = $data['order_id'] = Order::maxId() + 1;
     					
     					
     					$data['code'] = (string) random_numbers(5);
@@ -4423,7 +4451,7 @@ class TransactionController extends \BaseController {
             if(isset($offer->remarks) && $offer->remarks != ""){
                 $data['ratecard_remarks'] = $offer->remarks;
             }
-            if(isset($offer->vendor_price))
+            if(!empty($offer->vendor_price))
             {
                 $data['vendor_price'] = $offer->vendor_price;
             }
@@ -5102,7 +5130,7 @@ class TransactionController extends \BaseController {
 
         $data = array_merge($data,$serviceDetail['data']);
 
-        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+        $order_id = $data['_id'] = $data['order_id'] = Order::maxId() + 1;
 
         $data = $this->unsetData($data);
 
@@ -5182,7 +5210,7 @@ class TransactionController extends \BaseController {
     		$data['success_date'] = date('Y-m-d H:i:s',time());
     		
     		$order = new Order($data); 
-    		$order->_id =Order::max('_id')+1;
+    		$order->_id =Order::maxId()+1;
     		$order->save();
     		Log::info(" free dietplan order ".print_r($order,true));
     		return array('order_id'=>$order->_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
@@ -6141,7 +6169,9 @@ class TransactionController extends \BaseController {
         if(!empty($order['type']) && $order['type'] == 'memberships'){
             $payment_options['payment_options_order'] = ["cards", "wallet", "netbanking", "emi"];
         }
+
         
+    
         $payment_options['wallet'] = [
             'title' => 'Wallet',
             'subtitle' => 'Transact online with Wallets',
@@ -6174,6 +6204,53 @@ class TransactionController extends \BaseController {
                     ]
             ]
         ];
+
+        if(($this->get_device_type=='ios' &&$this->get_app_version > '5.1.7') || ($this->get_device_type=='android' &&$this->get_app_version > '5.24')){
+            $payment_options['payment_options_order'] = ["wallet", "upi", "cards", "netbanking", "emi"];
+
+            if(!empty($order['type']) && $order['type'] == 'memberships'){
+                $payment_options['payment_options_order'] = ["cards", "upi", "wallet", "netbanking", "emi"];
+            }
+
+            $payment_options['upi'] = [
+                'title' => 'UPI',
+                'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
+            ];
+
+            $payment_options['wallet'] = [
+                'title' => 'Wallet',
+                'subtitle' => 'Transact online with Wallets',
+                'value'=>'wallet',
+                'options'=>[
+                        [
+                                'title' => 'Paypal',
+                                'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
+                                'value' => 'paypal'
+                        ],
+                        [
+                                'title' => 'Paytm',
+                                // 'subtitle' => 'Paytm',
+                                'value' => 'paytm'
+                        ],
+                        [
+                                'title' => 'AmazonPay',
+                                // 'subtitle' => 'AmazonPay',
+                                'value' => 'amazonpay'
+                        ],
+                        [
+                                'title' => 'Mobikwik',
+                                // 'subtitle' => 'Mobikwik',
+                                'value' => 'mobikwik'
+                        ],
+                        [
+                                'title' => 'PayU',
+                                // 'subtitle' => 'PayU',
+                                'value' => 'payu'
+                        ]
+                ]
+            ];
+        }
+        
         $os_version = intval(Request::header('Os-Version'));
         
         if($os_version >= 9 && $this->device_type == 'android'){
@@ -6206,12 +6283,22 @@ class TransactionController extends \BaseController {
             );
 
         }else{
-            $payment_modes[] = array(
-                'title' => 'Online Payment',
-                'subtitle' => 'Transact online with netbanking, card and wallet',
-                'value' => 'paymentgateway',
-                'payment_options'=>$payment_options
-            );
+            
+            if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount'])){
+                $payment_modes[] = array(
+                    'title' => 'Online Payment (100% Cashback)',
+                    'subtitle' => 'Transact online with netbanking, card and wallet',
+                    'value' => 'paymentgateway',
+                    'payment_options'=>$payment_options
+                );
+            }else{
+                $payment_modes[] = array(
+                    'title' => 'Online Payment',
+                    'subtitle' => 'Transact online with netbanking, card and wallet',
+                    'value' => 'paymentgateway',
+                    'payment_options'=>$payment_options
+                );
+            }
         }
 
 
@@ -6506,7 +6593,7 @@ class TransactionController extends \BaseController {
             //         unset($resp['success_message']);
             //     }
             // }
-            $resp['message'] = $resp['message']." Promotional fitcash will not be applicable with discount coupon";
+            $resp['message'] = $resp['message']." Promotional fitcash and cashback will not be applicable with discount coupon";
             $resp['success_message'] = $resp['message'];
             return Response::json($resp,$resp['status']);
 
@@ -6639,7 +6726,7 @@ class TransactionController extends \BaseController {
         
         $data['status'] = "0";
         
-        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+        $order_id = $data['_id'] = $data['order_id'] = Order::maxId() + 1;
         $txnid = "";
         $successurl = "";
         $mobilehash = "";
@@ -6949,7 +7036,7 @@ class TransactionController extends \BaseController {
 
             
 
-            if(empty($data['service_flags']['disable_dynamic_pricing']) && $data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
+            if(((isset($data['finder_flags']['disable_dynamic_pricing']) && empty($data['finder_flags']['disable_dynamic_pricing'])) || (isset($data['service_flags']['disable_dynamic_pricing']) && empty($data['service_flags']['disable_dynamic_pricing']))) && $data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
             {
                 $start_time = explode('-', $data['slot']['slot_time'])[0];
                 $end_time = explode('-', $data['slot']['slot_time'])[1];
@@ -8571,7 +8658,7 @@ class TransactionController extends \BaseController {
         
         $data['status'] = "0";
         
-        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+        $order_id = $data['_id'] = $data['order_id'] = Order::maxId() + 1;
 
         $txnid = "";
         $successurl = "";

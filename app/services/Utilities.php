@@ -707,98 +707,6 @@ Class Utilities {
         return customerTokenDecode($token);
     }
 
-
-    public function autoRegisterCustomer($data){
-
-        // Input customer_email, customer_phone, customer_name, customer_id...
-        // Output customer_id ...
-
-        if(isset($data['customer_id']) && $data['customer_id'] != ""){
-            return (int) $data['customer_id'];
-        }
-
-
-        $customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
-
-        if(!$customer) {
-
-            $inserted_id = Customer::max('_id') + 1;
-            $customer = new Customer();
-            $customer->_id = $inserted_id;
-            $customer->name = ucwords($data['customer_name']) ;
-            $customer->email = $data['customer_email'];
-            $customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-            $customer->password = md5(time());
-
-            if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
-                $customer->contact_no = $data['customer_phone'];
-            }
-
-            if(isset($data['customer_address'])){
-
-                if(is_array($data['customer_address']) && !empty($data['customer_address'])){
-
-                    $customer->address = implode(",", array_values($data['customer_address']));
-                    $customer->address_array = $data['customer_address'];
-
-                }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
-
-                    $customer->address = $data['customer_address'];
-                }
-
-            }
-
-            $customer->identity = 'email';
-            $customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
-            $customer->status = "1";
-            $customer->ishulluser = 1;
-            $customer->save();
-
-            return $inserted_id;
-
-        }else{
-
-            $customerData = [];
-
-            try{
-
-                if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
-                    $customerData['contact_no'] = trim($data['customer_phone']);
-                }
-
-                if(isset($data['otp']) &&  $data['otp'] != ""){
-                    $customerData['contact_no_verify_status'] = "yes";
-                }
-
-                if(isset($data['customer_address'])){
-
-                    if(is_array($data['customer_address']) && !empty($data['customer_address'])){
-
-                        $customerData['address'] = implode(",", array_values($data['customer_address']));
-                        $customerData['address_array'] = $data['customer_address'];
-
-                    }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
-
-                        $customerData['address'] = $data['customer_address'];
-                    }
-
-                }
-
-                if(count($customerData) > 0){
-                    $customer->update($customerData);
-                }
-
-            } catch(ValidationException $e){
-
-                Log::error($e);
-
-            }
-
-            return $customer->_id;
-        }
-
-    }
-
     public function errorMessage($errors){
 
         $errors = json_decode(json_encode($errors));
@@ -5745,7 +5653,11 @@ Class Utilities {
         \Cache::tags('finder_detail_android')->forget($slug);
         \Cache::tags('finder_detail_ios')->forget($slug);
         \Cache::tags('finder_detail_ios_4_4_3')->forget($slug);
+        \Cache::tags('finder_detail_ios_5_1_5')->forget($slug);
+        \Cache::tags('finder_detail_ios_5_1_6')->forget($slug);
         \Cache::tags('finder_detail_android_4_4_3')->forget($slug);
+        \Cache::tags('finder_detail_android_5_1_8')->forget($slug);
+        \Cache::tags('finder_detail_android_5_1_9')->forget($slug);
         
     }
 
@@ -5944,23 +5856,23 @@ Class Utilities {
 		return null;
 	}
 	public function getWSNonPeakPrice($start=null,$end=null,$workoutSessionPrice=null,$service_cat=null,$just_tag=false) {
-		Log::info(func_get_args());
+        
 		try {
 			$peak=true;
 			if(!empty($start)&&!empty($end)&&!empty($service_cat))
 			{   
 				if($service_cat=='gym')
-				{
+				{   
 					if(intval($start)>=Config::get('app.non_peak_hours.gym.start')&&intval($end)<=Config::get('app.non_peak_hours.gym.end'))
 					{
 						(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.gym.off')*intval($workoutSessionPrice):"";$peak=false;
 					}
 				}
 				else if(intval($start)>=Config::get('app.non_peak_hours.studios.start')&&intval($end)<=Config::get('app.non_peak_hours.studios.end'))
-				{
+				{   
 					(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.studios.off')*intval($workoutSessionPrice):"";$peak=false;
 				}			
-			}
+            }
 			return ['wsprice'=>$workoutSessionPrice,'peak'=>$peak];
 		} catch (Exception $e) {
 			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
@@ -6897,7 +6809,7 @@ Class Utilities {
     		$data['success_date'] = date('Y-m-d H:i:s',time());
     		
     		$order = new Order($data); 
-    		$order->_id =Order::max('_id')+1;
+    		$order->_id =Order::maxId()+1;
     		$order->save();
     		Log::info(" free dietplan order ".print_r($order,true));
     		return array('order_id'=>$order->_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
@@ -8404,11 +8316,24 @@ Class Utilities {
         Log::info('----- Entered getLoyaltyAppropriationConsentMsg -----');
         $device_type = Request::header('Device-Type');
         $cashbackMap = ['A','B','C','D','E','F'];
-        $order = Order::active()->where('_id', intval($order_id))->first();
+        $retObj = null;
+        if(empty($order_id) && empty($customer_id)){
+            return $retObj;
+        }
+        else if(empty($order_id) && isset($customer_id)){
+            Log::info('----- finding order for customer -----');
+            $order = Order::active()->where('customer_id', $customer_id)->where('type', 'memberships')
+            ->where('end_date', '>' ,new MongoDate(time()))->orderBy('_id', 'desc')->first();
+            if(empty($order)){
+                return $retObj;
+            }
+        }
+        else{
+            $order = Order::active()->where('_id', intval($order_id))->first();
+        }
         $customer = Customer::active()
                             ->where('email', $order['customer_email'])
                             ->first();
-        $retObj = null;
         if(!empty($customer) && (!isset($order['loyalty_registration']) || !$order['loyalty_registration'])){
             // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
             $existingLoyalty = null;
@@ -8416,6 +8341,7 @@ Class Utilities {
             $newMessage = null;
             if(!empty($customer['loyalty'])){
                 $retObj = [];
+                $retObj['customer_name'] = $customer['name'];
                 if(!empty($customer['loyalty']['brand_loyalty']) && !in_array($order['finder_id'], \Config::get('app.brand_finder_without_loyalty'))){
                     $finderMilestone = FinderMilestone::where('duration', $customer['loyalty']['brand_loyalty_duration'])
                                             ->where('brand_id', $customer['loyalty']['brand_loyalty'])
@@ -8576,24 +8502,38 @@ Class Utilities {
                 }
                 $finder = Finder::active()->where('_id', $order['finder_id'])->first();
                 $isDowngrade = false;
+                $brandIdTypeChk = false;
+                $sameBrand = false;
                 if(!empty($customer['loyalty']['brand_loyalty'])){
-                    $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$order['brand_id'];
-                    if($brandIdTypeChk){
+                    $sameBrand = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];
+                    if($sameBrand){
                         $brand_loyalty_data = $this->buildBrandLoyaltyInfoFromOrder($finder, $order);
-                        $brandIdTypeChk = $customer['loyalty']['brand_loyalty']==$brand_loyalty_data['brand_id']
+                        $sameBrand = $customer['loyalty']['brand_loyalty']==$brand_loyalty_data['brand_loyalty']
                         && $customer['loyalty']['brand_loyalty_duration']==$brand_loyalty_data['brand_loyalty_duration']
                         && $customer['loyalty']['brand_loyalty_city']==$brand_loyalty_data['brand_loyalty_city']
                         && $customer['loyalty']['brand_version']==$brand_loyalty_data['brand_version'];
+                        Log::info('$brand_loyalty_data: ', [$brand_loyalty_data]);
                     }
                 }
                 else {
-                    $brandIdTypeChk = empty($order['brand_id'])||in_array($finder['brand_id'], Config::get('app.brand_finder_without_loyalty'));
+                    $brandIdTypeChk = empty($finder['brand_id'])||!in_array($finder['brand_id'], Config::get('app.brand_loyalty'))||!in_array($order['duration_day'], [180, 360])||in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'));
 
-                    $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2)));
+                    $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2))) && $brandIdTypeChk;
                 }
-                if(($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
+                
+                Log::info('$sameBrand: ', [$sameBrand]);
+                Log::info('$rewTypeChk: ', [$rewTypeChk]);
+                Log::info('$cbkTypeChk: ', [$cbkTypeChk]);
+                Log::info('$brandIdTypeChk: ', [$brandIdTypeChk]);
+                Log::info('$isDowngrade: ', [$isDowngrade]);
+
+                if($sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
                     // same grid - no need to upgrade
                     $retObj = null;
+                } else {
+                    if(!empty($finder['brand_id'])){
+                        $retObj['brand_id'] = $finder['brand_id'];
+                    }
                 }
             }
             // return $message;
@@ -8603,6 +8543,7 @@ Class Utilities {
             return null;
         }
     }
+
 
     public function buildBrandLoyaltyInfoFromOrder($finder, $order){
         $data = null;
@@ -9216,7 +9157,7 @@ Class Utilities {
         $ratecard = Ratecard::where('_id', $order['ratecard_id'])->first();
         $finder = Finder::where('_id', $order['finder_id'])->first();
 
-        if(!empty($finder['flags']['ff_tenant_id'])) {
+        if(!empty($finder['flags']['ff_tenant_id']) && !empty($ratecard['flags']['ff_product_id'])) {
             if(!empty($post_data['customer_name'])) {
                 $nameArr = explode(' ', $post_data['customer_name']);
                 if(!empty($nameArr) && count($nameArr)>0) {
@@ -9357,5 +9298,140 @@ Class Utilities {
             return $response;
         }
     }
+
+      
+    public function getRewardGridImages($rewardType=2, $cashbackType=1) {
+        if($rewardType == 2) {
+            return 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final%20(1)%20(1).jpg';
+        }
+        else if($rewardType == 3) {
+            $cashbackImageMap = [
+                0 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A1.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],
+                1 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%201A1.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],
+                2 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%202A1.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],				
+                3 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A1.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],				
+                4 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "250"],				
+                5 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "275"],				
+                6 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "300"]
+            ];
+            return $cashbackImageMap[$cashbackType]['image'];
+        }
+        else if(in_array($rewardType, [4, 6])) {
+            $cashbackImageMap = [
+                0 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A1.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],
+                1 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20rewards%20type%20A2.png", "cashback_rate" => "120%", "cashback_days" => "10, 30, 75, 150, 250, 275, 300"],
+                2 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20rewards%20type%20B2.png", "cashback_rate" => "120%", "cashback_days" => "10, 30, 75, 150, 250, 275, 300"],				
+                3 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20C2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 250, 275, 300"],				
+                4 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20D2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 250"],				
+                5 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20E2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 275"],				
+                6 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20F2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 300"]
+            ];
+            return $cashbackImageMap[$cashbackType]['image'];
+        }
+        else if($rewardType == 5) {
+            $cashbackImageMap = [
+                0 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A1.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],
+                1 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%201A.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],
+                2 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%202A.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],				
+                3 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],				
+                4 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "250"],				
+                5 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "275"],				
+                6 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "300"]
+            ];
+            return $cashbackImageMap[$cashbackType]['image'];
+        }
+    }
+
+    public function openrewardlist($value, $id, $curcity){
+		$rewardDuration = $value;
+		$curcity = (empty($curcity))?'':$curcity;
+		//$('.gold-fit-rewards').find('.mui-row').addClass('hide');
+		$reward_image = '';
+		if (!(empty($id)) && $id == '88') {
+			//$('.gold-fit-rewards .multifit').removeClass('hide');
+			$reward_image = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+		}else if (!(empty($id)) && $id == '166') {
+			//$('.gold-fit-rewards .shivfit').removeClass('hide');
+			$reward_image = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
+		} else if (!(empty($id)) && $id == '56') {
+			//$('.gold-fit-rewards .hanman').removeClass('hide');
+			$reward_image = 'https://b.fitn.in/hanman/download2.jpeg';
+        } else if (!(empty($id)) && $id == '40') {    
+            $reward_image = 'https://b.fitn.in/global/Hype-Grid-Website.jpg';
+		} else {
+			if ($rewardDuration == '0') {
+				//$('.gold-fit-rewards .allvendors').removeClass('hide');
+				$reward_image = 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final%20%281%29%20%281%29.jpg';
+			} else if ($curcity == "mumbai" || $curcity == "pune") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixmum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvemum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else if ($curcity == "delhi" || $curcity == "noida" || $curcity == "gurgaon") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixdel').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvedel').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else if ($curcity == "bangalore") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixbang').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvebang').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixmum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvemum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			}
+		}
+		return $reward_image;
+		// openPopUp('gold-fit-rewards');
+		//customOpenPopup('gold-fit-rewards');
+	}
+
+    public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name){
+		$orderSummary = Config::get('orderSummary.slot_summary');
+		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
+		
+		//Log::info('order summary ::::::', [$orderSummary]);
+		foreach($slotsdata as &$slot){
+				$slot['order_summary']['header'] = $orderSummary['header']; 
+		}
+		return $slotsdata;
+    }
+    
+    public function orderSummarySlots($slotsdata, $service_name, $vendor_name){
+        $orderSummary = Config::get('orderSummary.slot_summary');
+		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
+		
+		foreach($slotsdata as &$slot){
+			foreach($slot['data'] as &$sd){
+                $sd['order_summary']['header'] = $orderSummary['header']; 
+			}
+		}
+		return $slotsdata;
+    }
+    
+    public function orderSummaryService($service){
+		Log::info('service name at order summary3', [$service['name']]);
+		$summary= Config::get('orderSummary.service_summary');
+		$summary['header'] = (strtr($summary['header'], ['vendor_name'=>$service['finder_name'], 'service_name'=>$service['name']]));
+        
+        $service['order_summary']['header']= $summary['header'];
+        	
+		return $service;
+	}
 
 }

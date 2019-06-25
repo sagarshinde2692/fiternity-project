@@ -1312,7 +1312,7 @@ Class CustomerSms extends VersionNextSms{
         }
         $utilities = new Utilities();
         $allMultifitFinderId = $utilities->multifitFinder(); 
-        if(in_array($data['finder_id'], $allMultifitFinderId) && !empty($data["customer_source"]) && $data["customer_source"] == "kiosk"){
+        if(!empty($data['finder_id']) && in_array($data['finder_id'], $allMultifitFinderId) && !empty($data["customer_source"]) && $data["customer_source"] == "kiosk"){
             return true;
         }
 	}
@@ -1338,7 +1338,12 @@ Class CustomerSms extends VersionNextSms{
 
 		$template = \Template::where('label',$label)->first();
 
-		$to = array($to);
+        $to = array($to);
+        
+        $header = $this->multifitKioskOrder($data);
+        if(!empty($header)){
+            $data['multifit'] = true;
+        }
 
 		$sender = null;
 		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])){
