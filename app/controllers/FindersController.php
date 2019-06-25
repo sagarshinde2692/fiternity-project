@@ -5270,11 +5270,14 @@ class FindersController extends \BaseController {
 				foreach ($finderservice['ratecard'] as $ratecard){
                     //Log::info($ratecard);
 					if(in_array($ratecard["type"],["workout session", "trial"])){
-						unset($ratecard['remarks']);
+                        // unset($ratecard['remarks']);
+                        
 						if($type == "workout session" && in_array($ratecard["type"],["trial"])){
 							continue;
 						}
-
+                        if($ratecard['type'] == 'workout session'){
+                            $ratecard['remarks'] = "( 100% Cashback )";
+                        }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
 							$ratecard_price = $ratecard['special_price'];
 						}else{
