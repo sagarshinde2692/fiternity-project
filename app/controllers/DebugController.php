@@ -11136,10 +11136,18 @@ public function yes($msg){
 		if(empty($brand_id)){
 			return array("status"=>false, "message"=>"Brand is Missing");
 		}
-		Log::info([$brand_id]);
+
+		$base_url =Config::get('app.s3_bane_url');
+
 		$home = Brand::where('_id',(int)$brand_id)
 		->select('brand_website.banner','brand_website.offer', 'brand_website.centers_block','brand_website.speakers_block','brand_website.advisory_block', 'brand_website.video')
 		->get();
+
+		if(!empty($base_url)){
+			foreach($home as $key=>$value){
+				$home[$key]['base_url'] = $base_url;
+			}
+		}
 
 		if(!empty($home)){
 			return array('status'=>true, "data"=>$home);
@@ -11155,10 +11163,17 @@ public function yes($msg){
 		if(empty($brand_id)){
 			return array("status"=>false, "message"=>"Brand is Missing");
 		}
-		Log::info([$brand_id]);
+		$base_url =Config::get('app.s3_bane_url');
+
 		$home = Brand::where('_id',(int)$brand_id)
 		->select('brand_website.overview_block','brand_website.founders_block', 'brand_website.fitness_studio','brand_website.gym_equipement','brand_website.training_software', 'brand_website.awards_list', 'brand_website.media_coverages')
 		->get();
+
+		if(!empty($base_url)){
+			foreach($home as $key=>$value){
+				$home[$key]['base_url'] = $base_url;
+			}
+		}
 
 		if(!empty($home)){
 			return array('status'=>true, "data"=>$home);
@@ -11174,10 +11189,18 @@ public function yes($msg){
 		if(empty($brand_id)){
 			return array("status"=>false, "message"=>"Brand is Missing");
 		}
-		Log::info([$brand_id]);
+
+		$base_url =Config::get('app.s3_bane_url');
+
 		$home = Brand::where('_id',(int)$brand_id)
 		->select('brand_website.programs')
 		->get();
+
+		if(!empty($base_url)){
+			foreach($home as $key=>$value){
+				$home[$key]['base_url'] = $base_url;
+			}
+		}
 
 		if(!empty($home)){
 			return array('status'=>true, "data"=>$home);
@@ -11193,10 +11216,18 @@ public function yes($msg){
 		if(empty($brand_id)){
 			return array("status"=>false, "message"=>"Brand is Missing");
 		}
-		Log::info([$brand_id]);
+		
+		$base_url =Config::get('app.s3_bane_url');
+
 		$home = Brand::where('_id',(int)$brand_id)
 		->select('brand_website.hiit')
 		->get();
+
+		if(!empty($base_url)){
+			foreach($home as $key=>$value){
+				$home[$key]['base_url'] = $base_url;
+			}
+		}
 
 		if(!empty($home)){
 			return array('status'=>true, "data"=>$home);
@@ -11212,10 +11243,18 @@ public function yes($msg){
 		if(empty($brand_id)){
 			return array("status"=>false, "message"=>"Brand is Missing");
 		}
-		Log::info([$brand_id]);
+		
+		$base_url =Config::get('app.s3_bane_url');
+
 		$home = Brand::where('_id',(int)$brand_id)
 		->select('brand_website.contact_us')
 		->get();
+
+		if(!empty($base_url)){
+			foreach($home as $key=>$value){
+				$home[$key]['base_url'] = $base_url;
+			}
+		}
 
 		if(!empty($home)){
 			return array('status'=>true, "data"=>$home);
@@ -11231,10 +11270,18 @@ public function yes($msg){
 		if(empty($brand_id)){
 			return array("status"=>false, "message"=>"Brand is Missing");
 		}
-		Log::info([$brand_id]);
+
+		$base_url =Config::get('app.s3_bane_url');
+
 		$home = Brand::where('_id',(int)$brand_id)
 		->select('brand_website.own_franchise')
 		->get();
+
+		if(!empty($base_url)){
+			foreach($home as $key=>$value){
+				$home[$key]['base_url'] = $base_url;
+			}
+		}
 
 		if(!empty($home)){
 			return array('status'=>true, "data"=>$home);
@@ -11243,5 +11290,37 @@ public function yes($msg){
 			return array('status'=>true, "data"=>$home);
 		}
 	}
+
+	public function getBrandWebsiteMembership($vendor_id=null, $brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($vendor_id)){
+			return array("status"=>false, "message"=>"Finder is Missing");
+		}
+		
+		$base_url =Config::get('app.s3_bane_url');
+		
+		$home = Finder::where('_id',(int)$vendor_id)
+		->select('website_membership')
+		->get();
+
+		if(!empty($base_url)){
+			foreach($home as $key=>$value){
+				$home[$key]['base_url'] = $base_url;
+			}
+		}
+
+		if(!empty($home)){
+			if(!empty($home[0]['website_membership'])){
+				$home = $home[0];
+			}
+			else{
+				$home = [];
+			}
+		}
+		return array('status'=>true, "data"=>$home);
+		
+	}
+	
 }
 

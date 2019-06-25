@@ -309,6 +309,8 @@ return array(
 
 	's3_finder_url'					=> 'https://d3oorwrq3wx4ad.cloudfront.net/f/',
 	's3_service_url'				=> 'https://d3oorwrq3wx4ad.cloudfront.net/s/',
+	's3_bane_url'				=> 'https://d3oorwrq3wx4ad.cloudfront.net/',
+
 //
 //	'elasticsearch_port' 			=> 	9200,
 //	'elasticsearch_host_new' 		=> 	'ESAdmin:fitternity2020@54.169.120.141',
