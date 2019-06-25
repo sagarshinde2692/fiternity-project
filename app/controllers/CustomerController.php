@@ -631,7 +631,7 @@ class CustomerController extends \BaseController {
 
 		Log::info('register',$data);
 
-		$inserted_id = Customer::max('_id') + 1;
+		$inserted_id = Customer::maxId() + 1;
 
 		$rules = [
 			'name' => 'required|max:255',
@@ -1332,7 +1332,7 @@ class CustomerController extends \BaseController {
 		'identity' => 'required',
 		];
 
-		$inserted_id = Customer::max('_id') + 1;
+		$inserted_id = Customer::maxId() + 1;
 		$validator = Validator::make($data, $rules);
 
 		if ($validator->fails()) {
