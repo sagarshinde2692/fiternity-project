@@ -143,7 +143,9 @@ class Service extends \Basemodel{
                 $offers  = [];
 
 
-
+				if(isset($value['type']) && $value['type'] == 'workout session'){
+					$value['remarks'] = $$value['remarks']." (100% Cashback)";
+				}
 
 				$ratecard = [
 				'order'=> (isset($value['order'])) ? $value['order'] : '0',
@@ -491,9 +493,11 @@ class Service extends \Basemodel{
 
                 if(!empty($value['type']) && $value['type'] == "workout session"){
                     if(!empty($value['offers'][0]['remarks'])){
-                        $value['offers'][0]['remarks'] = "Book multiple sessions at this price".(!empty($value['offers'][0]['remarks']) ? $value['offers'][0]['remarks'] : "");;
+                        $value['offers'][0]['remarks'] = "100% Cashback";
+                        $value['remarks_imp'] =  true;
                     }else{
-                        $value['remarks'] =  "Book multiple sessions at this price. ".(!empty($value['remarks']) ? $value['remarks'] : "");
+                        $value['remarks'] =  "100% Cashback";
+                        $value['remarks_imp'] =  true;
                     }
                 }
 

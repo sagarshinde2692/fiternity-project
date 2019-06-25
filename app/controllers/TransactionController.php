@@ -6283,12 +6283,22 @@ class TransactionController extends \BaseController {
             );
 
         }else{
-            $payment_modes[] = array(
-                'title' => 'Online Payment',
-                'subtitle' => 'Transact online with netbanking, card and wallet',
-                'value' => 'paymentgateway',
-                'payment_options'=>$payment_options
-            );
+            
+            if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount'])){
+                $payment_modes[] = array(
+                    'title' => 'Online Payment (100% Cashback)',
+                    'subtitle' => 'Transact online with netbanking, card and wallet',
+                    'value' => 'paymentgateway',
+                    'payment_options'=>$payment_options
+                );
+            }else{
+                $payment_modes[] = array(
+                    'title' => 'Online Payment',
+                    'subtitle' => 'Transact online with netbanking, card and wallet',
+                    'value' => 'paymentgateway',
+                    'payment_options'=>$payment_options
+                );
+            }
         }
 
 
@@ -6583,7 +6593,7 @@ class TransactionController extends \BaseController {
             //         unset($resp['success_message']);
             //     }
             // }
-            $resp['message'] = $resp['message']." Promotional fitcash will not be applicable with discount coupon";
+            $resp['message'] = $resp['message']." Promotional fitcash and cashback will not be applicable with discount coupon";
             $resp['success_message'] = $resp['message'];
             return Response::json($resp,$resp['status']);
 

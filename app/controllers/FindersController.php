@@ -1397,27 +1397,27 @@ class FindersController extends \BaseController {
                     //             ];
                     //         }
                     //     }
-                        if(in_array($finder['_id'], Config::get('app.anytime_finder_ids', []))){
+                        // if(in_array($finder['_id'], Config::get('app.anytime_finder_ids', []))){
                             
-                            $response['vendor_stripe_data']	=	[
+                            $response['vendor_stripe_data']	= [
                                 
-                                'text1'=> "BEAT THE HEAT THIS SUMMER WITH RS 500 OFF ON THE LOWEST PRICE | CODE: FITAF",
+                                'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | USE CODE: THUNDER | OFFER EXPIRES IN",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
                                 'background'=> '#49bfb3'
                             ];
 
-                        }elseif(!empty($finder['flags']['sfit'])){
-                            $response['vendor_stripe_data']	=	[
+                        // }elseif(!empty($finder['flags']['sfit'])){
+                            // $response['vendor_stripe_data']	=	[
                                 
-                                'text1'=> "MONSOON FITNESS MANIA | LIGHTNING DEALS ON MEMBERSHIPS | UPTO 50% OFF + ADDNL 10% OFF | USE CODE: MFIT *T&C",
-                                'text3'=>"",
-                                'background-color'=> "",
-                                'text_color'=> '$fff',
-                                'background'=> '#49bfb3'
-                            ];
-                        }
+                            //     'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | USE CODE: THUNDER | OFFER EXPIRES IN",
+                            //     'text3'=>"",
+                            //     'background-color'=> "",
+                            //     'text_color'=> '$fff',
+                            //     'background'=> '#49bfb3'
+                            // ];
+                        // }
 					
                 }else if(!empty($response['vendor_stripe_data']['text'])){
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
@@ -3453,7 +3453,7 @@ class FindersController extends \BaseController {
 		if(!$items){
 			return array();
 		}
-
+		
 		$scheduleservices = array();
 		$sericecategorysWorkoutResultArr        =   Config::get('app.workout_results_categorywise');
 
@@ -3637,7 +3637,7 @@ class FindersController extends \BaseController {
 				$ratecardArr = [];
 
 				foreach ($item['serviceratecard'] as $ratekey => $rateval){
-
+					
 					//for ratecards offers
 					$ratecardoffers     =   [];
 
@@ -3736,7 +3736,11 @@ class FindersController extends \BaseController {
 
 
 					}
-
+					
+					if($rateval['type'] == 'workout session'){
+						Log::info("workour session");
+						$rateval['remarks'] = (isset($rateval['remarks'])) ? $rateval['remarks']. "(100% Cashback)" : "(100% Cashback)";
+					}
 					/*if($category->_id == 42){
 						array_push($ratecardArr, $rateval);
 					}else{*/
@@ -3836,6 +3840,9 @@ class FindersController extends \BaseController {
 	}
 
 	public function getFinderOneLiner($data) {
+
+        return "Monsoon Fitness Mania | Get Addnl 15% off | Use code: THUNDER | Limited Slots Applicable till 30th June 2019";
+        
 
 		$brandMap = [
 			135 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹20,000 worth of rewards',
@@ -5263,11 +5270,14 @@ class FindersController extends \BaseController {
 				foreach ($finderservice['ratecard'] as $ratecard){
                     //Log::info($ratecard);
 					if(in_array($ratecard["type"],["workout session", "trial"])){
-						unset($ratecard['remarks']);
+                        unset($ratecard['remarks']);
+                        
 						if($type == "workout session" && in_array($ratecard["type"],["trial"])){
 							continue;
 						}
-
+                        if($ratecard['type'] == 'workout session'){
+                            $ratecard['remarks'] = "Get 100% instant cashback";
+                        }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
 							$ratecard_price = $ratecard['special_price'];
 						}else{
