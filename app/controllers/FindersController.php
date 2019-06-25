@@ -1397,27 +1397,27 @@ class FindersController extends \BaseController {
                     //             ];
                     //         }
                     //     }
-                        if(in_array($finder['_id'], Config::get('app.anytime_finder_ids', []))){
+                        // if(in_array($finder['_id'], Config::get('app.anytime_finder_ids', []))){
                             
-                            $response['vendor_stripe_data']	=	[
+                            $response['vendor_stripe_data']	= [
                                 
-                                'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | OFFER EXPIRES IN",
+                                'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | USE CODE: THUNDER | OFFER EXPIRES IN",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
                                 'background'=> '#49bfb3'
                             ];
 
-                        }elseif(!empty($finder['flags']['sfit'])){
-                            $response['vendor_stripe_data']	=	[
+                        // }elseif(!empty($finder['flags']['sfit'])){
+                            // $response['vendor_stripe_data']	=	[
                                 
-                                'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | OFFER EXPIRES IN",
-                                'text3'=>"",
-                                'background-color'=> "",
-                                'text_color'=> '$fff',
-                                'background'=> '#49bfb3'
-                            ];
-                        }
+                            //     'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | USE CODE: THUNDER | OFFER EXPIRES IN",
+                            //     'text3'=>"",
+                            //     'background-color'=> "",
+                            //     'text_color'=> '$fff',
+                            //     'background'=> '#49bfb3'
+                            // ];
+                        // }
 					
                 }else if(!empty($response['vendor_stripe_data']['text'])){
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
