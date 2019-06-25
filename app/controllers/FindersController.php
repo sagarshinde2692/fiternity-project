@@ -3737,10 +3737,10 @@ class FindersController extends \BaseController {
 
 					}
 					
-					if($rateval['type'] == 'workout session'){
-						Log::info("workour session");
-						$rateval['remarks'] = (isset($rateval['remarks'])) ? $rateval['remarks']. "(100% Cashback)" : "(100% Cashback)";
-					}
+					// if($rateval['type'] == 'workout session'){
+					// 	Log::info("workour session");
+					// 	$rateval['remarks'] = (isset($rateval['remarks'])) ? $rateval['remarks']. "(100% Cashback)" : "(100% Cashback)";
+					// }
 					/*if($category->_id == 42){
 						array_push($ratecardArr, $rateval);
 					}else{*/
