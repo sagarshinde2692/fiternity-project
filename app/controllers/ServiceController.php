@@ -893,7 +893,7 @@ class ServiceController extends \BaseController {
 		    		$p_np=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 		    		if(!empty($p_np))
 		    		{	
-		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak'])." (100% Cashback)":"";
+		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak'])." (100% Cashback)":((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $this->utilities->getRupeeForm($p_np['non_peak'] + $p_np['non_peak_discount'])." (100% Cashback)":"");
 		    			$nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak'])." (100% Cashback)":"";
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
