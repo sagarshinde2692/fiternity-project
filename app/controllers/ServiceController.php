@@ -2409,7 +2409,8 @@ class ServiceController extends \BaseController {
 	public function ppsPriceOffer($ratecard_id, $slots/*, $service_id, $ratecard_id, $type, $service_type='data'*/)
 	{	
 		$date = date('Y-m-d 00:00:00');
-		$offers = Offer :: where('ratecard_id', $ratecard_id)
+        $offers = Offer :: where('hidden', false)
+                        ->where('ratecard_id', $ratecard_id)
 						->where('start_date', '<=', new MongoDate(strtotime($date)))
 						->where('end_date', '>', new MongoDate(strtotime($date)))
 						->orderBy('_id', 'desc')
