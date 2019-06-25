@@ -5276,7 +5276,7 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session'){
-                            $ratecard['remarks'] = "( 100% Cashback )";
+                            $ratecard['remarks'] = "Get 100% instant cashback";
                         }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
 							$ratecard_price = $ratecard['special_price'];
