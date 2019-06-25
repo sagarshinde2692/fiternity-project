@@ -2449,7 +2449,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     
                     if (!$customer) {
 
-                        $inserted_id = Customer::max('_id') + 1;
+                        $inserted_id = Customer::maxId() + 1;
                         
                         $customer = new Customer();
                         $customer->_id = $inserted_id;

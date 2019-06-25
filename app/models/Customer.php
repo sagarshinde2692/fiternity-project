@@ -109,6 +109,29 @@ class Customer extends  \Basemodel {
 			
 			return $voucherCategory = VoucherCategory::where("_id", $this["loyalty"]["milestones"][0]["voucher"]["voucher_category"])->get(array("name", "image", "terms", "amount"));
 		}
-	}
+    }
+    
+    public static function maxId(){
+        
+        $model = "Customer";
+        
+        $identitycounter =  Identitycounter::where('model', $model)->where('field', '_id')->first();
+
+        if(empty($identitycounter)){
+            return $model::max('_id');
+        }
+
+        $identitycounter_count =  $identitycounter->count;
+        
+        $update = Identitycounter::where('model', $model)->where('field', '_id')->where('count', $identitycounter_count)->increment('count');
+
+        if($update){
+            Log::info("returning::".strval($identitycounter_count));
+            return $identitycounter_count;
+        }
+        Log::info("reiterating::".strval($identitycounter_count));
+        return  $model::maxId();
+    
+    }
 
 }
