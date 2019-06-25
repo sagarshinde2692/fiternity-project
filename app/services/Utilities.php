@@ -6671,7 +6671,7 @@ Class Utilities {
             }
         }
 
-        \Queue::connection('sync')->push('TransactionController@afterTransQueued', array('data'=>$data, 'type'=> $type),Config::get('app.queue'));
+        \Queue::connection('redis')->push('TransactionController@afterTransQueued', array('data'=>$data, 'type'=> $type),Config::get('app.queue'));
         
         return ['loyalty_registration'=>$loyalty_registration, 'checkin'=> $checkin];
     }
