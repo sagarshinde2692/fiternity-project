@@ -11128,7 +11128,26 @@ public function yes($msg){
 		}
 		
 		print_r($return);
-    }
+	}
+	
+	public function getBrandWebsiteHome($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+		Log::info([$brand_id]);
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.banner','brand_website.offer', 'brand_website.centers_block','brand_website.speakers_block','brand_website.advisory_block', 'brand_website.video')
+		->get();
+
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home);
+		}
+		else{
+			return [];
+		}
+	}
 
 }
 

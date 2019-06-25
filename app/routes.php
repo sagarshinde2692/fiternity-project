@@ -1362,3 +1362,4 @@ Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');
 Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
 Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
 Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
+Route::get('brandwebsite/home/{brand_id}', 'DebugController@getBrandWebsiteHome');
