@@ -878,14 +878,14 @@ class ServiceController extends \BaseController {
 					];
 				}
 				if($ratecard_price > 0){
-					$service['cost'] = "₹ ".$ratecard_price." (100% Cashback)";
+					$service['cost'] = "₹ ".$ratecard_price;
 				}
 		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
-		    		$service['cost'] = "₹ ".$ratecard_price." (100% Cashback)";
+		    		$service['cost'] = "₹ ".$ratecard_price;
 				}
 				
-				
-                
+
+
                 if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
 		    	{
                     $rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@2x%20%281%29.png', 'slot_type'=>1];$nrsh=["title"=>Config::get('app.non_peak_hours.non_peak_title'),"price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png', 'slot_type'=>0];
@@ -1253,16 +1253,18 @@ class ServiceController extends \BaseController {
 
 
 			}else{
-
-                foreach($data['schedules'] as &$sc){
+				
+				foreach($data['schedules'] as &$sc){
 
                     if(!empty($_GET['init_source']) && $_GET['init_source'] == 'pps'){
                         $sc['free_trial_available'] = false;
                     }
-
-                    
-                    if(((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])) || (!empty($sc['extended_validity']))){
-                        $sc['cost'] .= Config::get('app.first_free_string');
+					
+					$str = " (100% Cashback)";
+					if(((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])) || (!empty($sc['extended_validity']))){
+						
+						$str = "";
+						$sc['cost'] .= Config::get('app.first_free_string');
 
                         if(!empty($sc['extended_validity'])){
                             $sc['cost'] = Config::get('nonvalidity.slots_header');
@@ -1282,8 +1284,10 @@ class ServiceController extends \BaseController {
 								unset($x['price']);
 							}
                         }
-                    }
-                    if(!empty($service['extended_validity'])){
+					}
+					
+					$sc['cost'] .= $str;
+					if(!empty($service['extended_validity'])){
 
                     }
 

@@ -782,7 +782,7 @@ Class CustomerReward {
                 }            
             }
             
-            if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0){
+            if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount'])){
                 $amount_paid = $order['amount'];
 
                 $cashback_amount = round(($amount_paid * 100) / 118);
