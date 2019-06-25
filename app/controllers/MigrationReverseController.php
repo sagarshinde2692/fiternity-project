@@ -2004,9 +2004,9 @@ class MigrationReverseController extends \BaseController {
             	'vendor_stripe' => isset($brand->vendor_stripe)? $brand->vendor_stripe:null,
                 'logo' => isset($brand->media) && isset($brand->media['images']) && isset($brand->media['images']['logo']) ? $brand->media['images']['logo'] : "",
             ];
-
+            
             if(!empty($brand->brand_website)){
-                $insertData['brand_webstite'] = $brand->brand_website; //storing data of vendor for brand website
+                $insertData['brand_website'] = $brand->brand_website; //storing data of vendor for brand website
             }
 
             $_exists_cnt =   DB::connection($this->fitadmin)->table('brands')->where('_id', intval($id) )->count();
