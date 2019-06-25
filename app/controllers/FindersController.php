@@ -3453,7 +3453,7 @@ class FindersController extends \BaseController {
 		if(!$items){
 			return array();
 		}
-
+		
 		$scheduleservices = array();
 		$sericecategorysWorkoutResultArr        =   Config::get('app.workout_results_categorywise');
 
@@ -3637,7 +3637,7 @@ class FindersController extends \BaseController {
 				$ratecardArr = [];
 
 				foreach ($item['serviceratecard'] as $ratekey => $rateval){
-
+					
 					//for ratecards offers
 					$ratecardoffers     =   [];
 
@@ -3736,7 +3736,11 @@ class FindersController extends \BaseController {
 
 
 					}
-
+					
+					if($rateval['type'] == 'workout session'){
+						Log::info("workour session");
+						$rateval['remarks'] = (isset($rateval['remarks'])) ? $rateval['remarks']. "(100% Cashback)" : "(100% Cashback)";
+					}
 					/*if($category->_id == 42){
 						array_push($ratecardArr, $rateval);
 					}else{*/

@@ -6284,7 +6284,7 @@ class TransactionController extends \BaseController {
 
         }else{
             
-            if(isset($order['type']) && $order['type'] == 'workout-session'){
+            if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount'])){
                 $payment_modes[] = array(
                     'title' => 'Online Payment (100% Cashback)',
                     'subtitle' => 'Transact online with netbanking, card and wallet',
