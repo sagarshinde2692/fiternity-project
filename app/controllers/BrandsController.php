@@ -14,7 +14,7 @@ class BrandsController extends \BaseController {
     }
 
 
-    public function brandDetail($slug, $city, $cache = true){
+    public function brandDetail($slug, $city, $cache = false){
         Log::info($_SERVER['REQUEST_URI']);
         
         $brand_detail = $cache ? Cache::tags('brand_detail')->has("$slug-$city") : false;
@@ -157,7 +157,7 @@ class BrandsController extends \BaseController {
 
                     return Response::json($data);
                 }
-
+                $this->multifitGymWebsiteBrandUpdate($data);
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
             }else{
@@ -211,6 +211,24 @@ class BrandsController extends \BaseController {
 
         return $brands;
 
+    }
+
+    public function multifitGymWebsiteBrandUpdate(&$data){
+
+        if(!empty(Request::header('Source')) && Request::header('Source') == "multifit"){
+
+            if(!empty($data['finders']['results'])){
+
+                $base_url =Config::get('app.s3_bane_url');
+                foreach($data['finders']['results'] as $key=>$value){
+
+                    if(!empty($value['website_membership']) && $value['website_membership']){
+
+                        $data['finders']['results']['coverimage'] = $base_url.$value['website_membership']['cover']['path'].$value['website_membership']['cover']['image'];
+                    }
+                }
+            }
+        }
     }
 
 }

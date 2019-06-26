@@ -1333,7 +1333,7 @@ class FindersController extends \BaseController {
 				// $response['finder']  = $this->applyNonValidity($response, 'web');
 
                 $this->applyFreeSP($response);
-                $this->multifitGrmWebsiteVendorUpdate($response);
+                $this->multifitGymWebsiteVendorUpdate($response);
 
                 // $this->insertWSNonValidtiy($response, 'web');
 
@@ -8337,7 +8337,7 @@ class FindersController extends \BaseController {
         }
 	}
 
-	public function multifitGrmWebsiteVendorUpdate(&$data){
+	public function multifitGymWebsiteVendorUpdate(&$data){
 		
 		if(!empty(Request::header('Source')) && Request::header('Source') == "multifit"){
 			Log::info('inside vendor update for multifit gym');
