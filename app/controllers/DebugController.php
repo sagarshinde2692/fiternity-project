@@ -11200,6 +11200,7 @@ public function yes($msg){
 
 		$home1[0]['brand_website'] = $home[0]['brand_website'];
 		$home1[0]['brand_website'] = $first_block;
+
 		if(!empty($home)){
 			return array('status'=>true, "data"=>$home1);
 		}
@@ -11313,11 +11314,6 @@ public function yes($msg){
 		$home1['own_franchise']['banner_image']['image'] = $base_url.$home1['own_franchise']['banner_image']['path'].$home1['own_franchise']['banner_image']['image'];
 		$home[0]['brand_website'] =  $home1;
 
-		if(!empty($base_url)){
-			foreach($home as $key=>$value){
-				$home[$key]['base_url'] = $base_url;
-			}
-		}
 
 		if(!empty($home)){
 			return array('status'=>true, "data"=>$home);
@@ -11340,12 +11336,23 @@ public function yes($msg){
 		->select('website_membership')
 		->get();
 
-		if(!empty($base_url)){
-			foreach($home as $key=>$value){
-				$home[$key]['base_url'] = $base_url;
-			}
-		}
+		$first_block = $home[0]['website_membership'];
 
+		foreach($first_block as $key=>$value){
+			if(in_array($key,['cover', 'thumbnail', 'class_time_table'])){	
+				$first_block[$key]['image'] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'] ;
+			}	
+
+			if(in_array($key,['services_list', 'memberships_list', 'facilities_list'])){
+				foreach($first_block[$key] as $keyImage=>$valueImage){
+					if(!empty($first_block[$key][$keyImage]['image'])){
+						$first_block[$key][$keyImage]['image'] =  $base_url.$first_block[$key][$keyImage]['path'].$first_block[$key][$keyImage]['image'];
+					}
+				}
+			}	
+		}
+		
+		$home[0]['website_membership'] = $first_block;
 		if(!empty($home)){
 			if(!empty($home[0]['website_membership'])){
 				$home = $home[0];
