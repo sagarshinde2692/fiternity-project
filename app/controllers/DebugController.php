@@ -11280,11 +11280,9 @@ public function yes($msg){
 		->select('brand_website.contact_us')
 		->get();
 
-		if(!empty($base_url)){
-			foreach($home as $key=>$value){
-				$home[$key]['base_url'] = $base_url;
-			}
-		}
+		$home1= $home[0]['brand_website'];
+		$home1['contact_us']['banner_image'] = $base_url.$home1['contact_us']['path'].$home1['contact_us']['banner_image'];
+		$home[0]['brand_website']=$home1; 
 
 		if(!empty($home)){
 			return array('status'=>true, "data"=>$home);
@@ -11357,11 +11355,7 @@ public function yes($msg){
 			}
 		}
 		return array('status'=>true, "data"=>$home);
-		
 	}
-	
-	public function imageAbsoluteURl($image, $path, $base_url){
-		return $base_url.$path.$image;
-	}
+
 }
 
