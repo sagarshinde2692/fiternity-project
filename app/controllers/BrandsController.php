@@ -14,7 +14,7 @@ class BrandsController extends \BaseController {
     }
 
 
-    public function brandDetail($slug, $city, $cache = false){
+    public function brandDetail($slug, $city, $cache = true){
         Log::info($_SERVER['REQUEST_URI']);
         
         $brand_detail = $cache ? Cache::tags('brand_detail')->has("$slug-$city") : false;
