@@ -8527,6 +8527,7 @@ Class Utilities {
                     $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2))) && $brandIdTypeChk;
                 }
                 
+                Log::info('$sameFinder: ', [$sameFinder]);
                 Log::info('$sameBrand: ', [$sameBrand]);
                 Log::info('$rewTypeChk: ', [$rewTypeChk]);
                 Log::info('$cbkTypeChk: ', [$cbkTypeChk]);
@@ -8850,7 +8851,6 @@ Class Utilities {
                                             'cancelBookTrialByVendor'
                                         ],
                                         "notifications" => [
-                                            'bookTrialReminderBefore10Min',
                                             'bookTrialReminderBefore3Hour',
                                             'bookTrialReminderBefore12Hour',
                                             'cancelBookTrial',
