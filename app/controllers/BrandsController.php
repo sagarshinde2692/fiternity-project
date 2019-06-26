@@ -14,7 +14,7 @@ class BrandsController extends \BaseController {
     }
 
 
-    public function brandDetail($slug, $city, $cache = true){
+    public function brandDetail($slug, $city, $cache = false){
         Log::info($_SERVER['REQUEST_URI']);
         
         $brand_detail = $cache ? Cache::tags('brand_detail')->has("$slug-$city") : false;
@@ -219,11 +219,10 @@ class BrandsController extends \BaseController {
 
             if(!empty($data['finders']['results'])){
 
-                $base_url =Config::get('app.s3_bane_url');
                 foreach($data['finders']['results'] as $key=>$value){
 
-                    if(!empty($value['coverimage_website_membership']) && $value['coverimage_website_membership']){
-
+                    if(!empty($value['coverimage_website_membership'])){
+                        
                         $data['finders']['results']['coverimage'] = $value['coverimage_website_membership'];
                     }
                 }
