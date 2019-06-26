@@ -91,7 +91,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderdetail($slug, $cache = false){
+	public function finderdetail($slug, $cache = true){
 
 		// Log::info($_SERVER['REQUEST_URI']);        
 
@@ -8338,8 +8338,9 @@ class FindersController extends \BaseController {
 	}
 
 	public function multifitGrmWebsiteVendorUpdate(&$data){
-		Log::info('inside vendor update for multifit gym');
-		if(Request::header('Source')=="multifit"){
+		
+		if(!empty(Request::header('Source')) && Request::header('Source') == "multifit"){
+			Log::info('inside vendor update for multifit gym');
 			if(!empty($data['finder']['website_membership'])){
 
 				$data['finder']['website_membership'] = $this->pathAddingToVendorWebsite($data['finder']['website_membership']);
@@ -8414,5 +8415,6 @@ class FindersController extends \BaseController {
 				}
 			}	
 		}
+		return $first_block;
 	}
 }
