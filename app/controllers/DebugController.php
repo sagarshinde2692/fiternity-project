@@ -11143,11 +11143,19 @@ public function yes($msg){
 		->select('brand_website.banner','brand_website.offer', 'brand_website.centers_block','brand_website.speakers_block','brand_website.advisory_block', 'brand_website.video')
 		->get();
 
-		if(!empty($base_url)){
-			foreach($home as $key=>$value){
-				$home[$key]['base_url'] = $base_url;
-			}
+		$home1 = $home[0]['brand_website'];
+		foreach($home1 as $key=>$value){
+			if(in_array($key,['banner'])){
+				$home1[$key]['image'] =  $base_url.$home1[$key]['path'].$home1[$key]['image'];
+			}	
+
+			if(in_array($key,['centers_block', 'speakers_block', 'advisory_block'])){
+				foreach($home1[$key] as $keyImage=>$valueImage){
+					$home1[$key][$keyImage]['image'] =  $base_url.$home1[$key][$keyImage]['path'].$home1[$key][$keyImage]['image'];
+				}
+			}	
 		}
+		$home[0]['brand_website'] =  $home1;
 
 		if(!empty($home)){
 			return array('status'=>true, "data"=>$home);
@@ -11185,7 +11193,7 @@ public function yes($msg){
 
 			if(in_array($key,['training_software', 'gym_equipement', 'fitness_studio'])){
 				foreach($first_block[$key]['image'] as $keyImage=>$valueImage){
-						$first_block[$key]['image'][$keyImage] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'][$keyImage];
+					$first_block[$key]['image'][$keyImage] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'][$keyImage];
 				}
 			}	
 		}
@@ -11298,6 +11306,14 @@ public function yes($msg){
 		$home = Brand::where('_id',(int)$brand_id)
 		->select('brand_website.own_franchise')
 		->get();
+
+
+		$home1 = $home[0]['brand_website'];
+		foreach($home1['own_franchise']['what_we_deliver']['details'] as $key=>$value){
+			$home1['own_franchise']['what_we_deliver']['details'][$key]['image'] =  $base_url.$home1['own_franchise']['what_we_deliver']['details'][$key]['path'].$home1['own_franchise']['what_we_deliver']['details'][$key]['image'];
+		}
+		$home1['own_franchise']['banner_image']['image'] = $base_url.$home1['own_franchise']['banner_image']['path'].$home1['own_franchise']['banner_image']['image'];
+		$home[0]['brand_website'] =  $home1;
 
 		if(!empty($base_url)){
 			foreach($home as $key=>$value){
