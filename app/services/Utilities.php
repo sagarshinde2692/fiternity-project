@@ -6809,7 +6809,7 @@ Class Utilities {
     		$data['success_date'] = date('Y-m-d H:i:s',time());
     		
     		$order = new Order($data); 
-    		$order->_id =Order::maxId()+1;
+    		$order->_id =Order::max('_id')+1;
     		$order->save();
     		Log::info(" free dietplan order ".print_r($order,true));
     		return array('order_id'=>$order->_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');

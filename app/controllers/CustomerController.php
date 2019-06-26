@@ -479,7 +479,7 @@ class CustomerController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 
-		$orderid 			=	Order::maxId() + 1;
+		$orderid 			=	Order::max('_id') + 1;
 
 		$data = array(
 			'customer_name'		=>		Input::json()->get('customer_name'),
@@ -540,7 +540,7 @@ class CustomerController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 
-		$orderid 			=	Order::maxId() + 1;
+		$orderid 			=	Order::max('_id') + 1;
 
 		$data = array(
 			'customer_name'		=>		Input::json()->get('customer_name'),

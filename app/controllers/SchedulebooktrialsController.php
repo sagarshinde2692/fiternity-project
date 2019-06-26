@@ -1187,7 +1187,7 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json($resp,404);
         }
 
-        $orderid 	       =	Order::maxId() + 1;        
+        $orderid 	       =	Order::max('_id') + 1;        
         $customer_id        =	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : autoRegisterCustomer($data);
         array_set($data, 'customer_id', intval($customer_id));
 
