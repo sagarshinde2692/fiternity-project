@@ -223,7 +223,7 @@ class BrandsController extends \BaseController {
 
                     if(!empty($value['coverimage_website_membership'])){
                         
-                        $data['finders']['results']['coverimage'] = $value['coverimage_website_membership'];
+                        $data['finders']['results'][$key]['coverimage'] = $value['coverimage_website_membership'];
                     }
                 }
             }
