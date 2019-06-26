@@ -222,9 +222,9 @@ class BrandsController extends \BaseController {
                 $base_url =Config::get('app.s3_bane_url');
                 foreach($data['finders']['results'] as $key=>$value){
 
-                    if(!empty($value['website_membership']) && $value['website_membership']){
+                    if(!empty($value['coverimage_website_membership']) && $value['coverimage_website_membership']){
 
-                        $data['finders']['results']['coverimage'] = $base_url.$value['website_membership']['cover']['path'].$value['website_membership']['cover']['image'];
+                        $data['finders']['results']['coverimage'] = $value['coverimage_website_membership'];
                     }
                 }
             }
