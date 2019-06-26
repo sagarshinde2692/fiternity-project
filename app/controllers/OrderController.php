@@ -623,7 +623,7 @@ class OrderController extends \BaseController {
             $data['service_duration'] = (isset($data['service_duration']) && $data['service_duration'] != "") ? $data['service_duration'] : "";
         }
 
-        $orderid 			=	Order::maxId() + 1;
+        $orderid 			=	Order::max('_id') + 1;
         $data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
         if(trim(Input::json()->get('preferred_starting_date')) != '' && trim(Input::json()->get('preferred_starting_date')) != '-'){
             $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
@@ -1496,7 +1496,7 @@ class OrderController extends \BaseController {
             array_set($data, 'reward_ids', $rewardoffers);
         }
 
-        $orderid = Order::maxId() + 1;
+        $orderid = Order::max('_id') + 1;
 
         $code = $orderid.str_random(8);
 
