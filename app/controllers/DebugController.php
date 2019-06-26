@@ -11169,17 +11169,34 @@ public function yes($msg){
 		->select('brand_website.overview_block','brand_website.founders_block', 'brand_website.fitness_studio','brand_website.gym_equipement','brand_website.training_software', 'brand_website.awards_list', 'brand_website.media_coverages')
 		->get();
 
-		if(!empty($base_url)){
-			foreach($home as $key=>$value){
-				$home[$key]['base_url'] = $base_url;
-			}
+		$first_block = $home[0]['brand_website'];
+
+		foreach($first_block as $key=>$value){
+			if(in_array($key,['founders_block', 'awards_list', 'media_coverages'])){
+				foreach($first_block[$key] as $keyImage=>$valueImage){
+					if(!empty($first_block[$key][$keyImage]['image'])){
+						$first_block[$key][$keyImage]['image'] =  $base_url.$first_block[$key][$keyImage]['path'].$first_block[$key][$keyImage]['image'] ;
+					}
+					if(!empty($first_block[$key][$keyImage]['popup_image'])){
+						$first_block[$key][$keyImage]['popup_image'] =  $base_url.$first_block[$key][$keyImage]['path'].$first_block[$key][$keyImage]['popup_image'] ;
+					}
+				}
+			}	
+
+			if(in_array($key,['training_software', 'gym_equipement', 'fitness_studio'])){
+				foreach($first_block[$key]['image'] as $keyImage=>$valueImage){
+						$first_block[$key]['image'][$keyImage] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'][$keyImage];
+				}
+			}	
 		}
 
+		$home1[0]['brand_website'] = $home[0]['brand_website'];
+		$home1[0]['brand_website'] = $first_block;
 		if(!empty($home)){
-			return array('status'=>true, "data"=>$home);
+			return array('status'=>true, "data"=>$home1);
 		}
 		else{
-			return array('status'=>true, "data"=>$home);
+			return array('status'=>true, "data"=>$home1);
 		}
 	}
 
@@ -11196,17 +11213,22 @@ public function yes($msg){
 		->select('brand_website.programs')
 		->get();
 
-		if(!empty($base_url)){
-			foreach($home as $key=>$value){
-				$home[$key]['base_url'] = $base_url;
+		$programs = $home[0]['brand_website']['programs'];
+		foreach($programs as $key=>$value){
+			if(!in_array($key, ['name','path', 'weight_training'])){
+				foreach($value['image'] as $imageIndex=>$imageName){
+					Log::info([$key, $imageIndex, $base_url.$programs['path'].$imageName]);
+					$programs[$key]['image'][$imageIndex] =  $base_url.$programs['path'].$imageName;
+				}
 			}
 		}
 
+		$home1[0]['brand_website']['programs'] = $programs;
 		if(!empty($home)){
-			return array('status'=>true, "data"=>$home);
+			return array('status'=>true, "data"=>$home1);
 		}
 		else{
-			return array('status'=>true, "data"=>$home);
+			return array('status'=>true, "data"=>$home1);
 		}
 	}
 
@@ -11322,5 +11344,8 @@ public function yes($msg){
 		
 	}
 	
+	public function imageAbsoluteURl($image, $path, $base_url){
+		return $base_url.$path.$image;
+	}
 }
 
