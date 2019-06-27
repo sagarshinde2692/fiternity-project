@@ -9233,5 +9233,36 @@ class TransactionController extends \BaseController {
         $this->successCommon($success_data);
     }
 
+    public function classPassCapture($data){
+        
+    }
+
+    public function getRazorPayPlans($data){
+        $amount = (int)$data['amount'];
+        $razorPayPlans = RazorPayPlans::Active()
+        ->where('amount',$amount)
+        ->select('plan_id')
+        ->first();
+
+        if(!empty($razorPayPlans)){
+
+        } 
+        else{
+            $this->utilities->createRazorPayPlans($amount);
+        } 
+    }
+
+    public function getPasses($data){
+        $amount = (int)$data['amount'];
+        $pass = Passes::Active()
+        //->where('amount',$amount)
+        ->select('pass_id','duration', 'duration_type')
+        ->first();
+
+        if(!empty($pass)){
+
+        }
+    }
+
 }
 

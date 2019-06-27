@@ -9438,6 +9438,10 @@ Class Utilities {
         $service['order_summary']['header']= $summary['header'];
         	
 		return $service;
-	}
+    }
+    
+    public function createRazorPayPlans($amount, $interval=30, $type="Days"){
+
+    }
 
 }
