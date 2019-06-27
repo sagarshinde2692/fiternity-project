@@ -7157,7 +7157,7 @@ Class Utilities {
                     $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
 
                     $update_data = [
-                        'loyalty'=>new StdClass()
+                        'loyalty'=>new \StdClass()
                     ];
                     
                     $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
