@@ -504,7 +504,9 @@ class Service extends \Basemodel{
                 if($this->servicecategory_id == 1 && $value['special_price'] == 99 && $value['type'] == "workout session" && isFinderIntegrated($finder) && isServiceIntegrated($this)){
                     $value['remarks'] =  "The Ultimate Yoga Fest. Book Multiple Sessions at Flat ₹99/session";
                     $value['remarks_imp'] =  true;
-                }
+				}
+				
+				$value['remarks'] = (isset($value['remarks']) && $value['remarks'] != "") ? $value['remarks']. "\n\ntesttttttt" : "testtttttt";
 
 				unset($value['flags']['convinience_fee_applicable']);
 				array_push($ratecards, $value);

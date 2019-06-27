@@ -1231,7 +1231,22 @@ class TransactionController extends \BaseController {
                 Log::info('Not bookings as studio extended validity: ', [$data['_id']]);
             }
         }
+        
+        $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
+        $duration = $duration > 180 ? 360 : $duration;
+        if(!empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
+            Finder::$withoutAppends = true;
+            $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+            
+            if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
+                $duration = 0;
+            }
 
+            if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
+                $data['finder_flags']['brand_loyalty'] = $finder['brand_id'];
+            }
+        }
+        
         if(isset($old_order_id)){
             
             if($order){
