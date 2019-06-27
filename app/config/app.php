@@ -42,8 +42,8 @@ return array(
 	'paypal_sandbox'=>true,
 	'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
 	'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
-	'razorPayKey' => 'rzp_test_6TKjLnXzpuVIds',
-	'razorPaySecret' => 'rK7FwR1a4coHHLCuhSSLz8P5',
+	$razorPayKey => 'rzp_test_6TKjLnXzpuVIds',
+	$razorPaySecret => 'rK7FwR1a4coHHLCuhSSLz8P5',
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://beta.fitn.in',
@@ -84,9 +84,8 @@ return array(
 	// 'ffTransactionAPI'=>'https://demo.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
 	// 'ffEnquiryAPI'=>'http://api.fitnessforce.com/prospect',
 	
-
-	'razorPayURL' =>/*"https://api.razorpay.com/v1/plans";*/"https://"+razorPayKey+':'+razorPaySecret+"@api.razorpay.com/v1/plans",
-	'razorPayBasicAuth' => "Basic " + new Buffer(razorPayKey + ":" + razorPaySecret).toString("base64"),
+	'razorPayURL' =>/*"https://api.razorpay.com/v1/plans";*/"https://"+$razorPayKey+':'+$razorPaySecret+"@api.razorpay.com/v1/plans",
+	
 	'ffDetails' => [
 		'source' => 'fitternity',
 		'paymentmode' => 'fitternity'

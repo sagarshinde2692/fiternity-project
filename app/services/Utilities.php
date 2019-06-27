@@ -9441,7 +9441,7 @@ Class Utilities {
     }
     
     public function createRazorPayPlans($amount, $interval=30, $type="Days"){
-
+        //$razorPayBasicAuth = "Basic " + new Buffer($razorPayKey + ":" + $razorPaySecret).toString("base64");
     }
 
 }
