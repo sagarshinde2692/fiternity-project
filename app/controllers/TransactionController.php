@@ -634,7 +634,7 @@ class TransactionController extends \BaseController {
             
                         // }
                         $data['amount_customer'] = 0; // discussed with Utkarsh
-	            		$order_id = Order::max('_id') + 1;
+	            		$order_id = Order::maxId() + 1;
 	            		$order = new Order($data);
 	            		$order->_id = $order_id;
 	            		$order->save();
@@ -790,7 +790,7 @@ class TransactionController extends \BaseController {
 
         }else{
 
-            $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+            $order_id = $data['_id'] = $data['order_id'] = Order::maxId() + 1;
             $order = new Order();
             $order->_id = $order_id;
             $order->save();
@@ -1774,7 +1774,7 @@ class TransactionController extends \BaseController {
     							else
     								return Response::json(['status'=>0,"message"=>"Not a valid order id."]);
     					}
-    					else $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+    					else $order_id = $data['_id'] = $data['order_id'] = Order::maxId() + 1;
     					
     					
     					$data['code'] = (string) random_numbers(5);
@@ -5130,7 +5130,7 @@ class TransactionController extends \BaseController {
 
         $data = array_merge($data,$serviceDetail['data']);
 
-        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+        $order_id = $data['_id'] = $data['order_id'] = Order::maxId() + 1;
 
         $data = $this->unsetData($data);
 
@@ -5210,7 +5210,7 @@ class TransactionController extends \BaseController {
     		$data['success_date'] = date('Y-m-d H:i:s',time());
     		
     		$order = new Order($data); 
-    		$order->_id =Order::max('_id')+1;
+    		$order->_id =Order::maxId()+1;
     		$order->save();
     		Log::info(" free dietplan order ".print_r($order,true));
     		return array('order_id'=>$order->_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
@@ -6726,7 +6726,7 @@ class TransactionController extends \BaseController {
         
         $data['status'] = "0";
         
-        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+        $order_id = $data['_id'] = $data['order_id'] = Order::maxId() + 1;
         $txnid = "";
         $successurl = "";
         $mobilehash = "";
@@ -8658,7 +8658,7 @@ class TransactionController extends \BaseController {
         
         $data['status'] = "0";
         
-        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+        $order_id = $data['_id'] = $data['order_id'] = Order::maxId() + 1;
 
         $txnid = "";
         $successurl = "";
