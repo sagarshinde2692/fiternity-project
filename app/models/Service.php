@@ -506,8 +506,6 @@ class Service extends \Basemodel{
                     $value['remarks_imp'] =  true;
 				}
 				
-				$value['remarks'] = (isset($value['remarks']) && $value['remarks'] != "") ? $value['remarks']. "\n\ntesttttttt" : "testtttttt";
-
 				unset($value['flags']['convinience_fee_applicable']);
 				array_push($ratecards, $value);
 			}
