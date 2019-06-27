@@ -495,6 +495,8 @@ class FindersController extends \BaseController {
 				$finderarr['services'] = $this->sortNoMembershipServices($finderarr['services'], 'finderdetail');
 				
 
+				
+				
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings', 'flags','location_id','slug','location', 'inoperational_dates']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				// array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
