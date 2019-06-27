@@ -7157,7 +7157,7 @@ Class Utilities {
                     $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
 
                     $update_data = [
-                        'loyalty'=>array()
+                        'loyalty'=>new \StdClass()
                     ];
                     
                     $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
@@ -8504,6 +8504,12 @@ Class Utilities {
                 $isDowngrade = false;
                 $brandIdTypeChk = false;
                 $sameBrand = false;
+                $sameFinder = false;
+
+                if(!empty($customer['loyalty']['finder_id'])){
+                    $sameFinder = $finder['_id'] == $customer['loyalty']['finder_id'];
+                }
+
                 if(!empty($customer['loyalty']['brand_loyalty'])){
                     $sameBrand = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];
                     if($sameBrand){
@@ -8521,13 +8527,14 @@ Class Utilities {
                     $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2))) && $brandIdTypeChk;
                 }
                 
+                Log::info('$sameFinder: ', [$sameFinder]);
                 Log::info('$sameBrand: ', [$sameBrand]);
                 Log::info('$rewTypeChk: ', [$rewTypeChk]);
                 Log::info('$cbkTypeChk: ', [$cbkTypeChk]);
                 Log::info('$brandIdTypeChk: ', [$brandIdTypeChk]);
                 Log::info('$isDowngrade: ', [$isDowngrade]);
 
-                if($sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
+                if($sameFinder || $sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
                     // same grid - no need to upgrade
                     $retObj = null;
                 } else {
@@ -8844,7 +8851,6 @@ Class Utilities {
                                             'cancelBookTrialByVendor'
                                         ],
                                         "notifications" => [
-                                            'bookTrialReminderBefore10Min',
                                             'bookTrialReminderBefore3Hour',
                                             'bookTrialReminderBefore12Hour',
                                             'cancelBookTrial',
