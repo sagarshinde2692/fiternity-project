@@ -324,7 +324,7 @@ class BrandsController extends \BaseController {
 
 		$programs = $home[0]['brand_website']['programs'];
 		foreach($programs as $key=>$value){
-			if(!in_array($key, ['name','path', 'weight_training'])){
+			if(!in_array($key, ['name','path'])){
 				foreach($value['image'] as $imageIndex=>$imageName){
 					$programs[$key]['image'][$imageIndex] =  $base_url.$programs['path'].$imageName;
 				}
