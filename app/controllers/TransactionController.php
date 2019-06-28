@@ -9244,20 +9244,20 @@ class TransactionController extends \BaseController {
         if ($validator->fails()) {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
         }
-        return $this->getRazorPayPlans($data);
+        return $this->getRazorpayPlans($data);
         
     }
 
-    public function getRazorPayPlans($data){
+    public function getRazorpayPlans($data){
         $amount = (int)$data['amount'];
-        $razorPayPlans = RazorPayPlans::Active()
+        $razorPayPlans = RazorpayPlans::Active()
         ->where('amount',$amount)
         ->select('plan_id')
         ->first();
         $plans = $razorPayPlans;
         Log::info("plans:::::::::::", [$plans, $amount, $data['pass_type']]);
         if(empty($plans)){
-            $plans = $this->utilities->createRazorPayPlans($amount, $data['pass_type']);
+            $plans = $this->utilities->createRazorpayPlans($amount, $data['pass_type']);
         } 
         Log::info("plans dattata::::::::::", [$plans]);
 

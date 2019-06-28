@@ -34,7 +34,7 @@ use MongoDate;
 use Coupon;
 use \GuzzleHttp\Client;
 use Input;
-use RazorPayPlans;
+use RazorpayPlans;
 
 use App\Services\Fitnessforce as Fitnessforce;
 
@@ -9441,7 +9441,7 @@ Class Utilities {
 		return $service;
     }
     
-    public function createRazorPayPlans($amount, $plan_name="Silver", $interval=30, $period="daily", $desciption="passes" ){
+    public function createRazorpayPlans($amount, $plan_name="Silver", $interval=30, $period="daily", $desciption="passes" ){
         
         $data =array(
             "period"=>$period,
@@ -9466,7 +9466,7 @@ Class Utilities {
 
         Log::info('return of plan creation=>>>>>>>> ::::::::::::>>>>>>>>>>>>>>.',[$output]);
         //$output['amount'] = $amount;
-        $planStore = new RazorPayPlans($output);
+        $planStore = new RazorpayPlans($output);
         $planStore->save();
         return array('plan'=>$output);
     }

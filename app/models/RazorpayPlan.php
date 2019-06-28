@@ -1,6 +1,6 @@
 <?php
 
-class RazorPayPlans extends  \Basemodel {
+class RazorpayPlan extends  \Basemodel {
 	
 	protected $collection = "razorpayplans";
 
