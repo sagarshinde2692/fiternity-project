@@ -9441,7 +9441,21 @@ Class Utilities {
     }
     
     public function createRazorPayPlans($amount, $interval=30, $type="Days"){
-        //$razorPayBasicAuth = "Basic " + new Buffer($razorPayKey + ":" + $razorPaySecret).toString("base64");
+        // options ={
+        //     method:'POST',
+        //     url: constant.razorPayURL,
+        //     hraders:{"Content-Type": "application/json"},
+        //     json: {
+        //         "period": req.period,
+        //         "interval": req.interval,
+        //         "item": {
+        //             "name": req.name,
+        //             "description": req.description,
+        //             "amount": req.amount,
+        //             "currency": "INR"
+        //         }
+        //     }
+        // };
     }
 
 }
