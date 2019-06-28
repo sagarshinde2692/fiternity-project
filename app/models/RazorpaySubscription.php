@@ -1,8 +1,8 @@
 <?php
 
-class RazorpayPlan extends  \Basemodel {
+class RazorpaySubscription extends  \Basemodel {
 	
-	protected $collection = "razorpayplans";
+	protected $collection = "razorpaysubscriptions";
 
 	public function setIdAttribute($value){
 		
@@ -16,7 +16,7 @@ class RazorpayPlan extends  \Basemodel {
         $identitycounter =  Identitycounter::where('model', $model)->where('field', '_id')->first();
 
         if(empty($identitycounter)){
-            return $model::max('plan_id');
+            return $model::max('_id');
         }
 
         $identitycounter_count =  $identitycounter->count;
@@ -31,5 +31,4 @@ class RazorpayPlan extends  \Basemodel {
         return  $model::maxId();
     
 	}
-
 }
