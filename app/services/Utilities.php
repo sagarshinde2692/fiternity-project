@@ -9440,22 +9440,33 @@ Class Utilities {
 		return $service;
     }
     
-    public function createRazorPayPlans($amount, $interval=30, $type="Days"){
-        // options ={
-        //     method:'POST',
-        //     url: constant.razorPayURL,
-        //     hraders:{"Content-Type": "application/json"},
-        //     json: {
-        //         "period": req.period,
-        //         "interval": req.interval,
-        //         "item": {
-        //             "name": req.name,
-        //             "description": req.description,
-        //             "amount": req.amount,
-        //             "currency": "INR"
-        //         }
-        //     }
-        // };
+    public function createRazorPayPlans($amount, $interval=30, $plan_name="Silver", $period="Days", $desciption="passes" ){
+        
+        $data =array(
+            "period"=>$period,
+            "interval"=>$interval, 
+            "item"=>array(
+                "name" => $plan_name,
+                "description" =>$desciption,
+                "amount"=> $amount,
+                "currency"=> "INR"
+            )
+        );
+
+        $razoPayUrl = Config::get('app.razorPayURL');
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $razoPayUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_USERPWD, Config::get('app.key_id') . ":" . Config::get('app.secrate_key'));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $output = json_decode(curl_exec($ch), true);
+        curl_close($ch);
+
+        Log::info('return of plan creation=>>>>>>>> ::::::::::::>>>>>>>>>>>>>>.',[$output]);
+        $planStore = new RazorPayPlans($output);
+        $planStore->save();
+        return array('plan'=>$output);
     }
 
 }

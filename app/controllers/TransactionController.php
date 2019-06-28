@@ -9233,7 +9233,18 @@ class TransactionController extends \BaseController {
         $this->successCommon($success_data);
     }
 
-    public function classPassCapture($data){
+    public function classPassCapture(){
+        $data = Input::All();
+        $rules = array(
+            'amount'=>'required',
+            "pass_type"=> "required"
+        );
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+        $this->getRazorPayPlans($data);
         
     }
 
@@ -9243,13 +9254,14 @@ class TransactionController extends \BaseController {
         ->where('amount',$amount)
         ->select('plan_id')
         ->first();
-
-        if(!empty($razorPayPlans)){
-
+        $plans = $razorPayPlans;
+        Log::info("plans:::::::::::", [$plans, $amount, $data['pass_type']]);
+        if(empty($plans)){
+            $plans = $this->utilities->createRazorPayPlans($amount, $data['pass_type']);
         } 
-        else{
-            $this->utilities->createRazorPayPlans($amount);
-        } 
+        Log::info("plans dattata::::::::::", [$plans]);
+
+        return $plans;
     }
 
     public function getPasses($data){
