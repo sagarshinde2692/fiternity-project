@@ -5,6 +5,7 @@ use Config;
 use Pass;
 use RazorpayPlan;
 use RazorpaySubscription;
+use Order;
 
 class RazorpayService {
     
@@ -114,6 +115,20 @@ class RazorpayService {
         $output = json_decode(curl_exec($curl), true);
         curl_close($curl);
         return $output;
+    }
+
+    public function storePaymentDetails($orderId, $paymentId) {
+        if(empty($orderId) || empty($paymentId)) {
+            return;
+        }
+        $order = Order::where('_id', $orderId)->first();
+        $order->update(['razorpay_payment_id' => $paymentId]);
+        RazorpaySubscription::where('subscription_id', $order->razorpay_subscription_id)->update(['razorpay_payment_id' => $paymentId]);
+        return [
+            'order_id' => $orderId,
+            'razorpay_subscription_id' => $order['razorpay_subscription_id'],
+            'razorpay_payment_id' => $order['razorpay_payment_id']
+        ];
     }
 
 }

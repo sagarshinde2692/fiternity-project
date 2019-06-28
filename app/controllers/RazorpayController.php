@@ -22,4 +22,16 @@ class RazorpayController extends \BaseController {
         }
         return $response;
     }
+
+    public function storePaymentDetails() {
+        $data = Input::json()->all();
+        $response = ['status' => 400, 'data' => null, 'msg' => 'Failed'];
+        if(!empty($data['payment_id']) && $data['order_id']) {
+            $response = $this->razorpayService->storePaymentDetails($data['order_id'], $data['payment_id']);
+        }
+        if(empty($response)) {
+            $response = ['status' => 200, 'data' => $response, 'msg' => 'Success'];
+        }
+        return $response;
+    }
 }
