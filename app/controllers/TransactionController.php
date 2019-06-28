@@ -3793,6 +3793,7 @@ class TransactionController extends \BaseController {
                                 'description'=> $this->utilities->getDescription($data),
                                 'finder_id'=>$data['finder_id'],
                                 'order_type'=>$data['type'],
+                                'city_id'=>$data['city_id'],
                                 'extended_validity'=>!empty($data['extended_validity']) || !empty($order['extended_validity'])
                             );
                             $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
