@@ -251,7 +251,9 @@ class BrandsController extends \BaseController {
 
 			if(in_array($key,['centers_block', 'speakers_block', 'advisory_block', 'video'])){
 				foreach($home1[$key] as $keyImage=>$valueImage){
-					$home1[$key][$keyImage]['image'] =  $base_url.$home1[$key][$keyImage]['path'].$home1[$key][$keyImage]['image'];
+					if(!in_array($keyImage, ['webm', 'mp4'])){				
+						$home1[$key][$keyImage]['image'] =  $base_url.$home1[$key][$keyImage]['path'].$home1[$key][$keyImage]['image'];
+					}
 				}
 			}	
 		}
