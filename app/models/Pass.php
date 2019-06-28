@@ -1,6 +1,6 @@
 <?php
 
-class Passes extends  \Basemodel {
+class Pass extends  \Basemodel {
 	
 	protected $collection = "passes";
 

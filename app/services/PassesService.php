@@ -1,7 +1,7 @@
 <?PHP namespace App\Services;
 
 use Log;
-use Passes;
+use Pass;
 
 Class PassesService {
 
@@ -10,10 +10,11 @@ Class PassesService {
     }
 
     Public function listPasses(){
-        $passList = Passes:: Active()
+
+        $passList = Pass:: Active()
         ->select('pass_id', 'amount', 'duaration', 'duration_type', 'type', 'credits')
         ->get();
 
-        return $passList;
+        return array("status" => 200, "data"=> $passList, "msg" => "success");
     }
 }
