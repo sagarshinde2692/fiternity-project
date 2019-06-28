@@ -9264,17 +9264,5 @@ class TransactionController extends \BaseController {
         return $plans;
     }
 
-    public function getPasses($data){
-        $amount = (int)$data['amount'];
-        $pass = Passes::Active()
-        //->where('amount',$amount)
-        ->select('pass_id','duration', 'duration_type')
-        ->first();
-
-        if(!empty($pass)){
-
-        }
-    }
-
 }
 

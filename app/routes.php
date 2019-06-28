@@ -1363,3 +1363,4 @@ Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
 Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
 Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
 Route::post('passcapture', 'TransactionController@classPassCapture');
+Route::get('listpass', 'PassesController@listPassesController');
