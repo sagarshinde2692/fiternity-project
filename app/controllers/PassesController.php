@@ -7,7 +7,7 @@ class PassesController extends \BaseController {
         $this->passesService = $passesService;
     }
 
-    public function listPassesController(){
+    public function listPasses(){
         return $this->passesService->listPasses();
     }
 
