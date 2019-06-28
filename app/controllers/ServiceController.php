@@ -1289,6 +1289,10 @@ class ServiceController extends \BaseController {
                         }
 					}
 					
+					if(isset($sc['free_trial_available']) && $sc['free_trial_available']){
+						$str = "";
+					}
+
 					$sc['cost'] .= $str;
 					if(!empty($service['extended_validity'])){
 
