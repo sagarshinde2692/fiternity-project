@@ -9244,7 +9244,7 @@ class TransactionController extends \BaseController {
         if ($validator->fails()) {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
         }
-        $this->getRazorPayPlans($data);
+        return $this->getRazorPayPlans($data);
         
     }
 

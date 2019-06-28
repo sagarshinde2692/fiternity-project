@@ -34,6 +34,7 @@ use MongoDate;
 use Coupon;
 use \GuzzleHttp\Client;
 use Input;
+use RazorPayPlans;
 
 use App\Services\Fitnessforce as Fitnessforce;
 
@@ -9440,7 +9441,7 @@ Class Utilities {
 		return $service;
     }
     
-    public function createRazorPayPlans($amount, $interval=30, $plan_name="Silver", $period="Days", $desciption="passes" ){
+    public function createRazorPayPlans($amount, $plan_name="Silver", $interval=30, $period="daily", $desciption="passes" ){
         
         $data =array(
             "period"=>$period,
@@ -9458,12 +9459,13 @@ Class Utilities {
         curl_setopt($ch, CURLOPT_URL, $razoPayUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_USERPWD, Config::get('app.key_id') . ":" . Config::get('app.secrate_key'));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_USERPWD, Config::get('app.razorPayKey') . ":" . Config::get('app.razorPaySecret'));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
         $output = json_decode(curl_exec($ch), true);
         curl_close($ch);
 
         Log::info('return of plan creation=>>>>>>>> ::::::::::::>>>>>>>>>>>>>>.',[$output]);
+        //$output['amount'] = $amount;
         $planStore = new RazorPayPlans($output);
         $planStore->save();
         return array('plan'=>$output);
