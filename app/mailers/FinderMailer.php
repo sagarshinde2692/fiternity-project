@@ -60,7 +60,6 @@ Class FinderMailer extends Mailer {
 					case 3 : 
 						$fitternity_email = [
 							'virenmehta@fitternity.com',
-							'silkeshakadam@fitternity.com',
 							'priyankamohnish@fitternity.com',
 							'dharatanna@fitternity.com',
 							'pranjalisalvi@fitternity.com',
@@ -106,7 +105,6 @@ Class FinderMailer extends Mailer {
 						break;
 					case 5 : 
 						$fitternity_email = [
-							'silkeshakadam@fitternity.com',
 							'priyankamohnish@fitternity.com',
 							'virenmehta@fitternity.com',
 							'nishantullal@fitternity.com',
@@ -282,7 +280,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'RM-email-on-profile-edit-request';
 
-		$user_email = array('pranjalisalvi@fitternity.com','sailismart@fitternity.com','harshitagupta@fitternity.com');
+		$user_email = array('pranjalisalvi@fitternity.com','sailismart@fitternity.com','harshitagupta@fitternity.com', 'priyankapatel@fitternity.com');
 
 		$message_data 	= array(
 			'user_email' => $user_email
@@ -353,7 +351,6 @@ Class FinderMailer extends Mailer {
 				case 3 : 
 					$fitternity_email = [
 						'virenmehta@fitternity.com',
-						'silkeshakadam@fitternity.com',
 						'priyankamohnish@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
@@ -398,7 +395,6 @@ Class FinderMailer extends Mailer {
 					break;
 				case 5 : 
 					$fitternity_email = [
-						'silkeshakadam@fitternity.com',
 						'priyankamohnish@fitternity.com',
 						'virenmehta@fitternity.com',
 						'nishantullal@fitternity.com',
@@ -430,7 +426,8 @@ Class FinderMailer extends Mailer {
 
 		$common = [
 			'siddharthshah@fitternity.com',
-			'dharmindersingh@fitternity.com'
+			'dharmindersingh@fitternity.com',
+			'priyankapatel@fitternity.com'
 		];
 
 		$user_email = array_merge($user_email,$common);
@@ -595,7 +592,7 @@ Class FinderMailer extends Mailer {
 
         $label = 'First-Autotrial-Fitternity';
 
-        $user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','fitternity.suraj@gmail.com');
+        $user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','fitternity.suraj@gmail.com', 'priyankapatel@fitternity.com');
 
         $user_name = 'Fitternity Team';
 
@@ -771,7 +768,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'NoPrevSalesNotification';
 
-		$user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','surajshetty@fitternity.com');
+		$user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','surajshetty@fitternity.com', 'priyankapatel@fitternity.com');
 		$user_name = "Fitternity Team";
 
 		$message_data 	= array(
@@ -822,7 +819,7 @@ Class FinderMailer extends Mailer {
 
 	protected function partPaymentFitternity($data){
 		$label = 'PartPaymentPurchase-Fitternity';
-		$user_email 	=  	['sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com'];
+		$user_email 	=  	['sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'priyankapatel@fitternity.com'];
 		$message_data 	= array(
 			'user_email' => $user_email,
 			'user_name' =>  'Fitterntiy',
@@ -842,7 +839,6 @@ Class FinderMailer extends Mailer {
 			'mitmehta@fitternity.com',
 			'kevalshah@fitternity.com',
 			'priyankapatel@fitternity.com',
-			'silkeshakadam@fitternity.com',
 			'ismailbaig@fitternity.com',
 			'arvindraj@fitternity.com'
 		];
@@ -869,7 +865,6 @@ Class FinderMailer extends Mailer {
 					break;
 				case 3 : 
 					$data['fitternity_email'] = [
-						'silkeshakadam@fitternity.com',
 						'ismailbaig@fitternity.com',
 						'prashanthreddy@fitternity.com',
 						'dharatanna@fitternity.com',
@@ -907,7 +902,6 @@ Class FinderMailer extends Mailer {
 		$label = 'AddBusiness-Fitternity';
 
 		$data['fitternity_email'] = [
-			'silkeshakadam@fitternity.com',
 			'rahulsachdev@fitternity.com',
 			'niveditasomani@fitternity.com',
 			'dharatanna@fitternity.com',
@@ -938,7 +932,6 @@ Class FinderMailer extends Mailer {
 					break;
 				case 3 : 
 					$data['fitternity_email'] = [
-						'silkeshakadam@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
 						'priyankapatel@fitternity.com' 
@@ -1026,7 +1019,6 @@ Class FinderMailer extends Mailer {
 					break;
 				case 3 : 
 					$data['fitternity_email'] = [
-						'silkeshakadam@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
 						'priyankapatel@fitternity.com' 
@@ -1171,7 +1163,6 @@ Class FinderMailer extends Mailer {
 					break;
 				case 3 : 
 					$data['fitternity_email'] = [
-						"silkeshakadam@fitternity.com",
 						"priyankamohnish@fitternity.com",
 						"virenmehta@fitternity.com",
 						"nishantullal@fitternity.com",
@@ -1208,7 +1199,6 @@ Class FinderMailer extends Mailer {
 					break;
 				case 5 : 
 					$data['fitternity_email'] = [
-						"silkeshakadam@fitternity.com",
 						"priyankamohnish@fitternity.com",
 						"nishantullal@fitternity.com",
 						"vinichellani@fitternity.com",
@@ -1274,7 +1264,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'TrialAlert-Fitternity';
 
-		$user_email = ["vinichellani@fitternity.com","rohityadav@fitternity.com","karishahuja@fitternity.com","mukeshraheja@fitternity.com","prachimayekar@fitternity.com"];
+		$user_email = ["vinichellani@fitternity.com","rohityadav@fitternity.com","karishahuja@fitternity.com","mukeshraheja@fitternity.com","prachimayekar@fitternity.com", 'priyankapatel@fitternity.com'];
 		
 		// $user_email = ["dhruvsarawagi@fitternity.com"];
 		$user_name = 'Fitternity Team';

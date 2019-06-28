@@ -1289,6 +1289,10 @@ class ServiceController extends \BaseController {
                         }
 					}
 					
+					if(isset($sc['free_trial_available']) && $sc['free_trial_available']){
+						$str = "";
+					}
+
 					$sc['cost'] .= $str;
 					if(!empty($service['extended_validity'])){
 
@@ -1656,7 +1660,7 @@ class ServiceController extends \BaseController {
 			if(!$finder){
 				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
 			}
-
+			
 			$finder['reviews'] = !empty($finder['reviews']) ? $finder['reviews']->toArray() : []; 
 			if(count($finder['reviews']) < 3){
 				$initial_review_count = count($finder['reviews']);
@@ -1677,8 +1681,12 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules', 'short_description','servicesubcategory_id','flags']);
+			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules', 'short_description','servicesubcategory_id','flags', 'pps_description']);
 			
+			if(isset($service_details['pps_description']) && $service_details['pps_description'] != ''){
+				$service_details['short_description'] = $service_details['pps_description'];
+			}
+
 			if(!empty($service_details['short_description'])){
 				
 				$service_category = Servicecategory::find($service_details["servicesubcategory_id"]);
