@@ -1046,6 +1046,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['vip_trial'] = (isset($data['vip_trial'])  && $data['vip_trial'] == true) ? '1' : '0';
             $insertData['ordering'] = (int)$data['order'];
             $insertData['short_description'] = $data['info']['short_description'];
+            $insertData['pps_description'] = $data['info']['pps_description'];
             $insertData['body'] = $data['info']['long_description'];
             $insertData['address'] = ($data['address']['line1'] == '' && $data['address']['line1'] == '' && $data['address']['line1'] == '' && $data['address']['pincode'] == '' && $data['address']['landmark'] == '') ? '' : $data['address']['line1'].', '.$data['address']['line2'].', '.$data['address']['line3'].', '.$data['address']['landmark'].', '.$data['address']['pincode'];
             $insertData['what_i_should_carry'] = $data['what_i_should_carry'];

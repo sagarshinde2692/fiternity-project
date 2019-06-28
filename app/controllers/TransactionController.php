@@ -1231,7 +1231,22 @@ class TransactionController extends \BaseController {
                 Log::info('Not bookings as studio extended validity: ', [$data['_id']]);
             }
         }
+        
+        $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
+        $duration = $duration > 180 ? 360 : $duration;
+        if(!empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
+            Finder::$withoutAppends = true;
+            $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+            
+            if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
+                $duration = 0;
+            }
 
+            if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
+                $data['finder_flags']['brand_loyalty'] = $finder['brand_id'];
+            }
+        }
+        
         if(isset($old_order_id)){
             
             if($order){
@@ -9137,7 +9152,7 @@ class TransactionController extends \BaseController {
             $campaign_reg->save();
         }
 
-        if($type == 'workout-session' && isset($data['service_flags']['bulk_purchase']) && $data['service_flags']['bulk_purchase']['status'] == true){
+        if((isset($data['service_flags']['bulk_purchase_b2c_pps']) && $data['service_flags']['bulk_purchase_b2c_pps']['status'] == true) || (isset($data['service_flags']['bulk_purchase_b2b_pps']) && $data['service_flags']['bulk_purchase_b2b_pps']['status'] == true) || (isset($data['ratecard_flags']['bulk_purchase_membership']) && $data['ratecard_flags']['bulk_purchase_membership']['status'] == true)){
             Log::info("bulk_purchase");
             $this->updateBulkPurchase($data);
         }
@@ -9149,39 +9164,124 @@ class TransactionController extends \BaseController {
     public function updateBulkPurchase($data){
         Log::info("updateBulkPurchase");
 
-        $bulk_purchase = $data['service_flags']['bulk_purchase'];
+        $type = $data['type'];
 
-        $service_id = $data['service_id'];
-        $order_id = $data['order_id'];
-        $booktrial_id = $data['_id'];
-        $used = 0;
-        if(isset($bulk_purchase['used']) && $bulk_purchase['used'] != $bulk_purchase['quantity']){
-            Log::info('used != quantity');
+        if($type == 'memberships' && isset($data['ratecard_flags']['bulk_purchase_membership']) && $data['ratecard_flags']['bulk_purchase_membership']['status'] == true){
+
+            $order_id = $data['order_id'];
+            $ratecard_id = $data['ratecard_id'];
             
-            $used = $bulk_purchase['used'] + 1;
-            Log::info('used ::', [$used]);
+            $ratecard = array();
+            Ratecard::$withoutAppends = true;
+            $ratecard = Ratecard::where('_id', $ratecard_id)->first();
+            $ratecard_flag = $ratecard['flags'];
+
+            $used = $ratecard_flag['bulk_purchase_membership']['used'] + 1;
+            $price = $ratecard_flag['bulk_purchase_membership']['price'];
+
+            $ratecard_flag['bulk_purchase_membership']['used'] = $used;
+            $ratecard['flags'] = $ratecard_flag;
+            $ratecard->update();
+
+            $ratecard_api = array();
+            $ratecard_api = RatecardAPI::where('_id', $ratecard_id)->first();
+            $ratecard_api_flag = $ratecard_api['flags'];
+            $ratecard_api_flag['bulk_purchase_membership']['used'] = $used;
+            $ratecard_api['flags'] = $ratecard_api_flag;
+            $ratecard_api->update();
 
             $data = array();
-            $data['bulk_purchase'] = array('price' => $bulk_purchase['price']);
-            Order::where('_id',(int)$order_id)->update($data);
-            Booktrial::where('_id',(int)$booktrial_id)->update($data);
-            
-            $service = array();
-            Service::$withoutAppends = true;
-            $service = Service::where('_id', $service_id)->first();
-            $service_flag = $service['flags'];
-            $service_flag['bulk_purchase']['used'] = $used;
-            $service['flags'] = $service_flag;
-            $service->update();
+            $data['bulk_purchase'] = array(
+                'type' => 'bulk_purchase_membership', 
+                'used' => $used,
+                'price' => $price,
+            );
 
-            $v_service = array();
-            $v_service = Vendorservice::where('_id', $service_id)->first();
-            $v_service_flag = $v_service['flags'];
-            $v_service_flag['bulk_purchase']['used'] = $used;
-            $v_service['flags'] = $v_service_flag;
-            $v_service->update();
-           
+            Order::where('_id',(int)$order_id)->update($data);
+
         }
+
+        if($type == 'workout-session'){
+
+            $order_id = $data['order_id'];
+            $service_id = $data['service_id'];
+            $booktrial_id = $data['_id'];
+
+            if((isset($data['third_party_details.abg']) && $data['third_party_details.abg'] != "") || (isset($data['corporate_coupon']) && $data['corporate_coupon'] == true)){
+
+                $service = array();
+                Service::$withoutAppends = true;
+                $service = Service::where('_id', $service_id)->first();
+                $service_flag = $service['flags'];
+
+                $used = $service_flag['bulk_purchase_b2b_pps']['used'] + 1;
+                $price = $service_flag['bulk_purchase_b2b_pps']['price'];
+                $commission = $service_flag['bulk_purchase_b2b_pps']['commission'];
+                $quantity = $service_flag['bulk_purchase_b2b_pps']['quantity'];
+                
+                if($used <= $quantity){
+                    $service_flag['bulk_purchase_b2b_pps']['used'] = $used;
+                    $service['flags'] = $service_flag;
+                    $service->update();
+
+                    $v_service = array();
+                    $v_service = Vendorservice::where('_id', $service_id)->first();
+                    $v_service_flag = $v_service['flags'];
+                    $v_service_flag['bulk_purchase_b2b_pps']['used'] = $used;
+                    $v_service['flags'] = $v_service_flag;
+                    $v_service->update();
+
+                    $data = array();
+                    $data['bulk_purchase'] = array(
+                        'type' => 'bulk_purchase_b2b_pps', 
+                        'used' => $used,
+                        'price' => $price,
+                        'commission' => $commission,
+                        'quantity' => $quantity,
+                    );
+                    Order::where('_id',(int)$order_id)->update($data);
+                    Booktrial::where('_id',(int)$booktrial_id)->update($data);
+                }
+                
+            }else{
+
+                $service = array();
+                Service::$withoutAppends = true;
+                $service = Service::where('_id', $service_id)->first();
+                $service_flag = $service['flags'];
+
+                $used = $service_flag['bulk_purchase_b2c_pps']['used'] + 1;
+                $price = $service_flag['bulk_purchase_b2c_pps']['price'];
+                $commission = $service_flag['bulk_purchase_b2c_pps']['commission'];
+                $quantity = $service_flag['bulk_purchase_b2c_pps']['quantity'];
+                
+                if($used <= $quantity){
+                    $service_flag['bulk_purchase_b2c_pps']['used'] = $used;
+                    $service['flags'] = $service_flag;
+                    $service->update();
+
+                    $v_service = array();
+                    $v_service = Vendorservice::where('_id', $service_id)->first();
+                    $v_service_flag = $v_service['flags'];
+                    $v_service_flag['bulk_purchase_b2c_pps']['used'] = $used;
+                    $v_service['flags'] = $v_service_flag;
+                    $v_service->update();
+
+                    $data = array();
+                    $data['bulk_purchase'] = array(
+                        'type' => 'bulk_purchase_b2c_pps', 
+                        'used' => $used,
+                        'price' => $price,
+                        'commission' => $commission,
+                        'quantity' => $quantity,
+                    );
+                    Order::where('_id',(int)$order_id)->update($data);
+                    Booktrial::where('_id',(int)$booktrial_id)->update($data);
+                }
+
+            }
+        }
+
 
     }
 
