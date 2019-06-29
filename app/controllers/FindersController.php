@@ -1333,6 +1333,7 @@ class FindersController extends \BaseController {
 				// $response['finder']  = $this->applyNonValidity($response, 'web');
 
                 $this->applyFreeSP($response);
+                $this->multifitGymWebsiteVendorUpdate($response);
 
                 // $this->insertWSNonValidtiy($response, 'web');
 
@@ -8344,5 +8345,86 @@ class FindersController extends \BaseController {
             Log::info("Non validity description breaking", [$e]);
         
         }
+	}
+
+	public function multifitGymWebsiteVendorUpdate(&$data){
+		
+		if(!empty(Request::header('Source')) && Request::header('Source') == "multifit"){
+			Log::info('inside vendor update for multifit gym');
+			if(!empty($data['finder']['website_membership'])){
+
+				$data['finder']['website_membership'] = $this->pathAddingToVendorWebsite($data['finder']['website_membership']);
+	
+				if(!empty($data['finder']['website_membership']['cover']['image'])){
+	
+					$data['finder']['coverimage'] = $data['finder']['website_membership']['cover']['image'];
+				}
+	
+				if(!empty($data['finder']['website_membership']['class_time_table']['image'])){
+	
+					$data['finder']['class_time_table'] = $data['finder']['website_membership']['class_time_table']['image'];
+				}
+	
+				if(!empty($data['finder']['website_membership']['address'])){
+	
+					$data['finder']['contact']['address'] = !empty($data['finder']['website_membership']['address']['location'])? $data['finder']['website_membership']['address']['location']: $data['finder']['contact']['address'];
+					$data['finder']['contact']['phone'] = !empty($data['finder']['website_membership']['address']['contact_number']) ? $data['finder']['website_membership']['address']['contact_number']: $data['finder']['contact']['phone'] ;
+					$data['finder']['contact']['email'] = !empty($data['finder']['website_membership']['address']['email']) ?$data['finder']['website_membership']['address']['email']: $data['finder']['contact']['email'];
+					$data['finder']['contact']['pincode'] = !empty($data['finder']['website_membership']['address']['pincode'])?$data['finder']['website_membership']['address']['pincode']: $data['finder']['contact']['pincode'];
+				}
+	
+				if(!empty($data['finder']['website_membership']['services_list'])){
+					$data['finder']['servicesfilter_fitt'] = $data['finder']['servicesfilter'];
+					$data['finder']['servicesfilter'] = $data['finder']['website_membership']['services_list'];
+					// foreach($data['finder']['website_membership']['services_list'] as $key=> $value){
+	
+					// 	foreach($data['finder']['servicesfilter'] as $serviceFilterKey=> $serviceFilterValue){
+	
+					// 		if(strtolower($value['name'])==  strtolower($serviceFilterValue['tag'])){
+					// 			Log::info('inside vendor update for multifit gym------------->>>>>>>>>>>>.matched service name image');
+					// 			$data['finder']['servicesfilter'][$serviceFilterKey]['image'] = $value['image'];
+					// 			break;
+					// 		}
+					// 	}
+					// }
+				}
+	
+				if(!empty($data['finder']['website_membership']['facilities_list'])){
+					$data['finder']['facilities_fitt'] = $data['finder']['facilities'];
+					$data['finder']['facilities'] = $data['finder']['website_membership']['facilities_list'];
+					// foreach($data['finder']['website_membership']['facilities_list'] as $key=> $value){
+	
+					// 	foreach($data['finder']['facilities'] as $facilitiesKey=> $facilitiesValue){
+	
+					// 		if(strtolower($value['name'])==  strtolower($facilitiesValue['name'])){
+					// 			Log::info('inside vendor update for multifit gym------------->>>>>>>>>>>>.matched filtes name image',[$value['image']]);
+					// 			$data['finder']['facilities'][$facilitiesKey]['image'] = $value['image'];
+					// 			break;
+					// 		}
+					// 	}
+					// }
+				}
+				unset($data['finder']['website_membership']);
+				unset($data['finder']['brand']['brand_detail']['brand_website']);
+			}
+		}
+	}
+
+	public function pathAddingToVendorWebsite($first_block){
+		$base_url =Config::get('app.s3_bane_url');
+		foreach($first_block as $key=>$value){
+			if(in_array($key,['cover', 'thumbnail', 'class_time_table'])){	
+				$first_block[$key]['image'] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'] ;
+			}	
+
+			if(in_array($key,['services_list', 'memberships_list', 'facilities_list'])){
+				foreach($first_block[$key] as $keyImage=>$valueImage){
+					if(!empty($first_block[$key][$keyImage]['image'])){
+						$first_block[$key][$keyImage]['image'] =  $base_url.$first_block[$key][$keyImage]['path'].$first_block[$key][$keyImage]['image'];
+					}
+				}
+			}	
+		}
+		return $first_block;
 	}
 }
