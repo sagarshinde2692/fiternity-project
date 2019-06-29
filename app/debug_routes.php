@@ -2743,4 +2743,5 @@ Route::get('corporateCoupons','DebugController@corporateCoupons');
 Route::get('rewardDistributionAndClaim', 'DebugController@rewardDistributionAndClaim');
 Route::get('addAmountTransferToVendorBreakup', 'DebugController@addAmountTransferToVendorBreakup');
 Route::get('manualToSession', 'DebugController@manualToSession');
+Route::get('hyperLocal', 'DebugController@hyperLocal');
 Route::get('fitnessForce','TransactionController@fitnessForce');

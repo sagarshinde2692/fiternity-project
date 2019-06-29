@@ -11152,7 +11152,58 @@ public function yes($msg){
              Vendor::where('_id', $vendor['_id'])->update(['website_membership'=>$vendor['website_membership']]);
             //  return;
          }
-    }
+	}
+	
+	public function hyperLocal(){
+		$destinationPath = public_path();
+		$fileName = "vendor.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+		
+		$cat_ali = ["ft" => 'Cross functional'];
+
+		$finArr = array();
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if( !empty($value['_id']) && !empty($value['category']) && !empty($value['location_id']) ){
+					
+					$cat = explode(",",$value['category']);
+					if(!empty($cat)){
+						foreach($cat as $ck => $cv){
+							
+							$cv = trim(strtolower($cv));
+							if($cv == 'ft'){
+								$cv = $cat_ali[$cv];
+							}
+							
+							if($cv == 'gym' || $cv == 'gyms'){
+								$id['_id'] = 5;
+							}else{
+								$id = Findercategory::where('name', 'LIKE', '%'.$cv.'%')->first(['_id']);
+							}
+							$cat_id = $id['_id'];
+							$loc_cat = $value['location_id']."-".$cat_id; 
+														
+							if (array_key_exists($loc_cat,$finArr)){
+								if(!in_array($value['_id'], $finArr[$loc_cat])){
+									$finArr[$loc_cat][] = (int)$value['_id'];
+								}
+							}else{
+								$finArr[$loc_cat][] = (int)$value['_id'];
+							}
+							
+
+						}
+					}
+				}
+			}
+		}
+		return $finArr;
+	}
 
 }
 

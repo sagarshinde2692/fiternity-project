@@ -1,0 +1,259 @@
+_id,location_id,category
+1,68,"FT, aerial"
+26,69,"gym, Fitness studio"
+424,34,"gym,FT,fitness studio,dance,zumba,yoga"
+941,54,Gym
+1013,66,marathon training
+1030,21,gyms
+1034,74,gym
+1215,15,"Fitness Studio, Zumba"
+1427,31,Gym
+1429,23,gyms
+1490,24,"gym, FT"
+1493,36,Zumba
+1705,16,gyms
+1706,65,gyms
+1711,51,fitness studios
+1750,12,marathon training
+1908,78,Gyms
+1935,77,Gyms
+2236,42,gym
+2252,367,"gyms, FT"
+2421,43,gyms
+2739,103,Gyms
+2818,21,Fitness studio
+3180,273,"Gyms , Fitness Studio"
+3202,221,"Gyms , Fitness Studio"
+3204,167,"Gyms , Fitness Studio"
+3229,178,"Gyms , Fitness Studio"
+3279,215,Gyms
+3322,247,"Gyms , Fitness Studio"
+3331,226,"Gyms , Fitness Studio"
+3336,287,"Gyms , Fitness Studio"
+3341,180,"Gyms , Fitness Studio"
+3342,166,"Gyms , Fitness Studio"
+3346,229,"Gyms , Fitness Studio"
+3442,15,Gyms
+3499,174,"Gyms, Crossfit, Cross functional"
+3504,243,Gyms
+3529,150,Gyms
+3774,220,"Yoga, Fitness Studios"
+3777,213,"Yoga, Fitness Studios"
+3980,244,"Gyms , Fitness Studio"
+4044,180,"Gyms , Fitness Studio"
+4689,238,Gyms
+4763,252,"Gyms, Crossfit, Cross functional"
+4819,198,"Gyms , Fitness Studio"
+4822,243,"Gyms , Fitness Studio"
+4823,184,"Gyms , Fitness Studio"
+4824,213,"Gyms , Fitness Studio"
+4825,281,"Gyms , Fitness Studio"
+4826,210,"Gyms , Fitness Studio"
+5041,308,Gym
+5502,242,"Gyms , Fitness Studio , cross functional"
+5617,305,Gym
+5728,306,gyms
+5745,325,gyms
+6029,229,"Gyms , Fitness Studio"
+6049,142,"fitness studio, dance,zumba"
+6188,90,Fitness Studios
+6259,135,gyms
+6377,12,"fitness studio,yoga,FT,Fitness studio"
+6411,391,gyms
+6496,392,"Fitness Studios, Zumba"
+6499,404,gyms
+6534,420,cross functional training
+6602,321,Gym
+6686,203,"Gyms, Crossfit, Cross functional"
+6945,205,"Yoga, Fitness Studios"
+6964,93,Gyms
+7031,266,"Gyms , Fitness Studio"
+7053,238,Gyms
+7153,31,Fitness Studio
+7168,232,Gyms
+7697,34,"FT,fitness studio"
+7724,47,"FT,Fitness studio"
+7877,2,FT
+8077,252,MMA and kick boxing
+8868,420,Gym
+9041,254,Gyms
+9111,48,gym
+9149,446,Gym
+9187,57,luxury hotels
+9365,23,gyms
+9400,191,"Gyms , Fitness Studio"
+9404,2,Fitness Studio
+9422,252,"Yoga, Fitness Studios"
+9423,380,Gyms
+9427,36,Functional Training
+9436,48,gym
+9476,1,
+9481,100,Gyms
+9518,27,gyms
+9575,32,"gym,FT,fitness studio"
+9600,440,"gyms, cross functional training"
+9615,243,"Yoga, Fitness Studios"
+9622,176,Fitness Studio
+9624,368,Gym
+9877,37,Aqua 
+9922,47,"Fitness Studio,Yoga"
+9935,38,fitness studios
+9943,43,Fitness Studios
+9947,221,"Yoga, Fitness Studios"
+9948,19,fitness studios
+9951,220,"Yoga, Fitness Studios"
+9954,78,Gyms
+9957,276,"Yoga, Fitness Studios"
+9959,281,"Yoga, Fitness Studios"
+10394,166,"Yoga, Fitness Studios"
+10503,79,Cross Functional Training
+10567,30,"FT,fitness studio"
+10674,84,Gyms
+10690,222,"Gyms, Crossfit, Cross functional"
+10761,244,"Yoga, Fitness Studios"
+10957,327,Fitness Studios
+10964,222,"Gyms, Crossfit, Cross functional"
+10970,374,Gyms
+11021,81,Gyms
+11103,298,gyms
+11140,325,"Gyms, Fitness studio"
+11159,67,pilates
+11168,230,Gyms
+11183,73,gyms
+11190,140,gyms
+11223,417,Gyms
+11230,71,gym 
+11231,51,fitness studios
+11235,333,gyms
+11306,281,"gyms, Fitness Studios"
+11347,221,"gyms, Fitness Studios"
+11350,166,"Gyms, Fitness Studios"
+11366,506,"Gyms, Fitness Studios"
+11409,501,"Gyms, Fitness Studios"
+11475,367,gyms
+11534,501,Gyms
+11648,394,gyms
+11698,230,"Gyms, Fitness Studios"
+11822,503,"Gyms , Cross Functioanl, Crossfit"
+11988,192,"Gyms, Fitness Studios"
+12050,244,"Gyms, Fitness Studios"
+12166,90,Gyms
+12181,354,cross functional training
+12208,82,Gyms
+12212,423,"MMA, Kickboxing"
+12565,266,"Gyms, Fitness Studios, cross functional "
+12683,210,"Cross functional, cross fit, Fitness Studios"
+12685,498,gyms
+12690,272,"Gyms, Fitness Studios"
+12692,252,"Gyms, Fitness Studios"
+12719,238,"Yoga, Fitness Studios"
+12729,228,"Yoga, Fitness Studios"
+12986,36,Fitness STudio
+12991,428,"Gyms, cross functional training"
+13094,105,Gyms
+13256,501,"Yoga, Fitness Studios"
+13257,508,"Yoga, Fitness Studios"
+13258,582,"Yoga, Fitness Studios"
+13262,517,"Yoga, Fitness Studios"
+13263,545,"Yoga, Fitness Studios"
+13290,230,"Gyms, Fitness Studios"
+13297,305,gyms
+13340,508,Gyms
+13382,523,"Gyms, Fitness Studios"
+13578,502,"Gyms , Cross Functioanl, Crossfit"
+13581,505,"Gyms , Cross Functioanl, Crossfit"
+13660,12,"gym,FT,Fitness studio"
+13691,232,"Gyms, Fitness Studios"
+13801,26,gym
+13850,2,Fitness Studio
+13898,79,Gyms
+13901,27,gyms
+13961,31,gyms
+13968,184,"Gyms, Fitness Studios"
+13996,19,gyms
+14037,178,fitness studios
+14062,28,gyms
+14066,136,gyms
+14071,13,FT
+14102,415,Gyms
+14107,134,Gyms
+14113,69,FT
+14119,508,"Gyms, Fitness Studios , Cross functional, Crossfit"
+14125,252,"Yoga, Fitness Studios"
+14126,222,"Yoga, Fitness Studios"
+14129,266,"Yoga, Fitness Studios"
+14187,136,gyms
+14193,28,gyms
+14235,5,"Fitness studio, FT,gym"
+14324,299,gyms
+14345,142,gyms
+14518,15,Gyms
+14622,754,"Gyms, cross functional training"
+14625,28,FT
+14626,766,"Gyms, cross functional training"
+14627,759,"Gyms, cross functional training"
+14803,523,Gyms
+15078,198,"Cross fit, cross functional, Gyms, Fitness studios"
+15248,353,Gyms
+15310,242,"Gyms, Fitness Studios"
+15431,206,"Gyms, Fitness Studios"
+15536,358,Gyms
+15720,194,"Yoga, Fitness Studios"
+15758,200,"Gyms, Fitness Studios"
+15775,508,"Gyms, Fitness Studios"
+15852,45,MMA & KB
+15854,308,Gyms
+15872,231,"Gyms, Fitness Studios"
+15882,515,"Gyms, Fitness Studios"
+15919,79,Yoga
+15929,23,FT
+15975,42,"gyms, FT"
+15979,38,gym
+15980,183,"Gyms, Fitness Studios"
+15992,82,Gyms
+16027,2,yoga
+16028,28,"fitness studio, yoga"
+16036,354,"Gyms, MMA, Boxing"
+16062,117,Gyms
+16134,220,"Gyms, Fitness Studios, Yoga"
+16136,142,"gyms,FT,fitness studio,MMA & KB"
+16137,200,"Gyms, Fitness Studios"
+16190,191,Gyms
+16211,272,"Gyms, Crossfit, Cross functional"
+16240,741,gyms and FT
+16247,508,"Gyms, Fitness Studios"
+16251,501,"Gyms, Fitness Studios"
+16264,384,"gym, MMA"
+16265,226,"Yoga, Fitness Studios"
+16266,221,"Yoga, Fitness Studios"
+16267,284,"Yoga, Fitness Studios"
+16268,287,"Yoga, Fitness Studios"
+16269,198,"Yoga, Fitness Studios"
+16270,229,"Yoga, Fitness Studios"
+16271,230,"Yoga, Fitness Studios"
+16272,242,"Yoga, Fitness Studios"
+16273,167,"Yoga, Fitness Studios"
+16274,290,"Yoga, Fitness Studios"
+16292,683,"fitness studio, yoga"
+16293,184,"Yoga, Fitness Studios"
+16294,184,"Yoga, Fitness Studios"
+16299,257,"Yoga, Fitness Studios"
+16300,238,"Yoga, Fitness Studios"
+16305,114,Yoga
+16328,218,"Yoga, Fitness Studios"
+16451,45,Zumba
+16452,36,zumba
+16455,17,gym
+16483,45,Gyms
+16487,75,Gyms
+16494,995,gyms
+16495,59,gyms
+16500,426,cross functional training
+16503,509,"cross functional training, cross fit, Gyms, Fitness Studio"
+16504,210,"cross functional training, cross fit, Gyms, Fitness Studio"
+16507,18,"gyms, FT, Fitness STudios"
+16514,7,"gyms,FT,Fitness studios"
+16522,45,Gyms
+16528,87,Gyms
+16554,,Gyms
+16556,,Gyms
