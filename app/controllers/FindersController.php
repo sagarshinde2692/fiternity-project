@@ -1476,6 +1476,7 @@ class FindersController extends \BaseController {
 				$updatefindersulg       = Urlredirect::whereIn('oldslug',array($tslug))->firstOrFail();
 				$data['finder']         = $updatefindersulg->newslug;
 				$data['statusfinder']   = 404;
+				
 				return Response::json($data);
 			}
 
