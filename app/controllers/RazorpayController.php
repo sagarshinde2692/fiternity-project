@@ -14,11 +14,11 @@ class RazorpayController extends \BaseController {
         $data = Input::json()->all();
         Log::info('$data: ', [$data]);
         $response = ['status' => 400, 'data' => null, 'msg' => 'Failed'];
-        if(!empty($data['pass_id'])) {
-            $response = $this->razorpayService->createSubscription($data['pass_id']);
-        }
-        if(!empty($response)) {
-            $response = ['status' => 200, 'data' => $response, 'msg' => 'Success'];
+        if(!empty($data['order_id'])) {
+            $response = $this->razorpayService->createSubscription($data['order_id']);
+            if(!empty($response)) {
+                $response = ['status' => 200, 'data' => $response, 'msg' => 'Success'];
+            }
         }
         return $response;
     }

@@ -2,43 +2,53 @@
 
 use Log;
 use Config;
-use Pass;
 use RazorpayPlan;
 use RazorpaySubscription;
 use Order;
 
 class RazorpayService {
-    
-    public function createSubscription ($pass_id) {
 
-        $response = null;
+    public function createSubscription ($orderId) {
         
-        if (empty($pass_id)) {
-            return Response::json(array('status' => 400, 'data'=> null, 'msg' => 'Pass id not found.'),$this->error_status);
+        if (empty($orderId)) {
+            return;
         }
 
-        $pass = Pass::where('status', '1')->where('pass_id', $pass_id)->first();
-        if(empty($pass)){
-            Log::info("Pass not found");
-            return $response;
+        $order = Order::where('_id', $orderId)->first();
+        if(empty($order)){
+            Log::info("Order not found");
+            return;
+        }
+        $ratecardDetails = [
+            'type' => $order['type'],
+            'amount' => $order['amount']
+        ];
+        if(!empty($order['pass_id'])) {
+            $ratecardDetails['id'] = $order['pass_id'];
+        }
+        else if(!empty($order['ratecard_id'])) {
+            $ratecardDetails['id'] = $order['ratecard_id'];
+        }
+        else {
+            return;
         }
 
-        $razorpayPlan = RazorpayPlan::where('status', '1')->where('amount', $pass['amount'])->first();
+        $razorpayPlan = RazorpayPlan::where('status', '1')->where('amount', $order['amount'])->first();
 
         if(empty($razorpayPlan)) {
-            $razorpayPlan = $this->getRazorpayPlan($pass, true);
+            $razorpayPlan = $this->getRazorpayPlan($ratecardDetails, true);
         }
 
         $total_count = Config::get('app.razorpay.subscription.total_count');
         $data = [
-            'plan_id' => $razorpayPlan['razorpay_plan_id'],
+            'plan_id' => $razorpayPlan['rp_plan_id'],
             'total_count' => $total_count,
             'start_at'=> strtotime(Config::get('app.razorpay.subscription.interval')),
             'addons' => [
                 [
                     'item' => [
                         'name' => 'Initial Payment',
-                        'amount' => $pass['amount'],
+                        'amount' => $ratecardDetails['amount'],
                         'currency' => Config::get('app.razorpay.currency')
                     ]
                 ]
@@ -49,37 +59,70 @@ class RazorpayService {
         if(empty($subCreationResponse)) {
             return;
         }
-        $subscription = new RazorpaySubscription($subCreationResponse);
+
+        $modelData = [
+            'subscription_id' => RazorpaySubscription::maxId() + 1,
+            'plan_id' => $razorpayPlan['plan_id'],
+            'order_id' => $orderId,
+            'rp_subscription_id' => $subCreationResponse['id'],
+            'rp_plan_id' => $subCreationResponse['plan_id'],
+            'rp_status' => $subCreationResponse['status'],
+            'rp_start_at' => new \MongoDate($subCreationResponse['start_at']),
+            'rp_end_at' => new \MongoDate($subCreationResponse['end_at']),
+            'rp_start_at_epoch' => $subCreationResponse['end_at'],
+            'rp_end_at_epoch' => $subCreationResponse['start_at'],
+            'rp_total_count' => $subCreationResponse['total_count'],
+            'rp_customer_notify' => $subCreationResponse['customer_notify'],
+            'rp_short_url' => $subCreationResponse['short_url'],
+            'rp_expire_by' => $subCreationResponse['expire_by'],
+            'status' => '1',
+        ];
+
+        if(!empty($order['pass_id'])) {
+            $modelData['pass_id'] = $order['pass_id'];
+        }
+        else if(!empty($order['ratecard_id'])) {
+            $modelData['ratecard_id'] = $order['ratecard_id'];
+        }
+
+        $subscription = new RazorpaySubscription($modelData);
         $subscription->save();
+
+        $order->subscription_id = $modelData['subscription_id'];
+        $order->plan_id = $modelData['plan_id'];
+        $order->rp_subscription_id = $modelData['rp_subscription_id'];
+        $order->rp_plan_id = $modelData['rp_plan_id'];
+        $order->update();
+
         return $subscription;
 
     }
 
-    public function getRazorpayPlan($pass, $create=false) {
-        if(empty($pass)){
+    public function getRazorpayPlan($ratecardDetails, $create=false) {
+        if(empty($ratecardDetails)){
             return;
         }
-        $razorpayPlan = RazorpayPlan::where('status', '1')->where('amount', $pass['amount'])->first();
+        $razorpayPlan = RazorpayPlan::where('status', '1')->where('amount', $ratecardDetails['amount'])->first();
         if(!empty($razorpayPlan)) {
             Log::info('Plan already exists!');
             return $razorpayPlan->toArray();
         }
         if($create) {
-            return $this->createPlan($pass);
+            return $this->createPlan($ratecardDetails);
         }
         return;
     }
 
-    public function createPlan($pass) {
-        if(empty($pass)){
+    public function createPlan($ratecardDetails) {
+        if(empty($ratecardDetails)){
             return;
         }
 
         $razorpayPlan = [
             'item' => [
-                'name' => ('pass-'.$pass['pass_id'].'-'.$pass['type']),
-                'description' => 'Plan for pass: '.$pass['pass_id'].' of the type: '.$pass['type'],
-                'amount' => $pass['amount'],
+                'name' => ('pass-'.$ratecardDetails['id'].'-'.$ratecardDetails['type']),
+                'description' => 'Plan for pass: '.$ratecardDetails['id'].' of the type: '.$ratecardDetails['type'],
+                'amount' => $ratecardDetails['amount'],
                 'currency' => Config::get('app.razorpay.currency')
             ],
             'interval' => Config::get('app.razorpay.plan.interval'),
@@ -94,15 +137,16 @@ class RazorpayService {
 
         $modelData = [
             'plan_id' => RazorpayPlan::maxId() + 1,
-            'razorpay_plan_id' => $planCreationResponse['id'],
-            'razorpay_item_id' => $planCreationResponse['item']['id'],
-            'type' => $planCreationResponse['item']['type'],
-            'name' => $razorpayPlan['item']['name'],
-            'description' => $razorpayPlan['item']['description'],
-            'amount' => $razorpayPlan['item']['amount'],
-            'currency' => $razorpayPlan['item']['currency'],
-            'interval' => $razorpayPlan['interval'],
-            'period' => $razorpayPlan['period']
+            'rp_plan_id' => $planCreationResponse['id'],
+            'rp_item_id' => $planCreationResponse['item']['id'],
+            'rp_type' => $planCreationResponse['item']['type'],
+            'rp_name' => $razorpayPlan['item']['name'],
+            'rp_description' => $razorpayPlan['item']['description'],
+            'rp_amount' => $razorpayPlan['item']['amount'],
+            'rp_currency' => $razorpayPlan['item']['currency'],
+            'rp_interval' => $razorpayPlan['interval'],
+            'rp_period' => $razorpayPlan['period'],
+            'status' => '1',
         ];
 
         $razorpayPlan = new RazorpayPlan($modelData);
@@ -131,12 +175,12 @@ class RazorpayService {
             return;
         }
         $order = Order::where('_id', $orderId)->first();
-        $order->update(['razorpay_payment_id' => $paymentId]);
-        RazorpaySubscription::where('subscription_id', $order->razorpay_subscription_id)->update(['razorpay_payment_id' => $paymentId]);
+        $order->update(['rp_payment_id' => $paymentId]);
+        RazorpaySubscription::where('subscription_id', $order->rp_subscription_id)->update(['rp_payment_id' => $paymentId]);
         return [
             'order_id' => $orderId,
-            'razorpay_subscription_id' => $order['razorpay_subscription_id'],
-            'razorpay_payment_id' => $order['razorpay_payment_id']
+            'rp_subscription_id' => $order['rp_subscription_id'],
+            'rp_payment_id' => $order['rp_payment_id']
         ];
     }
 
