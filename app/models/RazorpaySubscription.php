@@ -11,7 +11,7 @@ class RazorpaySubscription extends  \Basemodel {
 
 	public static function maxId(){
         
-        $model = 'RazorpayPlan';
+        $model = 'RazorpaySubscription';
         
         $identitycounter =  Identitycounter::where('model', $model)->where('field', '_id')->first();
 
