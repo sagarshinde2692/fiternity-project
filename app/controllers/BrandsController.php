@@ -249,9 +249,10 @@ class BrandsController extends \BaseController {
 				$home1[$key]['image'] =  $base_url.$home1[$key]['path'].$home1[$key]['image'];
 			}	
 
-			if(in_array($key,['centers_block', 'speakers_block', 'advisory_block', 'video'])){
+			if(in_array($key,['centers_block', 'speakers_block', 'advisory_block'])){
 				foreach($home1[$key] as $keyImage=>$valueImage){
-					if(!in_array($keyImage, ['webm', 'mp4'])){				
+					if(!in_array($keyImage, ['webm', 'mp4'])){
+                        Log::info($home1[$key][$keyImage])				;
 						$home1[$key][$keyImage]['image'] =  $base_url.$home1[$key][$keyImage]['path'].$home1[$key][$keyImage]['image'];
 					}
 				}
