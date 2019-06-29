@@ -14,10 +14,16 @@ class RazorpayService {
             return;
         }
 
-        $order = Order::where('_id', $orderId)->first();
-        if(empty($order)){
-            Log::info("Order not found");
+        $order = Order::where('status','!=','1')->where('_id', $orderId)->first();
+        if(empty($order) || !empty($order['rp_payment_id'])){
+            Log::info("Order not found or razorpay payment already done");
             return;
+        }
+        else if(!empty($order['subscription_id'])) {
+            $existingSubscription = RazorpaySubscription::where('subscription_id', $order['subscription_id'])->first();
+            if(!empty($existingSubscription)) {
+                return $existingSubscription->toArray();
+            }
         }
         $ratecardDetails = [
             'type' => $order['type'],

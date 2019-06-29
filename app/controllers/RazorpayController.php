@@ -15,9 +15,9 @@ class RazorpayController extends \BaseController {
         Log::info('$data: ', [$data]);
         $response = ['status' => 400, 'data' => null, 'msg' => 'Failed'];
         if(!empty($data['order_id'])) {
-            $response = $this->razorpayService->createSubscription($data['order_id']);
-            if(!empty($response)) {
-                $response = ['status' => 200, 'data' => $response, 'msg' => 'Success'];
+            $_response = $this->razorpayService->createSubscription($data['order_id']);
+            if(!empty($_response)) {
+                $response = ['status' => 200, 'data' => $_response, 'msg' => 'Success'];
             }
         }
         return $response;
