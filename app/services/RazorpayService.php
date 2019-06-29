@@ -26,7 +26,7 @@ class RazorpayService {
         $razorpayPlan = RazorpayPlan::where('status', '1')->where('amount', $pass['amount'])->first();
 
         if(empty($razorpayPlan)) {
-            $razorpayPlan = $this->createPlan($pass);
+            $razorpayPlan = $this->getRazorpayPlan($pass, true);
         }
 
         $total_count = Config::get('app.razorpay.subscription.total_count');
@@ -55,15 +55,24 @@ class RazorpayService {
 
     }
 
-    public function createPlan($pass) {
+    public function getRazorpayPlan($pass, $create=false) {
         if(empty($pass)){
             return;
         }
-
         $razorpayPlan = RazorpayPlan::where('status', '1')->where('amount', $pass['amount'])->first();
         if(!empty($razorpayPlan)) {
             Log::info('Plan already exists!');
             return $razorpayPlan->toArray();
+        }
+        if($create) {
+            return $this->createPlan($pass);
+        }
+        return;
+    }
+
+    public function createPlan($pass) {
+        if(empty($pass)){
+            return;
         }
 
         $razorpayPlan = [
