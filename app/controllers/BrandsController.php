@@ -245,11 +245,11 @@ class BrandsController extends \BaseController {
 
 		$home1 = $home[0]['brand_website'];
 		foreach($home1 as $key=>$value){
-			if(in_array($key,['banner'], true)){
+			if(in_array($key,['banner'])){
 				$home1[$key]['image'] =  $base_url.$home1[$key]['path'].$home1[$key]['image'];
 			}	
 
-			if(in_array($key,['centers_block', 'speakers_block', 'advisory_block', 'video'], true)){
+			if(in_array($key,['centers_block', 'speakers_block', 'advisory_block', 'video'])){
 				foreach($home1[$key] as $keyImage=>$valueImage){
 					if(!in_array($keyImage, ['webm', 'mp4', 'ogg'],true)){
 						$home1[$key][$keyImage]['image'] =  $base_url.$home1[$key][$keyImage]['path'].$home1[$key][$keyImage]['image'];
@@ -282,7 +282,7 @@ class BrandsController extends \BaseController {
 		$first_block = $home[0]['brand_website'];
 
 		foreach($first_block as $key=>$value){
-			if(in_array($key,['founders_block', 'awards_list', 'media_coverages'], true)){
+			if(in_array($key,['founders_block', 'awards_list', 'media_coverages'])){
 				foreach($first_block[$key] as $keyImage=>$valueImage){
 					if(!empty($first_block[$key][$keyImage]['image'])){
 						$first_block[$key][$keyImage]['image'] =  $base_url.$first_block[$key][$keyImage]['path'].$first_block[$key][$keyImage]['image'] ;
@@ -293,7 +293,7 @@ class BrandsController extends \BaseController {
 				}
 			}	
 
-			if(in_array($key,['training_software', 'gym_equipement', 'fitness_studio'],true)){
+			if(in_array($key,['training_software', 'gym_equipement', 'fitness_studio'])){
 				foreach($first_block[$key]['image'] as $keyImage=>$valueImage){
 					$first_block[$key]['image'][$keyImage] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'][$keyImage];
 				}

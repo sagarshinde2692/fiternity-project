@@ -8403,11 +8403,11 @@ class FindersController extends \BaseController {
 	public function pathAddingToVendorWebsite($first_block){
 		$base_url =Config::get('app.s3_bane_url');
 		foreach($first_block as $key=>$value){
-			if(in_array($key,['cover', 'thumbnail', 'class_time_table', true])){	
+			if(in_array($key,['cover', 'thumbnail', 'class_time_table'])){	
 				$first_block[$key]['image'] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'] ;
 			}	
 
-			if(in_array($key,['services_list', 'memberships_list', 'facilities_list'], true)){
+			if(in_array($key,['services_list', 'memberships_list', 'facilities_list'])){
 				foreach($first_block[$key] as $keyImage=>$valueImage){
 					if(!empty($first_block[$key][$keyImage]['image'])){
 						$first_block[$key][$keyImage]['image'] =  $base_url.$first_block[$key][$keyImage]['path'].$first_block[$key][$keyImage]['image'];
