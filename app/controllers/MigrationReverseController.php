@@ -816,6 +816,10 @@ class MigrationReverseController extends \BaseController {
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
             $insertData['finder_type']                    = (isset($insertData['commercial_type']) && !empty(($insertData['commercial_type'])) ) ? (( $insertData['commercial_type'] == 1  || $insertData['commercial_type'] == 3 ) ? 1: 0) :0;
 
+            if(!empty($Finder->website_membership)){
+                $insertData['website_membership'] = $Finder->website_membership;
+            }
+
 //            dd($Finder->flags['membership']);
 //            var_dump($insertData);exit();
             $Finder_exists_cnt	=	DB::connection($this->fitadmin)->table('finders')->where('_id', intval($id) )->count();
@@ -2003,6 +2007,10 @@ class MigrationReverseController extends \BaseController {
             	'vendor_stripe' => isset($brand->vendor_stripe)? $brand->vendor_stripe:null,
                 'logo' => isset($brand->media) && isset($brand->media['images']) && isset($brand->media['images']['logo']) ? $brand->media['images']['logo'] : "",
             ];
+            
+            if(!empty($brand->brand_website)){
+                $insertData['brand_website'] = $brand->brand_website; //storing data of vendor for brand website
+            }
 
             $_exists_cnt =   DB::connection($this->fitadmin)->table('brands')->where('_id', intval($id) )->count();
 
