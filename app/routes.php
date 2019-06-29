@@ -1368,3 +1368,4 @@ Route::get('brandwebsite/programs/{brand_id}', 'BrandsController@getBrandWebsite
 Route::get('brandwebsite/hiit/{brand_id}', 'BrandsController@getBrandWebsiteHiit');
 Route::get('brandwebsite/contactus/{brand_id}', 'BrandsController@getBrandWebsiteContactUs');
 Route::get('brandwebsite/ownfranchise/{brand_id}', 'BrandsController@getBrandWebsiteOwnFranchise');
+Route::get('multifitDataMigration', 'DebugController@multifitDataMigration');

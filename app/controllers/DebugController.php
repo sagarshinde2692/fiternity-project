@@ -11141,7 +11141,18 @@ public function yes($msg){
 		$update2 = RatecardAPI::whereIn('_id',$ratecardIds)->update($return);
 
 		return [$update1, $update2];
-	}
+    }
+    
+    public function multifitDataMigration(){
+         $stageVendors = StageVendor::where('brand_id', 88)->where("website_membership", 'exists', true)->get(['website_membership']);
+
+         foreach($stageVendors as $vendor){
+            //  return $vendor;
+             Finder::where('_id', $vendor['_id'])->update(['website_membership'=>$vendor['website_membership']]);
+             Vendor::where('_id', $vendor['_id'])->update(['website_membership'=>$vendor['website_membership']]);
+            //  return;
+         }
+    }
 
 }
 
