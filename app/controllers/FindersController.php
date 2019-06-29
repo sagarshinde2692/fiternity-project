@@ -1333,7 +1333,6 @@ class FindersController extends \BaseController {
 				// $response['finder']  = $this->applyNonValidity($response, 'web');
 
                 $this->applyFreeSP($response);
-                $this->multifitGymWebsiteVendorUpdate($response);
 
                 // $this->insertWSNonValidtiy($response, 'web');
 
@@ -1477,7 +1476,6 @@ class FindersController extends \BaseController {
 				$updatefindersulg       = Urlredirect::whereIn('oldslug',array($tslug))->firstOrFail();
 				$data['finder']         = $updatefindersulg->newslug;
 				$data['statusfinder']   = 404;
-
 				return Response::json($data);
 			}
 
@@ -1538,7 +1536,7 @@ class FindersController extends \BaseController {
 
 		// 	$response['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 		// }
-		
+		$this->multifitGymWebsiteVendorUpdate($response);
 		return Response::json($response);
 
 	}
