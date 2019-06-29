@@ -308,7 +308,9 @@ return array(
 	'perpage' 						=> 	50,
 
 	's3_finder_url'					=> 'https://d3oorwrq3wx4ad.cloudfront.net/f/',
-	's3_service_url'				=> 'https://d3oorwrq3wx4ad.cloudfront.net/s/',
+    's3_service_url'				=> 'https://d3oorwrq3wx4ad.cloudfront.net/s/',
+	's3_bane_url'				=> 'https://d3oorwrq3wx4ad.cloudfront.net/',
+
 //
 //	'elasticsearch_port' 			=> 	9200,
 //	'elasticsearch_host_new' 		=> 	'ESAdmin:fitternity2020@54.169.120.141',
@@ -996,7 +998,7 @@ return array(
     'anytime_finder_ids'=> [7335,5745,5728,8821,8871,5747,12221,5748,5746,6250,9480,8823,10570,10568,7909,13124,11363,7907,11103,12516,15103,11037,11129,11742,7902,16209,13980,15103,15384,13031,],
     
     'non_flexi_service_cat'=>[111, 65, 5],
-
+    
     'tab_session_pack_vendor_ids'=>[1490,424,1935,9423,9481,9932,9954,10970,11021,11223,12208,13968,14102,15431,15775,15980,16251]
     
 );
