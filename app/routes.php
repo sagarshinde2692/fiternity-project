@@ -294,6 +294,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('getwalletdetails/{limit?}/{offset?}',  array('as' => 'customer.getWalletDetails','uses' => 'CustomerController@getWalletDetails'));
 
 	Route::post('reportareview', array('as' => 'finderdetails.reportareview','uses' => 'FindersController@reportReview'));
+    
+    Route::post('passcapture', 'PassController@passCapture');
 
 });
 
@@ -1362,7 +1364,7 @@ Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');
 Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
 Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
 Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
-Route::post('passcapture', 'TransactionController@classPassCapture');
-Route::get('listpass', 'PassesController@listPasses');
+// Route::post('passcapture', 'TransactionController@classPassCapture');
+Route::get('listpass', 'PassController@listPasses');
 Route::post('razorpay/subscribe', 'RazorpayController@createSubscription');
 Route::post('razorpay/storepaymentdetails', 'RazorpayController@storePaymentDetails');
