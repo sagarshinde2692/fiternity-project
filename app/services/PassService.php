@@ -98,7 +98,12 @@ class PassService {
             $result['hash'] = $data['payment_hash'];
             $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
             $result['finder_name'] = strtolower($data['finder_name']);
-            
+            $resp = [
+                'status' => 200,
+                'data' => $result,
+                'message' => "Tmp Order Generated Sucessfully"
+            ];
+            $result['payment_modes'] = $this->getPaymentModes($resp);
             
         }else{
 
@@ -165,6 +170,63 @@ class PassService {
         $order->update(['status'=>'1']);
         return ['status'=>200, 'data'=>$order, "message"=>"Subscription successful"];
 
+    }
+
+    function getPaymentModes($data){
+        
+        $utilities = new Utilities();
+
+        $payment_modes = [];
+
+        $payment_options['payment_options_order'] = ["cards", "upi", "wallet", "netbanking", "emi"];
+        
+
+        $payment_options['upi'] = [
+            'title' => 'UPI',
+            'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
+        ];
+
+        $payment_options['wallet'] = [
+            'title' => 'Wallet',
+            'subtitle' => 'Transact online with Wallets',
+            'value'=>'wallet',
+            'options'=>[
+                    [
+                            'title' => 'Paypal',
+                            'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
+                            'value' => 'paypal'
+                    ],
+                    [
+                            'title' => 'Paytm',
+                            // 'subtitle' => 'Paytm',
+                            'value' => 'paytm'
+                    ],
+                    [
+                            'title' => 'AmazonPay',
+                            // 'subtitle' => 'AmazonPay',
+                            'value' => 'amazonpay'
+                    ],
+                    [
+                            'title' => 'Mobikwik',
+                            // 'subtitle' => 'Mobikwik',
+                            'value' => 'mobikwik'
+                    ],
+                    [
+                            'title' => 'PayU',
+                            // 'subtitle' => 'PayU',
+                            'value' => 'payu'
+                    ]
+            ]
+        ];
+
+        $payment_modes[] = array(
+            'title' => 'Pay now',
+            'subtitle' => 'Pay online through wallet,credit/debit card',
+            'value' => 'paymentgateway',
+            'payment_options'=>$payment_options
+        );
+
+        return $payment_modes;
     }
 
 }
