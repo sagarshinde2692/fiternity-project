@@ -9205,7 +9205,7 @@ Class Utilities {
             if(!(empty($data['type'])) && $data['type']=='workout-session') {
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['schedule_date_time']));
             }
-            else {
+            else if(!empty($data['data']['preferred_starting_date'])){
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['preferred_starting_date'])); // '2019-05-29';
             }
             // $post_data['total'] = $order['amount_transferred_to_vendor'];
