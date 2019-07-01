@@ -17,7 +17,7 @@ class PassService {
         ->select('pass_id', 'amount', 'duaration', 'duration_type', 'type', 'credits', 'price', 'selling_price', 'premium_sessions')
         ->get();
 
-        return array("status" => 200, "data"=> $passList, "msg" => "success");
+        return array("data"=> $passList);
     }
 
     public function passCapture($data){
