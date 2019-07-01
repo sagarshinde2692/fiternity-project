@@ -5,6 +5,8 @@ use Pass;
 use App\Services\RazorpayService as RazorpayService;
 use App\Services\Utilities as Utilities;
 use Order;
+use Booktrial;
+
 use Config;
 use Request;
 use Wallet;
@@ -170,6 +172,41 @@ class PassService {
         $order->update(['status'=>'1']);
         return ['status'=>200, 'data'=>$order, "message"=>"Subscription successful"];
 
+    }
+
+    public function getPassBookings($orderId) {
+        if(empty($orderId)) {
+            return;
+        }
+        $booktrials = Booktrial::where('pass_order_id', $orderId)->where('going_status',1)->where('schedule_date_time','>=',new \MongoDate(strtotime('midnight')))->get();
+        if(empty($booktrials)) {
+            return;
+        }
+        $booktrials = $booktrials->toArray();
+        $finalList = [];
+        foreach($booktrials as $booking) {
+            $temp = [];
+            $temp['_id'] = $booking['_id'];
+            $temp['order_id'] = $booking['order_id'];
+            $temp['pass_order_id'] = $booking['pass_order_id'];
+            $temp['customer_id'] = $booking['customer_id'];
+            $temp['customer_name'] = $booking['customer_name'];
+            $temp['customer_email'] = $booking['customer_email'];
+            $temp['customer_phone'] = $booking['customer_phone'];
+            $temp['type'] = $booking['type'];
+            $temp['finder_id'] = $booking['finder_id'];
+            $temp['amount'] = $booking['amount'];
+            $temp['finder_slug'] = $booking['finder_slug'];
+            $temp['finder_location'] = $booking['finder_location'];
+            $temp['finder_slug'] = $booking['finder_slug'];
+            $temp['schedule_date'] = $booking['schedule_date'];
+            $temp['schedule_date_time'] = $booking['schedule_date_time'];
+            $temp['schedule_date'] = $booking['schedule_date'];
+            $temp['schedule_slot_start_time'] = $booking['schedule_slot_start_time'];
+            $temp['schedule_slot_end_time'] = $booking['schedule_slot_end_time'];
+            array_push($finalList, $temp);
+        }
+        return $finalList;
     }
 
     function getPaymentModes($data){

@@ -15,6 +15,7 @@ use App\Services\CustomerReward as CustomerReward;
 use App\Services\ShortenUrl as ShortenUrl;
 use App\Services\Emi as Emi;
 use App\Mailers\FinderMailer as FinderMailer;
+use App\Services\PassService as PassService;
 
 class CustomerController extends \BaseController {
 
@@ -28,7 +29,8 @@ class CustomerController extends \BaseController {
 		CustomerSms $customersms,
 		Utilities $utilities,
 		CustomerReward $customerreward,
-		FinderMailer $findermailer
+		FinderMailer $findermailer,
+		PassService $passService
 	) {
 		parent::__construct();
 
@@ -37,6 +39,7 @@ class CustomerController extends \BaseController {
 		$this->utilities	=	$utilities;
 		$this->customerreward = $customerreward;
 		$this->findermailer             =   $findermailer;
+		$this->passService = $passService;
 
 		$this->vendor_token = false;
 
@@ -4044,6 +4047,28 @@ class CustomerController extends \BaseController {
             // 'knowmorelink' => 'know more',
             'footer' => "Available across 2500+ outlets across ".ucwords($city)." | Starting at <b>&#8377; 149</b>"
         ];
+
+		$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
+
+		if(empty($order)) {
+			$result['buy_pass'] = [
+				'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
+				'header' => 'Flexi Pass!',
+				'subheader' => 'Buy pass and book workouts',
+				'footer' => 'Buy pass!!'
+			];
+		}
+		else {
+			try{
+				$active_passes = [];
+				if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
+					$active_passes = $this->passService->getPassBookings($order['_id']);
+				}
+			}catch(Exception $e){
+				$active_passes = [];
+			}
+			$result['pass_bookings'] = $active_passes;
+		}
 
 		return Response::json($result);
 		
