@@ -76,8 +76,6 @@ class PassService {
             
             $data = array_merge($data,$hash);
             
-           
-            
         }else{
 
             $data['amount_customer'] = $data['amount'];
@@ -92,8 +90,8 @@ class PassService {
             
             $razorpay_service = new RazorpayService();
             $create_subscription_response = $razorpay_service->createSubscription($id);
-            $order['subscription_id'] = $create_subscription_response['subscription_id'];
-            $order['rp_subscription_id'] = $create_subscription_response['rp_subscription_id'];
+            $data['subscription_id'] = $create_subscription_response['subscription_id'];
+            $data['rp_subscription_id'] = $create_subscription_response['rp_subscription_id'];
             
 
         }
