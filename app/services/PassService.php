@@ -113,8 +113,8 @@ class PassService {
 
         $utilities = new Utilities();
 
-        if(!empty($order['pass_type']) && $order['pass'] == 'trial'){
-
+        if(!empty($order['pass_type']) && $order['pass_type'] == 'trial'){
+            
             $walletData = array(
                 "order_id"=>$order['_id'],
                 "customer_id"=> intval($order['customer_id']),
