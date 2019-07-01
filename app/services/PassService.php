@@ -39,6 +39,7 @@ class PassService {
         $create_subscription_response = $razorpay_service->createSubscription($id);
 
         $order['subscription_id'] = $create_subscription_response['subscription_id'];
+        $order['rp_subscription_id'] = $create_subscription_response['rp_subscription_id'];
         $order['payment_type'] = 'razorpay';
         $order['order_id'] = $order['_id'];
 
@@ -47,7 +48,15 @@ class PassService {
 
     }
 
+    public function passSuccess(){
+        
+        $data = Input::json()->all();
+        
+        $order = Order::where('_id', $data['order_id'])->first();
+        $order->update(['status'=>'1']);
+        
+        return ['status'=>200, 'message'=>$order];
 
-
+    }
 
 }
