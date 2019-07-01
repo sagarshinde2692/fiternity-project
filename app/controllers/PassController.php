@@ -33,9 +33,14 @@ class PassController extends \BaseController {
         if(empty($order_creation_response['status']) || $order_creation_response['status'] != 200){
             return ['status'=>400, 'message'=>'Error while creating order.'];
         }
+
+    }
+
+    public function passSuccess(){
         
-
-
+        $data = Input::json()->all();
+        return $order_success_response = $this->passService->passSuccess($data);
+        return $order_success_response;
 
     }
 
