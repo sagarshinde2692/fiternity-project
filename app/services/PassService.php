@@ -52,7 +52,7 @@ class PassService {
         
         $order = Order::where('_id', $data['order_id'])->first();
         $order->update(['status'=>'1']);
-        return ['status'=>200, 'data'=>$order];
+        return ['status'=>200, 'data'=>$order, "message"=>"Subscription successful"];
 
     }
 
