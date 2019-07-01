@@ -27,10 +27,13 @@ class RazorpayService {
         }
         $ratecardDetails = [
             'type' => $order['type'],
-            'amount' => $order['amount']
+            'amount' => $order['amount']*100
         ];
         if(!empty($order['pass_id'])) {
             $ratecardDetails['id'] = $order['pass_id'];
+            if(!empty($order['razorpay_subscription_amount'])) {
+                $ratecardDetails['upfront_amount'] = $order['razorpay_subscription_amount']*100;
+            }
         }
         else if(!empty($order['ratecard_id'])) {
             $ratecardDetails['id'] = $order['ratecard_id'];
@@ -54,7 +57,7 @@ class RazorpayService {
                 [
                     'item' => [
                         'name' => 'Initial Payment',
-                        'amount' => $ratecardDetails['amount'],
+                        'amount' => (!empty($ratecardDetails['upfront_amount']))?$ratecardDetails['upfront_amount']:$ratecardDetails['amount'],
                         'currency' => Config::get('app.razorpay.currency')
                     ]
                 ]

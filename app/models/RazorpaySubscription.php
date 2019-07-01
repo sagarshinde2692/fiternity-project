@@ -16,7 +16,7 @@ class RazorpaySubscription extends  \Basemodel {
         $identitycounter =  Identitycounter::where('model', $model)->where('field', '_id')->first();
 
         if(empty($identitycounter)){
-            return $model::max('_id');
+            return $model::max('subscription_id');
         }
 
         $identitycounter_count =  $identitycounter->count;
