@@ -53,7 +53,10 @@ class PassService {
         
         $id = Order::maxId()+1;
         $data['_id'] = $id;
-        
+        $order = new Order($data);
+        $order['_id'] = $data['_id'];
+        $order['order_id'] = $order['_id'];
+        $order->save();
         
         if(!empty($data['pass_type']) && $data['pass_type'] == 'trial'){
 
@@ -127,12 +130,7 @@ class PassService {
 
         }
 
-        
-        
-        $order = new Order($data);
-        $order['_id'] = $data['_id'];
-        $order['order_id'] = $order['_id'];
-        $order->save();
+        $order->update($data);
 
         return  [
             'status' => 200,
