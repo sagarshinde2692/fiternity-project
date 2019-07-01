@@ -1368,3 +1368,4 @@ Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
 Route::get('listpass', 'PassController@listPasses');
 Route::post('razorpay/subscribe', 'RazorpayController@createSubscription');
 Route::post('razorpay/storepaymentdetails', 'RazorpayController@storePaymentDetails');
+Route::post('passsuccess', 'PassController@passSuccess');
