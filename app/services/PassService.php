@@ -7,6 +7,7 @@ use App\Services\Utilities as Utilities;
 use Order;
 use Config;
 use Request;
+use Wallet;
 class PassService {
 
     public function __construct() {
@@ -51,16 +52,8 @@ class PassService {
         $data['_id'] = $id;
         
         
-        if(!empty($order['pass_type']) && $order['pass'] == 'trial'){
+        if(!empty($data['pass_type']) && $data['pass_type'] == 'trial'){
 
-            $razorpay_service = new RazorpayService();
-            $create_subscription_response = $razorpay_service->createSubscription($id);
-            $order['subscription_id'] = $create_subscription_response['subscription_id'];
-            $order['rp_subscription_id'] = $create_subscription_response['rp_subscription_id'];
-            
-        }else{
-
-            
             $txnid = "";
             $successurl = "";
             $mobilehash = "";
@@ -82,6 +75,26 @@ class PassService {
             $hash = getHash($data);
             
             $data = array_merge($data,$hash);
+            
+           
+            
+        }else{
+
+            $data['amount_customer'] = $data['amount'];
+
+            $wallet = Wallet::active()->where('balance', '>', 0)->where('order_type', 'pass')->first();
+
+            if(!empty($wallet)){
+                $data['fitcash'] = $wallet['balance'];
+                $data['amount'] = $data['amount'] - $data['fitcash'];
+                $data['wallet_id'] = $wallet['_id'];
+            }
+            
+            $razorpay_service = new RazorpayService();
+            $create_subscription_response = $razorpay_service->createSubscription($id);
+            $order['subscription_id'] = $create_subscription_response['subscription_id'];
+            $order['rp_subscription_id'] = $create_subscription_response['rp_subscription_id'];
+            
 
         }
         
