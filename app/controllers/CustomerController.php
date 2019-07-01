@@ -9690,4 +9690,26 @@ class CustomerController extends \BaseController {
 		return array("status"=>200, "message"=>"Success");
 		//'loyalty.loyalty_upgraded'=false
 	}
+
+	public function orderPassHistory($customer_email, $offset = 0, $limit = 10){
+		$customer_email		= 	$customer_email;	
+		$offset 			=	intval($offset);
+		$limit 				=	intval($limit);
+
+		$orderPassData = Order::where('status', "1")
+		->where('type', 'pass')
+		->where('customer_email', $customer_email)
+		->skip($offset)
+		->take($limit)
+		->orderBy('_id', 'desc')
+		->select('amount', 'pass', 'pass_type', 'customer_name', 'customer_email', 'created_at' ,'updated_at')
+		->get();
+
+		$response = array(
+			"status"=>true,
+			"data" => $orderPassData
+		);
+
+		return $response;
+	}
 }
