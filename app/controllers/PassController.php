@@ -35,7 +35,7 @@ class PassController extends \BaseController {
             ]
         ];
 
-        return $response;
+        return array("status" => 200, "data"=> $response, "msg" => "success");
     }
 
     public function passCapture(){
