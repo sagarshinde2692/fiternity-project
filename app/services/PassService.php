@@ -85,7 +85,7 @@ class PassService {
             if(in_array($data['customer_source'],['android','ios','kiosk'])){
                 $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
             }
-            $result['firstname'] = strtolower($data['customer_name']);
+            $result['firstname'] = trim(strtolower($data['customer_name']));
             $result['lastname'] = "";
             $result['phone'] = $data['customer_phone'];
             $result['email'] = strtolower($data['customer_email']);
