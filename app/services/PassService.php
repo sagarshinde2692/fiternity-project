@@ -24,7 +24,7 @@ class PassService {
 
         $pass = Pass::where('pass_id', $data['pass_id'])->first();
 
-        $data['amount'] = $data['razorpay_subscription_amount'] = $pass['amount'];
+        $data['amount'] = $data['razorpay_subscription_amount'] = $pass['price'];
 
         $data['type'] = 'pass';
         $data['pass_type'] = $pass['type'];
