@@ -74,8 +74,11 @@ class PassService {
             
             $data['service_id'] = 100002;
             
-            $hash = getHash($data);
+            if(Config::get('app.env') != 'production'){
+                $data['env'] = 1;
+            }
             
+            $hash = getHash($data);
             
             $data = array_merge($data,$hash);
             
