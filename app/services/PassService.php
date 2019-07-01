@@ -22,7 +22,12 @@ class PassService {
 
     public function passCapture($data){
 
+        $customer_id = autoregisterCustomer($data);
+        $data['customer_id'] = $customer_id;
+
         $pass = Pass::where('pass_id', $data['pass_id'])->first();
+
+        $data['pass'] = $pass;
 
         $data['amount'] = $data['razorpay_subscription_amount'] = $pass['price'];
 
@@ -34,6 +39,7 @@ class PassService {
         $id = Order::maxId()+1;
         $order = new Order($data);
         $order['_id'] = $id;
+        // return $order;
         $order->save();
 
         $create_subscription_response = $razorpay_service->createSubscription($id);

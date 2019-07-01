@@ -55,6 +55,7 @@ class PassController extends \BaseController {
         if ($validator->fails()) {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())), 400);
         }
+        
         return $order_creation_response = $this->passService->passCapture($data);
 
         if(empty($order_creation_response['status']) || $order_creation_response['status'] != 200){
