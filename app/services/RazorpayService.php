@@ -32,8 +32,8 @@ class RazorpayService {
         if(!empty($order['pass_id'])) {
             $ratecardDetails['id'] = $order['pass_id'];
             $ratecardDetails['type'] = $order['pass_type'];
-            if(!empty($order['razorpay_subscription_amount'])) {
-                $ratecardDetails['upfront_amount'] = $order['razorpay_subscription_amount']*100;
+            if(!empty($order['rp_subscription_amount'])) {
+                $ratecardDetails['upfront_amount'] = $order['rp_subscription_amount']*100;
             }
         }
         else if(!empty($order['ratecard_id'])) {

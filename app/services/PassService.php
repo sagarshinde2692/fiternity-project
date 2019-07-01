@@ -113,15 +113,15 @@ class PassService {
         }else{
 
             $data['amount_customer'] = $data['amount'];
-
-            $wallet = Wallet::active()->where('balance', '>', 0)->where('order_type', 'pass')->first();
-
+            $data['rp_subscription_amount'] = $data['amount_customer'];
+            $wallet = Wallet::active()->where('customer_id', $data['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
             if(!empty($wallet)){
                 $data['fitcash'] = $wallet['balance'];
                 $data['amount'] = $data['amount'] - $data['fitcash'];
                 $data['wallet_id'] = $wallet['_id'];
             }
             
+            $order->update($data);
             $razorpay_service = new RazorpayService();
             $create_subscription_response = $razorpay_service->createSubscription($id);
             $data['subscription_id'] = $create_subscription_response['subscription_id'];
