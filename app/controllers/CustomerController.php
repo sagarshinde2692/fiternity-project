@@ -9666,12 +9666,10 @@ class CustomerController extends \BaseController {
 		//'loyalty.loyalty_upgraded'=false
 	}
 
-	public function orderPassHistory($customer_email,$offset = 0, $limit = 10){
+	public function orderPassHistory($customer_email, $offset = 0, $limit = 10){
 		$customer_email		= 	$customer_email;	
 		$offset 			=	intval($offset);
 		$limit 				=	intval($limit);
-
-		$orders 			=  	[];
 
 		$orderPassData = Order::where('status', "1")
 		->where('type', 'pass')
