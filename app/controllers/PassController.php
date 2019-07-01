@@ -11,38 +11,30 @@ class PassController extends \BaseController {
         $passes = $this->passService->listPasses();
 
         $passConfig = \Config::get('pass');
-        $trial_header = $passConfig['trial_header'];
         $main_header = $passConfig['main_header'];
-        $subscription_header = $passConfig['subscription_header'];
-        $unlimited_header = $passConfig['unlimited_header'];
+
+        foreach($passes['data'] as $key=>$value){
+            if($value['type'] == 'trial'){
+                array_push($passConfig['trial']['data'], $value);
+            }
+            else if($value['type'] == 'subscription'){
+                array_push($passConfig['subscription']['data'], $value);
+            }
+            else if($value['type'] == 'unlimited'){
+                array_push($passConfig['unlimited']['data'], $value);
+            }
+        }
 
 
         $response =[
             "header" => $main_header,
             "data" => [
+                $passConfig['trial'],
+                $passConfig['subscription'],
+                $passConfig['unlimited']
             ]
         ];
 
-        foreach($passes['data'] as $key=>$value){
-            if($value['type'] == 'trial'){
-                array_push($response['data'],[
-                    "header" => $trial_header, 
-                    "data" => $value
-                ]);
-            }
-            else if($value['type'] == 'subscription'){
-                array_push($response['data'],[
-                    "header" => $subscription_header, 
-                    "data" => $value
-                ]);
-            }
-            else if($value['type'] == 'unlimited'){
-                array_push($response['data'],[
-                    "header" => $unlimited_header, 
-                    "data" => $value
-                ]);
-            }
-        }
         return $response;
     }
 
