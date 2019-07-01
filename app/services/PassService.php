@@ -29,6 +29,7 @@ class PassService {
         $data['customer_source'] = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
         
         $data['type'] = "pass";
+        $data['status'] = "0";
 
         $utilities = new Utilities();
         $customer_detail = $utilities->getCustomerDetail($data);
