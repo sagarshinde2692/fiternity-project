@@ -7,17 +7,17 @@ return array(
     "main_header" => "this is header",
     "trial" => [
         "header" => "this is trail pass valid for 30 days",
-        "type" => "Trial",
+        "type" => "trial",
         "data" =>[]
     ],
     "subscription" => [
         "header" => "this is subscription pass valid till",
-        "type" => "Subscription",
+        "type" => "subscription",
         "data" =>[]
     ],
     "unlimited" => [
         "header" => "this is fitternity membership valid till",
-        "type" => "Unlimited",
+        "type" => "unlimited",
         "data" =>[]
     ]
 );
