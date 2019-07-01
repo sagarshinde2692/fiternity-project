@@ -44,7 +44,7 @@ class PassService {
 
         $data['pass'] = $pass;
 
-        $data['amount'] = $data['razorpay_subscription_amount'] = $pass['price'];
+        $data['amount'] = $data['rp_subscription_amount'] = $pass['price'];
 
         $data['type'] = 'pass';
         $data['pass_type'] = $pass['type'];
