@@ -119,7 +119,7 @@ class PassService {
             if(!empty($wallet)){
                 $data['fitcash'] = $wallet['balance'];
                 $data['amount'] = $data['amount'] - $data['fitcash'];
-                $data['amount'] = 1;
+                // $data['amount'] = 1;
                 $data['wallet_id'] = $wallet['_id'];
             }
             
