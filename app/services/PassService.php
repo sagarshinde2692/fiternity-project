@@ -75,6 +75,21 @@ class PassService {
             $hash = getHash($data);
             
             $data = array_merge($data,$hash);
+
+            $result['firstname'] = strtolower($data['customer_name']);
+            $result['lastname'] = "";
+            $result['phone'] = $data['customer_phone'];
+            $result['email'] = strtolower($data['customer_email']);
+            $result['orderid'] = $data['_id'];
+            $result['txnid'] = $txnid;
+            $result['amount'] = $data['amount'];
+            $result['productinfo'] = strtolower($data['productinfo']);
+            $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($data['service_name']));
+            $result['successurl'] = $successurl;
+            $result['hash'] = $data['payment_hash'];
+            $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+            $result['finder_name'] = strtolower($data['finder_name']);
+            
             
         }else{
 
@@ -95,14 +110,20 @@ class PassService {
             
 
         }
+
+        
         
         $order = new Order($data);
         $order['_id'] = $data['_id'];
         $order['order_id'] = $order['_id'];
         $order->save();
 
-
-        return ['status'=>200, 'data'=>$order];
+        return  [
+            'status' => 200,
+            'data' => !empty($result) ? $result : $order,
+            'message' => "Tmp Order Generated Sucessfully"
+        ];
+        
 
 
     }
