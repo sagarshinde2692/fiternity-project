@@ -65,6 +65,7 @@ class PassService {
                 $txnid = "FIT".$data['_id'];
                 $successurl = Config::get('app.website')."/paymentsuccessproduct";
             }
+
             $data['txnid'] = $txnid;
             $data['finder_name'] = 'Fitternity';
             $data['finder_slug'] = 'fitternity';
@@ -75,8 +76,12 @@ class PassService {
             
             $hash = getHash($data);
             
+            
             $data = array_merge($data,$hash);
-
+            
+            if(in_array($data['customer_source'],['android','ios','kiosk'])){
+                $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
+            }
             $result['firstname'] = strtolower($data['customer_name']);
             $result['lastname'] = "";
             $result['phone'] = $data['customer_phone'];
