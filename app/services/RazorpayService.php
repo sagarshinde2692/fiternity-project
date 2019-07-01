@@ -33,7 +33,8 @@ class RazorpayService {
             $ratecardDetails['id'] = $order['pass_id'];
             $ratecardDetails['type'] = $order['pass_type'];
             if(!empty($order['rp_subscription_amount'])) {
-                $ratecardDetails['upfront_amount'] = $order['rp_subscription_amount']*100;
+                $ratecardDetails['amount'] = $order['rp_subscription_amount']*100;
+                $ratecardDetails['upfront_amount'] = $order['amount']*100;
             }
         }
         else if(!empty($order['ratecard_id'])) {
@@ -64,6 +65,9 @@ class RazorpayService {
                 ]
             ]
         ];
+        if(empty($ratecardDetails['upfront_amount'])) {
+            unset($data['addons']);
+        }
         $subCreationResponse = $this->curlRequest(Config::get('app.razorpay.subscription.url'), $data);
         Log::info('Subscription creation status: ',[ $subCreationResponse ]);
         if(empty($subCreationResponse)) {
