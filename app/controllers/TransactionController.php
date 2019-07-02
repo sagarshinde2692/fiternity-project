@@ -21,7 +21,7 @@ use App\AmazonPaynon\PWAINBackendSDK as PWAINBackendSDKNon;
 use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
 use App\Services\Paytm as PaytmService;
-use App\Services\PassService as passService;
+use App\Services\PassService as PassService;
 //use App\Controllers\PaymentGatewayController as GatewayController;
 //use App\config\paytm as paytmConfig;
 class TransactionController extends \BaseController {
@@ -38,6 +38,8 @@ class TransactionController extends \BaseController {
     protected $fitapi;
     protected $fitweb;
     protected $PaytmService;
+    protected $passService;
+    
     //protected $GatewayController;
     //protected $paytmConfig;
 
@@ -77,6 +79,7 @@ class TransactionController extends \BaseController {
 
         $this->vendor_token = false;
         $this->PaytmService = $PaytmService;
+        $this->passService = $passService;
         //$this->GatewayController = $GatewayController;
         //$this->paytmConfig = $paytmConfig;
         
@@ -2362,6 +2365,9 @@ class TransactionController extends \BaseController {
         
         if(!empty($order)&&!empty($order['type'])&&$order['type']=='giftcoupon')
         	return $this->giftCouponSuccess();
+        
+        if(!empty($order)&&!empty($order['type'])&&$order['type']=='pass')
+        	return $this->passService->passSuccessPayU($data);
 
         //If Already Status Successfull Just Send Response
         if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){

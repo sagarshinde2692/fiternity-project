@@ -98,6 +98,8 @@ class PassService {
             $hash = getHash($data);
             
             $data = array_merge($data,$hash);
+
+            $order->update($data);
             
             if(in_array($data['customer_source'],['android','ios','kiosk'])){
                 $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
@@ -143,7 +145,7 @@ class PassService {
 
         }
 
-        $order->update($data);
+        
 
         return  [
             'status' => 200,
@@ -181,6 +183,8 @@ class PassService {
 
 
         $order->update(['status'=>'1']);
+        $razorpay_service = new RazorpayService();
+        $razorpay_service->storePaymentDetails($order['_id'], $data['payment_id']);
         return ['status'=>200, 'data'=>$order, "message"=>"Subscription successful"];
 
     }
@@ -310,6 +314,36 @@ class PassService {
         }
         return [ 'credits' => 0, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
         
+    }
+    
+    public function passSuccessPayU($data){
+    
+        $rules = [
+            'order_id'=>'required | integer',
+            'hash'=>'required'
+        ];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+
+        $order = Order::find(intval($data['order_id']));
+
+        $utilities = new Utilities();    
+        $hash_verified = $utilities->verifyOrder($data, $order);
+
+        if(empty($hash_verified)){
+            return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
+        }
+
+        $order->status = '1';
+        $order->update();
+
+        return ['status'=>200, 'message'=>'Transaction successful'];
+
+    
     }
 
 }
