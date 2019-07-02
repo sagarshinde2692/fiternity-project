@@ -51,6 +51,9 @@ class PassService {
         $data['type'] = 'pass';
         $data['pass_type'] = $pass['type'];
         
+        $data['start_date'] = new \MongoDate(strtotime('midnight', time()));
+        $data['end_date'] = new \MongoDate(strtotime('midnight', strtotime('+'.$pass['duration'].' days', time())));
+        
         $id = Order::maxId()+1;
         $data['_id'] = $id;
         $order = new Order($data);
