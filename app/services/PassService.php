@@ -56,6 +56,7 @@ class PassService {
         $order = new Order($data);
         $order['_id'] = $data['_id'];
         $order['order_id'] = $order['_id'];
+        $order['orderid'] = $order['_id'];
         $order->save();
         
         if(!empty($data['pass_type']) && $data['pass_type'] == 'trial'){
@@ -118,6 +119,7 @@ class PassService {
             if(!empty($wallet)){
                 $data['fitcash'] = $wallet['balance'];
                 $data['amount'] = $data['amount'] - $data['fitcash'];
+                // $data['amount'] = 1;
                 $data['wallet_id'] = $wallet['_id'];
             }
             
