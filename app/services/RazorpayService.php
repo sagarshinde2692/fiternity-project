@@ -81,6 +81,8 @@ class RazorpayService {
             'rp_subscription_id' => $subCreationResponse['id'],
             'rp_plan_id' => $subCreationResponse['plan_id'],
             'rp_status' => $subCreationResponse['status'],
+            'rp_subscription_amount' => $ratecardDetails['amount'],
+            'rp_upfront_amount' => $ratecardDetails['upfront_amount'],
             'rp_start_at' => new \MongoDate($subCreationResponse['start_at']),
             'rp_end_at' => new \MongoDate($subCreationResponse['end_at']),
             'rp_start_at_epoch' => $subCreationResponse['end_at'],
