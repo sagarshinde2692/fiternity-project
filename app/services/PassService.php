@@ -10,6 +10,7 @@ use Booktrial;
 use Config;
 use Request;
 use Wallet;
+use Customer;
 class PassService {
 
     public function __construct() {
@@ -274,6 +275,41 @@ class PassService {
         );
 
         return $payment_modes;
+    }
+
+    public function getCreditsApplicable($amount, $customerId) {
+        if(empty($amount) || empty(!$customerId)) {
+            return;
+        }
+
+        $customer = Customer::where('_id', $customerId)->first();
+        $passOrder = Order::active()->where('type', 'pass')->where('customer_id', $customer['_id'])->where('end_date','>',new \MongoDate(strtotime('midnight')))->first();
+
+        if(!empty($passOrder)) {
+            $passType = $passOrder['pass_type'];
+            $pass = $passOrder['pass'];
+            $totalCredits = $passOrder['total_credits'];
+            $totalCreditsUsed = $passOrder['total_credits_used'];
+        }
+        $credits = null;
+        if(!empty($passType) && $passType=='unlimited'){
+            return [ 'credits' => -1, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
+        }
+        else if(empty($passType)) {
+            return [ 'credits' => 0, 'order_id' => $passOrder['_id'] ];
+        }
+        foreach($creditMap as $rec) {
+            if($rec['max_price']<$amount){
+                $credits = $rec['credits'];
+                break;
+            }
+        }
+
+        if(!empty($passOrder['total_credits_used']) && $credits<=$passOrder['total_credits_used']) {
+            return [ 'credits' => $credits, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
+        }
+        return [ 'credits' => 0, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
+        
     }
 
 }

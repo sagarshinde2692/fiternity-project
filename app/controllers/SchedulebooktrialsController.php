@@ -2163,6 +2163,22 @@ class SchedulebooktrialsController extends \BaseController {
                 'ask_review'                    =>      true,
             );
 
+            if(!empty($order['pass_order_id'])) {
+                $booktrialdata['pass_order_id'] = $order['pass_order_id'];
+            }
+
+            if(!empty($order['pass_booking'])) {
+                $booktrialdata['pass_booking'] = $order['pass_booking'];
+            }
+
+            if(!empty($order['pass_credits'])) {
+                $booktrialdata['pass_credits'] = $order['pass_credits'];
+            }
+
+            if(!empty($order['pass_type'])) {
+                $booktrialdata['pass_type'] = $order['pass_type'];
+            }
+
             if(!empty($data['studio_extended_validity_order_id'])){
                 $booktrialdata['studio_extended_validity_order_id'] = $data['studio_extended_validity_order_id'];
             }
