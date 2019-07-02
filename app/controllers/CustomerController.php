@@ -8200,6 +8200,7 @@ class CustomerController extends \BaseController {
 								
 								
 								if($booktrial_update&&!empty($value['mark'])&& !(isset($booktrial->payment_done) && $booktrial->payment_done == false)){
+									
 									if(!isset($booktrial['extended_validity_order_id']) && !isset($booktrial['pass_order_id'])){
 										$fitcash = $this->utilities->getFitcash($booktrial->toArray());
 										$req = array(

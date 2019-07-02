@@ -6960,10 +6960,10 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function locateTrial($code){
 
-        //$decodeKioskVendorToken = decodeKioskVendorToken();
+        $decodeKioskVendorToken = decodeKioskVendorToken();
 
-        //$vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
-    	$vendor = ["_id"=>9932];
+        $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
 
         Log::info("Kiosk find at vendor ".$vendor['_id']."and the code used :".$code);
@@ -7036,7 +7036,6 @@ class SchedulebooktrialsController extends \BaseController {
                 {
                 	try {
                         $fitcash = 0;
-                        Log::info(" info ",[$booktrial['extended_validity_order_id'], $booktrial['pass_order_id']]);
                         if(!isset($booktrial['extended_validity_order_id']) && !isset($booktrial['pass_order_id'])){
                             $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
                             
@@ -7305,7 +7304,7 @@ class SchedulebooktrialsController extends \BaseController {
             if(
                 $booktrial->type == "booktrials" && 
                 !isset($booktrial->post_trial_status_updated_by_fitcode) && 
-                !isset($booktrial->post_trial_status_updated_by_lostfitcode) //&& !isset($booktrial->pass_order_id) because type of pass booktrial is workout session
+                !isset($booktrial->post_trial_status_updated_by_lostfitcode) 
             ){
 
                 $post_trial_status_updated_by_fitcode = time();
@@ -7344,7 +7343,7 @@ class SchedulebooktrialsController extends \BaseController {
                 !isset($booktrial->post_trial_status_updated_by_lostfitcode) &&
                 !isset($booktrial['pass_order_id'])
             ){
-                Log::info('pass orders id:::::', [$booktrial['pass_order_id']]);
+
                 $post_trial_status_updated_by_fitcode = time();
                 $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
 
