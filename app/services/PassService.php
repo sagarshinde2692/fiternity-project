@@ -282,7 +282,7 @@ class PassService {
     }
 
     public function getCreditsApplicable($amount, $customerId) {
-        if(empty($amount) || empty(!$customerId)) {
+        if(empty($amount) && empty(!$customerId)) {
             return;
         }
 
@@ -302,14 +302,17 @@ class PassService {
         else if(empty($passType)) {
             return [ 'credits' => 0, 'order_id' => $passOrder['_id'] ];
         }
+        $creditMap = Config::get('app.creditMap');
         foreach($creditMap as $rec) {
-            if($rec['max_price']<$amount){
+            if($amount<$rec['max_price']){
                 $credits = $rec['credits'];
                 break;
             }
         }
-
-        if(!empty($passOrder['total_credits_used']) && $credits<=$passOrder['total_credits_used']) {
+        if(!empty($passOrder['total_credits']) && empty($passOrder['total_credits_used'])) {
+            $passOrder['total_credits_used'] = 0;
+        }
+        if(isset($passOrder['total_credits']) && ($credits+$passOrder['total_credits_used'])<=$passOrder['total_credits']) {
             return [ 'credits' => $credits, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
         }
         return [ 'credits' => 0, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
