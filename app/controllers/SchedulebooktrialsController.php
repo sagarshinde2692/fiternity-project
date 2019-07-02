@@ -7014,7 +7014,7 @@ class SchedulebooktrialsController extends \BaseController {
             	
             	Log::info(" info ".print_r($booktrial->type,true));
 
-                if($booktrial->type!='workout-session')
+                if($booktrial->type!='workout-session' || !isset($booktrial['pass_order_id']))
                 {
 	                	$req = array(
 	                			"customer_id"=>$booktrial['customer_id'],
@@ -7036,7 +7036,7 @@ class SchedulebooktrialsController extends \BaseController {
                 {
                 	try {
                         $fitcash = 0;
-                        if(!isset($booktrial['extended_validity_order_id'])){
+                        if(!isset($booktrial['extended_validity_order_id']) || !isset($booktrial['pass_order_id'])){
                             $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
                             
                             $req = array(
@@ -7068,7 +7068,7 @@ class SchedulebooktrialsController extends \BaseController {
                             $booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city->name.'/'.newcategorymapping($booktrial->category->name);
                         }
                         
-                        if(!isset($booktrial['extended_validity_order_id'])){
+                        if(!isset($booktrial['extended_validity_order_id'])|| !isset($booktrial['pass_order_id'])){
                             $sendComm = $booktrial->send_communication;
                 			if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true) {
                 				$sendComm['customer_sms_paypersession_FitCodeEnter_PayLater'] = $this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
@@ -7301,7 +7301,17 @@ class SchedulebooktrialsController extends \BaseController {
         $fitcash = 0;
         if(isset($booktrial)){
 
-            if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !isset($booktrial->post_trial_status_updated_by_lostfitcode)){
+            if(
+                (
+                    $booktrial->type == "booktrials" && 
+                    !isset($booktrial->post_trial_status_updated_by_fitcode) && 
+                    !isset($booktrial->post_trial_status_updated_by_lostfitcode)
+                ) 
+                || 
+                (
+                    !isset($booktrial->pass_order_id)
+                )
+            ){
 
                 $post_trial_status_updated_by_fitcode = time();
                 $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
@@ -7332,7 +7342,18 @@ class SchedulebooktrialsController extends \BaseController {
                 else{
                     $message = "Thank you, your attendance has been marked.";
                 }
-            }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done) && !isset($booktrial->post_trial_status_updated_by_lostfitcode)){
+            }else if(
+                (
+                    $booktrial->type == "workout-session" && 
+                    !isset($booktrial->post_trial_status_updated_by_fitcode) && 
+                    !(isset($booktrial->payment_done) && !$booktrial->payment_done) && 
+                    !isset($booktrial->post_trial_status_updated_by_lostfitcode)
+                )
+                ||
+                (
+                    !isset($booktrial['pass_order_id'])
+                )
+            ){
 
                 $post_trial_status_updated_by_fitcode = time();
                 $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
