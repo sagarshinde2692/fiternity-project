@@ -8134,7 +8134,7 @@ class CustomerController extends \BaseController {
 
 								if($booktrial_update&&!empty($value['mark']))
 								{
-									if(!isset($booktrial['extended_validity_order_id']) && !isset($booktrial['pass_order_id'])){
+									if(!isset($booktrial['extended_validity_order_id'])){
 										$fitcash = $this->utilities->getFitcash($booktrial->toArray());
 										$req = array(
 												"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,
@@ -8200,8 +8200,7 @@ class CustomerController extends \BaseController {
 								
 								
 								if($booktrial_update&&!empty($value['mark'])&& !(isset($booktrial->payment_done) && $booktrial->payment_done == false)){
-									
-									if(!isset($booktrial['extended_validity_order_id']) || !isset($booktrial['pass_order_id'])){
+									if(!isset($booktrial['extended_validity_order_id']) && !isset($booktrial['pass_order_id'])){
 										$fitcash = $this->utilities->getFitcash($booktrial->toArray());
 										$req = array(
 												"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
@@ -8244,7 +8243,7 @@ class CustomerController extends \BaseController {
 								}
 								if($booktrial_update&&!empty($value['mark'])){
 									$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
-									if(isset($booktrial['extended_validity_order_id'])) {
+									if(isset($booktrial['extended_validity_order_id']) || isset($booktrial['pass_order_id'])) {
 										if(isset($resp1) && isset($resp1['sub_header_1'])){
 											$resp1['sub_header_1'] = '';
 										}
@@ -8263,7 +8262,7 @@ class CustomerController extends \BaseController {
 								else  {
 									
 									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
-									if(isset($booktrial['extended_validity_order_id'])) {
+									if(isset($booktrial['extended_validity_order_id']) || isset($booktrial['pass_order_id'])) {
 										if(isset($resp1) && isset($resp1['sub_header_1'])){
 											$resp1['sub_header_1'] = '';
 										}

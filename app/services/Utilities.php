@@ -3127,7 +3127,7 @@ Class Utilities {
             'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
             'amount'=>(string)$fitcash_amount,
             'title1'=>strtoupper('<b>review</b>'),
-            'title2'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
+            'title2'=>('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
             'description'=>'<b>Post    your    trial</b>    make    sure    you    review    your    experience    on    this    tab    &    get    <b>₹'.$fitcash_amount.'    Fitcash+</b>    in    your    Fitternity    Wallet    that    can    be    used    to    purchase    your    membership',
         ];
 

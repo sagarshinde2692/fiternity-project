@@ -6960,10 +6960,10 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function locateTrial($code){
 
-        $decodeKioskVendorToken = decodeKioskVendorToken();
+        //$decodeKioskVendorToken = decodeKioskVendorToken();
 
-        $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
-    	
+        //$vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+    	$vendor = ["_id"=>9932];
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
 
         Log::info("Kiosk find at vendor ".$vendor['_id']."and the code used :".$code);
@@ -7014,7 +7014,7 @@ class SchedulebooktrialsController extends \BaseController {
             	
             	Log::info(" info ".print_r($booktrial->type,true));
 
-                if($booktrial->type!='workout-session' || !isset($booktrial['pass_order_id']))
+                if($booktrial->type!='workout-session')
                 {
 	                	$req = array(
 	                			"customer_id"=>$booktrial['customer_id'],
@@ -7036,7 +7036,8 @@ class SchedulebooktrialsController extends \BaseController {
                 {
                 	try {
                         $fitcash = 0;
-                        if(!isset($booktrial['extended_validity_order_id']) || !isset($booktrial['pass_order_id'])){
+                        Log::info(" info ",[$booktrial['extended_validity_order_id'], $booktrial['pass_order_id']]);
+                        if(!isset($booktrial['extended_validity_order_id']) && !isset($booktrial['pass_order_id'])){
                             $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
                             
                             $req = array(
@@ -7068,7 +7069,7 @@ class SchedulebooktrialsController extends \BaseController {
                             $booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city->name.'/'.newcategorymapping($booktrial->category->name);
                         }
                         
-                        if(!isset($booktrial['extended_validity_order_id'])|| !isset($booktrial['pass_order_id'])){
+                        if(!isset($booktrial['extended_validity_order_id']) && !isset($booktrial['pass_order_id'])){
                             $sendComm = $booktrial->send_communication;
                 			if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true) {
                 				$sendComm['customer_sms_paypersession_FitCodeEnter_PayLater'] = $this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
@@ -7302,15 +7303,9 @@ class SchedulebooktrialsController extends \BaseController {
         if(isset($booktrial)){
 
             if(
-                (
-                    $booktrial->type == "booktrials" && 
-                    !isset($booktrial->post_trial_status_updated_by_fitcode) && 
-                    !isset($booktrial->post_trial_status_updated_by_lostfitcode)
-                ) 
-                || 
-                (
-                    !isset($booktrial->pass_order_id)
-                )
+                $booktrial->type == "booktrials" && 
+                !isset($booktrial->post_trial_status_updated_by_fitcode) && 
+                !isset($booktrial->post_trial_status_updated_by_lostfitcode) //&& !isset($booktrial->pass_order_id) because type of pass booktrial is workout session
             ){
 
                 $post_trial_status_updated_by_fitcode = time();
@@ -7343,18 +7338,13 @@ class SchedulebooktrialsController extends \BaseController {
                     $message = "Thank you, your attendance has been marked.";
                 }
             }else if(
-                (
-                    $booktrial->type == "workout-session" && 
-                    !isset($booktrial->post_trial_status_updated_by_fitcode) && 
-                    !(isset($booktrial->payment_done) && !$booktrial->payment_done) && 
-                    !isset($booktrial->post_trial_status_updated_by_lostfitcode)
-                )
-                ||
-                (
-                    !isset($booktrial['pass_order_id'])
-                )
+                $booktrial->type == "workout-session" && 
+                !isset($booktrial->post_trial_status_updated_by_fitcode) && 
+                !(isset($booktrial->payment_done) && !$booktrial->payment_done) && 
+                !isset($booktrial->post_trial_status_updated_by_lostfitcode) &&
+                !isset($booktrial['pass_order_id'])
             ){
-
+                Log::info('pass orders id:::::', [$booktrial['pass_order_id']]);
                 $post_trial_status_updated_by_fitcode = time();
                 $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
 
