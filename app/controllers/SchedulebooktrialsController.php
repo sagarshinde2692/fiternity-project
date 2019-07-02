@@ -2163,6 +2163,22 @@ class SchedulebooktrialsController extends \BaseController {
                 'ask_review'                    =>      true,
             );
 
+            if(!empty($order['pass_order_id'])) {
+                $booktrialdata['pass_order_id'] = $order['pass_order_id'];
+            }
+
+            if(!empty($order['pass_booking'])) {
+                $booktrialdata['pass_booking'] = $order['pass_booking'];
+            }
+
+            if(!empty($order['pass_credits'])) {
+                $booktrialdata['pass_credits'] = $order['pass_credits'];
+            }
+
+            if(!empty($order['pass_type'])) {
+                $booktrialdata['pass_type'] = $order['pass_type'];
+            }
+
             if(!empty($data['studio_extended_validity_order_id'])){
                 $booktrialdata['studio_extended_validity_order_id'] = $data['studio_extended_validity_order_id'];
             }
@@ -2462,6 +2478,20 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                     array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
+                }
+
+                if(!empty($order['pass_credits'])) {
+                    Order::$withoutAppends = true;
+                    $passOrder = Order::where('_id', $order['pass_order_id'])->first();
+
+                    if(!empty($passOrder)) {
+                        if(empty($passOrder->total_credits_used)) {
+                            $passOrder->total_credits_used = 0;
+                        }
+
+                        $passOrder->total_credits_used += $order['pass_credits'];
+                        $passOrder->update();
+                    }
                 }
                 
             }

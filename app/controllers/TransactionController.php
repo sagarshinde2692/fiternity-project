@@ -21,6 +21,7 @@ use App\AmazonPaynon\PWAINBackendSDK as PWAINBackendSDKNon;
 use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
 use App\Services\Paytm as PaytmService;
+use App\Services\PassService as PassService;
 //use App\Controllers\PaymentGatewayController as GatewayController;
 //use App\config\paytm as paytmConfig;
 class TransactionController extends \BaseController {
@@ -37,6 +38,8 @@ class TransactionController extends \BaseController {
     protected $fitapi;
     protected $fitweb;
     protected $PaytmService;
+    protected $passService;
+    
     //protected $GatewayController;
     //protected $paytmConfig;
 
@@ -51,7 +54,8 @@ class TransactionController extends \BaseController {
         CustomerNotification $customernotification,
         Fitapi $fitapi,
         Fitweb $fitweb,
-        PaytmService $PaytmService
+        PaytmService $PaytmService,
+        PassService $passService
         //GatewayController $GatewayController,
         //paytmConfig $paytmConfig
     ) {
@@ -66,6 +70,7 @@ class TransactionController extends \BaseController {
         $this->customernotification =   $customernotification;
         $this->fitapi               =   $fitapi;
         $this->fitweb               =   $fitweb;
+        $this->passService          =   $passService;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
@@ -74,6 +79,7 @@ class TransactionController extends \BaseController {
 
         $this->vendor_token = false;
         $this->PaytmService = $PaytmService;
+        $this->passService = $passService;
         //$this->GatewayController = $GatewayController;
         //$this->paytmConfig = $paytmConfig;
         
@@ -2359,6 +2365,9 @@ class TransactionController extends \BaseController {
         
         if(!empty($order)&&!empty($order['type'])&&$order['type']=='giftcoupon')
         	return $this->giftCouponSuccess();
+        
+        if(!empty($order)&&!empty($order['type'])&&$order['type']=='pass')
+        	return $this->passService->passSuccessPayU($data);
 
         //If Already Status Successfull Just Send Response
         if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
@@ -3856,7 +3865,17 @@ class TransactionController extends \BaseController {
 
         }
         
-
+        if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
+            Order::$withoutAppends = true;
+            $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $data['customer_id']);
+            if($creditsApplicable['credits'] != 0) {
+                $data['pass_type'] = $creditsApplicable['pass_type'];
+                $data['pass_order_id'] = $creditsApplicable['order_id'];
+                $data['pass_booking'] = true;
+                $data['pass_credits'] = $creditsApplicable['credits'];
+                $amount = 0;
+            }
+        }
         
 
         $data['amount_final'] = $amount;

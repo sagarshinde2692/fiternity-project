@@ -10,6 +10,7 @@ use Booktrial;
 use Config;
 use Request;
 use Wallet;
+use Customer;
 class PassService {
 
     public function __construct() {
@@ -54,6 +55,13 @@ class PassService {
         $data['start_date'] = new \MongoDate(strtotime('midnight', time()));
         $data['end_date'] = new \MongoDate(strtotime('midnight', strtotime('+'.$pass['duration'].' days', time())));
         
+        if(!empty($pass['credits'])){
+            
+            $data['total_credits'] = $pass['credits'];
+        
+        }
+        
+        
         $id = Order::maxId()+1;
         $data['_id'] = $id;
         $order = new Order($data);
@@ -90,6 +98,8 @@ class PassService {
             $hash = getHash($data);
             
             $data = array_merge($data,$hash);
+
+            $order->update($data);
             
             if(in_array($data['customer_source'],['android','ios','kiosk'])){
                 $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
@@ -135,7 +145,7 @@ class PassService {
 
         }
 
-        $order->update($data);
+        
 
         return  [
             'status' => 200,
@@ -173,6 +183,8 @@ class PassService {
 
 
         $order->update(['status'=>'1']);
+        $razorpay_service = new RazorpayService();
+        $razorpay_service->storePaymentDetails($order['_id'], $data['payment_id']);
         return ['status'=>200, 'data'=>$order, "message"=>"Subscription successful"];
 
     }
@@ -267,6 +279,74 @@ class PassService {
         );
 
         return $payment_modes;
+    }
+
+    public function getCreditsApplicable($amount, $customerId) {
+        if(empty($amount) && empty(!$customerId)) {
+            return;
+        }
+
+        $customer = Customer::where('_id', $customerId)->first();
+        $passOrder = Order::active()->where('type', 'pass')->where('customer_id', $customer['_id'])->where('end_date','>',new \MongoDate(strtotime('midnight')))->first();
+
+        if(!empty($passOrder)) {
+            $passType = $passOrder['pass_type'];
+            $pass = $passOrder['pass'];
+            $totalCredits = $passOrder['total_credits'];
+            $totalCreditsUsed = $passOrder['total_credits_used'];
+        }
+        $credits = null;
+        if(!empty($passType) && $passType=='unlimited'){
+            return [ 'credits' => -1, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
+        }
+        else if(empty($passType)) {
+            return [ 'credits' => 0, 'order_id' => $passOrder['_id'] ];
+        }
+        $creditMap = Config::get('app.creditMap');
+        foreach($creditMap as $rec) {
+            if($amount<$rec['max_price']){
+                $credits = $rec['credits'];
+                break;
+            }
+        }
+        if(!empty($passOrder['total_credits']) && empty($passOrder['total_credits_used'])) {
+            $passOrder['total_credits_used'] = 0;
+        }
+        if(isset($passOrder['total_credits']) && ($credits+$passOrder['total_credits_used'])<=$passOrder['total_credits']) {
+            return [ 'credits' => $credits, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
+        }
+        return [ 'credits' => 0, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
+        
+    }
+    
+    public function passSuccessPayU($data){
+    
+        $rules = [
+            'order_id'=>'required | integer',
+            'hash'=>'required'
+        ];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+
+        $order = Order::find(intval($data['order_id']));
+
+        $utilities = new Utilities();    
+        $hash_verified = $utilities->verifyOrder($data, $order);
+
+        if(empty($hash_verified)){
+            return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
+        }
+
+        $order->status = '1';
+        $order->update();
+
+        return ['status'=>200, 'message'=>'Transaction successful'];
+
+    
     }
 
 }

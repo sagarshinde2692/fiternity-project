@@ -86,6 +86,13 @@ return array(
 	// 'ffTransactionAPI'=>'https://demo.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
 	// 'ffEnquiryAPI'=>'http://api.fitnessforce.com/prospect',
 	
+	'creditMap' => [
+		['max_price'=>300, 'credits'=>2],
+		['max_price'=>500, 'credits'=>3],
+		['max_price'=>750, 'credits'=>4],
+		['max_price'=>999999, 'credits'=>5]
+	],
+
 	'razorPayURL' =>'https://api.razorpay.com/v1/plans',
 	
 	'ffDetails' => [
