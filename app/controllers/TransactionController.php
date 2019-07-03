@@ -7148,7 +7148,6 @@ class TransactionController extends \BaseController {
             }
 
             if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
-                $data['amount_payable'] = 0;
                 if(!empty($decoded->customer->_id)) {
                     $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $decoded->customer->_id);
                     if($creditsApplicable['credits'] != 0) {
@@ -7156,6 +7155,7 @@ class TransactionController extends \BaseController {
                             'field' => ((!empty($creditsApplicable['pass_type']) && $creditsApplicable['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
                             'value' => (string)$creditsApplicable['credits'].' Sweat Points Applied'
                         ];
+                        $data['amount_payable'] = 0;
                     }
                 }
             }
