@@ -3598,6 +3598,19 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['total_sessions'] = $data['total_sessions'];
                 $booktrialdata['total_sessions_used'] = $data['total_session_used'];
                 $booktrialdata['ratecard_id'] = $ratecard_id;
+
+                Customer::$withoutAppends = true;
+                $abwCust = Customer::where('third_party_details','exists',true)->where('status','1')->where('email', $customer_email)->first();
+                if(!empty($abwCust)) {
+                    if(empty($abwCust['total_sessions_used'])) {
+                        $abwCust['total_sessions_used'] = 0;
+                    }
+                    $abwCust['total_sessions_used'] = $abwCust['total_sessions_used'] - 1;
+                    if($abwCust['total_sessions_used']<0) {
+                        $abwCust['total_sessions_used'] = 0;
+                    }
+                    $abwCust->update();
+                }
             }
 
             if(isset($data['_id'])){
