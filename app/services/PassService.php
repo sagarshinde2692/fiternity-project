@@ -22,7 +22,7 @@ class PassService {
         $response = Config::get('pass.list');
         foreach($passList as &$pass) {
             $passDetails = [
-                '_id' => $pass['pass_id'],
+                'pass_id' => $pass['pass_id'],
                 'header' => $pass['duration_text'],
                 'text' => 'All Access',
                 'remarks' => ucwords($pass['type'])
