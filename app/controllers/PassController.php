@@ -75,4 +75,9 @@ class PassController extends \BaseController {
 
     }
 
+    public function passTermsAndCondition(){
+        $passConfig = \Config::get('pass.terms');
+        return array("status"=> 200, "data"=> $passConfig);
+    }
+
 }

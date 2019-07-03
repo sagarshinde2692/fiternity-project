@@ -66,5 +66,15 @@ return [
                 ]
             ]
         ]
+    ],
+    "terms"=>[
+        "<h2>terms and condition header</h2>
+        <ul>
+            <li> terms1 vkvdfk</li>
+            <li> terms t2</li>
+            <li> tersm 4</li>
+            <li>terms 4</li>
+            <li> terms 5</li>
+        </ul>"
     ]
 ];
