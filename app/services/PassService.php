@@ -18,12 +18,28 @@ class PassService {
     }
 
     public function listPasses(){
-
-        $passList = Pass:: active()
-        ->select('pass_id', 'amount', 'duaration', 'duration_type', 'type', 'credits', 'price', 'selling_price', 'premium_sessions')
-        ->get();
-
-        return array("data"=> $passList);
+        $passList = Pass::where('status', '1')->orderBy('pass_id')->get();
+        $response = Config::get('pass.list');
+        foreach($passList as &$pass) {
+            $passDetails = [
+                '_id' => $pass['pass_id'],
+                'header' => $pass['duration_text'],
+                'text' => 'All Access',
+                'remarks' => ucwords($pass['type'])
+            ];
+            if($pass['unlimited_access']) {
+                $passDetails['price'] = 'Rs. '.$pass['price'];
+                $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
+                $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
+            } else {
+                $passDetails['header'] = $pass['credits'].' Sweat Points';
+                $passDetails['text'] = 'for 1 month';
+                $passDetails['price'] = 'Rs. '.$pass['price'];
+                $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
+                $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
+            }
+        }
+        return $response;
     }
 
     public function passCapture($data){
@@ -242,33 +258,7 @@ class PassService {
             'title' => 'Wallet',
             'subtitle' => 'Transact online with Wallets',
             'value'=>'wallet',
-            'options'=>[
-                    [
-                            'title' => 'Paypal',
-                            'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
-                            'value' => 'paypal'
-                    ],
-                    [
-                            'title' => 'Paytm',
-                            // 'subtitle' => 'Paytm',
-                            'value' => 'paytm'
-                    ],
-                    [
-                            'title' => 'AmazonPay',
-                            // 'subtitle' => 'AmazonPay',
-                            'value' => 'amazonpay'
-                    ],
-                    [
-                            'title' => 'Mobikwik',
-                            // 'subtitle' => 'Mobikwik',
-                            'value' => 'mobikwik'
-                    ],
-                    [
-                            'title' => 'PayU',
-                            // 'subtitle' => 'PayU',
-                            'value' => 'payu'
-                    ]
-            ]
+            'options'=>Config::get('app.pass_payment_options')
         ];
 
         $payment_modes[] = array(
@@ -296,7 +286,7 @@ class PassService {
             $totalCreditsUsed = $passOrder['total_credits_used'];
         }
         $credits = null;
-        if(!empty($passType) && $passType=='unlimited'){
+        if(!empty($passType) && $passType=='unlimited') {
             return [ 'credits' => -1, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
         }
         else if(empty($passType)) {

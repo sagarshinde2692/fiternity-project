@@ -10,32 +10,35 @@ class PassController extends \BaseController {
     public function listPasses(){
         $passes = $this->passService->listPasses();
 
-        $passConfig = \Config::get('pass');
-        $main_header = $passConfig['main_header'];
+        // $passConfig = \Config::get('pass');
+        // $main_header = $passConfig['main_header'];
 
-        foreach($passes['data'] as $key=>$value){
-            if($value['type'] == 'trial'){
-                array_push($passConfig['trial']['data'], $value);
-            }
-            else if($value['type'] == 'subscription'){
-                array_push($passConfig['subscription']['data'], $value);
-            }
-            else if($value['type'] == 'unlimited'){
-                array_push($passConfig['unlimited']['data'], $value);
-            }
+        // foreach($passes['data'] as $key=>$value){
+        //     if($value['type'] == 'trial'){
+        //         array_push($passConfig['trial']['data'], $value);
+        //     }
+        //     else if($value['type'] == 'subscription'){
+        //         array_push($passConfig['subscription']['data'], $value);
+        //     }
+        //     else if($value['type'] == 'unlimited'){
+        //         array_push($passConfig['unlimited']['data'], $value);
+        //     }
+        // }
+
+        if(empty($passes)) {
+            return [
+                "status" => 400,
+                "data" => null,
+                "msg" => "failed"
+            ];
         }
-
-
-        $response =[
-            "header" => $main_header,
-            "data" => [
-                $passConfig['trial'],
-                $passConfig['subscription'],
-                $passConfig['unlimited']
-            ]
+        $response = [
+            "status" => 200,
+            "data" => $passes,
+            "msg" => "success"
         ];
 
-        return array("status" => 200, "data"=> $response, "msg" => "success");
+        return $response;
     }
 
     public function passCapture(){
