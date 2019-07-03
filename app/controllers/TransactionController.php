@@ -7147,6 +7147,18 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            if(!empty($order['pass_booking']) && $order['pass_booking']) {
+                $data['amount_payable'] = 0;
+                // $data['credits_applied'] = $this->passService->getCreditsForAmount($order['amount']);
+                $creditsApplied = $this->passService->getCreditsForAmount($order['amount']);
+                $passOrder = Order::where('status', '1')->where('_id', $order['pass_order_id'])->first();
+                if(!empty($creditsApplied) && !empty($passOrder['pass'])) {
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => ((!empty($passOrder['pass']['unlimited_access']) && $passOrder['pass']['unlimited_access'])?'Unlimited Access':'Monthly Access').' Pass Applied',
+                        'value' => (string)$creditsApplied.' Sweat Points Applied'
+                    ];
+                }
+            }
 
             if((empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 

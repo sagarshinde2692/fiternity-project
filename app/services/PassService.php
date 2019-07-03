@@ -339,4 +339,16 @@ class PassService {
     
     }
 
+    public function getCreditsForAmount($amount) {
+        $creditMap = Config::get('app.creditMap');
+        $credits = 0;
+        foreach($creditMap as $rec) {
+            if($amount<$rec['max_price']) {
+                $credits = $rec['credits'];
+                break;
+            }
+        }
+        return $credits;
+    }
+
 }
