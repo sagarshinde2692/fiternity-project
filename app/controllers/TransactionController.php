@@ -7147,16 +7147,16 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(!empty($order['pass_booking']) && $order['pass_booking']) {
+            if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
                 $data['amount_payable'] = 0;
-                // $data['credits_applied'] = $this->passService->getCreditsForAmount($order['amount']);
-                $creditsApplied = $this->passService->getCreditsForAmount($order['amount']);
-                $passOrder = Order::where('status', '1')->where('_id', $order['pass_order_id'])->first();
-                if(!empty($creditsApplied) && !empty($passOrder['pass'])) {
-                    $result['payment_details']['amount_summary'][] = [
-                        'field' => ((!empty($passOrder['pass']['unlimited_access']) && $passOrder['pass']['unlimited_access'])?'Unlimited Access':'Monthly Access').' Pass Applied',
-                        'value' => (string)$creditsApplied.' Sweat Points Applied'
-                    ];
+                if(!empty($decoded->customer->_id)) {
+                    $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $decoded->customer->_id);
+                    if($creditsApplicable['credits'] != 0) {
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => ((!empty($creditsApplicable['pass_type']) && $creditsApplicable['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
+                            'value' => (string)$creditsApplicable['credits'].' Sweat Points Applied'
+                        ];
+                    }
                 }
             }
 
