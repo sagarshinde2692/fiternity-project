@@ -3605,10 +3605,7 @@ class SchedulebooktrialsController extends \BaseController {
                     if(empty($abwCust['total_sessions_used'])) {
                         $abwCust['total_sessions_used'] = 0;
                     }
-                    $abwCust['total_sessions_used'] = $abwCust['total_sessions_used'] - 1;
-                    if($abwCust['total_sessions_used']<0) {
-                        $abwCust['total_sessions_used'] = 0;
-                    }
+                    $abwCust['total_sessions_used'] = $abwCust['total_sessions_used'] + 1;
                     $abwCust->update();
                 }
             }
