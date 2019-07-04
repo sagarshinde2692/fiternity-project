@@ -369,24 +369,6 @@ class PassService {
         return $credits;
     }
     
-<<<<<<< HEAD
-    public function checkTrialPassUsedByCustomer(){
-
-        $response = ["status"=> false];
-        $jwt_token = Request::header('Authorization');
-        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-            $decoded = customerTokenDecode($jwt_token);
-            $customer_id = (int)$decoded->customer->_id;
-
-            $trialPass = Order::where("pass_type", 'trial')
-            ->where('status', "1")
-            ->where('customer_id', $customer_id)
-            ->count();
-
-            if($trialPass > 0){
-                $response["status"]= true;
-            }
-=======
     public function checkTrialPassUsedByCustomer($customerId) {
         if(empty($customerId)) {
             return;
@@ -399,7 +381,6 @@ class PassService {
                     ->first();
         if(isset($trialPass['_id'])) {
             $response["status"]= true;
->>>>>>> 2268985fbe00952ad75dbe9df3182943f1e85929
         }
         return $response;
     }
