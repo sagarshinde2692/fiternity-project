@@ -49,6 +49,8 @@ class PassService {
                 $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
             }
         }
+        $apiUrl = Config::get('app.url');
+        $response['t_and_c_url'] = $apiUrl.'/passtermscondition';
         return $response;
     }
 
