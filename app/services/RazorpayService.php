@@ -148,7 +148,7 @@ class RazorpayService {
         }
 
         //Checking on email instead of customerid as the customer might have already been created on razorpay with diff acc having same email
-        $customer = Customer::where('status', '1')->where('email', $customerEmail)->where('rp_customer_id','exists',true)->where()->first();
+        $customer = Customer::where('status', '1')->where('email', $customerEmail)->where('rp_customer_id','exists',true)->first();
 
         if(!empty($customer['rp_customer_id'])) {
             return $customer['rp_customer_id'];
