@@ -94,42 +94,41 @@ class PassService {
         
         $id = Order::maxId()+1;
         $data['_id'] = $id;
-        $order = new Order($data);
-        $order['_id'] = $data['_id'];
-        $order['order_id'] = $order['_id'];
-        $order['orderid'] = $order['_id'];
         
-        if(!empty($order['pass_type']) && $order['pass_type'] == 'trial'){
+        $data['order_id'] = $data['_id'];
+        $data['orderid'] = $data['_id'];
+        
+        if(!empty($data['pass']['payment_gateway']) && $data['pass']['payment_gateway'] == 'payu'){
             
-            $order['payment_gateway'] = 'payu';
             $txnid = "";
             $successurl = "";
             $mobilehash = "";
-            if($order['customer_source'] == "android" || $order['customer_source'] == "ios"){
-                $txnid = "MFIT".$order['_id'];
-                $successurl = $order['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
+            if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
+                $txnid = "MFIT".$data['_id'];
+                $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
             }else{
-                $txnid = "FIT".$order['_id'];
+                $txnid = "FIT".$data['_id'];
                 $successurl = Config::get('app.website')."/paymentsuccessproduct";
             }
 
-            $order['txnid'] = $txnid;
-            $order['finder_name'] = 'Fitternity';
-            $order['finder_slug'] = 'fitternity';
+            $data['txnid'] = $txnid;
+            $data['finder_name'] = 'Fitternity';
+            $data['finder_slug'] = 'fitternity';
             
             
-            $order['service_name'] = 'Pass';
+            $data['service_name'] = 'Pass';
             
-            $order['service_id'] = 100002;
+            $data['service_id'] = 100002;
             
             if(Config::get('app.env') != 'production'){
-                $order['env'] = 1;
+                $data['env'] = 1;
             }
             
-            $hash = getHash($order);
+            $hash = getHash($data);
             
-            $order = array_merge($order,$hash);
-
+            $data = array_merge($data,$hash);
+            $order = new Order($data);
+            $order['_id'] = $data['_id'];
             $order->save($order);
             
             if(in_array($order['customer_source'],['android','ios','kiosk'])){
@@ -157,17 +156,18 @@ class PassService {
             
         }else{
             
-            $order['payment_gateway'] = 'razorpay';
-            $order['amount_customer'] = $order['amount'];
-            $order['rp_subscription_amount'] = $order['amount_customer'];
-            $wallet = Wallet::active()->where('customer_id', $order['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
-            if(!empty($wallet)){
-                $order['fitcash'] = $wallet['balance'];
-                $order['amount'] = $order['amount'] - $order['fitcash'];
-                // $order['amount'] = 1;
-                $order['wallet_id'] = $wallet['_id'];
-            }
             
+            $data['amount_customer'] = $data['amount'];
+            $data['rp_subscription_amount'] = $data['amount_customer'];
+            $wallet = Wallet::active()->where('customer_id', $data['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
+            if(!empty($wallet)){
+                $data['fitcash'] = $wallet['balance'];
+                $data['amount'] = $data['amount'] - $data['fitcash'];
+                // $data['amount'] = 1;
+                $data['wallet_id'] = $wallet['_id'];
+            }
+            $order = new Order($data);
+            $order['_id'] = $data['_id'];
             $order->save();
             $razorpay_service = new RazorpayService();
             $create_subscription_response = $razorpay_service->createSubscription($id);
@@ -317,8 +317,12 @@ class PassService {
             return ['status' => 404,'message' => error_message($validator->errors())];
         }
 
-        $order = Order::find(intval($data['order_id']));
-
+        $order = Order::where('status', '0')->where('pass.razaorpay', 'payu')->where('_id', $data['order_id']);
+        
+        if(empty($order)){
+            return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
+        }
+        
         $utilities = new Utilities();    
         $hash_verified = $utilities->verifyOrder($data, $order);
 
@@ -400,7 +404,7 @@ class PassService {
 
     public function passSuccessRazorpay($order, $data){
 
-        if(!empty($order['payment_gateway']) && $order['payment_gateway'] == 'razorpay' && empty($order['status']) && !empty($data['payment_id'])){
+        if(!empty($order['pass']['payment_gateway']) && $order['pass']['payment_gateway'] == 'razorpay' && empty($order['status']) && !empty($data['payment_id'])){
             
             $order->update(['status'=>'1']);
             $razorpay_service = new RazorpayService();
