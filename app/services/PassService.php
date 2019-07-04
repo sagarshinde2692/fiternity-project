@@ -74,8 +74,9 @@ class PassService {
         $pass = Pass::where('pass_id', $data['pass_id'])->first()->toArray();
 
         $data['pass'] = $pass;
-
-        $data['amount'] = $data['rp_subscription_amount'] = $pass['price'];
+        if(empty($data['rp_subscription_id'])){
+            $data['amount'] = $data['rp_subscription_amount'] = $pass['price'];
+        }
 
         $data['type'] = 'pass';
         $data['payment_mode'] =  'paymentgateway';
