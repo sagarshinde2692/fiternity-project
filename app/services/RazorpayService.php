@@ -72,13 +72,13 @@ class RazorpayService {
                 [
                     'item' => [
                         'name' => 'Initial Payment',
-                        'amount' => (isset($ratecardDetails['upfront_amount']))?$ratecardDetails['upfront_amount']:$ratecardDetails['amount'],
+                        'amount' => (!empty($ratecardDetails['upfront_amount']))?$ratecardDetails['upfront_amount']:$ratecardDetails['amount'],
                         'currency' => Config::get('app.razorpay.currency')
                     ]
                 ]
             ]
         ];
-        if(!isset($ratecardDetails['upfront_amount'])) {
+        if(empty($ratecardDetails['upfront_amount'])) {
             unset($data['addons']);
         }
         $subCreationResponse = $this->curlRequest(Config::get('app.razorpay.subscription.url'), $data);
