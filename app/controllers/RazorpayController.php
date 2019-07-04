@@ -40,8 +40,8 @@ class RazorpayController extends \BaseController {
         Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$data]);
         switch($data['event']){
             case "subscription.activated": $this->activated($data);break;
-            case "subscription.charged": ;
-            case "subscription.completed": ;
+            case "subscription.charged": $this->charged($data);break;
+            case "subscription.completed": $this->completed($data);break;
             case "subscription.pending": ;
             case "subscription.halted": ;
             case "subscription.cancelled": ;
@@ -57,7 +57,42 @@ class RazorpayController extends \BaseController {
         $razorpaySubs = RazorpaySubscription::find('rp_subscription_id', $subs_id);
         $razorpaySubs->rp_activate = true;
 
+        $webhook = new RazorpayWebhook($data);
+
         $order->update();
         $razorpaySubs->updated();
+        $webhook->save();
+    }
+
+    public function charged($data){
+        $subs_id = $data['payload']['subscription']['entity']['id'];
+
+        $order = Order::find('rp_payment_id', $subs_id);
+        $order->rp_charged = true;
+
+        $razorpaySubs = RazorpaySubscription::find('rp_subscription_id', $subs_id);
+        $razorpaySubs->rp_charged = true;
+
+        $webhook = new RazorpayWebhook($data);
+
+        $order->update();
+        $razorpaySubs->updated();
+        $webhook->save();
+    }
+
+    public function completed($data){
+        $subs_id = $data['payload']['subscription']['entity']['id'];
+
+        $order = Order::find('rp_payment_id', $subs_id);
+        $order->rp_completed = true;
+
+        $razorpaySubs = RazorpaySubscription::find('rp_subscription_id', $subs_id);
+        $razorpaySubs->rp_completed = true;
+
+        $webhook = new RazorpayWebhook($data);
+
+        $order->update();
+        $razorpaySubs->updated();
+        $webhook->save();
     }
 }
