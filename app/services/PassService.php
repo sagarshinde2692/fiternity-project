@@ -392,7 +392,7 @@ class PassService {
             [
                 '__customer_name'=>$order['customer_name'], 
                 '__pass_name'=>$order['pass']['name'],
-                '__pass_duration'=> $order['pass']['duration']['text']
+                '__pass_duration'=> $order['pass']['duration_text']
             ]
         );
 
