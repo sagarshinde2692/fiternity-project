@@ -156,8 +156,8 @@ class RazorpayService {
 
         $razorpayCustomer = [
             'name' => $customerName,
-            'email' => $customerContact,
-            'contact' => $customerEmail,
+            'email' => $customerEmail,
+            'contact' => $customerContact,
             'notes'=> []
         ];
 
