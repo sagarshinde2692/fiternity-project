@@ -326,7 +326,7 @@ class PassService {
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {
-            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+            return ['status' => 404,'message' => error_message($validator->errors())];
         }
 
         $order = Order::find(intval($data['order_id']));
