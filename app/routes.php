@@ -1372,3 +1372,4 @@ Route::post('passsuccess', 'PassController@passSuccess');
 Route::get('orderpasshistory/{customeremail}/{from?}/{size?}',  array('as' => 'customer.orderpasshistory','uses' => 'CustomerController@orderPassHistory'));
 Route::get('passtermscondition', 'PassController@passTermsAndCondition');
 Route::get('passfaq', 'PassController@passFrequentAskedQuestion');
+Route::post('razorpaywebhooks', 'RazorpayController@razorpayWebhooks');
