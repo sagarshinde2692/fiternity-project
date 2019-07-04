@@ -99,55 +99,55 @@ class PassService {
         $order['order_id'] = $order['_id'];
         $order['orderid'] = $order['_id'];
         
-        if(!empty($data['pass_type']) && $data['pass_type'] == 'trial'){
+        if(!empty($order['pass_type']) && $order['pass_type'] == 'trial'){
             
-            $data['payment_gateway'] = 'payu';
+            $order['payment_gateway'] = 'payu';
             $txnid = "";
             $successurl = "";
             $mobilehash = "";
-            if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
-                $txnid = "MFIT".$data['_id'];
-                $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
+            if($order['customer_source'] == "android" || $order['customer_source'] == "ios"){
+                $txnid = "MFIT".$order['_id'];
+                $successurl = $order['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
             }else{
-                $txnid = "FIT".$data['_id'];
+                $txnid = "FIT".$order['_id'];
                 $successurl = Config::get('app.website')."/paymentsuccessproduct";
             }
 
-            $data['txnid'] = $txnid;
-            $data['finder_name'] = 'Fitternity';
-            $data['finder_slug'] = 'fitternity';
+            $order['txnid'] = $txnid;
+            $order['finder_name'] = 'Fitternity';
+            $order['finder_slug'] = 'fitternity';
             
             
-            $data['service_name'] = 'Pass';
+            $order['service_name'] = 'Pass';
             
-            $data['service_id'] = 100002;
+            $order['service_id'] = 100002;
             
             if(Config::get('app.env') != 'production'){
-                $data['env'] = 1;
+                $order['env'] = 1;
             }
             
-            $hash = getHash($data);
+            $hash = getHash($order);
             
-            $data = array_merge($data,$hash);
+            $order = array_merge($order,$hash);
 
-            $order->save($data);
+            $order->save($order);
             
-            if(in_array($data['customer_source'],['android','ios','kiosk'])){
-                $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
+            if(in_array($order['customer_source'],['android','ios','kiosk'])){
+                $mobilehash = $order['payment_related_details_for_mobile_sdk_hash'];
             }
-            $result['firstname'] = trim(strtolower($data['customer_name']));
+            $result['firstname'] = trim(strtolower($order['customer_name']));
             $result['lastname'] = "";
-            $result['phone'] = $data['customer_phone'];
-            $result['email'] = strtolower($data['customer_email']);
-            $result['orderid'] = $data['_id'];
+            $result['phone'] = $order['customer_phone'];
+            $result['email'] = strtolower($order['customer_email']);
+            $result['orderid'] = $order['_id'];
             $result['txnid'] = $txnid;
-            $result['amount'] = $data['amount'];
-            $result['productinfo'] = strtolower($data['productinfo']);
-            $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($data['service_name']));
+            $result['amount'] = $order['amount'];
+            $result['productinfo'] = strtolower($order['productinfo']);
+            $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($order['service_name']));
             $result['successurl'] = $successurl;
-            $result['hash'] = $data['payment_hash'];
+            $result['hash'] = $order['payment_hash'];
             $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
-            $result['finder_name'] = strtolower($data['finder_name']);
+            $result['finder_name'] = strtolower($order['finder_name']);
             $resp = [
                 'status' => 200,
                 'data' => $result,
@@ -157,18 +157,18 @@ class PassService {
             
         }else{
             
-            $data['payment_gateway'] = 'razorpay';
-            $data['amount_customer'] = $data['amount'];
-            $data['rp_subscription_amount'] = $data['amount_customer'];
-            $wallet = Wallet::active()->where('customer_id', $data['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
+            $order['payment_gateway'] = 'razorpay';
+            $order['amount_customer'] = $order['amount'];
+            $order['rp_subscription_amount'] = $order['amount_customer'];
+            $wallet = Wallet::active()->where('customer_id', $order['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
             if(!empty($wallet)){
-                $data['fitcash'] = $wallet['balance'];
-                $data['amount'] = $data['amount'] - $data['fitcash'];
-                // $data['amount'] = 1;
-                $data['wallet_id'] = $wallet['_id'];
+                $order['fitcash'] = $wallet['balance'];
+                $order['amount'] = $order['amount'] - $order['fitcash'];
+                // $order['amount'] = 1;
+                $order['wallet_id'] = $wallet['_id'];
             }
             
-            $order->save($data);
+            $order->save();
             $razorpay_service = new RazorpayService();
             $create_subscription_response = $razorpay_service->createSubscription($id);
             $order['subscription_id'] = $create_subscription_response['subscription_id'];
