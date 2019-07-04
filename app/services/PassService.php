@@ -241,7 +241,6 @@ class PassService {
             $temp['amount'] = $booking['amount'];
             $temp['finder_slug'] = $booking['finder_slug'];
             $temp['finder_location'] = $booking['finder_location'];
-            $temp['finder_slug'] = $booking['finder_slug'];
             $temp['schedule_date'] = $booking['schedule_date'];
             $temp['schedule_date_time'] = $booking['schedule_date_time'];
             $temp['schedule_date'] = $booking['schedule_date'];
@@ -293,9 +292,6 @@ class PassService {
 
         if(!empty($passOrder)) {
             $passType = $passOrder['pass_type'];
-            $pass = $passOrder['pass'];
-            $totalCredits = $passOrder['total_credits'];
-            $totalCreditsUsed = $passOrder['total_credits_used'];
         }
         $credits = null;
         if(!empty($passType) && $passType=='unlimited') {

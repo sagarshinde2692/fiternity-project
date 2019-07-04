@@ -5,6 +5,7 @@ use Config;
 use RazorpayPlan;
 use RazorpaySubscription;
 use Order;
+use Customer;
 
 class RazorpayService {
 
@@ -46,6 +47,15 @@ class RazorpayService {
             return;
         }
 
+        
+        if(!empty($order['customer_id'])) {
+            $rpCustomerId = $this->getRazorpayCustomer($order['customer_id']);
+        }
+
+        if(empty($rpCustomerId)) {
+            return;
+        }
+
         $razorpayPlan = RazorpayPlan::where('status', '1')->where('amount', $order['amount'])->first();
 
         if(empty($razorpayPlan)) {
@@ -55,6 +65,7 @@ class RazorpayService {
         $total_count = Config::get('app.razorpay.subscription.total_count');
         $data = [
             'plan_id' => $razorpayPlan['rp_plan_id'],
+            'customer_id' => $rpCustomerId,
             'total_count' => $total_count,
             'start_at'=> strtotime(Config::get('app.razorpay.subscription.interval')),
             'addons' => [
@@ -83,8 +94,8 @@ class RazorpayService {
             'rp_subscription_id' => $subCreationResponse['id'],
             'rp_plan_id' => $subCreationResponse['plan_id'],
             'rp_status' => $subCreationResponse['status'],
-            'rp_subscription_amount' => $ratecardDetails['amount'],
-            'rp_upfront_amount' => $ratecardDetails['upfront_amount'],
+            'rp_subscription_amount' => $ratecardDetails['amount']/100,
+            'rp_upfront_amount' => $ratecardDetails['upfront_amount']/100,
             'rp_start_at' => new \MongoDate($subCreationResponse['start_at']),
             'rp_end_at' => new \MongoDate($subCreationResponse['end_at']),
             'rp_start_at_epoch' => $subCreationResponse['end_at'],
@@ -129,6 +140,32 @@ class RazorpayService {
             return $this->createPlan($ratecardDetails);
         }
         return;
+    }
+
+    public function getRazorpayCustomer($customerId) {
+        if(empty($customerId)) {
+            return;
+        }
+
+        $customer = Customer::where('status', '1')->where('_id', $customerId)->first();
+
+        if(!empty($customer['rp_customer_id'])){
+            return $customer['rp_customer_id'];
+        }
+
+        $razorpayCustomer = [
+            'name' => $customer['name'],
+            'email' => $customer['email'],
+            'contact' => $customer['contact_no'],
+            'notes'=> []
+        ];
+
+        $response = $this->curlRequest(Config::get('app.razorpay.customer.url'), $razorpayCustomer);
+        if(empty($response['id'])){
+            return;
+        }
+        return $response['id'];
+
     }
 
     public function createPlan($ratecardDetails) {
