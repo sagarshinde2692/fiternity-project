@@ -20,12 +20,12 @@ class RazorpayService {
             Log::info("Order not found or razorpay payment already done");
             return;
         }
-        else if(!empty($order['subscription_id'])) {
-            $existingSubscription = RazorpaySubscription::where('subscription_id', $order['subscription_id'])->first();
-            if(!empty($existingSubscription)) {
-                return $existingSubscription->toArray();
-            }
-        }
+        // else if(!empty($order['subscription_id'])) {
+        //     $existingSubscription = RazorpaySubscription::where('subscription_id', $order['subscription_id'])->first();
+        //     if(!empty($existingSubscription)) {
+        //         return $existingSubscription->toArray();
+        //     }
+        // }
         $ratecardDetails = [
             'type' => $order['type'],
             'amount' => $order['amount']*100
@@ -78,7 +78,7 @@ class RazorpayService {
                 ]
             ]
         ];
-        if(empty($ratecardDetails['upfront_amount'])) {
+        if(!isset($ratecardDetails['upfront_amount'])) {
             unset($data['addons']);
         }
         $subCreationResponse = $this->curlRequest(Config::get('app.razorpay.subscription.url'), $data);
