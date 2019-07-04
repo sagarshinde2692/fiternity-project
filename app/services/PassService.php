@@ -98,7 +98,6 @@ class PassService {
         $order['_id'] = $data['_id'];
         $order['order_id'] = $order['_id'];
         $order['orderid'] = $order['_id'];
-        $order->save();
         
         if(!empty($data['pass_type']) && $data['pass_type'] == 'trial'){
             
@@ -131,7 +130,7 @@ class PassService {
             
             $data = array_merge($data,$hash);
 
-            $order->update($data);
+            $order->save($data);
             
             if(in_array($data['customer_source'],['android','ios','kiosk'])){
                 $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
@@ -169,12 +168,11 @@ class PassService {
                 $data['wallet_id'] = $wallet['_id'];
             }
             
+            $order->save($data);
             $razorpay_service = new RazorpayService();
             $create_subscription_response = $razorpay_service->createSubscription($id);
-            $data['subscription_id'] = $create_subscription_response['subscription_id'];
-            $data['rp_subscription_id'] = $create_subscription_response['rp_subscription_id'];
-            $order->update($data);
-            
+            $order['subscription_id'] = $create_subscription_response['subscription_id'];
+            $order['rp_subscription_id'] = $create_subscription_response['rp_subscription_id'];
 
         }
 
