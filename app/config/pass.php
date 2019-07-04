@@ -17,7 +17,6 @@ return [
                         'sdfs fsdfsd f'
                     ]
                 ],
-                't_and_c_url' => $apiUrl.'/passtermscondition?type=subscripe',
                 'offerings' => [
                     'header' => 'Select a monthly pass',
                     'text' => '(Limited Access)',
@@ -25,7 +24,10 @@ return [
                 ],
                 'remarks' => [
                     'header' => 'Limited access card gives you an access to all fitness centres around you.',
-                    'text' => 'view all terms and conditions'
+                    'text' => 'view all terms and conditions',
+                    "title" =>'Terms and Conditions',
+                    't_and_c_url' => $apiUrl.'/passtermscondition?type=subscripe'
+
                 ]
             ],
             [
@@ -42,7 +44,6 @@ return [
                         'sdfs fsdfsd f'
                     ]
                 ],
-                't_and_c_url' => $apiUrl.'/passtermscondition?type=unlimited',
                 'offerings' => [
                     'header' => 'ALL ACCESS PASS',
                     'text' => '(Limited Access)',
@@ -50,7 +51,9 @@ return [
                 ],
                 'remarks' => [
                     'header' => 'Limited access card gives you an access to all fitness centres around you.',
-                    'text' => 'view all terms and conditions'
+                    'text' => 'view all terms and conditions',
+                    "title" =>'Terms and Conditions',
+                    't_and_c_url' => $apiUrl.'/passtermscondition?type=subscripe'
                 ]
             ]
         ],
