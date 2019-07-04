@@ -20,15 +20,15 @@ class RazorpayService {
             Log::info("Order not found or razorpay payment already done");
             return;
         }
-        // else if(!empty($order['subscription_id'])) {
-        //     $existingSubscription = RazorpaySubscription::where('subscription_id', $order['subscription_id'])->first();
-        //     if(!empty($existingSubscription)) {
-        //         return $existingSubscription->toArray();
-        //     }
-        // }
+        else if(!empty($order['subscription_id'])) {
+            $existingSubscription = RazorpaySubscription::where('subscription_id', $order['subscription_id'])->first();
+            if(!empty($existingSubscription)) {
+                return $existingSubscription->toArray();
+            }
+        }
         $ratecardDetails = [
             'type' => $order['type'],
-            'amount' => $order['amount']*100
+            'amount' => $order['amount']
         ];
         if(!empty($order['pass_id'])) {
             $ratecardDetails['id'] = $order['pass_id'];
@@ -36,8 +36,8 @@ class RazorpayService {
                 $ratecardDetails['type'] = $order['pass']['pass_type'];
             }
             if(!empty($order['rp_subscription_amount'])) {
-                $ratecardDetails['amount'] = $order['rp_subscription_amount']*100;
-                $ratecardDetails['upfront_amount'] = $order['amount']*100;
+                $ratecardDetails['amount'] = $order['rp_subscription_amount'];
+                $ratecardDetails['upfront_amount'] = $order['amount'];
             }
         }
         else if(!empty($order['ratecard_id'])) {
@@ -72,12 +72,15 @@ class RazorpayService {
                 [
                     'item' => [
                         'name' => 'Initial Payment',
-                        'amount' => (!empty($ratecardDetails['upfront_amount']))?$ratecardDetails['upfront_amount']:$ratecardDetails['amount'],
+                        'amount' => (!empty($ratecardDetails['upfront_amount']))?($ratecardDetails['upfront_amount']*100):($ratecardDetails['amount']*100),
                         'currency' => Config::get('app.razorpay.currency')
                     ]
                 ]
             ]
         ];
+
+        Log::info('subscription details: ', [$data]);
+
         if(empty($ratecardDetails['upfront_amount'])) {
             unset($data['addons']);
         }
@@ -94,8 +97,8 @@ class RazorpayService {
             'rp_subscription_id' => $subCreationResponse['id'],
             'rp_plan_id' => $subCreationResponse['plan_id'],
             'rp_status' => $subCreationResponse['status'],
-            'rp_subscription_amount' => $ratecardDetails['amount']/100,
-            'rp_upfront_amount' => $ratecardDetails['upfront_amount']/100,
+            'rp_subscription_amount' => $ratecardDetails['amount'],
+            'rp_upfront_amount' => $ratecardDetails['upfront_amount'],
             'rp_start_at' => new \MongoDate($subCreationResponse['start_at']),
             'rp_end_at' => new \MongoDate($subCreationResponse['end_at']),
             'rp_start_at_epoch' => $subCreationResponse['end_at'],
@@ -131,7 +134,7 @@ class RazorpayService {
         if(empty($ratecardDetails)){
             return;
         }
-        $razorpayPlan = RazorpayPlan::where('status', '1')->where('amount', $ratecardDetails['amount'])->first();
+        $razorpayPlan = RazorpayPlan::where('status', '1')->where('amount', ($ratecardDetails['amount']))->first();
         if(!empty($razorpayPlan)) {
             Log::info('Plan already exists!');
             return $razorpayPlan->toArray();
@@ -179,7 +182,7 @@ class RazorpayService {
             'item' => [
                 'name' => ('pass-'.$ratecardDetails['id'].'-'.$ratecardDetails['type']),
                 'description' => 'Plan for pass: '.$ratecardDetails['id'].' of the type: '.$ratecardDetails['type'],
-                'amount' => $ratecardDetails['amount'],
+                'amount' => $ratecardDetails['amount']*100,
                 'currency' => Config::get('app.razorpay.currency')
             ],
             'interval' => Config::get('app.razorpay.plan.interval'),
@@ -199,7 +202,7 @@ class RazorpayService {
             'rp_type' => $planCreationResponse['item']['type'],
             'rp_name' => $razorpayPlan['item']['name'],
             'rp_description' => $razorpayPlan['item']['description'],
-            'rp_amount' => $razorpayPlan['item']['amount'],
+            'rp_amount' => $ratecardDetails['amount'],
             'rp_currency' => $razorpayPlan['item']['currency'],
             'rp_interval' => $razorpayPlan['interval'],
             'rp_period' => $razorpayPlan['period'],
