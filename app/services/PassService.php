@@ -320,7 +320,7 @@ class PassService {
     
         $rules = [
             'order_id'=>'required | integer',
-            'hash'=>'required'
+            'verify_hash'=>'required'
         ];
 
         $validator = Validator::make($data,$rules);
