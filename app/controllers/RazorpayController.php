@@ -45,7 +45,7 @@ class RazorpayController extends \BaseController {
             case "subscription.pending": ;
             case "subscription.halted": ;
             case "subscription.cancelled": ;
-            case "subscription.authorized": $this->authorized($data);break;
+            case "payment.authorized": $this->authorized($data);break;
         }
     }
 
@@ -98,18 +98,22 @@ class RazorpayController extends \BaseController {
     }
 
     public function authorized($data){
-        $subs_id = $data['payload']['subscription']['entity']['id'];
+        $subs_id = $data['payload']['payment']['entity']['id'];
+        Log::info("inside authorized ", [$subs_id]);
+        $order = Order::findOrFail(['rp_payment_id', $subs_id]);
+        Log::info('orders:::::::::', [($order)]);
+        if($order){
+            // $order->rp_authorized = true;
+            // $order->update();
+        }
 
-        $order = Order::find('rp_payment_id', $subs_id);
-        $order->rp_authorized = true;
-
-        $razorpaySubs = RazorpaySubscription::find('rp_subscription_id', $subs_id);
-        $razorpaySubs->rp_authorized = true;
+        $razorpaySubs = RazorpaySubscription::findOrFail(['rp_subscription_id', $subs_id]);
+        if($razorpaySubs){
+            // $razorpaySubs->rp_authorized = true;
+            // $razorpaySubs->updated();
+        }
 
         $webhook = new RazorpayWebhook($data);
-
-        $order->update();
-        $razorpaySubs->updated();
         $webhook->save();
     }
 
