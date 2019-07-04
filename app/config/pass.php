@@ -26,7 +26,7 @@ return [
                     'header' => 'Limited access card gives you an access to all fitness centres around you.',
                     'text' => 'view all terms and conditions',
                     "title" =>'Terms and Conditions',
-                    't_and_c_url' => $apiUrl.'/passtermscondition?type=subscripe'
+                    'url' => $apiUrl.'/passtermscondition?type=subscripe'
 
                 ]
             ],
@@ -53,7 +53,7 @@ return [
                     'header' => 'Limited access card gives you an access to all fitness centres around you.',
                     'text' => 'view all terms and conditions',
                     "title" =>'Terms and Conditions',
-                    't_and_c_url' => $apiUrl.'/passtermscondition?type=unlimited'
+                    'url' => $apiUrl.'/passtermscondition?type=unlimited'
                 ]
             ]
         ],
@@ -61,7 +61,7 @@ return [
             'header' => 'FAQs',
             'text' => 'sdfdfdsf sdfsd fsdf sdfs sf sf sdfs d',
             'title' => 'FAQ Title',
-            'faq_url' => $apiUrl.'/passfaq'
+            'url' => $apiUrl.'/passfaq'
         ]
     ],
     "terms"=>[
@@ -87,5 +87,19 @@ return [
             'question' => 'asdhjkdfhb adfjkvsfb?',
             'answer' => 'asfbdgf  sfduhsflkv sdfhbsfbh pdfshipubshf pbhfsdbhsb sfbgfb'
         ]
+    ],
+    'success'=>[
+        'section1'=>'Hi __customer_name, your __pass_name for __pass_duration is now active. We have also sent you a confirmation Email and SMS.',
+        'section2'=>[
+            'header'=>'Things to keep in mind',
+            'data'=>[
+                'You get sweatpoint credits to book whatever classes you want',
+                'Download the app & get started',
+                'Book classes at any gym/studio near you, sweatpoints vary by class',
+                'Not loving it? easy cancellation available',
+            ]
+        ],
+        'session3'=>'Please note - The sessions are bookable only of Fitternity app. Download now'
     ]
+
 ];

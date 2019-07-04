@@ -28,7 +28,7 @@ class RazorpayService {
         }
         $ratecardDetails = [
             'type' => $order['type'],
-            'amount' => $order['amount']*100
+            'amount' => $order['amount']
         ];
         if(!empty($order['pass_id'])) {
             $ratecardDetails['id'] = $order['pass_id'];
@@ -36,8 +36,8 @@ class RazorpayService {
                 $ratecardDetails['type'] = $order['pass']['pass_type'];
             }
             if(!empty($order['rp_subscription_amount'])) {
-                $ratecardDetails['amount'] = $order['rp_subscription_amount']*100;
-                $ratecardDetails['upfront_amount'] = $order['amount']*100;
+                $ratecardDetails['amount'] = $order['rp_subscription_amount'];
+                $ratecardDetails['upfront_amount'] = $order['amount'];
             }
         }
         else if(!empty($order['ratecard_id'])) {
@@ -49,7 +49,7 @@ class RazorpayService {
 
         
         if(!empty($order['customer_id'])) {
-            $rpCustomerId = $this->getRazorpayCustomer($order['customer_id']);
+            $rpCustomerId = $this->getRazorpayCustomer($order['customer_id'], $order['customer_name'], $order['customer_email'], $order['customer_phone']);
         }
 
         if(empty($rpCustomerId)) {
@@ -72,12 +72,15 @@ class RazorpayService {
                 [
                     'item' => [
                         'name' => 'Initial Payment',
-                        'amount' => (!empty($ratecardDetails['upfront_amount']))?$ratecardDetails['upfront_amount']:$ratecardDetails['amount'],
+                        'amount' => (!empty($ratecardDetails['upfront_amount']))?($ratecardDetails['upfront_amount']*100):($ratecardDetails['amount']*100),
                         'currency' => Config::get('app.razorpay.currency')
                     ]
                 ]
             ]
         ];
+
+        Log::info('subscription details: ', [$data]);
+
         if(empty($ratecardDetails['upfront_amount'])) {
             unset($data['addons']);
         }
@@ -94,8 +97,8 @@ class RazorpayService {
             'rp_subscription_id' => $subCreationResponse['id'],
             'rp_plan_id' => $subCreationResponse['plan_id'],
             'rp_status' => $subCreationResponse['status'],
-            'rp_subscription_amount' => $ratecardDetails['amount']/100,
-            'rp_upfront_amount' => $ratecardDetails['upfront_amount']/100,
+            'rp_subscription_amount' => $ratecardDetails['amount'],
+            'rp_upfront_amount' => $ratecardDetails['upfront_amount'],
             'rp_start_at' => new \MongoDate($subCreationResponse['start_at']),
             'rp_end_at' => new \MongoDate($subCreationResponse['end_at']),
             'rp_start_at_epoch' => $subCreationResponse['end_at'],
@@ -131,7 +134,7 @@ class RazorpayService {
         if(empty($ratecardDetails)){
             return;
         }
-        $razorpayPlan = RazorpayPlan::where('status', '1')->where('amount', $ratecardDetails['amount'])->first();
+        $razorpayPlan = RazorpayPlan::where('status', '1')->where('amount', ($ratecardDetails['amount']))->first();
         if(!empty($razorpayPlan)) {
             Log::info('Plan already exists!');
             return $razorpayPlan->toArray();
@@ -142,21 +145,22 @@ class RazorpayService {
         return;
     }
 
-    public function getRazorpayCustomer($customerId) {
-        if(empty($customerId)) {
+    public function getRazorpayCustomer($customerId, $customerName, $customerEmail, $customerContact) {
+        if(empty($customerEmail)) {
             return;
         }
 
-        $customer = Customer::where('status', '1')->where('_id', $customerId)->first();
+        //Checking on email instead of customerid as the customer might have already been created on razorpay with diff acc having same email
+        $customer = Customer::where('status', '1')->where('email', $customerEmail)->where('rp_customer_id','exists',true)->first();
 
-        if(!empty($customer['rp_customer_id'])){
+        if(!empty($customer['rp_customer_id'])) {
             return $customer['rp_customer_id'];
         }
 
         $razorpayCustomer = [
-            'name' => $customer['name'],
-            'email' => $customer['email'],
-            'contact' => $customer['contact_no'],
+            'name' => $customerName,
+            'email' => $customerEmail,
+            'contact' => $customerContact,
             'notes'=> []
         ];
 
@@ -164,6 +168,7 @@ class RazorpayService {
         if(empty($response['id'])){
             return;
         }
+        Customer::where('_id',$customerId)->where('status', '1')->update(['rp_customer_id' => $response['id']]);
         return $response['id'];
 
     }
@@ -177,7 +182,7 @@ class RazorpayService {
             'item' => [
                 'name' => ('pass-'.$ratecardDetails['id'].'-'.$ratecardDetails['type']),
                 'description' => 'Plan for pass: '.$ratecardDetails['id'].' of the type: '.$ratecardDetails['type'],
-                'amount' => $ratecardDetails['amount'],
+                'amount' => $ratecardDetails['amount']*100,
                 'currency' => Config::get('app.razorpay.currency')
             ],
             'interval' => Config::get('app.razorpay.plan.interval'),
@@ -197,7 +202,7 @@ class RazorpayService {
             'rp_type' => $planCreationResponse['item']['type'],
             'rp_name' => $razorpayPlan['item']['name'],
             'rp_description' => $razorpayPlan['item']['description'],
-            'rp_amount' => $razorpayPlan['item']['amount'],
+            'rp_amount' => $ratecardDetails['amount'],
             'rp_currency' => $razorpayPlan['item']['currency'],
             'rp_interval' => $razorpayPlan['interval'],
             'rp_period' => $razorpayPlan['period'],
