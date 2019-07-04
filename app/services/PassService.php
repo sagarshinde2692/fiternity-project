@@ -94,14 +94,12 @@ class PassService {
         
         $id = Order::maxId()+1;
         $data['_id'] = $id;
-        $order = new Order($data);
-        $order['_id'] = $data['_id'];
-        $order['order_id'] = $order['_id'];
-        $order['orderid'] = $order['_id'];
         
-        if(!empty($data['pass_type']) && $data['pass_type'] == 'trial'){
+        $data['order_id'] = $data['_id'];
+        $data['orderid'] = $data['_id'];
+        
+        if(!empty($data['pass']['payment_gateway']) && $data['pass']['payment_gateway'] == 'payu'){
             
-            $data['payment_gateway'] = 'payu';
             $txnid = "";
             $successurl = "";
             $mobilehash = "";
@@ -129,25 +127,26 @@ class PassService {
             $hash = getHash($data);
             
             $data = array_merge($data,$hash);
-
-            $order->save($data);
+            $order = new Order($data);
+            $order['_id'] = $data['_id'];
+            $order->save($order);
             
-            if(in_array($data['customer_source'],['android','ios','kiosk'])){
-                $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
+            if(in_array($order['customer_source'],['android','ios','kiosk'])){
+                $mobilehash = $order['payment_related_details_for_mobile_sdk_hash'];
             }
-            $result['firstname'] = trim(strtolower($data['customer_name']));
+            $result['firstname'] = trim(strtolower($order['customer_name']));
             $result['lastname'] = "";
-            $result['phone'] = $data['customer_phone'];
-            $result['email'] = strtolower($data['customer_email']);
-            $result['orderid'] = $data['_id'];
+            $result['phone'] = $order['customer_phone'];
+            $result['email'] = strtolower($order['customer_email']);
+            $result['orderid'] = $order['_id'];
             $result['txnid'] = $txnid;
-            $result['amount'] = $data['amount'];
-            $result['productinfo'] = strtolower($data['productinfo']);
-            $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($data['service_name']));
+            $result['amount'] = $order['amount'];
+            $result['productinfo'] = strtolower($order['productinfo']);
+            $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($order['service_name']));
             $result['successurl'] = $successurl;
-            $result['hash'] = $data['payment_hash'];
+            $result['hash'] = $order['payment_hash'];
             $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
-            $result['finder_name'] = strtolower($data['finder_name']);
+            $result['finder_name'] = strtolower($order['finder_name']);
             $resp = [
                 'status' => 200,
                 'data' => $result,
@@ -157,7 +156,7 @@ class PassService {
             
         }else{
             
-            $data['payment_gateway'] = 'razorpay';
+            
             $data['amount_customer'] = $data['amount'];
             $data['rp_subscription_amount'] = $data['amount_customer'];
             $wallet = Wallet::active()->where('customer_id', $data['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
@@ -167,8 +166,9 @@ class PassService {
                 // $data['amount'] = 1;
                 $data['wallet_id'] = $wallet['_id'];
             }
-            
-            $order->save($data);
+            $order = new Order($data);
+            $order['_id'] = $data['_id'];
+            $order->save();
             $razorpay_service = new RazorpayService();
             $create_subscription_response = $razorpay_service->createSubscription($id);
             $order['subscription_id'] = $create_subscription_response['subscription_id'];
@@ -192,10 +192,16 @@ class PassService {
         
         $order = Order::where('_id', $data['order_id'])->first();
 
+        $wallet_update = $this->updateWallet($order);
+
+        if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
+            return $wallet_update;
+        }
+        
         $this->passSuccessRazorpay($order, $data);
         
         if(empty($order['status'])){
-            return ['status'=>400, 'message'=>'Invalid request'];
+            return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (2)'];
         }
         
         $success_data = $this->getSuccessData($order);
@@ -317,8 +323,12 @@ class PassService {
             return ['status' => 404,'message' => error_message($validator->errors())];
         }
 
-        $order = Order::find(intval($data['order_id']));
-
+        $order = Order::where('status', '0')->where('pass.razaorpay', 'payu')->where('_id', $data['order_id']);
+        
+        if(empty($order)){
+            return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
+        }
+        
         $utilities = new Utilities();    
         $hash_verified = $utilities->verifyOrder($data, $order);
 
@@ -408,6 +418,24 @@ class PassService {
 
         }
        
+    }
+
+    public function updateWallet($order){
+        
+        if(!empty($order['wallet_id'])){
+            
+            $wallet_update = Wallet::active()->where('_id', $order['wallet_id'])->update(['status'=>'0']);
+            
+            if(empty($wallet_update)){
+             
+                return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (1)'];    
+            
+            }
+
+        }
+
+        return ['status'=>200];
+
     }
 
     
