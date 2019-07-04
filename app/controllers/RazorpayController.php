@@ -45,7 +45,7 @@ class RazorpayController extends \BaseController {
             case "subscription.pending": ;
             case "subscription.halted": ;
             case "subscription.cancelled": ;
-            case "subscription.authorized": ;
+            case "subscription.authorized": $this->authorized($data);break;
         }
     }
 
