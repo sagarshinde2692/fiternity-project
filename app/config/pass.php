@@ -1,5 +1,5 @@
 <?php
-
+$apiUrl = \Config::get('app.url');
 return [
     'list' => [
         'passes' => [
@@ -17,6 +17,7 @@ return [
                         'sdfs fsdfsd f'
                     ]
                 ],
+                't_and_c_url' => $apiUrl.'/passtermscondition?type=subscripe',
                 'offerings' => [
                     'header' => 'Select a monthly pass',
                     'text' => '(Limited Access)',
@@ -41,6 +42,7 @@ return [
                         'sdfs fsdfsd f'
                     ]
                 ],
+                't_and_c_url' => $apiUrl.'/passtermscondition?type=unlimited',
                 'offerings' => [
                     'header' => 'ALL ACCESS PASS',
                     'text' => '(Limited Access)',

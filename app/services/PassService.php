@@ -45,12 +45,10 @@ class PassService {
                 $passDetails['header'] = $pass['credits'].' Sweat Points';
                 $passDetails['text'] = 'for 1 month';
                 $passDetails['price'] = 'Rs. '.$pass['price'];
-                $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
+                $passDetails['price'] = 'Rs. '.$pass['price'];
                 $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
             }
         }
-        $apiUrl = Config::get('app.url');
-        $response['t_and_c_url'] = $apiUrl.'/passtermscondition';
         return $response;
     }
 
