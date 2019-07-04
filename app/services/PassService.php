@@ -400,7 +400,7 @@ class PassService {
 
     public function passSuccessRazorpay($order, $data){
 
-        if(!empty($order['payment_gateway']) && $order['payment_gateway'] == 'razorpay' && empty($order['status']) && !empty($data['payment_id'])){
+        if(!empty($order['pass']['payment_gateway']) && $order['pass']['payment_gateway'] == 'razorpay' && empty($order['status']) && !empty($data['payment_id'])){
             
             $order->update(['status'=>'1']);
             $razorpay_service = new RazorpayService();
