@@ -8,23 +8,13 @@ class PassController extends \BaseController {
     }
 
     public function listPasses(){
-        $passes = $this->passService->listPasses();
 
-        // $passConfig = \Config::get('pass');
-        // $main_header = $passConfig['main_header'];
-
-        // foreach($passes['data'] as $key=>$value){
-        //     if($value['type'] == 'trial'){
-        //         array_push($passConfig['trial']['data'], $value);
-        //     }
-        //     else if($value['type'] == 'subscription'){
-        //         array_push($passConfig['subscription']['data'], $value);
-        //     }
-        //     else if($value['type'] == 'unlimited'){
-        //         array_push($passConfig['unlimited']['data'], $value);
-        //     }
-        // }
-
+        $jwt_token = Request::header('Authorization');
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
+        $passes = $this->passService->listPasses($customer_id);
         if(empty($passes)) {
             return [
                 "status" => 400,
