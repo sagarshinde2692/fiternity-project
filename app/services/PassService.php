@@ -4,6 +4,7 @@ use Log;
 use Pass;
 use App\Services\RazorpayService as RazorpayService;
 use App\Services\Utilities as Utilities;
+use Validator;
 use Order;
 use Booktrial;
 
@@ -19,17 +20,17 @@ class PassService {
 
     }
 
-    public function listPasses(){
+    public function listPasses($customerId){
+        
         $passList = Pass::where('status', '1');
 
-        $trialPurchased =$this->checkTrialPassUsedByCustomer();
+        $trialPurchased =$this->checkTrialPassUsedByCustomer($customerId);
 
-        if($trialPurchased['status']){
-            $passList = $passList->where('type','!=', 'trial')->orderBy('pass_id')->get();
+        if(!empty($trialPurchased['status']) && $trialPurchased['status']) {
+            $passList = $passList->where('type','!=', 'trial');
         }
-        else{
-            $passList = $passList->orderBy('pass_id')->get();
-        }
+
+        $passList = $passList->orderBy('pass_id')->get();
         
         $response = Config::get('pass.list');
         foreach($passList as &$pass) {
@@ -309,13 +310,13 @@ class PassService {
     
         $rules = [
             'order_id'=>'required | integer',
-            'hash'=>'required'
+            'verify_hash'=>'required'
         ];
 
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {
-            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+            return ['status' => 404,'message' => error_message($validator->errors())];
         }
 
         $order = Order::find(intval($data['order_id']));
@@ -366,25 +367,19 @@ class PassService {
         return $credits;
     }
     
-    public function checkTrialPassUsedByCustomer(){
-
-        $response = ["status"=> false];
-        $jwt_token = Request::header('Authorization');
-        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-            $decoded = customerTokenDecode($jwt_token);
-            $customer_id = (int)$decoded->customer->_id;
-
-            $trialPass = Order::where("pass_type", 'trial')
-            ->where('status', "1")
-            ->where('customer_id', $customer_id)
-            ->select('_id')
-            ->first();
-
-            if(isset($trialPass['_id'])){
-                $response["status"]= true;
-            }
+    public function checkTrialPassUsedByCustomer($customerId) {
+        if(empty($customerId)) {
+            return;
         }
-
+        $response = ["status" => false];
+        $trialPass = Order::where("pass_type", 'trial')
+                    ->where('status', "1")
+                    ->where('customer_id', $customerId)
+                    ->select('_id')
+                    ->first();
+        if(isset($trialPass['_id'])) {
+            $response["status"]= true;
+        }
         return $response;
     }
 

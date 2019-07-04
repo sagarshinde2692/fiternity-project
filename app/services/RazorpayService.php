@@ -49,7 +49,7 @@ class RazorpayService {
 
         
         if(!empty($order['customer_id'])) {
-            $rpCustomerId = $this->getRazorpayCustomer($order['customer_id']);
+            $rpCustomerId = $this->getRazorpayCustomer($order['customer_id'], $order['customer_name'], $order['customer_email'], $order['customer_phone']);
         }
 
         if(empty($rpCustomerId)) {
@@ -142,21 +142,22 @@ class RazorpayService {
         return;
     }
 
-    public function getRazorpayCustomer($customerId) {
-        if(empty($customerId)) {
+    public function getRazorpayCustomer($customerId, $customerName, $customerEmail, $customerContact) {
+        if(empty($customerEmail)) {
             return;
         }
 
-        $customer = Customer::where('status', '1')->where('_id', $customerId)->first();
+        //Checking on email instead of customerid as the customer might have already been created on razorpay with diff acc having same email
+        $customer = Customer::where('status', '1')->where('email', $customerEmail)->where('rp_customer_id','exists',true)->first();
 
-        if(!empty($customer['rp_customer_id'])){
+        if(!empty($customer['rp_customer_id'])) {
             return $customer['rp_customer_id'];
         }
 
         $razorpayCustomer = [
-            'name' => $customer['name'],
-            'email' => $customer['email'],
-            'contact' => $customer['contact_no'],
+            'name' => $customerName,
+            'email' => $customerContact,
+            'contact' => $customerEmail,
             'notes'=> []
         ];
 
@@ -164,6 +165,7 @@ class RazorpayService {
         if(empty($response['id'])){
             return;
         }
+        Customer::where('_id',$customerId)->where('status', '1')->update(['rp_customer_id' => $response['id']]);
         return $response['id'];
 
     }
