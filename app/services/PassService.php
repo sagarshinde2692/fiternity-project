@@ -45,7 +45,6 @@ class PassService {
                 $passDetails['header'] = $pass['credits'].' Sweat Points';
                 $passDetails['text'] = 'for 1 month';
                 $passDetails['price'] = 'Rs. '.$pass['price'];
-                $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
                 $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
             }
