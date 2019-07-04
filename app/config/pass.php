@@ -53,7 +53,7 @@ return [
                     'header' => 'Limited access card gives you an access to all fitness centres around you.',
                     'text' => 'view all terms and conditions',
                     "title" =>'Terms and Conditions',
-                    't_and_c_url' => $apiUrl.'/passtermscondition?type=subscripe'
+                    't_and_c_url' => $apiUrl.'/passtermscondition?type=unlimited'
                 ]
             ]
         ],
