@@ -80,4 +80,8 @@ class PassController extends \BaseController {
         return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
     }
 
+    public function passFrequentAskedQuestion(){
+        $passFaq = \Config::get('pass.question_list');
+        return array("status"=> 200, "data"=> $passFaq, "msg"=> "success");
+    }
 }
