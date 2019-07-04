@@ -368,10 +368,9 @@ class PassService {
             $trialPass = Order::where("pass_type", 'trial')
             ->where('status', "1")
             ->where('customer_id', $customer_id)
-            ->select('_id')
-            ->first();
+            ->count();
 
-            if(isset($trialPass['_id'])){
+            if($trialPass > 0){
                 $response["status"]= true;
             }
         }
