@@ -3841,7 +3841,7 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
-        return "Monsoon Fitness Mania | Get Addnl 15% off | Use code: THUNDER | Limited Slots Applicable till 30th June 2019";
+        return "Monsoon Fitness Mania | Get Addnl 15% off | Use code: THUNDER | Limited Slots Applicable till 5th July 2019";
         
 
 		$brandMap = [
