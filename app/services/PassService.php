@@ -11,6 +11,8 @@ use Config;
 use Request;
 use Wallet;
 use Customer;
+use stdClass;
+
 class PassService {
 
     public function __construct() {
@@ -76,6 +78,7 @@ class PassService {
         $data['amount'] = $data['rp_subscription_amount'] = $pass['price'];
 
         $data['type'] = 'pass';
+        $data['payment_mode'] =  'paymentgateway';
         $data['pass_type'] = $pass['type'];
         
         $data['start_date'] = new \MongoDate(strtotime('midnight', time()));
@@ -97,7 +100,8 @@ class PassService {
         $order->save();
         
         if(!empty($data['pass_type']) && $data['pass_type'] == 'trial'){
-
+            
+            $data['payment_gateway'] = 'payu';
             $txnid = "";
             $successurl = "";
             $mobilehash = "";
@@ -112,6 +116,7 @@ class PassService {
             $data['txnid'] = $txnid;
             $data['finder_name'] = 'Fitternity';
             $data['finder_slug'] = 'fitternity';
+            
             
             $data['service_name'] = 'Pass';
             
@@ -151,7 +156,8 @@ class PassService {
             $result['payment_modes'] = $this->getPaymentModes($resp);
             
         }else{
-
+            
+            $data['payment_gateway'] = 'razorpay';
             $data['amount_customer'] = $data['amount'];
             $data['rp_subscription_amount'] = $data['amount_customer'];
             $wallet = Wallet::active()->where('customer_id', $data['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
@@ -187,31 +193,15 @@ class PassService {
         
         $order = Order::where('_id', $data['order_id'])->first();
 
-        $utilities = new Utilities();
-
-        if(!empty($order['pass_type']) && $order['pass_type'] == 'trial'){
-            
-            $walletData = array(
-                "order_id"=>$order['_id'],
-                "customer_id"=> intval($order['customer_id']),
-                "amount"=> $order['amount'],
-                "amount_fitcash" => 0,
-                "amount_fitcash_plus" => $order['amount'],
-                "type"=>'CASHBACK',
-                'entry'=>'credit',
-                'order_type'=>['pass'],
-                "description"=> "100% Cashback on workout-session booking at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14)),
-                "validity"=>time()+(86400*14),
-            );
-    
-            $utilities->walletTransaction($walletData);
+        $this->passSuccessRazorpay($order, $data);
+        
+        if(empty($order['status'])){
+            return ['status'=>400, 'message'=>'Invalid request'];
         }
+        
+        $success_data = $this->getSuccessData($order);
 
-
-        $order->update(['status'=>'1']);
-        $razorpay_service = new RazorpayService();
-        $razorpay_service->storePaymentDetails($order['_id'], $data['payment_id']);
-        return ['status'=>200, 'data'=>$order, "message"=>"Subscription successful"];
+        return ['status'=>200, 'data'=>$order, 'message'=>'Subscription successful', 'success_data'=>!empty($success_data) ? $success_data : new stdClass()];
 
     }
 
@@ -337,6 +327,25 @@ class PassService {
             return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
         }
 
+        if(!empty($order['pass']['cashback'])){
+            
+            $walletData = array(
+                "order_id"=>$order['_id'],
+                "customer_id"=> intval($order['customer_id']),
+                "amount"=> $order['amount'],
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $order['amount'],
+                "type"=>'CASHBACK',
+                'entry'=>'credit',
+                'order_type'=>['pass'],
+                "description"=> "100% Cashback on workout-session booking at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14)),
+                "validity"=>time()+(86400*14),
+            );
+    
+            $utilities->walletTransaction($walletData);
+        }
+
+
         $order->status = '1';
         $order->update();
 
@@ -378,5 +387,36 @@ class PassService {
 
         return $response;
     }
+
+    public function getSuccessData($order){
+        
+        $success_template = Config::get('pass.success');
+        
+        $success_template['section1'] = strtr(
+            $success_template['section1'], 
+            [
+                '__customer_name'=>$order['customer_name'], 
+                '__pass_name'=>$order['pass']['name'],
+                '__pass_duration'=> $order['pass']['duration']['text']
+            ]
+        );
+
+        return $success_template;
+
+    }
+
+    public function passSuccessRazorpay($order, $data){
+
+        if(!empty($order['payment_gateway']) && $order['payment_gateway'] == 'razorpay' && empty($order['status']) && !empty($data['payment_id'])){
+            
+            $order->update(['status'=>'1']);
+            $razorpay_service = new RazorpayService();
+            $razorpay_service->storePaymentDetails($order['_id'], $data['payment_id']);
+
+        }
+       
+    }
+
+    
 
 }

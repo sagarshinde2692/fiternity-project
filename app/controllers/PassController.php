@@ -68,10 +68,19 @@ class PassController extends \BaseController {
     }
 
     public function passSuccess(){
-        
         $data = Input::json()->all();
-        return $order_success_response = $this->passService->passSuccess($data);
-        return $order_success_response;
+
+        $rules = [
+            'order_id'=>'required | integer',
+        ];
+        
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())), 400);
+        }
+    
+        return $this->passService->passSuccess($data);
 
     }
 

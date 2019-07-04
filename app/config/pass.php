@@ -87,5 +87,19 @@ return [
             'question' => 'asdhjkdfhb adfjkvsfb?',
             'answer' => 'asfbdgf  sfduhsflkv sdfhbsfbh pdfshipubshf pbhfsdbhsb sfbgfb'
         ]
+    ],
+    'success'=>[
+        'section1'=>'Hi __customer_name, your __pass_name for __pass_duration is now active. We have also sent you a confirmation Email and SMS.',
+        'section2'=>[
+            'header'=>'Things to keep in mind',
+            'data'=>[
+                'You get sweatpoint credits to book whatever classes you want',
+                'Download the app & get started',
+                'Book classes at any gym/studio near you, sweatpoints vary by class',
+                'Not loving it? easy cancellation available',
+            ]
+        ],
+        'session3'=>'Please note - The sessions are bookable only of Fitternity app. Download now'
     ]
+
 ];
