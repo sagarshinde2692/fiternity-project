@@ -72,7 +72,7 @@ class RazorpayService {
                 [
                     'item' => [
                         'name' => 'Initial Payment',
-                        'amount' => (!empty($ratecardDetails['upfront_amount']))?$ratecardDetails['upfront_amount']:$ratecardDetails['amount'],
+                        'amount' => (isset($ratecardDetails['upfront_amount']))?$ratecardDetails['upfront_amount']:$ratecardDetails['amount'],
                         'currency' => Config::get('app.razorpay.currency')
                     ]
                 ]
