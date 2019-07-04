@@ -83,4 +83,6 @@ class PassController extends \BaseController {
         $passFaq = \Config::get('pass.question_list');
         return array("status"=> 200, "data"=> $passFaq, "msg"=> "success");
     }
+
+    
 }

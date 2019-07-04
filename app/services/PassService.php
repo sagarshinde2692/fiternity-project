@@ -62,7 +62,6 @@ class PassService {
         
         $data['type'] = "pass";
         $data['status'] = "0";
-
         $utilities = new Utilities();
         $customer_detail = $utilities->getCustomerDetail($data);
 
@@ -168,23 +167,30 @@ class PassService {
             }
             $order = new Order($data);
             $order['_id'] = $data['_id'];
+
+            if(!empty($data['rp_subscription_id'])){
+                $order['rp_subscription_id'] = $data['rp_subscription_id'];
+                $order['rp_plan_id'] = $data['plan_id'];
+                $order['rp_orignal_pass_order_id'] = $data['orignal_pass_order_id'];
+            }
+
             $order->save();
-            $razorpay_service = new RazorpayService();
-            $create_subscription_response = $razorpay_service->createSubscription($id);
-            $order['subscription_id'] = $create_subscription_response['subscription_id'];
-            $order['rp_subscription_id'] = $create_subscription_response['rp_subscription_id'];
+
+            if(empty($data['rp_subscription_id'])){
+                $razorpay_service = new RazorpayService();
+                $create_subscription_response = $razorpay_service->createSubscription($id);
+                $order['subscription_id'] = $create_subscription_response['subscription_id'];
+                $order['rp_subscription_id'] = $create_subscription_response['rp_subscription_id'];
+            }
+
 
         }
-
-        
-
+  
         return  [
             'status' => 200,
             'data' => !empty($result) ? $result : $order,
             'message' => "Tmp Order Generated Sucessfully"
         ];
-        
-
 
     }
 
