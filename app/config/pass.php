@@ -1,5 +1,5 @@
 <?php
-
+$apiUrl = \Config::get('app.url');
 return [
     'list' => [
         'passes' => [
@@ -24,7 +24,10 @@ return [
                 ],
                 'remarks' => [
                     'header' => 'Limited access card gives you an access to all fitness centres around you.',
-                    'text' => 'view all terms and conditions'
+                    'text' => 'view all terms and conditions',
+                    "title" =>'Terms and Conditions',
+                    't_and_c_url' => $apiUrl.'/passtermscondition?type=subscripe'
+
                 ]
             ],
             [
@@ -48,23 +51,17 @@ return [
                 ],
                 'remarks' => [
                     'header' => 'Limited access card gives you an access to all fitness centres around you.',
-                    'text' => 'view all terms and conditions'
+                    'text' => 'view all terms and conditions',
+                    "title" =>'Terms and Conditions',
+                    't_and_c_url' => $apiUrl.'/passtermscondition?type=unlimited'
                 ]
             ]
         ],
         'faq' => [
             'header' => 'FAQs',
             'text' => 'sdfdfdsf sdfsd fsdf sdfs sf sf sdfs d',
-            'question_list' => [
-                [
-                    'question' => 'asdhjkdfhb adfjkvsfb?',
-                    'answer' => 'asfbdgf  sfduhsflkv sdfhbsfbh pdfshipubshf pbhfsdbhsb sfbgfb'
-                ],
-                [
-                    'question' => 'asdhjkdfhb adfjkvsfb?',
-                    'answer' => 'asfbdgf  sfduhsflkv sdfhbsfbh pdfshipubshf pbhfsdbhsb sfbgfb'
-                ]
-            ]
+            'title' => 'FAQ Title',
+            'faq_url' => $apiUrl.'/passfaq'
         ]
     ],
     "terms"=>[
@@ -76,5 +73,19 @@ return [
             <li>terms 4</li>
             <li> terms 5</li>
         </ul>"
+    ],
+    'question_list' => [
+        [
+            'question' => 'asdhjkdfhb adfjkvsfb?',
+            'answer' => 'asfbdgf  sfduhsflkv sdfhbsfbh pdfshipubshf pbhfsdbhsb sfbgfb'
+        ],
+        [
+            'question' => 'asdhjkdfhb adfjkvsfb?',
+            'answer' => 'asfbdgf  sfduhsflkv sdfhbsfbh pdfshipubshf pbhfsdbhsb sfbgfb'
+        ],
+        [
+            'question' => 'asdhjkdfhb adfjkvsfb?',
+            'answer' => 'asfbdgf  sfduhsflkv sdfhbsfbh pdfshipubshf pbhfsdbhsb sfbgfb'
+        ]
     ]
 ];
