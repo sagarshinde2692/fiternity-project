@@ -192,10 +192,16 @@ class PassService {
         
         $order = Order::where('_id', $data['order_id'])->first();
 
+        $wallet_update = $this->updateWallet($order);
+
+        if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
+            return $wallet_update;
+        }
+        
         $this->passSuccessRazorpay($order, $data);
         
         if(empty($order['status'])){
-            return ['status'=>400, 'message'=>'Invalid request'];
+            return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (2)'];
         }
         
         $success_data = $this->getSuccessData($order);
@@ -412,6 +418,24 @@ class PassService {
 
         }
        
+    }
+
+    public function updateWallet($order){
+        
+        if(!empty($order['wallet_id'])){
+            
+            $wallet_update = Wallet::active()->where('_id', $order['wallet_id'])->update(['status'=>'0']);
+            
+            if(empty($wallet_update)){
+             
+                return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (1)'];    
+            
+            }
+
+        }
+
+        return ['status'=>200];
+
     }
 
     
