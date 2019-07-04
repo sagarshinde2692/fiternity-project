@@ -4572,11 +4572,16 @@ class CustomerController extends \BaseController {
 		
 
 		$code = trim(strtolower($data['code']));
-
+		
         $fitcashcode = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
 
 		if (!isset($fitcashcode) || $fitcashcode == "") {
 			$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
+			return Response::json($resp,404);
+		}
+
+		if($code == 'ihffpass' && empty(Request::header('Device-Type'))){
+			$resp 	= 	array('status' => 404,'message' => "Promotion Code Applicable Only On App");
 			return Response::json($resp,404);
 		}
 
@@ -4607,6 +4612,29 @@ class CustomerController extends \BaseController {
 				}
 			}	
 			
+			if($code == 'ihffpass'){
+				$order = Order::where(function($query) use($customer_email, $customer_phone){
+					$query->orWhere('customer_email',$customer_email)
+					->orWhere('customer_phone',$customer_phone);
+				})->lists('_id');
+
+				$booktrial = Booktrial::where(function($query) use($customer_email, $customer_phone){
+					$query->orWhere('customer_email',$customer_email)
+					->orWhere('customer_phone',$customer_phone);
+				})->lists('_id');
+
+				$newUser = true;
+
+				if(!empty($order) || !empty($booktrial)){
+					$newUser = false;
+				}
+
+				if(!$newUser){
+					$resp 	= 	array('status' => 400,'message' => "This promotion code is applicable only for new users");
+					return  Response::json($resp, 400);
+				}
+			}
+
 			if($already_applied_promotion > 0){
 				$resp 	= 	array('status' => 400,'message' => "You have already applied promotion code");
 				return  Response::json($resp, 400);
