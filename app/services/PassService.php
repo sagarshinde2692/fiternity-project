@@ -164,11 +164,11 @@ class PassService {
                 $data['wallet_id'] = $wallet['_id'];
             }
             
-            $order->update($data);
             $razorpay_service = new RazorpayService();
             $create_subscription_response = $razorpay_service->createSubscription($id);
             $data['subscription_id'] = $create_subscription_response['subscription_id'];
             $data['rp_subscription_id'] = $create_subscription_response['rp_subscription_id'];
+            $order->update($data);
             
 
         }
