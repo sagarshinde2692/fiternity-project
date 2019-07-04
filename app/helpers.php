@@ -3937,7 +3937,18 @@ if (!function_exists(('isFinderIntegrated'))){
 	
 	 function isFinderIntegrated($finder){
         try{
-            if((!empty($finder['commercial_type']) && $finder['commercial_type'] == 0) || (!empty($finder['membership']) && $finder['membership'] == 'disable') || (!empty($finder['trial']) && $finder['trial'] == 'disable') || (!empty($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed']))){
+            if(
+                (
+                    !empty($finder['commercial_type']) && $finder['commercial_type'] == 0) 
+                ||
+                (
+                    (!empty($finder['membership']) && $finder['membership'] == 'disable') 
+                    && 
+                    (!empty($finder['trial']) && $finder['trial'] == 'disable')
+                ) 
+                ||
+                (!empty($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed']))
+            ){
                 return false;
             }else{
                 return true;
