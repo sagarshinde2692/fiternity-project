@@ -45,6 +45,7 @@ class RazorpayController extends \BaseController {
             case "subscription.pending": ;
             case "subscription.halted": ;
             case "subscription.cancelled": ;
+            case "subscription.authorized": ;
         }
     }
 
@@ -95,4 +96,21 @@ class RazorpayController extends \BaseController {
         $razorpaySubs->updated();
         $webhook->save();
     }
+
+    public function authorized($data){
+        $subs_id = $data['payload']['subscription']['entity']['id'];
+
+        $order = Order::find('rp_payment_id', $subs_id);
+        $order->rp_authorized = true;
+
+        $razorpaySubs = RazorpaySubscription::find('rp_subscription_id', $subs_id);
+        $razorpaySubs->rp_authorized = true;
+
+        $webhook = new RazorpayWebhook($data);
+
+        $order->update();
+        $razorpaySubs->updated();
+        $webhook->save();
+    }
+
 }

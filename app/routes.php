@@ -1364,4 +1364,4 @@ Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
 Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
 Route::post('razorpay/subscribe', 'RazorpayController@createSubscription');
 Route::post('razorpay/storepaymentdetails', 'RazorpayController@storePaymentDetails');
-Route::post('razorpay/razorpaywebhooks', 'RazorpayController@razorpayWebhooks');
+Route::match(array('PUT', 'POST'),'razorpay/razorpaywebhooks', 'RazorpayController@razorpayWebhooks');
