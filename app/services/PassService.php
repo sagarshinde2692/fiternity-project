@@ -18,7 +18,17 @@ class PassService {
     }
 
     public function listPasses(){
-        $passList = Pass::where('status', '1')->orderBy('pass_id')->get();
+        $passList = Pass::where('status', '1');
+
+        $trialPurchased =$this->checkTrialPassUsedByCustomer();
+
+        if($trialPurchased['status']){
+            $passList = $passList->where('type','!=', 'trial')->orderBy('pass_id')->get();
+        }
+        else{
+            $passList = $passList->orderBy('pass_id')->get();
+        }
+        
         $response = Config::get('pass.list');
         foreach($passList as &$pass) {
             $passDetails = [
@@ -349,6 +359,28 @@ class PassService {
             }
         }
         return $credits;
+    }
+    
+    public function checkTrialPassUsedByCustomer(){
+
+        $response = ["status"=> false];
+        $jwt_token = Request::header('Authorization');
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+
+            $trialPass = Order::where("pass_type", 'trial')
+            ->where('status', "1")
+            ->where('customer_id', $customer_id)
+            ->select('_id')
+            ->first();
+
+            if(isset($trialPass['_id'])){
+                $response["status"]= true;
+            }
+        }
+
+        return $response;
     }
 
 }
