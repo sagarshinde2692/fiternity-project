@@ -45,7 +45,7 @@ return array(
 	'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
 	'razorPayKey' => 'rzp_test_6TKjLnXzpuVIds',
 	'razorPaySecret' => 'rK7FwR1a4coHHLCuhSSLz8P5',
-    
+    "webhook_secret_key"=>"qwepoifghtyvb",
     //beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://beta.fitn.in',

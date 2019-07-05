@@ -39,7 +39,7 @@ class RazorpayController extends \BaseController {
 
     public function razorpayWebhooks(){
         $data = Input::json()->all();
-        $key = Config::get('app.razorpay')['webhook_secret_key'];
+        $key = Config::get('app.webhook_secret_key');
         $expected_signature = hash_hmac('sha256', $data, $key);
 
         Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$data, $expected_signature]);
