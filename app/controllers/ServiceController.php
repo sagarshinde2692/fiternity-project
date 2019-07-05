@@ -1248,11 +1248,6 @@ class ServiceController extends \BaseController {
 					$message = "No slots available";
 				}
 
-				log::info('credit points:::::::::::::::', [$slots[0]['data']]);
-				foreach($slots as &$slot){
-					$this->addCreditPoints($slot['data']);
-				}
-
 				$data = [
 					'status'=>200,
 					'slots'=>$slots,
@@ -1305,7 +1300,7 @@ class ServiceController extends \BaseController {
 
                 }
 			}
-			log::info('rtpw::::::::::::;', [$type, $data]);
+			
 			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
 				foreach($data['schedules'] as &$schedule){
 					$schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title']);
@@ -1324,8 +1319,11 @@ class ServiceController extends \BaseController {
 					$this->addCreditPoints($schedule['slots']);
 				}
 			}
-			else if(!empty($data['slots']) && empty($_GET['source'])){
-				$this->addCreditPoints($data['slots']['data']);
+			else if(!empty($data['slots'])){
+				log::info('credit points:::::::::::::::', [$slots[0]['data']]);
+				foreach($data['slots'] as &$slot){
+					$this->addCreditPoints($slot['data']);
+				}
 			}
 
             return Response::json($data,200);
@@ -2454,7 +2452,6 @@ class ServiceController extends \BaseController {
 	}
 
 	public function addCreditPoints(&$data){
-		Log::info('addcredit :::::::::::;', [$data]);
 		foreach($data as &$value){
 
 			if($value['price']>0 && $value['price']<= 300){
