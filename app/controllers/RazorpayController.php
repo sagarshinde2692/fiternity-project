@@ -116,12 +116,12 @@ class RazorpayController extends \BaseController {
 
         $subs_id = $data['payload']['subscription']['entity']['id'];
 
-        $order = Order::active()
-        ->where('rp_subscription_id', $subs_id)
-        ->orderby('_id')
-        ->get();
-        //cancel order
-        Log::info('order data::::::::::::::::::', [$order]);
+        // $order = Order::active()
+        // ->where('rp_subscription_id', $subs_id)
+        // ->orderby('_id')
+        // ->get();
+        // //cancel order
+        // Log::info('order data::::::::::::::::::', [$order]);
     }
 
     public function webhookStore($data){
