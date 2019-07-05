@@ -47,6 +47,7 @@ class RazorpayController extends \BaseController {
             case "subscription.cancelled": $this->cancelled($data);break;
             case "subscription.activated": $this->activated($data);break;
             case "subscription.completed": $this->completed($data);break;
+            default : $this->webhookStore($data);break;
         }
     }
 
@@ -61,7 +62,7 @@ class RazorpayController extends \BaseController {
 
         $subs_id = $data['payload']['subscription']['entity']['id'];
         $plan_id = $data['payload']['subscription']['entity']['plan_id'];
-        $amount = $data['payload']['payment']['entity']['amount'];
+        $amount = ((float)$data['payload']['payment']['entity']['amount'])/100;
         $payment_id = $data['payload']['payment']['entity']['id'];
         $order_id = $data['payload']['payment']['entity']['order_id'];
 
@@ -121,5 +122,10 @@ class RazorpayController extends \BaseController {
         ->get();
         //cancel order
         Log::info('order data::::::::::::::::::', [$order]);
+    }
+
+    public function webhookStore($data){
+        $webhook = new RazorpayWebhook($data);
+        $webhook->save();
     }
 }
