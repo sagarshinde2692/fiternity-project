@@ -24,7 +24,12 @@ class PassService {
         
         $passList = Pass::where('status', '1');
 
-        $trialPurchased =$this->checkTrialPassUsedByCustomer($customerId);
+        if(!Config::get('app.debug')) {
+            $trialPurchased =$this->checkTrialPassUsedByCustomer($customerId);
+        }
+        else {
+            $trialPurchased = false;
+        }
 
         if(!empty($trialPurchased['status']) && $trialPurchased['status']) {
             $passList = $passList->where('type','!=', 'trial');
@@ -301,6 +306,9 @@ class PassService {
     }
 
     public function getCreditsApplicable($amount, $customerId) {
+
+        // credits: 0=>pass not applicable, -1=>unlimited access, >0=>monthly access credit points for the session
+
         if(empty($amount) && empty(!$customerId)) {
             return;
         }
@@ -313,6 +321,13 @@ class PassService {
         }
         $credits = null;
         if(!empty($passType) && $passType=='unlimited') {
+
+            if($amount>=750) {
+                if(!isset($passOrder['total_premium_sessions']) || !isset($passOrder['premium_sessions_used']) || !($passOrder['premium_sessions_used']<$passOrder['total_premium_sessions'])) {
+                    return [ 'credits' => 0, 'order_id' => $passOrder['_id']];        
+                }
+            }
+
             return [ 'credits' => -1, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
         }
         else if(empty($passType)) {
