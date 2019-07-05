@@ -62,6 +62,7 @@ class RazorpayController extends \BaseController {
     public function charged($data, $body, $signature, $key){
         $webhook = new RazorpayWebhook($data);
         $webhook->save();
+        
         $subs_id = $data['payload']['subscription']['entity']['id'];
         $plan_id = $data['payload']['subscription']['entity']['plan_id'];
         $amount = ((float)$data['payload']['payment']['entity']['amount'])/100;
