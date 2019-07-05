@@ -217,6 +217,11 @@ class PassService {
         if(empty($data['order_id'])){
             return;
         }
+        Log::info('data:::::::', [$data['razorpay']]);
+        $verify_status = $this->verifyOrderSignature(["body"=>$data['razorpay']['rp_body'], "key"=> $data['razorpay']['key'], "signature"=>$data['razorpay']['razorpay_signature']])['status'];
+        if(!$verify_status){
+            return ['status'=>400, 'message'=>'Invalid Request.'];
+        }
 
         $data['order_id'] = intval($data['order_id']);
 
@@ -465,7 +470,7 @@ class PassService {
         if(!empty($order['wallet_id'])){
             
             $wallet_update = Wallet::active()->where('_id', $order['wallet_id'])->update(['status'=>'0']);
-            
+            Log::info("wallet data:::::::::::::", [$order, $wallet_update]);
             if(empty($wallet_update)){
              
                 return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (1)'];    
@@ -478,6 +483,14 @@ class PassService {
 
     }
 
-    
+    public function verifyOrderSignature($data){
+        $expected_signature = hash_hmac('sha256', $data['body'], $data['key']);
+        $response= ["status"=>false];
+        Log::info("in verify signature:::::::::::::", [$data['signature'], $expected_signature]);
+        if($data['signature'] == $expected_signature){
+            $response['status'] = true;
+        }
+        return $response;
+    }
 
 }

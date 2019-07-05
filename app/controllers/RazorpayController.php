@@ -63,7 +63,7 @@ class RazorpayController extends \BaseController {
     public function charged($data, $body, $signature, $key, $expected_signature){
         $webhook = new RazorpayWebhook($data);
         $webhook->save();
-
+        
         $subs_id = $data['payload']['subscription']['entity']['id'];
         $plan_id = $data['payload']['subscription']['entity']['plan_id'];
         $amount = ((float)$data['payload']['payment']['entity']['amount'])/100;
@@ -93,11 +93,14 @@ class RazorpayController extends \BaseController {
         if(isset($pass_capture['status']) && $pass_capture['status']==200){
             $success_data = [
                 "order_id" => $pass_capture["data"]["_id"],
-                "payment_id" => $input['payment_id'],
-                "razorpay_signature" => $signature,
-                "body" => $body,
-                "secrate_key" => $key,
-                "expected_signature" => $expected_signature
+                "type" => "webhook",
+                "razorpay"=>[
+                    "razorpay_payment_id" => $input['payment_id'],
+                    "rp_subscription_id" => $input['rp_subscription_id'],
+                    "rp_body" => $body,
+                    "key" => $key,
+                    "razorpay_signature" => $signature
+                ],
             ];
             $this->passService->passSuccess($success_data);
         }
