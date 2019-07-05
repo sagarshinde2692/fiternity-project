@@ -440,8 +440,8 @@ class PassService {
         
         $success_template = Config::get('pass.success');
         
-        $success_template['section1'] = strtr(
-            $success_template['section1'], 
+        $success_template['subline'] = strtr(
+            $success_template['subline'], 
             [
                 '__customer_name'=>$order['customer_name'], 
                 '__pass_name'=>$order['pass']['name'],
@@ -449,6 +449,29 @@ class PassService {
             ]
         );
 
+        $success_template['pass']['header'] = strtr(
+            $success_template['pass']['header'],
+            [
+                '__credit_point'=> $order['pass']['credits']
+            ]
+        );
+
+        $success_template['pass']['subheader'] = strtr(
+            $success_template['pass']['subheader'],
+            [
+                '__pass_count'=> $order['pass']['classes']
+            ]
+        );
+
+        $success_template['pass']['text'] = strtr(
+            $success_template['pass']['text'],
+            [
+                '__end_date'=> date_format($order['end_date'],'d-M-Y')
+            ]
+        );
+        if($order['pass']['type']=='unlimited'){
+            $success_template['pass']['subheader'] = "Unlimitd Access";
+        }
         return $success_template;
 
     }
@@ -469,7 +492,7 @@ class PassService {
         
         if(!empty($order['wallet_id'])){
             
-            $wallet_update = Wallet::active()->where('_id', $order['wallet_id'])->update(['status'=>'0']);
+            $wallet_update = Wallet::where('_id', $order['wallet_id'])->update(['status'=>'0']);
             
             if(empty($wallet_update)){
              

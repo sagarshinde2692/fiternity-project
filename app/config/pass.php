@@ -89,8 +89,16 @@ return [
         ]
     ],
     'success'=>[
-        'section1'=>'Hi __customer_name, your __pass_name for __pass_duration is now active. We have also sent you a confirmation Email and SMS.',
-        'section2'=>[
+        'image' => 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
+        "header" => "Your subscription is active",
+        'subline'=>'Hi __customer_name, your __pass_name for __pass_duration is now active. We have also sent you a confirmation Email and SMS.',
+        "pass" => [
+            "header" => "__credit_point sweat point credits",
+            "subheader" => "__pass_count Classes",
+            "type" => "Monthly",
+            "text" => "Valid up to __end_date"
+        ],
+        'info'=>[
             'header'=>'Things to keep in mind',
             'data'=>[
                 'You get sweatpoint credits to book whatever classes you want',
