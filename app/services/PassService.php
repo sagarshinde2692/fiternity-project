@@ -197,6 +197,12 @@ class PassService {
 
     public function passSuccess($data){
         
+        if(empty($data['order_id'])){
+            return;
+        }
+
+        $data['order_id'] = intval($data['order_id']);
+
         $order = Order::where('_id', $data['order_id'])->first();
 
         $wallet_update = $this->updateWallet($order);
