@@ -41,12 +41,11 @@ class RazorpayController extends \BaseController {
         $data = Input::json()->all();
         $key = Config::get('app.webhook_secret_key');
         $signature = Request::header('X-Razorpay-Signature');
-        //$headers = Request::header();
         $body = Request::getContent();
         $expected_signature = hash_hmac('sha256', $body, $key);
         Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$body, $expected_signature, $signature]);
         switch($data['event']){
-            case "subscription.charged": $this->charged($data);break;
+            case "subscription.charged": $this->charged($data, $body, $signature, $key);break;
             case "subscription.pending": $this->pending($data);break;
             case "subscription.halted": $this->halted($data);break;
             case "subscription.cancelled": $this->cancelled($data);break;
@@ -61,7 +60,7 @@ class RazorpayController extends \BaseController {
         $webhook->save();
     }
 
-    public function charged($data){
+    public function charged($data, $body, $signature, $key){
         $webhook = new RazorpayWebhook($data);
         $webhook->save();
 
@@ -94,7 +93,10 @@ class RazorpayController extends \BaseController {
         if(isset($pass_capture['status']) && $pass_capture['status']==200){
             $success_data = [
                 "order_id" => $pass_capture["data"]["_id"],
-                "payment_id" => $input['payment_id']
+                "payment_id" => $input['payment_id'],
+                "razorpay_signature" => $signature,
+                "body" => $body,
+                "secrate_key" => $key 
             ];
             $this->passService->passSuccess($success_data);
         }
