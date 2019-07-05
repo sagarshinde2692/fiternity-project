@@ -83,7 +83,7 @@ class RazorpayController extends \BaseController {
             "plan_id" =>  $plan_id,
             "amount" => $amount,
             "payment_id" =>$payment_id,
-            "orignal_pass_order_id" =>$order['_id'],
+            "rp_orignal_pass_order_id" =>$order['_id'],
             "webhook_id" => $webhook->id
         );
 

@@ -189,7 +189,7 @@ class PassService {
             if(!empty($data['rp_subscription_id'])){
                 $order['rp_subscription_id'] = $data['rp_subscription_id'];
                 $order['rp_plan_id'] = $data['plan_id'];
-                $order['rp_orignal_pass_order_id'] = $data['orignal_pass_order_id'];
+                $order['rp_orignal_pass_order_id'] = $data['rp_orignal_pass_order_id'];
             }
 
             $order->save();
@@ -437,7 +437,8 @@ class PassService {
 
     public function getSuccessData($order){
         
-        $success_template = Config::get('pass.success');
+        $success = Config::get('pass');
+        $success_template = $success['success'];
         
         $success_template['subline'] = strtr(
             $success_template['subline'], 
@@ -468,9 +469,15 @@ class PassService {
                 '__end_date'=> date_format($order['end_date'],'d-M-Y')
             ]
         );
+
         if($order['pass']['type']=='unlimited'){
             $success_template['pass']['subheader'] = "Unlimitd Access";
+            $success_template['pass_image'] = $success['pass_image_gold'];
         }
+        else{
+            $success_template['pass_image'] = $success['pass_image_silver'];
+        }
+        
         return $success_template;
 
     }
