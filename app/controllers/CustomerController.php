@@ -4580,7 +4580,7 @@ class CustomerController extends \BaseController {
 			return Response::json($resp,404);
 		}
 
-		if($code == 'ihffpass' && empty(Request::header('Device-Type'))){
+		if(!empty($fitcashcode['flags']['app_only']) && empty(Request::header('Device-Type'))){
 			$resp 	= 	array('status' => 404,'message' => "Promotion Code Applicable Only On App");
 			return Response::json($resp,404);
 		}
@@ -4612,7 +4612,7 @@ class CustomerController extends \BaseController {
 				}
 			}	
 			
-			if($code == 'ihffpass'){
+			if(!empty($fitcashcode['flags']['only_new_user'])){
 				$order = Order::where(function($query) use($customer_email, $customer_phone){
 					$query->orWhere('customer_email',$customer_email)
 					->orWhere('customer_phone',$customer_phone);
