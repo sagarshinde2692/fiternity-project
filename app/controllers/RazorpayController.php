@@ -39,7 +39,7 @@ class RazorpayController extends \BaseController {
 
     public function razorpayWebhooks(){
         $data = Input::json()->all();
-        //Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$data]);
+        Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$data]);
         switch($data['event']){
             case "subscription.charged": $this->charged($data);break;
             case "subscription.pending": $this->pending($data);break;
