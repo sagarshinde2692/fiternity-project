@@ -45,7 +45,7 @@ class RazorpayController extends \BaseController {
         $expected_signature = hash_hmac('sha256', $body, $key);
         Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$body, $expected_signature, $signature]);
         switch($data['event']){
-            case "subscription.charged": $this->charged($data, $body, $signature, $key);break;
+            case "subscription.charged": $this->charged($data, $body, $signature, $key, $expected_signature);break;
             case "subscription.pending": $this->pending($data);break;
             case "subscription.halted": $this->halted($data);break;
             case "subscription.cancelled": $this->cancelled($data);break;
@@ -60,7 +60,7 @@ class RazorpayController extends \BaseController {
         $webhook->save();
     }
 
-    public function charged($data, $body, $signature, $key){
+    public function charged($data, $body, $signature, $key, $expected_signature){
         $webhook = new RazorpayWebhook($data);
         $webhook->save();
 
@@ -96,7 +96,8 @@ class RazorpayController extends \BaseController {
                 "payment_id" => $input['payment_id'],
                 "razorpay_signature" => $signature,
                 "body" => $body,
-                "secrate_key" => $key 
+                "secrate_key" => $key,
+                "expected_signature" => $expected_signature
             ];
             $this->passService->passSuccess($success_data);
         }
