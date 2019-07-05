@@ -330,14 +330,14 @@ class PassService {
             return ['status' => 404,'message' => error_message($validator->errors())];
         }
 
-        $order = Order::where('status', '0')->where('pass.razaorpay', 'payu')->where('_id', $data['order_id']);
+        $order = Order::where('status', '0')->where('pass.payment_gateway', 'payu')->where('_id', $data['order_id'])->first();
         
         if(empty($order)){
             return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
         }
         
         $utilities = new Utilities();    
-        $hash_verified = $utilities->verifyOrder($data, $order->toArray());
+        $hash_verified = $utilities->verifyOrder($data, $order);
 
         if(empty($hash_verified)){
             return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
