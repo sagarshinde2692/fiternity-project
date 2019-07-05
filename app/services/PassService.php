@@ -337,7 +337,7 @@ class PassService {
         }
         
         $utilities = new Utilities();    
-        $hash_verified = $utilities->verifyOrder($data, $order);
+        $hash_verified = $utilities->verifyOrder($data, $order->toArray());
 
         if(empty($hash_verified)){
             return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
