@@ -47,6 +47,7 @@ class PassService {
             } else {
                 $passDetails['header'] = $pass['credits'].' Sweat Points';
                 $passDetails['text'] = 'for 1 month';
+                $passDetails['offer'] = 'Get 100% instant cash back';
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
                 $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
@@ -197,6 +198,12 @@ class PassService {
 
     public function passSuccess($data){
         
+        if(empty($data['order_id'])){
+            return;
+        }
+
+        $data['order_id'] = intval($data['order_id']);
+
         $order = Order::where('_id', $data['order_id'])->first();
 
         $wallet_update = $this->updateWallet($order);
@@ -330,6 +337,9 @@ class PassService {
             return ['status' => 404,'message' => error_message($validator->errors())];
         }
 
+        if(!empty($data['order_id'])) {
+            $data['order_id'] = intval($data['order_id']);
+        }
         $order = Order::where('status', '0')->where('pass.payment_gateway', 'payu')->where('_id', $data['order_id'])->first();
         
         if(empty($order)){
