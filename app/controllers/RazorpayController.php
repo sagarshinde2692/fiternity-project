@@ -2,7 +2,6 @@
 
 use App\Services\RazorpayService as RazorpayService;
 use App\Services\PassService as PassService;
-use anlutro\cURL\Request;
 
 class RazorpayController extends \BaseController {
     protected $razorpayService;
@@ -42,10 +41,10 @@ class RazorpayController extends \BaseController {
         $data = Input::json()->all();
         $key = Config::get('app.webhook_secret_key');
         $signature = Request::header('X-Razorpay-Signature');
-        $headers = Request::header();
+        //$headers = Request::header();
         $body = Request::getContent();
         $expected_signature = hash_hmac('sha256', $body, $key);
-        Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$body, $expected_signature, $signature, $headers]);
+        Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$body, $expected_signature, $signature]);
         switch($data['event']){
             case "subscription.charged": $this->charged($data);break;
             case "subscription.pending": $this->pending($data);break;
