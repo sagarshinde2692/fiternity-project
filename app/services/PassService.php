@@ -490,7 +490,7 @@ class PassService {
 
     public function updateWallet($order){
         
-        if(!empty($order['wallet_id'])){
+        if(!empty($order['wallet_id']) && empty($order['status'])){
             
             $wallet_update = Wallet::where('_id', $order['wallet_id'])->update(['status'=>'0']);
             
