@@ -59,6 +59,7 @@ class PassController extends \BaseController {
     }
 
     public function passSuccess(){
+        
         $data = Input::json()->all();
 
         $rules = [

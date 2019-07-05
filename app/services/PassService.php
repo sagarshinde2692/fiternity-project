@@ -217,9 +217,12 @@ class PassService {
         if(empty($data['order_id'])){
             return;
         }
-        $verify_status = $this->verifyOrderSignature(["body"=>$data['razorpay']['rp_body'], "key"=> $data['razorpay']['key'], "signature"=>$data['razorpay']['razorpay_signature']])['status'];
-        if(!$verify_status){
-            return ['status'=>400, 'message'=>'Invalid Request.'];
+    
+        if(!empty($data['razorpay'])){
+            $verify_status = $this->verifyOrderSignature(["body"=>$data['razorpay']['rp_body'], "key"=> $data['razorpay']['key'], "signature"=>$data['razorpay']['razorpay_signature']])['status'];
+            if(!$verify_status){
+                return ['status'=>400, 'message'=>'Invalid Request.'];
+            }
         }
 
         $data['order_id'] = intval($data['order_id']);
