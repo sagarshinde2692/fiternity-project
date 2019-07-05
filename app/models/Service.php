@@ -408,6 +408,7 @@ class Service extends \Basemodel{
 				   $value[ "pps_know_more"] = true;
 				   $value['pps_title'] = "Pay Per Session";
 				   $value['title'] = '1 Workout';
+				   $this->addCreditPointsToWorkoutSessions($value);
 				   //unset($value['remarks']);
 				}
 
@@ -643,6 +644,33 @@ class Service extends \Basemodel{
 
 		return $inopertaional_dates;
 		
+	}
+
+	public function addCreditPointsToWorkoutSessions(&$value){
+		$price = $value['price'];
+		if(!empty($value['special_price'])){
+			$price = $value['special_price'];
+		}
+
+		if($price >0 && $price <= 300){
+			$points =2;
+		}
+		else if($price >300 && $price <= 500){
+			$points = 3;
+		}
+		else if($price >500 && $price <= 750){
+			$points = 4;
+		}
+		else{
+			$points =0;
+		}
+		
+		if($points){
+			$value['credits'] = [
+				"points" => $points,
+				"type" => "Sweat Point"
+				];
+		}
 	}
 
 }
