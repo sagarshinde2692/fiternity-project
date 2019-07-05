@@ -330,6 +330,9 @@ class PassService {
             return ['status' => 404,'message' => error_message($validator->errors())];
         }
 
+        if(!empty($data['order_id'])) {
+            $data['order_id'] = intval($data['order_id']);
+        }
         $order = Order::where('status', '0')->where('pass.payment_gateway', 'payu')->where('_id', $data['order_id'])->first();
         
         if(empty($order)){
