@@ -1349,7 +1349,7 @@ class FindersController extends \BaseController {
 				// }
 
                 $this->removeEmptyServices($response, 'web');
-                // return $response;
+                
                 $this->removeUpgradeWhereNoHigherAvailable($response);
                 
                 $this->serviceRemoveFlexiIfExtendedPresent($response);
@@ -1358,7 +1358,7 @@ class FindersController extends \BaseController {
                 }catch(Exception $e){
                     Log::info("Error while sorting ratecard");
                 }
-
+                
                 if(empty($response['vendor_stripe_data']['text'])){
                     // if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
                         
@@ -8176,7 +8176,11 @@ class FindersController extends \BaseController {
         }
 
         foreach($data['finder']['services'] as &$service){
-
+            $trial_ratecards = [];
+            $trial_ratecards = array_filter($service[$serviceRatecards], function($rc){
+                return $rc['type'] == 'trial';
+            });
+            
             $ws_ratecards = array_filter($service[$serviceRatecards], function($rc){
                 return $rc['type'] == 'workout session';
             });
@@ -8197,7 +8201,7 @@ class FindersController extends \BaseController {
             usort($session_ratecards, "compareSessions");
             usort($studio_extended_validity, "compareSessions");
             // return $session_ratecards;
-            $all_ratecards = $ws_ratecards;
+            $all_ratecards = array_merge($trial_ratecards, $ws_ratecards);
 
             $membership_ratecards = array_map('duration_days', $membership_ratecards);
 
