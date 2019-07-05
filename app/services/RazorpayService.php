@@ -234,6 +234,14 @@ class RazorpayService {
         if(empty($orderId) || empty($paymentId)) {
             return;
         }
+        
+        
+        $repeat_order = Order::where('payment_id', $paymentId)->first();
+
+        if(!empty($repeat_order)){
+            return;
+        }
+        
         $order = Order::where('_id', $orderId)->first();
         $order->update(['rp_payment_id' => $paymentId]);
         RazorpaySubscription::where('subscription_id', $order->rp_subscription_id)->update(['rp_payment_id' => $paymentId]);

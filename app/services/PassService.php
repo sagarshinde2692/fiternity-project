@@ -219,6 +219,7 @@ class PassService {
         }
     
         if(!empty($data['razorpay'])){
+            $data['payment_id'] = $data['razorpay']['razorpay_payment_id'];
             $verify_status = $this->verifyOrderSignature(["body"=>$data['razorpay']['rp_body'], "key"=> $data['razorpay']['key'], "signature"=>$data['razorpay']['razorpay_signature']])['status'];
             if(!$verify_status){
                 return ['status'=>400, 'message'=>'Invalid Request.'];
@@ -482,9 +483,11 @@ class PassService {
 
         if(!empty($order['pass']['payment_gateway']) && $order['pass']['payment_gateway'] == 'razorpay' && empty($order['status']) && !empty($data['payment_id'])){
             
-            $order->update(['status'=>'1']);
             $razorpay_service = new RazorpayService();
-            $razorpay_service->storePaymentDetails($order['_id'], $data['payment_id']);
+            $storePaymentDetails = $razorpay_service->storePaymentDetails($order['_id'], $data['payment_id']);
+            if(!empty($storePaymentDetails)){
+                $order->update(['status'=>'1']);
+            }
 
         }
        
