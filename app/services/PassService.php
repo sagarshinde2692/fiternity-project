@@ -129,7 +129,7 @@ class PassService {
             $data = array_merge($data,$hash);
             $order = new Order($data);
             $order['_id'] = $data['_id'];
-            $order->save($order);
+            $order->save();
             
             if(in_array($order['customer_source'],['android','ios','kiosk'])){
                 $mobilehash = $order['payment_related_details_for_mobile_sdk_hash'];
