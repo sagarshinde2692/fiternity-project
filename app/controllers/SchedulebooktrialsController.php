@@ -2480,7 +2480,20 @@ class SchedulebooktrialsController extends \BaseController {
                     array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
                 }
 
-                if(!empty($order['pass_credits'])) {
+                if(!empty($order['pass_premium_session'])) {
+                    Order::$withoutAppends = true;
+                    $passOrder = Order::where('_id', $order['pass_order_id'])->first();
+
+                    if(!empty($passOrder)) {
+                        if(empty($passOrder->premium_sessions_used)) {
+                            $passOrder->premium_sessions_used = 0;
+                        }
+
+                        $passOrder->premium_sessions_used += 1;
+                        $passOrder->update();
+                    }
+                }
+                else if(!empty($order['pass_credits'])) {
                     Order::$withoutAppends = true;
                     $passOrder = Order::where('_id', $order['pass_order_id'])->first();
 
@@ -2493,7 +2506,6 @@ class SchedulebooktrialsController extends \BaseController {
                         $passOrder->update();
                     }
                 }
-                
             }
             
              
