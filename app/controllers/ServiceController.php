@@ -1300,7 +1300,7 @@ class ServiceController extends \BaseController {
 
                 }
 			}
-			
+
 			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
 				foreach($data['schedules'] as &$schedule){
 					$schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title']);
@@ -2465,7 +2465,6 @@ class ServiceController extends \BaseController {
 			else{
 				$points =0;
 			}
-			$arr = ["0-300", "301-500", '501-750'];
 	
 			if($points){
 				$value['credits'] = [
