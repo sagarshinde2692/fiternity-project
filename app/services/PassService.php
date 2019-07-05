@@ -470,6 +470,7 @@ class PassService {
         if(!empty($order['wallet_id'])){
             
             $wallet_update = Wallet::active()->where('_id', $order['wallet_id'])->update(['status'=>'0']);
+            
             if(empty($wallet_update)){
              
                 return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (1)'];    
