@@ -39,7 +39,10 @@ class RazorpayController extends \BaseController {
 
     public function razorpayWebhooks(){
         $data = Input::json()->all();
-        Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$data]);
+        $key = Config::get('app.razorpay')['webhook_secret_key'];
+        $expected_signature = hash_hmac('sha256', $data, $key);
+
+        Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$data, $expected_signature]);
         switch($data['event']){
             case "subscription.charged": $this->charged($data);break;
             case "subscription.pending": $this->pending($data);break;
