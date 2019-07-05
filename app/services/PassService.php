@@ -79,7 +79,7 @@ class PassService {
         
         $pass = Pass::where('pass_id', $data['pass_id'])->first()->toArray();
 
-        if($pass['type']=='trial') {
+        if($pass['type']=='trial' && !Config::get('app.debug')) {
             $trialExists = $this->checkTrialPassUsedByCustomer($customer_detail['data']['customer_id']);
             if(!empty($trialExists['status']) && $trialExists['status']) {
                 return [
