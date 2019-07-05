@@ -1,5 +1,7 @@
 <?php
 $apiUrl = \Config::get('app.url');
+$success_page_template = Config::get('successPage');
+
 return [
     'list' => [
         'passes' => [
@@ -107,6 +109,8 @@ return [
                 'Not loving it? easy cancellation available',
             ]
         ],
+        "concultion" => $success_page_template['conclusion'],
+        "feedback" => $success_page_template["feedback"],
         'session3'=>'Please note - The sessions are bookable only of Fitternity app. Download now'
     ]
 
