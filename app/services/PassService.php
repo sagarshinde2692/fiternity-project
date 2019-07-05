@@ -70,6 +70,7 @@ class PassService {
         }
 
         $data = array_merge($data, $customer_detail['data']);
+        
         $pass = Pass::where('pass_id', $data['pass_id'])->first()->toArray();
 
         $data['pass'] = $pass;

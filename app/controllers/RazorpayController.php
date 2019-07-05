@@ -44,7 +44,7 @@ class RazorpayController extends \BaseController {
             case "subscription.charged": $this->charged($data);break;
             case "subscription.pending": $this->pending($data);break;
             case "subscription.halted": $this->halted($data);break;
-            case "subscription.cancelled": return $this->cancelled($data);break;
+            case "subscription.cancelled": $this->cancelled($data);break;
             case "subscription.activated": $this->activated($data);break;
             case "subscription.completed": $this->completed($data);break;
         }
@@ -121,6 +121,5 @@ class RazorpayController extends \BaseController {
         ->get();
         //cancel order
         Log::info('order data::::::::::::::::::', [$order]);
-        return $order;
     }
 }
