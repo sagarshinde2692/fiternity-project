@@ -217,7 +217,6 @@ class PassService {
         if(empty($data['order_id'])){
             return;
         }
-        Log::info('data:::::::', [$data['razorpay']]);
         $verify_status = $this->verifyOrderSignature(["body"=>$data['razorpay']['rp_body'], "key"=> $data['razorpay']['key'], "signature"=>$data['razorpay']['razorpay_signature']])['status'];
         if(!$verify_status){
             return ['status'=>400, 'message'=>'Invalid Request.'];

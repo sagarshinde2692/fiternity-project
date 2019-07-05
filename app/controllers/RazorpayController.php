@@ -42,7 +42,7 @@ class RazorpayController extends \BaseController {
         $key = Config::get('app.webhook_secret_key');
         $signature = Request::header('X-Razorpay-Signature');
         $body = Request::getContent();
-        Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$body, $signature]);
+        Log::info("webhooks data:::::::::::::::::::::::::::::::::::::::::::::::::::::::", [$signature]);
         switch($data['event']){
             case "subscription.charged": $this->charged($data, $body, $signature, $key);break;
             case "subscription.pending": $this->pending($data);break;
@@ -62,7 +62,6 @@ class RazorpayController extends \BaseController {
     public function charged($data, $body, $signature, $key){
         $webhook = new RazorpayWebhook($data);
         $webhook->save();
-        
         $subs_id = $data['payload']['subscription']['entity']['id'];
         $plan_id = $data['payload']['subscription']['entity']['plan_id'];
         $amount = ((float)$data['payload']['payment']['entity']['amount'])/100;
@@ -84,7 +83,8 @@ class RazorpayController extends \BaseController {
             "plan_id" =>  $plan_id,
             "amount" => $amount,
             "payment_id" =>$payment_id,
-            "orignal_pass_order_id" =>$order['_id']
+            "orignal_pass_order_id" =>$order['_id'],
+            "webhook_id" => $webhook->id
         );
 
         $pass_capture = $this->passService->passCapture($input);
