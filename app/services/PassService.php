@@ -74,6 +74,17 @@ class PassService {
         
         $pass = Pass::where('pass_id', $data['pass_id'])->first()->toArray();
 
+        if($pass['type']=='trial') {
+            $trialExists = $this->checkTrialPassUsedByCustomer($customer_detail['customer_id']);
+            if(!empty($trialExists['status']) && $trialExists['status']) {
+                return [
+                    'status' =>400,
+                    'data' => null,
+                    'msg' => 'Not eligible to book a trial pass.'
+                ];
+            }
+        }
+
         $data['pass'] = $pass;
         if(empty($data['rp_subscription_id'])){
             $data['amount'] = $data['rp_subscription_amount'] = $pass['price'];
@@ -397,11 +408,8 @@ class PassService {
             return;
         }
         $response = ["status" => false];
-        $trialPass = Order::where("pass_type", 'trial')
-                    ->where('status', "1")
-                    ->where('customer_id', $customerId)
-                    ->select('_id')
-                    ->first();
+        $trialPass = Order::where('status', "1")->where('customer_id', $customerId)->select('_id')->first();
+        // ->where("pass_type", 'trial')
         if(isset($trialPass['_id'])) {
             $response["status"]= true;
         }
