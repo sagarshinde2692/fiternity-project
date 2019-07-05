@@ -66,11 +66,9 @@ class RazorpayController extends \BaseController {
         $plan_id = $data['payload']['subscription']['entity']['plan_id'];
         $amount = ((float)$data['payload']['payment']['entity']['amount'])/100;
         $payment_id = $data['payload']['payment']['entity']['id'];
-        $order_id = $data['payload']['payment']['entity']['order_id'];
 
         $order = Order::active()
         ->where('rp_subscription_id', $subs_id)
-        ->where('rp_plan_id', $plan_id)
         ->orderby('_id')
         ->first();
         
