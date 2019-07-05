@@ -1320,7 +1320,6 @@ class ServiceController extends \BaseController {
 				}
 			}
 			else if(!empty($data['slots'])){
-				log::info('credit points:::::::::::::::', [$slots[0]['data']]);
 				foreach($data['slots'] as &$slot){
 					$this->addCreditPoints($slot['data']);
 				}
