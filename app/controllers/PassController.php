@@ -59,6 +59,7 @@ class PassController extends \BaseController {
     }
 
     public function passSuccess(){
+        
         $data = Input::json()->all();
 
         $rules = [
@@ -70,7 +71,28 @@ class PassController extends \BaseController {
         if ($validator->fails()) {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())), 400);
         }
+
+        if(!empty($data['razorpay'])){
+            
+            $rules = [
+                'order_id'=>'required | integer',
+                'razorpay.razorpay_subscription_id'=>'required | string',
+                'razorpay.razorpay_signature'=>'required | string',
+                'razorpay.razorpay_payment_id'=>'required | string'
+            ];
+            
+            $validator = Validator::make($data,$rules);
     
+            if ($validator->fails()) {
+                return Response::json(array('status' => 404,'message' => error_message($validator->errors())), 400);
+            }
+            
+            $data['razorpay']['key'] = Config::get('app.razorPaySecret');
+            $data['razorpay']['rp_body'] = $data['razorpay']['razorpay_payment_id'].'|'.$data['razorpay']['razorpay_subscription_id'];
+            $data['payment_id'] = $data['razorpay']['razorpay_payment_id'];
+        
+        }
+
         return $this->passService->passSuccess($data);
 
     }

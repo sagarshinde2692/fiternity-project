@@ -1,5 +1,7 @@
 <?php
 $apiUrl = \Config::get('app.url');
+$success_page_template = Config::get('successPage');
+
 return [
     'list' => [
         'passes' => [
@@ -89,8 +91,16 @@ return [
         ]
     ],
     'success'=>[
-        'section1'=>'Hi __customer_name, your __pass_name for __pass_duration is now active. We have also sent you a confirmation Email and SMS.',
-        'section2'=>[
+        'image' => 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
+        "header" => "Your subscription is active",
+        'subline'=>'Hi __customer_name, your __pass_name for __pass_duration is now active. We have also sent you a confirmation Email and SMS.',
+        "pass" => [
+            "header" => "__credit_point sweat point credits",
+            "subheader" => "__pass_count Classes",
+            "type" => "Monthly",
+            "text" => "Valid up to __end_date"
+        ],
+        'info'=>[
             'header'=>'Things to keep in mind',
             'data'=>[
                 'You get sweatpoint credits to book whatever classes you want',
@@ -99,7 +109,10 @@ return [
                 'Not loving it? easy cancellation available',
             ]
         ],
-        'session3'=>'Please note - The sessions are bookable only of Fitternity app. Download now'
-    ]
-
+        "concultion" => $success_page_template['conclusion'],
+        "feedback" => $success_page_template["feedback"]
+    ],
+    'pass_image_silver' => 'https://b.fitn.in/passes/monthly_card.png',
+    'pass_image_gold' => 'https://b.fitn.in/passes/all_access_card.png',
+    'web_message'=>'Please note - The sessions are bookable only of Fitternity app. Download now'
 ];

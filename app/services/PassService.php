@@ -189,7 +189,7 @@ class PassService {
             if(!empty($data['rp_subscription_id'])){
                 $order['rp_subscription_id'] = $data['rp_subscription_id'];
                 $order['rp_plan_id'] = $data['plan_id'];
-                $order['rp_orignal_pass_order_id'] = $data['orignal_pass_order_id'];
+                $order['rp_orignal_pass_order_id'] = $data['rp_orignal_pass_order_id'];
             }
 
             $order->save();
@@ -216,6 +216,14 @@ class PassService {
         
         if(empty($data['order_id'])){
             return;
+        }
+    
+        if(!empty($data['razorpay'])){
+            $data['payment_id'] = $data['razorpay']['razorpay_payment_id'];
+            $verify_status = $this->verifyOrderSignature(["body"=>$data['razorpay']['rp_body'], "key"=> $data['razorpay']['key'], "signature"=>$data['razorpay']['razorpay_signature']])['status'];
+            if(!$verify_status){
+                return ['status'=>400, 'message'=>'Invalid Request.'];
+            }
         }
 
         Log::info('pass success:: ', [$data]);
@@ -252,7 +260,7 @@ class PassService {
         
         $success_data = $this->getSuccessData($order);
 
-        return ['status'=>200, 'data'=>$order, 'message'=>'Subscription successful', 'success_data'=>!empty($success_data) ? $success_data : new stdClass()];
+        return ['status'=>200, 'data'=>$success_data];
 
     }
 
@@ -479,16 +487,50 @@ class PassService {
 
     public function getSuccessData($order){
         
-        $success_template = Config::get('pass.success');
+        $success = Config::get('pass');
+        $success_template = $success['success'];
         
-        $success_template['section1'] = strtr(
-            $success_template['section1'], 
+        $success_template['subline'] = strtr(
+            $success_template['subline'], 
             [
                 '__customer_name'=>$order['customer_name'], 
                 '__pass_name'=>$order['pass']['name'],
                 '__pass_duration'=> $order['pass']['duration_text']
             ]
         );
+
+        $success_template['pass']['header'] = strtr(
+            $success_template['pass']['header'],
+            [
+                '__credit_point'=> $order['pass']['credits']
+            ]
+        );
+
+        $success_template['pass']['subheader'] = strtr(
+            $success_template['pass']['subheader'],
+            [
+                '__pass_count'=> $order['pass']['classes']
+            ]
+        );
+
+        $success_template['pass']['text'] = strtr(
+            $success_template['pass']['text'],
+            [
+                '__end_date'=> date_format($order['end_date'],'d-M-Y')
+            ]
+        );
+
+        if($order['pass']['type']=='unlimited'){
+            $success_template['pass']['subheader'] = "Unlimitd Access";
+            $success_template['pass_image'] = $success['pass_image_gold'];
+        }
+        else{
+            $success_template['pass_image'] = $success['pass_image_silver'];
+        }
+       
+        if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
+            $success_template['web_message'] = $success['web_message'];
+        }
 
         return $success_template;
 
@@ -498,9 +540,11 @@ class PassService {
 
         if(!empty($order['pass']['payment_gateway']) && $order['pass']['payment_gateway'] == 'razorpay' && empty($order['status']) && !empty($data['payment_id'])){
             
-            $order->update(['status'=>'1']);
             $razorpay_service = new RazorpayService();
-            $razorpay_service->storePaymentDetails($order['_id'], $data['payment_id']);
+            $storePaymentDetails = $razorpay_service->storePaymentDetails($order['_id'], $data['payment_id']);
+            if(!empty($storePaymentDetails)){
+                $order->update(['status'=>'1']);
+            }
 
         }
        
@@ -508,9 +552,9 @@ class PassService {
 
     public function updateWallet($order){
         
-        if(!empty($order['wallet_id'])){
+        if(!empty($order['wallet_id']) && empty($order['status'])){
             
-            $wallet_update = Wallet::active()->where('_id', $order['wallet_id'])->update(['status'=>'0']);
+            $wallet_update = Wallet::where('_id', $order['wallet_id'])->update(['status'=>'0']);
             
             if(empty($wallet_update)){
              
@@ -524,6 +568,14 @@ class PassService {
 
     }
 
-    
+    public function verifyOrderSignature($data){
+        $expected_signature = hash_hmac('sha256', $data['body'], $data['key']);
+        $response= ["status"=>false];
+        Log::info("in verify signature:::::::::::::", [$data['signature'], $expected_signature]);
+        if($data['signature'] == $expected_signature){
+            $response['status'] = true;
+        }
+        return $response;
+    }
 
 }
