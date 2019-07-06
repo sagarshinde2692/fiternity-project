@@ -642,7 +642,7 @@ Class CustomerReward {
                         $fitcash_plus *= $order['ticket_quantity'];
                     }
 
-//                    $fitcash_plus = intval($fitcash_plus) + 500;
+                    // $fitcash_plus = intval($fitcash_plus) + 500;
 
                 }
 
@@ -814,6 +814,46 @@ Class CustomerReward {
                         $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$cashback_amount." Fitcash has been added in your Fitternity wallet.Valid for 14 days from booking time. For quick assistance call ".Config::get('app.contact_us_customer_number');
     
                         $customersms->custom($sms_data);
+                    }
+                }
+            }
+
+            if(!empty($order['type']) && $order['type'] == 'memberships' && !empty($order['amount']) && $order['amount'] > 0){
+                $amount_paid = $order['amount'];
+
+                if($amount_paid > 2500){
+                    $amount_paid = 2500;
+                }
+
+                $cashback_amount = round(($amount_paid * 82) / 100);
+                Log::info('after GST cashback_amount :: ',[$cashback_amount]);
+                
+                if($cashback_amount > 0){
+                    $walletData = array(
+                        "order_id"=>$order['_id'],
+                        "customer_id"=> intval($order['customer_id']),
+                        "amount"=> intval($cashback_amount),
+                        "amount_fitcash" => 0,
+                        "amount_fitcash_plus" => intval($cashback_amount),
+                        "type"=>'CASHBACK',
+                        'entry'=>'credit',
+                        "description"=> "100% Cashback on buying Membership at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*90)),
+                        "validity"=>time()+(86400*90),
+                    );
+    
+                    $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());
+    
+                    if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
+    
+                        $customersms = new CustomerSms();
+    
+                        $sms_data = [];
+    
+                        $sms_data['customer_phone'] = $order['customer_phone'];
+                        $sms_data['amount'] = $cashback_amount;
+                        $sms_data['finder_name'] = ucwords($order['finder_name']);
+    
+                        $customersms->membership100PerCashback($sms_data);
                     }
                 }
             }

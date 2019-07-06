@@ -5894,7 +5894,11 @@ class TransactionController extends \BaseController {
         
         if(!empty($booking_details_data['service_duration'])) {
             unset($booking_details_data['service_duration']);  
-        } 
+        }
+
+        if(!empty($data['type']) && $data['type'] == 'memberships'){
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase','position'=>$position++];
+        }
         
         $booking_details_all = [];
         foreach ($booking_details_data as $key => $value) {

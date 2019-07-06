@@ -1401,7 +1401,7 @@ class FindersController extends \BaseController {
                             
                             $response['vendor_stripe_data']	= [
                                 
-                                'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | USE CODE: THUNDER | OFFER EXPIRES IN",
+                                'text1'=> "MONSOON BONANZA | GET INSTANT 100% CASHBACK ON PAY-PER-SESSION & MEMBERSHIPS | OFFER EXPIRES IN",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3841,7 +3841,7 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
-        return "Monsoon Fitness Mania | Get Addnl 15% off | Use code: THUNDER | Limited Slots Applicable till 5th July 2019";
+        return "Monsoon Bonanza: Get 100% instant cashback on Pay-Per-Session & Memberships Know more (i)";
         
 
 		$brandMap = [
@@ -8239,7 +8239,7 @@ class FindersController extends \BaseController {
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				if($rc['type']=='membership')
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\nThe instant cashback can be used anywhere on the Fitternity App. \nBook multiple workout sessions with friends & family, buy memberships & more using this cashback");
 				else
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
 				$orderSummary['title'] = ucwords($title);

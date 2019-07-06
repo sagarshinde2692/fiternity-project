@@ -1282,6 +1282,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);	
 	}
 
+	protected function membership100PerCashback($data){
+
+		$label = 'Membership100PerCashback-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+	}
+
 	public function multifitUserHeader(){
 		$vendor_token = \Request::header('Authorization-Vendor');
 		\Log::info('register auth             :: ', [$vendor_token]);
