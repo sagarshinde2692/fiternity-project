@@ -7054,7 +7054,9 @@ class TransactionController extends \BaseController {
 
             }
 
-            
+            if(!empty($data['type']) && $data['type'] == 'membership'){
+                $result['offer_text'] = "You are eligilble for instant 100% cashback with this purchase";
+            }
 
             if(((isset($data['finder_flags']['disable_dynamic_pricing']) && empty($data['finder_flags']['disable_dynamic_pricing'])) || (isset($data['service_flags']['disable_dynamic_pricing']) && empty($data['service_flags']['disable_dynamic_pricing']))) && $data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
             {
@@ -7523,10 +7525,6 @@ class TransactionController extends \BaseController {
             }
             !empty($order['finder_name']) ? $result['finder_name'] = $order['finder_name'] : null;
             !empty($order['finder_location']) ? $result['finder_location'] = $order['finder_location'] : null;
-
-            if(!empty($order['type']) && $order['type'] == 'memberships'){
-                $result['offer_text'] = "You are eligilble for instant 100% cashback with this purchase";
-            }
 
             $data['you_save'] = 0;
 
