@@ -2488,9 +2488,13 @@ class SchedulebooktrialsController extends \BaseController {
                         if(empty($passOrder->premium_sessions_used)) {
                             $passOrder->premium_sessions_used = 0;
                         }
-
-                        $passOrder->premium_sessions_used += 1;
-                        $passOrder->update();
+                        if($passOrder->total_credits_used<$passOrder->total_credits) {
+                            $passOrder->premium_sessions_used += 1;
+                            $passOrder->update();
+                        }
+                        else {
+                            return ['status'=>400, 'reason'=>'Used up premium sessions, please try again.'];
+                        }
                     }
                 }
                 else if(!empty($order['pass_credits'])) {
@@ -2501,9 +2505,13 @@ class SchedulebooktrialsController extends \BaseController {
                         if(empty($passOrder->total_credits_used)) {
                             $passOrder->total_credits_used = 0;
                         }
-
-                        $passOrder->total_credits_used += $order['pass_credits'];
-                        $passOrder->update();
+                        if($passOrder->total_credits_used<$passOrder->total_credits) {
+                            $passOrder->total_credits_used += $order['pass_credits'];
+                            $passOrder->update();
+                        }
+                        else {
+                            return ['status'=>400, 'reason'=>'Used up premium sessions, please try again.'];
+                        }
                     }
                 }
             }
