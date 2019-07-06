@@ -224,6 +224,20 @@ class PassService {
 
         $order = Order::where('_id', $data['order_id'])->first();
 
+        $credits = null;
+        $creditMap = Config::get('app.creditMap');
+        foreach($creditMap as $rec) {
+            if($order['amount']<=$rec['max_price']){
+                $credits = $rec['credits'];
+                break;
+            }
+        }
+        $passOrder = $this->getPassOrderDetails($order['customer_id'], $credits);
+
+        if(empty($passOrder)) {
+            return ['status'=>400, 'message'=>'Used up all the sweat points, please try again.'];
+        }
+
         $wallet_update = $this->updateWallet($order);
 
         if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
@@ -307,6 +321,32 @@ class PassService {
         return $payment_modes;
     }
 
+    public function getPassOrderDetails($customerId, $credits) {
+        $passOrder = Order::raw(function($collection) use ($customerId, $credits) {
+            $aggregate = [
+                ['$match' => [
+                    'status' => '1', 'type' => 'pass', 'customer_id' => $customerId,
+                    'end_date' => ['$gte' => new \MongoDate(strtotime('midnight'))],
+                    'total_credits' => ['$exists' => true]
+                ]],
+                ['$project' => [
+                    'pass_type'=>1, 'total_premium_sessions'=>1, 'premium_sessions_used'=>1, 'total_credits' => 1, 'total_credits_used' => 1,
+                    'credits_diff' => ['$subtract' => ['$total_credits', '$total_credits_used']],
+                    'credits_available' => ['$gte' => ['$credits_diff', $credits]]
+                ]],
+                ['$match' => [
+                    'credits_available' => false
+                ]],
+                ['$sort' => ['_id' => -1]]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+        if(!empty($passOrder['result'][0])) {
+            $passOrder = $passOrder['result'][0];
+        }
+        return $passOrder;
+    }
+
     public function getCreditsApplicable($amount, $customerId) {
 
         // credits: 0=>pass not applicable, -1=>unlimited access, >0=>monthly access credit points for the session
@@ -316,12 +356,23 @@ class PassService {
         }
 
         $customer = Customer::where('_id', $customerId)->first();
-        $passOrder = Order::active()->where('type', 'pass')->where('customer_id', $customer['_id'])->where('end_date','>',new \MongoDate(strtotime('midnight')))->first();
+
+        $credits = null;
+        $creditMap = Config::get('app.creditMap');
+        foreach($creditMap as $rec) {
+            if($amount<=$rec['max_price']){
+                $credits = $rec['credits'];
+                break;
+            }
+        }
+
+        if(!empty($customer) && !empty($credits)) {
+            $passOrder = $this->getPassOrderDetails($customerId, $credits);
+        }
 
         if(!empty($passOrder)) {
             $passType = $passOrder['pass_type'];
         }
-        $credits = null;
         if(!empty($passType) && $passType=='unlimited') {
 
             if($amount>=750) {
@@ -334,13 +385,6 @@ class PassService {
         }
         else if(empty($passType)) {
             return [ 'credits' => 0, 'order_id' => $passOrder['_id'] ];
-        }
-        $creditMap = Config::get('app.creditMap');
-        foreach($creditMap as $rec) {
-            if($amount<=$rec['max_price']){
-                $credits = $rec['credits'];
-                break;
-            }
         }
         if(!empty($passOrder['total_credits']) && empty($passOrder['total_credits_used'])) {
             $passOrder['total_credits_used'] = 0;

@@ -3872,6 +3872,11 @@ class TransactionController extends \BaseController {
                 $data['pass_type'] = $creditsApplicable['pass_type'];
                 $data['pass_order_id'] = $creditsApplicable['order_id'];
                 $data['pass_booking'] = true;
+
+                if($data['pass_type']=='unlimited' && $amount>=750) {
+                    $data['pass_premium_session'] = true;
+                }
+
                 $data['pass_credits'] = $creditsApplicable['credits'];
                 $amount = 0;
             }

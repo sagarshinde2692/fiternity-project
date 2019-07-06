@@ -89,8 +89,7 @@ return array(
 	'creditMap' => [
 		['max_price'=>300, 'credits'=>2],
 		['max_price'=>500, 'credits'=>3],
-		['max_price'=>750, 'credits'=>4],
-		['max_price'=>999999, 'credits'=>5]
+		['max_price'=>749, 'credits'=>4]
 	],
 
 	'pass_payment_options' => [
