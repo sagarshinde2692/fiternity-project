@@ -505,6 +505,11 @@ class Service extends \Basemodel{
                     $value['remarks'] =  "The Ultimate Yoga Fest. Book Multiple Sessions at Flat ₹99/session";
                     $value['remarks_imp'] =  true;
 				}
+                
+                if(in_array($value['type'], ["membership", "extended validity"])&& isFinderIntegrated($finder) && isServiceIntegrated($this)){
+                    $value['campaign_offer'] =  "100% cashback";
+                    $value['campaign_color'] = "#43a047";
+				}
 				
 				unset($value['flags']['convinience_fee_applicable']);
 				array_push($ratecards, $value);

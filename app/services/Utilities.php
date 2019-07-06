@@ -1593,7 +1593,7 @@ Class Utilities {
 
         Log::info('entry', [$entry]);
 
-        if(isset($request['order_id']) &&  $request['order_id'] != 0){
+        if(isset($request['order_id']) &&  $request['order_id'] != 0 && empty($request['membership_instant_cashback'])){
 
             // Check Duplicacy of transaction request........
             $duplicateRequest = WalletTransaction::where('order_id', (int) $request['order_id'])
@@ -1916,6 +1916,9 @@ Class Utilities {
             }
             if(isset($request['session_pack_duration_gt'])){
                 $wallet->session_pack_duration_gt = $request['session_pack_duration_gt'];
+            }
+            if(isset($request['app_only'])){
+                $wallet->app_only = $request['app_only'];
             }
             
             $wallet->save();
@@ -2352,6 +2355,10 @@ Class Utilities {
             Log::info("wallet balance buy for other true");
             $query->where(function($query){$query->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
         }
+        
+        if(!in_array(Request::header('Device-Type'), ['android', 'ios'])){
+            $query->where('app_only', '!=', true);
+        }
 
         $wallet_balance = $query->sum('balance');
 
@@ -2631,6 +2638,10 @@ Class Utilities {
             $query->where('_id',(int)$request['wallet_id']);
         
         }else{
+
+            if(!in_array(Request::header('Device-Type'), ['android', 'ios'])){
+                $query->where('app_only', '!=', true);
+            }
 
             if(!empty($request['extended_validity'])){
             

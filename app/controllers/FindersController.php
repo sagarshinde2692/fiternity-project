@@ -1401,7 +1401,7 @@ class FindersController extends \BaseController {
                             
                             $response['vendor_stripe_data']	= [
                                 
-                                'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | USE CODE: THUNDER | OFFER EXPIRES IN",
+                                'text1'=> "MONSOON BONANZA | GET INSTANT 100% CASHBACK ON PAY-PER-SESSION & MEMBERSHIPS | OFFER EXPIRES IN",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1432,8 +1432,11 @@ class FindersController extends \BaseController {
                 $response['finder']['type'] = !empty($finder['flags']['reward_type']) ?  $finder['flags']['reward_type'] : 2;
                 $response['finder']['sub_type'] = !empty($finder['flags']['cashback_type']) ?  $cashback_type_map[strval($finder['flags']['cashback_type'])] : null;
 
+				if($this->utilities->isIntegratedVendor($response['finder'])){
+					$response['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
+				}
 
-
+				
                 /********** Flash Offer Section Start**********/
 
 
@@ -3841,7 +3844,7 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
-        return "Monsoon Fitness Mania | Get Addnl 15% off | Use code: THUNDER | Limited Slots Applicable till 6th July 2019";
+        return "Monsoon Bonanza: Get 100% instant cashback on Pay-Per-Session & Memberships";
         
 
 		$brandMap = [
@@ -6382,14 +6385,13 @@ class FindersController extends \BaseController {
 					$location_name = ", ".ucwords($location['name']);
 				}
 
-				if(isset($ratecard) && isset($ratecard['type']) && in_array($ratecard['type'],['membership','packages'])){
+				if(isset($ratecard) && isset($ratecard['type']) && in_array($ratecard['type'],['membership','packages','extended'])){
 
 					$tnc['description'] .= "<b> - </b>  Discount varies across different outlets depending on slot availability.";
 					$tnc['description'] .= "<br/><br/><b> - </b>  For memberships reserved by part payment and not fully paid for on date of joining, 5% of total membership value will be deducted as convenience fees & the remaining will be transferred in the wallet as Fitcash+ . The membership will also be terminated.";
 					$tnc['description'] .= "<br/><br/><b> - </b>  Memberships once purchased are not transferrable or resalable.";
-					$tnc['description'] .= "<br/><br/><b> - </b>  For any Refund/cancellation queries refer to <a href='https://www.fitternity.com/refund-cancellation'> https://www.fitternity.com/refund-cancellation</a>";
-					$tnc['description'] .= "<br/><br/><b> - </b>  For any Offer related queries refer to <a href='https://www.fitternity.com/offer-usage'>https://www.fitternity.com/offer-usage</a>";
-
+					$tnc['description'] .= "<br/><br/><b> - </b>  For detailed terms and conditions refer to <a href='https://www.fitternity.com/terms-conditions/all'> https://www.fitternity.com/terms-conditions/all</a>";
+					
 				}else{
 
 					$tnc['description'] .= "<b> - </b>  I recognise that staff at ".ucwords($finder['title']).$location_name.", their associates and staff at Fitternity Health E Solutions are not able to provide medical advice or assess whether it is suitable for me to participate in programs.";
@@ -8238,8 +8240,8 @@ class FindersController extends \BaseController {
 			foreach($service['ratecard'] as &$rc){
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
-				if($rc['type']=='membership')
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
+				if(in_array($rc['type'], ['membership', 'extended validity']))
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nGet Instant 100% Cashback. The instant cashback can be used anywhere on the Fitternity App. Book multiple workout sessions with friends & family, buy memberships & more using this cashback");
 				else
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
 				$orderSummary['title'] = ucwords($title);
