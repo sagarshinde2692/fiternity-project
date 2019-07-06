@@ -7053,8 +7053,8 @@ class TransactionController extends \BaseController {
 
 
             }
-
-            if(!empty($data['type']) && ($data['type'] == 'membership' || $data['type'] == 'extended validity')){
+            
+            if(!empty($data['type']) && in_array($data['type'], ['membership', 'memberships'])){
                 $result['offer_text'] = "You are eligilble for instant 100% cashback with this purchase";
             }
 
