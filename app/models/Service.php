@@ -506,7 +506,7 @@ class Service extends \Basemodel{
                     $value['remarks_imp'] =  true;
 				}
                 
-                if($value['type'] == "membership" && isFinderIntegrated($finder) && isServiceIntegrated($this)){
+                if(in_array($value['type'], ["membership", "extended validity"])&& isFinderIntegrated($finder) && isServiceIntegrated($this)){
                     $value['campaign_offer'] =  "100% cashback";
                     $value['campaign_color'] = "#43a047";
 				}
