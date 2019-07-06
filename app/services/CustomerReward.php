@@ -839,6 +839,7 @@ Class CustomerReward {
                         'entry'=>'credit',
                         "description"=> "100% Cashback on buying Membership at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*90)),
                         "validity"=>time()+(86400*90),
+                        "membership_instant_cashback" => true,
                     );
     
                     $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());

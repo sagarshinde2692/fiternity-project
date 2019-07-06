@@ -1593,7 +1593,7 @@ Class Utilities {
 
         Log::info('entry', [$entry]);
 
-        if(isset($request['order_id']) &&  $request['order_id'] != 0){
+        if(isset($request['order_id']) &&  $request['order_id'] != 0 && empty($request['membership_instant_cashback'])){
 
             // Check Duplicacy of transaction request........
             $duplicateRequest = WalletTransaction::where('order_id', (int) $request['order_id'])

@@ -7524,6 +7524,9 @@ class TransactionController extends \BaseController {
             !empty($order['finder_name']) ? $result['finder_name'] = $order['finder_name'] : null;
             !empty($order['finder_location']) ? $result['finder_location'] = $order['finder_location'] : null;
 
+            if(!empty($order['type']) && $order['type'] == 'memberships'){
+                $result['offer_text'] = "You are eligilble for instant 100% cashback with this purchase";
+            }
 
             $data['you_save'] = 0;
 
