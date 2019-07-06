@@ -340,7 +340,7 @@ class PassService {
         if(!empty($passOrder['result'][0])) {
             $passOrder = $passOrder['result'][0];
         }
-        return $passOrder;
+        return;
     }
 
     public function getCreditsApplicable($amount, $customerId) {
