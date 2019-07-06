@@ -113,7 +113,7 @@ return [
         "feedback" => $success_page_template["feedback"],
         'session3'=>'Please note - The sessions are bookable only of Fitternity app. Download now'
     ],
-    'pass_image_silver' => 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
-    'pass_image_gold' => 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png'
+    'pass_image_silver' => 'https://b.fitn.in/passes/monthly_card.png',
+    'pass_image_gold' => 'https://b.fitn.in/passes/all_access_card.png'
 
 ];
