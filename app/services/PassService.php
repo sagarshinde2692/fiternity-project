@@ -495,7 +495,7 @@ class PassService {
             ]
         );
 
-        if($order['pass']['type']=='unlimited'){
+        if(!empty($order['pass']['type']) && $order['pass']['type']=='unlimited'){
             $success_template['pass']['subheader'] = "Unlimitd Access";
             $success_template['pass_image'] = $success['pass_image_gold'];
         }
@@ -513,7 +513,7 @@ class PassService {
                     '__pass_count'=> $order['pass']['classes']
                 ]
             );
-            
+
             $success_template['pass_image'] = $success['pass_image_silver'];
         }
        
