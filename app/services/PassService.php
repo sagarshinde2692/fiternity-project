@@ -244,7 +244,7 @@ class PassService {
         
         $success_data = $this->getSuccessData($order);
 
-        return ['status'=>200, 'data'=>$success_data, 'message'=>'Subscription successful', 'order_data'=>$order];
+        return ['status'=>200, 'data'=>$success_data];
 
     }
 
@@ -481,7 +481,11 @@ class PassService {
         else{
             $success_template['pass_image'] = $success['pass_image_silver'];
         }
-        
+       
+        if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
+            $success_template['web_message'] = $success['web_message'];
+        }
+
         return $success_template;
 
     }
