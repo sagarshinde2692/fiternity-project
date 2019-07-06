@@ -333,6 +333,7 @@ class PassService {
                 ]],
                 ['$sort' => ['_id' => -1]]
             ];
+            Log::info('getPassOrderDetails query: ', [$aggregate]);
             return $collection->aggregate($aggregate);
         });
         if(!empty($passOrder['result'][0])) {
