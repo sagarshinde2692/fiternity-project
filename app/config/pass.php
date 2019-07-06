@@ -6,6 +6,32 @@ return [
     'list' => [
         'passes' => [
             [
+                'header' => 'ALL ACCESS PASS',
+                'subheader' => 'ALL ACCESS PASS UNLIMITED USAGE',
+                'text' => '1 MONTH | 3 MONTHS | 6 MONTHS',
+                'image' => 'https://b.fitn.in/passes/all_access_card.png',
+                'why_pass' => [
+                    'header' => 'WHY GO FOR A PASS',
+                    'text' => 'adfaf fs fsadf dadfdsf sf safasdf asf asdfsdf sfs dsdf',
+                    'data' => [
+                        'afsdf',
+                        'adfsdfsf sd',
+                        'sdfs fsdfsd f'
+                    ]
+                ],
+                'offerings' => [
+                    'header' => 'ALL ACCESS PASS',
+                    'text' => '(Limited Access)',
+                    'ratecards' => []
+                ],
+                'remarks' => [
+                    'header' => 'Limited access card gives you an access to all fitness centres around you.',
+                    'text' => 'view all terms and conditions',
+                    "title" =>'Terms and Conditions',
+                    'url' => $apiUrl.'/passtermscondition?type=unlimited'
+                ]
+            ],
+            [
                 'header' => 'MONTHLY PASS',
                 'subheader' => 'MONTHLY PASS FOR LIMITED USAGE',
                 'text' => '1 MONTH',
@@ -30,32 +56,6 @@ return [
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
 
-                ]
-            ],
-            [
-                'header' => 'ALL ACCESS PASS',
-                'subheader' => 'ALL ACCESS PASS UNLIMITED USAGE',
-                'text' => '1 MONTH | 3 MONTHS | 6 MONTHS',
-                'image' => 'https://b.fitn.in/passes/all_access_card.png',
-                'why_pass' => [
-                    'header' => 'WHY GO FOR A PASS',
-                    'text' => 'adfaf fs fsadf dadfdsf sf safasdf asf asdfsdf sfs dsdf',
-                    'data' => [
-                        'afsdf',
-                        'adfsdfsf sd',
-                        'sdfs fsdfsd f'
-                    ]
-                ],
-                'offerings' => [
-                    'header' => 'ALL ACCESS PASS',
-                    'text' => '(Limited Access)',
-                    'ratecards' => []
-                ],
-                'remarks' => [
-                    'header' => 'Limited access card gives you an access to all fitness centres around you.',
-                    'text' => 'view all terms and conditions',
-                    "title" =>'Terms and Conditions',
-                    'url' => $apiUrl.'/passtermscondition?type=unlimited'
                 ]
             ]
         ],

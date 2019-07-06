@@ -48,16 +48,17 @@ class PassService {
             if($pass['unlimited_access']) {
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
-                $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
-            } else {
+                $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
+            } else{
                 $passDetails['header'] = $pass['credits'].' Sweat Points';
                 $passDetails['text'] = 'for 1 month';
                 $passDetails['offer'] = 'Get 100% instant cash back';
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
-                $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
+                $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
             }
         }
+        unset($response['passes'][1]);
         return $response;
     }
 
