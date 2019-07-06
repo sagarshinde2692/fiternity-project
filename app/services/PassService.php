@@ -232,20 +232,6 @@ class PassService {
 
         $order = Order::where('_id', $data['order_id'])->first();
 
-        $credits = null;
-        $creditMap = Config::get('app.creditMap');
-        foreach($creditMap as $rec) {
-            if($order['amount']<=$rec['max_price']){
-                $credits = $rec['credits'];
-                break;
-            }
-        }
-        $passOrder = $this->getPassOrderDetails($order['customer_id'], $credits);
-
-        if(empty($passOrder)) {
-            return ['status'=>400, 'message'=>'Used up all the sweat points, please try again.'];
-        }
-
         $wallet_update = $this->updateWallet($order);
 
         if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
