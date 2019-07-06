@@ -244,7 +244,7 @@ class PassService {
         
         $success_data = $this->getSuccessData($order);
 
-        return ['status'=>200, 'data'=>$order, 'message'=>'Subscription successful', 'success_data'=>!empty($success_data) ? $success_data : new stdClass()];
+        return ['status'=>200, 'data'=>$success_data, 'message'=>'Subscription successful', 'order_data'=>$order];
 
     }
 
