@@ -380,7 +380,7 @@ class PassService {
             return [ 'credits' => -1, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
         }
         else if(empty($passType)) {
-            return [ 'credits' => 0, 'order_id' => $passOrder['_id'] ];
+            return [ 'credits' => 0, 'order_id' => (!empty($passOrder['_id']))?$passOrder['_id']:null ];
         }
         if(!empty($passOrder['total_credits']) && empty($passOrder['total_credits_used'])) {
             $passOrder['total_credits_used'] = 0;
