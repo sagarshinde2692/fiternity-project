@@ -77,7 +77,7 @@ class PassService {
 
         $data = array_merge($data, $customer_detail['data']);
         
-        $pass = Pass::where('pass_id', $data['pass_id'])->first()->toArray();
+        $pass = Pass::where('pass_id', $data['pass_id'])->first();
 
         if($pass['type']=='trial' && !Config::get('app.debug')) {
             $trialExists = $this->checkTrialPassUsedByCustomer($customer_detail['data']['customer_id']);
