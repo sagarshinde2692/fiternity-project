@@ -487,10 +487,10 @@ class PassService {
             ]
         );
 
-        $success_template['pass']['header'] = strtr(
-            $success_template['pass']['header'],
+        $success_template['pass']['subheader'] = strtr(
+            $success_template['pass']['subheader'],
             [
-                '__credit_point'=> $order['pass']['credits']
+                '__pass_count'=> $order['pass']['classes']
             ]
         );
 
@@ -506,10 +506,10 @@ class PassService {
             $success_template['pass_image'] = $success['pass_image_gold'];
         }
         else{
-            $success_template['pass']['subheader'] = strtr(
-                $success_template['pass']['subheader'],
+            $success_template['pass']['header'] = strtr(
+                $success_template['pass']['header'],
                 [
-                    '__pass_count'=> $order['pass']['classes']
+                    '__credit_point'=> $order['pass']['credits']
                 ]
             );
             $success_template['pass_image'] = $success['pass_image_silver'];
