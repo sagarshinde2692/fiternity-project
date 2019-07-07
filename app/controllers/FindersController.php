@@ -1401,7 +1401,7 @@ class FindersController extends \BaseController {
                             
                             $response['vendor_stripe_data']	= [
                                 
-                                'text1'=> "MONSOON BONANZA | GET INSTANT 100% CASHBACK ON PAY-PER-SESSION & MEMBERSHIPS | OFFER EXPIRES IN",
+                                'text1'=> "MONSOON BONANZA | GET 100% INSTANT CASHBACK ON ALL SERVICES ACROSS THE WEBSITE | OFFER EXPIRES IN",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3844,7 +3844,7 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
-        return "Monsoon Bonanza: Get 100% instant cashback on Pay-Per-Session & Memberships";
+        return "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title'];
         
 
 		$brandMap = [
@@ -8241,7 +8241,7 @@ class FindersController extends \BaseController {
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				if(in_array($rc['type'], ['membership', 'extended validity']))
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nGet Instant 100% Cashback. The instant cashback can be used anywhere on the Fitternity App. Book multiple workout sessions with friends & family, buy memberships & more using this cashback");
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nUse 100% instant cashback to book multiple workout sessions, buy session packs, memberships & more using this cashback for friends & family.");
 				else
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
 				$orderSummary['title'] = ucwords($title);
