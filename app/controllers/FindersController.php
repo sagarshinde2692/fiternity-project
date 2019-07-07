@@ -1432,9 +1432,9 @@ class FindersController extends \BaseController {
                 $response['finder']['type'] = !empty($finder['flags']['reward_type']) ?  $finder['flags']['reward_type'] : 2;
                 $response['finder']['sub_type'] = !empty($finder['flags']['cashback_type']) ?  $cashback_type_map[strval($finder['flags']['cashback_type'])] : null;
 
-				if($this->utilities->isIntegratedVendor($response['finder'])){
-					$response['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
-				}
+				// if($this->utilities->isIntegratedVendor($response['finder'])){
+				// 	$response['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
+				// }
 
 				
                 /********** Flash Offer Section Start**********/
