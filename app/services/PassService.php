@@ -340,7 +340,7 @@ class PassService {
         if(!empty($passOrder['result'][0])) {
             $passOrder = $passOrder['result'][0];
         }
-        return $passOrder;
+        return;
     }
 
     public function getCreditsApplicable($amount, $customerId) {
@@ -380,7 +380,7 @@ class PassService {
             return [ 'credits' => -1, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
         }
         else if(empty($passType)) {
-            return [ 'credits' => 0, 'order_id' => $passOrder['_id'] ];
+            return [ 'credits' => 0, 'order_id' => (!empty($passOrder['_id']))?$passOrder['_id']:null ];
         }
         if(!empty($passOrder['total_credits']) && empty($passOrder['total_credits_used'])) {
             $passOrder['total_credits_used'] = 0;
@@ -566,5 +566,114 @@ class PassService {
         }
         return $response;
     }
+
+    public function getPassOrderList($endDate, $customer_email, $offset, $limit, $type = null) {
+        $passOrderList = Order::raw(function($collection) use ($endDate, $customer_email, $offset, $limit, $type){
+            $aggregate = [
+                ['$match' => [
+                    'type' => 'pass', 'customer_email' => $customer_email
+                ]],
+                ['$sort' => ['_id' => -1]],
+                ['$skip' => $offset],
+                ['$limit' => $limit],
+                ['$project' => [
+                    'status' => 1, 'end_date' => 1, 'type' => 1, 'customer_email' => 1,
+                    'customer_name' => 1, 'customer_phone' => 1, 'total_credits_used' => 1, 'total_credits' => 1,
+                    'total_premium_sessions' => 1, 'premium_sessions_used' => 1, 'amount' => 1,
+                    'pass_type' => '$pass.type', 'unlimited_access' => '$pass.unlimited_access', 'duration' => '$pass.duration', 'duration_days' => '$pass.duration_days',
+                    'duration_text' => '$pass.duration_text', 'pass_name' => '$pass.name', 'classes' => '$pass.classes', 'created_at' => 1
+                ]]
+            ];
+            if ($type=='active') {
+                $aggregate[0]['$match']['end_date'] = ['$gte' => $endDate];
+                $aggregate[0]['$match']['status'] = '1';
+            }
+            else if($type=='inactive') {
+                $aggregate[0]['$match']['$or'] = [
+                    ['end_date' => ['$gte' => $endDate]],
+                    ['status' => ['$ne' => '1']]
+                ];
+            }
+            Log::info('aggregate: ', [$aggregate]);
+            return $collection->aggregate($aggregate);
+        });
+        if(!empty($passOrderList['result'])) {
+            $passOrderList = $passOrderList['result'];
+        }
+        if($type=='active' && !empty($passOrderList[0])) {
+            $passOrderList = $passOrderList[0];
+        }
+        return $passOrderList;
+    }
+
+    public function orderPassHistory($customer_email, $offset = 0, $limit = 10){
+		$customer_email		= 	$customer_email;	
+		$offset 			=	intval($offset);
+		$limit 				=	intval($limit);
+
+        $endDate = new \MongoDate(strtotime('midnight', time()));
+
+        $activeOrders = $this->getPassOrderList($endDate, $customer_email, $offset, 1, 'active');
+        $inactiveOrders = $this->getPassOrderList($endDate, $customer_email, $offset, $limit, 'inactive');
+
+        $data = [];
+
+        if(!empty($activeOrders)) {
+            $orderList = [
+                'image' => 'https://b.fitn.in/passes/monthly_card.png',
+                'header' => ucwords($activeOrders['duration_text']),
+                'subheader' => (!empty($activeOrders['classes']))?strtoupper($activeOrders['classes']):null,
+                'type' => (!empty($activeOrders['pass_type']))?strtoupper($activeOrders['pass_type']):null,
+                'text' => 'Valid up to '.date('d M Y', $activeOrders['end_date']->sec),
+                'remarks' => [
+                    'header' => 'Things to keep in mind',
+                    'data' => [
+                        'You get sweatpoint credits to book whatever classes you want.',
+                        'Download the app & get started',
+                        'Book classes at any gym/studio near you',
+                        'Sweatpoints vary by class',
+                        'Not loving it? easy cancellation available'
+                    ]
+                ],
+                'terms' => [
+                    'header' => 'View all terms & condition',
+                    'title' => 'Terms & Condition',
+                    'url' => 'http://apistage.fitn.in/passtermscondition?type=subscribe',
+                    'button_title' => 'Past Bookings'
+                ]
+            ];
+            $data['active_pass'] = $orderList;
+        }
+
+        if(empty($inactiveOrders)) {
+            $inactiveOrders = array();
+        }
+
+        $orderList = [];
+        foreach($inactiveOrders as $inactive) {
+            $_order = [
+                'header' => ucwords($inactive['duration_text']),
+                'subheader' => (!empty($inactive['classes']))?strtoupper($inactive['classes']):null,
+                'type' => (!empty($inactive['pass_type']))?strtoupper($inactive['pass_type']):null,
+                'color' => '#f7a81e',
+                'tdate_label' => 'Transaction Date',
+                'tdate_value' => date('d M Y',  $inactive['created_at']->sec),
+                'expired_label' => 'Expired on',
+                'expired_value' => date('d M Y',  $inactive['end_date']->sec),
+                'price' => '₹'.$inactive['amount']
+            ];
+            array_push($orderList, $_order);
+        }
+
+        $data['expirder_pass'] = $orderList;
+
+		$response = [
+			'status' => 200,
+			'data' => $data,
+            'message' => 'Success'
+        ];
+
+		return $response;
+	}
 
 }
