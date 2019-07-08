@@ -210,7 +210,7 @@ class CustomerController extends \BaseController {
 		$limit 				=	intval($limit);
 		$deviceType = (isset($_GET['device_type']))?$_GET['device_type']:"website";
 
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order','customer_id', 'studio_extended_validity_order_id');
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order','customer_id', 'studio_extended_validity_order_id', 'pass_order_id');
 
 		// if(isset($_GET['device_type']) && $_GET['device_type'] == "website"){
 
@@ -232,6 +232,22 @@ class CustomerController extends \BaseController {
 			else {
 				$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'gt');
 				$pastTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'lte');
+
+				if(!empty($upcomingTrialsQuery[0])) {
+					foreach($upcomingTrialsQuery as &$trial){
+						if(!empty($trial['pass_order_id'])) {
+							$trial['pass_stamp'] = 'https://b.fitn.in/passes/pass_stamp.png';
+						}
+					}
+				}
+
+				if(!empty($pastTrialsQuery[0])) {
+					foreach($pastTrialsQuery as &$trial){
+						if(!empty($trial['pass_order_id'])) {
+							$trial['pass_stamp'] = 'https://b.fitn.in/passes/pass_stamp.png';
+						}
+					}
+				}
 			}
 
 		// }else{
