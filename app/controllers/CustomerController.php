@@ -2167,7 +2167,7 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 
 		$orderId = null;
-		if(!empty($data)){
+		if(!empty($data['order_id'])){
 			$orderId = $data['order_id'];
 		}
 
