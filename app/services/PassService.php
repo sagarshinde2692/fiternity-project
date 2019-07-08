@@ -567,17 +567,17 @@ class PassService {
         return $response;
     }
 
-    public function getPassOrderList($endDate, $customer_email, $offset, $limit, $type = null) {
-        $passOrderList = Order::raw(function($collection) use ($endDate, $customer_email, $offset, $limit, $type){
+    public function getPassOrderList($endDate, $customer_id, $offset, $limit, $type = null) {
+        $passOrderList = Order::raw(function($collection) use ($endDate, $customer_id, $offset, $limit, $type){
             $aggregate = [
                 ['$match' => [
-                    'type' => 'pass', 'customer_email' => $customer_email
+                    'type' => 'pass', 'customer_id' => $customer_id
                 ]],
                 ['$sort' => ['_id' => -1]],
-                ['$skip' => $offset],
-                ['$limit' => $limit],
+                // ['$skip' => $offset],
+                // ['$limit' => $limit],
                 ['$project' => [
-                    'status' => 1, 'end_date' => 1, 'type' => 1, 'customer_email' => 1,
+                    'order_id' => '$_id', 'status' => 1, 'end_date' => 1, 'type' => 1, 'customer_id' => 1,
                     'customer_name' => 1, 'customer_phone' => 1, 'total_credits_used' => 1, 'total_credits' => 1,
                     'total_premium_sessions' => 1, 'premium_sessions_used' => 1, 'amount' => 1,
                     'pass_type' => '$pass.type', 'unlimited_access' => '$pass.unlimited_access', 'duration' => '$pass.duration', 'duration_days' => '$pass.duration_days',
@@ -600,31 +600,33 @@ class PassService {
         if(!empty($passOrderList['result'])) {
             $passOrderList = $passOrderList['result'];
         }
-        if($type=='active' && !empty($passOrderList[0])) {
-            $passOrderList = $passOrderList[0];
-        }
         return $passOrderList;
     }
 
-    public function orderPassHistory($customer_email, $offset = 0, $limit = 10){
-		$customer_email		= 	$customer_email;	
+    public function orderPassHistory($customer_id, $offset = 0, $limit = 20){
+		$customer_id		= 	$customer_id;	
 		$offset 			=	intval($offset);
 		$limit 				=	intval($limit);
 
         $endDate = new \MongoDate(strtotime('midnight', time()));
 
-        $activeOrders = $this->getPassOrderList($endDate, $customer_email, $offset, 1, 'active');
-        $inactiveOrders = $this->getPassOrderList($endDate, $customer_email, $offset, $limit, 'inactive');
+        $activeOrders = $this->getPassOrderList($endDate, $customer_id, $offset, $limit, 'active');
+        $inactiveOrders = $this->getPassOrderList($endDate, $customer_id, $offset, $limit, 'inactive');
 
         $data = [];
 
-        if(!empty($activeOrders)) {
-            $orderList = [
+        if(empty($activeOrders)) {
+            $activeOrders = array();
+        }
+
+        $orderList = [];
+        foreach($activeOrders as $active) {
+            $_order = [
                 'image' => 'https://b.fitn.in/passes/monthly_card.png',
-                'header' => ucwords($activeOrders['duration_text']),
-                'subheader' => (!empty($activeOrders['classes']))?strtoupper($activeOrders['classes']):null,
-                'type' => (!empty($activeOrders['pass_type']))?strtoupper($activeOrders['pass_type']):null,
-                'text' => 'Valid up to '.date('d M Y', $activeOrders['end_date']->sec),
+                'header' => ucwords($active['duration_text']),
+                'subheader' => (!empty($active['classes']))?strtoupper($active['classes']).' classes':null,
+                'type' => (!empty($active['pass_name']))?strtoupper($active['pass_name']):null,
+                'text' => 'Valid up to '.date('d M Y', $active['end_date']->sec),
                 'remarks' => [
                     'header' => 'Things to keep in mind',
                     'data' => [
@@ -636,14 +638,19 @@ class PassService {
                     ]
                 ],
                 'terms' => [
+                    '_id' => $active['order_id'],
                     'header' => 'View all terms & condition',
                     'title' => 'Terms & Condition',
                     'url' => 'http://apistage.fitn.in/passtermscondition?type=subscribe',
                     'button_title' => 'Past Bookings'
                 ]
             ];
-            $data['active_pass'] = $orderList;
+            if(empty($active['unlimited_access']) || !$active['unlimited_access']) {
+                $_order['header'] = (!empty($active['total_credits']))?strtoupper($active['total_credits']).' Sweat Points':null;
+            }
+            array_push($orderList, $_order);
         }
+        $data['active_pass'] = $orderList;
 
         if(empty($inactiveOrders)) {
             $inactiveOrders = array();
@@ -652,9 +659,10 @@ class PassService {
         $orderList = [];
         foreach($inactiveOrders as $inactive) {
             $_order = [
+                '_id' => $inactive['order_id'],
                 'header' => ucwords($inactive['duration_text']),
-                'subheader' => (!empty($inactive['classes']))?strtoupper($inactive['classes']):null,
-                'type' => (!empty($inactive['pass_type']))?strtoupper($inactive['pass_type']):null,
+                'subheader' => (!empty($inactive['classes']))?strtoupper($inactive['classes']).' classes':null,
+                'type' => (!empty($inactive['pass_name']))?strtoupper($inactive['pass_name']):null,
                 'color' => '#f7a81e',
                 'tdate_label' => 'Transaction Date',
                 'tdate_value' => date('d M Y',  $inactive['created_at']->sec),
@@ -662,10 +670,14 @@ class PassService {
                 'expired_value' => date('d M Y',  $inactive['end_date']->sec),
                 'price' => '₹'.$inactive['amount']
             ];
+            if(empty($active['unlimited_access']) || !$active['unlimited_access']) {
+                $_order['header'] = (!empty($inactive['total_credits']))?strtoupper($inactive['total_credits']).' Sweat Points':null;
+                $_order['subheader'] = (!empty($inactive['total_credits_used']))?strtoupper($inactive['total_credits_used']).' Sweat Points used':'0 Sweat Points used';
+            }
             array_push($orderList, $_order);
         }
 
-        $data['expirder_pass'] = $orderList;
+        $data['expired_pass'] = $orderList;
 
 		$response = [
 			'status' => 200,

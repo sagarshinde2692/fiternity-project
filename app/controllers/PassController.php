@@ -108,8 +108,14 @@ class PassController extends \BaseController {
     }
 
 
-    public function orderPassHistory($customer_email, $offset = 0, $limit = 10) {
-        return $this->passService->orderPassHistory($customer_email, $offset, $limit);
+    public function orderPassHistory() {
+        $jwt_token = Request::header('Authorization');
+        $customer_id = null;
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
+        return $this->passService->orderPassHistory($customer_id);
     }
 
 }
