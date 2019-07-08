@@ -1314,16 +1314,16 @@ class ServiceController extends \BaseController {
                 $data['slots'][0]['title'] = "Select a slot";
 			}
 			
-            if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules'])){
-				foreach($data['schedules'] as &$schedule){
-					$this->addCreditPoints($schedule['slots']);
-				}
-			}
-			else if(!empty($data['slots'])){
-				foreach($data['slots'] as &$slot){
-					$this->addCreditPoints($slot['data']);
-				}
-			}
+            // if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules'])){
+			// 	foreach($data['schedules'] as &$schedule){
+			// 		$this->addCreditPoints($schedule['slots']);
+			// 	}
+			// }
+			// else if(!empty($data['slots'])){
+			// 	foreach($data['slots'] as &$slot){
+			// 		$this->addCreditPoints($slot['data']);
+			// 	}
+			// }
 
             return Response::json($data,200);
         }
@@ -2450,29 +2450,29 @@ class ServiceController extends \BaseController {
 		return array("price"=>$offer_price, "slots"=> $slots);
 	}
 
-	public function addCreditPoints(&$data){
-		foreach($data as &$value){
+	// public function addCreditPoints(&$data){
+	// 	foreach($data as &$value){
 
-			if($value['price']>0 && $value['price']<= 300){
-				$points =2;
-			}
-			else if($value['price']>300 && $value['price']<= 500){
-				$points =3;
-			}
-			else if($value['price']>500 && $value['price']<= 750){
-				$points =4;
-			}
-			else{
-				$points =0;
-			}
+	// 		if($value['price']>0 && $value['price']<= 300){
+	// 			$points =2;
+	// 		}
+	// 		else if($value['price']>300 && $value['price']<= 500){
+	// 			$points =3;
+	// 		}
+	// 		else if($value['price']>500 && $value['price']<= 750){
+	// 			$points =4;
+	// 		}
+	// 		else{
+	// 			$points =0;
+	// 		}
 	
-			if($points){
-				$value['credits'] = [
-					"ponts" => $points,
-					"type" => "Sweat Points"
-				];
-			}
-		}
-	}
+	// 		if($points){
+	// 			$value['credits'] = [
+	// 				"ponts" => $points,
+	// 				"type" => "Sweat Points"
+	// 			];
+	// 		}
+	// 	}
+	// }
 
 }
