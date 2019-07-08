@@ -221,7 +221,8 @@ class CustomerController extends \BaseController {
 			// ->orderBy('_id', 'asc')->skip($offset)->take($limit)
 			// ->get($selectfields);
 
-			if($orderId) {
+			if(isset($orderId)) {
+				$orderId = intval($orderId);
 				$passOrder = Order::where('_id', $orderId)->where('status', '1')->first();
 			}
 			if(!empty($passOrder)){

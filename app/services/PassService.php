@@ -636,7 +636,7 @@ class PassService {
                         ]
                     ],
                     'terms' => [
-                        '_id' => $active['order_id'],
+                        '_id' => strval($active['order_id']),
                         'header' => 'View all terms & condition',
                         'title' => 'Terms & Condition',
                         'url' => 'http://apistage.fitn.in/passtermscondition?type=subscribe',
@@ -659,7 +659,7 @@ class PassService {
         if(!empty($inactiveOrders)) {
             foreach($inactiveOrders as $inactive) {
                 $_order = [
-                    '_id' => $inactive['order_id'],
+                    '_id' => strval($inactive['order_id']),
                     'header' => ucwords($inactive['duration_text']),
                     'subheader' => (!empty($inactive['classes']))?strtoupper($inactive['classes']).' classes':null,
                     'name' => (!empty($inactive['pass_name']))?strtoupper($inactive['pass_name']):null,
