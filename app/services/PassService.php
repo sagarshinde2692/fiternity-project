@@ -571,7 +571,7 @@ class PassService {
         $passOrderList = Order::raw(function($collection) use ($endDate, $customer_id, $offset, $limit, $type){
             $aggregate = [
                 ['$match' => [
-                    'type' => 'pass', 'customer_id' => $customer_id
+                    'type' => 'pass', 'customer_id' => $customer_id, 'status' => '1'
                 ]],
                 ['$sort' => ['_id' => -1]],
                 // ['$skip' => $offset],
@@ -586,18 +586,14 @@ class PassService {
             ];
             if ($type=='active') {
                 $aggregate[0]['$match']['end_date'] = ['$gte' => $endDate];
-                $aggregate[0]['$match']['status'] = '1';
             }
             else if($type=='inactive') {
-                $aggregate[0]['$match']['$or'] = [
-                    ['end_date' => ['$gte' => $endDate]],
-                    ['status' => ['$ne' => '1']]
-                ];
+                $aggregate[0]['$match']['end_date'] = ['$lt' => $endDate];
             }
             Log::info('aggregate: ', [$aggregate]);
             return $collection->aggregate($aggregate);
         });
-        if(!empty($passOrderList['result'])) {
+        if(isset($passOrderList['result'])) {
             $passOrderList = $passOrderList['result'];
         }
         return $passOrderList;
@@ -620,36 +616,38 @@ class PassService {
         }
 
         $orderList = [];
-        foreach($activeOrders as $active) {
-            $_order = [
-                'image' => 'https://b.fitn.in/passes/monthly_card.png',
-                'header' => ucwords($active['duration_text']),
-                'subheader' => (!empty($active['classes']))?strtoupper($active['classes']).' classes':null,
-                'name' => (!empty($active['pass_name']))?strtoupper($active['pass_name']):null,
-                'type' => (!empty($active['pass_type']))?strtoupper($active['pass_type']):null,
-                'text' => 'Valid up to '.date('d M Y', $active['end_date']->sec),
-                'remarks' => [
-                    'header' => 'Things to keep in mind',
-                    'data' => [
-                        'You get sweatpoint credits to book whatever classes you want.',
-                        'Download the app & get started',
-                        'Book classes at any gym/studio near you',
-                        'Sweatpoints vary by class',
-                        'Not loving it? easy cancellation available'
+        if(!empty($activeOrders)) {
+            foreach($activeOrders as $active) {
+                $_order = [
+                    'image' => 'https://b.fitn.in/passes/monthly_card.png',
+                    'header' => ucwords($active['duration_text']),
+                    'subheader' => (!empty($active['classes']))?strtoupper($active['classes']).' classes':null,
+                    'name' => (!empty($active['pass_name']))?strtoupper($active['pass_name']):null,
+                    'type' => (!empty($active['pass_type']))?strtoupper($active['pass_type']):null,
+                    'text' => 'Valid up to '.date('d M Y', $active['end_date']->sec),
+                    'remarks' => [
+                        'header' => 'Things to keep in mind',
+                        'data' => [
+                            'You get sweatpoint credits to book whatever classes you want.',
+                            'Download the app & get started',
+                            'Book classes at any gym/studio near you',
+                            'Sweatpoints vary by class',
+                            'Not loving it? easy cancellation available'
+                        ]
+                    ],
+                    'terms' => [
+                        '_id' => $active['order_id'],
+                        'header' => 'View all terms & condition',
+                        'title' => 'Terms & Condition',
+                        'url' => 'http://apistage.fitn.in/passtermscondition?type=subscribe',
+                        'button_title' => 'Past Bookings'
                     ]
-                ],
-                'terms' => [
-                    '_id' => $active['order_id'],
-                    'header' => 'View all terms & condition',
-                    'title' => 'Terms & Condition',
-                    'url' => 'http://apistage.fitn.in/passtermscondition?type=subscribe',
-                    'button_title' => 'Past Bookings'
-                ]
-            ];
-            if(empty($active['unlimited_access']) || !$active['unlimited_access']) {
-                $_order['header'] = (!empty($active['total_credits']))?strtoupper($active['total_credits']).' Sweat Points':null;
+                ];
+                if(empty($active['unlimited_access']) || !$active['unlimited_access']) {
+                    $_order['header'] = (!empty($active['total_credits']))?strtoupper($active['total_credits']).' Sweat Points':null;
+                }
+                array_push($orderList, $_order);
             }
-            array_push($orderList, $_order);
         }
         $data['active_pass'] = $orderList;
 
@@ -658,25 +656,27 @@ class PassService {
         }
 
         $orderList = [];
-        foreach($inactiveOrders as $inactive) {
-            $_order = [
-                '_id' => $inactive['order_id'],
-                'header' => ucwords($inactive['duration_text']),
-                'subheader' => (!empty($inactive['classes']))?strtoupper($inactive['classes']).' classes':null,
-                'name' => (!empty($inactive['pass_name']))?strtoupper($inactive['pass_name']):null,
-                'type' => (!empty($inactive['pass_type']))?strtoupper($inactive['pass_type']):null,
-                'color' => '#f7a81e',
-                'tdate_label' => 'Transaction Date',
-                'tdate_value' => date('d M Y',  $inactive['created_at']->sec),
-                'expired_label' => 'Expired on',
-                'expired_value' => date('d M Y',  $inactive['end_date']->sec),
-                'price' => '₹'.$inactive['amount']
-            ];
-            if(empty($active['unlimited_access']) || !$active['unlimited_access']) {
-                $_order['header'] = (!empty($inactive['total_credits']))?strtoupper($inactive['total_credits']).' Sweat Points':null;
-                $_order['subheader'] = (!empty($inactive['total_credits_used']))?strtoupper($inactive['total_credits_used']).' Sweat Points used':'0 Sweat Points used';
+        if(!empty($inactiveOrders)) {
+            foreach($inactiveOrders as $inactive) {
+                $_order = [
+                    '_id' => $inactive['order_id'],
+                    'header' => ucwords($inactive['duration_text']),
+                    'subheader' => (!empty($inactive['classes']))?strtoupper($inactive['classes']).' classes':null,
+                    'name' => (!empty($inactive['pass_name']))?strtoupper($inactive['pass_name']):null,
+                    'type' => (!empty($inactive['pass_type']))?strtoupper($inactive['pass_type']):null,
+                    'color' => '#f7a81e',
+                    'tdate_label' => 'Transaction Date',
+                    'tdate_value' => date('d M Y',  $inactive['created_at']->sec),
+                    'expired_label' => 'Expired on',
+                    'expired_value' => date('d M Y',  $inactive['end_date']->sec),
+                    'price' => '₹'.$inactive['amount']
+                ];
+                if(empty($active['unlimited_access']) || !$active['unlimited_access']) {
+                    $_order['header'] = (!empty($inactive['total_credits']))?strtoupper($inactive['total_credits']).' Sweat Points':null;
+                    $_order['subheader'] = (!empty($inactive['total_credits_used']))?strtoupper($inactive['total_credits_used']).' Sweat Points used':'0 Sweat Points used';
+                }
+                array_push($orderList, $_order);
             }
-            array_push($orderList, $_order);
         }
 
         $data['expired_pass'] = $orderList;

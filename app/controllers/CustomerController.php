@@ -54,28 +54,37 @@ class CustomerController extends \BaseController {
 
 	}
 
-	public function getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType='website', $type='lte') {
+	public function getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType='website', $type='lte', $orderId=null) {
 		if($deviceType=='website'){
 
 			// returning cancelled trials as well, for website...
 
-			return Booktrial::where('customer_email', '=', $customeremail)
+			$query = Booktrial::where('customer_email', '=', $customeremail)
+			->where('third_party_details','exists',false)
+			->whereIn('booktrial_type', array('auto'))
+			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
+			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')));
+
+			if(!empty($orderId)) {
+				$query->where('pass_order_id', $orderId);
+			}
+
+			return $query->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
+			->get($selectfields);
+		}
+		$query = Booktrial::where('customer_email', '=', $customeremail)
 			->where('third_party_details','exists',false)
 			->whereIn('booktrial_type', array('auto'))
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
 			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')))
-			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
-			->get($selectfields);
-		}
-		return Booktrial::where('customer_email', '=', $customeremail)
-		->where('third_party_details','exists',false)
-			->whereIn('booktrial_type', array('auto'))
-			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
-			// ->where('going_status_txt','!=','cancel')
-			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')))
-			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
+
+			if(!empty($orderId)) {
+				$query->where('pass_order_id', $orderId);
+			}
+
+			return $query->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
 			->get($selectfields);
 	}
 
@@ -195,7 +204,7 @@ class CustomerController extends \BaseController {
 	}
 
     // Listing Schedule Tirals for Normal Customer
-	public function getAutoBookTrials($customeremail, $offset = 0, $limit = 12){
+	public function getAutoBookTrials($customeremail, $offset = 0, $limit = 12, $orderId=null){
 
 		$offset 			=	intval($offset);
 		$limit 				=	intval($limit);
@@ -212,8 +221,17 @@ class CustomerController extends \BaseController {
 			// ->orderBy('_id', 'asc')->skip($offset)->take($limit)
 			// ->get($selectfields);
 
-			$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'gt');
-			$pastTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'lte');
+			if($orderId) {
+				$passOrder = Order::where('_id', $orderId)->where('status', '1')->first();
+			}
+			if(!empty($passOrder)){
+				$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'gt', $orderId);
+				$pastTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'lte', $orderId);
+			}
+			else {
+				$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'gt');
+				$pastTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'lte');
+			}
 
 		// }else{
 		// 	$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, 'gt');
@@ -2142,12 +2160,17 @@ class CustomerController extends \BaseController {
 
 	public function getAllTrials($offset = 0, $limit = 12){
 
+		$data = Input::all();
+
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
 
+		$orderId = null;
+		if(!empty($data)){
+			$orderId = $data['order_id'];
+		}
 
-
-		return $this->getAutoBookTrials($decoded->customer->email, $offset, $limit);
+		return $this->getAutoBookTrials($decoded->customer->email, $offset, $limit, $orderId);
 
 	// $selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
 
