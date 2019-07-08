@@ -567,4 +567,70 @@ class PassService {
         return $response;
     }
 
+    public function getPassOrderList($endDate, $customer_email, $offset, $limit, $type = null) {
+        $passOrderList = Order::raw(function($collection) use ($endDate, $customer_email, $offset, $limit, $type){
+            $aggregate = [
+                ['$match' => [
+                    'type' => 'pass', 'customer_email' => $customer_email
+                ]],
+                ['$sort' => ['_id' => -1]],
+                ['$skip' => $offset],
+                ['$limit' => $limit],
+                ['$project' => [
+                    'status' => 1, 'end_date' => 1, 'type' => 1, 'customer_email' => 1,
+                    'customer_name' => 1, 'customer_phone' => 1, 'total_credits_used' => 1, 'total_credits' => 1,
+                    'total_premium_sessions' => 1, 'premium_sessions_used' => 1, 'amount' => 1,
+                    'pass_type' => '$pass.type', 'unlimited_access' => '$pass.unlimited_access', 'duration' => '$pass.duration', 'duration_days' => '$pass.duration_days',
+                    'duration_text' => '$pass.duration_text', 'pass_name' => '$pass.name'
+                ]]
+            ];
+            if ($type=='active') {
+                $aggregate[0]['$match']['end_date'] = ['$gte' => $endDate];
+                $aggregate[0]['$match']['status'] = '1';
+            }
+            else if($type=='inactive') {
+                $aggregate[0]['$match']['$or'] = [
+                    ['end_date' => ['$gte' => $endDate]],
+                    ['status' => ['$ne' => '1']]
+                ];
+            }
+            Log::info('aggregate: ', [$aggregate]);
+            return $collection->aggregate($aggregate);
+        });
+        if(!empty($passOrderList['result'])) {
+            $passOrderList = $passOrderList['result'];
+        }
+        return $passOrderList;
+    }
+
+    public function orderPassHistory($customer_email, $offset = 0, $limit = 10){
+		$customer_email		= 	$customer_email;	
+		$offset 			=	intval($offset);
+		$limit 				=	intval($limit);
+
+        $endDate = new \MongoDate(strtotime('midnight', time()));
+
+        $activeOrders = $this->getPassOrderList($endDate, $customer_email, $offset, $limit, 'active');
+        $inactiveOrders = $this->getPassOrderList($endDate, $customer_email, $offset, $limit, 'inactive');
+
+        if(empty($activeOrders)) {
+            $activeOrders = [];
+        }
+
+        if(empty($inactiveOrders)) {
+            $inactiveOrders = [];
+        }
+
+		$response = [
+			'status' => 200,
+			'data' => [
+                'active' => $activeOrders,
+                'inactive' => $inactiveOrders
+            ],
+            'message' => 'Success'
+        ];
+
+		return $response;
+	}
+
 }

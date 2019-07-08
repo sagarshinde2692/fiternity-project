@@ -107,5 +107,9 @@ class PassController extends \BaseController {
         return array("status"=> 200, "data"=> $passFaq, "msg"=> "success");
     }
 
-    
+
+    public function orderPassHistory($customer_email, $offset = 0, $limit = 10) {
+        return $this->passService->orderPassHistory($customer_email, $offset, $limit);
+    }
+
 }
