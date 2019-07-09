@@ -1401,7 +1401,7 @@ class FindersController extends \BaseController {
                             
                             $response['vendor_stripe_data']	= [
                                 
-                                'text1'=> "MONSOON BONANZA | GET 100% INSTANT CASHBACK ON ALL SERVICES ACROSS THE WEBSITE | OFFER EXPIRES IN",
+                                'text1'=> "MONSOON BONANZA | GET 100% INSTANT CASHBACK ON ALL SERVICES ACROSS THE WEBSITE",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
