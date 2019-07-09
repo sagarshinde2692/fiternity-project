@@ -1972,7 +1972,7 @@ class SchedulebooktrialsController extends \BaseController {
             $finder_poc_for_customer_name       = 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
             $finder_poc_for_customer_no	       = 	(isset($finder['finder_poc_for_customer_mobile']) && $finder['finder_poc_for_customer_mobile'] != '') ? $finder['finder_poc_for_customer_mobile'] : "";
             $share_customer_no			       = 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
-
+            $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
 
             $service_name				       =	strtolower($data['service_name']);
             if(isset($data['schedule_slot'])){
@@ -2083,6 +2083,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'finder_lat'                    =>      $finder_lat,
                 'finder_lon'                    =>      $finder_lon,
                 'finder_photos'                 =>      $finder_photos,
+                'finder_flags'                  =>      $finder_flags,
                 'description'                   =>      $description,
                 'what_i_should_carry'           =>      $what_i_should_carry,
                 'what_i_should_expect'          =>      $what_i_should_expect,
