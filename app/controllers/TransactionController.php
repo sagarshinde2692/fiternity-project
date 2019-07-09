@@ -3869,11 +3869,11 @@ class TransactionController extends \BaseController {
             Order::$withoutAppends = true;
             $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $data['customer_id']);
             if($creditsApplicable['credits'] != 0) {
-                $data['pass_type'] = $creditsApplicable['pass_type'];
+                $data['pass_type'] = $creditsApplicable['pass']['type'];
                 $data['pass_order_id'] = $creditsApplicable['order_id'];
                 $data['pass_booking'] = true;
 
-                if($data['pass_type']=='unlimited' && $amount>=750) {
+                if(!empty($creditsApplicable['pass_premium_session'])) {
                     $data['pass_premium_session'] = true;
                 }
 
@@ -7157,7 +7157,7 @@ class TransactionController extends \BaseController {
                     $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $decoded->customer->_id);
                     if($creditsApplicable['credits'] != 0) {
                         $result['payment_details']['amount_summary'][] = [
-                            'field' => ((!empty($creditsApplicable['pass_type']) && $creditsApplicable['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
+                            'field' => ((!empty($creditsApplicable['pass']['type']) && $creditsApplicable['pass']['type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
                             'value' => (string)$creditsApplicable['credits'].' Sweat Points Applied'
                         ];
                         $data['amount_payable'] = 0;

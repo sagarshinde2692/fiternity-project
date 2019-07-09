@@ -325,7 +325,7 @@ class PassService {
                     'total_credits' => ['$exists' => true]
                 ]],
                 ['$project' => [
-                    'pass_type'=>1, 'total_premium_sessions'=>1, 'premium_sessions_used'=>1, 'total_credits' => 1, 'total_credits_used' => 1,
+                    'pass_type'=>1, 'total_premium_sessions'=>1, 'premium_sessions_used'=>1, 'total_credits' => 1, 'total_credits_used' => 1,'unlimited_access'=>1
                     'credits_diff' => ['$subtract' => ['$total_credits', '$total_credits_used']],
                     'credits_available' => ['$gte' => ['$credits_diff', $credits]]
                 ]],
@@ -338,7 +338,7 @@ class PassService {
             return $collection->aggregate($aggregate);
         });
         if(!empty($passOrder['result'][0])) {
-            $passOrder = $passOrder['result'][0];
+            return $passOrder = $passOrder['result'][0];
         }
         return;
     }
@@ -369,11 +369,16 @@ class PassService {
         if(!empty($passOrder)) {
             $passType = $passOrder['pass_type'];
         }
-        if(!empty($passType) && $passType=='unlimited') {
+        // if(!empty($passType) && $passType=='unlimited') {
+
+
+        if($this->checkUmlimitedPass($passOrder)) {
 
             if($amount>=750) {
                 if(!isset($passOrder['total_premium_sessions']) || !isset($passOrder['premium_sessions_used']) || !($passOrder['premium_sessions_used']<$passOrder['total_premium_sessions'])) {
                     return [ 'credits' => 0, 'order_id' => $passOrder['_id']];        
+                }else{
+                    $pass_premium_session = true;
                 }
             }
 
@@ -388,7 +393,7 @@ class PassService {
         if(isset($passOrder['total_credits']) && ($credits+$passOrder['total_credits_used'])<=$passOrder['total_credits']) {
             return [ 'credits' => $credits, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
         }
-        return [ 'credits' => 0, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
+        return [ 'credits' => 0, 'order_id' => $passOrder['_id'], 'pass_premium_session' => !empty($pass_premium_session), 'pass'=>$passOrder['pass']];
         
     }
     
@@ -494,8 +499,8 @@ class PassService {
                 '__end_date'=> date_format($order['end_date'],'d-M-Y')
             ]
         );
-
-        if(!empty($order['pass']['type']) && $order['pass']['type']=='unlimited'){
+        
+        if(!empty($order['pass']['unlimited_access'])){
             $success_template['pass']['subheader'] = "Unlimitd Access";
             $success_template['pass_image'] = $success['pass_image_gold'];
         }
@@ -688,6 +693,10 @@ class PassService {
         ];
 
 		return $response;
-	}
+    }
+    
+    public function checkUmlimitedPass($data){
+        return !empty($data['pass']['unlimited_access']) || !empty($data['unlimited_access']);
+    }
 
 }
