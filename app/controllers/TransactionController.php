@@ -282,7 +282,20 @@ class TransactionController extends \BaseController {
             $data = $transform_response['data'];
 
         }
+        
+        Log::info("customer_source !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", [$data['customer_source']]);
+        Log::info("before status !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", [$data['status']]);
+        $status = "0";
+        if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+            $status = $data['status'];
+            $payment_mode_admin = $data['payment_mode'];
+            $secondary_payment_mode_admin = $data['secondary_payment_mode'];
 
+            Log::info("status 1 ::",[$status]);
+            Log::info("payment_mode 1 ::",[$payment_mode_admin]);
+            Log::info("secondary_payment_mode_admin 1 ::",[$secondary_payment_mode_admin]);
+        }
+        
         $rules = array(
             'customer_name'=>'required',
             'customer_email'=>'required|email',
@@ -447,8 +460,8 @@ class TransactionController extends \BaseController {
         /*if(isset($data['wallet']) && !$data['wallet']){
             $data['paymentmode_selected'] = 'paymentgateway';
         }*/
-
         
+
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
             if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1 ){
                 $data['paymentmode_selected'] = 'paymentgateway';
@@ -574,6 +587,7 @@ class TransactionController extends \BaseController {
                 
                 $ratecardDetail = $this->getRatecardDetail($data);
                 
+                Log::info("RateCard details !!!!!!!!!!!!!!!!!!!!!!!!!!",[$ratecardDetail]);
                 if($ratecardDetail['status'] != 200){
                     return Response::json($ratecardDetail,$this->error_status);
                 }
@@ -1162,13 +1176,19 @@ class TransactionController extends \BaseController {
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
         }
-
-        $data["status"] = "0";
+        
+        $data['status'] = $status;
+        Log::info("after status !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", [$data['status']]);
 
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] == 'pay_at_vendor'){
 
             $data['payment_mode'] = 'at the studio';
             $data["secondary_payment_mode"] = "at_vendor_post";
+        }
+
+        if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+            $data['payment_mode'] = $payment_mode_admin;
+            $data['secondary_payment_mode'] = $secondary_payment_mode_admin;
         }
 
         $is_tab_active = isTabActive($data['finder_id']);
