@@ -435,13 +435,15 @@ class BrandsController extends \BaseController {
 		$cities = City::lists('name');
 		Log::info('cities name::::::::::::', [$cities]);
 		$city_list = [];
+		$listed_cities_multifit = ['jaipur','pune', 'mumbai', 'hydrabad', 'bangalore', 'gurgoan'];
 		foreach($cities as $key=>$value){
-			if($value != 'Default City')
-			array_push($city_list,[
-				'name' => ucwords($value) ,
-				'slug' => 'listing-multifit-'.strtolower($value),
-				'city_brand' => true 
-			]);
+			if(in_array(strtolower($value), $listed_cities_multifit)){
+				array_push($city_list,[
+					'name' => ucwords($value) ,
+					'slug' => 'listing-multifit-'.strtolower($value),
+					'city_brand' => true 
+				]);
+			}
 		} 
 		$city = [
 			['name'=>'Mysure', 'slug'=>'multifitvendor/multifit---mysuru-mysuru', 'city_brand'=>false],
@@ -454,7 +456,7 @@ class BrandsController extends \BaseController {
 	public function updateCitiesData(&$data){
 		$cities = City::lists('name');
 		$without_brand_city = [
-			'maysure'=>['slug'=>'multifitvendor/multifit---mysuru-mysuru', 'city_brand'=>false],
+			'mysure'=>['slug'=>'multifitvendor/multifit---mysuru-mysuru', 'city_brand'=>false],
 			'nagpur'=> ['slug'=>'multifitvendor/multifit-nagpur-dharampeth-nagpur', 'city_brand'=>false],
 			'salem'=> ['slug'=>'multifitvendor/multifit---salem-salem', 'city_brand'=>false]
 		];
