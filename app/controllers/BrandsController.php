@@ -458,11 +458,11 @@ class BrandsController extends \BaseController {
 		foreach($data['centers_block'] as &$value){
 			if(in_array(strtolower($value['name']), $cities)){
 				$value['city_brand'] = true;
-				$value['slug'] = 'listing-multifit-'.strtolower($value);
+				$value['slug'] = 'listing-multifit-'.strtolower($value['name']);
 			}
 			else{
 				$value['city_brand'] = false;
-				$value['slug'] = 'listing-multifit-'.strtolower($value);
+				$value['slug'] = 'listing-multifit-'.strtolower($value['name']);
 			}
 		}
 	}
