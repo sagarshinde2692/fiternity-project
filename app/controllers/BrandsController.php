@@ -431,15 +431,17 @@ class BrandsController extends \BaseController {
 
 	public function multifitCities(){
 		return [
-			'Mumbai',
-			'Pune',
-			'Bangalore',
-			'Gurgoan',
-			'Hydrabad',
-			'Jaipur',
-			'Mysure',
-			'Nagpur',
-			'Salem'
+			[
+				'name'=>'Mumbai', 'slug'=>'listing-multifit-mumbei', 'city_brand'=>true,
+				'name'=>'Pune', 'slug'=>'listing-multifit-pune', 'city_brand'=>true,
+				'name'=>'Bangalore', 'slug'=>'listing-multifit-bangalore', 'city_brand'=>true,
+				'name'=>'Gurgoan', 'slug'=>'listing-multifit-bangalore', 'city_brand'=>true,
+				'name'=>'Hydrabad', 'slug'=>'listing-multifit-bangalore', 'city_brand'=>true,
+				'name'=>'Jaipur', 'slug'=>'listing-multifit-bangalore', 'city_brand'=>true,
+				'name'=>'Mysure', 'slug'=>'listing-multifit-mysure', 'city_brand'=>false,
+				'name'=>'Nagpur', 'slug'=>'listing-multifit-nagpur', 'city_brand'=>false,
+				'name'=>'Salem', 'slug'=>'listing-multifit-salem', 'city_brand'=>false
+			]
 		];
 	}
 }
