@@ -157,7 +157,11 @@ class BrandsController extends \BaseController {
 
                     return Response::json($data);
 				}
-				$data['cities_list'] = $this->multifitCities();
+				
+				if($data['brand']['_id']==88){
+					$data['cities_list'] = $this->multifitCities();
+				}
+
                 $this->multifitGymWebsiteBrandUpdate($data);
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
