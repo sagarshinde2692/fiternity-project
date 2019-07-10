@@ -1796,7 +1796,7 @@ class HomeController extends BaseController {
                     if(!isset($item['ratecard_flags']['unlimited_validity']) || (!$item['ratecard_flags']['unlimited_validity'])){
                         $duration = "valid for ".$serviceDurArr[1];
                     }
-                    $subline = "Hi <b>".$item['customer_name']."</b>, your ".$serviceDurArr[0]." pack (".$duration.") for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed by paying Rs. ".(string)$item['amount_customer'].". We have also sent you a confirmation Email and SMS"."<br><br> Congratulations on receiving your instant cashback. Make the most of it anywhere on Fitternity. Book multiple workout sessions with friends & family, buy memberships & more using this cashback.";
+                    $subline = "Hi <b>".$item['customer_name']."</b>, your ".$serviceDurArr[0]." pack (".$duration.") for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed by paying Rs. ".(string)$item['amount_customer'].". We have also sent you a confirmation Email and SMS"."<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
                 }
 
                 if(isset($item['booking_for_others']) && $item['booking_for_others']){
