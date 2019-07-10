@@ -430,6 +430,8 @@ class BrandsController extends \BaseController {
 	}
 
 	public function multifitCities(){
+		$cities = City::lists('name');
+		Log::info('cities name::::::::::::', [$cities]);
 		return [
 			[
 				'name'=>'Mumbai', 'slug'=>'listing-multifit-mumbei', 'city_brand'=>true,
