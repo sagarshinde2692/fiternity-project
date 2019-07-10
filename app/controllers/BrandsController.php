@@ -435,7 +435,7 @@ class BrandsController extends \BaseController {
 		$cities = City::lists('name');
 		Log::info('cities name::::::::::::', [$cities]);
 		$city_list = [];
-		$listed_cities_multifit = ['jaipur','pune', 'mumbai', 'hydrabad', 'bangalore', 'gurgoan'];
+		$listed_cities_multifit = ['jaipur','pune', 'mumbai', 'hyderabad', 'bangalore', 'gurgoan'];
 		foreach($cities as $key=>$value){
 			if(in_array(strtolower($value), $listed_cities_multifit)){
 				array_push($city_list,[
