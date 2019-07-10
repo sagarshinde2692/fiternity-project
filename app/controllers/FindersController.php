@@ -3844,7 +3844,7 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
-        return "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title'];
+        return "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title']." upto Rs 2500. Use this cashback on any transaction without restriction for yourself as well as friends & family.";
         
 
 		$brandMap = [
