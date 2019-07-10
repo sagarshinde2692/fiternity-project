@@ -262,6 +262,7 @@ class BrandsController extends \BaseController {
 				}
 			}	
 		}
+		$this->updateCitiesData($home1);
 		$home[0]['brand_website'] =  $home1;
 
 		if(!empty($home)){
@@ -447,5 +448,22 @@ class BrandsController extends \BaseController {
 			['name'=>'Salem', 'slug'=>'listing-multifit-salem', 'city_brand'=>false]
 		];
 		return array_merge($city_list, $city);
+	}
+
+	public function updateCitiesData(&$data){
+		$cities = City::lists('name');
+			foreach($cities as &$city){
+				$city = strtolower($city);
+			}
+		foreach($data['centers_block'] as &$value){
+			if(in_array(strtolower($value['name']), $cities)){
+				$value['city_brand'] = true;
+				$value['slug'] = 'listing-multifit-'.strtolower($value);
+			}
+			else{
+				$value['city_brand'] = false;
+				$value['slug'] = 'listing-multifit-'.strtolower($value);
+			}
+		}
 	}
 }
