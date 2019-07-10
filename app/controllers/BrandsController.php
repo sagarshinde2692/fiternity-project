@@ -156,7 +156,8 @@ class BrandsController extends \BaseController {
                     }
 
                     return Response::json($data);
-                }
+				}
+				$data['cities_list'] = $this->multifitCities();
                 $this->multifitGymWebsiteBrandUpdate($data);
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
@@ -424,4 +425,17 @@ class BrandsController extends \BaseController {
 		}
 	}
 
+	public function multifitCities(){
+		return [
+			'Mumbai',
+			'Pune',
+			'Bangalore',
+			'Gurgoan',
+			'Hydrabad',
+			'Jaipur',
+			'Mysure',
+			'Nagpur',
+			'Salem'
+		];
+	}
 }
