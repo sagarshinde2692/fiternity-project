@@ -284,7 +284,7 @@ class TransactionController extends \BaseController {
         }
         
         Log::info("customer_source !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", [$data['customer_source']]);
-        Log::info("before status !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", [$data['status']]);
+        // Log::info("before status !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", [$data['status']]);
         $status = "0";
         if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
             $status = $data['status'];
