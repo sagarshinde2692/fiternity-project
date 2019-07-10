@@ -965,16 +965,19 @@ class TransactionController extends \BaseController {
 
             }
 
-            $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+            if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+            }else{
+                $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
             
-            // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
-            
-            if($cashbackRewardWallet['status'] != 200){
-                return Response::json($cashbackRewardWallet,$this->error_status);
+                // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
+                
+                if($cashbackRewardWallet['status'] != 200){
+                    return Response::json($cashbackRewardWallet,$this->error_status);
+                }
+                
+                $data = array_merge($data,$cashbackRewardWallet['data']);
             }
             
-            $data = array_merge($data,$cashbackRewardWallet['data']);
-
         }
 
         if(!empty($data['donation_amount']) && is_numeric($data['donation_amount'])){
@@ -1040,18 +1043,23 @@ class TransactionController extends \BaseController {
 
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
-
-                if($this->utilities->isConvinienceFeeApplicable($data)){
-
-                    $convinience_fee_percent = Config::get('app.convinience_fee');
-
-                    $convinience_fee = round($part_payment_data['amount_finder']*$convinience_fee_percent/100);
-
-                    $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
-                    
+                if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+                    $convinience_fee = 0;
                     $part_payment_data['convinience_fee'] = $convinience_fee;
+                }else{
+                    if($this->utilities->isConvinienceFeeApplicable($data)){
 
+                        $convinience_fee_percent = Config::get('app.convinience_fee');
+    
+                        $convinience_fee = round($part_payment_data['amount_finder']*$convinience_fee_percent/100);
+    
+                        $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
+                        
+                        $part_payment_data['convinience_fee'] = $convinience_fee;
+    
+                    }
                 }
+                
 
                 $part_payment_amount = ceil(($data["amount_finder"] * (20 / 100)));
 
@@ -1089,23 +1097,26 @@ class TransactionController extends \BaseController {
 
 
         if(empty($data['convinience_fee'])){
-
             $data['convinience_fee'] = 0;
-    
-            if($this->utilities->isConvinienceFeeApplicable($data)){
+            
+            if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+                $data['convinience_fee'] = 0;
+            }else{
+                if($this->utilities->isConvinienceFeeApplicable($data)){
                 
-                $convinience_fee_percent = Config::get('app.convinience_fee');
-    
-                $convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
-    
-                $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
-    
-                $data['convinience_fee'] = $convinience_fee;
-    
-                if(!empty($data['customer_quantity'])){
-                    $data['convinience_fee'] = $data['convinience_fee'] * $data['customer_quantity'];
+                    $convinience_fee_percent = Config::get('app.convinience_fee');
+        
+                    $convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
+        
+                    $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
+        
+                    $data['convinience_fee'] = $convinience_fee;
+        
+                    if(!empty($data['customer_quantity'])){
+                        $data['convinience_fee'] = $data['convinience_fee'] * $data['customer_quantity'];
+                    }
+        
                 }
-    
             }
         }
 
