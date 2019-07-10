@@ -444,18 +444,24 @@ class BrandsController extends \BaseController {
 			]);
 		} 
 		$city = [
-			['name'=>'Mysure', 'slug'=>'listing-multifit-mysure', 'city_brand'=>false],
-			['name'=>'Nagpur', 'slug'=>'listing-multifit-nagpur', 'city_brand'=>false],
-			['name'=>'Salem', 'slug'=>'listing-multifit-salem', 'city_brand'=>false]
+			['name'=>'Mysure', 'slug'=>'multifitvendor/multifit---mysuru-mysuru', 'city_brand'=>false],
+			['name'=>'Nagpur', 'slug'=>'multifitvendor/multifit-nagpur-dharampeth-nagpur', 'city_brand'=>false],
+			['name'=>'Salem', 'slug'=>'multifitvendor/multifit---salem-salem', 'city_brand'=>false]
 		];
 		return array_merge($city_list, $city);
 	}
 
 	public function updateCitiesData(&$data){
 		$cities = City::lists('name');
-			foreach($cities as &$city){
-				$city = strtolower($city);
-			}
+		$without_brand_city = [
+			'maysure'=>['slug'=>'multifitvendor/multifit---mysuru-mysuru', 'city_brand'=>false],
+			'nagpur'=> ['slug'=>'multifitvendor/multifit-nagpur-dharampeth-nagpur', 'city_brand'=>false],
+			'salem'=> ['slug'=>'multifitvendor/multifit---salem-salem', 'city_brand'=>false]
+		];
+
+		foreach($cities as &$city){
+			$city = strtolower($city);
+		}
 		foreach($data['centers_block'] as &$value){
 			if(in_array(strtolower($value['name']), $cities)){
 				$value['city_brand'] = true;
@@ -463,7 +469,7 @@ class BrandsController extends \BaseController {
 			}
 			else{
 				$value['city_brand'] = false;
-				$value['slug'] = 'listing-multifit-'.strtolower($value['name']);
+				$value['slug'] = !empty($without_brand_city[strtolower($value['name'])])? $without_brand_city[strtolower($value['name'])]['slug']:'';
 			}
 		}
 	}
