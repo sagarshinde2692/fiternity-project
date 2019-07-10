@@ -432,18 +432,20 @@ class BrandsController extends \BaseController {
 	public function multifitCities(){
 		$cities = City::lists('name');
 		Log::info('cities name::::::::::::', [$cities]);
-		return [
-			[
-				'name'=>'Mumbai', 'slug'=>'listing-multifit-mumbei', 'city_brand'=>true,
-				'name'=>'Pune', 'slug'=>'listing-multifit-pune', 'city_brand'=>true,
-				'name'=>'Bangalore', 'slug'=>'listing-multifit-bangalore', 'city_brand'=>true,
-				'name'=>'Gurgoan', 'slug'=>'listing-multifit-bangalore', 'city_brand'=>true,
-				'name'=>'Hydrabad', 'slug'=>'listing-multifit-bangalore', 'city_brand'=>true,
-				'name'=>'Jaipur', 'slug'=>'listing-multifit-bangalore', 'city_brand'=>true,
-				'name'=>'Mysure', 'slug'=>'listing-multifit-mysure', 'city_brand'=>false,
-				'name'=>'Nagpur', 'slug'=>'listing-multifit-nagpur', 'city_brand'=>false,
-				'name'=>'Salem', 'slug'=>'listing-multifit-salem', 'city_brand'=>false
-			]
+		$city_list = [];
+		foreach($cities as $key=>$value){
+			if($value != 'Default City')
+			array_push($city_list,[
+				'name' => ucwords($value) ,
+				'slug' => 'listing-multifit-'.strtolower($value),
+				'city_brand' => true 
+			]);
+		} 
+		$city = [
+			['name'=>'Mysure', 'slug'=>'listing-multifit-mysure', 'city_brand'=>false],
+			['name'=>'Nagpur', 'slug'=>'listing-multifit-nagpur', 'city_brand'=>false],
+			['name'=>'Salem', 'slug'=>'listing-multifit-salem', 'city_brand'=>false]
 		];
+		return array_merge($city_list, $city);
 	}
 }
