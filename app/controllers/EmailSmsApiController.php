@@ -1071,7 +1071,14 @@ class EmailSmsApiController extends \BaseController {
             else {
                 $this->utilities->sendEnquiryToFitnessForce($captureData);
             }
-        
+            
+            if($data['capture_type']== 'multifit-franchisepage'){
+                //send email to multifit
+                $data['customer_message'] = $data['message'];
+                $data['enquiry_date'] = strtotime('now');
+                $this->findermailer->multifitInquiry($data);
+                return 'sending message';
+            }
         }
 
         return Response::json($resp);

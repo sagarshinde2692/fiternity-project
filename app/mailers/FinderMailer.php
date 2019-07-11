@@ -1291,6 +1291,23 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	protected function multifitInquiry ($data){
+
+		$label = 'Multifit-Inquiry';
+
+		$user_email 	=  	['kailashbajya@fitternity.com'];//explode(',', $data['finder_vcc_email']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $data['customer_name'],
+			'customer_phone' =>  $data['customer_phone'],
+			'customer_message' =>  $data['customer_message'],
+			'enquiry_date' => $data['enquiry_date']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
 	public function common($label,$data,$message_data,$delay = 0){
 		// return($message_data['user_email']);
 		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
@@ -1306,10 +1323,10 @@ Class FinderMailer extends Mailer {
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
 		$email_subject = 	$this->bladeCompile($template->email_subject,$data);
 
-		if(!Config::get('app.vendor_communication')){
+		// if(!Config::get('app.vendor_communication')){
 
-			$message_data['user_email'] = array('sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'akhilkulkarni@fitternity.com', 'ankitamamnia@fitternity.com', 'rohitvarade@fitternity.com');
-		}
+		// 	$message_data['user_email'] = array('sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'akhilkulkarni@fitternity.com', 'ankitamamnia@fitternity.com', 'rohitvarade@fitternity.com');
+		// }
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
 

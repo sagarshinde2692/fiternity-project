@@ -445,21 +445,13 @@ class BrandsController extends \BaseController {
 				]);
 			}
 		} 
-		$city = [
-			['name'=>'Mysure', 'slug'=>'multifitvendor/multifit---mysuru-mysuru', 'city_brand'=>false],
-			['name'=>'Nagpur', 'slug'=>'multifitvendor/multifit-nagpur-dharampeth-nagpur', 'city_brand'=>false],
-			['name'=>'Salem', 'slug'=>'multifitvendor/multifit---salem-salem', 'city_brand'=>false]
-		];
+		$city = Config::get('multifit.vendors_slug');
 		return array_merge($city_list, $city);
 	}
 
 	public function updateCitiesData(&$data){
 		$cities = City::lists('name');
-		$without_brand_city = [
-			'mysure'=>['slug'=>'multifitvendor/multifit---mysuru-mysuru', 'city_brand'=>false],
-			'nagpur'=> ['slug'=>'multifitvendor/multifit-nagpur-dharampeth-nagpur', 'city_brand'=>false],
-			'salem'=> ['slug'=>'multifitvendor/multifit---salem-salem', 'city_brand'=>false]
-		];
+		$without_brand_city = Config::get('multifit.without_brand_city');
 
 		foreach($cities as &$city){
 			$city = strtolower($city);
