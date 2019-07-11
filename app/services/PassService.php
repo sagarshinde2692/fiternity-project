@@ -325,7 +325,7 @@ class PassService {
                     'total_credits' => ['$exists' => true]
                 ]],
                 ['$project' => [
-                    'pass_type'=>1, 'total_premium_sessions'=>1, 'premium_sessions_used'=>1, 'total_credits' => 1, 'total_credits_used' => 1,'unlimited_access'=>1
+                    'pass_type'=>1, 'total_premium_sessions'=>1, 'premium_sessions_used'=>1, 'total_credits' => 1, 'total_credits_used' => 1,'unlimited_access'=>1,
                     'credits_diff' => ['$subtract' => ['$total_credits', '$total_credits_used']],
                     'credits_available' => ['$gte' => ['$credits_diff', $credits]]
                 ]],
