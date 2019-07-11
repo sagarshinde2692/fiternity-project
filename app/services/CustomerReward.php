@@ -818,7 +818,13 @@ Class CustomerReward {
                 }
             }
 
-            if(!empty($order['type']) && $order['type'] == 'memberships' && !empty($order['amount']) && $order['amount'] > 0 && (empty($order['customer_source']) || $order['customer_source'] != 'admin')){
+            if(
+                !empty($order['type']) 
+                && $order['type'] == 'memberships' 
+                && !empty($order['amount']) 
+                && $order['amount'] > 0 
+                && (empty($order['customer_source']) || !in_array($order['customer_source'], ['admin', 'kiosk']))
+            ){
                 $amount_paid = $order['amount'];
 
                 if($amount_paid > 2500){
