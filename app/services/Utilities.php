@@ -7989,7 +7989,7 @@ Class Utilities {
         
         $token = Request::header('Authorization');
         
-        if(empty($token)){
+        if(empty($token) || $token=='undefined'){
             return;
         }
         
