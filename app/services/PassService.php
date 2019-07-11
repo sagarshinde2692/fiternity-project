@@ -563,6 +563,9 @@ class PassService {
     }
 
     public function verifyOrderSignature($data){
+        if(empty($data['key'])){
+            $data['key'] = Config::get('app.razorpay.secret_key');
+        }
         $expected_signature = hash_hmac('sha256', $data['body'], $data['key']);
         $response= ["status"=>false];
         Log::info("in verify signature:::::::::::::", [$data['signature'], $expected_signature]);
