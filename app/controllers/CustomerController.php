@@ -4099,18 +4099,23 @@ class CustomerController extends \BaseController {
 			];
 		}
 		else {
+            $pass = true;
 			try{
 				$active_passes = [];
 				if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
-					$active_passes = $this->passService->getPassBookings($order['_id']);
+                    $pass_bookings = $this->passService->getPassBookings($order['_id']);
 				}
 			}catch(Exception $e){
-				$active_passes = [];
-			}
-			$result['pass_bookings'] = $active_passes;
-		}
-
-		return Response::json($result);
+				$pass_bookings = [];
+            }
+            
+			$result['pass_bookings'] = $pass_bookings;
+        }
+        
+        $response = Response::make($result);
+        $response = setNewToken($response, !empty($pass));
+        
+		return $response;
 		
 	}
 
