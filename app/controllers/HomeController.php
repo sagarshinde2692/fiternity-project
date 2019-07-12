@@ -2278,7 +2278,9 @@ class HomeController extends BaseController {
                     $resp['kiosk_membership'] = $this->utilities->membershipBookedLocateScreen($item);
                 }
             }
-
+            if(!empty($item['coupon_flags'])){
+                $resp['coupon_flags'] = $item['coupon_flags'];
+            }
             return Response::json($resp);
         }
     }
