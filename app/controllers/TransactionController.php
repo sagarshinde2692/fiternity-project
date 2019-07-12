@@ -3869,7 +3869,7 @@ class TransactionController extends \BaseController {
             Order::$withoutAppends = true;
             $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $data['customer_id']);
             if($creditsApplicable['credits'] != 0) {
-                $data['pass_type'] = $creditsApplicable['pass']['type'];
+                $data['pass_type'] = $creditsApplicable['pass_type'];
                 $data['pass_order_id'] = $creditsApplicable['order_id'];
                 $data['pass_booking'] = true;
 
