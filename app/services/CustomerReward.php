@@ -790,7 +790,7 @@ Class CustomerReward {
             ){
                 if(isset($order['type']) && $order['type'] == 'workout-session'){
                     $amount_paid = $order['amount'];
-                    if(isset($order['customer_quantity']) && $order['customer_quantity'] == 1){
+                    if(isset($order['customer_quantity']) && $order['customer_quantity'] != 1){
                         $amount_paid = 0;
                     }
                 }else{
