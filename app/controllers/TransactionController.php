@@ -3636,7 +3636,7 @@ class TransactionController extends \BaseController {
                     $data['coupon_flags'] = $couponCheck['flags'];
                 }
 
-                if(!empty($couponCheck['flags']) && $couponCheck['flags']['corporate_coupon'] == true){
+                if(!empty($couponCheck['flags']['corporate_coupon']) && $couponCheck['flags']['corporate_coupon'] == true){
                     $data['corporate_coupon'] = true;
                 }
 

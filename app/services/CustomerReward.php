@@ -782,49 +782,43 @@ Class CustomerReward {
                 }            
             }
             
-            if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount'])){
-                $amount_paid = $order['amount'];
+            // if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount'])){
+            //     $amount_paid = $order['amount'];
 
-                $cashback_amount = round(($amount_paid * 100) / 118);
+            //     $cashback_amount = round(($amount_paid * 100) / 118);
 
-                if($cashback_amount > 0){
-                    $walletData = array(
-                        "order_id"=>$order['_id'],
-                        "customer_id"=> intval($order['customer_id']),
-                        "amount"=> intval($cashback_amount),
-                        "amount_fitcash" => 0,
-                        "amount_fitcash_plus" => intval($cashback_amount),
-                        "type"=>'CASHBACK',
-                        'entry'=>'credit',
-                        'order_type'=>['workout-session', 'workout session'],
-                        "description"=> "100% Cashback on workout-session booking at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14)),
-                        "validity"=>time()+(86400*14),
-                    );
+            //     if($cashback_amount > 0){
+            //         $walletData = array(
+            //             "order_id"=>$order['_id'],
+            //             "customer_id"=> intval($order['customer_id']),
+            //             "amount"=> intval($cashback_amount),
+            //             "amount_fitcash" => 0,
+            //             "amount_fitcash_plus" => intval($cashback_amount),
+            //             "type"=>'CASHBACK',
+            //             'entry'=>'credit',
+            //             'order_type'=>['workout-session', 'workout session'],
+            //             "description"=> "100% Cashback on workout-session booking at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14)),
+            //             "validity"=>time()+(86400*14),
+            //         );
     
-                    $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());
+            //         $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());
     
-                    if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
+            //         if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
     
-                        $customersms = new CustomerSms();
+            //             $customersms = new CustomerSms();
     
-                        $sms_data = [];
+            //             $sms_data = [];
     
-                        $sms_data['customer_phone'] = $order['customer_phone'];
+            //             $sms_data['customer_phone'] = $order['customer_phone'];
     
-                        $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$cashback_amount." Fitcash has been added in your Fitternity wallet.Valid for 14 days from booking time. For quick assistance call ".Config::get('app.contact_us_customer_number');
+            //             $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$cashback_amount." Fitcash has been added in your Fitternity wallet.Valid for 14 days from booking time. For quick assistance call ".Config::get('app.contact_us_customer_number');
     
-                        $customersms->custom($sms_data);
-                    }
-                }
-            }
+            //             $customersms->custom($sms_data);
+            //         }
+            //     }
+            // }
 
-            if(
-                !empty($order['type']) 
-                && $order['type'] == 'memberships' 
-                && !empty($order['amount']) 
-                && $order['amount'] > 0 
-                && (empty($order['customer_source']) || !in_array($order['customer_source'], ['admin', 'kiosk']))
-            ){
+            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per']){
                 $amount_paid = $order['amount'];
 
                 if($amount_paid > 2500){
@@ -843,7 +837,7 @@ Class CustomerReward {
                         "amount_fitcash_plus" => intval($cashback_amount),
                         "type"=>'CASHBACK',
                         'entry'=>'credit',
-                        "description"=> "100% Cashback on buying Membership at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*90)),
+                        "description"=> "100% Cashback on buying ".ucfirst($order['type'])." at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*90)),
                         "validity"=>time()+(86400*90),
                         "membership_instant_cashback" => true,
                         'app_only'=>true
