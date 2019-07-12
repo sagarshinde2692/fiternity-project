@@ -9760,16 +9760,14 @@ class CustomerController extends \BaseController {
 			}
 			else{
 				// return for now you are checking in for non operational day or time
-				$return = $this->checkinCheckoutSuccessMsg($finder);
-				$return['header'] = 'Sorry you are checking at non operational Time.';
+				$return = $this->checkinCheckoutFailureMsg('Sorry you are checking at non operational Time.');
 				return $return;
 				//return $oprtionalDays;
 			}
 		}
 		else{
 			// return for use high accurary
-			$return  = $this->checkinCheckoutSuccessMsg($finder);
-			$return['header']= "Put your device in high accuracy.";
+			$return  = $this->checkinCheckoutFailureMsg("Please mark your check in by visiting ".$finder['title']);
 			return $return;
 			//return ["status"=> false, "message"=>"Put your device in high accuracy."];
 		}
@@ -9845,4 +9843,14 @@ class CustomerController extends \BaseController {
 		];
 		return $return;
 	}
+
+	public function checkinCheckoutFailureMsg($reason=null) {
+		$return =  [
+			'header'=>'CHECK-IN FAILED!',
+			'sub_header_2'=> (!empty($reason))?$reason.".":"Unable to mark your checkin.",
+			'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png'
+		];
+		return $return;
+	}
+
 }
