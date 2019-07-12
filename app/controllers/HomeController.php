@@ -1142,6 +1142,9 @@ class HomeController extends BaseController {
                     $response['subline'] = 'Your payment for '.$service_name.' session at '.$finder_name.' for '.$schedule_date.' at '.$schedule_slot.' is successful. Keep booking, reach milestones & earn rewards';
                 }
                 
+            
+                $this->utilities->branchIOData($response);
+                
 
                 return $response;
             }
@@ -2278,6 +2281,10 @@ class HomeController extends BaseController {
                     $resp['kiosk_membership'] = $this->utilities->membershipBookedLocateScreen($item);
                 }
             }
+
+        
+            $this->utilities->branchIOData($item);
+            
 
             return Response::json($resp);
         }

@@ -9471,4 +9471,41 @@ Class Utilities {
         return array('plan'=>$output);
     }
 
+    public function branchIOData(&$data){
+        if(
+            checkAppVersionFromHeader(['ios'=>'5.1.9', 'android'=>5.25])
+        ){
+
+            $branch_data = [
+                "canonicalIdentifier"=>$data['type'],
+                "canonicalurl"=>"https://www.fitternity.com",
+                "title"=>"1 month membership at gold gym",
+                "qty"=>!empty($data['ratecard_id']) ? strval($data['ratecard_id']) : 1,
+                "price"=>!empty($data['amount_customer']) ? strval($data['amount_customer']) : (!empty($data['amount']) ? strval($data['amount']) : 0),
+                "sku"=> !empty($data['ratecard_id']) ? strval($data['ratecard_id']) : "",
+                "productname"=>$data['productinfo'],
+                "productbrand"=>"fitternity",
+                "variant"=>"variant",
+                "txnid"=>"txnid",
+                "revenue"=>!empty($data['amount_customer']) ? strval($data['amount_customer']) : (!empty($data['amount']) ? strval($data['amount']) : 0),
+                "shipping"=>0,
+                "tax"=>0,
+                "coupon"=>"",
+                "affiliation"=>"affiliation data",
+                "eventdescription"=>"eventdescription",
+                "searchquery"=>"searchquery",
+                "customdata"=>[
+                    "key1"=>"value1",
+                    "key2"=>"value2"
+                ]
+            ];
+                
+                
+
+
+
+
+        }
+    }
+
 }

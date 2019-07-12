@@ -4460,5 +4460,25 @@ if (!function_exists('setNewToken')) {
 
 }
 
+if (!function_exists('checkAppVersionFromHeader')) {
+
+    function checkAppVersionFromHeader($data){        
+        
+        $app_version = Request::header('App-Version');
+        $device_type = Request::header('Device-Type');
+
+        if($device_type == 'android' && $app_version >= $data['android']){
+            return true;
+        }
+        
+        if($device_type == 'ios' && $app_version >= $data['ios']){
+            return true;
+        }
+
+        return false;
+    }
+
+}
+
 
 ?>
