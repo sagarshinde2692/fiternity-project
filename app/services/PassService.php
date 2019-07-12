@@ -372,7 +372,7 @@ class PassService {
         // if(!empty($passType) && $passType=='unlimited') {
 
 
-        if($this->checkUmlimitedPass($passOrder)) {
+        if(!empty($passOrder) && $this->checkUmlimitedPass($passOrder)) {
 
             if($amount>=750) {
                 if(!isset($passOrder['total_premium_sessions']) || !isset($passOrder['premium_sessions_used']) || !($passOrder['premium_sessions_used']<$passOrder['total_premium_sessions'])) {
