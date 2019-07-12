@@ -853,6 +853,7 @@ Class CustomerReward {
     
                         $sms_data['customer_phone'] = $order['customer_phone'];
                         $sms_data['amount'] = $cashback_amount;
+                        $sms_data['type'] = $order['type'];
                         $sms_data['finder_name'] = ucwords($order['finder_name']);
     
                         $customersms->membership100PerCashback($sms_data);
