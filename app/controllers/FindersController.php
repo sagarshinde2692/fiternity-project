@@ -2494,10 +2494,16 @@ class FindersController extends \BaseController {
 		// $this->updateFinderRatingV2($finder);
 
 		// $review_detail = $this->updateFinderRatingV1($reviewdata);
-		
-		// $review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
-
-		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>null);
+		$review_detail = null;
+		$deviceType = Request::header('Device-Type');
+		if(empty($deviceType) || !in_array($deviceType, ['android','ios'])) {
+			$review_detail    =  ['rating' => [
+				'average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count, 'detail_rating_summary_average' => $finder->detail_rating_summary_average, 'detail_rating_summary_count' => $finder->detail_rating_summary_count
+			]];
+			
+			$review_detail['reviews'] = Review::active()->where('description', '!=', "")->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
+		}
+		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>$review_detail);
 
 		if(isset($data['booktrialid']) &&  $data['booktrialid'] != '' && isset($review_id) &&  $review_id != ''){
 			$booktrial_id   =   (int) $data['booktrialid'];
