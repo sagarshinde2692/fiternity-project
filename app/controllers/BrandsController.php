@@ -474,12 +474,7 @@ class BrandsController extends \BaseController {
 				"logo" => "https://b.fitn.in/brand/partner-1-bw.png",
 				"colored_logo" => "https://b.fitn.in/brand/partner-1.jpg",
 				"url" => ""
-			], 
-			[
-				"logo" => "https://b.fitn.in/brand/partner-1-bw.png",
-				"colored_logo" => "https://b.fitn.in/brand/partner-1.jpg",
-				"url" => ""
-			], 
+			],
 			[
 				"logo" => "https://b.fitn.in/brand/partner-2-bw.png",
 				"colored_logo" => "https://b.fitn.in/brand/partner-2.jpg",
