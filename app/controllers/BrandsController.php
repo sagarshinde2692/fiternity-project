@@ -156,7 +156,12 @@ class BrandsController extends \BaseController {
                     }
 
                     return Response::json($data);
-                }
+				}
+				
+				if($data['brand']['_id']==88){
+					$data['cities_list'] = $this->multifitCities();
+				}
+
                 $this->multifitGymWebsiteBrandUpdate($data);
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
@@ -257,6 +262,7 @@ class BrandsController extends \BaseController {
 				}
 			}	
 		}
+		$this->updateCitiesData($home1);
 		$home[0]['brand_website'] =  $home1;
 
 		if(!empty($home)){
@@ -413,6 +419,7 @@ class BrandsController extends \BaseController {
 			$home1['own_franchise']['what_we_deliver']['details'][$key]['image'] =  $base_url.$home1['own_franchise']['what_we_deliver']['details'][$key]['path'].$home1['own_franchise']['what_we_deliver']['details'][$key]['image'];
 		}
 		$home1['own_franchise']['banner_image']['image'] = $base_url.$home1['own_franchise']['banner_image']['path'].$home1['own_franchise']['banner_image']['image'];
+		$home1['own_franchise']['partners_list'] = $this->addPartenersList();
 		$home[0]['brand_website'] =  $home1;
 
 
@@ -424,4 +431,75 @@ class BrandsController extends \BaseController {
 		}
 	}
 
+	public function multifitCities(){
+		$cities = City::lists('name');
+		Log::info('cities name::::::::::::', [$cities]);
+		$city_list = [];
+		$listed_cities_multifit = ['jaipur','pune', 'mumbai', 'hyderabad', 'bangalore', 'gurgaon'];
+		foreach($cities as $key=>$value){
+			if(in_array(strtolower($value), $listed_cities_multifit)){
+				array_push($city_list,[
+					'name' => ucwords($value) ,
+					'slug' => 'listing-multifit-'.strtolower($value),
+					'city_brand' => true 
+				]);
+			}
+		} 
+		$city = Config::get('multifit.vendors_slug');
+		return array_merge($city_list, $city);
+	}
+
+	public function updateCitiesData(&$data){
+		$cities = City::lists('name');
+		$without_brand_city = Config::get('multifit.without_brand_city');
+
+		foreach($cities as &$city){
+			$city = strtolower($city);
+		}
+		foreach($data['centers_block'] as &$value){
+			if(in_array(strtolower($value['name']), $cities)){
+				$value['city_brand'] = true;
+				$value['slug'] = 'listing-multifit-'.strtolower($value['name']);
+			}
+			else{
+				$value['city_brand'] = false;
+				$value['slug'] = !empty($without_brand_city[strtolower($value['name'])])? $without_brand_city[strtolower($value['name'])]['slug']:'';
+			}
+		}
+	}
+
+	public function addPartenersList(){
+		return[ 
+			[
+				"logo" => "https://b.fitn.in/brand/partner-1-bw.png",
+				"colored_logo" => "https://b.fitn.in/brand/partner-1.jpg",
+				"url" => ""
+			], 
+			[
+				"logo" => "https://b.fitn.in/brand/partner-1-bw.png",
+				"colored_logo" => "https://b.fitn.in/brand/partner-1.jpg",
+				"url" => ""
+			], 
+			[
+				"logo" => "https://b.fitn.in/brand/partner-2-bw.png",
+				"colored_logo" => "https://b.fitn.in/brand/partner-2.jpg",
+				"url" => ""
+			], 
+			[
+				"logo" => "https://b.fitn.in/brand/partner-3-bw.png",
+				"colored_logo" => "https://b.fitn.in/brand/partner-3.png",
+				"url" => ""
+			], 
+			[
+				"logo" => "https://b.fitn.in/brand/partner-4-bw.png",
+				"colored_logo" => "https://b.fitn.in/brand/partner-4.png",
+				"url" => ""
+			], 
+			[
+				"logo" => "https://b.fitn.in/brand/partner-5-bw.png",
+				"colored_logo" => "https://b.fitn.in/brand/partner-5.png",
+				"url" => ""
+			]
+			];
+	}
 }
