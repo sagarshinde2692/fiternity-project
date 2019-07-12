@@ -1291,23 +1291,6 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	protected function multifitInquiry ($data){
-
-		$label = 'Multifit-Inquiry';
-
-		$user_email 	=  	['kailashbajya@fitternity.com'];//explode(',', $data['finder_vcc_email']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $data['customer_name'],
-			'customer_phone' =>  $data['customer_phone'],
-			'customer_message' =>  $data['customer_message'],
-			'enquiry_date' => $data['enquiry_date']
-		);
-
-		return $this->common($label,$data,$message_data);
-	}
-
 	public function common($label,$data,$message_data,$delay = 0){
 		// return($message_data['user_email']);
 		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
