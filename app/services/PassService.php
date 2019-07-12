@@ -382,7 +382,7 @@ class PassService {
                 }
             }
 
-            return [ 'credits' => -1, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
+            return [ 'credits' => -1, 'order_id' => $passOrder['_id'], 'pass_type' => $passType , 'pass'=>$passOrder['pass']];
         }
         else if(empty($passType)) {
             return [ 'credits' => 0, 'order_id' => (!empty($passOrder['_id']))?$passOrder['_id']:null ];
@@ -391,7 +391,7 @@ class PassService {
             $passOrder['total_credits_used'] = 0;
         }
         if(isset($passOrder['total_credits']) && ($credits+$passOrder['total_credits_used'])<=$passOrder['total_credits']) {
-            return [ 'credits' => $credits, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
+            return [ 'credits' => $credits, 'order_id' => $passOrder['_id'], 'pass_type' => $passType, 'pass'=>$passOrder['pass'] ];
         }
         return [ 'credits' => 0, 'order_id' => $passOrder['_id'], 'pass_premium_session' => !empty($pass_premium_session), 'pass'=>$passOrder['pass']];
         
