@@ -1990,7 +1990,7 @@ Class Utilities {
             //Log::info("query ::            ", [$query]);
 
             $allWallets  = $query->OrderBy('restricted','desc')->OrderBy('_id','asc')->get();
-
+            Log::info('allwaters::::::::::', [$allWallets]);
             Log::info('wallet ::             ',[count($allWallets)]);
 
             if(count($allWallets) > 0){
