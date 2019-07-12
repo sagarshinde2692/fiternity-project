@@ -1071,6 +1071,7 @@ class EmailSmsApiController extends \BaseController {
             else {
                 $this->utilities->sendEnquiryToFitnessForce($captureData);
             }
+            
         }
 
         return Response::json($resp);
