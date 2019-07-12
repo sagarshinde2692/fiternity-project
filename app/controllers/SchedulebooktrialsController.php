@@ -2256,6 +2256,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['service_flags'] = $order['service_flags'];
             }
 
+            if(!empty($order['coupon_flags'])){
+                $booktrialdata['coupon_flags'] = $order['coupon_flags'];
+            }
+
             if(!empty($order['ratecard_flags'])){
                 $booktrialdata['ratecard_flags'] = $order['ratecard_flags'];
             }
