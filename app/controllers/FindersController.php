@@ -8418,7 +8418,7 @@ class FindersController extends \BaseController {
 	public function pathAddingToVendorWebsite($first_block){
 		$base_url =Config::get('app.s3_bane_url');
 		foreach($first_block as $key=>$value){
-			if(in_array($key,['cover', 'thumbnail', 'class_time_table'])){	
+			if(in_array($key,['cover', 'thumbnail', 'class_time_table']) && isset($first_block[$key]['image'])){	
 				$first_block[$key]['image'] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'] ;
 			}	
 
