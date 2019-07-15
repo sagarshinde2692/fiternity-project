@@ -9471,7 +9471,7 @@ Class Utilities {
         return array('plan'=>$output);
     }
 
-    public function branchIOData(&$data, &$response = null){
+    public function branchIOData($data){
         if(
             checkAppVersionFromHeader(['ios'=>'5.1.9', 'android'=>5.25])
         ){
@@ -9479,10 +9479,10 @@ Class Utilities {
             $branch_obj = [
                 "canonicalIdentifier"=>$data['type'],
                 "canonicalurl"=>"https://www.fitternity.com",
-                "title"=>"1 month membership at gold gym",
+                "title"=>$data['type'],
                 "qty"=>!empty($data['customer_quantity']) ? ($data['customer_quantity']) : 1,
                 "price"=>!empty($data['amount_customer']) ? ($data['amount_customer']) : (!empty($data['amount']) ? ($data['amount']) : 0),
-                "sku"=> !empty($data['ratecard_id']) ? ($data['ratecard_id']) : "",
+                "sku"=> !empty($data['ratecard_id']) ? ($data['ratecard_id']) : 0,
                 "productname"=>$data['productinfo'],
                 "productbrand"=>"fitternity",
                 "variant"=>$data['type'],
@@ -9499,11 +9499,8 @@ Class Utilities {
                     "key2"=>"value2"
                 ]
             ];
-            if(!empty($response)){
-                $response['branch_obj'] = $branch_obj;
-            }else{
-                $data['branch_obj'] = $branch_obj;
-            }
+
+            return $branch_obj;
 
         }
     }

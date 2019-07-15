@@ -1,10 +1,13 @@
 <?PHP
 use App\Services\PassService as PassService;
+use App\Services\Utilities;
+
 class PassController extends \BaseController {
 
-    public function __construct(PassService $passService) {
+    public function __construct(PassService $passService, Utilities $utilities) {
         parent::__construct();
         $this->passService = $passService;
+        $this->utilities = $utilities;
     }
 
     public function listPasses(){
@@ -93,7 +96,10 @@ class PassController extends \BaseController {
         
         }
 
-        return $this->passService->passSuccess($data);
+        $response =  $this->passService->passSuccess($data);
+        $response['data']['branch_obj'] = $this->utilities->branchIOData($response['order']);
+        unset($response['order']);
+        return $response;
 
     }
 

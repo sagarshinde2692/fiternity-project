@@ -1143,8 +1143,7 @@ class HomeController extends BaseController {
                 }
                 
             
-                $this->utilities->branchIOData($itemData, $response);
-                
+                $response['branch_obj'] = $this->utilities->branchIOData($itemData);
 
                 return $response;
             }
@@ -2283,8 +2282,7 @@ class HomeController extends BaseController {
             }
 
         
-            $this->utilities->branchIOData($item);
-            
+            $resp['branch_obj'] = $this->utilities->branchIOData($item);
 
             return Response::json($resp);
         }
