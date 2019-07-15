@@ -9192,7 +9192,7 @@ class CustomerController extends \BaseController {
 
             }
 
-            $post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s)");
+            $post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".(($milestone_claim_count < count($post_reward_template['data']) ? $milestone_claim_count : count($post_reward_template['data'])) - count($claimed_vouchers) )." Reward(s)");
             $post_register_rewards_data[] = $post_reward_template;
             
         }
