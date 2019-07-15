@@ -7234,8 +7234,6 @@ Class Utilities {
                             }else{
                                 $loyalty['brand_version'] = 1;
                             }
-                            unset($loyalty['reward_type']);
-                            unset($loyalty['cashback_type']);
                             $dontUpdateLoyalty = false;
                         }
                     }
@@ -7253,10 +7251,6 @@ Class Utilities {
                                 $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
                             }
 
-                            unset($loyalty['brand_loyalty']);
-                            unset($loyalty['brand_loyalty_duration']);
-                            unset($loyalty['brand_loyalty_city']);
-                            unset($loyalty['brand_version']);
                         }
                         else {
                             $dontUpdateLoyalty = true;
