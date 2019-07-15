@@ -28,7 +28,7 @@ Class CustomerMailer extends Mailer {
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
 		);
-
+		Log::info('instant bbooktrial data of customer mailer:::::::::::', [$data]);
 		return $this->common($label,$data,$message_data);
 
 	}
