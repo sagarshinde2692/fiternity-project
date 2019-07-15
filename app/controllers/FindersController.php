@@ -10,7 +10,7 @@ use App\Mailers\FinderMailer as FinderMailer;
 use App\Services\Cacheapi as Cacheapi;
 use App\Services\Cron as Cron;
 use App\Services\Utilities as Utilities;
-
+use App\Services\PassService as PassService;
 
 class FindersController extends \BaseController {
 
@@ -26,7 +26,7 @@ class FindersController extends \BaseController {
 	protected $findermailer;
 	protected $cacheapi;
 
-	public function __construct(FinderMailer $findermailer, Cacheapi $cacheapi, Utilities $utilities) {
+	public function __construct(FinderMailer $findermailer, Cacheapi $cacheapi, Utilities $utilities, PassService $passService) {
 
 		parent::__construct();
 		$this->elasticsearch_default_url        =   "http://".Config::get('app.es.host').":".Config::get('app.es.port').'/'.Config::get('app.es.default_index').'/';
@@ -39,6 +39,7 @@ class FindersController extends \BaseController {
 		$this->appOfferDiscount 				= Config::get('app.app.discount');
 		$this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
 		$this->utilities 						= $utilities;
+		$this->passService 						= $passService;
 
 		$this->vendor_token = false;
 
@@ -1537,7 +1538,7 @@ class FindersController extends \BaseController {
 
 		// 	$response['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 		// }
-		
+		$this->addCreditPointsToWorkoutSessions($response['finder']['services']);
 		return Response::json($response);
 
 	}
@@ -5208,6 +5209,7 @@ class FindersController extends \BaseController {
 		}catch(Exception $e){
 			Log::info("Error while sorting ratecard", [$e]);
 		}
+		$this->addCreditPointsToWorkoutSessions($finderData['finder']['services']);
 		//adding static data for hanman fitness
 		// if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
 		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
@@ -8345,4 +8347,41 @@ class FindersController extends \BaseController {
         
         }
 	}
+
+	public function addCreditPointsToWorkoutSessions(&$value){
+
+		if(!empty(Request::header('Authorization'))){
+			$decoded = decode_customer_token();
+			$customer_id = intval($decoded->customer->_id);
+		}
+
+		if(!empty($customer_id)){
+			foreach($value as &$service){
+			if(!empty($service['serviceratecard'])){
+				foreach($service['serviceratecard'] as &$ratecards){
+					if($ratecards['type']=='workout session'){
+						$creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
+						Log::info('credit appplicable"::::::', [$creditApplicable]);
+						if($creditApplicable['credits'] != 0 ){
+							$ratecards['price_text'] = 'Book Using Pass';	
+						}
+					}
+				}
+			}
+			else if(!empty($service['ratecard'])){
+				foreach($service['ratecard'] as &$ratecards){
+					if($ratecards['type']=='workout session'){
+						$creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
+						Log::info('credit appplicable"::::::', [$creditApplicable]);
+						if($creditApplicable['credits'] != 0 ){
+							$ratecards['price_text'] = 'Book Using Pass';	
+						}
+					}
+				}
+			}
+				
+			}
+		}
+	}
+
 }

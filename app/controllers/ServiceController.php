@@ -2463,7 +2463,7 @@ class ServiceController extends \BaseController {
 	public function addCreditPoints(&$data, $customerId, $workout_session, $key){
 		
 		$creditApplicable = $this->passService->getCreditsApplicable($workout_session['amount'], $customerId);
-		$points =$this->passService->getCreditsForAmount($workout_session['amount']);
+		//$points =$this->passService->getCreditsForAmount($workout_session['amount']);
 		Log::info('credit appplicable"::::::', [$creditApplicable]);
 		if($creditApplicable['credits'] != 0 ){
 			if($key=='data'){
@@ -2474,12 +2474,12 @@ class ServiceController extends \BaseController {
 			}
 		}
 
-		foreach($data[$key] as &$value){
-			if($creditApplicable['credits'] == 0 ){
-				$index=array_search($value, $data[$key]);
-				unset($data[$key][$index]);
-			}
-		}
+		// foreach($data[$key] as &$value){
+		// 	if($creditApplicable['credits'] == 0 ){
+		// 		$index=array_search($value, $data[$key]);
+		// 		unset($data[$key][$index]);
+		// 	}
+		// }
 	}
 
 }
