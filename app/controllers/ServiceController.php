@@ -1323,7 +1323,7 @@ class ServiceController extends \BaseController {
 
             if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && !empty($customer_id)){
 				foreach($data['schedules'] as &$schedule){
-					$this->addCreditPoints($schedule['slots'], $customer_id, $schedule['workout_session']);
+					$this->addCreditPoints($schedule, $customer_id, $schedule['workout_session'], 'slots');
 					unset($schedule['workout_session']);
 				}
 			}
@@ -1331,7 +1331,7 @@ class ServiceController extends \BaseController {
 			 	foreach($data['slots'] as &$slot){
 					$amount = !empty($slot['data'][0])? $slot['data'][0]['price']:0;
 					$workout_amount = ['amount'=> $amount];
-					$this->addCreditPoints($slot['data'], $customer_id, $workout_amount);
+					$this->addCreditPoints($slot, $customer_id, $workout_amount, 'data');
 			 	}
 			}
 
@@ -2460,20 +2460,26 @@ class ServiceController extends \BaseController {
 		return array("price"=>$offer_price, "slots"=> $slots);
 	}
 
-	public function addCreditPoints(&$data, $customerId, $workout_session){
+	public function addCreditPoints(&$data, $customerId, $workout_session, $key){
 		
 		$creditApplicable = $this->passService->getCreditsApplicable($workout_session['amount'], $customerId);
 		$points =$this->passService->getCreditsForAmount($workout_session['amount']);
-		//need to apply check for more than 750 price workout session ->>> giving order_id null <<<-
-		foreach($data as &$value){	
-
-			if(($creditApplicable['credits'] == -1) || ($creditApplicable['credits'] > 0 && $points <= $creditApplicable['credits'])){
-				unset($value['price']);
+		Log::info('credit appplicable"::::::', [$creditApplicable]);
+		if($creditApplicable['credits'] != 0 ){
+			if($key=='data'){
+				$data['price_text'] = 'Book Using Pass';
 			}
-			else if(!empty($creditApplicable['order_id'])){
-				$key=array_search($value, $data);
-				unset($data[$key]);
-			}	
+			else if($key=='slots'){
+				$data['price_text'] = 'Book Using Pass';
+			}
+		}
+
+		foreach($data[$key] as &$value){	
+
+			if($creditApplicable['credits'] == 0 ){
+				$index=array_search($value, $data[$key]);
+				unset($data[$key][$index]);
+			}
 		}
 	}
 

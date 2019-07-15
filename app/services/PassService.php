@@ -375,7 +375,7 @@ class PassService {
                 break;
             }
         }
-
+        Log::info('credits::::::::::', [$credits]);
         if(!empty($customer) && !empty($credits)) {
             $passOrder = $this->getPassOrderDetails($customerId, $credits);
         }
