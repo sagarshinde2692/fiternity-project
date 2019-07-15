@@ -282,7 +282,18 @@ class TransactionController extends \BaseController {
             $data = $transform_response['data'];
 
         }
+        
+        $status = "0";
+        if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+            $status = $data['status'];
+            $payment_mode_admin = $data['payment_mode'];
+            $secondary_payment_mode_admin = $data['secondary_payment_mode'];
 
+            Log::info("status 1 ::",[$status]);
+            Log::info("payment_mode 1 ::",[$payment_mode_admin]);
+            Log::info("secondary_payment_mode_admin 1 ::",[$secondary_payment_mode_admin]);
+        }
+        
         $rules = array(
             'customer_name'=>'required',
             'customer_email'=>'required|email',
@@ -447,8 +458,8 @@ class TransactionController extends \BaseController {
         /*if(isset($data['wallet']) && !$data['wallet']){
             $data['paymentmode_selected'] = 'paymentgateway';
         }*/
-
         
+
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
             if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1 ){
                 $data['paymentmode_selected'] = 'paymentgateway';
@@ -951,16 +962,19 @@ class TransactionController extends \BaseController {
 
             }
 
-            $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+            if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+            }else{
+                $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
             
-            // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
-            
-            if($cashbackRewardWallet['status'] != 200){
-                return Response::json($cashbackRewardWallet,$this->error_status);
+                // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
+                
+                if($cashbackRewardWallet['status'] != 200){
+                    return Response::json($cashbackRewardWallet,$this->error_status);
+                }
+                
+                $data = array_merge($data,$cashbackRewardWallet['data']);
             }
             
-            $data = array_merge($data,$cashbackRewardWallet['data']);
-
         }
 
         if(!empty($data['donation_amount']) && is_numeric($data['donation_amount'])){
@@ -1026,19 +1040,23 @@ class TransactionController extends \BaseController {
 
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
-
-                if($this->utilities->isConvinienceFeeApplicable($data)){
-
-                    $convinience_fee_percent = Config::get('app.convinience_fee');
-
-                    $convinience_fee = round($part_payment_data['amount_finder']*$convinience_fee_percent/100);
-
-                    $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
-                    
+                if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+                    $convinience_fee = 0;
                     $part_payment_data['convinience_fee'] = $convinience_fee;
+                }else{
+                    if($this->utilities->isConvinienceFeeApplicable($data)){
 
+                        $convinience_fee_percent = Config::get('app.convinience_fee');
+    
+                        $convinience_fee = round($part_payment_data['amount_finder']*$convinience_fee_percent/100);
+    
+                        $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
+                        
+                        $part_payment_data['convinience_fee'] = $convinience_fee;
+    
+                    }
                 }
-
+                
                 $part_payment_amount = ceil(($data["amount_finder"] * (20 / 100)));
 
                 $part_payment_data["amount"] = $convinience_fee + $part_payment_amount;
@@ -1075,23 +1093,26 @@ class TransactionController extends \BaseController {
 
 
         if(empty($data['convinience_fee'])){
-
             $data['convinience_fee'] = 0;
-    
-            if($this->utilities->isConvinienceFeeApplicable($data)){
+            
+            if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+                $data['convinience_fee'] = 0;
+            }else{
+                if($this->utilities->isConvinienceFeeApplicable($data)){
                 
-                $convinience_fee_percent = Config::get('app.convinience_fee');
-    
-                $convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
-    
-                $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
-    
-                $data['convinience_fee'] = $convinience_fee;
-    
-                if(!empty($data['customer_quantity'])){
-                    $data['convinience_fee'] = $data['convinience_fee'] * $data['customer_quantity'];
+                    $convinience_fee_percent = Config::get('app.convinience_fee');
+        
+                    $convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
+        
+                    $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
+        
+                    $data['convinience_fee'] = $convinience_fee;
+        
+                    if(!empty($data['customer_quantity'])){
+                        $data['convinience_fee'] = $data['convinience_fee'] * $data['customer_quantity'];
+                    }
+        
                 }
-    
             }
         }
 
@@ -1162,13 +1183,19 @@ class TransactionController extends \BaseController {
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
         }
-
-        $data["status"] = "0";
+        
+        $data['status'] = $status;
+        Log::info("after status !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", [$data['status']]);
 
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] == 'pay_at_vendor'){
 
             $data['payment_mode'] = 'at the studio';
             $data["secondary_payment_mode"] = "at_vendor_post";
+        }
+
+        if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+            $data['payment_mode'] = $payment_mode_admin;
+            $data['secondary_payment_mode'] = $secondary_payment_mode_admin;
         }
 
         $is_tab_active = isTabActive($data['finder_id']);
