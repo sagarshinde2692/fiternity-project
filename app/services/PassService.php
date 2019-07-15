@@ -331,11 +331,6 @@ class PassService {
                         [ 'pass.unlimited_access'  => true ]
                     ]
                 ]],
-                ['$match' => [
-                    'status' => '1', 'type' => 'pass', 'customer_id' => $customerId,
-                    'end_date' => ['$gte' => new \MongoDate(strtotime('midnight'))],
-                    'total_credits' => ['$exists' => true]
-                ]],
                 ['$project' => [
                     'pass_type'=>1, 'total_premium_sessions'=>1, 'premium_sessions_used'=>1, 'total_credits' => 1, 'total_credits_used' => 1,'unlimited_access' => '$pass.unlimited_access',
                     'credits_diff' => ['$subtract' => ['$total_credits', '$total_credits_used']],
