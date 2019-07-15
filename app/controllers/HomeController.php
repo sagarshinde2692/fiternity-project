@@ -1090,12 +1090,12 @@ class HomeController extends BaseController {
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
-
+                Log::info('pass checking::::::::::::', [$item['pass_type'], $item['pass_order_id']]);
                 if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
                     $response['streak']['header'] = '';
                     $response['streak']['items'] = [];
                 }
-                if((isset($item['extended_validity_order_id']) || isset($item['extended_validity_order_id'])) && (($device_type=='android' && $app_version > '5.17') || ($device_type=='ios' && $app_version > '5.1.4'))){
+                if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version > '5.17') || ($device_type=='ios' && $app_version > '5.1.4'))){
                     unset($response['streak']);
                 }
                 
