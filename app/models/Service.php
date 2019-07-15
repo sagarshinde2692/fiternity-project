@@ -1,6 +1,5 @@
 <?php
 use Illuminate\Support\Facades\Config;
-use App\Services\PassService;
 /** 
  * ModelName : Service.
  * Maintains a list of functions used for Service.
