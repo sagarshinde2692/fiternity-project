@@ -7234,6 +7234,7 @@ Class Utilities {
                             }else{
                                 $loyalty['brand_version'] = 1;
                             }
+
                             $dontUpdateLoyalty = false;
                         }
                     }
@@ -7250,7 +7251,6 @@ Class Utilities {
                             if(!empty($data['finder_flags']['cashback_type'])){
                                 $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
                             }
-
                         }
                         else {
                             $dontUpdateLoyalty = true;
@@ -7270,7 +7270,6 @@ Class Utilities {
                 Log::info("dontUpdateLoyalty",[$dontUpdateLoyalty]);
 
                 if(!$dontUpdateLoyalty){
-                    Log::info("in dontUpdateLoyalty");
                     $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
                     $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
                     $this->deactivateCheckins($customer['_id'], 'loyalty_appropriation_autoupgrade');                    
