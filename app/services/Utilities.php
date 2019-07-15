@@ -9492,7 +9492,7 @@ Class Utilities {
                 "tax"=>0,
                 "coupon"=>"",
                 "affiliation"=>"affiliation data",
-                "eventdescription"=>"eventdescription",
+                "eventdescription"=>"buy_success",
                 "searchquery"=>"searchquery",
                 "customdata"=>[
                     "key1"=>"value1",
