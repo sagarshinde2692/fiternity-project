@@ -1331,7 +1331,7 @@ class ServiceController extends \BaseController {
 			 	foreach($data['slots'] as &$slot){
 					$amount = !empty($slot['data'][0])? $slot['data'][0]['price']:0;
 					$workout_amount = ['amount'=> $amount];
-					$this->addCreditPoints($slot, $customer_id, $workout_amount);
+					$this->addCreditPoints($slot['data'], $customer_id, $workout_amount);
 			 	}
 			}
 
