@@ -9476,7 +9476,7 @@ Class Utilities {
             checkAppVersionFromHeader(['ios'=>'5.1.9', 'android'=>5.25])
         ){
 
-            $branchio_data = [
+            $branch_obj = [
                 "canonicalIdentifier"=>$data['type'],
                 "canonicalurl"=>"https://www.fitternity.com",
                 "title"=>"1 month membership at gold gym",
@@ -9500,9 +9500,9 @@ Class Utilities {
                 ]
             ];
             if(!empty($response)){
-                $response['branchio_data'] = $branchio_data;
+                $response['branch_obj'] = $branch_obj;
             }else{
-                $data['branchio_data'] = $branchio_data;
+                $data['branch_obj'] = $branch_obj;
             }
 
         }
