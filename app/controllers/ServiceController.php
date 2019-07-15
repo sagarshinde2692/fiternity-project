@@ -8,15 +8,17 @@
  */
 use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
+use App\Services\PassService as PassService;
 
 
 class ServiceController extends \BaseController {
 
-	public function __construct(Utilities $utilities) {
+	public function __construct(Utilities $utilities, PassService $passService) {
 
 		parent::__construct();
 
 		$this->utilities = $utilities;
+		$this->passService = $passService;
 		$this->vendor_token = false;
         
         $vendor_token = Request::header('Authorization-Vendor');
@@ -1283,9 +1285,9 @@ class ServiceController extends \BaseController {
                                 unset($x['image']);
                             }
 
-                            if(!empty($x['price']) && in_array($this->device_type, ['ios'])){
-								unset($x['price']);
-							}
+                            // if(!empty($x['price']) && in_array($this->device_type, ['ios'])){
+							// 	unset($x['price']);
+							// }
                         }
 					}
 					
@@ -1314,16 +1316,24 @@ class ServiceController extends \BaseController {
                 $data['slots'][0]['title'] = "Select a slot";
 			}
 			
-            // if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules'])){
-			// 	foreach($data['schedules'] as &$schedule){
-			// 		$this->addCreditPoints($schedule['slots']);
-			// 	}
-			// }
-			// else if(!empty($data['slots'])){
-			// 	foreach($data['slots'] as &$slot){
-			// 		$this->addCreditPoints($slot['data']);
-			// 	}
-			// }
+			if(!empty(Request::header('Authorization'))){
+				$decoded = decode_customer_token();
+				$customer_id = intval($decoded->customer->_id);
+			}
+
+            if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && !empty($customer_id)){
+				foreach($data['schedules'] as &$schedule){
+					$this->addCreditPoints($schedule['slots'], $customer_id, $schedule['workout_session']);
+					unset($schedule['workout_session']);
+				}
+			}
+			else if(!empty($data['slots'])  && !empty($customer_id)){
+			 	foreach($data['slots'] as &$slot){
+					$amount = !empty($slot['data'][0])? $slot['data'][0]['price']:0;
+					$workout_amount = ['amount'=> $amount];
+					$this->addCreditPoints($slot, $customer_id, $workout_amount);
+			 	}
+			}
 
             return Response::json($data,200);
         }
@@ -2450,29 +2460,21 @@ class ServiceController extends \BaseController {
 		return array("price"=>$offer_price, "slots"=> $slots);
 	}
 
-	// public function addCreditPoints(&$data){
-	// 	foreach($data as &$value){
+	public function addCreditPoints(&$data, $customerId, $workout_session){
+		
+		$creditApplicable = $this->passService->getCreditsApplicable($workout_session['amount'], $customerId);
+		$points =$this->passService->getCreditsForAmount($workout_session['amount']);
+		//need to apply check for more than 750 price workout session ->>> giving order_id null <<<-
+		foreach($data as &$value){	
 
-	// 		if($value['price']>0 && $value['price']<= 300){
-	// 			$points =2;
-	// 		}
-	// 		else if($value['price']>300 && $value['price']<= 500){
-	// 			$points =3;
-	// 		}
-	// 		else if($value['price']>500 && $value['price']<= 750){
-	// 			$points =4;
-	// 		}
-	// 		else{
-	// 			$points =0;
-	// 		}
-	
-	// 		if($points){
-	// 			$value['credits'] = [
-	// 				"ponts" => $points,
-	// 				"type" => "Sweat Points"
-	// 			];
-	// 		}
-	// 	}
-	// }
+			if(($creditApplicable['credits'] == -1) || ($creditApplicable['credits'] > 0 && $points <= $creditApplicable['credits'])){
+				unset($value['price']);
+			}
+			else{
+				$key=array_search($value, $data);
+				unset($data[$key]);
+			}	
+		}
+	}
 
 }
