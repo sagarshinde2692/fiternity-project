@@ -9471,39 +9471,36 @@ Class Utilities {
         return array('plan'=>$output);
     }
 
-    public function branchIOData(&$data, &$response = null){
+    public function branchIOData($data){
         if(
             checkAppVersionFromHeader(['ios'=>'5.1.9', 'android'=>5.25])
         ){
 
-            $branchio_data = [
+            $branch_obj = [
                 "canonicalIdentifier"=>$data['type'],
                 "canonicalurl"=>"https://www.fitternity.com",
-                "title"=>"1 month membership at gold gym",
-                "qty"=>!empty($data['ratecard_id']) ? strval($data['ratecard_id']) : 1,
-                "price"=>!empty($data['amount_customer']) ? strval($data['amount_customer']) : (!empty($data['amount']) ? strval($data['amount']) : 0),
-                "sku"=> !empty($data['ratecard_id']) ? strval($data['ratecard_id']) : "",
+                "title"=>$data['type'],
+                "qty"=>!empty($data['customer_quantity']) ? ($data['customer_quantity']) : 1,
+                "price"=>!empty($data['amount_customer']) ? ($data['amount_customer']) : (!empty($data['amount']) ? ($data['amount']) : 0),
+                "sku"=> !empty($data['ratecard_id']) ? ($data['ratecard_id']) : 0,
                 "productname"=>$data['productinfo'],
                 "productbrand"=>"fitternity",
-                "variant"=>"variant",
-                "txnid"=>"txnid",
-                "revenue"=>!empty($data['amount_customer']) ? strval($data['amount_customer']) : (!empty($data['amount']) ? strval($data['amount']) : 0),
+                "variant"=>$data['type'],
+                "txnid"=>!empty($data["txnid"]) ? strval($data["txnid"]) : "txnid",
+                "revenue"=>!empty($data['amount_customer']) ? ($data['amount_customer']) : (!empty($data['amount']) ? ($data['amount']) : 0),
                 "shipping"=>0,
                 "tax"=>0,
                 "coupon"=>"",
                 "affiliation"=>"affiliation data",
-                "eventdescription"=>"eventdescription",
+                "eventdescription"=>"buy_success",
                 "searchquery"=>"searchquery",
                 "customdata"=>[
                     "key1"=>"value1",
                     "key2"=>"value2"
                 ]
             ];
-            if(!empty($response)){
-                $response['branchio_data'] = $branchio_data;
-            }else{
-                $data['branchio_data'] = $branchio_data;
-            }
+
+            return $branch_obj;
 
         }
     }
