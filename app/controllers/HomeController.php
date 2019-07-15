@@ -1143,7 +1143,7 @@ class HomeController extends BaseController {
                 }
                 
             
-                $this->utilities->branchIOData($response);
+                $this->utilities->branchIOData($itemData, $response);
                 
 
                 return $response;

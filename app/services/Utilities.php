@@ -9471,12 +9471,12 @@ Class Utilities {
         return array('plan'=>$output);
     }
 
-    public function branchIOData(&$data){
+    public function branchIOData(&$data, &$response = null){
         if(
             checkAppVersionFromHeader(['ios'=>'5.1.9', 'android'=>5.25])
         ){
 
-            $branch_data = [
+            $branchio_data = [
                 "canonicalIdentifier"=>$data['type'],
                 "canonicalurl"=>"https://www.fitternity.com",
                 "title"=>"1 month membership at gold gym",
@@ -9499,11 +9499,11 @@ Class Utilities {
                     "key2"=>"value2"
                 ]
             ];
-                
-                
-
-
-
+            if(!empty($response)){
+                $response['branchio_data'] = $branchio_data;
+            }else{
+                $data['branchio_data'] = $branchio_data;
+            }
 
         }
     }
