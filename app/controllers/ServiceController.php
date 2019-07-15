@@ -2474,8 +2474,7 @@ class ServiceController extends \BaseController {
 			}
 		}
 
-		foreach($data[$key] as &$value){	
-
+		foreach($data[$key] as &$value){
 			if($creditApplicable['credits'] == 0 ){
 				$index=array_search($value, $data[$key]);
 				unset($data[$key][$index]);
