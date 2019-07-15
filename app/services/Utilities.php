@@ -7163,7 +7163,7 @@ Class Utilities {
                 
                 }
 
-                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1]))){
+                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1])) && !empty($data['type']) && $data['type'] != 'workout-session' ){
 
                     $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
 
@@ -7192,7 +7192,7 @@ Class Utilities {
                 $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
                 $duration = $duration > 180 ? 360 : $duration;
                 
-                if(!empty($data['type']) && ($data['type'] == 'workout-session' || $data['type'] == 'workout session')){
+                if(!empty($data['type']) && $data['type'] == 'workout-session'){
                     if(empty($customer['loyalty'])){
                         $loyalty['reward_type'] = 2;
                         $dontUpdateLoyalty = false;
