@@ -283,8 +283,6 @@ class TransactionController extends \BaseController {
 
         }
         
-        Log::info("customer_source !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", [$data['customer_source']]);
-        // Log::info("before status !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", [$data['status']]);
         $status = "0";
         if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
             $status = $data['status'];
@@ -587,7 +585,6 @@ class TransactionController extends \BaseController {
                 
                 $ratecardDetail = $this->getRatecardDetail($data);
                 
-                Log::info("RateCard details !!!!!!!!!!!!!!!!!!!!!!!!!!",[$ratecardDetail]);
                 if($ratecardDetail['status'] != 200){
                     return Response::json($ratecardDetail,$this->error_status);
                 }
@@ -1060,7 +1057,6 @@ class TransactionController extends \BaseController {
                     }
                 }
                 
-
                 $part_payment_amount = ceil(($data["amount_finder"] * (20 / 100)));
 
                 $part_payment_data["amount"] = $convinience_fee + $part_payment_amount;
