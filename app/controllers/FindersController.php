@@ -1401,7 +1401,7 @@ class FindersController extends \BaseController {
                             
                             $response['vendor_stripe_data']	= [
                                 
-                                'text1'=> "MONSOON BONANZA | GET 100% INSTANT CASHBACK ON ALL SERVICES ACROSS THE WEBSITE | OFFER EXPIRES IN",
+                                'text1'=> "MONSOON BONANZA | GET 100% INSTANT CASHBACK ACROSS THE WEBSITE | USE CODE: FITBACK",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -2494,10 +2494,16 @@ class FindersController extends \BaseController {
 		// $this->updateFinderRatingV2($finder);
 
 		// $review_detail = $this->updateFinderRatingV1($reviewdata);
-		
-		// $review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
-
-		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>null);
+		$review_detail = null;
+		$deviceType = Request::header('Device-Type');
+		if(empty($deviceType) || !in_array($deviceType, ['android','ios'])) {
+			$review_detail    =  ['rating' => [
+				'average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count, 'detail_rating_summary_average' => $finder->detail_rating_summary_average, 'detail_rating_summary_count' => $finder->detail_rating_summary_count
+			]];
+			
+			$review_detail['reviews'] = Review::active()->where('description', '!=', "")->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
+		}
+		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>$review_detail);
 
 		if(isset($data['booktrialid']) &&  $data['booktrialid'] != '' && isset($review_id) &&  $review_id != ''){
 			$booktrial_id   =   (int) $data['booktrialid'];
@@ -3844,9 +3850,9 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
-        return "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title'];
-        
+        return "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction without restriction for yourself as well as friends & family.";
 
+		
 		$brandMap = [
 			135 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹20,000 worth of rewards',
 			88 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹35,000 worth of rewards',
@@ -4020,7 +4026,7 @@ class FindersController extends \BaseController {
 				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
 				->with(array('reviews'=>function($query){$query->where('status','=','1')->where('description','!=', "")->select('_id','finder_id','customer_id','rating','description','updated_at','tag')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
-                ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews','brand_id'));
+                ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews','brand_id','custom_city','custom_location'));
                 
             
 			$finder = false;
@@ -6385,7 +6391,7 @@ class FindersController extends \BaseController {
 					$location_name = ", ".ucwords($location['name']);
 				}
 
-				if(isset($ratecard) && isset($ratecard['type']) && in_array($ratecard['type'],['membership','packages','extended'])){
+				if(isset($ratecard) && isset($ratecard['type']) && in_array($ratecard['type'],['membership','packages','extended validity'])){
 
 					$tnc['description'] .= "<b> - </b>  Discount varies across different outlets depending on slot availability.";
 					$tnc['description'] .= "<br/><br/><b> - </b>  For memberships reserved by part payment and not fully paid for on date of joining, 5% of total membership value will be deducted as convenience fees & the remaining will be transferred in the wallet as Fitcash+ . The membership will also be terminated.";
@@ -8241,7 +8247,7 @@ class FindersController extends \BaseController {
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				if(in_array($rc['type'], ['membership', 'extended validity']))
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nUse 100% instant cashback to book multiple workout sessions, buy session packs, memberships & more using this cashback for friends & family.");
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Get 100% instant cashback using code FITBACK on this booking. Book multiple workout sessions, buy session packs, memberships & more using this cashback for yourself, friends & family.");
 				else
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
 				$orderSummary['title'] = ucwords($title);
@@ -8418,7 +8424,7 @@ class FindersController extends \BaseController {
 	public function pathAddingToVendorWebsite($first_block){
 		$base_url =Config::get('app.s3_bane_url');
 		foreach($first_block as $key=>$value){
-			if(in_array($key,['cover', 'thumbnail', 'class_time_table'])){	
+			if(in_array($key,['cover', 'thumbnail', 'class_time_table']) && isset($first_block[$key]['image'])){	
 				$first_block[$key]['image'] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'] ;
 			}	
 

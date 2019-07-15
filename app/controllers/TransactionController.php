@@ -3667,7 +3667,7 @@ class TransactionController extends \BaseController {
                     $data['coupon_flags'] = $couponCheck['flags'];
                 }
 
-                if(!empty($couponCheck['flags']) && $couponCheck['flags']['corporate_coupon'] == true){
+                if(!empty($couponCheck['flags']['corporate_coupon']) && $couponCheck['flags']['corporate_coupon'] == true){
                     $data['corporate_coupon'] = true;
                 }
 
@@ -6416,7 +6416,7 @@ class TransactionController extends \BaseController {
         Log::info("checkCouponCode");
         Log::info($data);
 
-        if($this->vendor_token){
+        if($this->vendor_token && strtolower($data['coupon']) != 'sburn'){
             $resp = array("status"=> 400, "message" => "Coupon code is not valid", "error_message" => "Coupon code is not valid");
             return Response::json($resp,400);
         }

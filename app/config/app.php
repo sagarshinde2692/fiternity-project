@@ -384,7 +384,7 @@ return array(
 	'jwt' => array(
 		'key' => 'fitternity', //secret key to encode token
 		'iat' => time(), // time when token is created
-		'nbf' => time()+10, // time when token can be used from
+		'nbf' => time(), // time when token can be used from
 		'exp' => time()+(86400*365), // time when token gets expired (1 year)
 		'alg' => 'HS256',
 	),

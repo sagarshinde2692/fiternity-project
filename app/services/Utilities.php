@@ -7989,7 +7989,7 @@ Class Utilities {
         
         $token = Request::header('Authorization');
         
-        if(empty($token)){
+        if(empty($token) || $token=='undefined'){
             return;
         }
         
@@ -9366,7 +9366,8 @@ Class Utilities {
 		$reward_image = '';
 		if (!(empty($id)) && $id == '88') {
 			//$('.gold-fit-rewards .multifit').removeClass('hide');
-			$reward_image = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+			// $reward_image = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+			$reward_image = 'https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20rewards%20type%20B2.png';
 		}else if (!(empty($id)) && $id == '166') {
 			//$('.gold-fit-rewards .shivfit').removeClass('hide');
 			$reward_image = 'https://b.fitn.in/global/shivfit---grids-new.jpg';

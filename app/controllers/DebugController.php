@@ -10553,6 +10553,58 @@ public function yes($msg){
 		Log::info('getFFOrderDetails reqBody:: ', [$reqBody]);
 		return ['status' => 200, 'msg' => 'done'];
 	}
+    
+    public function addTypeOfPpsVendor(){
+
+		$destinationPath = public_path();
+		$fileName = "add_vendor_pps_type.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+
+		// return $csv_to_array;
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if(!empty($value['finder_id']) && !empty($value['type'])){
+					
+					$type_of_vendor = '';
+					if($value['type'] == 'Fitternity'){
+						$type_of_vendor  = 'fitternity_pps';
+					}else if($value['type'] == 'ABW PFC'){
+						$type_of_vendor  = 'abw_pps';
+					}else if($value['type'] == 'Capitation'){
+						$type_of_vendor  = 'capitation_pps';
+					}
+
+					Log::info($key);
+
+					$finder = Finder::find((int) $value['finder_id']);
+					if($finder){
+						$flags = $finder->flags;
+                        $flags['type_of_vendor'] = $type_of_vendor;
+                        $finder->flags = $flags; 
+						$finder->type_of_vendor_updated = new MongoDate();
+						$finder->update();
+					}
+
+					$vendor = Vendor::find((int) $value['finder_id']);
+					if($vendor){
+						$flags = $vendor->flags;
+                        $flags['type_of_vendor'] = $type_of_vendor;
+                        $vendor->flags = $flags; 
+						$vendor->type_of_vendor_updated = new MongoDate();
+						$vendor->update();
+					}
+				}
+
+			}
+		}
+
+		echo "done";	
+    }
 
     public function fixCustomerQuantity(){
 

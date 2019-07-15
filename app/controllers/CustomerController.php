@@ -644,8 +644,6 @@ class CustomerController extends \BaseController {
 
 		$validator = Validator::make($data,$rules);
 
-		$data['email'] = strtolower($data['email']);
-
 		if(!isset($data['contact_no']) && isset($data['mobile'])){
 			$data['contact_no'] = $data['mobile'];
 		}
@@ -656,6 +654,7 @@ class CustomerController extends \BaseController {
 
 		}else{
 
+			$data['email'] = strtolower($data['email']);
             if(!empty($data['contact_no'])){
                 $customerNoEmail = Customer::active()->where('contact_no', substr($data['contact_no'], -10))
                 ->where(function($query) use($data) {
