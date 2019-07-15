@@ -1538,7 +1538,7 @@ class FindersController extends \BaseController {
 
 		// 	$response['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 		// }
-		$this->addCreditPointsToWorkoutSessions($response['finder']['services']);
+		$this->addCreditPoints($response['finder']['services']);
 		return Response::json($response);
 
 	}
@@ -5209,7 +5209,7 @@ class FindersController extends \BaseController {
 		}catch(Exception $e){
 			Log::info("Error while sorting ratecard", [$e]);
 		}
-		$this->addCreditPointsToWorkoutSessions($finderData['finder']['services']);
+		$this->addCreditPoints($finderData['finder']['services']);
 		//adding static data for hanman fitness
 		// if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
 		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
@@ -8348,7 +8348,7 @@ class FindersController extends \BaseController {
         }
 	}
 
-	public function addCreditPointsToWorkoutSessions(&$value){
+	public function addCreditPoints(&$value){
 
 		if(!empty(Request::header('Authorization'))){
 			$decoded = decode_customer_token();
