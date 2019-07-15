@@ -2470,7 +2470,7 @@ class ServiceController extends \BaseController {
 			if(($creditApplicable['credits'] == -1) || ($creditApplicable['credits'] > 0 && $points <= $creditApplicable['credits'])){
 				unset($value['price']);
 			}
-			else{
+			else if(!empty($creditApplicable['order_id'])){
 				$key=array_search($value, $data);
 				unset($data[$key]);
 			}	
