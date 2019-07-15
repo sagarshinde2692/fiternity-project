@@ -6523,6 +6523,11 @@ Class Utilities {
 				return ['status'=>400, 'message'=>'Customer not registered'];
             }
             
+            if(!empty($customer->loyalty['brand_loyalty']) || (!empty($customer->loyalty['reward_type'] && $customer->loyalty['reward_type'] != 2 ))){
+                if(!empty($data['finder_id']) && !empty($customer->loyalty['finder_id']) && $customer->loyalty['finder_id'] != $data['finder_id'] ){
+                    return ['status'=>400, 'message'=>'Not registered with this gym'];
+                }
+            }
             
 			$checkin = new \Checkin();
 			$checkin->finder_id = $data['finder_id'];
