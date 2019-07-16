@@ -8357,28 +8357,28 @@ class FindersController extends \BaseController {
 		
 		if(!empty($customer_id)){
 			foreach($value as &$service){
-			if(!empty($service['serviceratecard'])){
-				foreach($service['serviceratecard'] as &$ratecards){
-					if($ratecards['type']=='workout session'){
-						$creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-						Log::info('credit appplicable"::::::', [$creditApplicable]);
-						if($creditApplicable['credits'] != 0 ){
-							$ratecards['price_text'] = 'Book Using Pass';	
+				if(!empty($service['serviceratecard'])){
+					foreach($service['serviceratecard'] as &$ratecards){
+						if($ratecards['type']=='workout session'){
+							$creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
+							Log::info('credit appplicable"::::::', [$creditApplicable]);
+							if($creditApplicable['credits'] != 0 ){
+								$ratecards['price_text'] = 'Book Using Pass';	
+							}
 						}
 					}
 				}
-			}
-			else if(!empty($service['ratecard'])){
-				foreach($service['ratecard'] as &$ratecards){
-					if($ratecards['type']=='workout session'){
-						$creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-						Log::info('credit appplicable"::::::', [$creditApplicable]);
-						if($creditApplicable['credits'] != 0 ){
-							$ratecards['price_text'] = 'Book Using Pass';	
+				else if(!empty($service['ratecard'])){
+					foreach($service['ratecard'] as &$ratecards){
+						if($ratecards['type']=='workout session'){
+							$creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
+							Log::info('credit appplicable"::::::', [$creditApplicable]);
+							if($creditApplicable['credits'] != 0 ){
+								$ratecards['price_text'] = 'Book Using Pass';	
+							}
 						}
 					}
 				}
-			}
 				
 			}
 		}
