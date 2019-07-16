@@ -7846,13 +7846,17 @@ class SchedulebooktrialsController extends \BaseController {
 				if(isTabActive($booktrial['finder_id'])){
                     $response['activate']['sub_header_2'] = 'Punch your subscription code on the kiosk/tab available at the center to activate your session';
                 }
-                if(isset($booktrial['studio_extended_validity_order_id']) || isset($booktrial['pass_order_id']) ){
+                if(isset($booktrial['studio_extended_validity_order_id'])){
                     unset($response['activate']);
                     unset($response['attend']['sub_header_1']);
                     $response['sub_header_2']='Enjoy your session at '.$booktrial['finder_name'].'. Your workout checklist is ready';
                     if($this->device_type=='android')
                         $response['attend']['sub_header_2']='Enjoy your session at '.$booktrial['finder_name'].'. Your workout checklist is ready';
                     
+                }
+
+                if(isset($booktrial['pass_order_id'])){
+                    unset($response['attend']);
                 }
             break;
             case 'cancel':
@@ -7933,7 +7937,7 @@ class SchedulebooktrialsController extends \BaseController {
         //     $booktrial_update = Booktrial::where('_id', $booktrial['_id'])->update(['loyalty_registration'=>true]);
         //     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
         // }
-        Log::info('booktria; data:::::::::::', [$verify_fitcode_result]);
+
         if(isset($booktrial['extended_validity_order_id']) || !empty($booktrial['pass_order_id'])){
             $response['description'] = '';
             $response['sub_header_1'] = '';
