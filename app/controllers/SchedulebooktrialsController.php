@@ -7775,6 +7775,9 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
 
                 }
+                if(!empty($booktrial->pass_order_id)){
+                    unset($response['footer']);
+                }
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
@@ -7809,6 +7812,9 @@ class SchedulebooktrialsController extends \BaseController {
                 if($booktrial->type=='booktrials'){
                     $response['reschedule_button'] = true;
                     $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
+                }
+                if(!empty($booktrial->pass_order_id)){
+                    unset($response['footer']);
                 }
                 $this->cancel($booktrial->_id);
             break;
