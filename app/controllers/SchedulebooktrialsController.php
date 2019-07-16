@@ -2505,7 +2505,7 @@ class SchedulebooktrialsController extends \BaseController {
                         if(empty($passOrder->total_credits_used)) {
                             $passOrder->total_credits_used = 0;
                         }
-                        if($passOrder->total_credits_used<$passOrder->total_credits) {
+                        if((!empty($passOrder->pass['unlimited_access']) && $passOrder->pass['unlimited_access']) || ($passOrder->total_credits_used<$passOrder->total_credits)) {
                             $passOrder->total_credits_used += $order['pass_credits'];
                             $passOrder->update();
                         }
