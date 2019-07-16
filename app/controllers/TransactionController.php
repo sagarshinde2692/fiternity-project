@@ -9189,6 +9189,11 @@ class TransactionController extends \BaseController {
             Log::info("bulk_purchase");
             $this->updateBulkPurchase($data);
         }
+
+        if(!empty($data['type']) && $data['type'] == 'workout-session'){
+            Log::info("updatePpsRepeat");
+            $this->updatePpsRepeat($data);
+        }
         
         $this->utilities->fitnessForce(['data'=>$data, 'type'=>$type]);
 
@@ -9316,6 +9321,23 @@ class TransactionController extends \BaseController {
         }
 
 
+    }
+
+    public function updatePpsRepeat($data){
+        
+        Order::$withoutAppends=true;
+        $count = Order::where('customer_phone', $data['customer_phone'])
+				->where('coupon_code', '!=', 'FIRSTPPSFREE')
+				->where('type', 'workout-session')
+				->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
+				->where('status', '1')
+				->where('created_at', '<', new DateTime( date("d-m-Y H:i:s", strtotime( $data['created_at'] )) ))
+				->where('_id', '!=', $data['_id'])
+                ->count();
+                        
+        if($count > 0){
+            Order::where('_id',(int)$data['_id'])->update(array('pps_repeat'=> true));
+        }
     }
 
     public function createSessionPack($data){

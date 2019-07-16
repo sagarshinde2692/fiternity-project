@@ -11206,5 +11206,85 @@ public function yes($msg){
          }
     }
 
+	public function ppsRepeat(){
+		try{
+			ini_set('max_execution_time', 0);
+			
+			Order::$withoutAppends=true;
+			
+			$totalOrder = Order::where('type', 'workout-session')
+			->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
+			->where('pps_repeat', 'exists', false)
+			->where('status', '1')->count();
+			
+			$limit = 500;
+			$offset = ceil($totalOrder / $limit);
+			Log::info("totalOrder :: ",[$totalOrder]);
+			Log::info("limit :: ",[$limit]);
+			Log::info("offset :: ",[$offset]);
+			// return;
+			for($i = 0;$i < $offset;$i++){
+				$skip = $i*$limit;
+				Log::info("skip :: ",[$skip]);
+
+                $orders = Order::where('type', 'workout-session')
+				->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
+				->where('pps_repeat', 'exists', false)
+				->where('status', '1')->skip($skip)->take($limit)->orderBy('_id', 'desc')->get(['_id','customer_phone', 'created_at']);
+				// return $orders;
+				$updates = [];
+				foreach($orders as $k => $x){
+					
+					$count = Order::where('customer_phone', $x['customer_phone'])
+						->where('coupon_code', '!=', 'FIRSTPPSFREE')
+						->where('type', 'workout-session')
+						->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
+						->where('status', '1')
+						->where('created_at', '<', new DateTime( date("d-m-Y H:i:s", strtotime( $x['created_at'] )) ))
+						->where('_id', '!=', $x['_id'])
+						->count();
+
+					Log::info("order_id :: ",[$x['_id']]);
+					Log::info("customer_phone :: ",[$x['customer_phone']]);
+					Log::info("created_at :: ",[$x['created_at']]);
+
+					if($count > 0){
+						array_push($updates, [
+							"q"=>['_id'=> $x['_id']],
+							"u"=>[
+								'$set'=>[
+                            		'pps_repeat'=>true 
+                                ]
+							],
+							'multi' => false
+						]);
+					}
+					
+					// return $updates;
+
+				}
+
+				if(count($updates) > 0){
+					$update = $this->batchUpdate('mongodb', 'orders', $updates);
+				}	
+				
+
+			}
+		
+			$return = array('status'=>'done');
+		}catch(Exception $exception){
+			$message = array(
+				'type'    => get_class($exception),
+				'message' => $exception->getMessage(),
+				'file'    => $exception->getFile(),
+				'line'    => $exception->getLine(),
+			);
+			Log::error($exception);
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+		
+		print_r($return);
+	}
+
 }
 
