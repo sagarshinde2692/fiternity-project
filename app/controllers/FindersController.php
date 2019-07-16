@@ -8382,13 +8382,13 @@ class FindersController extends \BaseController {
 						$data['finder']['contact']= null;
 					}
 
-					$data['finder']['contact']['address'] = !empty($data['finder']['website_membership']['address']['location'])? $data['finder']['website_membership']['address']['location']: !empty($data['finder']['contact']['address'])? $data['finder']['contact']['address']: null;
+					$data['finder']['contact']['address'] = !empty($data['finder']['website_membership']['address']['location'])? $data['finder']['website_membership']['address']['location']: (!empty($data['finder']['contact']['address'])? $data['finder']['contact']['address']: null);
 
-					$data['finder']['contact']['phone'] = !empty($data['finder']['website_membership']['address']['contact_number']) ? $data['finder']['website_membership']['address']['contact_number']:  !empty($data['finder']['contact']['phone'])? $data['finder']['contact']['phone']: null;
+					$data['finder']['contact']['phone'] = !empty($data['finder']['website_membership']['address']['contact_number']) ? $data['finder']['website_membership']['address']['contact_number']:  (!empty($data['finder']['contact']['phone'])? $data['finder']['contact']['phone']: null);
 
-					$data['finder']['contact']['email'] = !empty($data['finder']['website_membership']['address']['email']) ?$data['finder']['website_membership']['address']['email']: !empty($data['finder']['contact']['email'])? $data['finder']['contact']['email']: null;
+					$data['finder']['contact']['email'] = !empty($data['finder']['website_membership']['address']['email']) ?$data['finder']['website_membership']['address']['email']: (!empty($data['finder']['contact']['email'])? $data['finder']['contact']['email']: null);
 
-					$data['finder']['contact']['pincode'] = !empty($data['finder']['website_membership']['address']['pincode'])?$data['finder']['website_membership']['address']['pincode']: !empty($data['finder']['contact']['pincode'])? $data['finder']['contact']['pincode']: null;
+					$data['finder']['contact']['pincode'] = !empty($data['finder']['website_membership']['address']['pincode'])?$data['finder']['website_membership']['address']['pincode']: (!empty($data['finder']['contact']['pincode'])? $data['finder']['contact']['pincode']: null);
 
 					foreach($data['finder']['contact'] as $key=>$value){
 						if(empty($value)){
