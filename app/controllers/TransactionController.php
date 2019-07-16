@@ -9332,11 +9332,11 @@ class TransactionController extends \BaseController {
 				->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
 				->where('status', '1')
 				->where('created_at', '<', new DateTime( date("d-m-Y H:i:s", strtotime( $data['created_at'] )) ))
-				->where('_id', '!=', $data['_id'])
+				->where('_id', '!=', $data['order_id'])
                 ->count();
                         
         if($count > 0){
-            Order::where('_id',(int)$data['_id'])->update(array('pps_repeat'=> true));
+            Order::where('_id',(int)$data['order_id'])->update(array('pps_repeat'=> true));
         }
     }
 
