@@ -1491,6 +1491,7 @@ class FindersController extends \BaseController {
 			// $decoded                            =       decode_customer_token();
 			$customer_email                     =       $decoded->customer->email;
 			$customer_phone                     =       $decoded->customer->contact_no;
+			$customer_id                     	=       (int)$decoded->customer->_id;
 			$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
 			->where('finder_id', '=', (int) $response['finder']['_id'])
 			->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
@@ -1538,7 +1539,9 @@ class FindersController extends \BaseController {
 
 		// 	$response['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 		// }
-		$this->addCreditPoints($response['finder']['services']);
+		if(!empty($customer_id)){
+			$this->addCreditPoints($response['finder']['services'], $customer_id);
+		}
 		return Response::json($response);
 
 	}
@@ -5209,7 +5212,9 @@ class FindersController extends \BaseController {
 		}catch(Exception $e){
 			Log::info("Error while sorting ratecard", [$e]);
 		}
-		$this->addCreditPoints($finderData['finder']['services']);
+		if(!empty($customer_id)){
+			$this->addCreditPoints($finderData['finder']['services'], $customer_id);
+		}
 		//adding static data for hanman fitness
 		// if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
 		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
@@ -8348,13 +8353,8 @@ class FindersController extends \BaseController {
         }
 	}
 
-	public function addCreditPoints(&$value){
-
-		if(!empty(Request::header('Authorization'))){
-			$decoded = decode_customer_token();
-			$customer_id = intval($decoded->customer->_id);
-		}
-
+	public function addCreditPoints(&$value, $customer_id){
+		
 		if(!empty($customer_id)){
 			foreach($value as &$service){
 			if(!empty($service['serviceratecard'])){
