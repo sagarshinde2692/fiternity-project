@@ -8716,7 +8716,8 @@ class CustomerController extends \BaseController {
 				// $customer->update(['loyalty'=>$loyalty]);
 				Customer::where('_id', $customer_id)->increment('loyalty.workout_sessions.'.$finder_id);
             }elseif(!empty($update_finder_membership)){
-                if(empty($loyalty['memberships']) || !in_array($finder_id, $loyalty['memberships'])){
+				$loyalty['memberships'] = !empty($loyalty['memberships']) ? $loyalty['memberships'] : [];
+                if(!in_array($finder_id, $loyalty['memberships'])){
                     array_push($loyalty['memberships'], $finder_id);
                     $customer->update(['loyalty'=>$loyalty]);
                 }
