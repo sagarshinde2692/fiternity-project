@@ -7641,11 +7641,6 @@ class SchedulebooktrialsController extends \BaseController {
                 	return Response::json(array('status'=>400, 'message'=>$verify_fitcode_result->message), 200);
                 }
 
-                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
-
-                Log::info('customer_level_data');
-                Log::info($customer_level_data);
-
                 $response = [
                     'status'=>200,
                     'header'=>'ENJOY YOUR WORKOUT!',
@@ -7670,17 +7665,24 @@ class SchedulebooktrialsController extends \BaseController {
                 // if(isset($customer_level_data['next_level']) && isset($customer_level_data['next_level']['cashback'])){
                 //     $response['streak']['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Make sure to continue as next level gets you '.$customer_level_data['next_level']['cashback'].'%.Higher the Level, Higher the Cashback';
                 // }
-                
-                if($payment_done){
-                    $response['sub_header_1'] = $customer_level_data['current_level']['cashback']."% Cashback";
-                    $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!";
-                }else{
-                    $response['payment'] = $pending_payment;
-                }
+                if($verify_fitcode_result->fitcash > 0 || empty($booktrial['pass_order_id'])){
 
-                if($booktrial['type'] == 'booktrials'){
-                    $response['sub_header_1'] = $verify_fitcode_result->fitcash." Fitcash";
-                    $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
+                    $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
+
+                    Log::info('customer_level_data');
+                    Log::info($customer_level_data);
+
+                    if($payment_done){
+                        $response['sub_header_1'] = $customer_level_data['current_level']['cashback']."% Cashback";
+                        $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!";
+                    }else{
+                        $response['payment'] = $pending_payment;
+                    }
+
+                    if($booktrial['type'] == 'booktrials'){
+                        $response['sub_header_1'] = $verify_fitcode_result->fitcash." Fitcash";
+                        $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
+                    }
                 }
 
                 if(isset($_GET['source']) && $_GET['source'] == 'let_us_know'){
@@ -7844,7 +7846,7 @@ class SchedulebooktrialsController extends \BaseController {
 				if(isTabActive($booktrial['finder_id'])){
                     $response['activate']['sub_header_2'] = 'Punch your subscription code on the kiosk/tab available at the center to activate your session';
                 }
-                if(isset($booktrial['studio_extended_validity_order_id'])){
+                if(isset($booktrial['studio_extended_validity_order_id']) || isset($booktrial['pass_order_id']) ){
                     unset($response['activate']);
                     unset($response['attend']['sub_header_1']);
                     $response['sub_header_2']='Enjoy your session at '.$booktrial['finder_name'].'. Your workout checklist is ready';
@@ -7931,8 +7933,8 @@ class SchedulebooktrialsController extends \BaseController {
         //     $booktrial_update = Booktrial::where('_id', $booktrial['_id'])->update(['loyalty_registration'=>true]);
         //     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
         // }
-
-        if(isset($booktrial['extended_validity_order_id'])){
+        Log::info('booktria; data:::::::::::', [$verify_fitcode_result]);
+        if(isset($booktrial['extended_validity_order_id']) || !empty($booktrial['pass_order_id'])){
             $response['description'] = '';
             $response['sub_header_1'] = '';
             $response['sub_header_2'] = '';
