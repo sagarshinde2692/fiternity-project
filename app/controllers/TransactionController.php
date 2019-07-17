@@ -6129,7 +6129,7 @@ class TransactionController extends \BaseController {
                         'field' => 'Coupon Discount',
                         'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "100% Cashback"
                     );
-                    $you_save += $data['coupon_discount_amount'];
+                    $you_save += (!empty($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0);
                 }else{
                     $amount_final = $amount_final + $data['coupon_discount_amount'];
                     $amount_payable['value'] = "Rs. ".$amount_final;   
