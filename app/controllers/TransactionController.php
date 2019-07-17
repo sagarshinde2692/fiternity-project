@@ -1187,6 +1187,10 @@ class TransactionController extends \BaseController {
         $data['status'] = $status;
         Log::info("after status !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", [$data['status']]);
 
+        if(!empty(Request::header('Origin')) && strpos( Request::header('Origin'), "www.jgsfitness.com" ) !== false){
+            $data['jgs'] = true;
+        }
+
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] == 'pay_at_vendor'){
 
             $data['payment_mode'] = 'at the studio';
