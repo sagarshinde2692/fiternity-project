@@ -1401,7 +1401,7 @@ class FindersController extends \BaseController {
                             
                             $response['vendor_stripe_data']	= [
                                 
-                                'text1'=> "MONSOON BONANZA | GET 100% INSTANT CASHBACK ACROSS THE WEBSITE | USE CODE: FITBACK",
+                                'text1'=> "MONSOON BONANZA | GET 100% INSTANT CASHBACK (APP ONLY DEAL) | USE CODE: FITBACK",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3850,8 +3850,7 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
-        return "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction without restriction for yourself as well as friends & family.";
-
+        return "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself as well as friends & family.";
 		
 		$brandMap = [
 			135 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹20,000 worth of rewards',
