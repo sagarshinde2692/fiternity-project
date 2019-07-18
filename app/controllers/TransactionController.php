@@ -1437,7 +1437,7 @@ class TransactionController extends \BaseController {
             }
             
             
-            if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
+            if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']))){
                 $resp['data']["coupon_details"] = [];
                 $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
                 $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
@@ -3680,7 +3680,7 @@ class TransactionController extends \BaseController {
 
             if($order && isset($order['coupon_code'])){
 
-                $order->unset(['coupon_code', 'coupon_discount_amount']);
+                $order->unset(['coupon_code', 'coupon_discount_amount','coupon_flags']);
                 // $order->unset('coupon_discount_amount');
             }
 
