@@ -7086,7 +7086,7 @@ class TransactionController extends \BaseController {
             }
             
             if(!empty($data['type']) && in_array($data['type'], ['membership', 'memberships'])){
-                $result['offer_text'] = "You are eligilble for 100% instant cashback  with this purchase";
+                $result['offer_text'] = "";
             }
 
             if(((isset($data['finder_flags']['disable_dynamic_pricing']) && empty($data['finder_flags']['disable_dynamic_pricing'])) || (isset($data['service_flags']['disable_dynamic_pricing']) && empty($data['service_flags']['disable_dynamic_pricing']))) && $data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
