@@ -506,8 +506,11 @@ class Service extends \Basemodel{
                     $value['remarks_imp'] =  true;
 				}
                 
-                if(in_array($value['type'], ["membership", "extended validity"])&& isFinderIntegrated($finder) && isServiceIntegrated($this)){
-                    $value['campaign_offer'] =  "";
+                if(in_array($value['type'], ["membership", "extended validity"])&& isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios']) ){
+                    $value['campaign_offer'] =  "100% cashback";
+                    $value['campaign_color'] = "#43a047";
+				}else{
+					$value['campaign_offer'] =  "";
                     $value['campaign_color'] = "";
 				}
 				
