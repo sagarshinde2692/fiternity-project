@@ -967,7 +967,7 @@ class EmailSmsApiController extends \BaseController {
             'send_bcc_status'   => 1
         );
 
-        $capture_type = array('fitness_canvas','renew-membership','claim_listing','add_business', 'sale_pre_register_2018','walkthrough', 'multifit-franchisepage', 'multifit-contactuspagemultifit-contactuspage');
+        $capture_type = array('fitness_canvas','renew-membership','claim_listing','add_business', 'sale_pre_register_2018','walkthrough', 'multifit-franchisepage', 'multifit-contactuspage');
 
         if(in_array($data['capture_type'],$capture_type)){
 

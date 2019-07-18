@@ -1292,22 +1292,37 @@ Class FinderMailer extends Mailer {
 	}
 
 	public function multifitRequest($data){
-		Log::info("data", [$data]);
-		if($data['capture_type'] == 'multifit-franchisepage'){
-			$label = 'OwnFranchise-Multifit-Vendor';
-		}else if($data['capture_type'] == 'multifit-contactuspage'){
-			$label = 'ContactUs-Multifit-Vendor';
-		}
 		
-		// $user_email = ["info@multifit.co.in", "ankitamamnia@fitternity.com"];
-		$user_email = ["ankitamamnia@fitternity.com"];
+		$user_email = ["info@multifit.co.in"];
 		
 		$user_name = 'Multifit Team';
 
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' => $user_name
-		);
+		if($data['capture_type'] == 'multifit-franchisepage'){
+			$label = 'OwnFranchise-Multifit-Vendor';
+			
+			$message_data = array();
+			$message_data 	= array(
+				'user_email' => $user_email,
+				'user_name' => $user_name,
+				'customer_name' => $data['name'],
+				'customer_email' => $data['email'],
+				'customer_phone' => $data['mobile'],
+				'city' => $data['city']
+			);
+		}else if($data['capture_type'] == 'multifit-contactuspage'){
+			$label = 'ContactUs-Multifit-Vendor';
+
+			$message_data = array();
+			$message_data 	= array(
+				'user_email' => $user_email,
+				'user_name' => $user_name,
+				'customer_name' => $data['name'],
+				'customer_email' => $data['email'],
+				'customer_phone' => $data['mobile'],
+				'message' => $data['message'],
+				'company' => $data['company']
+			);
+		}
 
 		return $this->common($label,$data,$message_data);
 	}
