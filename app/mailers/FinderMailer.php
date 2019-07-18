@@ -1291,6 +1291,42 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	public function multifitRequest($data){
+		
+		$user_email = ["info@multifit.co.in"];
+		
+		$user_name = 'Multifit Team';
+
+		if($data['capture_type'] == 'multifit-franchisepage'){
+			$label = 'OwnFranchise-Multifit-Vendor';
+			
+			$message_data = array();
+			$message_data 	= array(
+				'user_email' => $user_email,
+				'user_name' => $user_name,
+				'customer_name' => $data['name'],
+				'customer_email' => $data['email'],
+				'customer_phone' => $data['mobile'],
+				'city' => $data['city']
+			);
+		}else if($data['capture_type'] == 'multifit-contactuspage'){
+			$label = 'ContactUs-Multifit-Vendor';
+
+			$message_data = array();
+			$message_data 	= array(
+				'user_email' => $user_email,
+				'user_name' => $user_name,
+				'customer_name' => $data['name'],
+				'customer_email' => $data['email'],
+				'customer_phone' => $data['mobile'],
+				'message' => $data['message'],
+				'company' => $data['company']
+			);
+		}
+
+		return $this->common($label,$data,$message_data);
+	}
+
 	protected function captureVendorWalkthrough ($data){
 
 		$label = 'Walkthrough-Vendor';
