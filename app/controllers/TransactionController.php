@@ -3680,7 +3680,7 @@ class TransactionController extends \BaseController {
 
             if($order && isset($order['coupon_code'])){
 
-                $order->unset(['coupon_code', 'coupon_discount_amount']);
+                $order->unset(['coupon_code', 'coupon_discount_amount','coupon_flags']);
                 // $order->unset('coupon_discount_amount');
             }
 
