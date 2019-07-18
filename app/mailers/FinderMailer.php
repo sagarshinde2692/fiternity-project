@@ -1291,6 +1291,27 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	public function multifitRequest($data){
+		Log::info("data", [$data]);
+		if($data['capture_type'] == 'multifit-franchisepage'){
+			$label = 'OwnFranchise-Multifit-Vendor';
+		}else if($data['capture_type'] == 'multifit-contactuspage'){
+			$label = 'ContactUs-Multifit-Vendor';
+		}
+		
+		// $user_email = ["info@multifit.co.in", "ankitamamnia@fitternity.com"];
+		$user_email = ["ankitamamnia@fitternity.com"];
+		
+		$user_name = 'Multifit Team';
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' => $user_name
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
 	protected function captureVendorWalkthrough ($data){
 
 		$label = 'Walkthrough-Vendor';
@@ -1322,7 +1343,8 @@ Class FinderMailer extends Mailer {
 
 		if(!Config::get('app.vendor_communication')){
 
-			$message_data['user_email'] = array('sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'akhilkulkarni@fitternity.com', 'ankitamamnia@fitternity.com', 'rohitvarade@fitternity.com');
+			// $message_data['user_email'] = array('sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com', 'akhilkulkarni@fitternity.com', 'ankitamamnia@fitternity.com', 'rohitvarade@fitternity.com');
+			$message_data['user_email'] = array( 'ankitamamnia@fitternity.com');
 		}
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
