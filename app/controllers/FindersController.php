@@ -5285,7 +5285,9 @@ class FindersController extends \BaseController {
 						}
                         if($ratecard['type'] == 'workout session' && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
                             $ratecard['remarks'] = "Get 100% instant cashback";
-                        }
+                        }else{
+							$ratecard['remarks'] = "";
+						}
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
 							$ratecard_price = $ratecard['special_price'];
 						}else{
