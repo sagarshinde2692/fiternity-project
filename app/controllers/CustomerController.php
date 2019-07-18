@@ -195,7 +195,7 @@ class CustomerController extends \BaseController {
 			}catch(Exception $e){
 				Log::info($e);
 			}
-			if(!empty($trial['studio_extended_validity_order_id'])){
+			if(!empty($trial['studio_extended_validity_order_id']) || !empty($trial['pass_order_id'])){
 				$trial['fitcash_text'] = '';
 			}
 			array_push($bookings, $trial);
