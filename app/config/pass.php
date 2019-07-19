@@ -1,7 +1,8 @@
 <?php
 $apiUrl = \Config::get('app.url');
 $success_page_template = Config::get('successPage');
-
+$silver_logo = 'https://b.fitn.in/passes/monthly_card.png';
+$gold_logo = 'https://b.fitn.in/passes/all_access_card.png';
 return [
     'list' => [
         'passes' => [
@@ -9,7 +10,7 @@ return [
                 'header' => 'ALL ACCESS PASS',
                 'subheader' => 'ALL ACCESS PASS UNLIMITED USAGE',
                 'text' => '1 MONTH | 3 MONTHS | 6 MONTHS',
-                'image' => 'https://b.fitn.in/passes/all_access_card.png',
+                'image' => $gold_logo,
                 'why_pass' => [
                     'header' => 'WHY GO FOR A PASS',
                     'text' => 'adfaf fs fsadf dadfdsf sf safasdf asf asdfsdf sfs dsdf',
@@ -112,7 +113,48 @@ return [
         "concultion" => $success_page_template['conclusion'],
         "feedback" => $success_page_template["feedback"]
     ],
-    'pass_image_silver' => 'https://b.fitn.in/passes/monthly_card.png',
-    'pass_image_gold' => 'https://b.fitn.in/passes/all_access_card.png',
-    'web_message'=>'Please note - The sessions are bookable only of Fitternity app. Download now'
+    'pass_image_silver' => $silver_logo,
+    'pass_image_gold' => $gold_logo,
+    'web_message'=>'Please note - The sessions are bookable only of Fitternity app. Download now',
+    'trial_pass' => [
+        "logo" => $silver_logo,
+        "header" => "EXPERIENCE FITNESS LIKE NEVER BEFORE!",
+        "subheader" => "Book sessions and only pay for days you workout",
+        'pass' => [
+            'header' => 'pass_name',
+            'subheader' => 'duration_text PASS FOR UNLIMITED USAGE',
+            'text' => 'duration_text',
+            'image' => $silver_logo,
+            'name' => 'FLEXI PASS',
+            'type' => 'pass_type'
+        ],
+        
+        'footer' => [
+            "text" => "lorum lorum lorum lorum lorum lorum lorum lorum lorum lorum",
+            "button_text" => "Explore"
+        ]
+    ],
+
+    'subscription_pass' => [
+        "logo" => $gold_logo,
+        "header" => "EXPERIENCE FITNESS LIKE NEVER BEFORE!",
+        "subheader" => "Book sessions and only pay for days you workout",
+        'pass' => [
+            'header' => 'pass_name',
+            'subheader' => 'ALL ACCESS PASS UNLIMITED USAGE', // do have to mention pass duration time 
+            'text' => '1 MONTH | 3 MONTHS | 6 MONTHS', //need to confirm what have to show before purchase and after pass purchased
+            'image' => $gold_logo,
+            'name' => 'FLEXI PASS',
+            'type' => 'pass_type'
+        ],
+        
+        'footer' => [
+            "text" => "lorum lorum lorum lorum lorum lorum lorum lorum lorum lorum",
+            "button_text" => "Explore"
+        ]
+    ],
+    "flexipass_small" => [
+        "text" => "lorum lorum lorum lorum lorum lorum lorum lorum lorum lorum",
+        "button_text" => "Explore"
+    ]
 ];

@@ -4089,16 +4089,18 @@ class CustomerController extends \BaseController {
         ];
 
 		$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
-
+		//get flexi contain (flexipass_small, flexipass) with orders count
+		$this->flexipassHome($order, $result);
 		if(empty($order)) {
-			$result['buy_pass'] = [
-				'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
-				'header' => 'Flexi Pass!',
-				'subheader' => 'Buy pass and book workouts',
-				'footer' => 'Buy pass!!'
-			];
+			// $result['buy_pass'] = [
+			// 	'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
+			// 	'header' => 'Flexi Pass!',
+			// 	'subheader' => 'Buy pass and book workouts',
+			// 	'footer' => 'Buy pass!!'
+			// ];
 		}
 		else {
+			
             $pass = true;
 			try{
 				$active_passes = [];
@@ -9734,5 +9736,44 @@ class CustomerController extends \BaseController {
 		$customerUpdate->update();
 		return array("status"=>200, "message"=>"Success");
 		//'loyalty.loyalty_upgraded'=false
+	}
+
+	public function flexipassHome($passPurchased, &$result){
+		$passConfig = Config::get('pass');
+		Log::info('passpurchased', []);
+		if(!empty($passPurchased) && !($passPurchased['pass']['type']=='trial')){
+			//fatch subscription pass from master db and which pass 
+			$pass = $this->getPass('subscription');
+
+			$subscription_pass = $passConfig['subscription_pass'];
+			$subscription_pass['pass']['header'] = strtr($subscription_pass['pass']['header'], ['pass_name'=> $pass['name']]);
+			$subscription_pass['pass']['subheader'] = strtr($subscription_pass['pass']['subheader'], ['duration_text'=> $pass['duration_text']]);
+			$subscription_pass['pass']['text'] = strtr($subscription_pass['pass']['text'], ['duration_text'=> $pass['duration_text']]);
+			$subscription_pass['pass']['type'] = strtr($subscription_pass['pass']['type'], ['pass_type'=> strtoupper($pass['type'])]);
+
+			$result['flexipass'] = $subscription_pass;
+		}
+		else if(empty($passPurchased)){
+			//fatch trial pass from masted db
+			$pass = $this->getPass('trial');
+
+			$trial_pass = $passConfig['trial_pass'];
+			$trial_pass['pass']['header'] = strtr($trial_pass['pass']['header'], ['pass_name'=> $pass['name']]);
+			$trial_pass['pass']['subheader'] = strtr($trial_pass['pass']['subheader'], ['duration_text'=> $pass['duration_text']]);
+			$trial_pass['pass']['text'] = strtr($trial_pass['pass']['text'], ['duration_text'=> $pass['duration_text']]);
+			$trial_pass['pass']['type'] = strtr($trial_pass['pass']['type'], ['pass_type'=> strtoupper($pass['type'])]);
+
+			$result['flexipass'] = $trial_pass;
+			$result['flexipass_small'] = $passConfig['flexipass_small'];
+		}
+		else {
+			// need to update
+			////fatch trial pass from order->>> allready comming in passPurchased parameter
+			$result['flexipass'] = $passConfig['subscription_pass'];	
+		}
+	}
+
+	public function getPass($type){
+		return Pass::active()->where('type', $type)->first();
 	}
 }
