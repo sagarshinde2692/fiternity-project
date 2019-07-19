@@ -636,6 +636,7 @@ class ServiceController extends \BaseController {
         		$decodeKioskVendorToken = decodeKioskVendorToken();
         		$vendor = $decodeKioskVendorToken->vendor;
         		$finder_id = (int)$vendor->_id;
+                $request['type'] = 'workout-session';
         	}
         	else $finder_id = (int)$request['finder_id'];
         	
