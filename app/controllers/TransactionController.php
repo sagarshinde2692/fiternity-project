@@ -1189,6 +1189,10 @@ class TransactionController extends \BaseController {
 
         if(!empty(Request::header('Origin')) && strpos( Request::header('Origin'), "www.jgsfitness.com" ) !== false){
             $data['jgs'] = true;
+
+            if(!empty($data['multifit'])){
+                unset($data['multifit']);
+            }
         }
 
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] == 'pay_at_vendor'){
