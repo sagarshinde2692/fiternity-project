@@ -4052,6 +4052,9 @@ class CustomerController extends \BaseController {
 					$result['fitsquad_upgrade'] = $fitsquadUpgradeOrder;
 				}
 			}
+			$workout_sessions_near_vendor = $this->getWorkoutSessions($near_by_vendor_request);
+			//removing fields from search
+			$this->nearVendorRemoveExtraFields($result['near_by_vendor']);
 		}
         
 		$result['categoryheader'] = "Discover | Try | Buy";
@@ -4085,37 +4088,50 @@ class CustomerController extends \BaseController {
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
             // 'knowmorelink' => 'know more',
-			'near_by_workouts'=>  $this->getWorkoutSessions($near_by_vendor_request)
-        ];
-
-		$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
-		$this->flexipassHome($order, $result);
-		// if(empty($order)) {
-		// 	$result['buy_pass'] = [
-		// 		'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
-		// 		'header' => 'Flexi Pass!',
-		// 		'subheader' => 'Buy pass and book workouts',
-		// 		'footer' => 'Buy pass!!'
-		// 	];
-		// }
-		if(!empty($order)) {
 			
-            $pass = true;
-			try{
-				$active_passes = [];
-				if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
-                    $pass_bookings = $this->passService->getPassBookings($order['_id']);
-				}
-			}catch(Exception $e){
+		];
+
+		if(!empty($workout_sessions_near_vendor) ){
+			$result['fitex']['near_by_workouts']= $workout_sessions_near_vendor;
+		}
+
+		if(!empty($customeremail))
+		{
+			$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
+			$this->flexipassHome($order, $result);
+			// if(empty($order)) {
+			// 	$result['buy_pass'] = [
+			// 		'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
+			// 		'header' => 'Flexi Pass!',
+			// 		'subheader' => 'Buy pass and book workouts',
+			// 		'footer' => 'Buy pass!!'
+			// 	];
+			// }
+			if(!empty($order)) {
+				
+				$pass = true;
 				$pass_bookings = [];
-            }
-            
-			$result['pass_bookings'] = $pass_bookings;
-        }
-        
-        $response = Response::make($result);
-        $response = setNewToken($response, !empty($pass));
-        
+				try{
+					$active_passes = [];
+					if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
+						$pass_bookings = $this->passService->getPassBookings($order['_id']);
+					}
+				}catch(Exception $e){
+					$pass_bookings = [];
+				}
+				
+				$result['pass_bookings'] = $pass_bookings;
+			}
+		}
+
+		if(!empty($result['session_packs'])){
+			$this->sessionPackRemoveExtraFields($result['session_packs']);
+		}
+
+		$response = Response::make($result);
+		if(!empty($customeremail)){
+			$response = setNewToken($response, !empty($pass));
+		}
 		return $response;
 		
 	}
@@ -9805,5 +9821,37 @@ class CustomerController extends \BaseController {
 			$result['header'] = "Workouts in ".ucwords($near_by_workout_request['city']);
 		}
 		return $result;
+	}
+
+	public function nearVendorRemoveExtraFields(&$nearByVendors){
+		foreach($nearByVendors as &$value){
+			unset($value['flags']);
+			unset($value['pps_offer']);
+			unset($value['pps_offer_icon']);
+			unset($value['membership_header']);
+			unset($value['membership_icon']);
+			unset($value['membership_offer_default']);
+			unset($value['trial_header']);
+			unset($value['membership_offer']);
+			unset($value['credits']);
+			unset($value['address']);
+		}
+	}
+
+	public function sessionPackRemoveExtraFields(&$sessionPacks){
+		
+		foreach($sessionPacks as &$value){
+			unset($value['customer_id']);
+			unset($value['start_date']);
+			unset($value['end_date']);
+			unset($value['ratecard_flags']);
+			unset($value['finder_address']);
+			unset($value['subscription_text']);
+			unset($value['subscription_code']);
+			unset($value['finder_name_copy']);
+			unset($value['detail_text']);
+			unset($value['finder']);
+			unset($value['service']);
+		}
 	}
 }
