@@ -6778,7 +6778,6 @@ class TransactionController extends \BaseController {
         $data["additional_fitcash"] = $data['fitcash_amount']-$data['amount'];
         $data['amount_finder'] = 0;
         $data['payment_mode'] = 'paymentgateway';
-        $data['type'] = 'wallet';
         
         $data['status'] = "0";
         
@@ -6829,6 +6828,7 @@ class TransactionController extends \BaseController {
         $result['finder_name'] = strtolower($data['finder_name']);
         $result['fitcash_amount'] = $data['fitcash_amount'];
         $result['success_msg'] = $data['fitcash_amount']." fitcash has been added into your wallet";
+        $result['type'] = 'wallet';
         
         
         $resp   =   array(
