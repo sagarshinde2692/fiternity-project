@@ -9741,7 +9741,7 @@ class CustomerController extends \BaseController {
 	public function flexipassHome($passPurchased, &$result){
 		$passConfig = Config::get('pass');
 
-		if(!empty($passPurchased) && !($passPurchased['pass']['type']=='trial')){
+		if(!empty($passPurchased) && ($passPurchased['pass']['type']=='trial')){
 			//fatch subscription pass from master db and which pass 
 			$pass = $this->getPass('subscription');
 
