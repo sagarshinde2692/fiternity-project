@@ -9815,7 +9815,7 @@ class CustomerController extends \BaseController {
 			$result['data'] = $workout['workout'];
 		}
 		if(empty($near_by_workout_request['lat']) && empty($near_by_workout_request['lon'])){
-			$result['header'] = "Workouts in ".$near_by_workout_request['city'];
+			$result['header'] = "Workouts in ".ucwords($near_by_workout_request['city']);
 		}
 		return $result;
 	}
