@@ -9748,9 +9748,9 @@ class CustomerController extends \BaseController {
 			$subscription_pass = $passConfig['subscription_pass'];
 			$subscription_pass['pass']['header'] = strtr($subscription_pass['pass']['header'], ['pass_name'=> $pass['name']]);
 			$subscription_pass['pass']['subheader'] = strtr($subscription_pass['pass']['subheader'], ['duration_text'=> $pass['duration_text']]);
-			$subscription_pass['pass']['text'] = strtr($subscription_pass['pass']['text'], ['duration_text'=> $pass['duration_text']]);
+			$subscription_pass['pass']['text'] = strtr($subscription_pass['pass']['text'], ['duration_text'=> strtoupper($pass['duration_text'])]);
 			$subscription_pass['pass']['type'] = strtr($subscription_pass['pass']['type'], ['pass_type'=> strtoupper($pass['type'])]);
-			$subscription_pass['pass']['price'] = strtr($subscription_pass['pass']['price'], ['pass_price'=> strtoupper($pass['price'])]);
+			$subscription_pass['pass']['price'] = strtr($subscription_pass['pass']['price'], ['pass_price'=> $pass['price']]);
 
 			$result['flexipass'] = $subscription_pass;
 		}
@@ -9761,9 +9761,9 @@ class CustomerController extends \BaseController {
 			$trial_pass = $passConfig['trial_pass'];
 			$trial_pass['pass']['header'] = strtr($trial_pass['pass']['header'], ['pass_name'=> $pass['name']]);
 			$trial_pass['pass']['subheader'] = strtr($trial_pass['pass']['subheader'], ['duration_text'=> $pass['duration_text']]);
-			$trial_pass['pass']['text'] = strtr($trial_pass['pass']['text'], ['duration_text'=> $pass['duration_text']]);
+			$trial_pass['pass']['text'] = strtr($trial_pass['pass']['text'], ['duration_text'=> strtoupper($pass['duration_text'])]);
 			$trial_pass['pass']['type'] = strtr($trial_pass['pass']['type'], ['pass_type'=> strtoupper($pass['type'])]);
-			$trial_pass['pass']['price'] = strtr($trial_pass['pass']['price'], ['pass_price'=> strtoupper($pass['price'])]);
+			$trial_pass['pass']['price'] = strtr($trial_pass['pass']['price'], ['pass_price'=> $pass['price']]);
 
 			$result['flexipass'] = $trial_pass;
 			$result['flexipass_small'] = $passConfig['flexipass_small'];
@@ -9776,6 +9776,8 @@ class CustomerController extends \BaseController {
 	}
 
 	public function getPass($type){
-		return Pass::active()->where('type', $type)->first();
+		return Pass::active()
+		->where('type', $type)
+		->first();
 	}
 }

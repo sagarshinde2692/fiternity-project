@@ -143,7 +143,7 @@ return [
         'pass' => [
             'header' => 'pass_name',
             'subheader' => 'ALL ACCESS PASS UNLIMITED USAGE', // do have to mention pass duration time 
-            'text' => '1 MONTH | 3 MONTHS | 6 MONTHS', //need to confirm what have to show before purchase and after pass purchased
+            'text' => 'duration_text', //need to confirm what have to show before purchase and after pass purchased
             'image' => $gold_logo,
             'name' => 'FLEXI PASS',
             'type' => 'pass_type',
