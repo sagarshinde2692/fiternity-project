@@ -9742,28 +9742,19 @@ class CustomerController extends \BaseController {
 		$passConfig = Config::get('pass');
 
 		if(!empty($passPurchased) && ($passPurchased['pass']['type']=='trial')){
-			//fatch subscription pass from master db and which pass has to choose(1, month, 3, 6)
+			//which pass has to choose(1, month, 3, 6)
 			$pass = $this->getPass('subscription');
 
 			$subscription_pass = $passConfig['subscription_pass'];
-			$subscription_pass['pass']['header'] = strtr($subscription_pass['pass']['header'], ['pass_name'=> $pass['name']]);
-			$subscription_pass['pass']['subheader'] = strtr($subscription_pass['pass']['subheader'], ['duration_text'=> $pass['duration_text']]);
-			$subscription_pass['pass']['text'] = strtr($subscription_pass['pass']['text'], ['duration_text'=> strtoupper($pass['duration_text'])]);
-			$subscription_pass['pass']['type'] = strtr($subscription_pass['pass']['type'], ['pass_type'=> strtoupper($pass['type'])]);
-			$subscription_pass['pass']['price'] = strtr($subscription_pass['pass']['price'], ['pass_price'=> $pass['price']]);
+			$this->updateDataOfPass($subscription_pass, $pass);
 
 			$result['flexipass'] = $subscription_pass;
 		}
 		else if(empty($passPurchased)){
-			//fatch trial pass from masted db
 			$pass = $this->getPass('trial');
 
 			$trial_pass = $passConfig['trial_pass'];
-			$trial_pass['pass']['header'] = strtr($trial_pass['pass']['header'], ['pass_name'=> $pass['name']]);
-			$trial_pass['pass']['subheader'] = strtr($trial_pass['pass']['subheader'], ['duration_text'=> $pass['duration_text']]);
-			$trial_pass['pass']['text'] = strtr($trial_pass['pass']['text'], ['duration_text'=> strtoupper($pass['duration_text'])]);
-			$trial_pass['pass']['type'] = strtr($trial_pass['pass']['type'], ['pass_type'=> strtoupper($pass['type'])]);
-			$trial_pass['pass']['price'] = strtr($trial_pass['pass']['price'], ['pass_price'=> $pass['price']]);
+			$this->updateDataOfPass($trial_pass, $pass);
 
 			$result['flexipass'] = $trial_pass;
 			$result['flexipass_small'] = $passConfig['flexipass_small'];
@@ -9779,5 +9770,13 @@ class CustomerController extends \BaseController {
 		return Pass::active()
 		->where('type', $type)
 		->first();
+	}
+
+	public function updateDataOfPass(&$pass_data, $pass){
+		$pass_data['pass']['header'] = strtr($pass_data['pass']['header'], ['pass_name'=> $pass['name']]);
+		$pass_data['pass']['subheader'] = strtr($pass_data['pass']['subheader'], ['duration_text'=> $pass['duration_text']]);
+		$pass_data['pass']['text'] = strtr($pass_data['pass']['text'], ['duration_text'=> strtoupper($pass['duration_text'])]);
+		$pass_data['pass']['type'] = strtr($pass_data['pass']['type'], ['pass_type'=> strtoupper($pass['type'])]);
+		$pass_data['pass']['price'] = strtr($pass_data['pass']['price'], ['pass_price'=> $pass['price']]);
 	}
 }

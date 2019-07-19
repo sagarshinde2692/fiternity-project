@@ -116,6 +116,7 @@ return [
     'pass_image_silver' => $silver_logo,
     'pass_image_gold' => $gold_logo,
     'web_message'=>'Please note - The sessions are bookable only of Fitternity app. Download now',
+
     'trial_pass' => [
         "logo" => $silver_logo,
         "header" => "EXPERIENCE FITNESS LIKE NEVER BEFORE!",
@@ -155,6 +156,7 @@ return [
             "button_text" => "Explore"
         ]
     ],
+    
     "flexipass_small" => [
         "text" => "lorum lorum lorum lorum lorum lorum lorum lorum lorum lorum",
         "button_text" => "Explore"
