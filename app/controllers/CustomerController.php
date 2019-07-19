@@ -9781,7 +9781,6 @@ class CustomerController extends \BaseController {
 	}
 
 	public function getWorkoutSessions($near_by_workout_request){
-		$region ='';
 		unset($near_by_workout_request['keys']);
 		unset($near_by_workout_request['category']);
 		$near_by_workout_request['category'] = [];
