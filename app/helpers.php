@@ -4480,5 +4480,74 @@ if (!function_exists('checkAppVersionFromHeader')) {
 
 }
 
+if (!function_exists(('geoLocationWorkoutSession'))){
+
+    function geoLocationWorkoutSession($request, $from=null){
+        
+        $client = new Client( ['debug' => false, 'base_uri' => Config::get("app.url")."/"] );
+        $offset  = $request['offset'];
+        $limit   = $request['limit'];
+        $radius  = $request['radius'];
+        $lat    =  $request['lat'];
+        $lon    =  $request['lon'];
+        $category = $request['category'];
+        $keys = $request['keys'];
+        $city = $request['city'];
+        $not = isset($request['not']) ? $request['not'] : new \stdClass();
+        $region = isset($request['region']) ? $request['region'] : [];
+
+        $payload = [
+            "category"=>$category,
+            "sort"=>[
+              "order"=>"desc",
+              "sortfield"=>"popularity"
+            ],
+            "offset"=>[
+                "from"=>$offset,
+                "number_of_records"=>$limit
+            ],
+            "location"=>[
+                "geo"=>[
+                    "lat"=>$lat,
+                    "lon"=>$lon,
+                    "radius"=>$radius
+                ],
+                "regions"=>$region,
+                "city"=>$city
+            ],
+            "keys"=>$keys,
+            //"not"=>$not,
+            "pass"=>$request['pass'],
+            "time_tag"=> $request['time_tag'],
+            'date'=> $request['date']
+        ];
+
+        $url = Config::get('app.new_search_url')."/search/paypersession";
+
+        $workout = [];
+
+        try {
+
+            $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+
+            if(isset($response['results'])){
+                $workout = $response['results'];
+            }
+            
+            if(!empty($from)){
+                return ['total_records'=>$response['metadata']['total_records'], 'workout'=>$workout];
+            }
+            return $workout;
+
+        }catch (RequestException $e) {
+
+            return $workout;
+
+        }catch (Exception $e) {
+            return $workout;
+        }
+
+    }
+}
 
 ?>

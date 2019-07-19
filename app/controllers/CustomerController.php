@@ -4085,7 +4085,8 @@ class CustomerController extends \BaseController {
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
             // 'knowmorelink' => 'know more',
-            'footer' => "Available across 2500+ outlets across ".ucwords($city)." | Starting at <b>&#8377; 149</b>"
+			//'footer' => "Available across 2500+ outlets across ".ucwords($city)." | Starting at <b>&#8377; 149</b>",
+			'workouts'=>  $this->getWorkoutSessions($near_by_vendor_request)
         ];
 
 		$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
@@ -9778,5 +9779,38 @@ class CustomerController extends \BaseController {
 		$pass_data['pass']['text'] = strtr($pass_data['pass']['text'], ['duration_text'=> strtoupper($pass['duration_text'])]);
 		$pass_data['pass']['type'] = strtr($pass_data['pass']['type'], ['pass_type'=> strtoupper($pass['type'])]);
 		$pass_data['pass']['price'] = strtr($pass_data['pass']['price'], ['pass_price'=> $pass['price']]);
+	}
+
+	public function getWorkoutSessions($near_by_workout_request){
+		unset($near_by_workout_request['keys']);
+		unset($near_by_workout_request['category']);
+		$near_by_workout_request['category'] = [];
+		$near_by_workout_request['keys'] = [ 
+			"address", 
+			"average_rating", 
+			"location", 
+			"name", 
+			"slug", 
+			"vendor_slug", 
+			"vendor_name", 
+			"price", 
+			"special_price", 
+			"coverimage", 
+			"overlayimage", 
+			"total_slots", 
+			"next_slot", 
+			"finder_coverimage_color", 
+			"total_photos_count"
+		];
+		$near_by_workout_request['pass'] = true;
+		$near_by_workout_request['time_tag'] = 'later-today';
+		$near_by_workout_request['date'] = date('d-m-y');
+		$near_by_workout_request;
+		$workout = geoLocationWorkoutSession($near_by_workout_request, 'customerhome');
+		$result=[];
+		if(!empty($workout['workout'])){
+			$result = $workout['workout'];
+		}
+		return $result;
 	}
 }
