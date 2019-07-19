@@ -6778,6 +6778,7 @@ class TransactionController extends \BaseController {
         $data["additional_fitcash"] = $data['fitcash_amount']-$data['amount'];
         $data['amount_finder'] = 0;
         $data['payment_mode'] = 'paymentgateway';
+        $data['type'] = 'wallet';
         
         $data['status'] = "0";
         
