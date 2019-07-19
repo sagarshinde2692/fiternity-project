@@ -4085,8 +4085,7 @@ class CustomerController extends \BaseController {
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
             // 'knowmorelink' => 'know more',
-			//'footer' => "Available across 2500+ outlets across ".ucwords($city)." | Starting at <b>&#8377; 149</b>",
-			'workouts'=>  $this->getWorkoutSessions($near_by_vendor_request)
+			'near_by_workouts'=>  $this->getWorkoutSessions($near_by_vendor_request)
         ];
 
 		$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
@@ -9782,6 +9781,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function getWorkoutSessions($near_by_workout_request){
+		$region ='';
 		unset($near_by_workout_request['keys']);
 		unset($near_by_workout_request['category']);
 		$near_by_workout_request['category'] = [];
@@ -9807,9 +9807,15 @@ class CustomerController extends \BaseController {
 		$near_by_workout_request['date'] = date('d-m-y');
 		$near_by_workout_request;
 		$workout = geoLocationWorkoutSession($near_by_workout_request, 'customerhome');
-		$result=[];
+		$result=[
+			'header'=> 'Workouts near me',
+			'data'=>[]
+		];
 		if(!empty($workout['workout'])){
-			$result = $workout['workout'];
+			$result['data'] = $workout['workout'];
+		}
+		if(empty($near_by_workout_request['lat']) && empty($near_by_workout_request['lon'])){
+			$result['header'] = "Workouts in ".$near_by_workout_request['city'];
 		}
 		return $result;
 	}
