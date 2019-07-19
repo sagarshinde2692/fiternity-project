@@ -126,7 +126,8 @@ return [
             'text' => 'duration_text',
             'image' => $silver_logo,
             'name' => 'FLEXI PASS',
-            'type' => 'pass_type'
+            'type' => 'pass_type',
+            'price' => 'pass_price'
         ],
         
         'footer' => [
@@ -145,7 +146,8 @@ return [
             'text' => '1 MONTH | 3 MONTHS | 6 MONTHS', //need to confirm what have to show before purchase and after pass purchased
             'image' => $gold_logo,
             'name' => 'FLEXI PASS',
-            'type' => 'pass_type'
+            'type' => 'pass_type',
+            'price' => 'pass_price'
         ],
         
         'footer' => [

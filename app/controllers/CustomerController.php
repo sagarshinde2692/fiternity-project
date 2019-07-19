@@ -9742,7 +9742,7 @@ class CustomerController extends \BaseController {
 		$passConfig = Config::get('pass');
 
 		if(!empty($passPurchased) && ($passPurchased['pass']['type']=='trial')){
-			//fatch subscription pass from master db and which pass 
+			//fatch subscription pass from master db and which pass has to choose(1, month, 3, 6)
 			$pass = $this->getPass('subscription');
 
 			$subscription_pass = $passConfig['subscription_pass'];
@@ -9750,6 +9750,7 @@ class CustomerController extends \BaseController {
 			$subscription_pass['pass']['subheader'] = strtr($subscription_pass['pass']['subheader'], ['duration_text'=> $pass['duration_text']]);
 			$subscription_pass['pass']['text'] = strtr($subscription_pass['pass']['text'], ['duration_text'=> $pass['duration_text']]);
 			$subscription_pass['pass']['type'] = strtr($subscription_pass['pass']['type'], ['pass_type'=> strtoupper($pass['type'])]);
+			$subscription_pass['pass']['price'] = strtr($subscription_pass['pass']['price'], ['pass_price'=> strtoupper($pass['price'])]);
 
 			$result['flexipass'] = $subscription_pass;
 		}
@@ -9762,13 +9763,14 @@ class CustomerController extends \BaseController {
 			$trial_pass['pass']['subheader'] = strtr($trial_pass['pass']['subheader'], ['duration_text'=> $pass['duration_text']]);
 			$trial_pass['pass']['text'] = strtr($trial_pass['pass']['text'], ['duration_text'=> $pass['duration_text']]);
 			$trial_pass['pass']['type'] = strtr($trial_pass['pass']['type'], ['pass_type'=> strtoupper($pass['type'])]);
+			$trial_pass['pass']['price'] = strtr($trial_pass['pass']['price'], ['pass_price'=> strtoupper($pass['price'])]);
 
 			$result['flexipass'] = $trial_pass;
 			$result['flexipass_small'] = $passConfig['flexipass_small'];
 		}
 		else {
 			// need to update
-			////fatch trial pass from order->>> allready comming in passPurchased parameter
+			////fatch trial pass from order->>> allready comming in passPurchased parameter 
 			$result['flexipass'] = $passConfig['subscription_pass'];	
 		}
 	}
