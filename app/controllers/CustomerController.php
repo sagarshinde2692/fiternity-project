@@ -9785,22 +9785,16 @@ class CustomerController extends \BaseController {
 		unset($near_by_workout_request['keys']);
 		unset($near_by_workout_request['category']);
 		$near_by_workout_request['category'] = [];
-		$near_by_workout_request['keys'] = [ 
-			"address", 
-			"average_rating", 
-			"location", 
+		$near_by_workout_request['keys'] = [  
+			"average_rating",  
 			"name", 
 			"slug", 
 			"vendor_slug", 
-			"vendor_name", 
-			"price", 
-			"special_price", 
+			"vendor_name",
 			"coverimage", 
 			"overlayimage", 
 			"total_slots", 
-			"next_slot", 
-			"finder_coverimage_color", 
-			"total_photos_count"
+			"next_slot"
 		];
 		$near_by_workout_request['pass'] = true;
 		$near_by_workout_request['time_tag'] = 'later-today';
