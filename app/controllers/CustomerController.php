@@ -9759,11 +9759,11 @@ class CustomerController extends \BaseController {
 			$result['flexipass'] = $trial_pass;
 			$result['flexipass_small'] = $passConfig['flexipass_small'];
 		}
-		else {
-			// need to update
-			////fatch trial pass from order->>> allready comming in passPurchased parameter 
-			$result['flexipass'] = $passConfig['subscription_pass'];	
-		}
+		// else {
+		// 	// need to update
+		// 	////fatch trial pass from order->>> allready comming in passPurchased parameter 
+		// 	$result['flexipass'] = $passConfig['subscription_pass'];	
+		// }
 	}
 
 	public function getPass($type){
