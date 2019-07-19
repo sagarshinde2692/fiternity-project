@@ -165,7 +165,7 @@ class PassService {
             $result['hash'] = $order['payment_hash'];
             $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
             $result['finder_name'] = strtolower($order['finder_name']);
-            $result['type'] = strtolower($order['pass']);
+            $result['type'] = 'pass';
             $resp = [
                 'status' => 200,
                 'data' => $result,
