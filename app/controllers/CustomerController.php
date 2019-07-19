@@ -4091,15 +4091,15 @@ class CustomerController extends \BaseController {
 		$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
 		//get flexi contain (flexipass_small, flexipass) with orders count
 		$this->flexipassHome($order, $result);
-		if(empty($order)) {
-			// $result['buy_pass'] = [
-			// 	'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
-			// 	'header' => 'Flexi Pass!',
-			// 	'subheader' => 'Buy pass and book workouts',
-			// 	'footer' => 'Buy pass!!'
-			// ];
-		}
-		else {
+		// if(empty($order)) {
+		// 	$result['buy_pass'] = [
+		// 		'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
+		// 		'header' => 'Flexi Pass!',
+		// 		'subheader' => 'Buy pass and book workouts',
+		// 		'footer' => 'Buy pass!!'
+		// 	];
+		// }
+		if(!empty($order)) {
 			
             $pass = true;
 			try{
@@ -9740,7 +9740,7 @@ class CustomerController extends \BaseController {
 
 	public function flexipassHome($passPurchased, &$result){
 		$passConfig = Config::get('pass');
-		Log::info('passpurchased', []);
+
 		if(!empty($passPurchased) && !($passPurchased['pass']['type']=='trial')){
 			//fatch subscription pass from master db and which pass 
 			$pass = $this->getPass('subscription');
