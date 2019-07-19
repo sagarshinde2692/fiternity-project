@@ -97,8 +97,10 @@ class PassController extends \BaseController {
         }
 
         $response =  $this->passService->passSuccess($data);
-        $response['data']['branch_obj'] = $this->utilities->branchIOData($response['order']);
-        unset($response['order']);
+        if(!empty($response['order'])){
+            $response['data']['branch_obj'] = $this->utilities->branchIOData($response['order']);
+            unset($response['order']);
+        }
         return $response;
 
     }

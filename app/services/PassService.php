@@ -239,7 +239,7 @@ class PassService {
             return $wallet_update;
         }
         
-        $this->passSuccessRazorpay($order, $data);
+        $order = $this->passSuccessRazorpay($order, $data);
         
         if(empty($order['status'])){
             return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (2)'];
@@ -556,7 +556,7 @@ class PassService {
             }
 
         }
-       
+        return $order;
     }
 
     public function updateWallet($order){
