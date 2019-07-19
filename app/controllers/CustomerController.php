@@ -4089,7 +4089,6 @@ class CustomerController extends \BaseController {
         ];
 
 		$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
-		//get flexi contain (flexipass_small, flexipass) with orders count
 		$this->flexipassHome($order, $result);
 		// if(empty($order)) {
 		// 	$result['buy_pass'] = [
@@ -9759,11 +9758,6 @@ class CustomerController extends \BaseController {
 			$result['flexipass'] = $trial_pass;
 			$result['flexipass_small'] = $passConfig['flexipass_small'];
 		}
-		// else {
-		// 	// need to update
-		// 	////fatch trial pass from order->>> allready comming in passPurchased parameter 
-		// 	$result['flexipass'] = $passConfig['subscription_pass'];	
-		// }
 	}
 
 	public function getPass($type){
