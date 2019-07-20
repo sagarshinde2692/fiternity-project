@@ -3915,7 +3915,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderDetailApp($slug, $cache = true){
+	public function finderDetailApp($slug, $cache = false){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -5294,7 +5294,7 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session'){
-                            $ratecard['remarks'] = "Monsoon Bonanza | Book Workout Sessions At INR 99 only";
+                            $ratecard['remarks'] = "100% Instant Cashback";
                             if(!empty($finder['flags']['monsoon_campaign_pps'])){
                                 $ratecard['remarks'] = "Monsoon Bonanza | Book Workout Sessions At INR 99 only";
                             }
