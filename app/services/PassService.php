@@ -249,7 +249,8 @@ class PassService {
             return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (2)'];
         }
 
-        $this->passPurchaseCommunication($order);
+        $communication = $this->passPurchaseCommunication($order);
+        $order->update(['communication'=> $communication]);
 
         $success_data = $this->getSuccessData($order);
 
@@ -467,8 +468,9 @@ class PassService {
 
 
         $order->status = '1';
+        $communication = $this->passPurchaseCommunication($order);
+        $order->communication = $communication;
         $order->update();
-        $this->passPurchaseCommunication($order);
         return ['status'=>200, 'message'=>'Transaction successful'];
 
     
@@ -731,7 +733,6 @@ class PassService {
         $sms = new CustomerSms();
         $mail = new CustomerMailer();
         // $notification = new CustomerNotification();
-        Log::info('pass success data::::::::::::::::after email:::::::::::::', [$data]);
 
         $pass_data = array(
             "customer_name" => $data['customer_name'],
@@ -740,9 +741,22 @@ class PassService {
             "type" => $data['type'],
             "duration" => $data['pass']['duration_text'],
         );
-        !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
-        $sms->sendPgOrderSms($pass_data);
-        
-        // $mail->sendPgOrderMail($pass_data);
+        if(empty($data['communication']['sms'])){
+            $smsSent = $sms->sendPgOrderSms($pass_data);
+            Log::info('sent smd',[$smsSent]);
+        }
+        else{
+            $smsSent = $data['communication']['sms'];
+        }
+        if(empty($data['communication']['email'])){
+            //$mail->sendPgOrderMail($pass_data);
+        }
+        else{
+            $smsSent = $data['communication']['email'];
+        }
+
+        return array(
+            'sms'=> $smsSent
+        );
     }
 }
