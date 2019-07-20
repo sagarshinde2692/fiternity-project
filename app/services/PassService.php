@@ -493,8 +493,8 @@ class PassService {
             return;
         }
         $response = ["status" => false];
-        $trialPass = Order::where('status', "1")->where('customer_id', $customerId)->select('_id')->first();
-        // ->where("pass_type", 'trial')
+        $trialPass = Order::where('status', "1")->where('customer_id', $customerId)->select('_id')
+        ->where("pass_type", 'trial')->first();
         if(isset($trialPass['_id'])) {
             $response["status"]= true;
         }
