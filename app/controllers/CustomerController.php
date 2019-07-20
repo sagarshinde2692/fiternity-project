@@ -4091,7 +4091,7 @@ class CustomerController extends \BaseController {
 			
 		];
 
-		if(!empty($workout_sessions_near_vendor) ){
+		if(!empty($workout_sessions_near_customer) ){
 			$result['fitex']['near_by_workouts']= $workout_sessions_near_customer;
 		}
 
