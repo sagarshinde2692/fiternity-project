@@ -9757,19 +9757,16 @@ class CustomerController extends \BaseController {
 		$passConfig = Config::get('pass');
 		Log::info('pass purchased: ::::::::::', [$passPurchased]);
 		if(!empty($passPurchased) && ($passPurchased['pass']['type']=='trial')){
-			//which pass has to choose(1, month, 3, 6)
-			//$pass = $this->getPass('subscription');
-			
+
 			$subscription_pass = $passConfig['boughtflexipass'];
 			$this->fillBoughtPassData($passPurchased, $subscription_pass);
 			$subscription_pass['isUpgrade'] = true;
 			$subscription_pass['passtype'] = 'Upgrade';
-
 			$result['boughtflexipass'] = $subscription_pass;
 		}
 		else if(empty($passPurchased)){
-			$pass = $this->getPass('trial');
 
+			$pass = $this->getPass('trial');
 			$trial_pass = $passConfig['trial_pass'];
 			$this->updateDataOfPass($trial_pass, $pass);
 
@@ -9777,7 +9774,6 @@ class CustomerController extends \BaseController {
 			$result['flexipass_small'] = $passConfig['flexipass_small'];
 		}
 		else{
-			//$pass = $this->getPass('subscription');
 			$subscription_pass = $passConfig['boughtflexipass'];
 			$this->fillBoughtPassData($passPurchased, $subscription_pass);
 			$subscription_pass['isUpgrade'] = false;
@@ -9872,8 +9868,8 @@ class CustomerController extends \BaseController {
 	}
 
 	public function fillBoughtPassData($passPurchased, &$subscription_pass){
+		
 		$subscription_pass['validity']['text1'] = strtr($subscription_pass['validity']['text1'], ["__duration" => $passPurchased['pass']['duration'], "__duration_type" => ucwords($passPurchased['pass']['duration_type'])]);
-
 		$subscription_pass['booking']['text1'] = $this->getBookingOfPass($passPurchased['_id']);
 		$subscription_pass['swimming']['text1'] = $passPurchased['pass']['premium_sessions']- $passPurchased['premium_sessions_used'];
 	}
