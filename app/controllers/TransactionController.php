@@ -3531,6 +3531,23 @@ class TransactionController extends \BaseController {
             }
         }    
 
+        if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
+            Order::$withoutAppends = true;
+            $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $data['customer_id']);
+            if($creditsApplicable['credits'] != 0) {
+                $data['pass_type'] = $creditsApplicable['pass_type'];
+                $data['pass_order_id'] = $creditsApplicable['order_id'];
+                $data['pass_booking'] = true;
+
+                if(!empty($creditsApplicable['pass_premium_session'])) {
+                    $data['pass_premium_session'] = true;
+                }
+
+                $data['pass_credits'] = $creditsApplicable['credits'];
+                $amount = 0;
+            }
+        }
+        
         if(!empty($data['amount'] ) && $data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
             Order::$withoutAppends = true;
             $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
@@ -3865,24 +3882,6 @@ class TransactionController extends \BaseController {
 
         }
         
-        if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
-            Order::$withoutAppends = true;
-            $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $data['customer_id']);
-            if($creditsApplicable['credits'] != 0) {
-                $data['pass_type'] = $creditsApplicable['pass_type'];
-                $data['pass_order_id'] = $creditsApplicable['order_id'];
-                $data['pass_booking'] = true;
-
-                if(!empty($creditsApplicable['pass_premium_session'])) {
-                    $data['pass_premium_session'] = true;
-                }
-
-                $data['pass_credits'] = $creditsApplicable['credits'];
-                $amount = 0;
-            }
-        }
-        
-
         $data['amount_final'] = $amount;
 
         if(isset($data['wallet']) && $data['wallet'] == true){
