@@ -9755,15 +9755,17 @@ class CustomerController extends \BaseController {
 
 	public function flexipassHome($passPurchased, &$result){
 		$passConfig = Config::get('pass');
-
+		Log::info('pass purchased: ::::::::::', [$passPurchased]);
 		if(!empty($passPurchased) && ($passPurchased['pass']['type']=='trial')){
 			//which pass has to choose(1, month, 3, 6)
-			$pass = $this->getPass('subscription');
+			//$pass = $this->getPass('subscription');
+			
+			$subscription_pass = $passConfig['boughtflexipass'];
+			$this->fillBoughtPassData($passPurchased, $subscription_pass);
+			$subscription_pass['isUpgrade'] = true;
+			$subscription_pass['passtype'] = 'Upgrade';
 
-			$subscription_pass = $passConfig['subscription_pass'];
-			$this->updateDataOfPass($subscription_pass, $pass);
-
-			$result['flexipass'] = $subscription_pass;
+			$result['boughtflexipass'] = $subscription_pass;
 		}
 		else if(empty($passPurchased)){
 			$pass = $this->getPass('trial');
@@ -9773,6 +9775,14 @@ class CustomerController extends \BaseController {
 
 			$result['flexipass'] = $trial_pass;
 			$result['flexipass_small'] = $passConfig['flexipass_small'];
+		}
+		else{
+			//$pass = $this->getPass('subscription');
+			$subscription_pass = $passConfig['boughtflexipass'];
+			$this->fillBoughtPassData($passPurchased, $subscription_pass);
+			$subscription_pass['isUpgrade'] = false;
+			$subscription_pass['passtype'] = 'Subscription';
+			$result['boughtflexipass'] = $subscription_pass;
 		}
 	}
 
@@ -9853,5 +9863,18 @@ class CustomerController extends \BaseController {
 			unset($value['finder']);
 			unset($value['service']);
 		}
+	}
+
+	public function getBookingOfPass($pass_order_id){
+		return Order::active()
+		->where('pass_order_id', $pass_order_id)
+		->count();
+	}
+
+	public function fillBoughtPassData($passPurchased, &$subscription_pass){
+		$subscription_pass['validity']['text1'] = strtr($subscription_pass['validity']['text1'], ["__duration" => $passPurchased['pass']['duration'], "__duration_type" => ucwords($passPurchased['pass']['duration_type'])]);
+
+		$subscription_pass['booking']['text1'] = $this->getBookingOfPass($passPurchased['_id']);
+		$subscription_pass['swimming']['text1'] = $passPurchased['pass']['premium_sessions']- $passPurchased['premium_sessions_used'];
 	}
 }

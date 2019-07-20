@@ -163,5 +163,29 @@ return [
         "header" => "Introducing Fitternity - OnePass",
         "subheader" => "Experience the All New Freedom to workout in any Gym or Studio across India",
         "button_text" => "Explore"
+    ],
+
+    "boughtflexipass" => [
+        "header" => "OnePass Activated",
+        "passtype" => "Upgrade",
+        "isUpgrade" => true,
+        "button_text" => "Book",
+        "sessions" => [
+            "text1" => "∞",
+            "text2" => "Sessions \n left"
+        ],
+        "swimming" => [
+            "text1" => "__left_swimming_session",
+            "text2" => "Swimming Sessions"   
+        ],
+        "booking" => [
+            "text1" => "",
+            "text2" => "Bookings \n done"
+        ],
+        "validity" => [
+            "text1" => "__duration __duration_type",
+            "text2" => "Trial ends \n in "
+        ],
+        "footer"  => "Lorum lorum lorum lorum lorum"
     ]
 ];
