@@ -188,7 +188,9 @@ class PassService {
                 $data['amount'] = $data['amount'] - $data['fitcash'];
                 // $data['amount'] = 1;
                 $data['wallet_id'] = $wallet['_id'];
+                $data['rp_description'] = $data['fitcash'].' Rs Fitcash Applied.';
             }
+            $data['rp_name'] = $data['pass']['duration_text'];
             $order = new Order($data);
             $order['_id'] = $data['_id'];
 
@@ -209,7 +211,7 @@ class PassService {
 
 
         }
-  
+
         return  [
             'status' => 200,
             'data' => !empty($result) ? $result : $order,
