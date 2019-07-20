@@ -524,26 +524,34 @@ class PassService {
         );
         
         if(!empty($order['pass']['unlimited_access'])){
-            $success_template['pass']['subheader'] = "Unlimitd Access";
-            $success_template['pass']['header'] = $order['pass']['name'];
-            $success_template['pass_image'] = $success['pass_image_gold'];
-        }
-        else{
-            $success_template['pass']['header'] = strtr(
-                $success_template['pass']['header'],
+            $success_template['pass']['subheader'] = strtr(
+                $success_template['pass']['subheader'],
                 [
-                    '__name'=> $order['pass']['name']
+                    'duration_text'=> $order['pass']['duration_text']
                 ]
             );
+            $success_template['pass']['header'] = $order['pass']['name'];
+            $success_template['pass']['image'] = $success['pass_image_gold'];
+            $success_template['pass']['type'] =  strtoupper($order['pass']['type']);
+            $success_template['pass']['price'] =  strtoupper($order['pass']['price']);
+        }
+        else{
+            $success_template['pass']['header'] = $order['pass']['name'];
+            // strtr(
+            //     $success_template['pass']['header'],
+            //     [
+            //         '__name'=> $order['pass']['name']
+            //     ]
+            // );
 
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
                 [
-                    '__pass_count'=> $order['pass']['classes']
+                    'duration_text'=> $order['pass']['duration_text']
                 ]
             );
 
-            $success_template['pass_image'] = $success['pass_image_silver'];
+            $success_template['pass']['image'] = $success['pass_image_silver'];
         }
        
         if(!in_array(Request::header('Device-Type'), ["android", "ios"])){

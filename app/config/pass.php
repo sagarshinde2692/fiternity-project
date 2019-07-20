@@ -96,10 +96,17 @@ return [
         "header" => "Your subscription is active",
         'subline'=>'Hi __customer_name, your __pass_name for __pass_duration is now active. We have also sent you a confirmation Email and SMS.',
         "pass" => [
-            "header" => "__name",
-            "subheader" => "__pass_count Classes",
-            "type" => "Monthly",
-            "text" => "Valid up to __end_date"
+            // "header" => "__name",
+            // "subheader" => "__pass_count Classes",
+            // "type" => "Monthly",
+            "text" => "Valid up to __end_date",
+            // 'header' => 'pass_name',
+            'header' => 'pass_name',
+            'subheader' => 'duration_text PASS FOR UNLIMITED USAGE',
+            'image' => $silver_logo,
+            'name' => 'FLEXI PASS',
+            'type' => 'pass_type',
+            'price' => 'pass_price'
         ],
         'info'=>[
             'header'=>'Things to keep in mind',
