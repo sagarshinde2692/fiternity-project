@@ -1656,7 +1656,7 @@ class ServiceController extends \BaseController {
 				->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
 				->with('category')
 				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->where("description", "!=", "")->orderBy('updated_at', 'DESC')->limit(3);}))
-				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo', 'category_id']);
+				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo', 'category_id', 'flags']);
 
 			if(!$finder){
 				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
@@ -1705,6 +1705,7 @@ class ServiceController extends \BaseController {
 			
 			};
 			$service_details['finder_slug'] = $finder['slug'];
+			$service_details['finder_flags'] = $finder['flags'];
 			$service_details['lat'] = (string)$service_details['lat'];
 			$service_details['lon'] = (string)$service_details['lon'];
 
