@@ -1801,7 +1801,7 @@ Class CustomerReward {
 
             
             if(strtolower($couponCode) == 'fitback' && !empty($ratecard) && $ratecard['type'] == 'workout session' && !empty($finder['flags']['monsoon_campaign_pps'])){
-                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Not applicable on this booking as prices are already marked down");
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Cashback is not applicable on this transaction");
                     return $resp;   
             }
         }
