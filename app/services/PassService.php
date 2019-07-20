@@ -248,9 +248,8 @@ class PassService {
         if(empty($order['status'])){
             return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (2)'];
         }
-        else{
-            $this->passPurchaseCommunication($order);
-        }
+        
+        $this->passPurchaseCommunication($order);
         
         $success_data = $this->getSuccessData($order);
 
@@ -471,7 +470,7 @@ class PassService {
         $order->update();
 
         $this->passPurchaseCommunication($order);
-        
+
         return ['status'=>200, 'message'=>'Transaction successful'];
 
     
