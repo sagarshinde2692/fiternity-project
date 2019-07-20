@@ -3850,7 +3850,13 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
-        return "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself as well as friends & family.";
+        $line = "Monsoon Bonanza | Book Workout Sessions At INR 99 Only | For Memberships & Session Packs Get 100% Instant Cashback at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
+
+        if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
+            $line = "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
+        }
+
+        return $line;
 		
 		$brandMap = [
 			135 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹20,000 worth of rewards',
@@ -4669,8 +4675,8 @@ class FindersController extends \BaseController {
 
 					if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
 						
-						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial', $data['finder']['trial']);
-						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session');
+						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial', $data['finder']['trial'],$data['finder']);
+						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session',null,$data['finder']);
 
                         
 						
@@ -4907,6 +4913,10 @@ class FindersController extends \BaseController {
                         }else{
                             $finderData['call_for_action_button']      =      "Book A Session";
                             $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking sessions';    
+
+                            if(!empty($finderData['finder']['flags']['monsoon_campaign_pps'])){
+                                $finderData['call_for_action_button']      =      "Book a Session @ 99";
+                            }
                         }
 
                     }
@@ -5228,7 +5238,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function getTrialWorkoutRatecard($finderservices,$findertype,$type, $finder_trial = null){
+	public function getTrialWorkoutRatecard($finderservices,$findertype,$type, $finder_trial = null, $finder=null){
 
 		$finderservicesArr  =   [];
 
@@ -5284,7 +5294,10 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session'){
-                            $ratecard['remarks'] = "Get 100% instant cashback";
+                            $ratecard['remarks'] = "Monsoon Bonanza | Book Workout Sessions At INR 99 only";
+                            if(!empty($finder['flags']['monsoon_campaign_pps'])){
+                                $ratecard['remarks'] = "Monsoon Bonanza | Book Workout Sessions At INR 99 only";
+                            }
                         }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
 							$ratecard_price = $ratecard['special_price'];
@@ -7135,7 +7148,7 @@ class FindersController extends \BaseController {
 			$service = $this->addingRemarkToDuplicate($service, 'app');
 		}
 
-		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title']);
+		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title'],$data['finder']);
 		//updating duration name for extended validity ratecards
 		foreach($data['finder']['services'] as &$service){
 			foreach($service[$ratecard_key] as $key1=>&$ratecard){
@@ -8235,7 +8248,7 @@ class FindersController extends \BaseController {
         }
     }
 	
-	public function orderSummary($services, $finder_name){
+	public function orderSummary($services, $finder_name, $finder=null){
         $orderSummary2 = Config::get('orderSummary.order_summary');
 		$orderSummary2['header'] = strtr($orderSummary2['header'], ['vendor_name'=>$finder_name]);
 		$title =  strtolower($orderSummary2['title']);
@@ -8245,10 +8258,15 @@ class FindersController extends \BaseController {
 			foreach($service['ratecard'] as &$rc){
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
-				if(in_array($rc['type'], ['membership', 'extended validity']))
+				if(in_array($rc['type'], ['membership', 'extended validity'])){
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Get 100% instant cashback using code FITBACK on this booking. Book multiple workout sessions, buy session packs, memberships & more using this cashback for yourself, friends & family.");
-				else
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
+                }else{
+                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
+                    if(!empty($finder['flags']['monsoon_campaign_pps'])){
+                        $orderSummary['header'] .= ucwords("\n\n Get 100% instant cashback using code FITBACK on this booking. Book multiple workout sessions, buy session packs, memberships & more using this cashback for yourself, friends & family.");
+                    }
+
+                }
 				$orderSummary['title'] = ucwords($title);
 				$rc['order_summary'] = $orderSummary;
 				$remark_data=[];
