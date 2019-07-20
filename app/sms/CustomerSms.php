@@ -270,6 +270,9 @@ Class CustomerSms extends VersionNextSms{
 			}
 		}
 		
+		if(!empty($data['type']) && $data['type'] ==  "pass"){
+			$label = 'Pass-Purchase-Customer';
+		}
 		
 
 		$to = $data['customer_phone'];

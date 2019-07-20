@@ -23,6 +23,7 @@ return array(
 	'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
 	'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
 	'razorpay' => [ 'key_id' => 'rzp_test_6TKjLnXzpuVIds', 'secret_key' => 'rK7FwR1a4coHHLCuhSSLz8P5', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
+	"pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -46,6 +47,7 @@ return array(
 	// 'razorPayKey' => 'rzp_test_6TKjLnXzpuVIds',
 	// 'razorPaySecret' => 'rK7FwR1a4coHHLCuhSSLz8P5',
 	// "webhook_secret_key"=>"qwepoifghtyvb",
+	// "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
 
     //beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
