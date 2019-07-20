@@ -282,7 +282,18 @@ class TransactionController extends \BaseController {
             $data = $transform_response['data'];
 
         }
+        
+        $status = "0";
+        if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+            $status = $data['status'];
+            $payment_mode_admin = $data['payment_mode'];
+            $secondary_payment_mode_admin = $data['secondary_payment_mode'];
 
+            Log::info("status 1 ::",[$status]);
+            Log::info("payment_mode 1 ::",[$payment_mode_admin]);
+            Log::info("secondary_payment_mode_admin 1 ::",[$secondary_payment_mode_admin]);
+        }
+        
         $rules = array(
             'customer_name'=>'required',
             'customer_email'=>'required|email',
@@ -447,8 +458,8 @@ class TransactionController extends \BaseController {
         /*if(isset($data['wallet']) && !$data['wallet']){
             $data['paymentmode_selected'] = 'paymentgateway';
         }*/
-
         
+
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
             if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1 ){
                 $data['paymentmode_selected'] = 'paymentgateway';
@@ -951,16 +962,19 @@ class TransactionController extends \BaseController {
 
             }
 
-            $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+            if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+            }else{
+                $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
             
-            // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
-            
-            if($cashbackRewardWallet['status'] != 200){
-                return Response::json($cashbackRewardWallet,$this->error_status);
+                // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
+                
+                if($cashbackRewardWallet['status'] != 200){
+                    return Response::json($cashbackRewardWallet,$this->error_status);
+                }
+                
+                $data = array_merge($data,$cashbackRewardWallet['data']);
             }
             
-            $data = array_merge($data,$cashbackRewardWallet['data']);
-
         }
 
         if(!empty($data['donation_amount']) && is_numeric($data['donation_amount'])){
@@ -1026,19 +1040,23 @@ class TransactionController extends \BaseController {
 
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
-
-                if($this->utilities->isConvinienceFeeApplicable($data)){
-
-                    $convinience_fee_percent = Config::get('app.convinience_fee');
-
-                    $convinience_fee = round($part_payment_data['amount_finder']*$convinience_fee_percent/100);
-
-                    $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
-                    
+                if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+                    $convinience_fee = 0;
                     $part_payment_data['convinience_fee'] = $convinience_fee;
+                }else{
+                    if($this->utilities->isConvinienceFeeApplicable($data)){
 
+                        $convinience_fee_percent = Config::get('app.convinience_fee');
+    
+                        $convinience_fee = round($part_payment_data['amount_finder']*$convinience_fee_percent/100);
+    
+                        $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
+                        
+                        $part_payment_data['convinience_fee'] = $convinience_fee;
+    
+                    }
                 }
-
+                
                 $part_payment_amount = ceil(($data["amount_finder"] * (20 / 100)));
 
                 $part_payment_data["amount"] = $convinience_fee + $part_payment_amount;
@@ -1075,23 +1093,26 @@ class TransactionController extends \BaseController {
 
 
         if(empty($data['convinience_fee'])){
-
             $data['convinience_fee'] = 0;
-    
-            if($this->utilities->isConvinienceFeeApplicable($data)){
+            
+            if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+                $data['convinience_fee'] = 0;
+            }else{
+                if($this->utilities->isConvinienceFeeApplicable($data)){
                 
-                $convinience_fee_percent = Config::get('app.convinience_fee');
-    
-                $convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
-    
-                $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
-    
-                $data['convinience_fee'] = $convinience_fee;
-    
-                if(!empty($data['customer_quantity'])){
-                    $data['convinience_fee'] = $data['convinience_fee'] * $data['customer_quantity'];
+                    $convinience_fee_percent = Config::get('app.convinience_fee');
+        
+                    $convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
+        
+                    $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
+        
+                    $data['convinience_fee'] = $convinience_fee;
+        
+                    if(!empty($data['customer_quantity'])){
+                        $data['convinience_fee'] = $data['convinience_fee'] * $data['customer_quantity'];
+                    }
+        
                 }
-    
             }
         }
 
@@ -1162,13 +1183,27 @@ class TransactionController extends \BaseController {
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
         }
+        
+        $data['status'] = $status;
+        Log::info("after status !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", [$data['status']]);
 
-        $data["status"] = "0";
+        if(!empty(Request::header('Origin')) && strpos( Request::header('Origin'), "www.jgsfitness.com" ) !== false){
+            $data['jgs'] = true;
+
+            if(!empty($data['multifit'])){
+                unset($data['multifit']);
+            }
+        }
 
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] == 'pay_at_vendor'){
 
             $data['payment_mode'] = 'at the studio';
             $data["secondary_payment_mode"] = "at_vendor_post";
+        }
+
+        if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
+            $data['payment_mode'] = $payment_mode_admin;
+            $data['secondary_payment_mode'] = $secondary_payment_mode_admin;
         }
 
         $is_tab_active = isTabActive($data['finder_id']);
@@ -1406,7 +1441,7 @@ class TransactionController extends \BaseController {
             }
             
             
-            if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
+            if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']))){
                 $resp['data']["coupon_details"] = [];
                 $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
                 $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
@@ -3649,7 +3684,7 @@ class TransactionController extends \BaseController {
 
             if($order && isset($order['coupon_code'])){
 
-                $order->unset(['coupon_code', 'coupon_discount_amount']);
+                $order->unset(['coupon_code', 'coupon_discount_amount','coupon_flags']);
                 // $order->unset('coupon_discount_amount');
             }
 
@@ -6094,15 +6129,15 @@ class TransactionController extends \BaseController {
                 
             }
 
-            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per']))){
 
                 if($payment_mode_type != 'pay_later'){
 
                     $amount_summary[] = array(
                         'field' => 'Coupon Discount',
-                        'value' => '-Rs. '.$data['coupon_discount_amount']
+                        'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "100% Cashback"
                     );
-                    $you_save += $data['coupon_discount_amount'];
+                    $you_save += (!empty($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0);
                 }else{
                     $amount_final = $amount_final + $data['coupon_discount_amount'];
                     $amount_payable['value'] = "Rs. ".$amount_final;   
@@ -6793,6 +6828,7 @@ class TransactionController extends \BaseController {
         $result['finder_name'] = strtolower($data['finder_name']);
         $result['fitcash_amount'] = $data['fitcash_amount'];
         $result['success_msg'] = $data['fitcash_amount']." fitcash has been added into your wallet";
+        $result['type'] = 'wallet';
         
         
         $resp   =   array(
@@ -7055,7 +7091,7 @@ class TransactionController extends \BaseController {
             }
             
             if(!empty($data['type']) && in_array($data['type'], ['membership', 'memberships'])){
-                $result['offer_text'] = "You are eligilble for 100% instant cashback  with this purchase";
+                $result['offer_text'] = "";
             }
 
             if(((isset($data['finder_flags']['disable_dynamic_pricing']) && empty($data['finder_flags']['disable_dynamic_pricing'])) || (isset($data['service_flags']['disable_dynamic_pricing']) && empty($data['service_flags']['disable_dynamic_pricing']))) && $data['type'] == 'workout session' && !empty($data['slot']['slot_time']) && $data['slot']['date'])
@@ -9162,6 +9198,11 @@ class TransactionController extends \BaseController {
             Log::info("bulk_purchase");
             $this->updateBulkPurchase($data);
         }
+
+        if(!empty($data['type']) && $data['type'] == 'workout-session'){
+            Log::info("updatePpsRepeat");
+            $this->updatePpsRepeat($data);
+        }
         
         $this->utilities->fitnessForce(['data'=>$data, 'type'=>$type]);
 
@@ -9289,6 +9330,23 @@ class TransactionController extends \BaseController {
         }
 
 
+    }
+
+    public function updatePpsRepeat($data){
+        
+        Order::$withoutAppends=true;
+        $count = Order::where('customer_phone', $data['customer_phone'])
+				->where('coupon_code', '!=', 'FIRSTPPSFREE')
+				->where('type', 'workout-session')
+				->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
+				->where('status', '1')
+				->where('created_at', '<', new DateTime( date("d-m-Y H:i:s", strtotime( $data['created_at'] )) ))
+				->where('_id', '!=', $data['order_id'])
+                ->count();
+                        
+        if($count > 0){
+            Order::where('_id',(int)$data['order_id'])->update(array('pps_repeat'=> true));
+        }
     }
 
     public function createSessionPack($data){

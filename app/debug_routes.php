@@ -30,6 +30,7 @@ Route::get('migrations/commercial', 'MigrationsController@commercial');
 Route::get('migrations/onboard', 'MigrationsController@onboard');
 Route::get('migrations/feedback', 'MigrationsController@feedback');
 Route::get('newordermigration', 'DebugController@newOrderMigration');
+Route::get('ppsRepeat', 'DebugController@ppsRepeat');
 
 
 

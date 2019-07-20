@@ -8716,7 +8716,8 @@ class CustomerController extends \BaseController {
 				// $customer->update(['loyalty'=>$loyalty]);
 				Customer::where('_id', $customer_id)->increment('loyalty.workout_sessions.'.$finder_id);
             }elseif(!empty($update_finder_membership)){
-                if(empty($loyalty['memberships']) || !in_array($finder_id, $loyalty['memberships'])){
+				$loyalty['memberships'] = !empty($loyalty['memberships']) ? $loyalty['memberships'] : [];
+                if(!in_array($finder_id, $loyalty['memberships'])){
                     array_push($loyalty['memberships'], $finder_id);
                     $customer->update(['loyalty'=>$loyalty]);
                 }
@@ -9192,7 +9193,7 @@ class CustomerController extends \BaseController {
 
             }
 
-            $post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".(($milestone_claim_count < count($post_reward_template['data']) ? $milestone_claim_count : count($post_reward_template['data'])) - count($claimed_vouchers) )." Reward(s)");
+            $post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) || count($post_reward_template['data']) <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".(($milestone_claim_count < count($post_reward_template['data']) ? $milestone_claim_count : count($post_reward_template['data'])) - count($claimed_vouchers) )." Reward(s)");
             $post_register_rewards_data[] = $post_reward_template;
             
         }

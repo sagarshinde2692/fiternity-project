@@ -491,7 +491,7 @@ class Service extends \Basemodel{
                     $value['duration_type'] = 'sessions';
                 }
 
-                if(!empty($value['type']) && $value['type'] == "workout session"){
+                if(!empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
                     if(!empty($value['offers'][0]['remarks'])){
                         $value['offers'][0]['remarks'] = "Get 100% instant cashback";
                         $value['remarks_imp'] =  true;
@@ -506,9 +506,12 @@ class Service extends \Basemodel{
                     $value['remarks_imp'] =  true;
 				}
                 
-                if(in_array($value['type'], ["membership", "extended validity"])&& isFinderIntegrated($finder) && isServiceIntegrated($this)){
+                if(in_array($value['type'], ["membership", "extended validity"])&& isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios']) ){
                     $value['campaign_offer'] =  "100% cashback";
                     $value['campaign_color'] = "#43a047";
+				}else{
+					$value['campaign_offer'] =  "";
+                    $value['campaign_color'] = "";
 				}
 				
 				unset($value['flags']['convinience_fee_applicable']);

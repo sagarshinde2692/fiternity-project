@@ -811,7 +811,8 @@ Class CustomerReward {
                     if(isset($order['type']) && $order['type'] == 'workout-session'){
                         $walletData = array(
                             "order_id"=>$order['_id'],
-                            "customer_id"=> intval($order['customer_id']),
+                            // "customer_id"=> intval($order['customer_id']),
+                            "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
                             "amount"=> intval($cashback_amount),
                             "amount_fitcash" => 0,
                             "amount_fitcash_plus" => intval($cashback_amount),
@@ -839,7 +840,8 @@ Class CustomerReward {
                     }else{
                         $walletData = array(
                             "order_id"=>$order['_id'],
-                            "customer_id"=> intval($order['customer_id']),
+                            // "customer_id"=> intval($order['customer_id']),
+                            "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
                             "amount"=> intval($cashback_amount),
                             "amount_fitcash" => 0,
                             "amount_fitcash_plus" => intval($cashback_amount),

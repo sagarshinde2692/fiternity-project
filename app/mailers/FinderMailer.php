@@ -135,7 +135,8 @@ Class FinderMailer extends Mailer {
 			$common = [
 				'siddharthshah@fitternity.com',
 				'dharmindersingh@fitternity.com',
-				'priyankapatel@fitternity.com'
+				'priyankapatel@fitternity.com',
+				'shreyasjadhav@fitternity.com'
 			];
 
 			$user_email = array_merge($user_email,$common);
@@ -280,7 +281,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'RM-email-on-profile-edit-request';
 
-		$user_email = array('pranjalisalvi@fitternity.com','sailismart@fitternity.com','harshitagupta@fitternity.com', 'priyankapatel@fitternity.com');
+		$user_email = array('pranjalisalvi@fitternity.com','sailismart@fitternity.com','harshitagupta@fitternity.com', 'priyankapatel@fitternity.com', 'shreyasjadhav@fitternity.com');
 
 		$message_data 	= array(
 			'user_email' => $user_email
@@ -427,7 +428,8 @@ Class FinderMailer extends Mailer {
 		$common = [
 			'siddharthshah@fitternity.com',
 			'dharmindersingh@fitternity.com',
-			'priyankapatel@fitternity.com'
+			'priyankapatel@fitternity.com',
+			'shreyasjadhav@fitternity.com'
 		];
 
 		$user_email = array_merge($user_email,$common);
@@ -592,7 +594,7 @@ Class FinderMailer extends Mailer {
 
         $label = 'First-Autotrial-Fitternity';
 
-        $user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','fitternity.suraj@gmail.com', 'priyankapatel@fitternity.com');
+        $user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','fitternity.suraj@gmail.com', 'priyankapatel@fitternity.com', 'shreyasjadhav@fitternity.com');
 
         $user_name = 'Fitternity Team';
 
@@ -768,7 +770,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'NoPrevSalesNotification';
 
-		$user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','surajshetty@fitternity.com', 'priyankapatel@fitternity.com');
+		$user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','surajshetty@fitternity.com', 'priyankapatel@fitternity.com', 'shreyasjadhav@fitternity.com');
 		$user_name = "Fitternity Team";
 
 		$message_data 	= array(
@@ -819,7 +821,7 @@ Class FinderMailer extends Mailer {
 
 	protected function partPaymentFitternity($data){
 		$label = 'PartPaymentPurchase-Fitternity';
-		$user_email 	=  	['sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'priyankapatel@fitternity.com'];
+		$user_email 	=  	['sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'priyankapatel@fitternity.com', 'shreyasjadhav@fitternity.com'];
 		$message_data 	= array(
 			'user_email' => $user_email,
 			'user_name' =>  'Fitterntiy',
@@ -840,7 +842,8 @@ Class FinderMailer extends Mailer {
 			'kevalshah@fitternity.com',
 			'priyankapatel@fitternity.com',
 			'ismailbaig@fitternity.com',
-			'arvindraj@fitternity.com'
+			'arvindraj@fitternity.com',
+			'shreyasjadhav@fitternity.com'
 		];
 
 		/*if(isset($data['city_id']) && $data['city_id'] != ""){
@@ -918,7 +921,8 @@ Class FinderMailer extends Mailer {
 						'mitmehta@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
-						'priyankapatel@fitternity.com' 
+						'priyankapatel@fitternity.com',
+						'shreyasjadhav@fitternity.com' 
 					];
 					break;
 				case 2 : 
@@ -927,14 +931,16 @@ Class FinderMailer extends Mailer {
 						'vishankkapoor@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
-						'priyankapatel@fitternity.com' 
+						'priyankapatel@fitternity.com',
+						'shreyasjadhav@fitternity.com' 
 					];
 					break;
 				case 3 : 
 					$data['fitternity_email'] = [
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
-						'priyankapatel@fitternity.com' 
+						'priyankapatel@fitternity.com',
+						'shreyasjadhav@fitternity.com' 
 					];
 					break;
 				case 4 : 
@@ -952,7 +958,8 @@ Class FinderMailer extends Mailer {
 						"shreyajain@fitternity.com",
 						"arfatinamdar@fitternity.com",
 						"anoliadhia@fitternity.com",
-						'priyankapatel@fitternity.com'
+						'priyankapatel@fitternity.com',
+						'shreyasjadhav@fitternity.com'
  
 					];
 					break;
@@ -968,7 +975,8 @@ Class FinderMailer extends Mailer {
 						"shreyajain@fitternity.com",
 						"arfatinamdar@fitternity.com",
 						"anoliadhia@fitternity.com",
-						'priyankapatel@fitternity.com'
+						'priyankapatel@fitternity.com',
+						'shreyasjadhav@fitternity.com'
 					];
 					break;
 				default:
@@ -1005,7 +1013,8 @@ Class FinderMailer extends Mailer {
 						'mitmehta@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
-						'priyankapatel@fitternity.com' 
+						'priyankapatel@fitternity.com',
+						'shreyasjadhav@fitternity.com' 
 					];
 					break;
 				case 2 : 
@@ -1014,14 +1023,16 @@ Class FinderMailer extends Mailer {
 						'vishankkapoor@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
-						'priyankapatel@fitternity.com' 
+						'priyankapatel@fitternity.com',
+						'shreyasjadhav@fitternity.com' 
 					];
 					break;
 				case 3 : 
 					$data['fitternity_email'] = [
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
-						'priyankapatel@fitternity.com' 
+						'priyankapatel@fitternity.com',
+						'shreyasjadhav@fitternity.com' 
 					];
 					break;
 				case 4 : 
@@ -1039,7 +1050,8 @@ Class FinderMailer extends Mailer {
 						"shreyajain@fitternity.com",
 						"arfatinamdar@fitternity.com",
 						"anoliadhia@fitternity.com",
-						'priyankapatel@fitternity.com' 
+						'priyankapatel@fitternity.com',
+						'shreyasjadhav@fitternity.com' 
 					];
 					break;
 				case 6 : 
@@ -1052,7 +1064,8 @@ Class FinderMailer extends Mailer {
 						"deepdesai@fitternity.com",
 						"shreyajain@fitternity.com",
 						"arfatinamdar@fitternity.com",
-						"anoliadhia@fitternity.com"
+						"anoliadhia@fitternity.com",
+						'shreyasjadhav@fitternity.com'
 					];
 					break;
 				case 11 : 
@@ -1066,7 +1079,8 @@ Class FinderMailer extends Mailer {
 						"shreyajain@fitternity.com",
 						"arfatinamdar@fitternity.com",
 						"anoliadhia@fitternity.com",
-						'priyankapatel@fitternity.com'
+						'priyankapatel@fitternity.com',
+						'shreyasjadhav@fitternity.com'
 					];
 					break;	
 				default:
@@ -1245,7 +1259,7 @@ Class FinderMailer extends Mailer {
 			}
 		}
 		
-		$all_city_ids = ['vinichellani@fitternity.com', 'pranjalisalvi@fitternity.com', 'siddharthshah@fitternity.com', 'priyankapatel@fitternity.com'];
+		$all_city_ids = ['vinichellani@fitternity.com', 'pranjalisalvi@fitternity.com', 'siddharthshah@fitternity.com', 'priyankapatel@fitternity.com',	'shreyasjadhav@fitternity.com'];
 		
 		$data['fitternity_email'] = array_merge($data['fitternity_email'], $all_city_ids);
 
@@ -1264,7 +1278,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'TrialAlert-Fitternity';
 
-		$user_email = ["vinichellani@fitternity.com","rohityadav@fitternity.com","karishahuja@fitternity.com","mukeshraheja@fitternity.com","prachimayekar@fitternity.com", 'priyankapatel@fitternity.com'];
+		$user_email = ["vinichellani@fitternity.com","rohityadav@fitternity.com","karishahuja@fitternity.com","mukeshraheja@fitternity.com","prachimayekar@fitternity.com", 'priyankapatel@fitternity.com', 'shreyasjadhav@fitternity.com'];
 		
 		// $user_email = ["dhruvsarawagi@fitternity.com"];
 		$user_name = 'Fitternity Team';
@@ -1273,6 +1287,42 @@ Class FinderMailer extends Mailer {
 			'user_email' => $user_email,
 			'user_name' => $user_name
 		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function multifitRequest($data){
+		
+		$user_email = ["info@multifit.co.in"];
+		
+		$user_name = 'Multifit Team';
+
+		if($data['capture_type'] == 'multifit-franchisepage'){
+			$label = 'OwnFranchise-Multifit-Vendor';
+			
+			$message_data = array();
+			$message_data 	= array(
+				'user_email' => $user_email,
+				'user_name' => $user_name,
+				'customer_name' => $data['name'],
+				'customer_email' => $data['email'],
+				'customer_phone' => $data['mobile'],
+				'city' => $data['city']
+			);
+		}else if($data['capture_type'] == 'multifit-contactuspage'){
+			$label = 'ContactUs-Multifit-Vendor';
+
+			$message_data = array();
+			$message_data 	= array(
+				'user_email' => $user_email,
+				'user_name' => $user_name,
+				'customer_name' => $data['name'],
+				'customer_email' => $data['email'],
+				'customer_phone' => $data['mobile'],
+				'message' => $data['message'],
+				'company' => $data['company']
+			);
+		}
 
 		return $this->common($label,$data,$message_data);
 	}

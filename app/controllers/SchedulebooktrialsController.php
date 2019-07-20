@@ -2227,6 +2227,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['multifit'] = $order['multifit'];
             }
 
+            if(!empty($order['jgs'])){
+                $booktrialdata['jgs'] = $order['jgs'];
+            }
+
             if(!empty($order['manual_order'])){
                 $booktrialdata['manual_order'] = $order['manual_order'];
             }
