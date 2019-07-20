@@ -1408,7 +1408,7 @@ class FindersController extends \BaseController {
                                 'background'=> '#49bfb3'
                             ];
 
-                            if(!empty($response['finder']['monsoon_campaign_pps'])){
+                            if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                                 $response['vendor_stripe_data']	= [
                                 
                                     'text1'=> "Monsoon Bonanza || Book Workout Sessions At INR 99 Only || Buy Memberships & Session Packs And Get 100% Instant Cashback - Use Code - FITBACK (App Only Deal)",
