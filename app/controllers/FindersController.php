@@ -1401,12 +1401,23 @@ class FindersController extends \BaseController {
                             
                             $response['vendor_stripe_data']	= [
                                 
-                                'text1'=> "MONSOON BONANZA | GET 100% INSTANT CASHBACK (APP ONLY DEAL) | USE CODE: FITBACK",
+                                'text1'=> "Monsoon Bonanza | Get 100% Instant Cashback - Use code: FITBACK (App Only Deal)",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
                                 'background'=> '#49bfb3'
                             ];
+
+                            if(!empty($response['finder']['monsoon_campaign_pps'])){
+                                $response['vendor_stripe_data']	= [
+                                
+                                    'text1'=> "Monsoon Bonanza || Book Workout Sessions At INR 99 Only || Buy Memberships & Session Packs And Get 100% Instant Cashback - Use Code - FITBACK (App Only Deal)",
+                                    'text3'=>"",
+                                    'background-color'=> "",
+                                    'text_color'=> '$fff',
+                                    'background'=> '#49bfb3'
+                                ];
+                            }
 
                         // }elseif(!empty($finder['flags']['sfit'])){
                             // $response['vendor_stripe_data']	=	[
