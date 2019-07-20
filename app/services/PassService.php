@@ -27,12 +27,12 @@ class PassService {
         
         $passList = Pass::where('status', '1');
 
-        if(!Config::get('app.debug')) {
+        //if(!Config::get('app.debug')) {
             $trialPurchased =$this->checkTrialPassUsedByCustomer($customerId);
-        }
-        else {
-            $trialPurchased = false;
-        }
+        // }
+        // else {
+        //     $trialPurchased = false;
+        // }
 
         if(!empty($trialPurchased['status']) && $trialPurchased['status']) {
             $passList = $passList->where('type','!=', 'trial');
