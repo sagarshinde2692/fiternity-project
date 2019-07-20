@@ -96,7 +96,7 @@ return [
         "header" => "Your subscription is active",
         'subline'=>'Hi __customer_name, your __pass_name for __pass_duration is now active. We have also sent you a confirmation Email and SMS.',
         "pass" => [
-            "header" => "__credit_point sweat point credits",
+            "header" => "__name",
             "subheader" => "__pass_count Classes",
             "type" => "Monthly",
             "text" => "Valid up to __end_date"
