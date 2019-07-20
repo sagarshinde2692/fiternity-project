@@ -104,10 +104,10 @@ return [
         'info'=>[
             'header'=>'Things to keep in mind',
             'data'=>[
-                'You get sweatpoint credits to book whatever classes you want',
-                'Download the app & get started',
-                'Book classes at any gym/studio near you, sweatpoints vary by class',
-                'Not loving it? easy cancellation available',
+                'You get unlimited access to book classes at your favorate studios.',
+                'Download the app & get started.',
+                'Book classes at any gym/studio near you of your choice.',
+                'Not loving it? easy cancellation available.',
             ]
         ],
         "concultion" => $success_page_template['conclusion'],
@@ -115,7 +115,7 @@ return [
     ],
     'pass_image_silver' => $silver_logo,
     'pass_image_gold' => $gold_logo,
-    'web_message'=>'Please note - The sessions are bookable only of Fitternity app. Download now',
+    'web_message'=>'Please note - The sessions are bookable only on Fitternity app. Download now.',
 
     'trial_pass' => [
         "logo" => $silver_logo,
