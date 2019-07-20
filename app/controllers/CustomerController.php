@@ -4052,7 +4052,7 @@ class CustomerController extends \BaseController {
 					$result['fitsquad_upgrade'] = $fitsquadUpgradeOrder;
 				}
 			}
-			$workout_sessions_near_vendor = $this->getWorkoutSessions($near_by_vendor_request);
+			$workout_sessions_near_customer = $this->getWorkoutSessions($near_by_vendor_request);
 			//removing fields from search
 			$this->nearVendorRemoveExtraFields($result['near_by_vendor']);
 		}
@@ -4092,7 +4092,7 @@ class CustomerController extends \BaseController {
 		];
 
 		if(!empty($workout_sessions_near_vendor) ){
-			$result['fitex']['near_by_workouts']= $workout_sessions_near_vendor;
+			$result['fitex']['near_by_workouts']= $workout_sessions_near_customer;
 		}
 
 		if(!empty($customeremail))
