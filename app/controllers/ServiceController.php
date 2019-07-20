@@ -1762,7 +1762,15 @@ class ServiceController extends \BaseController {
 			};
 			
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
+            // $ratecard = Ratecard::where("service_id",(int)$value["service_id"])->where('type','workout session')->orderBy("_id","desc")->first();
+            $offer = Offer::where('hidden', false)->where('ratecard_id', $workout_session_ratecard['_id'])->orderBy('_id', 'desc')
+            ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+            ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+            ->first();		
 
+            if(!empty($offer)){
+                $service_details['amount'] = $offer['price'];
+            }
 			
             $service_details['price'] = "₹".$service_details['amount'];
 
