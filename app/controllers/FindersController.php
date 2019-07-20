@@ -3850,10 +3850,10 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
-        $line = "Monsoon Bonanza | Book Workout Sessions At INR 99 Only | For Memberships & Session Packs Get 100% Instant Cashback at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
-
+        $line = "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
+        
         if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
-            $line = "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
+            $line = "Monsoon Bonanza | Book Workout Sessions At INR 99 Only | For Memberships & Session Packs Get 100% Instant Cashback at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
         }
 
         return $line;
