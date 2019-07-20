@@ -739,6 +739,7 @@ class PassService {
             "type" => $data['type'],
             "duration" => $data['pass']['duration_text'],
         );
+        !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
         $sms->sendPgOrderSms($pass_data);
         
         // $mail->($pass_data);

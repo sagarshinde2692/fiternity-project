@@ -176,6 +176,10 @@ Class CustomerMailer extends Mailer {
 			}
 		}
 
+		if(!empty($data['type']) && ($data['type']='pass')){
+            $label = "Pass-Purchase-Customer";
+		}
+
 		$message_data 	= array(
 			'user_email' =>explode(",",$data['customer_email']),
 			'user_name' => $data['customer_name']

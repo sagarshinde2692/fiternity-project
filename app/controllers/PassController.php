@@ -36,7 +36,8 @@ class PassController extends \BaseController {
     }
 
     public function passCapture(){
-        
+        Log::info('checking header in pass capture::::::::::::', [apache_request_headers()]);
+
         $data = Input::json()->all();
 
         $rules = [
@@ -63,6 +64,7 @@ class PassController extends \BaseController {
 
     public function passSuccess(){
         
+        Log::info('checking header in pass success ::::::::::::', [apache_request_headers()]);
         $data = Input::json()->all();
 
         $rules = [
