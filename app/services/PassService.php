@@ -533,7 +533,7 @@ class PassService {
             $success_template['pass']['header'] = $order['pass']['name'];
             $success_template['pass']['image'] = $success['pass_image_gold'];
             $success_template['pass']['type'] =  strtoupper($order['pass']['type']);
-            $success_template['pass']['price'] =  strtoupper($order['pass']['price']);
+            $success_template['pass']['price'] =  $order['pass']['price'];
         }
         else{
             $success_template['pass']['header'] = $order['pass']['name'];
