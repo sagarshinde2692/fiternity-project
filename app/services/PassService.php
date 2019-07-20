@@ -726,8 +726,22 @@ class PassService {
     }
 
     public function passPurchaseCommunication($data){
-        $sms = new CustomerSms($data);
-        // $mail = new CustomerMailer($data);
-        // $notification = new CustomerNotification($data);
+
+        $sms = new CustomerSms();
+        // $mail = new CustomerMailer();
+        // $notification = new CustomerNotification();
+        Log::info('pass success data::::::::::::::::after email:::::::::::::', [$data]);
+
+        $pass_data = array(
+            "customer_name" => $data['customer_name'],
+            "customer_phone" => $data['customer_phone'],
+            "customer_email" => $data['customer_email'],
+            "type" => $data['type'],
+            "duration" => $data['pass']['duration_text'],
+        );
+        $sms->sendPgOrderSms($pass_data);
+        
+        // $mail->($pass_data);
+        // $notification->($pass_data);
     }
 }
