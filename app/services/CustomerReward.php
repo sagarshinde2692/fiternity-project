@@ -1782,6 +1782,8 @@ Class CustomerReward {
         //     return array("data"=>array("discount" => $price, "final_amount" => 0, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => true,  "vendor_coupon"=>false, "vendor_routed_coupon" => false);
         // }
 
+        
+
 
         $query = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime());
 
@@ -1796,7 +1798,14 @@ Class CustomerReward {
                 
             $finder = Finder::find($ratecard->finder_id);
             $finder_city = $finder->city_id;
+
+            
+            if(strtolower($couponCode) == 'fitback' && !empty($ratecard) && $ratecard['type'] == 'workout session' && !empty($finder['flags']['monsoon_campaign_pps'])){
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Not applicable on this booking as prices are already marked down");
+                    return $resp;   
+            }
         }
+
         // if(!isset($coupon) && (strtolower($couponCode) == "srfit")){
         //     $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
         //     $coupon = array("code" => strtolower($couponCode),"discount_max" => 1000,"discount_amount" => 0,"discount_min" => 200);
