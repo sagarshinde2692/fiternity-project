@@ -491,7 +491,7 @@ class Service extends \Basemodel{
                     $value['duration_type'] = 'sessions';
                 }
 
-                if(!empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
+                if(isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
                     if(!empty($value['offers'][0]['remarks'])){
                         $value['offers'][0]['remarks'] = "Get 100% instant cashback";
                         $value['remarks_imp'] =  true;

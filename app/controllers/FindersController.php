@@ -5304,7 +5304,7 @@ class FindersController extends \BaseController {
 						if($type == "workout session" && in_array($ratecard["type"],["trial"])){
 							continue;
 						}
-                        if($ratecard['type'] == 'workout session'){
+                        if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
                             $ratecard['remarks'] = "100% Instant Cashback";
                             if(!empty($finder['flags']['monsoon_campaign_pps'])){
                                 $ratecard['remarks'] = "Monsoon Bonanza | Book Workout Sessions At INR 99 only";
