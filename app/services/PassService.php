@@ -752,7 +752,7 @@ class PassService {
             //$mail->sendPgOrderMail($pass_data);
         }
         else{
-            $smsSent = $data['communication']['email'];
+            //$smsSent = $data['communication']['email'];
         }
 
         return array(
