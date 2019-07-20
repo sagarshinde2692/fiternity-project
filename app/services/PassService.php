@@ -4,6 +4,9 @@ use Log;
 use Pass;
 use App\Services\RazorpayService as RazorpayService;
 use App\Services\Utilities as Utilities;
+use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Sms\CustomerSms as CustomerSms;
+use App\Notification\CustomerNotification as CustomerNotification;
 use Validator;
 use Order;
 use Booktrial;
@@ -245,6 +248,9 @@ class PassService {
         if(empty($order['status'])){
             return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (2)'];
         }
+        else{
+            $this->passPurchaseCommunication($order);
+        }
         
         $success_data = $this->getSuccessData($order);
 
@@ -464,6 +470,8 @@ class PassService {
         $order->status = '1';
         $order->update();
 
+        $this->passPurchaseCommunication($order);
+        
         return ['status'=>200, 'message'=>'Transaction successful'];
 
     
@@ -718,4 +726,9 @@ class PassService {
         return !empty($data['pass']['unlimited_access']) || !empty($data['unlimited_access']);
     }
 
+    public function passPurchaseCommunication($data){
+        $sms = new CustomerSms($data);
+        // $mail = new CustomerMailer($data);
+        // $notification = new CustomerNotification($data);
+    }
 }
