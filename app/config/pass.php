@@ -183,7 +183,7 @@ return [
             "text2" => "Bookings \n done"
         ],
         "validity" => [
-            "text1" => "__duration __duration_type",
+            "text1" => "__duration",
             "text2" => "Trial ends \n in "
         ],
         "footer"  => "Lorum lorum lorum lorum lorum"

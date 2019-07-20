@@ -9869,8 +9869,8 @@ class CustomerController extends \BaseController {
 
 	public function fillBoughtPassData($passPurchased, &$subscription_pass){
 		
-		$subscription_pass['validity']['text1'] = strtr($subscription_pass['validity']['text1'], ["__duration" => $passPurchased['pass']['duration'], "__duration_type" => ucwords($passPurchased['pass']['duration_type'])]);
-		$subscription_pass['booking']['text1'] = $this->getBookingOfPass($passPurchased['_id']);
-		$subscription_pass['swimming']['text1'] = $passPurchased['pass']['premium_sessions']- $passPurchased['premium_sessions_used'];
+		$subscription_pass['validity']['text1'] = strtr($subscription_pass['validity']['text1'], ["__duration" => $passPurchased['pass']['duration']]);
+		$subscription_pass['booking']['text1'] = (string)$this->getBookingOfPass($passPurchased['_id']);
+		$subscription_pass['swimming']['text1'] =(string) ($passPurchased['pass']['premium_sessions']- $passPurchased['premium_sessions_used']);
 	}
 }
