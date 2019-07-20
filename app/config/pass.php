@@ -119,7 +119,7 @@ return [
 
     'trial_pass' => [
         "logo" => $silver_logo,
-        "header" => "EXPERIENCE FITNESS LIKE NEVER BEFORE!",
+        "header" => "Experience the all-new freedom to workout",
         "subheader" => "Book sessions and only pay for days you workout",
         'pass' => [
             'header' => 'pass_name',
@@ -132,14 +132,15 @@ return [
         ],
         
         'footer' => [
-            "text" => "lorum lorum lorum lorum lorum lorum lorum lorum lorum lorum",
+            "header" => "15 DAY TRIAL PACK",
+            "subheader" => "100% CASHBACK",
             "button_text" => "Explore"
         ]
     ],
 
     'subscription_pass' => [
         "logo" => $gold_logo,
-        "header" => "EXPERIENCE FITNESS LIKE NEVER BEFORE!",
+        "header" => "Experience the all-new freedom to workout",
         "subheader" => "Book sessions and only pay for days you workout",
         'pass' => [
             'header' => 'pass_name',
@@ -152,13 +153,15 @@ return [
         ],
         
         'footer' => [
-            "text" => "lorum lorum lorum lorum lorum lorum lorum lorum lorum lorum",
+            "header" => "15 DAY TRIAL PACK",
+            "subheader" => "No CASHBACK",
             "button_text" => "Explore"
         ]
     ],
     
     "flexipass_small" => [
-        "text" => "lorum lorum lorum lorum lorum lorum lorum lorum lorum lorum",
+        "header" => "Introducing Fitternity - OnePass",
+        "subheader" => "Experience the All New Freedom to workout in any Gym or Studio across India",
         "button_text" => "Explore"
     ]
 ];
