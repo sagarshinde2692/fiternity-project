@@ -7159,6 +7159,7 @@ Class Utilities {
                 // }
                 
                 $dontUpdateLoyalty = true;
+                Log::info("dontUpdateLoyalty 1",[$dontUpdateLoyalty]);
 
                 if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
                     
@@ -7167,7 +7168,7 @@ Class Utilities {
                     $data['finder_flags'] = !empty($finder['flags']) ? $finder['flags'] : [];
                 
                 }
-
+                
                 if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1])) && !empty($data['type']) && $data['type'] != 'workout-session' ){
 
                     $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
@@ -7201,6 +7202,7 @@ Class Utilities {
                     if(empty($customer['loyalty'])){
                         $loyalty['reward_type'] = 2;
                         $dontUpdateLoyalty = false;
+                        Log::info("dontUpdateLoyalty 2",[$dontUpdateLoyalty]);
                     }
                 }else{
 
@@ -7236,6 +7238,7 @@ Class Utilities {
                             }
 
                             $dontUpdateLoyalty = false;
+                            Log::info("dontUpdateLoyalty 3",[$dontUpdateLoyalty]);
                         }
                     }
                     
@@ -7244,6 +7247,7 @@ Class Utilities {
                     // $dontUpdateLoyalty = true;
                     if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
                         $dontUpdateLoyalty = false;
+                        Log::info("dontUpdateLoyalty 4",[$dontUpdateLoyalty]);
                         Log::info("if finder_flags reward_type");
                         if((!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type']!=2 && empty($customer['loyalty']['brand_loyalty'])) || (!empty($customer['loyalty']['brand_loyalty'])) || empty($customer['loyalty'])){
                             Log::info("if empty loyalty or brand");
@@ -7252,13 +7256,7 @@ Class Utilities {
                                 $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
                             }
                         }
-                        else {
-                            $dontUpdateLoyalty = true;
-                        }
-                    } else if(empty($customer['loyalty'])) {
-                        $dontUpdateLoyalty = false;
-                        Log::info("if empty loyalty");
-                    }
+                    } 
                 }
 
                 $update_data = [
@@ -7267,7 +7265,7 @@ Class Utilities {
 
                 $customer_update = false;
 
-                Log::info("dontUpdateLoyalty",[$dontUpdateLoyalty]);
+                Log::info("dontUpdateLoyalty 7",[$dontUpdateLoyalty]);
 
                 if(!$dontUpdateLoyalty){
                     $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
