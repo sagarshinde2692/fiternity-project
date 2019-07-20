@@ -45,6 +45,7 @@ class PassService {
             $passDetails = [
                 'pass_id' => $pass['pass_id'],
                 'header' => $pass['duration_text'],
+                'subheader' => strtr($response['subheader'], ['duration_text' => $pass['duration_text']]),
                 'text' => 'All Access',
                 'remarks' => ucwords($pass['type'])
             ];
@@ -510,7 +511,7 @@ class PassService {
         
         $success = Config::get('pass');
         $success_template = $success['success'];
-        
+        $success_template['header'] = strtr($success_template['header'], ['___type' => ucwords($order['pass']['type'])]);
         $success_template['subline'] = strtr(
             $success_template['subline'], 
             [

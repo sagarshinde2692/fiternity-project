@@ -65,7 +65,8 @@ return [
             'text' => 'sdfdfdsf sdfsd fsdf sdfs sf sf sdfs d',
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
-        ]
+        ],
+        'subheader' => 'duration_text PASS FOR UNLIMITED USAGE',
     ],
     "terms"=>[
         "<h2>terms and condition header</h2>
@@ -93,7 +94,7 @@ return [
     ],
     'success'=>[
         'image' => 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
-        "header" => "Your subscription is active",
+        "header" => "Your ___type pass is active",
         'subline'=>'Hi __customer_name, your __pass_name for __pass_duration is now active. We have also sent you a confirmation Email and SMS.',
         "pass" => [
             
@@ -114,7 +115,7 @@ return [
                 'Not loving it? easy cancellation available.',
             ]
         ],
-        "concultion" => $success_page_template['conclusion'],
+        "conclusion" => $success_page_template['conclusion'],
         "feedback" => $success_page_template["feedback"]
     ],
     'pass_image_silver' => $silver_logo,
