@@ -223,35 +223,33 @@ class PassService {
             return;
         }
 
+        if(!empty($data['razorpay'])){
+            $data['payment_id'] = $data['razorpay']['razorpay_payment_id'];
+            $verify_status = $this->verifyOrderSignature(["body"=>$data['razorpay']['rp_body'], "key"=> $data['razorpay']['key'], "signature"=>$data['razorpay']['razorpay_signature']])['status'];
+            if(!$verify_status){
+                return ['status'=>400, 'message'=>'Invalid Request.'];
+            }
+        }
+        
         $data['order_id'] = intval($data['order_id']);
 
         $order = Order::where('_id', $data['order_id'])->first();
-        if(!empty($order['status']) && $order['status'] == "0"){
 
-            if(!empty($data['razorpay'])){
-                $data['payment_id'] = $data['razorpay']['razorpay_payment_id'];
-                $verify_status = $this->verifyOrderSignature(["body"=>$data['razorpay']['rp_body'], "key"=> $data['razorpay']['key'], "signature"=>$data['razorpay']['razorpay_signature']])['status'];
-                if(!$verify_status){
-                    return ['status'=>400, 'message'=>'Invalid Request.'];
-                }
-            }
-    
-            Log::info('pass success:: ', [$data]);
-    
-            $wallet_update = $this->updateWallet($order);
-    
-            if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
-                return $wallet_update;
-            }
-            
-            $order = $this->passSuccessRazorpay($order, $data);
-            
-            if(empty($order['status'])){
-                return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (2)'];
-            }
+        Log::info('pass success:: ', [$data]);
 
-            $this->passPurchaseCommunication($order);
+        $wallet_update = $this->updateWallet($order);
+
+        if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
+            return $wallet_update;
         }
+        
+        $order = $this->passSuccessRazorpay($order, $data);
+        
+        if(empty($order['status'])){
+            return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (2)'];
+        }
+
+        $this->passPurchaseCommunication($order);
 
         $success_data = $this->getSuccessData($order);
 
@@ -470,7 +468,7 @@ class PassService {
 
         $order->status = '1';
         $order->update();
-
+        $this->passPurchaseCommunication($order);
         return ['status'=>200, 'message'=>'Transaction successful'];
 
     
@@ -727,9 +725,11 @@ class PassService {
     }
 
     public function passPurchaseCommunication($data){
-
+        if(empty($data['status'])){
+            return;
+        }
         $sms = new CustomerSms();
-        // $mail = new CustomerMailer();
+        $mail = new CustomerMailer();
         // $notification = new CustomerNotification();
         Log::info('pass success data::::::::::::::::after email:::::::::::::', [$data]);
 
@@ -743,7 +743,6 @@ class PassService {
         !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
         $sms->sendPgOrderSms($pass_data);
         
-        // $mail->($pass_data);
-        // $notification->($pass_data);
+        // $mail->sendPgOrderMail($pass_data);
     }
 }
