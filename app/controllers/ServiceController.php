@@ -925,8 +925,8 @@ class ServiceController extends \BaseController {
 		    				$service['city_id']=$finderQr['city_id'];
 		    		}
 		    		
-		    	}
-		    	
+				}
+				$price_text = $this->addCreditPointsNew($ratecard_price);
 				foreach ($weekdayslots['slots'] as $slot) {
 
 					if(!empty($finder)&&!empty($finder['flags'])&&!empty($finder['flags']['newly_launched_date']))
@@ -1001,8 +1001,12 @@ class ServiceController extends \BaseController {
                             $decoded = decode_customer_token();
                             $customer_email = $decoded->customer->email;
                             $extended_validity_order =  $this->utilities->getExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
-                            // $studio_extended_validity_order =  $this->utilities->getStudioExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
-                            $service['extended_validity'] = !empty($extended_validity_order) || !empty($studio_extended_validity_order);
+							// $studio_extended_validity_order =  $this->utilities->getStudioExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
+
+							if(!empty($price_text)){
+								$slot['price_text'] = $price_text;
+							}
+                            $service['extended_validity'] = !empty($extended_validity_order) || !empty($studio_extended_validity_order) || !empty($price_text);
 						}
 						
 						if(
@@ -1184,7 +1188,12 @@ class ServiceController extends \BaseController {
 
         $schedules = array();
 
-        $schedules = array_merge($schedules_sort_passed_false,$schedules_sort_passed_true,$schedules_slots_empty);
+		$schedules = array_merge($schedules_sort_passed_false,$schedules_sort_passed_true,$schedules_slots_empty);
+
+		if(!empty($price_text)){
+			$schedules[0]['price_text'] = $price_text;
+		}
+		
         if(!$flag && $count < 7 && $recursive){
 
         	$count += 1;
@@ -1321,19 +1330,19 @@ class ServiceController extends \BaseController {
 				$customer_id = intval($decoded->customer->_id);
 			}
 
-            if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && !empty($customer_id)){
-				foreach($data['schedules'] as &$schedule){
-					$this->addCreditPoints($schedule, $customer_id, $schedule['workout_session'], 'slots');
-					unset($schedule['workout_session']);
-				}
-			}
-			else if(!empty($data['slots'])  && !empty($customer_id)){
-			 	foreach($data['slots'] as &$slot){
-					$amount = !empty($slot['data'][0])? $slot['data'][0]['price']:0;
-					$workout_amount = ['amount'=> $amount];
-					$this->addCreditPoints($slot, $customer_id, $workout_amount, 'data');
-			 	}
-			}
+            // if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && !empty($customer_id)){
+			// 	foreach($data['schedules'] as &$schedule){
+			// 		$this->addCreditPoints($schedule, $customer_id, $schedule['workout_session'], 'slots');
+			// 		unset($schedule['workout_session']);
+			// 	}
+			// }
+			// else if(!empty($data['slots'])  && !empty($customer_id)){
+			//  	foreach($data['slots'] as &$slot){
+			// 		$amount = !empty($slot['data'][0])? $slot['data'][0]['price']:0;
+			// 		$workout_amount = ['amount'=> $amount];
+			// 		$this->addCreditPoints($slot, $customer_id, $workout_amount, 'data');
+			//  	}
+			// }
 
             return Response::json($data,200);
         }
@@ -2480,6 +2489,30 @@ class ServiceController extends \BaseController {
 		// 		unset($data[$key][$index]);
 		// 	}
 		// }
+	}
+
+	public function addCreditPointsNew($ratecard_price){
+		$price_text = null;
+		$jwt_token = Request::header('Authorization');
+		if(!empty($jwt_token)){
+			$decoded = decode_customer_token();
+			$customer_id = $decoded->customer->_id;
+		}
+		else{
+			return $price_text;
+		}
+
+		try{
+			$creditApplicable = $this->passService->getCreditsApplicable($ratecard_price, $customer_id);
+			if(!empty($creditApplicable['credits'])){
+				$price_text = 'Book Using Pass';
+			}
+			Log::info('ratecard and customer id and credits::::::::::', [$creditApplicable, $ratecard_price, !empty($creditApplicable['credits'])]);
+		}catch(\Exception $e){
+			$price_text = null;
+			Log::info('error occured::::::::', [$e]);
+		}
+		return $price_text;
 	}
 
 }
