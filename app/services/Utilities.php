@@ -7161,13 +7161,10 @@ Class Utilities {
                 $dontUpdateLoyalty = true;
                 Log::info("dontUpdateLoyalty 1",[$dontUpdateLoyalty]);
 
-                Finder::$withoutAppends = true;
-                $finder = Finder::find($data['finder_id']);
-
                 if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
                     
-                    // Finder::$withoutAppends = true;
-                    // $finder = Finder::find($data['finder_id']);
+                    Finder::$withoutAppends = true;
+                    $finder = Finder::find($data['finder_id']);
                     $data['finder_flags'] = !empty($finder['flags']) ? $finder['flags'] : [];
                 
                 }
