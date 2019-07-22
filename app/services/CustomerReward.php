@@ -1914,15 +1914,14 @@ Class CustomerReward {
 
                     \Order::$withoutAppends = true;
 
-                    $order_count = \Order::active()->where("customer_email", $customer_email)
-                    ->orWhere(function($query) use($coupon){
-                        $query->where('coupon_code', 'Like', $coupon['code'])
-                        ->where('coupon_discount_amount', '>', 0);
-                    })->count();
+                    $order_count = \Order::active()->where("customer_email", $customer_email)->count();
 
                     if($order_count > 0){
                         $coupon_order_count = \Order::active()->where("customer_email", $customer_email)->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
-                        if($coupon_order_count >= $coupon['flags']['repeat_new_user']){
+                        if($order_count > 0 && $coupon_order_count <= 0){
+                            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon valid only for new user");
+                            return $resp;
+                        }else if($order_count > 0 && $coupon_order_count >= $coupon['flags']['repeat_new_user']){
                             $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon valid only twise per new user");
                             return $resp;
                         }
@@ -1947,15 +1946,14 @@ Class CustomerReward {
 
                 \Order::$withoutAppends = true;
 
-                $order_count = \Order::active()->where("customer_email", $customer_email)
-                    ->orWhere(function($query) use($coupon){
-                        $query->where('coupon_code', 'Like', $coupon['code'])
-                        ->where('coupon_discount_amount', '>', 0);
-                    })->count();
+                $order_count = \Order::active()->where("customer_email", $customer_email)->count();
 
                 if($order_count > 0){
                     $coupon_order_count = \Order::active()->where("customer_email", $customer_email)->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
-                    if($coupon_order_count >= $coupon['flags']['repeat_new_user']){
+                    if($order_count > 0 && $coupon_order_count <= 0){
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon valid only for new user");
+                        return $resp;
+                    }else if($order_count > 0 && $coupon_order_count >= $coupon['flags']['repeat_new_user']){
                         $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon valid only twise per new user");
                         return $resp;
                     }
