@@ -7161,16 +7161,19 @@ Class Utilities {
                 $dontUpdateLoyalty = true;
                 Log::info("dontUpdateLoyalty 1",[$dontUpdateLoyalty]);
 
+                Finder::$withoutAppends = true;
+                $finder = Finder::find($data['finder_id']);
+
                 if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
                     
-                    Finder::$withoutAppends = true;
-                    $finder = Finder::find($data['finder_id']);
+                    // Finder::$withoutAppends = true;
+                    // $finder = Finder::find($data['finder_id']);
                     $data['finder_flags'] = !empty($finder['flags']) ? $finder['flags'] : [];
                 
                 }
                 
-                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1])) && !empty($data['type']) && $data['type'] != 'workout-session' ){
-
+                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1])) && !empty($data['type']) && $data['type'] != 'workout-session' && (empty($finder['brand_id']) || !in_array($finder['brand_id'], Config::get('app.brand_loyalty')) || in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))) ){
+                    Log::info("yolo");
                     $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
 
                     $update_data = [
@@ -7178,7 +7181,7 @@ Class Utilities {
                     ];
                     
                     $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
-                    $this->deactivateCheckins($customer['_id'], 'loyalty_appropriation_autoupgrade'); 
+                    $this->deactivateCheckins($customer['_id'], 'loyalty_appropriation_autoupgrade_no_fitsquad_for_vendor'); 
 
                     return ['status'=>400, 'message'=>'No fitsquad for vendor'];
                 }
