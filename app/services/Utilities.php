@@ -6523,9 +6523,9 @@ Class Utilities {
 				return ['status'=>400, 'message'=>'Customer not registered'];
             }
             
-            if(!empty($customer->loyalty['brand_loyalty']) || (!empty($customer->loyalty['reward_type'] && $customer->loyalty['reward_type'] != 2 ))){
+            if(!empty($customer->loyalty['brand_loyalty']) || (!empty($customer->loyalty['reward_type'] && $customer->loyalty['reward_type'] > 2 ))){
                 if(!empty($data['finder_id']) && !empty($customer->loyalty['finder_id']) && $customer->loyalty['finder_id'] != $data['finder_id'] ){
-                    return ['status'=>400, 'message'=>'Not registered with this gym'];
+                    return ['status'=>400, 'message'=>'Since you are registered with other fitsquad, you cannot get this checkin'];
                 }
             }
             
@@ -7172,16 +7172,16 @@ Class Utilities {
                 
                 }
                 
-                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1])) && !empty($data['type']) && $data['type'] != 'workout-session' && (empty($finder['brand_id']) || !in_array($finder['brand_id'], Config::get('app.brand_loyalty')) || in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))) ){
+                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1])) ){
                     Log::info("yolo");
-                    $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
+                    // $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
 
-                    $update_data = [
-                        'loyalty'=>new \StdClass()
-                    ];
+                    // $update_data = [
+                    //     'loyalty'=>new \StdClass()
+                    // ];
                     
-                    $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
-                    $this->deactivateCheckins($customer['_id'], 'loyalty_appropriation_autoupgrade_no_fitsquad_for_vendor'); 
+                    // $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
+                    // $this->deactivateCheckins($customer['_id'], 'loyalty_appropriation_autoupgrade_no_fitsquad_for_vendor'); 
 
                     return ['status'=>400, 'message'=>'No fitsquad for vendor'];
                 }
