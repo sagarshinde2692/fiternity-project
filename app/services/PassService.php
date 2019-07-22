@@ -748,17 +748,30 @@ class PassService {
         if(empty($data['status'])){
             return;
         }
+
         $sms = new CustomerSms();
         $mail = new CustomerMailer();
-        // $notification = new CustomerNotification();
+        $utilities = new Utilities();
 
         $pass_data = array(
             "customer_name" => $data['customer_name'],
             "customer_phone" => $data['customer_phone'],
             "customer_email" => $data['customer_email'],
             "type" => $data['type'],
-            "duration" => $data['pass']['duration_text'],
+            "customer_email" => $data['customer_email'],
+            "customer_id" => $data['customer_id'],
+            "pass_name" => $data['pass']['name'],
+            "duration_text" => $data['pass']['duration_text'],
+            "order_id" => $data['pass']['_id'],
+            "payment_mode" => $data['payment_mode'],
+            "end_date" => strtotime($data['end_date']),
+            "limit" => 3,
+            'city' => $data['customer_city'],
+            'lat' => $data['customer_lat'],
+            'lon' => $data['customer_lon'],
+            'selected_region' => $data['customer_region'],
         );
+
         if(empty($data['communication']['sms'])){
             $smsSent = $sms->sendPgOrderSms($pass_data);
             Log::info('sent smd',[$smsSent]);
@@ -766,15 +779,19 @@ class PassService {
         else{
             $smsSent = $data['communication']['sms'];
         }
+
         if(empty($data['communication']['email'])){
-            //$mail->sendPgOrderMail($pass_data);
+            $pass_data['workout_search'] = $utilities->getWorkoutSessions($pass_data, 'passEmail');
+            Log::info('in sending eamil to customer for passs', [$pass_data['workout_search'] ]);
+            $emailSent = $mail->sendPgOrderMail($pass_data);
         }
         else{
-            //$smsSent = $data['communication']['email'];
+            $emailSent = $data['communication']['email'];
         }
 
         return array(
-            'sms'=> $smsSent
+            'sms' => $smsSent,
+            'email' => $emailSent
         );
     }
 }

@@ -9797,36 +9797,35 @@ class CustomerController extends \BaseController {
 	}
 
 	public function getWorkoutSessions($near_by_workout_request){
-		unset($near_by_workout_request['keys']);
-		unset($near_by_workout_request['category']);
-		$near_by_workout_request['category'] = [];
-		$near_by_workout_request['keys'] = [  
-			"average_rating",  
-			"name", 
-			"slug", 
-			"vendor_slug", 
-			"vendor_name",
-			"coverimage", 
-			"overlayimage", 
-			"total_slots", 
-			"next_slot"
-		];
-		$near_by_workout_request['pass'] = true;
-		$near_by_workout_request['time_tag'] = 'later-today';
-		$near_by_workout_request['date'] = date('d-m-y');
-		$near_by_workout_request;
-		$workout = geoLocationWorkoutSession($near_by_workout_request, 'customerhome');
-		$result=[
-			'header'=> 'Workouts near me',
-			'data'=>[]
-		];
-		if(!empty($workout['workout'])){
-			$result['data'] = $workout['workout'];
-		}
-		if(empty($near_by_workout_request['lat']) && empty($near_by_workout_request['lon'])){
-			$result['header'] = "Workouts in ".ucwords($near_by_workout_request['city']);
-		}
-		return $result;
+		// unset($near_by_workout_request['keys']);
+		// unset($near_by_workout_request['category']);
+		// $near_by_workout_request['category'] = [];
+		// $near_by_workout_request['keys'] = [  
+		// 	"average_rating",  
+		// 	"name", 
+		// 	"slug", 
+		// 	"vendor_slug", 
+		// 	"vendor_name",
+		// 	"coverimage", 
+		// 	"overlayimage", 
+		// 	"total_slots", 
+		// 	"next_slot"
+		// ];
+		// $near_by_workout_request['pass'] = true;
+		// $near_by_workout_request['time_tag'] = 'later-today';
+		// $near_by_workout_request['date'] = date('d-m-y');
+		// $workout = geoLocationWorkoutSession($near_by_workout_request, 'customerhome');
+		// $result=[
+		// 	'header'=> 'Workouts near me',
+		// 	'data'=>[]
+		// ];
+		// if(!empty($workout['workout'])){
+		// 	$result['data'] = $workout['workout'];
+		// }
+		// if(empty($near_by_workout_request['lat']) && empty($near_by_workout_request['lon'])){
+		// 	$result['header'] = "Workouts in ".ucwords($near_by_workout_request['city']);
+		// }
+		return $this->utilities->getWorkoutSessions($near_by_workout_request, 'customerHome');
 	}
 
 	public function nearVendorRemoveExtraFields(&$nearByVendors){

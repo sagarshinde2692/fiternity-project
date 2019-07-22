@@ -133,11 +133,11 @@ Class CustomerMailer extends Mailer {
 		\Log::info('CustomerMailer Order-PG-Customer');
 
 		$label = 'Order-PG-Customer';
-
-		$utilities = new Utilities();
-		$data['loyalty_success_msg'] = $utilities->getLoyaltyAppropriationConsentMsg($data['customer_id'], $data['order_id'], true);
-
-		\Log::info('loyalty_success_msg :: ', [$data['loyalty_success_msg']]);
+		if(!empty($data['type']) && !in_array($data['type'], ['pass'])){
+			$utilities = new Utilities();
+			$data['loyalty_success_msg'] = $utilities->getLoyaltyAppropriationConsentMsg($data['customer_id'], $data['order_id'], true);	
+			\Log::info('loyalty_success_msg :: ', [$data['loyalty_success_msg']]);
+		}
 
 		switch ($data['payment_mode']) {
 			case 'cod': $label = 'Order-COD-Customer'; break;
@@ -165,17 +165,18 @@ Class CustomerMailer extends Mailer {
         if(!empty($data['ratecard_flags']['free_sp'])){
             $label = "Free-SP-Customer";
 		}
-		
-		$header = $this->multifitKioskOrder($data);
-		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
-			switch ($data['payment_mode']) {
-				case 'cod': $label = 'Order-COD-Multifit-Customer'; break;
-				case 'paymentgateway': $label = 'Order-PG-Multifit-Customer'; break;
-				case 'at the studio': $label = 'Order-At-Finder-Multifit-Customer'; break;
-				default: break;
+		if(!empty($data['type']) && !in_array($data['type'], ['pass'])){
+			$header = $this->multifitKioskOrder($data);
+			if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+				switch ($data['payment_mode']) {
+					case 'cod': $label = 'Order-COD-Multifit-Customer'; break;
+					case 'paymentgateway': $label = 'Order-PG-Multifit-Customer'; break;
+					case 'at the studio': $label = 'Order-At-Finder-Multifit-Customer'; break;
+					default: break;
+				}
 			}
 		}
-
+		
 		if(!empty($data['type']) && ($data['type']='pass')){
             $label = "Pass-Purchase-Customer";
 		}

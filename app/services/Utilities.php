@@ -9505,4 +9505,42 @@ Class Utilities {
         }
     }
 
+    public function getWorkoutSessions($input, $source='passEmail'){
+        $near_by_workout_request = [
+            "offset" => 0,
+            "limit" => $input['limit'],
+            "radius" => "2km",
+            "category"=>[],
+            "lat"=>$input['lat'],
+            "lon"=>$input['lon'],
+            "city"=>strtolower($input['city']),
+            'keys' => [  
+                "average_rating",  
+                "name", 
+                "slug", 
+                "vendor_slug", 
+                "vendor_name",
+                "coverimage", 
+                "overlayimage", 
+                "total_slots", 
+                "next_slot"
+            ],
+		    'pass' => true,
+		    'time_tag' => 'later-today',
+            'date' => date('d-m-y')
+        ];
+        Log::info('payload:::::::::', [$near_by_workout_request]);
+		$workout = geoLocationWorkoutSession($near_by_workout_request, $source);
+		$result=[
+			'header'=> 'Workouts near me',
+			'data'=>[]
+		];
+		if(!empty($workout['workout'])){
+			$result['data'] = $workout['workout'];
+		}
+		if(empty($near_by_workout_request['lat']) && empty($near_by_workout_request['lon'])){
+			$result['header'] = "Workouts in ".ucwords($near_by_workout_request['city']);
+		}
+		return $result;
+	}
 }
