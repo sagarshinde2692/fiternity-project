@@ -793,8 +793,17 @@ Class CustomerReward {
                     if(isset($order['customer_quantity']) && $order['customer_quantity'] != 1){
                         $amount_paid = 0;
                     }
+
+                    if($amount_paid > 0 && !empty($order['convinience_fee']) && $order['convinience_fee'] > 0){
+                        $amount_paid = $amount_paid - $order['convinience_fee'];
+                    }
+
                 }else{
                     $amount_paid = $order['amount'];
+
+                    if($amount_paid > 0 && !empty($order['convinience_fee']) && $order['convinience_fee'] > 0){
+                        $amount_paid = $amount_paid - $order['convinience_fee'];
+                    }
 
                     if($amount_paid > 2500){
                         $amount_paid = 2500;
