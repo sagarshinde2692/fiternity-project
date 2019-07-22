@@ -3864,7 +3864,7 @@ class FindersController extends \BaseController {
         $line = "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
         
         if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
-            $line = "Monsoon Bonanza | Book Workout Sessions At INR 99 Only<br>Buy Memberships & Session Packs And Get 100% Instant Cashback upto Rs 2500. Use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
+            $line = "Monsoon Bonanza | Book Workout Sessions At INR 99 Only<br><br>Buy Memberships & Session Packs And Get 100% Instant Cashback upto Rs 2500. Use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
         }
 
         return $line;
