@@ -761,6 +761,7 @@ class PassService {
             "customer_email" => $data['customer_email'],
             "customer_id" => $data['customer_id'],
             "pass_name" => $data['pass']['name'],
+            "duration" => $data['pass']['duration'],
             "duration_text" => $data['pass']['duration_text'],
             "order_id" => $data['pass']['_id'],
             "payment_mode" => $data['payment_mode'],
