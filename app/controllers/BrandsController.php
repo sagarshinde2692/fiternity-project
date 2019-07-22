@@ -252,6 +252,9 @@ class BrandsController extends \BaseController {
 		foreach($home1 as $key=>$value){
 			if(in_array($key,['banner'])){
 				$home1[$key]['image'] =  $base_url.$home1[$key]['path'].$home1[$key]['image'];
+				if(!empty($home1[$key]['mobile_image'])){
+					$home1[$key]['mobile_image'] =  $base_url.$home1[$key]['path'].$home1[$key]['mobile_image'];
+				}
 			}	
 
 			if(in_array($key,['centers_block', 'speakers_block', 'advisory_block'])){
