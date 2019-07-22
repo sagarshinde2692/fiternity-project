@@ -7157,7 +7157,7 @@ class TransactionController extends \BaseController {
                     if($creditsApplicable['credits'] != 0) {
                         $result['payment_details']['amount_summary'][] = [
                             'field' => ((!empty($creditsApplicable['pass']['type']) && $creditsApplicable['pass']['type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
-                            'value' => (string)$creditsApplicable['credits'].' Sweat Points Applied'
+                            'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'
                         ];
                         $data['amount_payable'] = 0;
                     }
