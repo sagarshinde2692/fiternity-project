@@ -8533,7 +8533,7 @@ Class Utilities {
                 }
 
                 if(!empty($customer['loyalty']['brand_loyalty'])){
-                    $sameBrand = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];
+                   $sameBrand = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];
                     if($sameBrand){
                         $brand_loyalty_data = $this->buildBrandLoyaltyInfoFromOrder($finder, $order);
                         $sameBrand = $customer['loyalty']['brand_loyalty']==$brand_loyalty_data['brand_loyalty']
@@ -8556,7 +8556,7 @@ Class Utilities {
                 Log::info('$brandIdTypeChk: ', [$brandIdTypeChk]);
                 Log::info('$isDowngrade: ', [$isDowngrade]);
 
-                if($sameFinder || $sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
+                if($sameFinder || $sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade || (!empty($finder['flags']['reward_type']) && $finder['flags']['reward_type'] == 1) ){
                     // same grid - no need to upgrade
                     $retObj = null;
                 } else {
