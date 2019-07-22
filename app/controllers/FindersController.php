@@ -8393,12 +8393,14 @@ class FindersController extends \BaseController {
 		if(!empty(Request::header('Source')) && Request::header('Source') == "multifit"){
 			Log::info('inside vendor update for multifit gym');
 			if(!empty($data['finder']['website_membership'])){
-
 				$data['finder']['website_membership'] = $this->pathAddingToVendorWebsite($data['finder']['website_membership']);
 	
 				if(!empty($data['finder']['website_membership']['cover']['image'])){
 	
 					$data['finder']['coverimage'] = $data['finder']['website_membership']['cover']['image'];
+					if(!empty($data['finder']['website_membership']['cover']['mobile_image'])){
+						$data['finder']['mobile_image'] = $data['finder']['website_membership']['cover']['mobile_image'];
+					}
 				}
 	
 				if(!empty($data['finder']['website_membership']['class_time_table']['image'])){
@@ -8469,6 +8471,9 @@ class FindersController extends \BaseController {
 		foreach($first_block as $key=>$value){
 			if(in_array($key,['cover', 'thumbnail', 'class_time_table']) && isset($first_block[$key]['image'])){	
 				$first_block[$key]['image'] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'] ;
+				if(!empty($first_block[$key]['mobile_image'])){
+					$first_block[$key]['mobile_image'] =  $base_url.$first_block[$key]['path'].$first_block[$key]['mobile_image'] ;
+				}
 			}	
 
 			if(in_array($key,['services_list', 'memberships_list', 'facilities_list'])){
