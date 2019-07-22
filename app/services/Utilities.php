@@ -7259,6 +7259,16 @@ Class Utilities {
                     } 
                 }
 
+                if(!empty($loyalty) && !empty($loyalty['brand_loyalty'])){
+                    if(!empty($loyalty['reward_type'])){
+                        unset($loyalty['reward_type']);
+                    }
+
+                    if(!empty($loyalty['cashback_type'])){
+                        unset($loyalty['cashback_type']);
+                    }
+                }
+
                 $update_data = [
                     'loyalty'=>$loyalty 
                 ];
