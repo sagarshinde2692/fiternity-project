@@ -1915,7 +1915,7 @@ Class CustomerReward {
                     \Order::$withoutAppends = true;
 
                     $order_count = \Order::active()->where("customer_email", $customer_email)
-                    ->orWhere(function($query){
+                    ->orWhere(function($query) use($coupon){
                         $query->where('coupon_code', 'Like', $coupon['code'])
                         ->where('coupon_discount_amount', '>', 0);
                     })->count();
@@ -1948,7 +1948,7 @@ Class CustomerReward {
                 \Order::$withoutAppends = true;
 
                 $order_count = \Order::active()->where("customer_email", $customer_email)
-                    ->orWhere(function($query){
+                    ->orWhere(function($query) use($coupon){
                         $query->where('coupon_code', 'Like', $coupon['code'])
                         ->where('coupon_discount_amount', '>', 0);
                     })->count();
