@@ -5934,6 +5934,10 @@ class TransactionController extends \BaseController {
         if(!empty($data['type']) && $data['type'] == 'memberships'){
             $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase','position'=>$position++];
         }
+
+        if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase','position'=>$position++];
+        }
         
         $booking_details_all = [];
         foreach ($booking_details_data as $key => $value) {
@@ -6339,7 +6343,7 @@ class TransactionController extends \BaseController {
 
         }else{
             
-            if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount'])){
+            if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount']) && empty($order['finder_flags']['monsoon_campaign_pps'])){
                 $payment_modes[] = array(
                     'title' => 'Online Payment (100% Cashback)',
                     'subtitle' => 'Transact online with netbanking, card and wallet',
