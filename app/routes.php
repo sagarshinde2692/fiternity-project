@@ -17,7 +17,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 
 
-// require __DIR__.'/debug_routes.php';
+require __DIR__.'/debug_routes.php';
 require __DIR__.'/analytics_routes.php';
 require __DIR__.'/testing_routes.php';
 

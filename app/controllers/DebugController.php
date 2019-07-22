@@ -11169,8 +11169,13 @@ public function yes($msg){
 
 			foreach ($csv_to_array as $key => $value) {
 
-				if( !empty($value['_id']) && !empty($value['category']) && !empty($value['location_id']) ){
+				if( !empty($value['_id']) && !empty($value['category']) && !empty($value['location']) ){
 					
+					$location = Location::where('name', $value['location'])->first(['_id']);
+					$value['location_id'] = $location['_id'];
+
+					// return $value;
+
 					$cat = explode(",",$value['category']);
 					if(!empty($cat)){
 						foreach($cat as $ck => $cv){
