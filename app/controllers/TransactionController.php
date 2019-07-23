@@ -7154,6 +7154,7 @@ class TransactionController extends \BaseController {
             if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
                 if(!empty($decoded->customer->_id)) {
                     $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $decoded->customer->_id);
+                    Log::info('getCreditApplicable capture checkout response:::::::::', [$creditsApplicable]);
                     if($creditsApplicable['credits'] != 0) {
                         $result['payment_details']['amount_summary'][] = [
                             'field' => ((!empty($creditsApplicable['pass']['type']) && $creditsApplicable['pass']['type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
