@@ -6523,6 +6523,11 @@ Class Utilities {
 				return ['status'=>400, 'message'=>'Customer not registered'];
             }
             
+            if(!empty($customer->loyalty['brand_loyalty']) || (!empty($customer->loyalty['reward_type'] && $customer->loyalty['reward_type'] > 2 ))){
+                if(!empty($data['finder_id']) && !empty($customer->loyalty['finder_id']) && $customer->loyalty['finder_id'] != $data['finder_id'] ){
+                    return ['status'=>400, 'message'=>'Since you are registered with other fitsquad, you cannot get this checkin'];
+                }
+            }
             
 			$checkin = new \Checkin();
 			$checkin->finder_id = $data['finder_id'];
@@ -7154,25 +7159,31 @@ Class Utilities {
                 // }
                 
                 $dontUpdateLoyalty = true;
+                Log::info("dontUpdateLoyalty 1",[$dontUpdateLoyalty]);
+                
+                if(!empty($data['finder_id'])){
+                    Finder::$withoutAppends = true;
+                    $finder = Finder::find($data['finder_id']);
+                }
 
                 if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
                     
-                    Finder::$withoutAppends = true;
-                    $finder = Finder::find($data['finder_id']);
+                    // Finder::$withoutAppends = true;
+                    // $finder = Finder::find($data['finder_id']);
                     $data['finder_flags'] = !empty($finder['flags']) ? $finder['flags'] : [];
                 
                 }
+                
+                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1])) && !empty($data['type']) && $data['type'] != 'workout-session' && (empty($finder['brand_id']) || !in_array($finder['brand_id'], Config::get('app.brand_loyalty')) || in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))) ){
+                    Log::info("yolo");
+                    // $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
 
-                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1]))){
-
-                    $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
-
-                    $update_data = [
-                        'loyalty'=>new \StdClass()
-                    ];
+                    // $update_data = [
+                    //     'loyalty'=>new \StdClass()
+                    // ];
                     
-                    $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
-                    $this->deactivateCheckins($customer['_id'], 'loyalty_appropriation_autoupgrade'); 
+                    // $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
+                    // $this->deactivateCheckins($customer['_id'], 'loyalty_appropriation_autoupgrade_no_fitsquad_for_vendor'); 
 
                     return ['status'=>400, 'message'=>'No fitsquad for vendor'];
                 }
@@ -7192,60 +7203,75 @@ Class Utilities {
                 $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
                 $duration = $duration > 180 ? 360 : $duration;
                 
-                if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
-                    if(empty($finder)){
-                        Finder::$withoutAppends = true;
-                        $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+                if(!empty($data['type']) && $data['type'] == 'workout-session'){
+                    if(empty($customer['loyalty'])){
+                        $loyalty['reward_type'] = 2;
+                        $dontUpdateLoyalty = false;
+                        Log::info("dontUpdateLoyalty 2",[$dontUpdateLoyalty]);
+                    }
+                }else{
+
+                    if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
+                        if(empty($finder)){
+                            Finder::$withoutAppends = true;
+                            $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+                        }
+                        
+                        if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
+                            $duration = 0;
+                        }
+    
+                        Log::info("brand_id",[$finder['brand_id']]);
+                        Log::info("loyalty brand_id",[Config::get('app.brand_loyalty')]);
+    
+                        if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
+                            Log::info("if brand");
+                            
+                            $brand_loyalty = true;
+                            $loyalty['brand_loyalty'] = $finder['brand_id'];
+                            $loyalty['brand_loyalty_duration'] = $duration;
+                            $loyalty['brand_loyalty_city'] = $data['city_id'];
+    
+                            if($loyalty['brand_loyalty'] == 135){
+                                if($loyalty['brand_loyalty_duration'] == 180){
+                                    $loyalty['brand_version'] = 1;
+                                }else{
+                                    $loyalty['brand_version'] = 2;
+                                }
+                            }else{
+                                $loyalty['brand_version'] = 1;
+                            }
+
+                            $dontUpdateLoyalty = false;
+                            Log::info("dontUpdateLoyalty 3",[$dontUpdateLoyalty]);
+                        }
                     }
                     
-                    if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
-                        $duration = 0;
-                    }
-
-                    Log::info("brand_id",[$finder['brand_id']]);
-                    Log::info("loyalty brand_id",[Config::get('app.brand_loyalty')]);
-
-                    if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
-                        Log::info("if brand");
-                        
-                        $brand_loyalty = true;
-                        $loyalty['brand_loyalty'] = $finder['brand_id'];
-                        $loyalty['brand_loyalty_duration'] = $duration;
-                        $loyalty['brand_loyalty_city'] = $data['city_id'];
-
-                        if($loyalty['brand_loyalty'] == 135){
-                            if($loyalty['brand_loyalty_duration'] == 180){
-                                $loyalty['brand_version'] = 1;
-                            }else{
-                                $loyalty['brand_version'] = 2;
-                            }
-                        }else{
-                            $loyalty['brand_version'] = 1;
-                        }
-
+                    // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
+                    // Log::info("type",[$data['type']]);
+                    // $dontUpdateLoyalty = true;
+                    if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
                         $dontUpdateLoyalty = false;
-                    }
-                }
-                
-                // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
-                // Log::info("type",[$data['type']]);
-                // $dontUpdateLoyalty = true;
-                if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
-                    $dontUpdateLoyalty = false;
-                    Log::info("if finder_flags reward_type");
-                    if((!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type']!=2 && empty($customer['loyalty']['brand_loyalty'])) || (!empty($customer['loyalty']['brand_loyalty'])) || empty($customer['loyalty'])){
-                        Log::info("if empty loyalty or brand");
-                        $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
-                        if(!empty($data['finder_flags']['cashback_type'])){
-                            $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
+                        Log::info("dontUpdateLoyalty 4",[$dontUpdateLoyalty]);
+                        Log::info("if finder_flags reward_type");
+                        if((!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type']!=2 && empty($customer['loyalty']['brand_loyalty'])) || (!empty($customer['loyalty']['brand_loyalty'])) || empty($customer['loyalty'])){
+                            Log::info("if empty loyalty or brand");
+                            $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
+                            if(!empty($data['finder_flags']['cashback_type'])){
+                                $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
+                            }
                         }
+                    } 
+                }
+
+                if(!empty($loyalty) && !empty($loyalty['brand_loyalty'])){
+                    if(!empty($loyalty['reward_type'])){
+                        unset($loyalty['reward_type']);
                     }
-                    else {
-                        $dontUpdateLoyalty = true;
+
+                    if(!empty($loyalty['cashback_type'])){
+                        unset($loyalty['cashback_type']);
                     }
-                } else if(empty($customer['loyalty'])) {
-                    $dontUpdateLoyalty = false;
-                    Log::info("if empty loyalty");
                 }
 
                 $update_data = [
@@ -7254,7 +7280,7 @@ Class Utilities {
 
                 $customer_update = false;
 
-                Log::info("dontUpdateLoyalty",[$dontUpdateLoyalty]);
+                Log::info("dontUpdateLoyalty 7",[$dontUpdateLoyalty]);
 
                 if(!$dontUpdateLoyalty){
                     $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
@@ -8522,7 +8548,7 @@ Class Utilities {
                 }
 
                 if(!empty($customer['loyalty']['brand_loyalty'])){
-                    $sameBrand = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];
+                   $sameBrand = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];
                     if($sameBrand){
                         $brand_loyalty_data = $this->buildBrandLoyaltyInfoFromOrder($finder, $order);
                         $sameBrand = $customer['loyalty']['brand_loyalty']==$brand_loyalty_data['brand_loyalty']
@@ -8545,7 +8571,7 @@ Class Utilities {
                 Log::info('$brandIdTypeChk: ', [$brandIdTypeChk]);
                 Log::info('$isDowngrade: ', [$isDowngrade]);
 
-                if($sameFinder || $sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
+                if($sameFinder || $sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade || (!empty($finder['flags']['reward_type']) && $finder['flags']['reward_type'] == 1) ){
                     // same grid - no need to upgrade
                     $retObj = null;
                 } else {
