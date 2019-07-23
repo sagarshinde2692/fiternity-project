@@ -6523,7 +6523,7 @@ Class Utilities {
 				return ['status'=>400, 'message'=>'Customer not registered'];
             }
             
-            if(!empty($customer->loyalty['brand_loyalty']) || (!empty($customer->loyalty['reward_type'] && $customer->loyalty['reward_type'] > 2 ))){
+            if(!empty($customer->loyalty['brand_loyalty']) || (!empty($customer->loyalty['reward_type']) && $customer->loyalty['reward_type'] > 2 )){
                 if(!empty($data['finder_id']) && !empty($customer->loyalty['finder_id']) && $customer->loyalty['finder_id'] != $data['finder_id'] ){
                     return ['status'=>400, 'message'=>'Since you are registered with other fitsquad, you cannot get this checkin'];
                 }
@@ -7174,7 +7174,7 @@ Class Utilities {
                 
                 }
                 
-                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1])) && !empty($data['type']) && $data['type'] != 'workout-session' && (empty($finder['brand_id']) || !in_array($finder['brand_id'], Config::get('app.brand_loyalty')) || in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))) ){
+                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1])) && (empty($finder['brand_id']) || !in_array($finder['brand_id'], Config::get('app.brand_loyalty')) || in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))) ){
                     Log::info("yolo");
                     // $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
 
@@ -7203,7 +7203,7 @@ Class Utilities {
                 $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
                 $duration = $duration > 180 ? 360 : $duration;
                 
-                if(!empty($data['type']) && $data['type'] == 'workout-session'){
+                if(!empty($data['type']) && $data['type'] == 'workout-session' && ( empty($data['finder_flags']['reward_type']) || (!empty($data['finder_flags']['reward_type']) && $data['finder_flags']['reward_type'] != 1)) ){
                     if(empty($customer['loyalty'])){
                         $loyalty['reward_type'] = 2;
                         $dontUpdateLoyalty = false;
