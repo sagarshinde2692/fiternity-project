@@ -502,16 +502,16 @@ class Service extends \Basemodel{
                 }
 
                 if($this->servicecategory_id == 1 && $value['special_price'] == 99 && $value['type'] == "workout session" && isFinderIntegrated($finder) && isServiceIntegrated($this)){
-                    $value['remarks'] =  "The Ultimate Yoga Fest. Book Multiple Sessions at Flat ₹99/session";
+                    $value['remarks'] =  "Biggest Monsoon Flash Sale | Book Workout Sessions At INR 99 only";
                     $value['remarks_imp'] =  true;
 				}else if(($offer_price == 99 || $value['price'] == 99 || $value['special_price'] == 99) && $value['type'] == "workout session" && !empty($finder['flags']['monsoon_campaign_pps']) && isFinderIntegrated($finder) && isServiceIntegrated($this)){
-                    $value['remarks'] =  "Monsoon Bonanza | Book Workout Sessions At INR 99 only";
+                    $value['remarks'] =  "Biggest Monsoon Flash Sale | Book Workout Sessions At INR 99 only";
                     $value['remarks_imp'] =  true;
                 }
                 
                 if(in_array($value['type'], ["membership", "extended validity"])&& isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios']) ){
-                    $value['campaign_offer'] =  "100% cashback";
-                    $value['campaign_color'] = "#43a047";
+                    $value['campaign_offer'] =  "";
+                    $value['campaign_color'] = "";
 				}else{
 					$value['campaign_offer'] =  "";
                     $value['campaign_color'] = "";

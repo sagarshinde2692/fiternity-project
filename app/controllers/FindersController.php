@@ -1401,7 +1401,7 @@ class FindersController extends \BaseController {
                             
                             $response['vendor_stripe_data']	= [
                                 
-                                'text1'=> "Monsoon Bonanza | Get 100% Instant Cashback - Use code: FITBACK (App Only Deal)",
+                                'text1'=> "Biggest Monsoon Flash Sale <br>  Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20 (App Only Deal)",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1411,7 +1411,7 @@ class FindersController extends \BaseController {
                             if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                                 $response['vendor_stripe_data']	= [
                                 
-                                    'text1'=> "Monsoon Bonanza || Book Workout Sessions At INR 99 Only || Buy Memberships & Session Packs And Get 100% Instant Cashback - Use Code - FITBACK (App Only Deal)",
+                                    'text1'=> "Biggest Monsoon Flash Sale <br> Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20 (App Only Deal) || Book Workout Sessions At INR 99 Only (No Code Required)",
                                     'text3'=>"",
                                     'background-color'=> "",
                                     'text_color'=> '$fff',
@@ -3860,18 +3860,21 @@ class FindersController extends \BaseController {
 	}
 
 	public function getFinderOneLiner($data) {
-
-        $line = "Monsoon Bonanza | Get 100% Instant Cashback On All Services at ".$data['finder']['title']." upto Rs 2500, use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
+		if($this->device_type == 'android'){
+			$line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20<br><br>- Get 100% Instant Cashback on Pay-Per-Session. Use Code : FITBACK";
+		}else{
+			$line = "\nBiggest Monsoon Flash Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20\n\n- Get 100% Instant Cashback on Pay-Per-Session. Use Code : FITBACK";
+		}
         
         if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
             if($this->device_type == 'android'){
                 
-                $line = "Monsoon Bonanza | Book Workout Sessions At INR 99 Only<br><br>Buy Memberships & Session Packs And Get 100% Instant Cashback upto Rs 2500. Use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
+                $line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20<br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
 
             }else{
                 
-                $line = "Monsoon Bonanza | Book Workout Sessions At INR 99 Only\n\nBuy Memberships & Session Packs And Get 100% Instant Cashback upto Rs 2500. Use code: FITBACK. Use this cashback on any transaction on Fitternity App without restriction for yourself, friends & family.";
+                $line = "\nBiggest Monsoon Flash Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
             
             }
 
@@ -5319,7 +5322,7 @@ class FindersController extends \BaseController {
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
                             $ratecard['remarks'] = "100% Instant Cashback";
                             if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 99 || $ratecard['special_price'] == 99)){
-                                $ratecard['remarks'] = "Monsoon Bonanza | Book Workout Sessions At INR 99 only";
+                                $ratecard['remarks'] = "Biggest Monsoon Flash Sale | Book Workout Sessions At INR 99 only";
                             }
                         }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
@@ -8282,7 +8285,7 @@ class FindersController extends \BaseController {
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				if(in_array($rc['type'], ['membership', 'extended validity'])){
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Get 100% instant cashback using code FITBACK on this booking. Book multiple workout sessions, buy session packs, memberships & more using this cashback for yourself, friends & family.");
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nGet upto 50% off + Additional 20% Off. Use Code: BIG20");
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
                     if(!empty($finder['flags']['monsoon_campaign_pps'])){
