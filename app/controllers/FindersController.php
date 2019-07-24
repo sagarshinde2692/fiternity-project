@@ -3860,18 +3860,21 @@ class FindersController extends \BaseController {
 	}
 
 	public function getFinderOneLiner($data) {
-
-        $line = "<u>Biggest Monsoon Flash Sale</u><br><br>Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20";
+		if($this->device_type == 'android'){
+			$line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20<br><br>- Get 100% Instant Cashback on Pay-Per-Session. Use Code - FITBACK";
+		}else{
+			$line = "\nBiggest Monsoon Flash Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20\n\n- Get 100% Instant Cashback on Pay-Per-Session. Use Code - FITBACK";
+		}
         
         if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
             if($this->device_type == 'android'){
                 
-                $line = "<u>Biggest Monsoon Flash Sale</u><br><br>Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20<br><br>Book Workout Sessions At INR 99 Only (No Code Required)";
+                $line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20<br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
 
             }else{
                 
-                $line = "<u>Biggest Monsoon Flash Sale<u>\n\nGet Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20\n\nBook Workout Sessions At INR 99 Only (No Code Required)";
+                $line = "\nBiggest Monsoon Flash Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
             
             }
 
