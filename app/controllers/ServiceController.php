@@ -1765,7 +1765,7 @@ class ServiceController extends \BaseController {
             // $ratecard = Ratecard::where("service_id",(int)$value["service_id"])->where('type','workout session')->orderBy("_id","desc")->first();
             $offer = Offer::where('hidden', false)->where('ratecard_id', $workout_session_ratecard['_id'])->orderBy('_id', 'desc')
             ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-            ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+            ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()-86400) ))
             ->first();		
 
             if(!empty($offer)){
@@ -2450,7 +2450,7 @@ class ServiceController extends \BaseController {
         $offers = Offer :: where('hidden', false)
                         ->where('ratecard_id', $ratecard_id)
 						->where('start_date', '<=', new MongoDate(strtotime($date)))
-						->where('end_date', '>', new MongoDate(strtotime($date)))
+						->where('end_date', '>', new MongoDate(strtotime($date)-86400))
 						->orderBy('_id', 'desc')
 						->select('price')->first();
 		$offer_price=0;
