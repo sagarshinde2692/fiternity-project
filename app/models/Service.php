@@ -505,7 +505,7 @@ class Service extends \Basemodel{
                     $value['remarks'] =  "The Ultimate Yoga Fest. Book Multiple Sessions at Flat ₹99/session";
                     $value['remarks_imp'] =  true;
 				}else if(($offer_price == 99 || $value['price'] == 99 || $value['special_price'] == 99) && $value['type'] == "workout session" && !empty($finder['flags']['monsoon_campaign_pps']) && isFinderIntegrated($finder) && isServiceIntegrated($this)){
-                    $value['remarks'] =  "Monsoon Bonanza | Book Workout Sessions At INR 99 only";
+                    $value['remarks'] =  "Biggest Monsoon Flash Sale | Book Workout Sessions At INR 99 only";
                     $value['remarks_imp'] =  true;
                 }
                 

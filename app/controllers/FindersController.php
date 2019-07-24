@@ -5322,7 +5322,7 @@ class FindersController extends \BaseController {
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
                             $ratecard['remarks'] = "100% Instant Cashback";
                             if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 99 || $ratecard['special_price'] == 99)){
-                                $ratecard['remarks'] = "Monsoon Bonanza | Book Workout Sessions At INR 99 only";
+                                $ratecard['remarks'] = "Biggest Monsoon Flash Sale | Book Workout Sessions At INR 99 only";
                             }
                         }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
