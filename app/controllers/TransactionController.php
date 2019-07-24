@@ -931,6 +931,8 @@ class TransactionController extends \BaseController {
                 isset($data['qrcodepayment']) || 
                 (empty($_GET['device_type'])) || 
                 $_GET['device_type'] == 'website')
+            &&
+            $data["amount_finder"] != 99
         ){
             if($data['type'] == 'workout-session')
             {
@@ -2762,7 +2764,7 @@ class TransactionController extends \BaseController {
                                     $emailData['customer_email'] = $c['customer_email'];
                                     $emailData['customer_name'] = $c['customer_name'];
                                     $emailData['jockey_code'] = !empty($c['jockey_code']) ? $c['jockey_code'] :'';
-                                    $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);                                    
+                                    $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
                                 }
                             
                             }else{
@@ -2773,7 +2775,7 @@ class TransactionController extends \BaseController {
                             // $this->customermailer->payPerSessionFree($emailData);
 
                             if(isset($order['routed_order']) && $order['routed_order'] == "1" && !in_array($reward_type,['cashback','diet_plan'])){
-                                $this->customermailer->routedOrder($emailData);                                
+                                $this->customermailer->routedOrder($emailData);
                             }
                         }
                     }
