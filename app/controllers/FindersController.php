@@ -3833,18 +3833,11 @@ class FindersController extends \BaseController {
 	public function getFinderOneLiner($data) {
 
         $line = null;
-        if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
-            if($this->device_type == 'android'){
-                $line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20<br><br>- Get 100% Instant Cashback on Pay-Per-Session. Use Code : FITBACK";
-            }else{
-                $line = "\nBiggest Monsoon Flash Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20\n\n- Get 100% Instant Cashback on Pay-Per-Session. Use Code : FITBACK";
-            }
-        }
-        
-        if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
+        if(empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
+            
             if($this->device_type == 'android'){
-                
+            
                 $line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20<br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
 
             }else{
@@ -3852,7 +3845,25 @@ class FindersController extends \BaseController {
                 $line = "\nBiggest Monsoon Flash Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
             
             }
+            
+        }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
+            if($this->device_type == 'android'){
+                $line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20<br><br>- Get 100% Instant Cashback on Pay-Per-Session. Use Code : FITBACK";
+            }else{
+                $line = "\nBiggest Monsoon Flash Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20\n\n- Get 100% Instant Cashback on Pay-Per-Session. Use Code : FITBACK";
+            }
+        
+        }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
+            if($this->device_type == 'android'){
+                
+                $line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
+
+            }else{
+                
+                $line = "\nBiggest Monsoon Flash Sale\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
+            
+            }
         }
 
         return $line;
