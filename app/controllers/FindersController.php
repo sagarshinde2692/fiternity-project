@@ -3861,7 +3861,7 @@ class FindersController extends \BaseController {
 
             }else{
                 
-                $line = "\nBiggest Monsoon Flash Sale\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
+                $line = "Biggest Monsoon Flash Sale\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
             
             }
         }
@@ -3925,7 +3925,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderDetailApp($slug, $cache = true){
+	public function finderDetailApp($slug, $cache = false){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
