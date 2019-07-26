@@ -3669,7 +3669,7 @@ if (!function_exists('vendorsByBrand')) {
         $limit   = 50;
         $brand_id = $request['brand_id'];
         $city = $request['city'];
-        $keys = [ "id","address","average_rating","business_type","categorytags","commercial_type","contact","coverimage","distance","facilities","geolocation","location","locationtags","multiaddress","name","offer_available","offerings","photos","servicelist","slug","total_rating_count","vendor_type","subcategories","tractionscore","trial_offer","membership_offer", "coverimage_website_membership"];
+        $keys = [ "id","address","average_rating","business_type","categorytags","commercial_type","contact","coverimage","distance","facilities","geolocation","location","locationtags","multiaddress","name","offer_available","offerings","photos","servicelist","slug","total_rating_count","vendor_type","subcategories","tractionscore","trial_offer","membership_offer", "thumbnail_website_membership"];
         
         // $brand_id = $request['brand_id'];
         $payload = [ 

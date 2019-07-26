@@ -226,9 +226,9 @@ class BrandsController extends \BaseController {
 
                 foreach($data['finders']['results'] as $key=>$value){
 
-                    if(!empty($value['coverimage_website_membership'])){
+                    if(!empty($value['thumbnail_website_membership'])){
                         
-                        $data['finders']['results'][$key]['coverimage'] = $value['coverimage_website_membership'];
+                        $data['finders']['results'][$key]['coverimage'] = $value['thumbnail_website_membership'];
                     }
                 }
             }
@@ -421,8 +421,15 @@ class BrandsController extends \BaseController {
 		foreach($home1['own_franchise']['what_we_deliver']['details'] as $key=>$value){
 			$home1['own_franchise']['what_we_deliver']['details'][$key]['image'] =  $base_url.$home1['own_franchise']['what_we_deliver']['details'][$key]['path'].$home1['own_franchise']['what_we_deliver']['details'][$key]['image'];
 		}
+
+		foreach($home1['own_franchise']['partners_list'] as $key=>$value){
+			$home1['own_franchise']['partners_list'][$key]['logo'] = $base_url.$home1['own_franchise']['partners_list'][$key]['path'].$home1['own_franchise']['partners_list'][$key]['logo'];
+
+			$home1['own_franchise']['partners_list'][$key]['colored_logo'] = $base_url.$home1['own_franchise']['partners_list'][$key]['path'].$home1['own_franchise']['partners_list'][$key]['colored_logo'];
+		}
+
 		$home1['own_franchise']['banner_image']['image'] = $base_url.$home1['own_franchise']['banner_image']['path'].$home1['own_franchise']['banner_image']['image'];
-		$home1['own_franchise']['partners_list'] = $this->addPartenersList();
+		//$home1['own_franchise']['partners_list'] = $this->addPartenersList();
 		$home[0]['brand_website'] =  $home1;
 
 
