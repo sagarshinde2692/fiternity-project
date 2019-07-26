@@ -227,7 +227,6 @@ class BrandsController extends \BaseController {
                 foreach($data['finders']['results'] as $key=>$value){
 
                     if(!empty($value['thumbnail_website_membership'])){
-                        
                         $data['finders']['results'][$key]['coverimage'] = $value['thumbnail_website_membership'];
                     }
                 }
