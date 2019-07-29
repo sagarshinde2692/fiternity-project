@@ -175,7 +175,7 @@ return array(
 	| will not be safe. Please do this before deploying an application!
 	|
 	*/
-	'key' => 'y9d0SChyBO4g5rxALMYLgTqTAJBGtrys',
+	'key' => 'llUcLdw8v9nl6kEzYDW5uwGRRRJkpIOV',
 
 	'cipher' => MCRYPT_RIJNDAEL_128,
 
