@@ -893,8 +893,8 @@ Class CustomerMailer extends Mailer {
 		$label = 'Remaining Voucher Notification Mail';
 
 		$message_data = array(
-			'user_email' => array('ankitamamnia@gmail.com'),
-			'user_name' => 'Ankita Mamnia',
+			'user_email' => array("vinichellani@fitternity.com", 'dhruvsarawagi@fitternity.com', 'sailismart@fitternity.com', 'kananigopi@fitternity.com', 'ankitamamnia@gmail.com'),
+			'user_name' => 'Fitternity',
 		);
 
 		return $this->common($label,$data,$message_data);
