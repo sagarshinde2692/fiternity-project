@@ -1,0 +1,48 @@
+order allow,deny
+deny from 43.250.165.159
+deny from 173.193.200.124
+deny from 43.241.144.166
+deny from 103.251.215.186
+deny from 110.164.157.24
+deny from 185.234.219.239
+deny from 79.101.41.129
+deny from 134.175.11.60
+deny from 61.238.241.166
+deny from 151.100.107.195
+deny from 194.36.173.3
+deny from 194.187.249.34
+deny from 52.77.62.162
+allow from all
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    </IfModule>
+
+    RewriteEngine On
+
+    # Redirect Trailing Slashes...
+    RewriteRule ^(.*)/$ /$1 [L,R=301]
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+    # RewriteCond %{THE_REQUEST} ^.*(email/opened).* [NC]
+    RewriteCond %{QUERY_STRING} label=flash-sale-mumbai [NC]
+    RewriteRule ^(.*)$ - [F,L]
+
+    # Handle Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+
+    #RewriteCond %{HTTP_REFERER} shoppoapp.com [NC,OR]
+    #RewriteRule .* - [F]
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  Header set Access-Control-Allow-Origin "*"
+  Header set Access-Control-Allow-Methods: "GET,POST,OPTIONS,DELETE,PUT"
+  Header set Access-Control-Allow-Headers: "Content-Type,Authorization,Client,Dev-Certificate,Device-Type,Device-Model,App-Version,Os-Version,Device-Token,Device-Id,Authorization-Vendor,Device-Serial,Mac-Address,Source"
+ 
+  RewriteEngine on
+  RewriteBase /
+</IfModule>

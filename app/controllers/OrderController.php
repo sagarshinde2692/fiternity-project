@@ -124,7 +124,7 @@ class OrderController extends \BaseController {
         if($resp["coupon_applied"]){
             if(isset($data['event_id']) && isset($data['customer_email'])){
                                 
-                $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
+                $already_applied_coupon = Customer::where('email',  strtolower($data['customer_email']))->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
             
                 if($already_applied_coupon>0){
                     return Response::json(array('status'=>400,'data'=>array('final_amount'=>($resp['data']['discount']+$resp['data']['final_amount']), "discount" => 0), 'error_message'=>'Coupon already applied', "message" => "Coupon already applied"), 400);
@@ -623,7 +623,7 @@ class OrderController extends \BaseController {
             $data['service_duration'] = (isset($data['service_duration']) && $data['service_duration'] != "") ? $data['service_duration'] : "";
         }
 
-        $orderid 			=	Order::max('_id') + 1;
+        $orderid 			=	Order::maxId() + 1;
         $data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
         if(trim(Input::json()->get('preferred_starting_date')) != '' && trim(Input::json()->get('preferred_starting_date')) != '-'){
             $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
@@ -667,7 +667,7 @@ class OrderController extends \BaseController {
         }
 
 
-        $count  = Order::where("status","1")->where('customer_email',$data['customer_email'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->orderBy('_id','asc')->where('_id','<',$orderid)->count();
+        $count  = Order::where("status","1")->where('customer_email',$data['customer_email'])->where('customer_phone', substr($data['customer_phone'], 10))->orderBy('_id','asc')->where('_id','<',$orderid)->count();
 
         if($count > 0){
             array_set($data, 'acquisition_type', 'renewal_direct');
@@ -1411,7 +1411,8 @@ class OrderController extends \BaseController {
                     $service_duration = $data['service_duration'] = $this->getServiceDuration($ratecard);
                 }
 
-                $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+                //$offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+                $offer = Offer::getActiveV1('ratecard_id', intval($ratecard->_id), intval($ratecard->finder_id))->first();
 
                 if($offer){
                     $data['amount_finder'] = $offer->price;
@@ -1495,7 +1496,7 @@ class OrderController extends \BaseController {
             array_set($data, 'reward_ids', $rewardoffers);
         }
 
-        $orderid = Order::max('_id') + 1;
+        $orderid = Order::maxId() + 1;
 
         $code = $orderid.str_random(8);
 
@@ -1774,106 +1775,6 @@ class OrderController extends \BaseController {
         $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
         return Response::json($resp);
     }
-
-
-    public function autoRegisterCustomer($data){
-
-        $customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
-
-        if(!$customer) {
-
-            $inserted_id = Customer::max('_id') + 1;
-            $customer = new Customer();
-            $customer->_id = $inserted_id;
-            $customer->name = ucwords($data['customer_name']) ;
-            $customer->email = $data['customer_email'];
-            $customer->dob =  isset($data['dob']) ? $data['dob'] : "";
-            $customer->gender =  isset($data['gender']) ? $data['gender'] : "";
-            $customer->fitness_goal = isset($data['fitness_goal']) ? $data['fitness_goal'] : "";
-            $customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-            $customer->password = md5(time());
-
-            if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
-                $customer->contact_no = $data['customer_phone'];
-            }
-
-            /*if(isset($data['customer_address'])){
-
-                if(is_array($data['customer_address']) && !empty($data['customer_address'])){
-
-                    $customer->address = implode(",", array_values($data['customer_address']));
-                    $customer->address_array = $data['customer_address'];
-
-                }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
-
-                    $customer->address = $data['customer_address'];
-                }
-
-            }*/
-
-            $customer->identity = 'email';
-            $customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
-            $customer->status = "1";
-            $customer->ishulluser = 1;
-            $customer->save();
-
-            return $inserted_id;
-
-        }else{
-
-            $customerData = [];
-
-            try{
-
-                if(isset($data['dob']) && $data['dob'] != ""){
-                    $customerData['dob'] = trim($data['dob']);
-                }
-
-                if(isset($data['fitness_goal']) && $data['fitness_goal'] != ""){
-                    $customerData['fitness_goal'] = trim($data['fitness_goal']);
-                }
-
-                if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
-                    $customerData['contact_no'] = trim($data['customer_phone']);
-                }
-
-                if(isset($data['otp']) &&  $data['otp'] != ""){
-                    $customerData['contact_no_verify_status'] = "yes";
-                }
-
-                if(isset($data['gender']) && $data['gender'] != ""){
-                    $customerData['gender'] = $data['gender'];
-                }
-
-                /*if(isset($data['customer_address'])){
-
-                    if(is_array($data['customer_address']) && !empty($data['customer_address'])){
-
-                        $customerData['address'] = implode(",", array_values($data['customer_address']));
-                        $customerData['address_array'] = $data['customer_address'];
-
-                    }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
-
-                        $customerData['address'] = $data['customer_address'];
-                    }
-
-                }*/
-
-                if(count($customerData) > 0){
-                    $customer->update($customerData);
-                }
-
-            } catch(ValidationException $e){
-
-                Log::error($e);
-
-            }
-
-            return $customer->_id;
-        }
-
-    }
-
 
     public function buyArsenalMembership(){
 
@@ -2402,8 +2303,9 @@ class OrderController extends \BaseController {
                         }
                     }
 
-                    $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
-
+                    //$offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+                    $offer = Offer::getActiveV1('ratecard_id', intval($ratecard->_id), intval($ratecard->finder_id))->first();
+                    
                     if($offer){
                         $data['amount_finder'] = $offer->price;
                         $offer_id = $offer->_id;
@@ -2961,6 +2863,15 @@ class OrderController extends \BaseController {
         // Log::info($data['reverse_hash']);
         return $data;
     }
+
+    public function debitWalletTransaction(){
+
+		$data =   Input::all();
+
+		Log::info('ASP                ::               ',[$data]);
+        $walletData = Input::all();
+		$wallet_res = $this->utilities->walletTransactionNew($walletData);
+	}
 
 
 }

@@ -9,6 +9,7 @@
 use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
 
+
 class ServiceController extends \BaseController {
 
 	public function __construct(Utilities $utilities) {
@@ -16,7 +17,6 @@ class ServiceController extends \BaseController {
 		parent::__construct();
 
 		$this->utilities = $utilities;
-
 		$this->vendor_token = false;
         
         $vendor_token = Request::header('Authorization-Vendor');
@@ -511,7 +511,7 @@ class ServiceController extends \BaseController {
 			$data['weekday'] = $weekday;
 			
 		}
-
+		
 		return Response::json($data,200);
         
     }
@@ -636,6 +636,7 @@ class ServiceController extends \BaseController {
         		$decodeKioskVendorToken = decodeKioskVendorToken();
         		$vendor = $decodeKioskVendorToken->vendor;
         		$finder_id = (int)$vendor->_id;
+                $request['type'] = 'workout-session';
         	}
         	else $finder_id = (int)$request['finder_id'];
         	
@@ -670,17 +671,28 @@ class ServiceController extends \BaseController {
         // $type                   =   'workout-session';
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
-		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id','flags');
+		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id','flags', 'inoperational_dates');
 		Service::$withoutAppends=true;
-		 Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards'];
+        Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards', 'service_inoperational_dates_array'];
 		
-        $query = Service::active()->where('trial','!=','disable');
+		if(!empty($request['service_id'])){
+			$currentService = Service:: find((int)$request['service_id'],['combine_service_ids']);
+			if(!empty($currentService['combine_service_ids'])){
+				$combine_service_ids = $currentService['combine_service_ids'];
+			}
+		}
+        $query = Service::active()->where("trial", '!=', 'disable')->where(function($query){
+            $query->whereNotIn('trial',['manual', 'manualauto'])->orWhere('flags.enable_manual_booking_pps.status', true);
+        });
 
-
+        $query->where('servicecategory_id','!=',163);
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
-
-        (isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id',(int)$request['service_id']) : null;
+		if(!empty($combine_service_ids)){
+			$query->whereIn('_id',$combine_service_ids);
+		}else{ 
+			(isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id',(int)$request['service_id']) : null;
+		}
 
 		switch ($type) {
 			case 'workout-session':
@@ -689,15 +701,12 @@ class ServiceController extends \BaseController {
         	default: $ratecard_type = 'trial'; array_push($selectedFieldsForService,'trialschedules');break;
         }
      	 $items = $query->with(array('serviceratecards'=> function($query) use ($ratecard_type){
-			 $query->where('type',$ratecard_type);
+			$query->where('type',$ratecard_type);
 		 }))->with(array('category'=>function($query){
 			$query->select('name');
 		}))->get($selectedFieldsForService)->toArray();
-
-		//  $items = $query->get()->toArray();
-
-
 		
+		//  $items = $query->get()->toArray();
 
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
@@ -708,7 +717,11 @@ class ServiceController extends \BaseController {
 
 		$finder_id = $items[0]['finder_id'];
 		// $finder = Finder::find($finder_id, array('inoperational_dates'));
-		$finder = Finder::find($finder_id);
+        $finder = Finder::find($finder_id);
+        
+        if(!empty($finder['trial']) && (in_array($finder['trial'], ['manual', 'manualauto']) && empty($finder['flags']['enable_manual_booking_pps']['status']))){
+    		return Response::json(array('status'=>401,'message'=>'Please contact customer support to book a session here'),401);
+    	}
 
 		$findercategory_id = isset($finder->category_id) ? $finder->category_id : null;
 		
@@ -729,6 +742,22 @@ class ServiceController extends \BaseController {
 
         foreach ($items as $k => $item) {
 
+            if(!empty($item['workoutsessionschedules'])){
+                $workoutsessionschedules = $item['workoutsessionschedules'];
+                if($item['servicecategory_id'] == 1){
+        
+                    foreach($workoutsessionschedules as &$value){
+                        foreach($value['slots'] as &$slot){
+                            if(empty($slot['price']) || $slot['price'] > 99){
+                                $slot['price'] = 99;
+                            }
+                        }
+                    }
+                }
+        
+                $item['workoutsessionschedules'] = $workoutsessionschedules;
+            }
+
         	$item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
             $item['vip_trial'] = "";//isset($item['vip_trial']) ? $item['vip_trial'] : "";
 			$item['address'] = isset($item['address']) ? $item['address'] : "";
@@ -738,16 +767,22 @@ class ServiceController extends \BaseController {
 
 			$weekdayslots = false;
 
-
-			if(!in_array($timestamp, $finder['inoperational_dates_array'])){
-				$weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
-					if($value['weekday'] == $weekday){
-						return $value;
-					}
-				}));
-			}
 			
+			if(!in_array($timestamp, $finder['inoperational_dates_array'])){
+				if(!in_array($timestamp, $item['service_inoperational_dates_array'])){
+					$weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
+						if($value['weekday'] == $weekday){
+							return $value;
+						}
+					}));
+				}
+			}
+
 			$time_in_seconds = time_passed_check($item['servicecategory_id']);
+            
+            if(!empty($finder['flags']['enable_manual_booking_pps']['status']) && !empty($item['flags']['enable_manual_booking_pps']['status'])){
+                $time_in_seconds = 60*60*24;
+            }
 			
 			if(isset($request['time_interval']) && $request['time_interval']){
 				$time_in_seconds = $request['time_interval'];
@@ -773,13 +808,14 @@ class ServiceController extends \BaseController {
 				'workoutsession_active_weekdays' => $item["workoutsession_active_weekdays"],
 				'trial_active_weekdays' => $item["trial_active_weekdays"],
 				'inoperational_dates_array' => $finder['inoperational_dates_array'],
+				'service_inoperational_dates_array' => $item['service_inoperational_dates_array'],
 				'cost'=>'Free Via Fitternity',
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
 				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : "",
                 'free_trial_available'=>!empty($item['freeTrialRatecards'])
 			);
 
-			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
 
 				$service['cost'] = 'Free';
 			}
@@ -819,12 +855,26 @@ class ServiceController extends \BaseController {
 	        $slot_passed_flag = true;
 			
             if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
-				if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
-					$ratecard_price = $ratecard['special_price'];
-                }else{
-					$ratecard_price = $ratecard['price'];
-                }
 
+				$offer_price = $this->ppsPriceOffer($ratecard['_id'], $weekdayslots['slots']);
+
+				if($offer_price['price'] == 0)
+				{
+					if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+						$ratecard_price = $ratecard['special_price'];
+					}else{
+						$ratecard_price = $ratecard['price'];
+                    }
+                    foreach($weekdayslots['slots'] as &$weekdayslot){
+                        $weekdayslot['price'] = $ratecard_price;
+                    }
+				}
+				else
+				{
+					$weekdayslots['slots']= $offer_price['slots'];
+					$ratecard_price = $offer_price['price'];
+				}
+				
 				if($type == "workoutsessionschedules"){
 					$service["workout_session"] = [
 							"available" => true,
@@ -838,17 +888,27 @@ class ServiceController extends \BaseController {
 		    		$service['cost'] = "₹ ".$ratecard_price;
 				}
 				
-				
-				
-		    	if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
+
+
+                if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
 		    	{
-		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@2x%20%281%29.png', 'slot_type'=>1];$nrsh=["title"=>Config::get('app.non_peak_hours.non_peak_title'),"price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png', 'slot_type'=>0];
+                    $rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@2x%20%281%29.png', 'slot_type'=>1];$nrsh=["title"=>Config::get('app.non_peak_hours.non_peak_title'),"price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png', 'slot_type'=>0];
 		    		
 		    		$p_np=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 		    		if(!empty($p_np))
-		    		{
-		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):"";
-		    			$nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
+		    		{	
+		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $this->utilities->getRupeeForm($p_np['non_peak'] + $p_np['non_peak_discount']):"");
+                        $nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
+                        
+                        if(empty($finder['flags']['monsoon_campaign_pps'])){
+                            if(!empty($rsh['price'])){
+                                $rsh['price'].=" (100% Cashback)";
+                            }
+                            if(!empty($rsh['price'])){
+                                $nrsh['price'].=" (100% Cashback)";
+                            }
+                            
+                        }
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
 				}
@@ -944,26 +1004,38 @@ class ServiceController extends \BaseController {
 						// if(isset($_GET['source']) && $_GET['source'] == 'pps')
                         $jwt_token = Request::header('Authorization');
 
-                        Log::info('jwt_token : '.$jwt_token);
+                        //Log::info('jwt_token : '.$jwt_token);
 
                         if(!empty($jwt_token)){
                             $decoded = decode_customer_token();
                             $customer_email = $decoded->customer->email;
                             $extended_validity_order =  $this->utilities->getExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
-                            $service['extended_validity'] = !empty($extended_validity_order);
-                        }
+                            // $studio_extended_validity_order =  $this->utilities->getStudioExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
+                            $service['extended_validity'] = !empty($extended_validity_order) || !empty($studio_extended_validity_order);
+						}
+						
+						if(
+                            $finder['category_id'] != 47 
+                            && 
+                            empty($service['extended_validity']) 
+                            && 
+                            (
+                                (isset($item['flags']['disable_dynamic_pricing']) && empty($item['flags']['disable_dynamic_pricing'])) 
+                                || 
+                                (isset($finder['flags']['disable_dynamic_pricing']) && empty($finder['flags']['disable_dynamic_pricing'])))
+                            ){
 
-                        if($finder['category_id'] != 47 && empty($service['extended_validity']) && empty($item['flags']['disable_dynamic_pricing'])){
+							$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
 
-						    $ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
-
-                        }else{
-                            $ck=['peak'=>true];
-                        }
-
+						}else{
+							
+							$ck=['peak'=>true];
+						
+						}
+						
 						if(!$slot['passed']){
 							$total_slots_available_count +=1;
-// 							return $ck;
+ 							//return $ck;
 							if(intval($slot['start_time_24_hour_format']) < 12){
 								array_push($slots_timewise['morning'], $slot);
 							}elseif(intval($slot['start_time_24_hour_format']) < 16){
@@ -1041,7 +1113,7 @@ class ServiceController extends \BaseController {
 			
 			// if(!empty($ratecard_price) && !empty($peak_exists)){
 			// 	$service['peak_text'] = "RUSH HOURS ₹. <b style=\"color:#4fa3a4;\">".$ratecard_price."</b>";
-			// }
+            // }
 			if(!empty($ratecard_price) && !empty($non_peak_exists)){
                 if(!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])){
 				    
@@ -1052,7 +1124,11 @@ class ServiceController extends \BaseController {
                     $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
 
                 }
-			}
+
+                if(empty($finder['flags']['monsoon_campaign_pps'])){
+                    $service['non_peak']['price'] .= " (100% Cashback)";
+                }
+            }
 			
 			$peak_exists = false;
 			$non_peak_exists = false;
@@ -1195,16 +1271,18 @@ class ServiceController extends \BaseController {
 
 
 			}else{
-
-                foreach($data['schedules'] as &$sc){
+				
+				foreach($data['schedules'] as &$sc){
 
                     if(!empty($_GET['init_source']) && $_GET['init_source'] == 'pps'){
                         $sc['free_trial_available'] = false;
                     }
-
-                    
-                    if(((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])) || (!empty($sc['extended_validity']))){
-                        $sc['cost'] .= Config::get('app.first_free_string');
+					
+					$str = " (100% Cashback)";
+					if(((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])) || (!empty($sc['extended_validity']))){
+						
+						$str = "";
+						$sc['cost'] .= Config::get('app.first_free_string');
 
                         if(!empty($sc['extended_validity'])){
                             $sc['cost'] = Config::get('nonvalidity.slots_header');
@@ -1224,16 +1302,34 @@ class ServiceController extends \BaseController {
 								unset($x['price']);
 							}
                         }
-                    }
-                    if(!empty($service['extended_validity'])){
+					}
+					
+					if((isset($sc['free_trial_available']) && $sc['free_trial_available']) || !empty($finder['flags']['monsoon_campaign_pps'])){
+						$str = "";
+					}
+
+					$sc['cost'] .= $str;
+					if(!empty($service['extended_validity'])){
 
                     }
 
                 }
+			}
+
+			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
+				foreach($data['schedules'] as &$schedule){
+					$schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title']);
+				}
+			}
+			else if(!empty($data['slots']) && in_array($this->device_type, ['android', 'ios'])){
+				$data['slots'] = $this->utilities->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'] );
             }
-
-
-	        return Response::json($data,200);
+            
+            if(!empty($data['slots']) && count($data['slots']) == 1 && !empty($data['slots'][0]['title'])){
+                $data['slots'][0]['title'] = "Select a slot";
+            }
+            
+            return Response::json($data,200);
         }
 
     }
@@ -1287,7 +1383,7 @@ class ServiceController extends \BaseController {
     	$customer_id = "";
         $jwt_token = Request::header('Authorization');
 
-        Log::info('jwt_token : '.$jwt_token);
+        //Log::info('jwt_token : '.$jwt_token);
 
         if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
             $decoded = decode_customer_token();
@@ -1354,7 +1450,7 @@ class ServiceController extends \BaseController {
 			$nextweekday     			=   strtolower(date( "l", strtotime("+".$i." days",$timestamp)));
 			// Log::info($nextweekday." ++ ".$service["service_name"]);
 			// Log::info($active_weekdays);
-			if(in_array($nextweekday,$active_weekdays) && !in_array(strtotime("+".$i." days",$timestamp), $service['inoperational_dates_array'])){
+			if(in_array($nextweekday,$active_weekdays) && !in_array(strtotime("+".$i." days",$timestamp), $service['inoperational_dates_array'])  && !in_array(strtotime("+".$i." days",$timestamp), $service['service_inoperational_dates_array'])){
 				// Log::info("available timestamp:".strtotime("+".$i." days",$timestamp));
 				$v = date("Y-m-d",strtotime("+".$i." days",$timestamp));
 				Log::info("Yahan".$v);
@@ -1574,12 +1670,12 @@ class ServiceController extends \BaseController {
 				->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
 				->with('category')
 				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->where("description", "!=", "")->orderBy('updated_at', 'DESC')->limit(3);}))
-				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo', 'category_id']);
+				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo', 'category_id', 'flags']);
 
 			if(!$finder){
 				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
 			}
-
+			
 			$finder['reviews'] = !empty($finder['reviews']) ? $finder['reviews']->toArray() : []; 
 			if(count($finder['reviews']) < 3){
 				$initial_review_count = count($finder['reviews']);
@@ -1600,8 +1696,12 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules', 'short_description','servicesubcategory_id']);
+			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules', 'short_description','servicesubcategory_id','flags', 'pps_description']);
 			
+			if(isset($service_details['pps_description']) && $service_details['pps_description'] != ''){
+				$service_details['short_description'] = $service_details['pps_description'];
+			}
+
 			if(!empty($service_details['short_description'])){
 				
 				$service_category = Servicecategory::find($service_details["servicesubcategory_id"]);
@@ -1619,6 +1719,7 @@ class ServiceController extends \BaseController {
 			
 			};
 			$service_details['finder_slug'] = $finder['slug'];
+			$service_details['finder_flags'] = $finder['flags'];
 			$service_details['lat'] = (string)$service_details['lat'];
 			$service_details['lon'] = (string)$service_details['lon'];
 
@@ -1661,14 +1762,26 @@ class ServiceController extends \BaseController {
 			};
 			
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
+            // $ratecard = Ratecard::where("service_id",(int)$value["service_id"])->where('type','workout session')->orderBy("_id","desc")->first();
+            $offer = Offer::where('hidden', false)->where('ratecard_id', $workout_session_ratecard['_id'])->orderBy('_id', 'desc')
+            ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+            ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()-86400) ))
+            ->first();		
 
-
-
-            if(!empty($finder['category_id']) && $finder['category_id'] == 47){
-                $service_details['price'] = "Starting at ₹".$service_details['amount'];
-            }else{
-                $service_details['price'] = "Starting at ₹".floor($service_details['amount'] * Config::get('app.non_peak_hours.off'));
+            if(!empty($offer)){
+                $service_details['amount'] = $offer['price'];
             }
+			
+            $service_details['price'] = "₹".$service_details['amount'];
+
+            if(empty($finder['flags']['monsoon_campaign_pps'])){
+                $service_details['price'].=" (100% Cashback)";
+            }
+            // if((!empty($finder['category_id']) && $finder['category_id'] == 47) || !empty($service_details['flags']['disable_dynamic_pricing'])){
+            //     $service_details['price'] = "Starting at ₹".$service_details['amount'];
+            // }else{
+            //     $service_details['price'] = "Starting at ₹".floor($service_details['amount'] * Config::get('app.non_peak_hours.off'));
+            // }
 
 			$service_details['contact'] = [
 				'address'=>''
@@ -1722,8 +1835,13 @@ class ServiceController extends \BaseController {
 
 			}
 	
+			$reviewCounts = Review::where('status','=','1')->where('description', '!=', "")->where('finder_id', $finder['_id'])->count();
+			if(empty($reviewCounts)) {
+				$reviewCounts = 0;
+			}
+
 			$service_details['reviews'] = [
-				'count'=>isset($finder['total_rating_count']) ? $finder['total_rating_count'] : 0,
+				'count'=>$reviewCounts,
 				'reviews'=>$reviews
 			];
 
@@ -1887,7 +2005,7 @@ class ServiceController extends \BaseController {
 			// $service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 3);
 		}
 		// $service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 7);
-		unset($service_details['workoutsessionschedules']);
+        unset($service_details['workoutsessionschedules']);
 		$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()), true);
 		
 		if($schedule['status'] != 200){
@@ -2027,7 +2145,12 @@ class ServiceController extends \BaseController {
 		if(!$data['pending_payment']){
 			unset($data['pending_payment']);	
 		}
-
+		if(!empty($data['service']) && in_array($this->device_type, ['android', 'ios'])){
+			$data['service'] = $this->utilities->orderSummaryService($data['service']);
+		}
+		if(!empty($data['service']['slots'] && in_array($this->device_type, ['android', 'ios']))){
+			$data['service']['slots'] = $this->utilities->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name']);
+		}
 		return Response::json(array('status'=>200, 'data'=> $data));
 
 	}
@@ -2099,28 +2222,28 @@ class ServiceController extends \BaseController {
 		];
 		$cityId=City::where("slug",$city)->first(['_id']);
 		$cityCached=strtolower($city);
-		if(!empty($cityId))
-		{
-			$cityId=$cityId->_id;
-			if(!empty($slotsCountCache))
-			{
-				$gymCacheKey=$cityCached.'-'.'gym';
-				$zumbaCacheKey=$cityCached.'-'.'zumba';
-				$cfCacheKey=$cityCached.'-'.'crossfit';
-				$totCacheKey=$cityCached.'-'.'total';
-				$cche=true;
-			}
-			else {
-				$cfCacheKey=null;$totCacheKey=null;$zumbaCacheKey=null;$gymCacheKey=null;$cche=false;
-			}
+		// if(!empty($cityId))
+		// {
+		// 	$cityId=$cityId->_id;
+		// 	if(!empty($slotsCountCache))
+		// 	{
+		// 		$gymCacheKey=$cityCached.'-'.'gym';
+		// 		$zumbaCacheKey=$cityCached.'-'.'zumba';
+		// 		$cfCacheKey=$cityCached.'-'.'crossfit';
+		// 		$totCacheKey=$cityCached.'-'.'total';
+		// 		$cche=true;
+		// 	}
+		// 	else {
+		// 		$cfCacheKey=null;$totCacheKey=null;$zumbaCacheKey=null;$gymCacheKey=null;$cche=false;
+		// 	}
 			
-			$gymCount=$this->utilities->getSessionSlotsService($cityId,[65,82],$cche,$gymCacheKey);
-			$zumbaCount=$this->utilities->getSessionSlotsService($cityId,[19,20,21,132,133,189],$cche,$zumbaCacheKey);
-			$cfCount=$this->utilities->getSessionSlotsService($cityId,[5,111,112,10],$cche,$cfCacheKey);
-			$total=$this->utilities->getSessionSlotsService($cityId,[],$cche,$totCacheKey);
-			$data["stats_count"]=["crossfit"=>$cfCount,"zumba"=>$zumbaCount,"gym"=>$gymCount,"total"=>$total,"categories"=>count($included_ids)];
+		// 	$gymCount=$this->utilities->getSessionSlotsService($cityId,[65,82],$cche,$gymCacheKey);
+		// 	$zumbaCount=$this->utilities->getSessionSlotsService($cityId,[19,20,21,132,133,189],$cche,$zumbaCacheKey);
+		// 	$cfCount=$this->utilities->getSessionSlotsService($cityId,[5,111,112,10],$cche,$cfCacheKey);
+		// 	$total=$this->utilities->getSessionSlotsService($cityId,[],$cche,$totCacheKey);
+		// 	$data["stats_count"]=["crossfit"=>$cfCount,"zumba"=>$zumbaCount,"gym"=>$gymCount,"total"=>$total,"categories"=>count($included_ids)];
 			
-		}
+		// }
 		try{
 
 			if($this->authorization && !empty($this->app_version) ){
@@ -2224,7 +2347,7 @@ class ServiceController extends \BaseController {
 			]
 		];
 		$pay_per_session = payPerSession($pay_persession_request);
-		$subheader = $pay_per_session["request"]["category_name"] . " sessions in " . $pay_per_session["request"]["location_name"];
+		$subheader = $pay_per_session["request"]["category_name"] . " sessions in " . $pay_per_session["request"]["location_name"].(!empty($data['location']['geo']['radius'])?' within '.$data['location']['geo']['radius']:'');
 		$timings = $pay_per_session["aggregations"]["time_range"];
 		$tomorrow = date('l', strtotime(' +1 day'));
 		$tomorrow_date = date('d-m-Y', strtotime(' +1 day'));
@@ -2251,7 +2374,10 @@ class ServiceController extends \BaseController {
 		$session_count = 0;
 		foreach($timings as $timing){
 			$session_count += $timing["count"];
-		}
+        }
+        
+        // $timings[1]['count'] += $timings[0]['count'];
+
 		return $data = array("header"=> "When would you like to workout?","subheader"=>$subheader, "categories" => $timings, "session_count"=> $session_count);
 	}
 
@@ -2318,5 +2444,26 @@ class ServiceController extends \BaseController {
 		
 	}
 
+	public function ppsPriceOffer($ratecard_id, $slots/*, $service_id, $ratecard_id, $type, $service_type='data'*/)
+	{	
+		$date = date('Y-m-d 00:00:00');
+        $offers = Offer :: where('hidden', false)
+                        ->where('ratecard_id', $ratecard_id)
+						->where('start_date', '<=', new MongoDate(strtotime($date)))
+						->where('end_date', '>', new MongoDate(strtotime($date)-86400))
+						->orderBy('_id', 'desc')
+						->select('price')->first();
+		$offer_price=0;
+
+		if(count($offers))
+		{	
+			$offer_price = $offers['price'];
+			foreach($slots as $key=>$value)
+			{	
+				$slots[$key]['price'] = $offer_price;
+			}
+		}
+		return array("price"=>$offer_price, "slots"=> $slots);
+	}
 
 }

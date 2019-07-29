@@ -79,7 +79,7 @@ class CampaignsController extends \BaseController {
 				if(empty($code)){
 					return Response::json(array('status' => 400,'message' => "The code is either invalid or already used"),400);
 				}
-				$inserted_id = Customer::max('_id') + 1;
+				$inserted_id = Customer::maxId() + 1;
 				$account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 				$customer = new Customer();
 				$customer->_id = $inserted_id;
@@ -139,7 +139,7 @@ class CampaignsController extends \BaseController {
 		}else{
 			$customer = Customer::where('email','=',$data['email'])->first();
 			if(empty($customer)){
-				$inserted_id = Customer::max('_id') + 1;
+				$inserted_id = Customer::maxId() + 1;
 				$account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 				$customer = new Customer();
 				$customer->_id = $inserted_id;

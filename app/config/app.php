@@ -3,9 +3,9 @@
 
 return array(
 
-	//local
-	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://fitapi.com',
+    //local
+    // 'new_search_url' =>'http://apistage.fitn.in:5000/',
+	// 'url' => 'http://fitapi.com/',
 	// 'admin_url' => 'http://fitadmin.com',
 	// 'website' => 'https://www.fitternity.com',
 	// 'sidekiq_url' => 'http://kick.fitn.in/',
@@ -19,23 +19,29 @@ return array(
 	// 'website_deeplink' =>'https://ftrnty.com',
 	// 'mobikwik_sandbox'=>true,
 	// 'paytm_sandbox'=>true,
+	// 'paypal_sandbox'=>true,
+	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
 
 	//stage
-	'new_search_url' =>'http://apistage.fitn.in:5000/',
-	'url' => 'http://apistage.fitn.in',
-	'admin_url' => 'http://adminstage.fitn.in',
-	'website' => 'http://apistage.fitn.in:8888',
-	'sidekiq_url' => 'http://kick.fitn.in/',
-	'queue' => 'booktrial',
-	'vendor_communication' => false,
-	'env' => 'stage',
-	'debug' => TRUE,
-	'metropolis' => 'http://apisatge.fitn.in:8989',
-	'amazonpay_isSandbox' => 'true',
-	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	'website_deeplink' =>'https://ftrnty.com',
-	'mobikwik_sandbox'=>true,
-	'paytm_sandbox'=>true,
+	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
+	// 'url' => 'http://apistage.fitn.in',
+	// 'admin_url' => 'http://adminstage.fitn.in',
+	// 'website' => 'http://apistage.fitn.in:8888',
+	// 'sidekiq_url' => 'http://kick.fitn.in/',
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => false,
+	// 'env' => 'stage',
+	// 'debug' => TRUE,
+	// 'metropolis' => 'http://apisatge.fitn.in:8989',
+	// 'amazonpay_isSandbox' => 'true',
+	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
+	// 'mobikwik_sandbox'=>true,
+	// 'paytm_sandbox'=>true,
+	// 'paypal_sandbox'=>true,
+	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -53,25 +59,39 @@ return array(
 	// 'website_deeplink' =>'https://ftrnty.com',
 	// 'mobikwik_sandbox'=>true,
 	// 'paytm_sandbox'=>true,
+	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
 
 	//live
-	// 'new_search_url' =>'http://c1.fitternity.com/',
-	// 'url' => 'https://a1.fitternity.com',
-	// 'admin_url' => 'https://fitn.in',
-	// 'website' => 'https://www.fitternity.com',
-	// 'sidekiq_url' => 'http://nw.fitn.in/',
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => true,
-	// 'env' => 'production',
-	// 'debug' => false,
-	// 'metropolis' => 'https://c1.fitternity.com',
-	// 'amazonpay_isSandbox' => 'false',
-	// 'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
-	// 'website_deeplink' =>'https://ftrnty.com',
-	// 'mobikwik_sandbox'=>false,
-	// 'paytm_sandbox'=>false,
-
-	"core_key"=> "FITITRNTY",
+	'new_search_url' =>'http://c1.fitternity.com/',	
+	'url' => 'https://a1.fitternity.com',
+	'admin_url' => 'https://fitn.in',
+    'website' => 'https://www.fitternity.com',
+    'multifit_website' => 'http://www.multifitgym.com',
+	'sidekiq_url' => 'http://nw.fitn.in/',
+	'queue' => 'booktrial',
+	'vendor_communication' => true,
+	'env' => 'production',
+	'debug' => false,
+	'metropolis' => 'https://c1.fitternity.com',
+	'amazonpay_isSandbox' => 'false',
+	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
+	'website_deeplink' =>'https://ftrnty.com',
+	'mobikwik_sandbox'=>false,
+	'paytm_sandbox'=>false,
+	'paypal_sandbox'=>false,
+	'ffTransactionAPI'=>'https://demo.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	'ffEnquiryAPI'=>'http://api.fitnessforce.com/prospect',
+	
+	'ffDetails' => [
+		'source' => 'fitternity',
+		'paymentmode' => 'fitternity'
+    ],
+    
+    "pps_image"=> 'https://b.fitn.in/global/fit-exclusive-new-14-7-2019.png',    
+    'fitsquad_upgrade_api'=> '/customer/loyaltyAppropriation',
+	'fitsquad_cancel_api'=>'/customer/remaincurrentloyalty',
+    "core_key"=> "FITITRNTY",
 	'non_peak_hours' => ["off"=>0.6,"non_peak_title1"=>"Look for this sign to book a slot for ", "non_peak_title"=>"NON RUSH HOUR (40% OFF)", "gym"=>["off"=>0.6,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.6]],
     'product_delivery_charges' => 50,
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
@@ -288,7 +308,9 @@ return array(
 	'perpage' 						=> 	50,
 
 	's3_finder_url'					=> 'https://d3oorwrq3wx4ad.cloudfront.net/f/',
-	's3_service_url'				=> 'https://d3oorwrq3wx4ad.cloudfront.net/s/',
+    's3_service_url'				=> 'https://d3oorwrq3wx4ad.cloudfront.net/s/',
+	's3_bane_url'				=> 'https://d3oorwrq3wx4ad.cloudfront.net/',
+
 //
 //	'elasticsearch_port' 			=> 	9200,
 //	'elasticsearch_host_new' 		=> 	'ESAdmin:fitternity2020@54.169.120.141',
@@ -308,14 +330,24 @@ return array(
 	//currently used only for vip trials rolling builds and search api.
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
-	//Production
+	//Production - Old
+	// 'es' =>array(
+	// 	'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+	// 	'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+	// 	'port'		=>			8050,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
+	// ),
+
+	// Production
 	'es' =>array(
-		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
-		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+		'url'		=> 			'ESAdmin:fitternity2020@13.234.226.35:8050',
+		'host'		=> 			'ESAdmin:fitternity2020@13.234.226.35',
 		'port'		=>			8050,
 		'default_index' => 	'fitternity',
 		'default_type' 	=> 	'finder',
 	),
+
 	//stage
 	// 'es' =>array(
 	//  	'url'		=> 			'139.59.16.74:1243',
@@ -352,7 +384,7 @@ return array(
 	'jwt' => array(
 		'key' => 'fitternity', //secret key to encode token
 		'iat' => time(), // time when token is created
-		'nbf' => time()+10, // time when token can be used from
+		'nbf' => time(), // time when token can be used from
 		'exp' => time()+(86400*365), // time when token gets expired (1 year)
 		'alg' => 'HS256',
 	),
@@ -365,8 +397,8 @@ return array(
 	),
 
 	'aws' => array(
-		'key' 								=> 'AKIAIRQP65VEX5N23QRQ',
-		'secret' 							=> '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',
+		'key' 								=> 'AKIATSZWJ7JFA747DICW',
+		'secret' 							=> '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',
 		'region' 							=> 'ap-southeast-1',
 		'bucket'							=> 'b.fitn.in',
 		'ozonetel' =>array(
@@ -421,6 +453,9 @@ return array(
 	'direct_ozonetel_vendor_number' => '+919699998838',
 	'direct_ozonetel_customer_number' => '+919867592381',
 	'sooraj_number'=>'+919699998838',
+	
+	'contact_us_customer_email_multifit' => 'info@multifit.co.in',
+	'contact_us_customer_number_multifit' => '020 67473400',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',
@@ -740,7 +775,7 @@ return array(
                 "rate"=>14
             )
         ),
-	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','rohitvarade@fitternity.com'],	
+	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','surajpalai@fitternity.com','kedarkhanvilkar@fitternity.com','nikitasharma@fitternity.com'],	
     
 	'test_vendors' => ['fitternity-test-page', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym'],
 	'hide_from_search' => [11128, 6332, 6865, 7146, 9309, 9329, 9379, 9381, 9403, 9623, 9863, 9869, 9891, 10037, 11128, 12110],
@@ -749,7 +784,7 @@ return array(
 
 	'fitternity_personal_trainers' => 'Personal Training at Home by Fitternity',
 
-	'delay_methods' =>["bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "postTrialStatusUpdate", "bookTrialReminderAfter2Hour", "bookTrialReminderBefore10Min", "bookTrialReminderBefore3Hour", 'bookTrialReminderBefore20Min', 'offhoursConfirmation', "bookTrialReminderAfter30Mins"],
+	'delay_methods' =>["bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "postTrialStatusUpdate", "bookTrialReminderAfter2Hour", "bookTrialReminderBefore10Min", "bookTrialReminderBefore3Hour", 'bookTrialReminderBefore20Min', 'offhoursConfirmation', "bookTrialReminderAfter30Mins", 'abandonCartCustomerAfter2hoursFinder'],
 
 
 	'my_fitness_party_slug' => ['mfp','mfp-mumbai','mfp-delhi'],
@@ -781,29 +816,29 @@ return array(
 
 	'streak_data'=>[		
 		[
-			'number'=>3,
-			'cashback'=>10,
+			'number'=>10,
+			'cashback'=>5,
 			'level'=>1,
 			'unlock_icon'=>'https://b.fitn.in/paypersession/level-1.png',
 			'unlock_color'=>'#d34b4b'
 		],
 		[
-			'number'=>5,
-			'cashback'=>15,
+			'number'=>20,
+			'cashback'=>10,
 			'level'=>2,
 			'unlock_icon'=>'https://b.fitn.in/paypersession/level-2.png',
 			'unlock_color'=>'#f7a81e'
 		],
 		[
-			'number'=>10,
-			'cashback'=>20,
+			'number'=>35,
+			'cashback'=>15,
 			'level'=>3,
 			'unlock_icon'=>'https://b.fitn.in/paypersession/level-3.png',
 			'unlock_color'=>'#4b67d3'
 		],
 		[
-			'number'=>20,
-			'cashback'=>30,
+			'number'=>50,
+			'cashback'=>20,
 			'level'=>4,
 			'unlock_icon'=>'https://b.fitn.in/paypersession/level-4.png',
 			'unlock_color'=>'#16b765'
@@ -824,7 +859,7 @@ return array(
 		'offhours_instant_td_mins'=>5,
 		'offhours_fixed_time_1'=>22,
 		'offhours_fixed_time_2'=>20,
-		'full_day_weekend'=>['Sunday'],
+		'full_day_weekend'=>['Sunday', 'Saturday'],
 		'begin_weekend'=>['Saturday'],
 		'end_weekend'=>['Monday'],
 	],
@@ -889,7 +924,9 @@ return array(
 	'slotAllowance' =>['vendors'=>[1584],'services'=>[17626],'types'=>['workout-session','booktrials']],
 	'add_wallet_extra'=>10,
     'renewal_ids'=>[],
-    'brand_loyalty'=>[135,166,88],
+	'brand_loyalty'=>[135,166,88,56,40],
+	'brand_finder_without_loyalty'=>[579,1233,1261,1260,1262,1874,2105,5742,10675,9178,9171,13549,1259,1263,1266,2545,6525,12226,7651,9198,12077,5743,5741,7355,6530],
+
 	'first_free_string'=>' (First session Free)',
     'eoys_excluded_vendor_ids'=>[8546,11230,11810,10466,941,12157,1020,613,9427,10965,1429,718,9432,4534,13660,9988,3184,9400,3192,13327,13328,13332,7010,3350,3351,3449,3450,11025,11352,3975,11988,12690,12101,6156,9579,11251,13271,14422,11456,5200,6411,7014,5601,5617,7136,5769,5833,5300,7013,5444,7012,10987,4929,7541,7616,6697,7649,5348,7585,8094,10537,4878,5688,9354,9341,5634,6578,9880,9878,4924,6214,9375,10974,5008,7832,6680,9395,8141,10975,4968,9417,9454,5108,5647,10983,7344,9487,9489,6213,5125,5347,9624,9905,9904,6477,9967,9763,9385,10549,9912,9483,5947,7395,10757,5633,10591,11370,10949,6912,12120,11043,5625,8598,8613,6475,11017,11012,11169,11171,11170,11137,11136,11185,11071,11134,5031,11236,5521,11405,11442,11499,11501,13693,11503,11517,11519,11521,11521,7368,5381,11884,11895,11901,10200,6331,11960,12062,12061,12065,10733,10507,10512,10517,10518,11934,11965,12760,7356,6564,6624,11036,12873,12885,13104,4997,7403,7174,12442,10849,13205,13213,13690,11818,13267,6052,13992,9215,9260,14065,14075,14135,9238,12449,14180,14199,14256,13398,12868,12869,13577,12848,13668,13084,13289,13291,13296,13596,14191,14192,14195,14196,14197,12862,14110,12872,14148,10932,12430,14123,14289,13823,13822,12968,13378,14357,12908,12909,14339,13673,14461,9185,14382,14432,9212,14779,14435,14412,14926,],
     'ratecard_button_color'=>'#53b7b7',
@@ -905,6 +942,7 @@ return array(
 	'finder_10_discount'=>[9932],
 
 	'upgrade_session_finder_id'=>[13968, 15431, 15980],
+	'extended_mixed_finder_id'=>[16251],
 	'multiply_app_download_link' => 'http://onelink.to/abmultiply',
 
 	'reward_type'=>[
@@ -940,4 +978,28 @@ return array(
         5=>5,
         6=>6
     ],
+    'women_mixed_finder_id'=>[142,147,596,823,1490,1771,2209,6049,6259,6468,9378,10571,11246,12164,13801,14016,14316,14392,14410,15215,15788,15605,4773,14193,166,8932,11032,11033,119,15188,9991,14706,15907,16157,13661,15977,15417,14982,15791,15789,16085,13800,11188,1837,13842,15706,15973,15929,13074,15192,783,878,1739,2828,7341,7896,9378,9436,2844,9991,3118,14066,12465,14464,10142,7669,4815,8744,11676,12166,12811,2867,1955,2050,1824,1863,1968,8800,13164,1913,14451,3196,4044,3720,14400,9112,14037,12683,7773,6686,14467,6884,11314,7321,3191,4164,14896,7429,3184,9400,12177,12806,6002,11988,12690,15078,14407,3499,4763,10098,10690,16211,7435,16190,3927,13322,6253,12160,15026,14014,4572,4032,6901,16233,3970,3985,4388,3595,9521,4484,12066,9601,3491,8877,6239,13471,3450,12521,3429,4256,9592,3476,4387,4653,3860,11297,3235,12044,3200,15930,7010,5958,4705,12101,15877,12964,3426,3205,11024,11871,6168,3919,12050,13254,4826,6256,3953,3322,13664,11042,11295,3456,3812,3210,3504,4391,8795,8797,3989,7116,14183,14534,4041,7330,11025,4291,3667,15296,10393,3221,14161,11409,13382,11397,14293,14516,13441,14529,14803,11366,14437,13341,14420,11448,12592,13251,13252,13205,7130,5629,15640,14804,14180,5947,7395,15248,15087,4834,14114,5300,7612,12947,9337,9726,15536,5241,6241,11965,11618,15247,6602,14607,4843,],
+    'women_week_off'=>[1068,1986,6466,7697,9476,9518,10515,11001,11183,11475,11509,12157,13085,14235,14185,14448,14518,6289,15881,9424,1711,12079,380,6916,6939,1613,1642,14050,13231,12418,15979,927,1258,12100,13054,10752,14787,13781,1814,13842,13155,14063,14064,13273,15769,2509,15776,15502,15769,15547,13618,15560,15755,7500,11277,15940,15926,14826,1769,14459,812,11197,15008,15006,15363,15277,15942,10567,142,147,596,823,1490,1771,2209,6049,6259,6468,9378,10571,11246,12164,13801,14016,14316,14392,14410,15215,15788,15605,4773,14193,166,8932,11032,11033,119,15188,9991,14706,15907,16157,13661,15977,15417,14982,15791,15789,16085,13800,11188,1837,13842,15706,15973,15929,13074,15192,783,1801,1846,1884,1940,2119,2183,2890,6245,7458,9144,9469,11631,12123,6964,1981,2728,2135,1911,4815,8744,11676,12166,12811,2867,1955,2050,10392,12692,11347,4179,11306,3180,14194,7166,7168,11168,7323,16261,3196,4044,3720,14400,9112,14037,12683,7773,6686,14467,6884,11314,7321,3191,4164,14896,7429,3184,9400,12177,12806,6002,11988,12690,15078,14407,3499,4763,10098,10690,16211,7435,16190,3927,13322,6253,12160,15026,14014,4572,4032,6901,16233,3970,3985,4388,3595,9521,4484,12066,9601,3491,8877,6239,13471,3450,12521,3429,4256,9592,3476,4387,4653,3860,11580,12730,14226,14230,14274,14278,14439,14143,14119,13941,12803,12794,12793,11409,13382,11397,14293,14516,13441,14529,14803,5383,6979,10969,12572,12588,7143,14952,12972,12890,13673,7013,5444,7012,10987,4929,12884,12994,6083,5347,16041,15686,15685,15796,16252,15687,5133,14357,4916,12623,6047,9455,10589,11700,13939,14103,14840,14356,15868,14671,15869,14614,14443,12908,12909,14339,13205,7130,5629,15640,14804,14180,5947,7395,15248,15087,4834,14114,5300,7612,12947,9337,9726,15536,5241,6241,11965,11618,15247,6602,14607,4843,],
+    'fit_10_excluded_finder_ids'=>[9988,3184,9400,3192,13327,13328,13332,7010,3350,3351,3449,3450,11025,11352,3975,11988,12690,6156,9579,7818,14387,3197,3398,12691,10030,7015,15310,11307,11306,3180,14194,11347,7116,613,9427,1667,14625,13901,15460,12164,9365,12046,11230,1013,1429,9877,11810,941,10466,12157,1020,1484,9459,579,1233,1257,1261,1260,1262,1266,2545,1259,1580,1581,1582,1583,1584,1602,1604,1605,1606,1607,2235,2236,6893,7064,1029,1030,1034,1705,1706,7407,9872,12768,401,576,1450,1451,1452,1455,1456,1457,1458,1460,1486,1487,1488,1647,2522,9883,11232,11234,11235,12782,12795,9922,9935,9942,9943,9948,1824,1860,1861,1862,1874,1875,1876,1878,1879,1880,1883,1935,2105,2194,2293,2425,5967,6593,9304,9423,9481,9954,10503,10970,11021,11223,11239,11811,11903,12073,12569,13094,13898,13965,13969,14102,14107,12208,1263,15992,15971,15807,15082,4819,4818,4821,4822,4825,4826,4824,5502,6029,12566,12565,15758,5750,5681,5741,5743,5744,7651,5742,12077,10675,6525,12226,6530,12198,7355,9178,9171,9198,9216,13396,11381,13549,13323,15709,15744,15745,15746,15747,15749,15750,15752,15760,15790,16227,15993,9932,10674,13968,15431,15980,9600,15775,14622,14626,14627,5728,5745,5746,5747,5748,6250,7335,7900,7902,7903,7905,7906,7907,7909,8821,8823,8871,9111,9418,9462,9480,10568,10570,10756,10953,11037,11103,11129,11363,11742,12221,12516,12823,13124,13980,15103,2890,3175,3178,3183,3201,3204,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,5964,7081,7106,7111,7114,8872,9446,10776,10782,10786,10787,10809,10811,13670,13671,9615,9951,9957,9959,10190,10521,10522,10524,10526,10558,10753,10759,10767,10768,10770,10771,11270,11271,11272,13256,13257,13258,13261,13262,13263,14125,14126,14129,1747,1813,4528,4530,5740,9984,10081,12709,4492,5596,5682,5729,9507,9508,9989,12480,13526,1739,2806,2824,2828,2833,2844,7341,7896,15193,3193,7037,7898,9968,10120,14361,14362,15056,4830,4827,4831,4829,13138,13135,13137,13136,11836,11828,11829,11838,13680,11830,11451,3239,9743,10624,10964,11106,11598,12126,12223,13102,14141,14142,15148,6244,6979,5383,10969,12572,12588,6047,4928,6460,7013,5444,7012,10987,4929,9149,9348,7389,5609,9140,9415,10210,4968,9453,10889,6566,9495,6480,11138,10995,9637,10689,10962,11353,11136,11141,11215,9056,4949,6083,11506,11503,13693,11501,15741,11499,11667,5418,11884,12025,11868,5621,5841,8688,5273,12119,9473,9651,12760,7174,12442,12991,13690,11818,10189,13219,12568,12783,12784,14078,13705,13921,13940,13960,13959,13116,14135,11040,12867,13146,12893,12824,13289,13291,13296,13596,14191,14192,14195,14196,14197,12834,14171,14254,13823,13822,14443,12908,12909,14339,13223,14550,15123,15122,15121,12927,12454,14571,14094,14472,14473,14818,14642,14864,14678,14894,14899,14931,6498,14423,7123,15064,15074,14613,14618,13723,7366,15096,15216,15269,15272,15332,15384,14637,14154,14691,6535,9851,9854,9855,11027,11028,11030,11031,16200,16202,16204,11029,16203,16206,9845,16209,16243,4534],
+
+    'multifit_email'=>'info@multifit.co.in',
+    
+    'no_convinience_finder_ids'=>[1259, 1263, 1266, 12986],
+
+    'discount_vendors'=>[12592,13251,13252,14526,11437,15882,12793,13941,12794,12803,13282,11397,14206,13265,13266,14168,11580,14230,14278,12730,14274,14226,14439,14803,11778,13441,14529,11622,13963,14046,11622,13342,13345,13349,13352,11409,13382,12371,11613,14292,11372,13099,14119,14438,14293],
+
+    'discount_vendors_duration' => [180, 360],
+
+    'powerworld_finder_ids'=>[10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900,12246,12247,12250,12252,12254,12256,12258,12260,12261,13878,13879,13881,13883,13884,13886,13887,13899,13900,13902,16607,16608,16609,16610],
+
+    'sucheta_pal_finder_ids'=>[16452, 12986, 1493],
+    
+    'sucheta_pal_service_ids'=>[16452, 12986, 1493],
+
+    'anytime_finder_ids'=> [7335,5745,5728,8821,8871,5747,12221,5748,5746,6250,9480,8823,10570,10568,7909,13124,11363,7907,11103,12516,15103,11037,11129,11742,7902,16209,13980,15103,15384,13031,],
+    
+    'non_flexi_service_cat'=>[111, 65, 5],
+    
+    'tab_session_pack_vendor_ids'=>[1490,424,1935,9423,9481,9932,9954,10970,11021,11223,12208,13968,14102,15431,15775,15980,16251]
+    
 );

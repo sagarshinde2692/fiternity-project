@@ -58,7 +58,7 @@ class Translator {
                 $automodel->object->location->area = $area;
                 $automodel->object->location->lat = 0.0;
                 $automodel->object->location->long = 0.0;//$value['fields']['location'][0];
-                $automodel->object->category = $value['fields']['inputcat1'][0];
+                $automodel->object->category = !empty($value['fields']['category_subcat']) ? $value['fields']['category_subcat'][0] : $value['fields']['inputcat1'][0];
 				$automodel->object->servicecategory = isset($value['fields']['inputservicecat']) ? $value['fields']['inputservicecat'][0] : '';
 				$automodel->object->tag = $value['fields']['inputcat'][0];
                 $automodel->object->brand = isset($value['fields']['brand']) ? $value['fields']['brand'][0] : '';

@@ -19,6 +19,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 // require __DIR__.'/debug_routes.php';
 require __DIR__.'/analytics_routes.php';
+require __DIR__.'/testing_routes.php';
 
 
 
@@ -170,7 +171,7 @@ Route::get('getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfi
 Route::get('getlocations/{city?}', 'HomeController@getCityLocation');
 Route::get('getcategories/{city?}', 'HomeController@getCityCategorys');
 Route::get('getcities', 'HomeController@getCities');
-Route::get('ifcity/{city}', 'HomeController@ifCity');
+Route::get('ifcity/{city?}', 'HomeController@ifCity');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
@@ -216,7 +217,7 @@ Route::post('customerstatus', array('as' => 'customer.customerstatus','uses' => 
 
 
 
-Route::get('autobooktrials/{customeremail}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
+Route::get('autobooktrials/{customeremail}/{from?}/{size?}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
 Route::get('reviews/{customerid}/{from?}/{size?}',  array('as' => 'customer.reviews','uses' => 'CustomerController@reviewListing'));
 Route::get('orderhistory/{customeremail}/{from?}/{size?}',  array('as' => 'customer.orderhistory','uses' => 'CustomerController@orderHistory'));
 Route::get('bookmarks/{customerid}',  array('as' => 'customer.bookmarks','uses' => 'CustomerController@getBookmarks'));
@@ -257,7 +258,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::post('customer/resetpassword', array('as' => 'customer.customerresetpassword','uses' => 'CustomerController@resetPassword'));
 	Route::post('customer/update', array('as' => 'customer.customerupdate','uses' => 'CustomerController@customerUpdate'));
-	Route::get('customer/getalltrials',  array('as' => 'customer.getalltrials','uses' => 'CustomerController@getAllTrials'));
+	Route::get('customer/getalltrials/{from?}/{size?}',  array('as' => 'customer.getalltrials','uses' => 'CustomerController@getAllTrials'));
 	Route::get('customer/getallreviews/{offset?}/{limit?}',  array('as' => 'customer.getallreviews','uses' => 'CustomerController@getAllReviews'));
 	Route::get('customer/getallorders/{offset?}/{limit?}',  array('as' => 'customer.getallorders','uses' => 'CustomerController@getAllOrders'));
 	Route::get('customer/getallbookmarks',  array('as' => 'customer.getallbookmarks','uses' => 'CustomerController@getAllBookmarks'));
@@ -296,6 +297,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 });
 
+
+Route::post('walletTransactionnew', array('uses' => 'OrderController@debitWalletTransaction'));
 /******************** CUSTOMERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -435,7 +438,7 @@ Route::get('v1/rollingfinderindex', array('as' => 'elasticsearch.rollingbuildfin
 Route::get('v1/rollingserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
 //Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
 Route::get('indexfinderdocument/{id}','RankingController@IndexFinderDocument');
-Route::get('locationcity/{value}','SearchController@locationCity');
+Route::get('locationcity/{value?}','SearchController@locationCity');
 
 Route::get('updatescheduleinsearch/{finderid}','ServiceRankingController@UpdateScheduleOfThisFinderInSessionSearch');
 
@@ -1144,7 +1147,8 @@ Route::get('cityfitnessoptions', 'HomeController@cityFitnessOptions');
 Route::post('generateamazonchecksum', 'TransactionController@generateAmazonChecksum');
 Route::match(array('GET', 'POST'),'verifyamazonchecksum/{id?}', 'TransactionController@verifyAmazonChecksum');
 Route::post('generateamazonurl', 'TransactionController@generateAmazonUrl');
-
+Route::post('generatepaytmurl', 'TransactionController@generatePaytmUrl');
+Route::match(array('GET', 'POST'),'verifypaytmchecksum', 'TransactionController@verifyPaytmChecksum');
 Route::post('verifyamazonchecksumsignature', 'TransactionController@verifyAmazonChecksumSignature');
 Route::post('amazonsignandencrypt', 'TransactionController@amazonSignAndEncrypt');
 Route::post('amazonsignandencryptop', 'TransactionController@amazonSignAndEncryptForOperation');
@@ -1263,8 +1267,8 @@ Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
 Route::post('inviteforevent','EventsController@inviteForEvent');
 
 // Music Run
-Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
-Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
+// Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
+// Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
 
 
 Route::get('checkexistinguser/mobikwik/{cell}','PaymentGatewayController@checkExistingUserMobikwik');
@@ -1278,6 +1282,10 @@ Route::post('debitmoney/mobikwik','PaymentGatewayController@debitMoneyMobikwik')
 Route::match(array('GET', 'POST'),'verifyaddmoney/mobikwik', 'PaymentGatewayController@verifyAddMoneyMobikwik');
 Route::post('checkstatus/mobikwik','PaymentGatewayController@checkStatusMobikwik');
 Route::get('verifypayment/{status}','PaymentGatewayController@verifyPayment');
+Route::get('gettoken','PaymentGatewayController@firstCallPaypal');
+Route::post('createpaymentpaypal','PaymentGatewayController@createPaymentPaypal');
+Route::get('successRoutePaypal','PaymentGatewayController@successExecutePaymentPaypal');
+Route::get('cancleRoutePaypal','PaymentGatewayController@canclePaymentPaypal');
 ##################################################################################################
 /*******************  Loyalty API ************************************************/
 
@@ -1331,3 +1339,36 @@ Route::post('addServiceMultipleSessionPack','DebugController@addServiceMultipleS
 Route::get('orderOldSuccessDateToNew', 'DebugController@orderOldSuccessDateToNew');
 
 Route::get('test', 'CustomerController@test');
+Route::get('addTypeOfPpsVendor', 'DebugController@addTypeOfPpsVendor');
+
+Route::post('generatefreesp', 'TransactionController@generateFreeSP');
+Route::get('paidAndFreeFItcash', 'DebugController@paidAndFreeFItcash');
+
+// Route::get('assignGold', 'DebugController@assignGoldLoyalty');
+// Route::get('assignloyaltygen', 'DebugController@assignLoyalty');
+Route::post('registershedeat', 'EmailSmsApiController@registerShedEat');
+Route::post('notifyshedeat', 'EmailSmsApiController@notifyShedEat');
+Route::get('testoffers', 'FindersController@testOffer');
+
+// Route::get('testmultifit', 'FindersController@testMultifit');
+// Route::get('testmm', 'DebugController@testmailMsg');
+// Route::post('loyaltyAppropriation', 'CustomerController@loyaltyAppropriation');
+Route::match(array('PUT', 'POST'), 'customer/loyaltyAppropriation', 'CustomerController@loyaltyAppropriation');
+Route::get('home/getLoyaltyAppropriationConsentMsg/{customer_id}/{order_id}','HomeController@getLoyaltyAppropriationConsentMsg');
+Route::get('testSpinResult/{number}','EmailSmsApiController@testSpinResult');
+Route::post('spinthewheelreg','EmailSmsApiController@spinTheWheelReg');
+Route::match(array('PUT', 'POST'), 'customer/remaincurrentloyalty', 'CustomerController@fitSquadUpgradeRemainLoyalty');
+Route::get('fitpassComparison', 'DebugController@fitpassComparison');
+Route::get('fixCustomerQuantity', 'DebugController@fixCustomerQuantity');
+Route::get('fixFinanceCustomerQuantity', 'DebugController@fixFinanceCustomerQuantity');
+Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');
+Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
+Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
+Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
+Route::get('brandwebsite/home/{brand_id}', 'BrandsController@getBrandWebsiteHome');
+Route::get('brandwebsite/aboutus/{brand_id}', 'BrandsController@getBrandWebsiteAboutUs');
+Route::get('brandwebsite/programs/{brand_id}', 'BrandsController@getBrandWebsitePrograms');
+Route::get('brandwebsite/hiit/{brand_id}', 'BrandsController@getBrandWebsiteHiit');
+Route::get('brandwebsite/contactus/{brand_id}', 'BrandsController@getBrandWebsiteContactUs');
+Route::get('brandwebsite/ownfranchise/{brand_id}', 'BrandsController@getBrandWebsiteOwnFranchise');
+Route::get('multifitDataMigration', 'DebugController@multifitDataMigration');

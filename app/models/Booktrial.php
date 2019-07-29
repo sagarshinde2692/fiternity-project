@@ -51,6 +51,21 @@ class Booktrial extends \Basemodel {
 
 	public function findercategory(){
 		return $this->hasOne('Findercategory', 'findercategory_id');
-	}
+    }
+    
+    public static function maxId(){
+        
+        $identitycounter =  Identitycounter::where('model', 'Booktrial')->where('field', '_id')->first();
+        $identitycounter_count =  $identitycounter->count;
+        
+        $update = Identitycounter::where('model', 'Booktrial')->where('field', '_id')->where('count', $identitycounter_count)->increment('count');
+
+        if($update){
+            Log::info("returning::".strval($identitycounter_count));
+            return $identitycounter_count;
+        }
+        Log::info("reiterating::".strval($identitycounter_count));
+        return  Booktrial::maxId();
+    }
 
 }

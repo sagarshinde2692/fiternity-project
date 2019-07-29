@@ -313,7 +313,7 @@ class TempsController extends \BaseController {
 
         $verified = false;
 
-        $temp = Temp::where('customer_phone','LIKE','%'.substr($number, -8).'%')->where('verified','Y')->first();
+        $temp = Temp::where('customer_phone', substr($number, -10))->where('verified','Y')->first();
 
         if($temp){
             $verified = true;
@@ -374,8 +374,9 @@ class TempsController extends \BaseController {
     	$req['for'] = isset($data['for'])&&$data['for']!=""?$data['for']:"";
     	return $this->utilities->walletTransaction($req);
     }
-    function verifyOtpV1($temp_id,$otp,$email="",$name=""){
 
+    function verifyOtpV1($temp_id,$otp,$email="",$name=""){
+        Log::info("verifyOtpV1");
         $customerToken = "";
         $jwt_token = Request::header('Authorization');
 
@@ -453,6 +454,14 @@ class TempsController extends \BaseController {
 
                     $customer_id = $temp->customer_id = $data['customer_id'];
                 }
+
+                // $customer_from_token = $this->utilities->getCustomerFromToken();
+
+                // if(!empty($customer_from_token['_id'])){
+                    
+                //     $customer_id = $customer_from_token['_id'];
+                
+                // }
 
                 $temp->save();
                 $verified = true;
@@ -664,7 +673,7 @@ class TempsController extends \BaseController {
 
                     Booktrial::$withoutAppends = true;
 
-                    $booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($temp->customer_phone, -10).'%')
+                    $booktrial = Booktrial::where('customer_phone', substr($temp->customer_phone, -10))
                                 ->where('finder_id', '=',$finder_id)
                                 // ->where('type','booktrials')
                                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
@@ -810,7 +819,7 @@ class TempsController extends \BaseController {
                     Order::$withoutAppends = true;
 
                     $order = Order::active()
-                                ->where('customer_phone','LIKE','%'.substr($temp->customer_phone, -10).'%')
+                                ->where('customer_phone', substr($temp->customer_phone, -10))
                                 ->where('finder_id', '=',$finder_id)
                                 ->where('type','memberships')
                                 ->orderBy('_id','desc')
@@ -1173,16 +1182,26 @@ class TempsController extends \BaseController {
         
         Log::info("getAllCustomersByPhone");
         Log::info($data);
-
+        $customer_from_token = $this->utilities->getCustomerFromToken();
+        if(!empty($customer_from_token['_id'])){
+            $customer_id = $customer_from_token['_id'];
+        }
+        if(!empty($customer_id)){
+        
+            $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('_id', $customer_id)->get();
+        
+        }else{
             
-        $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
+            $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
+
+        }
         
         Log::info("Customers by primary contact no");
         Log::info($customers);
 
         if(!empty($customers) && count($customers)>0){
             if(count($customers) != 1){
-                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->where('default_account', true)->orderBy('_id','desc')->get();
+                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no', substr($data['customer_phone'], -10))->where('default_account', true)->orderBy('_id','desc')->get();
 
                 Log::info("Customers by primary contact no default");
                 Log::info($defaultCustomer);
@@ -1207,7 +1226,7 @@ class TempsController extends \BaseController {
             // golds-fitcash
             Log::info('golds fitcash condition');
 
-            $customersGold = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', false)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
+            $customersGold = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', false)->where('contact_no',substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
 
             Log::info('$customersGold:: ', [$customersGold]);
 

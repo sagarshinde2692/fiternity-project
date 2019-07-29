@@ -15,13 +15,14 @@ return array(
             'header' => "<b>GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <font color='#f8a81b'>10, 30, 75, 150 & 225</font> WORKOUTS</b>",
             'data' => [
                 "https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
-                "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
+                "https://b.fitn.in/external-vouchers1/zomato-gold-mobile-logo.jpg",
                 "https://b.fitn.in/external-vouchers/JCB1.png",
                 "https://b.fitn.in/external-vouchers/epigamia.png",
                 "https://b.fitn.in/external-vouchers/small-cleartrip%20logo.jpg",
                 "https://b.fitn.in/external-vouchers/O21.png",
                 "https://b.fitn.in/external-vouchers/book%20my%20show.png",
-                "https://b.fitn.in/loyalty/goldvouchers/uber%20logo.jpg"
+                "https://b.fitn.in/external-vouchers1/UberEats-Logo-OnWhite-Color-V.png",
+                "https://b.fitn.in/loyalty/goqii---logo-mobile.jpg",
             ]
         ],
 
@@ -141,6 +142,15 @@ return array(
     ],
     'receipt_message'=>'Please upload the membership receipt to claim your reward',
     'receipt_verification_message'=>'Your membership receipt is under verification. We will notify you post verification.',
-    'bookings_block_message'=>'To claim this reward, you need to have transactions on Fitternity app / website worth at least Rs. booking_amount'
+    'bookings_block_message'=>'To claim this reward, you need to have transactions on Fitternity app / website worth at least Rs. booking_amount',
+    'loyalty_reawrd_images'=>[
+        "https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
+        "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
+        "https://b.fitn.in/external-vouchers1/JCB.png",
+        "https://b.fitn.in/external-vouchers1/epigamia.png",
+        "https://b.fitn.in/external-vouchers1/cleartrip.png",
+        "https://b.fitn.in/external-vouchers1/o2.png",
+        "https://b.fitn.in/external-vouchers1/book%20my%20show.png",
+    ]
 );
 ?>

@@ -30,6 +30,7 @@ Route::get('migrations/commercial', 'MigrationsController@commercial');
 Route::get('migrations/onboard', 'MigrationsController@onboard');
 Route::get('migrations/feedback', 'MigrationsController@feedback');
 Route::get('newordermigration', 'DebugController@newOrderMigration');
+Route::get('ppsRepeat', 'DebugController@ppsRepeat');
 
 
 
@@ -2718,3 +2719,30 @@ Route::get('addVoucherCategory','DebugController@addVoucherCategory');
 
 Route::get('ppsTOMembershipConversion','DebugController@ppsTOMembershipConversion');
 Route::get('multifitFitcash','DebugController@multifitFitcash');
+Route::get('verifyRatecards','DebugController@verifyRatecards');
+Route::get('verifyRatecards','DebugController@verifyRatecards');
+
+Route::get('salesgmvservices','DebugController@salesGMVServices');
+Route::get('salesgmv','DebugController@salesGMV');
+Route::get('leads','DebugController@leads');
+Route::get('otherLeads','DebugController@otherLeads');
+Route::get('reviews','DebugController@reviews');
+Route::get('abandoncart','DebugController@abandoncart');
+Route::get('gmvdata','DebugController@GMVData');
+Route::get('commission','DebugController@commission');
+Route::get('integratedSplit','DebugController@integratedSplit');
+Route::get('salesGMVFinders','DebugController@salesGMVFinders');
+Route::get('leadsCaptures','DebugController@leadsCaptures');
+Route::get('salesRangeFinders','DebugController@salesRangeFinders');
+Route::get('salesRangeFindersGyms','DebugController@salesRangeFindersGyms');
+Route::get('salesRangeFindersStudio','DebugController@salesRangeFindersStudio');
+Route::get('salesFinderDetails','DebugController@salesFinderDetails');
+Route::get('fitcashCouponMigration','DebugController@fitcashCouponMigration');
+Route::get('couponsValidMigration','DebugController@couponsValidMigration');
+Route::get('testcodesnippet','DebugController@testcodesnippet');
+Route::get('corporateCoupons','DebugController@corporateCoupons');
+Route::get('rewardDistributionAndClaim', 'DebugController@rewardDistributionAndClaim');
+Route::get('addAmountTransferToVendorBreakup', 'DebugController@addAmountTransferToVendorBreakup');
+Route::get('manualToSession', 'DebugController@manualToSession');
+Route::get('hyperLocal', 'DebugController@hyperLocal');
+Route::get('fitnessForce','TransactionController@fitnessForce');

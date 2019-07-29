@@ -18,6 +18,11 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'AutoTrial-Instant-Customer-abg';
 		}
 
+		$header = $this->multifitKioskOrder($data);
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AutoTrial-Instant-Multifit-Customer';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
@@ -53,6 +58,11 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'AutoTrial-ReminderBefore12Hour-Customer-abg';
 		}
 
+		$header = $this->multifitKioskOrder($data);
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AutoTrial-ReminderBefore12Hour-Multifit-Customer';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data,$delay);
@@ -84,6 +94,11 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'AutoTrial-ReminderBefore3Hour-Customer-abg';
 		}
 
+		$header = $this->multifitKioskOrder($data);
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AutoTrial-ReminderBefore3Hour-Multifit-Customer';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data,$delay);
@@ -93,7 +108,7 @@ Class CustomerSms extends VersionNextSms{
 	protected function bookTrialReminderAfter2Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
-		
+		\Log::info('inside auto trial remainder after 2 hours for customerss:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
 		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
 			$label = 'AutoTrial-ReminderAfter2Hour-Customer-abg';
 		}
@@ -118,10 +133,17 @@ Class CustomerSms extends VersionNextSms{
 
 	protected function cancelBookTrial ($data){
 
+		Log::info('cancelBookTrial sms: ', [$data]);
+
 		$label = 'Cancel-Trial-Customer';
 		
 		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
 			$label = 'Cancel-Trial-Customer-abg';
+		}
+
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'Cancel-Trial-Multifit-Customer';
 		}
 
 		$to = $data['customer_phone'];
@@ -130,6 +152,8 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 	protected function cancelBookTrialByVendor ($data){
+
+		Log::info('cancelBookTrialByVendor sms: ', [$data]);
 
 		$label = 'CancelTrialByVendor-Customer';
 
@@ -169,6 +193,11 @@ Class CustomerSms extends VersionNextSms{
 	protected function sendCodOrderSms ($data){
 
 		$label = 'Order-COD-Customer';
+
+		// $header = $this->multifitUserHeader();
+		// if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+		// 	$label = 'Order-COD-Multifit-Customer';
+		// }
 		
 		$to = $data['customer_phone'];
 
@@ -188,6 +217,12 @@ Class CustomerSms extends VersionNextSms{
 	protected function sendPgOrderSms ($data){
 
 		$label = 'Order-PG-Customer';
+
+		$header = $this->multifitKioskOrder($data);
+
+        if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'Order-PG-Multifit-Customer';
+		}
 
 		if($data['type'] == 'crossfit-week'){
 
@@ -227,8 +262,16 @@ Class CustomerSms extends VersionNextSms{
 		
         if(!empty($data['extended_validity'])){
 			$label = 'ExtendedValidityInstant-Customer';
+
+			$header = $this->multifitKioskOrder($data);
+			
+			if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+				$label = 'ExtendedValidityInstant-Multifit-Customer';
+			}
 		}
 		
+		
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
@@ -485,6 +528,15 @@ Class CustomerSms extends VersionNextSms{
 
 		$label = 'Generic-Otp-Customer';
 
+		$utilities = new Utilities();
+		$multifitWebsiteHeader = $utilities->getMultifitWebsiteHeader();
+		
+		$headreKiosk = $this->multifitUserHeader();
+		if($multifitWebsiteHeader == 'multifit' || $headreKiosk == true){
+			$label = 'Generic-Otp-Multifit-Customer';
+			$data['multifit'] = true;
+		}
+		
 		$to = $data['customer_phone'];
 
 		$data['otp_route'] = true;
@@ -531,7 +583,7 @@ Class CustomerSms extends VersionNextSms{
 			case 'renew-membership': $label = 'RenewMembership-Customer';break;
 			case 'upgrade-membership': $label = 'UpgradeMembership-Customer';break;
 			default:return "no email sms";break;
-		}
+        }
 
 		$to = $data['phone'];
 
@@ -1129,6 +1181,11 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'BookTrialReminderBefore10Min-Customer-abg';
 		}
 
+		$header = $this->multifitKioskOrder($data);
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'BookTrialReminderBefore10Min-Multifit-Customer';
+		}
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data,$delay);
@@ -1138,6 +1195,11 @@ Class CustomerSms extends VersionNextSms{
 	public function atVendorOrderCaputure($data){
 		
 		$label = 'AtVendorOrderCaputure-Customer';
+
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AtVendorOrderCaputure-Multifit-Customer';
+		}
 		
 		$to = $data['customer_phone'];
 		
@@ -1156,7 +1218,7 @@ Class CustomerSms extends VersionNextSms{
 	protected function offhoursConfirmation($data,$delay){
 
 		if(isset($data['pre_trial_vendor_confirmation']) && !in_array($data['pre_trial_vendor_confirmation'], ['yet_to_connect', ''])){
-			return "no_email_sent";
+			return null;
 		}
 		
 		$label = 'OffhoursConfirmation-Customer';
@@ -1210,6 +1272,70 @@ Class CustomerSms extends VersionNextSms{
 		
 		return $this->common($label,$to,$data);	
 	}
+    
+    public function spinWheelAfterTransaction($data){
+		
+		$label = 'SpinWheelAfterTransaction-Customer';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);	
+	}
+
+	protected function membership100PerCashback($data){
+
+		$label = 'Membership100PerCashback-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+	}
+
+	public function multifitUserHeader(){
+		$vendor_token = \Request::header('Authorization-Vendor');
+		\Log::info('register auth             :: ', [$vendor_token]);
+		if($vendor_token){
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = $decodeKioskVendorToken->vendor;
+
+			$finder_id = $vendor->_id;
+
+			$utilities = new Utilities();
+
+			$allMultifitFinderId = $utilities->multifitFinder(); 
+			// $allMultifitFinderId = [9932, 1935, 9304, 9423, 9481, 9954, 10674, 10970, 11021, 11223, 12208, 12209, 13094, 13898, 14102, 14107, 16062, 13968, 15431, 15980, 15775, 16251, 9600, 14622, 14626, 14627];
+			\Log::info('register     :: ', [$finder_id]);
+			if(in_array($finder_id, $allMultifitFinderId)){
+				return true;
+			}
+		}
+		
+		return false;
+    }
+    
+    public function multifitKioskOrder($data){
+        if(!empty($data['source'])){
+            $data["customer_source"] = $data['source'];
+        }
+        $utilities = new Utilities();
+        $allMultifitFinderId = $utilities->multifitFinder(); 
+        if(!empty($data['finder_id']) && in_array($data['finder_id'], $allMultifitFinderId) && !empty($data["customer_source"]) && $data["customer_source"] == "kiosk"){
+            return true;
+        }
+	}
+	
+	public function goldFitcash($data){
+		
+		
+		$label = 'Golds-Fitcash-Customer';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);
+		
+	}
 	
 	public function common($label,$to,$data,$delay = 0){
 
@@ -1217,11 +1343,16 @@ Class CustomerSms extends VersionNextSms{
 			return "";
 		}
 
-		Log::info('orderDetails: ', $data);
+		// Log::info('orderDetails: ', $data);
 
 		$template = \Template::where('label',$label)->first();
 
-		$to = array($to);
+        $to = array($to);
+        
+        $header = $this->multifitKioskOrder($data);
+        if(!empty($header)){
+            $data['multifit'] = true;
+        }
 
 		$sender = null;
 		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])){
@@ -1231,6 +1362,9 @@ Class CustomerSms extends VersionNextSms{
 			}
 		}
 
+		if(!empty($data['multifit']) && $label != 'Generic-Otp-Customer'){
+			$sender = 'MULTIF';
+		}
 		$message = $this->bladeCompile($template->sms_text,$data);
 
 		$otp = false;
@@ -1238,7 +1372,6 @@ Class CustomerSms extends VersionNextSms{
 		if(isset($data['otp_route']) && $data['otp_route']){
 			$otp = true;
 		}
-
 		return $this->sendToWorker($to, $message, $label, $delay, $otp, $sender);
 	}
 

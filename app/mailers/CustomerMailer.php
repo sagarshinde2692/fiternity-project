@@ -8,11 +8,18 @@ Class CustomerMailer extends Mailer {
 
 	protected function bookTrial ($data){
 
+		\Log::info('bookTrial');
+
 		$label = 'AutoTrial-Instant-Customer';
 
 		if(isset($data['type']) && ($data['type'] == "vip_booktrials" || $data['type'] == "vip_booktrials_rewarded" || $data['type'] == "vip_booktrials_invited" )){
 
 			$label = 'VipTrial-Instant-Customer';
+		}
+
+		$header = $this->multifitKioskOrder($data);
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AutoTrial-Instant-Multifit-Customer';
 		}
 
 		// return $data;
@@ -55,6 +62,11 @@ Class CustomerMailer extends Mailer {
 	protected function bookTrialReminderBefore12Hour ($data, $delay){
 		\Log::info("inside bookTrialReminderBefore12Hour");
 		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
+
+		$header = $this->multifitKioskOrder($data);
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AutoTrial-ReminderBefore12Hour-Multifit-Customer';
+		}
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
@@ -118,7 +130,14 @@ Class CustomerMailer extends Mailer {
 
 	protected function sendPgOrderMail ($data){
 
+		\Log::info('CustomerMailer Order-PG-Customer');
+
 		$label = 'Order-PG-Customer';
+
+		$utilities = new Utilities();
+		$data['loyalty_success_msg'] = $utilities->getLoyaltyAppropriationConsentMsg($data['customer_id'], $data['order_id'], true);
+
+		\Log::info('loyalty_success_msg :: ', [$data['loyalty_success_msg']]);
 
 		switch ($data['payment_mode']) {
 			case 'cod': $label = 'Order-COD-Customer'; break;
@@ -141,6 +160,20 @@ Class CustomerMailer extends Mailer {
 		if(isset($data['event_type']) && $data['event_type']=='TOI'){
 			$label = 'Order-PG-Event-TOI';
             $data['via'] = 'mfp';
+        }
+        
+        if(!empty($data['ratecard_flags']['free_sp'])){
+            $label = "Free-SP-Customer";
+		}
+		
+		$header = $this->multifitKioskOrder($data);
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			switch ($data['payment_mode']) {
+				case 'cod': $label = 'Order-COD-Multifit-Customer'; break;
+				case 'paymentgateway': $label = 'Order-PG-Multifit-Customer'; break;
+				case 'at the studio': $label = 'Order-At-Finder-Multifit-Customer'; break;
+				default: break;
+			}
 		}
 
 		$message_data 	= array(
@@ -176,13 +209,28 @@ Class CustomerMailer extends Mailer {
 	}
 
 	protected function register($data){
-
 		$label = 'Register-Customer';
 
 		$message_data 	= array(
 			'user_email' => array($data['email']),
 			'user_name' => $data['name']
 		);
+
+		$multifitFlag = false;
+		$allData = \Input::json()->all();
+
+		if(empty($allData)){
+			$allData = \Input::all();
+		}
+		
+		if(!empty($allData['multifit'])){
+			$multifitFlag = $allData['multifit'];
+		}
+		
+		$header = $this->multifitUserHeader();
+		if($multifitFlag == true || $header == true){
+			return;
+		}
 
 		return $this->common($label,$data,$message_data);
 	}
@@ -233,12 +281,34 @@ Class CustomerMailer extends Mailer {
 		
 		$label = 'Cancel-Trial-Customer';
 
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'Cancel-Trial-Multifit-Customer';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
 		);
-
-		return $this->common($label,$data,$message_data);
+		//if(empty($data["communications"]['customer']['mails']) ||(!empty($data["communications"]['customer']['mails']) &&  (in_array($label,$data["communications"]['customer']['mails'])))){
+			\Log::info('Cancel-Trial-Customer - data:: ', [$data]);
+			if(!empty($data['studio_extended_validity_order_id'])){
+				if(!empty($data['studio_sessions'])){
+					$avail = $data['studio_sessions']['total_cancel_allowed'] - $data['studio_sessions']['cancelled'];
+					$avail = ($avail<0)?0:$avail;
+					$data['studio_extended_details'] = [
+						'can_cancel' => $avail,
+						'total_cancel' => $data['studio_sessions']['total_cancel_allowed']
+					];
+					$data['app_onelink'] = "https://go.onelink.me/I0CO?pid=studioextcancelmail";
+				}	
+			}
+			return $this->common($label, $data, $message_data);
+		// }
+		// else if(!empty($data["communications"]['customer']['mails']) &&  !(in_array($label,$data["communications"]['customer']['mails']))){
+		// 	return null;
+		// }
+		//return $this->common($label,$data,$message_data);
 	}
 	
 	protected function cancelBookTrialByVendor($data){
@@ -440,6 +510,11 @@ Class CustomerMailer extends Mailer {
 
 		$label = 'OrderUpdatePaymentAtVendor-Customer';
 
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'OrderUpdatePaymentAtVendor-Multifit-Customer';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
@@ -597,6 +672,36 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['name']
 		);
 
+		$multifitFlag = false;
+		$allData = \Input::json()->all();
+
+		if(empty($allData)){
+			$allData = \Input::all();
+		}
+
+		if(!empty($allData['multifit'])){
+			$multifitFlag = $allData['multifit'];
+		}
+
+		if(isset($_GET['multifit'])){
+			\Log::info("inside get $$$$$$$$$$");
+			$multifitFlag = true;
+		}
+
+		$utilities = new Utilities();
+		$multifitWebsiteHeader = $utilities->getMultifitWebsiteHeader();
+		if($multifitWebsiteHeader == 'multifit'){
+			$multifitFlag = true;
+		}
+
+		\Log::info(" ++++++++ multifitflag",[$multifitFlag]);
+		\Log::info(" ++++++++ multifitflag2",[\Input::get('multifit')]);
+		\Log::info(" ++++++++ all data",[\Input::json()->all()]);
+		$header = $this->multifitUserHeader();
+		if($multifitFlag == true || $header == true){
+			return;
+		}
+
 		return $this->common($label,$data,$message_data);
 	}
 
@@ -607,6 +712,22 @@ Class CustomerMailer extends Mailer {
 			'user_email' => array($data['email']),
 			'user_name' => $data['name']
 		);
+
+		$multifitFlag = false;
+		$allData = \Input::json()->all();
+
+		if(empty($allData)){
+			$allData = \Input::all();
+		}
+
+		if(!empty($allData['multifit'])){
+			$multifitFlag = $allData['multifit'];
+		}
+
+		$header = $this->multifitUserHeader();
+		if($multifitFlag == true || $header == true){
+			return;
+		}
 
 		return $this->common($label,$data,$message_data);
 	}
@@ -627,6 +748,11 @@ Class CustomerMailer extends Mailer {
 		\Log::info("workout sessoin before 10 min sms");
 		// return "sent";
 		$label = 'BookTrialReminderBefore10Min-Customer';
+
+		$header = $this->multifitKioskOrder($data);
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'BookTrialReminderBefore10Min-Multifit-Customer';
+		}
 		
 		$message_data 	= array(
 				'user_email' => array($data['customer_email']),
@@ -642,6 +768,11 @@ Class CustomerMailer extends Mailer {
 		\Log::info("workout sessoin before 10 min sms");
 		// return "sent";
 		$label = 'Workout-session_Instant_WorkoutLevelStart';
+
+		$header = $this->multifitKioskOrder($data);
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			return;
+		}
 		
 		$message_data 	= array(
 				'user_email' => array($data['customer_email']),
@@ -668,6 +799,11 @@ Class CustomerMailer extends Mailer {
 
 		$label = 'AtVendorOrderCaputure-Customer';
 		
+		$header = $this->multifitUserHeader();
+		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			$label = 'AtVendorOrderCaputure-Multifit-Customer';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
@@ -764,12 +900,62 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 	
-	protected function common($label,$data,$message_data,$delay = 0){
+	public function spinTheWheel($data, $delay=0){
+
+		$label = 'SpinTheWheel-Customer';
+		
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => '',
+		);
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function multifitUserHeader(){
+		$vendor_token = \Request::header('Authorization-Vendor');
+		\Log::info('register auth             :: ', [$vendor_token]);
+		if($vendor_token){
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = $decodeKioskVendorToken->vendor;
+
+			$finder_id = $vendor->_id;
+
+			$utilities = new Utilities();
+
+			$allMultifitFinderId = $utilities->multifitFinder(); 
+			// $allMultifitFinderId = [9932, 1935, 9304, 9423, 9481, 9954, 10674, 10970, 11021, 11223, 12208, 12209, 13094, 13898, 14102, 14107, 16062, 13968, 15431, 15980, 15775, 16251, 9600, 14622, 14626, 14627];
+			\Log::info('register     :: ', [$finder_id]);
+			if(in_array($finder_id, $allMultifitFinderId)){
+				return true;
+			}
+		}
+		
+		return false;
+    }
+    
+    public function multifitKioskOrder($data){
+        if(!empty($data['source'])){
+            $data["customer_source"] = $data['source'];
+        }
+        $utilities = new Utilities();
+        $allMultifitFinderId = $utilities->multifitFinder(); 
+        if(in_array($data['finder_id'], $allMultifitFinderId) && !empty($data["customer_source"]) && $data["customer_source"] == "kiosk"){
+            return true;
+        }
+    }
+    
+    protected function common($label,$data,$message_data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
 			return "";
 		}
-		
+
+		if(!empty($data['multifit'])){
+			$message_data['fromemail'] = 'info@multifit.co.in';
+		}
+
 		$template = \Template::where('label',$label)->first();
 
 		$email_template = 	$this->bladeCompile($template->email_text,$data);

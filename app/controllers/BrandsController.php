@@ -15,13 +15,13 @@ class BrandsController extends \BaseController {
 
 
     public function brandDetail($slug, $city, $cache = true){
-		Log::info($_SERVER['REQUEST_URI']);
+        Log::info($_SERVER['REQUEST_URI']);
         
         $brand_detail = $cache ? Cache::tags('brand_detail')->has("$slug-$city") : false;
 
         if(!$brand_detail){
 
-            $brand = Brand::where('slug',$slug)->where("status","1")->firstOrFail();
+            $brand = Brand::where('slug',$slug)->where("status","1")->first();
 
             $finder_ids = isset($brand->finder_id) ? $brand->finder_id : [];
                     
@@ -141,6 +141,11 @@ class BrandsController extends \BaseController {
                     $data['stripe_data'] = "no-patti";
                 }
 
+                if(!empty($this->device_type) && $this->device_type == "android"){
+
+                    unset($data['finders']['request']);
+                    unset($data['finders']['aggregations']);
+                }
                 
                 if(empty($finders) || empty($finders['metadata']['total_records'])){
                     Log::info("Not caching brand");
@@ -151,13 +156,18 @@ class BrandsController extends \BaseController {
                     }
 
                     return Response::json($data);
-                }
+				}
+				
+				if($data['brand']['_id']==88){
+					$data['cities_list'] = $this->multifitCities();
+				}
 
+                $this->multifitGymWebsiteBrandUpdate($data);
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
             }else{
 
-                return Response::json(array('status' => 400,'message' => 'brand not found'),400);
+                return Response::json(array('status' => 400,'message' => 'Brand not active'),400);
             }
         }
 
@@ -208,4 +218,286 @@ class BrandsController extends \BaseController {
 
     }
 
+    public function multifitGymWebsiteBrandUpdate(&$data){
+
+        if(!empty(Request::header('Source')) && Request::header('Source') == "multifit"){
+
+            if(!empty($data['finders']['results'])){
+
+                foreach($data['finders']['results'] as $key=>$value){
+
+                    if(!empty($value['coverimage_website_membership'])){
+                        
+                        $data['finders']['results'][$key]['coverimage'] = $value['coverimage_website_membership'];
+                    }
+                }
+            }
+        }
+    }
+
+    public function getBrandWebsiteHome($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+
+		$base_url =Config::get('app.s3_bane_url');
+
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.banner','brand_website.offer', 'brand_website.centers_block','brand_website.speakers_block','brand_website.advisory_block', 'brand_website.video')
+		->get();
+
+		$home1 = $home[0]['brand_website'];
+		foreach($home1 as $key=>$value){
+			if(in_array($key,['banner'])){
+				$home1[$key]['image'] =  $base_url.$home1[$key]['path'].$home1[$key]['image'];
+				if(!empty($home1[$key]['mobile_image'])){
+					$home1[$key]['mobile_image'] =  $base_url.$home1[$key]['path'].$home1[$key]['mobile_image'];
+				}
+			}	
+
+			if(in_array($key,['centers_block', 'speakers_block', 'advisory_block'])){
+				foreach($home1[$key] as $keyImage=>$valueImage){
+					if(!in_array($keyImage, ['webm', 'mp4', 'ogg'],true)){
+						$home1[$key][$keyImage]['image'] =  $base_url.$home1[$key][$keyImage]['path'].$home1[$key][$keyImage]['image'];
+					}
+				}
+			}	
+		}
+		$this->updateCitiesData($home1);
+		$home[0]['brand_website'] =  $home1;
+
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home);
+		}
+		else{
+			return array('status'=>true, "data"=>$home);
+		}
+	}
+
+	public function getBrandWebsiteAboutUs($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+		$base_url =Config::get('app.s3_bane_url');
+
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.overview_block','brand_website.founders_block', 'brand_website.fitness_studio','brand_website.gym_equipement','brand_website.training_software', 'brand_website.awards_list', 'brand_website.media_coverages')
+		->get();
+
+		$first_block = $home[0]['brand_website'];
+
+		foreach($first_block as $key=>$value){
+			if(in_array($key,['founders_block', 'awards_list', 'media_coverages'])){
+				foreach($first_block[$key] as $keyImage=>$valueImage){
+					if(!empty($first_block[$key][$keyImage]['image'])){
+						$first_block[$key][$keyImage]['image'] =  $base_url.$first_block[$key][$keyImage]['path'].$first_block[$key][$keyImage]['image'] ;
+					}
+					if(!empty($first_block[$key][$keyImage]['popup_image'])){
+						$first_block[$key][$keyImage]['popup_image'] =  $base_url.$first_block[$key][$keyImage]['path'].$first_block[$key][$keyImage]['popup_image'] ;
+					}
+				}
+			}	
+
+			if(in_array($key,['training_software', 'gym_equipement', 'fitness_studio'])){
+				foreach($first_block[$key]['image'] as $keyImage=>$valueImage){
+					$first_block[$key]['image'][$keyImage] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'][$keyImage];
+				}
+			}	
+		}
+
+		$home1[0]['brand_website'] = $home[0]['brand_website'];
+		$home1[0]['brand_website'] = $first_block;
+
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home1);
+		}
+		else{
+			return array('status'=>true, "data"=>$home1);
+		}
+	}
+
+	public function getBrandWebsitePrograms($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+
+		$base_url =Config::get('app.s3_bane_url');
+
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.programs')
+		->get();
+
+		$programs = $home[0]['brand_website']['programs'];
+		foreach($programs as $key=>$value){
+			if(!in_array($key, ['name','path'], true)){
+				foreach($value['image'] as $imageIndex=>$imageName){
+					$programs[$key]['image'][$imageIndex] =  $base_url.$programs['path'].$imageName;
+				}
+			}
+		}
+
+		$home1[0]['brand_website']['programs'] = $programs;
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home1);
+		}
+		else{
+			return array('status'=>true, "data"=>$home1);
+		}
+	}
+
+	public function getBrandWebsiteHiit($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+		
+		$base_url =Config::get('app.s3_bane_url');
+
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.hiit')
+		->get();
+
+		if(!empty($base_url)){
+			foreach($home as $key=>$value){
+				$home[$key]['base_url'] = $base_url;
+			}
+		}
+
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home);
+		}
+		else{
+			return array('status'=>true, "data"=>$home);
+		}
+	}
+
+	public function getBrandWebsiteContactUs($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+		
+		$base_url =Config::get('app.s3_bane_url');
+
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.contact_us')
+		->get();
+
+		$home1= $home[0]['brand_website'];
+		$home1['contact_us']['banner_image'] = $base_url.$home1['contact_us']['path'].$home1['contact_us']['banner_image'];
+		$home[0]['brand_website']=$home1; 
+
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home);
+		}
+		else{
+			return array('status'=>true, "data"=>$home);
+		}
+	}
+
+	public function getBrandWebsiteOwnFranchise($brand_id=null){
+		$data = Input::All();
+		//$brand_id = $data['brand_id'];
+		if(empty($brand_id)){
+			return array("status"=>false, "message"=>"Brand is Missing");
+		}
+
+		$base_url =Config::get('app.s3_bane_url');
+
+		$home = Brand::where('_id',(int)$brand_id)
+		->select('brand_website.own_franchise')
+		->get();
+
+
+		$home1 = $home[0]['brand_website'];
+		foreach($home1['own_franchise']['what_we_deliver']['details'] as $key=>$value){
+			$home1['own_franchise']['what_we_deliver']['details'][$key]['image'] =  $base_url.$home1['own_franchise']['what_we_deliver']['details'][$key]['path'].$home1['own_franchise']['what_we_deliver']['details'][$key]['image'];
+		}
+		$home1['own_franchise']['banner_image']['image'] = $base_url.$home1['own_franchise']['banner_image']['path'].$home1['own_franchise']['banner_image']['image'];
+		$home1['own_franchise']['partners_list'] = $this->addPartenersList();
+		$home[0]['brand_website'] =  $home1;
+
+
+		if(!empty($home)){
+			return array('status'=>true, "data"=>$home);
+		}
+		else{
+			return array('status'=>true, "data"=>$home);
+		}
+	}
+
+	public function multifitCities(){
+		$cities = City::lists('name');
+		Log::info('cities name::::::::::::', [$cities]);
+		$city_list = [];
+		$listed_cities_multifit = ['jaipur','pune', 'mumbai', 'hyderabad', 'bangalore', 'gurgaon'];
+		foreach($cities as $key=>$value){
+			if(in_array(strtolower($value), $listed_cities_multifit)){
+				array_push($city_list,[
+					'name' => ucwords($value) ,
+					'slug' => 'listing-multifit-'.strtolower($value),
+					'city_brand' => true 
+				]);
+			}
+		} 
+		$city = Config::get('multifit.vendors_slug');
+		return array_merge($city_list, $city);
+	}
+
+	public function updateCitiesData(&$data){
+		$cities = City::lists('name');
+		$without_brand_city = Config::get('multifit.without_brand_city');
+
+		foreach($cities as &$city){
+			$city = strtolower($city);
+		}
+		foreach($data['centers_block'] as &$value){
+			if(in_array(strtolower($value['name']), $cities)){
+				$value['city_brand'] = true;
+				$value['slug'] = 'listing-multifit-'.strtolower($value['name']);
+			}
+			else{
+				$value['city_brand'] = false;
+				$value['slug'] = !empty($without_brand_city[strtolower($value['name'])])? $without_brand_city[strtolower($value['name'])]['slug']:'';
+			}
+		}
+	}
+
+	public function addPartenersList(){
+		return[ 
+			[
+				"logo" => "https://b.fitn.in/brand/partner-1-bw.png",
+				"colored_logo" => "https://b.fitn.in/brand/partner-1.jpg",
+				"url" => ""
+			],
+			[
+				"logo" => "https://b.fitn.in/brand/partner-2-bw.png",
+				"colored_logo" => "https://b.fitn.in/brand/partner-2.jpg",
+				"url" => ""
+			], 
+			[
+				"logo" => "https://b.fitn.in/brand/partner-3-bw.png",
+				"colored_logo" => "https://b.fitn.in/brand/partner-3.png",
+				"url" => ""
+			], 
+			[
+				"logo" => "https://b.fitn.in/brand/partner-4-bw.png",
+				"colored_logo" => "https://b.fitn.in/brand/partner-4.png",
+				"url" => ""
+			], 
+			[
+				"logo" => "https://b.fitn.in/brand/partner-5-bw.png",
+				"colored_logo" => "https://b.fitn.in/brand/partner-5.png",
+				"url" => ""
+			]
+			];
+	}
 }

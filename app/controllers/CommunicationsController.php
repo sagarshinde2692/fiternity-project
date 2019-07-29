@@ -56,6 +56,9 @@ class CommunicationsController extends \BaseController {
 				return array('status'=>400, 'message'=>'Communication not sent');
 			}
 		
+			Log::info('label', [$label]);
+			Log::info('transaction_type', [$transaction_type]);
+
 			if($transaction_type == 'order'){
 
 				$transaction_data = Order:: where('_id', intval($id))
@@ -69,7 +72,7 @@ class CommunicationsController extends \BaseController {
 												->where("communication_keys.$sender_class-$label", intval($key))
 												->first();
 
-				if(empty($transaction_data['surprise_fit_cash']) && !(isset($transaction_data['third_party_details']))){
+				if(!empty($transaction_data) && empty($transaction_data['surprise_fit_cash']) && !(isset($transaction_data['third_party_details']))){
 					
 					$transaction_data->surprise_fit_cash = $this->utilities->getFitcash($transaction_data->toArray());
 				}
@@ -199,7 +202,7 @@ class CommunicationsController extends \BaseController {
 					$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
 					$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
 					$batch = 1;
-					$booktrialMissedcall  = Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
+					$booktrialMissedcall  = Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone',substr($data['customer_phone'], -10))->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
 					if(!empty($booktrialMissedcall) && isset($booktrialMissedcall->missedcall_batch) && $booktrialMissedcall->missedcall_batch != ''){
 						$batch = $booktrialMissedcall->missedcall_batch + 1;
 					}
@@ -243,7 +246,7 @@ class CommunicationsController extends \BaseController {
 						$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
 						$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
 						$batch = 1;
-						$booktrialMissedcall  = Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
+						$booktrialMissedcall  = Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone', substr($data['customer_phone'], -10))->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
 						if(!empty($booktrialMissedcall) && isset($booktrialMissedcall->missedcall_batch) && $booktrialMissedcall->missedcall_batch != ''){
 							$batch = $booktrialMissedcall->missedcall_batch + 1;
 						}
@@ -291,6 +294,14 @@ class CommunicationsController extends \BaseController {
 						}
 						break;
 					}
+				case "abandonCartCustomerAfter2hoursFinder":
+					{
+						// $order = Order::find($data['_id']);
+						if(!empty($data['status']) && $data['status'] == '1'){
+							$data['abort_delay_comm'] = true;
+						}
+						break;
+					}
 		}
 
 		if(isset($data['customer_id']) && $data['customer_id'] != ""){
@@ -309,7 +320,22 @@ class CommunicationsController extends \BaseController {
         $data['diet_plan_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
 
 		return $data;
-	}
+    }
+    
+    public function triggerdelaycustomercomm($booktrial_id){
+        $booktrial_id = intval($booktrial_id);
+        
+        Booktrial::$withoutAppends = true;
+        $booktrial = Booktrial::find($booktrial_id, ['customer_name','communication_keys']);
+        
+        if(!empty($booktrial['communication_keys'])){
+            foreach($booktrial['communication_keys'] as $key => $value){
+                if (strpos($key, 'Customer') !== false) {
+                    $this->sendCommunication(explode('-', $key)[0], 'trial', explode('-', $key)[1], $booktrial['_id'], $value);
+                }
+            }
+        }
+    }
 
 
 

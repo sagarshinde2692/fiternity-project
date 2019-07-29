@@ -71,8 +71,37 @@ class Order extends \Basemodel {
 		Log::info("yo");
 		return $this->hasMany('TrainerSlotBooking','order_id');
 	}
-	public function ticket(){
+    
+    public function ticket(){
 		return $this->belongsTo('Ticket');
-	}
+    }
+    
+    public function customerreward(){
+		return $this->belongsTo('Myreward', 'customer_reward_id');
+    }
+    
+    public static function maxId(){
+        
+        $model = "Order";
+        
+        $identitycounter =  Identitycounter::where('model', $model)->where('field', '_id')->first();
+
+        if(empty($identitycounter)){
+            return $model::max('_id');
+        }
+
+        $identitycounter_count =  $identitycounter->count;
+        
+        $update = Identitycounter::where('model', $model)->where('field', '_id')->where('count', $identitycounter_count)->increment('count');
+
+        if($update){
+            Log::info("returning::".strval($identitycounter_count));
+            return $identitycounter_count;
+        }
+        Log::info("reiterating::".strval($identitycounter_count));
+        return  $model::maxId();
+    
+    }
+    
 	
 }

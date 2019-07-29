@@ -52,7 +52,7 @@ if (!function_exists('decode_customer_token')) {
             return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
         }catch(ExpiredException $e){
 
-            JWT::$leeway = (86400*365);
+            JWT::$leeway = (86400*365*4);
 
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
             return $decodedToken;
@@ -96,6 +96,7 @@ if (!function_exists('sorting_array')) {
 if(!function_exists('citywise_category')){
     function citywise_categories($city){
             $city = getmy_city($city);
+            
             $category_slug = [
                 "gyms",
                 "yoga",
@@ -476,6 +477,7 @@ if(!function_exists('ifCityPresent')){
             case "vashi":
             case "bhiwandi":
             case "navi mumbai":
+            case "mira bhayandar":
                 $send_city = "mumbai";
                 $ifcity = true;
                 break;
@@ -820,7 +822,7 @@ if (!function_exists('get_elastic_service_document')) {
 if (!function_exists('es_curl_request')) {
     function es_curl_request($params)
     {
-
+        
         $ci = curl_init();
         curl_setopt($ci, CURLOPT_TIMEOUT, 200);
         curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
@@ -2156,7 +2158,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'slug' => "",
                         'geolocation' => array('lat' => $lat, 'lon' => $lon),
                         'offeringrank' => $offrank,
-                        'inputservicecat' => ''
+                        'inputservicecat' => '',
+                        'category_subcat'=>!empty($off['name']) ? $cat['name'].'#'.$off['name'] : "",
                     );
                     return $postfields_data;
                 }
@@ -2446,7 +2449,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     
                     if (!$customer) {
 
-                        $inserted_id = Customer::max('_id') + 1;
+                        $inserted_id = Customer::maxId() + 1;
                         
                         $customer = new Customer();
                         $customer->_id = $inserted_id;
@@ -2788,7 +2791,8 @@ if (!function_exists(('time_passed_check'))){
     {      
         $service_category_id = array(2,19,65, 123);
 
-        return (in_array((int)$servicecategory_id,$service_category_id)) ? 15*60 : 90*60 ;
+        // return (in_array((int)$servicecategory_id,$service_category_id)) ? 15*60 : 90*60 ;
+        return 15*60;
     }
 }
 
@@ -3170,9 +3174,13 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null){
 
-        $inoperational_dates = ['2019-01-26'];
+        $inoperational_dates = ['2019-05-01'];
 
-        if( in_array($date, $inoperational_dates)){
+        if( in_array($date, $inoperational_dates) && in_array($city_id, [1,2])){
+            return false;
+        }
+
+        if( in_array($date, $inoperational_dates) && in_array($city_id, [3,5]) && !in_array($findercategory_id, [5])){
             return false;
         }
         
@@ -3195,6 +3203,9 @@ if(!function_exists('payPerSession')){
         $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]['city']) ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]['city'])) : "";
         $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]['regions']) && count($response["request"]["location"]['regions']) > 0 ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]['regions'][0])) : $response["request"]["location_name"];
         $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]["selected_region"]) ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]["selected_region"])) : $response["request"]["location_name"];
+
+        $response['aggregations']['time_range'][1]['count'] += $response['aggregations']['time_range'][0]['count'];
+
         return $response;
     }
 }
@@ -3338,6 +3349,7 @@ if (!function_exists('decodeKioskVendorToken')) {
         $jwt_token              =   Request::header('Authorization-Vendor');
         $jwt_key                =   Config::get('jwt.kiosk.key');
         $jwt_alg                =   Config::get('jwt.kiosk.alg');
+        JWT::$leeway = (86400*2000);
         $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
         
         Log::info("Vendor Token : ".$jwt_token);
@@ -3557,7 +3569,7 @@ if (!function_exists('setDefaultAccount')) {
             Customer::$withoutAppends = true;
             $defaultCustomer = Customer::find(intval($customer_id));
             $defaultCustomer->default_account = true;
-            $duplicateCustomers = Customer::where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->where('_id', '!=', $customer_id)->lists('_id');
+            $duplicateCustomers = Customer::where('contact_no', substr($data['customer_phone'], -10))->where('_id', '!=', $customer_id)->lists('_id');
             // dd(DB::getQueryLog());
             if(count($duplicateCustomers) > 0){
                 $defaultCustomer->attached_accounts = $duplicateCustomers;
@@ -3657,7 +3669,7 @@ if (!function_exists('vendorsByBrand')) {
         $limit   = 50;
         $brand_id = $request['brand_id'];
         $city = $request['city'];
-        $keys = [ "id","address","average_rating","business_type","categorytags","commercial_type","contact","coverimage","distance","facilities","geolocation","location","locationtags","multiaddress","name","offer_available","offerings","photos","servicelist","slug","total_rating_count","vendor_type","subcategories","tractionscore","trial_offer","membership_offer" ];
+        $keys = [ "id","address","average_rating","business_type","categorytags","commercial_type","contact","coverimage","distance","facilities","geolocation","location","locationtags","multiaddress","name","offer_available","offerings","photos","servicelist","slug","total_rating_count","vendor_type","subcategories","tractionscore","trial_offer","membership_offer", "coverimage_website_membership"];
         
         // $brand_id = $request['brand_id'];
         $payload = [ 
@@ -3925,7 +3937,18 @@ if (!function_exists(('isFinderIntegrated'))){
 	
 	 function isFinderIntegrated($finder){
         try{
-            if((!empty($finder['commercial_type']) && $finder['commercial_type'] == 0) || (!empty($finder['membership']) && $finder['membership'] == 'disable') || (!empty($finder['trial']) && $finder['trial'] == 'disable') || (!empty($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed']))){
+            if(
+                (
+                    !empty($finder['commercial_type']) && $finder['commercial_type'] == 0) 
+                ||
+                (
+                    (!empty($finder['membership']) && $finder['membership'] == 'disable') 
+                    && 
+                    (!empty($finder['trial']) && $finder['trial'] == 'disable')
+                ) 
+                ||
+                (!empty($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed']))
+            ){
                 return false;
             }else{
                 return true;
@@ -4316,16 +4339,101 @@ if (!function_exists('upgradeMembershipCondition')) {
 
         $days = getDurationDay($value);
         return $value['type'] == 'membership' 
-        && in_array($days, Config::get('upgrade_membership.duration', [30])) 
-        && in_array($service->servicecategory_id, Config::get('upgrade_membership.service_cat', [65, 111]));
+        && (in_array($days, Config::get('upgrade_membership.duration', [30, 90])) || $days < 30)
+        && in_array($service->servicecategory_id, Config::get('upgrade_membership.service_cat', [65, 111]))
+        && !(isset($value['upgradable']) && empty($value['upgradable']));
     }
 }
 if (!function_exists('upgradeSessionPackCondtion')) {
 
     function upgradeSessionPackCondtion($value, $service)
     {
-        return $value['type'] == 'extended validity' && in_array($service->finder['_id'], Config::get('app.upgrade_session_finder_id', []));
+        return  $value['type'] == 'extended validity' 
+                && !empty($value['flags']['upgradable']);
     }
 
 }
+
+if (!function_exists('addAToGlobals')) {
+
+    function addAToGlobals($key, $value)
+    {
+        $GLOBALS[$key] = $value;
+    }
+
+}
+if (!function_exists('print_exception')) {
+
+    function print_exception($e)
+    {
+        Log::info(array(
+            'type'    => get_class($e),
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+        ));
+    }
+
+}
+
+if (!function_exists('getSpinArray')) {
+
+    function getSpinArray(){
+        
+        return Cache::tags('spin_campaign')->remember('spin_array', 60*60*24, function () {
+            $spin_array = Ordervariables::where('name', 'spin_array')->first()['spin_array'];
+            if (!function_exists('relInt')) {
+                function relInt($x){
+                    $x['value']*=100;
+                    return $x;
+                }
+            }
+            $spin_array = array_map('relInt', $spin_array);
+            return $spin_array;
+        });
+    }
+
+}
+if (!function_exists('getArrayValue')) {
+
+    function getArrayValue($array, $key){
+        
+        return isset($array['key']) ? $array['key'] : null;
+    }
+
+}
+if (!function_exists('requestFtomApp')) {
+
+    function requestFtomApp(){
+        
+        return !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios']);
+    }
+
+}
+
+if (!function_exists('createBucket')) {
+
+    function createBucket($array, $key, $range){
+        
+        $buckets = [];
+
+        foreach($range as $r){
+            $buckets[$r] = [];
+            foreach($array as &$x){
+                if($x[$key] <= $r && empty($x['pushed'])){
+                    array_push($buckets[$r], $x);
+                    $x['pushed'] = true;
+                }
+            }
+        }
+
+        return $buckets;
+        
+        
+    
+    }
+
+}
+
+
 ?>

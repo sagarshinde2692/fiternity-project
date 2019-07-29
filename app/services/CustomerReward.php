@@ -23,6 +23,7 @@ use JWT;
 use Finder;
 use Input;
 use Service;
+use Order;
 
 
 Class CustomerReward {
@@ -366,7 +367,11 @@ Class CustomerReward {
                                 $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->first();
                             }
                             else {
-                                $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->orWhere('brand_id',$finder['brand_id'])->first();
+                                if(!empty($finder['brand_id'])){
+                                    $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->orWhere('brand_id',$finder['brand_id'])->first();
+                                }else{
+                                    $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->first();
+                                }
                             }
                         }
                         if(!empty($mixedreward_content)){
@@ -637,7 +642,7 @@ Class CustomerReward {
                         $fitcash_plus *= $order['ticket_quantity'];
                     }
 
-//                    $fitcash_plus = intval($fitcash_plus) + 500;
+                    // $fitcash_plus = intval($fitcash_plus) + 500;
 
                 }
 
@@ -776,12 +781,110 @@ Class CustomerReward {
                     $customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
                 }            
             }
+            
+            if(
+                !empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] 
+                && !empty($order['amount']) 
+                && $order['amount'] > 0 
+                && (empty($order['customer_source']) || !in_array($order['customer_source'], ['admin', 'kiosk']))
+            ){
+                if(isset($order['type']) && $order['type'] == 'workout-session'){
+                    $amount_paid = $order['amount'];
+                    if(isset($order['customer_quantity']) && $order['customer_quantity'] != 1){
+                        $amount_paid = 0;
+                    }
+
+                    if($amount_paid > 0 && !empty($order['convinience_fee']) && $order['convinience_fee'] > 0){
+                        $amount_paid = $amount_paid - $order['convinience_fee'];
+                    }
+
+                }else{
+                    $amount_paid = $order['amount'];
+
+                    if($amount_paid > 0 && !empty($order['convinience_fee']) && $order['convinience_fee'] > 0){
+                        $amount_paid = $amount_paid - $order['convinience_fee'];
+                    }
+
+                    if($amount_paid > 2500){
+                        $amount_paid = 2500;
+                    }
+                }
+                $cashback_amount = 0;
+                if($amount_paid != 0){
+                    $cashback_amount = round(($amount_paid * 82) / 100);
+                }
+                Log::info('after GST cashback_amount :: ',[$cashback_amount]);
+                
+                if($cashback_amount > 0){
+
+                    if(isset($order['type']) && $order['type'] == 'workout-session'){
+                        $walletData = array(
+                            "order_id"=>$order['_id'],
+                            // "customer_id"=> intval($order['customer_id']),
+                            "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
+                            "amount"=> intval($cashback_amount),
+                            "amount_fitcash" => 0,
+                            "amount_fitcash_plus" => intval($cashback_amount),
+                            "type"=>"CASHBACK",
+                            "entry"=>"credit",
+                            "order_type"=>["workout-session", "workout session"],
+                            "description"=> "100% Cashback on workout-session booking at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14)),
+                            "validity"=>time()+(86400*14),
+                        );
+                    
+                        $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());
+                    
+                        if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
+                    
+                            $customersms = new CustomerSms();
+                    
+                            $sms_data = [];
+                    
+                            $sms_data['customer_phone'] = $order['customer_phone'];
+                    
+                            $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$cashback_amount." Fitcash has been added in your Fitternity wallet.Valid for 14 days from booking time. For quick assistance call ".Config::get('app.contact_us_customer_number');
+                    
+                            $customersms->custom($sms_data);
+                        }
+                    }else{
+                        $walletData = array(
+                            "order_id"=>$order['_id'],
+                            // "customer_id"=> intval($order['customer_id']),
+                            "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
+                            "amount"=> intval($cashback_amount),
+                            "amount_fitcash" => 0,
+                            "amount_fitcash_plus" => intval($cashback_amount),
+                            "type"=>'CASHBACK',
+                            'entry'=>'credit',
+                            "description"=> "100% Cashback on buying ".ucfirst($order['type'])." at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*90)),
+                            "validity"=>time()+(86400*90),
+                            "membership_instant_cashback" => true,
+                            'app_only'=>true
+                        );
+        
+                        $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());
+        
+                        if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
+        
+                            $customersms = new CustomerSms();
+        
+                            $sms_data = [];
+        
+                            $sms_data['customer_phone'] = $order['customer_phone'];
+                            $sms_data['amount'] = $cashback_amount;
+                            $sms_data['finder_name'] = ucwords($order['finder_name']);
+        
+                            $customersms->membership100PerCashback($sms_data);
+                        }
+                    }    
+                }
+            }
 
             if(isset($order->coupon_code) && $utilities->isPPSReferralCode($order->coupon_code)){
                 $utilities->setPPSReferralData($order->toArray());
             }
 
-            $utilities->giveFitcashforUpgrade($order);
+            // $utilities->giveFitcashforUpgrade($order);
             
             
         }
@@ -1007,7 +1110,7 @@ Class CustomerReward {
     }
 
    public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false,$order_data=null){
-
+        
         $current_wallet_balance = 0;
         $wallet = 0;
         $wallet_fitcash_plus = 0;
@@ -1048,8 +1151,22 @@ Class CustomerReward {
                $request['extended_validity'] = $order_data['extended_validity'];
             }
 
+            Log::info("customer   email ::: ", [$customer['email']]);
+            if(!empty($order_data['customer_email']) && $order_data['customer_email'] != $customer['email']){
+                Log::info("customer reward email is differ");
+                $request['buy_for_other'] = true;
+            }
+
+            if(!empty($order_data['type'])){
+                $request['type'] = $order_data['type'];
+            }
+
+            if(!empty($order_data['city_id'])){
+                $request['city_id'] = $order_data['city_id'];
+            }
+
             $query = $utilities->getWalletQuery($request);
-            
+
             $current_wallet_balance = $query->sum('balance');/*
 
             if(isset($customer->demonetisation)){
@@ -1598,8 +1715,10 @@ Class CustomerReward {
         
         }else{
 
-            $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
-        
+            //$offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
+            
+            $offer = Offer::getActiveV1('ratecard_id', intval($ratecard->_id), intval($ratecard->finder_id))->first();
+
             if($offer){
                 $price = $offer->price;
             }else{
@@ -1612,6 +1731,8 @@ Class CustomerReward {
         $utilities = new Utilities;
         
         if($utilities->isPPSReferralCode($couponCode)){
+
+            
 
             if(!(isset($ratecard) && isset($ratecard['type']) && $ratecard['type'] == 'workout session')){
                 
@@ -1670,6 +1791,8 @@ Class CustomerReward {
         //     return array("data"=>array("discount" => $price, "final_amount" => 0, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => true,  "vendor_coupon"=>false, "vendor_routed_coupon" => false);
         // }
 
+        
+
 
         $query = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime());
 
@@ -1684,7 +1807,14 @@ Class CustomerReward {
                 
             $finder = Finder::find($ratecard->finder_id);
             $finder_city = $finder->city_id;
+
+            
+            if(strtolower($couponCode) == 'fitback' && !empty($ratecard['type']) && $ratecard['type'] == 'workout session' && (!empty($finder['flags']['monsoon_campaign_pps']) || $price == 99)){
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Cashback is not applicable on this transaction");
+                    return $resp;   
+            }
         }
+
         // if(!isset($coupon) && (strtolower($couponCode) == "srfit")){
         //     $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
         //     $coupon = array("code" => strtolower($couponCode),"discount_max" => 1000,"discount_amount" => 0,"discount_min" => 200);
@@ -1785,6 +1915,58 @@ Class CustomerReward {
             if(isset($coupon["tickets"]) && !$ticket){
                 $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
                 return $resp;
+            }
+
+            if(!empty($coupon['flags']['repeat_new_user'])){
+                
+                if(!empty($customer_email)){
+
+                    \Order::$withoutAppends = true;
+
+                    $order_count = \Order::active()->where("customer_email", $customer_email)->count();
+
+                    if($order_count > 0){
+                        $coupon_order_count = \Order::active()->where("customer_email", $customer_email)->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+                        if($order_count > 0 && $coupon_order_count <= 0){
+                            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon valid only for new user");
+                            return $resp;
+                        }else if($order_count > 0 && $coupon_order_count >= $coupon['flags']['repeat_new_user']){
+                            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon valid only twise per new user");
+                            return $resp;
+                        }
+                    }
+
+                }else if(empty($customer_id)){
+
+                    $jwt_token = Request::header('Authorization');
+
+                    if(empty($jwt_token)){
+
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                        return $resp;
+                    }
+
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    $customer_id = $decoded->customer->_id;
+
+                }
+
+
+                \Order::$withoutAppends = true;
+
+                $order_count = \Order::active()->where("customer_email", $customer_email)->count();
+
+                if($order_count > 0){
+                    $coupon_order_count = \Order::active()->where("customer_email", $customer_email)->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+                    if($order_count > 0 && $coupon_order_count <= 0){
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon valid only for new user");
+                        return $resp;
+                    }else if($order_count > 0 && $coupon_order_count >= $coupon['flags']['repeat_new_user']){
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon valid only twise per new user");
+                        return $resp;
+                    }
+                }
             }
 
             if(isset($coupon["app_only"]) && $coupon["app_only"]){
@@ -2001,6 +2183,21 @@ Class CustomerReward {
                 }
             }
 
+            if(!empty($coupon['usage_per_user']) && is_integer($coupon['usage_per_user'])){
+
+                \Order::$withoutAppends = true;
+
+                $order_count = \Order::active()->where('customer_email',$customer_email)->where('coupon_code','like',strtolower($couponCode))->count();
+
+                if($order_count > $coupon['usage_per_user']){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"This coupon is applicable only ".$coupon['usage_per_user']." time per user","user_login_error"=>true);
+
+                    return $resp;
+                }
+            
+            }
+
             if(isset($coupon['type']) && $coupon['type'] == 'syncron'){
                 
                 if(empty($customer_email) && !in_array($this->device_type, ['ios', 'android'])){
@@ -2133,7 +2330,7 @@ Class CustomerReward {
                 $customer_phone = $decoded->customer->contact_no;
                 $customer_email = $decoded->customer->email;
                 
-                $prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+                $prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', substr($customer_phone, -10))->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
 
                 if($prev_workout_session_count){
                     
@@ -2173,18 +2370,30 @@ Class CustomerReward {
                         if(!empty($condition['key']) && !empty($condition['operator']) && !empty($condition['values'])){
                             // print_r($condition['key']);
                             $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
-                            // exit();
-                            
                             if($condition['operator'] == 'in'){
                                 if(empty($embedded_value)){
                                     $and_condition = false;
                                     break;
                                 }
-                                if(!in_array($embedded_value, $condition['values'])){
-                                    $and_condition = false;
-                                    break;
-
+                                if(!empty($condition['values'][0]['valid_till'])){
+                        
+                                    $values = array_column($condition['values'], 'value');
+                                    $dates = array_column($condition['values'], 'valid_till');
+                                    
+                                    if(!in_array($embedded_value, $values) || time() > $dates[array_search($embedded_value, $values)]->sec){
+                                        $and_condition = false;
+                                        break;
+                                    }
+                                    
+                                }else{
+                                    
+                                    if(!in_array($embedded_value, $condition['values'])){
+                                        $and_condition = false;
+                                        break;
+                                    }
+                                
                                 }
+                            
                             }else if($condition['operator'] == 'nin'){
                                 if(!empty($embedded_value) && in_array($embedded_value, $condition['values'])){
                                     $and_condition = false;
@@ -2328,19 +2537,81 @@ Class CustomerReward {
                     $coupon["discount_max"] = 1250;
                 }
             }
-    
+            
+            if(!empty($coupon['gender'])){
+
+                $gender = Input::json()->get('gender');
+
+                if(empty($gender)){
+                    $order_id = Input::json()->get('order_id');
+                    if(!empty($order_id)){
+                        \Order::$withoutAppends = true;
+                        $order = \Order::find(intval($order_id));
+                        $gender = !empty($order['gender']) ? $order['gender'] : null;
+                    }
+                }
+
+                if(!empty($gender) && strtolower($gender) != strtolower($coupon['gender'])){
+                    
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Applicable only for women");
+        
+                    return $resp;
+                }
+                
+            }
+
             
             if($amount){
                 $price = $amount;
                 Log::info("changing price");
                 Log::info($price);
             }
-            $discount_amount = $coupon["discount_amount"];
+            $discount_amount = $coupon["discount_amount"] <= $price ? $coupon["discount_amount"] : $price;
+
+            if(!empty(Request::header('Device-Type')) && in_array(Request::header('Device-Type'), ['android', 'ios'])) {
+
+                if(!empty($coupon['app_discount_percent']) ){
+                    $coupon["discount_percent"] = $coupon['app_discount_percent'];
+                }
+                
+                if(!empty($coupon['app_discount_max']) ){
+                    $coupon["discount_max"] = $coupon["app_discount_max"];
+                }
+                if(!empty($coupon['app_description']) ){
+                    $coupon["description"] = $coupon["app_description"];
+                }
+                
+            }
+
+            if(!empty($coupon['flags']['discount_max_overridable']['amount']) && !empty($coupon['flags']['discount_max_overridable']['finder_flags_key']) && !empty($coupon['flags']['discount_max_overridable']['value']) && !empty($finder['flags']['monsoon_flash_discount']) && $finder['flags'][$coupon['flags']['discount_max_overridable']['finder_flags_key']] == $coupon['flags']['discount_max_overridable']['value']){
+                $coupon["discount_max"] = $coupon['flags']['discount_max_overridable']['amount'];
+            }
+
+            if(!empty($coupon['flags']['discount_max_overridable']) && is_array($coupon['flags']['discount_max_overridable'])){
+
+                foreach($coupon['flags']['discount_max_overridable'] as $x){
+                    // print_r($x);
+                    // exit();
+                    if(
+                        !empty($x['amount']) 
+                        && !empty($x['finder_flags_key']) 
+                        && !empty($x['value']) 
+                        && !empty($finder['flags'][$x['finder_flags_key']])  
+                        && $finder['flags'][$x['finder_flags_key']] == $x['value']
+                    ){
+                        $coupon["discount_max"] = $x['amount'];
+                        break;
+                    }
+
+                }
+            
+            }
+            
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
             
-
+            $GLOBALS['coupon_applied'] = true;
             $discount_price = $price - $discount_amount;
             $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
             $vendor_routed_coupon = isset($coupon["vendor_routed_coupon"]) ? $coupon["vendor_routed_coupon"] : false;
@@ -2355,7 +2626,17 @@ Class CustomerReward {
             if(isset($coupon['description'])){
                 $resp['description'] = $coupon['description'];
             }
-            
+
+            if(!empty($coupon['flags'])){
+                $resp['flags'] = $coupon['flags'];
+            }
+            if(!empty($coupon['spin_coupon'])){
+                $resp['spin_coupon'] = $coupon['spin_coupon'];
+            }
+            if(!empty($coupon['discount_percent'])){
+                $resp['coupon_discount_percent'] = $coupon['discount_percent'];
+            }
+
         }else{
 
             $applyCustomerCoupn = false;

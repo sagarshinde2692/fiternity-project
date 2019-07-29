@@ -19,6 +19,7 @@ use Wallet;
 use WalletTransaction;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
+use App\Sms\FinderSms as FinderSms;
 use App\Services\Fitapi as Fitapi;
 use App\Mailers\CustomerMailer as CustomerMailer;
 use Exception;
@@ -32,6 +33,20 @@ use FinderMilestone;
 use MongoDate;
 use Coupon;
 use \GuzzleHttp\Client;
+use Input;
+
+use App\Services\Fitnessforce as Fitnessforce;
+
+use App\Services\OzontelOutboundCall as OzontelOutboundCall;
+use App\Services\CustomerReward as CustomerReward;
+use App\Services\CustomerInfo as CustomerInfo;
+
+use App\Services\Jwtauth as Jwtauth;
+
+use FitnessForceAPILog;
+use Capture;
+
+use Booktrial;
 
 Class Utilities {
 
@@ -40,6 +55,8 @@ Class Utilities {
 
    
    public function __construct() {
+    
+    $this->device_type = Request::header('Device-Type');
     
     $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
     $this->vendor_token = false;
@@ -80,7 +97,7 @@ Class Utilities {
             return \Booktrial::
                 where(function ($query) use($customer_email, $customer_phone) {
                     $query->orWhere('customer_email', $customer_email)
-                        ->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');
+                        ->orWhere('customer_phone', substr($customer_phone, -10));
                 })
                 ->where('finder_id', '=', (int) $finder_id)
                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
@@ -108,7 +125,7 @@ Class Utilities {
             return \Booktrial::
                 where(function ($query) use($customer_email, $customer_phone) {
                     $query->orWhere('customer_email', $customer_email)
-                        ->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');
+                        ->orWhere('customer_phone', substr($customer_phone, -10));
                 })
                 ->where('finder_id', '=', (int) $finder_id)
                 ->where('service_id', '=', (int) $service_id)
@@ -690,98 +707,6 @@ Class Utilities {
         return customerTokenDecode($token);
     }
 
-
-    public function autoRegisterCustomer($data){
-
-        // Input customer_email, customer_phone, customer_name, customer_id...
-        // Output customer_id ...
-
-        if(isset($data['customer_id']) && $data['customer_id'] != ""){
-            return (int) $data['customer_id'];
-        }
-
-
-        $customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
-
-        if(!$customer) {
-
-            $inserted_id = Customer::max('_id') + 1;
-            $customer = new Customer();
-            $customer->_id = $inserted_id;
-            $customer->name = ucwords($data['customer_name']) ;
-            $customer->email = $data['customer_email'];
-            $customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-            $customer->password = md5(time());
-
-            if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
-                $customer->contact_no = $data['customer_phone'];
-            }
-
-            if(isset($data['customer_address'])){
-
-                if(is_array($data['customer_address']) && !empty($data['customer_address'])){
-
-                    $customer->address = implode(",", array_values($data['customer_address']));
-                    $customer->address_array = $data['customer_address'];
-
-                }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
-
-                    $customer->address = $data['customer_address'];
-                }
-
-            }
-
-            $customer->identity = 'email';
-            $customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
-            $customer->status = "1";
-            $customer->ishulluser = 1;
-            $customer->save();
-
-            return $inserted_id;
-
-        }else{
-
-            $customerData = [];
-
-            try{
-
-                if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
-                    $customerData['contact_no'] = trim($data['customer_phone']);
-                }
-
-                if(isset($data['otp']) &&  $data['otp'] != ""){
-                    $customerData['contact_no_verify_status'] = "yes";
-                }
-
-                if(isset($data['customer_address'])){
-
-                    if(is_array($data['customer_address']) && !empty($data['customer_address'])){
-
-                        $customerData['address'] = implode(",", array_values($data['customer_address']));
-                        $customerData['address_array'] = $data['customer_address'];
-
-                    }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
-
-                        $customerData['address'] = $data['customer_address'];
-                    }
-
-                }
-
-                if(count($customerData) > 0){
-                    $customer->update($customerData);
-                }
-
-            } catch(ValidationException $e){
-
-                Log::error($e);
-
-            }
-
-            return $customer->_id;
-        }
-
-    }
-
     public function errorMessage($errors){
 
         $errors = json_decode(json_encode($errors));
@@ -1012,11 +937,17 @@ Class Utilities {
 
     public function verifyOrder($data,$order){
     	// Log::info(" info data".print_r($data,true));
+        // Log::info(" info order ".print_r($order,true));
+        if(!empty($data['internal_success'])){
+            return true;
+        }
+
+    	// if(!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session')
     	// Log::info(" info order ".print_r($order,true));
-    	if(!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session')
+    	if((!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session') || (!empty($order['studio_extended_validity_order_id']))){
     		$hash_verified = true;
-    	
-    	else if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK" ||(isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched)){
+        }
+    	else if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK" ||(isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched) || !empty($data['internal_success'])){
             if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
@@ -1612,7 +1543,7 @@ Class Utilities {
     }
 
     public function walletTransactionNew($request, $data=false){
-
+            Log::info('in wallet transaction',[$request]);
         $wallet_limit = 100000;
 
         // if($data && isset($data['type']) && in_array($data['type'], ['wallet'])){
@@ -1634,6 +1565,7 @@ Class Utilities {
         // }
 
         $customer_id = (int)$request['customer_id'];
+        Log::info('customer_id ', [$customer_id]);
 
         $jwt_token = Request::header('Authorization');
 
@@ -1651,7 +1583,7 @@ Class Utilities {
         $customer = Customer::find($customer_id);
 
         $validator = Validator::make($request, Wallet::$rules);
-
+        Log::info('validator', [$validator]);
         if ($validator->fails()) {
             return ['status' => 400,'message' => $this->errorMessage($validator->errors())];
         }
@@ -1659,7 +1591,9 @@ Class Utilities {
         $entry = $request['entry'];
         $type = $request['type'];
 
-        if(isset($request['order_id']) &&  $request['order_id'] != 0){
+        Log::info('entry', [$entry]);
+
+        if(isset($request['order_id']) &&  $request['order_id'] != 0 && empty($request['membership_instant_cashback'])){
 
             // Check Duplicacy of transaction request........
             $duplicateRequest = WalletTransaction::where('order_id', (int) $request['order_id'])
@@ -1730,7 +1664,13 @@ Class Utilities {
                     $request_amount_balance = $request_amount = $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
                 }
 
-                $order = \Order::where('status','!=','1')->find((int)$request['order_id'])->toArray();
+                $order = \Order::where('status','!=','1')->find((int)$request['order_id']);
+
+                if(!empty($order)){
+                    $order = $order->toArray();
+                }else{
+                    return;
+                }
 
                 $wallet_transaction = $order['wallet_transaction_debit']['wallet_transaction'];
                 $wallet_amount = $order['wallet_transaction_debit']['amount'];
@@ -1884,6 +1824,10 @@ Class Utilities {
             $wallet->validity = 0;
             $wallet->type = $type;
 
+            if(isset($request['flags'])){
+                $wallet->flags = $request['flags'];
+            }
+
             if(isset($request['order_id']) && $request['order_id'] != ""){
                 $wallet->order_id = (int)$request['order_id'];
             }
@@ -1960,7 +1904,23 @@ Class Utilities {
 
                 $wallet->restricted_for = $request['restricted_for'];
             }
+            if(!empty($request['details'])){
 
+                $wallet->for_details = $request['details'];
+            }
+            if(isset($request['upgradable_to_membership'])){
+                $wallet->upgradable_to_membership = $request['upgradable_to_membership'];
+            }
+            if(isset($request['upgradable_to_session_pack'])){
+                $wallet->upgradable_to_session_pack = $request['upgradable_to_session_pack'];
+            }
+            if(isset($request['session_pack_duration_gt'])){
+                $wallet->session_pack_duration_gt = $request['session_pack_duration_gt'];
+            }
+            if(isset($request['app_only'])){
+                $wallet->app_only = $request['app_only'];
+            }
+            
             $wallet->save();
 
             $walletTransactionData['wallet_id'] = $wallet->_id;
@@ -2013,9 +1973,27 @@ Class Utilities {
 
             $amount = $request['amount'];
 
+            Log::info("customer   email ::: ", [$customer['email']]);
+            if(!empty($data['customer_email']) && $data['customer_email'] != $customer['email']){
+                Log::info("walletTransactionNew email is differ");
+                $request['buy_for_other'] = true;
+            }
+
+            if(!empty($data['type'])){
+                $request['type'] = $data['type'];
+            }
+
+            if(!empty($data['city_id'])){
+                $request['city_id'] = $data['city_id'];
+            }
+
             $query =  $this->getWalletQuery($request);
 
+            //Log::info("query ::            ", [$query]);
+
             $allWallets  = $query->OrderBy('restricted','desc')->OrderBy('_id','asc')->get();
+
+            Log::info('wallet ::             ',[count($allWallets)]);
 
             if(count($allWallets) > 0){
 
@@ -2045,7 +2023,9 @@ Class Utilities {
                 }
 
                 if(count($walletData) > 0){
+                    Log::info("walletData > 0 :: ");
 
+                    $paid_wallet_amount = 0;
                     $amount_used = 0;
                     $amount_balance = (int)$amount;
 
@@ -2066,7 +2046,12 @@ Class Utilities {
                         $walletTransactionData['wallet_id'] = $value->_id;
                         $walletTransactionData['entry'] = $entry;
                         $walletTransactionData['type'] = $request['type'];
+                        $walletTransactionData['description'] = $request['description'];
                         $walletTransactionData['customer_id'] = $customer_id;
+                        
+                        if(isset($request['debit_added_by'])){
+                            $walletTransactionData['debit_added_by'] = $request['debit_added_by'];
+                        }
 
                         if(isset($request['order_id']) && $request['order_id'] != ""){
                             $walletTransactionData['order_id'] = (int)$request['order_id'];
@@ -2110,6 +2095,20 @@ Class Utilities {
                             $walletTransactionDebitEntry['upgraded_order_id'] = $value['order_id'];
                         }
                         
+                        if(!empty($value['coupon'])){
+                            $walletTransactionDebitEntry['coupon'] = $value['coupon'];
+                        }
+
+                        if(!empty($value['for']) && $value['for'] == 'wallet_recharge'){
+                            $walletTransactionDebitEntry['paid_wallet'] = true;
+                            $paid_wallet_amount += $walletTransactionData['amount'];
+                        }
+
+                        if(!empty($value['flags'])){
+                            Log::info("flags  present :: ");
+                            $walletTransactionDebitEntry['fitcashcoupon_flags'] = $value['flags'];
+                        }
+                        
                         $walletTransactionDebit[] =  $walletTransactionDebitEntry;
 
 
@@ -2125,7 +2124,7 @@ Class Utilities {
 
                     if(isset($request['order_id']) && $request['order_id'] != ""){
 
-                        return ['status' => 200,'message' => 'Success Updated Wallet','wallet_transaction_debit'=>['amount'=>$amount,'wallet_transaction'=>$walletTransactionDebit]];
+                        return ['status' => 200,'message' => 'Success Updated Wallet','wallet_transaction_debit'=>['amount'=>$amount,'total_paid_wallet_amount' => $paid_wallet_amount,'wallet_transaction'=>$walletTransactionDebit]];
                     }
 
                 }else{
@@ -2309,6 +2308,9 @@ Class Utilities {
 
    public function getWalletBalance($customer_id,$data = false){
 
+        Log::info("getWalletBalance");
+        Log::info("getWalletBalance data ::: ", [$data]);
+
         $customer_id = (int) $customer_id;
 
         $finder_id = ($data && isset($data['finder_id']) && $data['finder_id'] != "") ? (int)$data['finder_id'] : "";
@@ -2318,8 +2320,13 @@ Class Utilities {
 
         if($finder_id && $finder_id != ""){
 
-            $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
-
+            if(!empty($data['order_type']) && $data['order_type'] != "workout-session" && !empty($data['city_id']) && $data['city_id'] != '3'){
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id)->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
+            }else if(!empty($data['order_type']) && ($data['order_type'] == "workout-session" || $data['order_type'] == "workout session") && !empty($data['city_id']) && $data['city_id'] == '3'){
+                
+            }else{
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
+            }
 
         }else{
 
@@ -2334,6 +2341,23 @@ Class Utilities {
         }
         if(!empty($data['duration_day'])){
             $query->where(function($query) use ($data){$query->orwhere('duration_day', 'exists', false)->orWhere('duration_day', $data['duration_day']);});
+        }
+
+        if(!empty($GLOBALS['ratecard_id_for_wallet'])){
+            $query->where(function($query){$query->orwhere('ratecard_id', 'exists', false)->orWhere('ratecard_id', $GLOBALS['ratecard_id_for_wallet']);});
+        }
+
+        if($this->checkCouponApplied()){
+            $query->where('for', 'wallet_recharge');
+        }
+
+        if(isset($data['buy_for_other']) && $data['buy_for_other'] == true ){
+            Log::info("wallet balance buy for other true");
+            $query->where(function($query){$query->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
+        }
+        
+        if(!in_array(Request::header('Device-Type'), ['android', 'ios'])){
+            $query->where('app_only', '!=', true);
         }
 
         $wallet_balance = $query->sum('balance');
@@ -2555,7 +2579,7 @@ Class Utilities {
         // $transaction_type = (isset($transaction_data['order_id'])) ? "order" : "trial";
         $key = rand(100000000, 999999999);
 
-        if(in_array($method, ["before3HourSlotBooking", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days"])){
+        if(in_array($method, ["before3HourSlotBooking", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "abandonCartCustomerAfter2hoursFinder"])){
             $transaction_type = "order";
         }else{
             $transaction_type = "trial";
@@ -2609,92 +2633,133 @@ Class Utilities {
 
         $query = Wallet::active()->where('customer_id',(int)$request['customer_id'])->where('balance','>',0);
 
-        if(!empty($request['extended_validity'])){
-            $query->where('restricted_for', '!=', 'upgrade');
-        }
-
-        if(isset($request['finder_id']) && $request['finder_id'] != ""){
-
-            $finder_id = (int)$request['finder_id'];
-
-            $finder = \Finder::find($finder_id);
-
-            $conditionData = [];
-
-            $conditionData['finder_category_id'] = $finder->category_id;
-
-            $fitcashCoupons = \Fitcashcoupon::select('_id','code','condition')->where('condition','exists',true)->get();
-
-            if(count($fitcashCoupons) > 0){
-
-                $fitcashCoupons = $fitcashCoupons->toArray();
-
-                foreach ($fitcashCoupons as $coupon) {
-
-                    $code = $coupon['code'];
-
-                    $condition_array = [];
-
-                    foreach ($coupon['condition'] as $condition) {
-
-                        $operator = $condition['operator'];
-                        $field = $condition['field'];
-                        $value = $condition['value'];
-
-                        switch ($operator) {
-                            case 'in':
-
-                                if(isset($conditionData[$field]) && in_array($conditionData[$field],$value)){
-                                    $condition_array[] = 'true';
-                                }else{
-                                    $condition_array[] = 'false';
-                                }
-
-                                break;
-
-                            case 'not_in':
-
-                                if(isset($conditionData[$field]) && !in_array($conditionData[$field],$value)){
-                                    $condition_array[] = 'true';
-                                }else{
-                                    $condition_array[] = 'false';
-                                }
-
-                                break;
-                        }
-
-                    }
-
-                    if(in_array('false', $condition_array)){
-                        $query->where('coupon','!=',$code);
-                    }
-
-                }
-            }
-
-
-            $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
-
-
+        if(isset($request['wallet_id'])){
+            Log::info('in wallet request');
+            $query->where('_id',(int)$request['wallet_id']);
+        
         }else{
 
-            $query->where('valid_finder_id','exists',false);
+            if(!in_array(Request::header('Device-Type'), ['android', 'ios'])){
+                $query->where('app_only', '!=', true);
+            }
+
+            if(!empty($request['extended_validity'])){
+            
+                $duration = isset($GLOBALS['order_duration']) ? $GLOBALS['order_duration'] : 0;
+
+                $query->where('upgradable_to_session_pack', '!=', 'false')->where(function($query) use ($duration){
+                    $query->orWhere('session_pack_duration_gt', '<', $duration)->orWhere('session_pack_duration_gt', 'exists', false);
+                });
+            
+            }else{
+            
+                $query->where('upgradable_to_membership', '!=', 'false');
+            
+            }
+
+            if($this->checkCouponApplied()){
+                $query->where('for', 'wallet_recharge');
+            }
+    
+            if(isset($request['finder_id']) && $request['finder_id'] != ""){
+                Log::info("request finder_id :::::: ");
+    
+                $finder_id = (int)$request['finder_id'];
+    
+                $finder = \Finder::find($finder_id);
+    
+                $conditionData = [];
+    
+                $conditionData['finder_category_id'] = $finder->category_id;
+    
+                $fitcashCoupons = \Fitcashcoupon::select('_id','code','condition')->where('condition','exists',true)->get();
+    
+                if(count($fitcashCoupons) > 0){
+    
+                    $fitcashCoupons = $fitcashCoupons->toArray();
+    
+                    foreach ($fitcashCoupons as $coupon) {
+    
+                        $code = $coupon['code'];
+    
+                        $condition_array = [];
+    
+                        foreach ($coupon['condition'] as $condition) {
+    
+                            $operator = $condition['operator'];
+                            $field = $condition['field'];
+                            $value = $condition['value'];
+    
+                            switch ($operator) {
+                                case 'in':
+    
+                                    if(isset($conditionData[$field]) && in_array($conditionData[$field],$value)){
+                                        $condition_array[] = 'true';
+                                    }else{
+                                        $condition_array[] = 'false';
+                                    }
+    
+                                    break;
+    
+                                case 'not_in':
+    
+                                    if(isset($conditionData[$field]) && !in_array($conditionData[$field],$value)){
+                                        $condition_array[] = 'true';
+                                    }else{
+                                        $condition_array[] = 'false';
+                                    }
+    
+                                    break;
+                            }
+    
+                        }
+    
+                        if(in_array('false', $condition_array)){
+                            $query->where('coupon','!=',$code);
+                        }
+    
+                    }
+                }
+
+                
+                if(!empty($request['order_type']) && ($request['order_type'] != "workout-session" || $request['order_type'] != "workout session") && !empty($request['city_id']) && $request['city_id'] != '3'){
+                    $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id)->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
+                }else if(!empty($request['order_type']) && ($request['order_type'] == "workout-session" || $request['order_type'] == "workout session") && !empty($request['city_id']) && $request['city_id'] == '3'){
+                    
+                }else{
+                    $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
+                }
+    
+            }else{
+                
+                $query->where('valid_finder_id','exists',false);
+            }
+    
+            if(!empty($request['service_id'])){
+                $query->where(function($query) use($request) {$query->orWhere('service_id','exists',false)->orWhere('service_id', $request['service_id']);});
+            }
+            
+            if(!empty($request['duration_day'])){
+                $query->where(function($query) use($request) {$query->orWhere('duration_day','exists',false)->orWhere('duration_day', $request['duration_day']);});
+            }
+            
+            if(!empty($GLOBALS['ratecard_id_for_wallet'])){
+                $query->where(function($query){$query->orwhere('ratecard_id', 'exists', false)->orWhere('ratecard_id', $GLOBALS['ratecard_id_for_wallet']);});
+            }
+
+            if(isset($request['buy_for_other']) && $request['buy_for_other'] == true ){
+                Log::info("wallet query buy for other true");
+                $query->where(function($query){$query->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
+            }
+    
+            Log::info("wallet debit query");
+            Log::info($request);
+    
+            if(!empty($request['order_type'])){
+                $query->where(function($query) use ($request){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $request['order_type']);});
+            }
         }
 
-        if(!empty($request['service_id'])){
-            $query->where(function($query) use($request) {$query->orWhere('service_id','exists',false)->orWhere('service_id', $request['service_id']);});
-        }
-        
-        if(!empty($request['duration_day'])){
-            $query->where(function($query) use($request) {$query->orWhere('duration_day','exists',false)->orWhere('duration_day', $request['duration_day']);});
-        }
-
-        Log::info("wallet debit query");
-        Log::info($request);
-
-        if(!empty($request['order_type'])){
-            $query->where(function($query) use ($request){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $request['order_type']);});
-        }
 
         return $query;
 
@@ -3011,6 +3076,11 @@ Class Utilities {
             }
             $flags = $data['flags'];
         }
+        
+        if(!empty($data["finder_id"]) && in_array($data['finder_id'], Config::get('app.no_convinience_finder_ids', []))){
+            return false;
+        }
+        
         $finder = Finder::find((int) $data["finder_id"]);
         
         if((isset($data['session_payment']) && $data['session_payment'])||
@@ -3039,13 +3109,17 @@ Class Utilities {
     }
 
     public function trialBookedLocateScreen($data = false){
-
+        $finder_id = "";
         if(isset($data['finder_id'])){
 
             Finder::$withoutAppends=true;
 
             $finder = Finder::find((int)$data['finder_id']);
+
+            $finder_id = intval($data['finder_id']);
         }
+
+        $multifitFinder = $this->multifitFinder();
 
         $fitcash_amount = 150;
 
@@ -3095,17 +3169,25 @@ Class Utilities {
             $response['message'] = "";
         }
 
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && in_array($finder_id, $multifitFinder)){
+            $response['title'] = "";
+        }
+
         return $response;
     }
 
     public function membershipBookedLocateScreen($data){
-
+        $finder_id = "";
         if(isset($data['finder_id'])){
 
             Finder::$withoutAppends=true;
 
             $finder = Finder::find((int)$data['finder_id']);
+
+            $finder_id = intval($data['finder_id']);
         }
+
+        $multifitFinder = $this->multifitFinder();
 
         $response['message_title'] = "DONE!";
 
@@ -3147,6 +3229,10 @@ Class Utilities {
 
             $response['features'] = [];
             $response['message'] = "";
+        }
+
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && in_array($finder_id, $multifitFinder)){
+            $response['features'] = [];
         }
 
         return $response;
@@ -3294,7 +3380,7 @@ Class Utilities {
             $customer_email                     =       $decoded->customer->email;
             $customer_id                        =       $decoded->customer->_id;
             // $customer_phone                     =       isset($decoded->customer->contact_no) ? $decoded->customer->contact_no : "";
-            $pending_payment = \Booktrial::where('type', 'workout-session')->where('post_trial_verified_status', '!=', 'no')->where(function ($query) use($customer_email, $customer_id) { $query->orWhere('customer_email', $customer_email)->orWhere("logged_in_customer_id", $customer_id);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->where(function($query){return $query->orWhere('post_trial_status', '!=', 'no show')->orWhere('post_trial_verified_status','!=', 'yes');})->first(['_id', 'amount', 'order_id', 'finder_name']);
+            $pending_payment = \Booktrial::where('type', 'workout-session')->where('post_trial_verified_status', '!=', 'no')->where(function ($query) use($customer_email, $customer_id) { $query->orWhere('customer_email', $customer_email)->orWhere("logged_in_customer_id", $customer_id);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->first(['_id', 'amount', 'order_id', 'finder_name']);
 
 			if(count($pending_payment) > 0){
                 $order = \Order::find($pending_payment['order_id'], ['txnid']);
@@ -3529,7 +3615,7 @@ Class Utilities {
         
         $beforeTime 	=	date('d-m-Y H:i:s', strtotime(Carbon::now()->addHours(-4)));
         
-        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->first();
+        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', substr($customer_phone, -10))->orWhere('customer_email', $customer_email);})->first();
 
         if($transaction){
             
@@ -3551,7 +3637,7 @@ Class Utilities {
 
         Log::info($beforeTime);
         
-        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->first();
+        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', substr($customer_phone, -10))->orWhere('customer_email', $customer_email);})->first();
 
         if($transaction){
             
@@ -3580,6 +3666,10 @@ Class Utilities {
             }
 
             if(!empty($data['post_trial_status_updated_by_qrcode'])){
+                $fit_code = false;
+            }
+            
+            if(!empty($data['going_status']) && $data['going_status']==2){
                 $fit_code = false;
             }
 
@@ -3958,11 +4048,11 @@ Class Utilities {
             return $fitcash;
         }
 
-        if(!empty($data['amount_finder']) && !empty($data['type']) && in_array($data['type'],['workout-session'])){
+        if(!empty($data['amount_customer']) && !empty($data['type']) && in_array($data['type'],['workout-session'])){
 
             $getWorkoutSessionFitcash = $this->getWorkoutSessionFitcash($data);
 
-            $fitcash = round($getWorkoutSessionFitcash * $data['amount_finder'] / 100);
+            $fitcash = round($getWorkoutSessionFitcash * $data['amount_customer'] / 100);
         }
         return $fitcash;
 
@@ -4060,7 +4150,7 @@ Class Utilities {
 
         Log::info('commision : '.$commision);
         return $commision;
-
+        
     }
 
     public function financeUpdate($order){
@@ -4079,7 +4169,17 @@ Class Utilities {
         
         }
 
+        if(!empty($order['spin_coupon']) && !empty($order['coupon_discount_percentage'])){
+
+            $order->cos_percentage_spin_discount = ($order->cos_percentage > $order['coupon_discount_percentage'] / 2) ? $order['coupon_discount_percentage'] / 2 : $order->cos_percentage;
+            $order->cos_percentage_orig = $order->cos_percentage;
+            $order->cos_percentage = $order->cos_percentage - $order->cos_percentage_spin_discount;
+
+        }
+
         $amount_used = (!empty($order->vendor_price)) ? $order->vendor_price : $order->amount_finder;
+
+        $amount_used = (!empty($order->customer_quantity)) ? $amount_used * intval($order->customer_quantity) :  $amount_used;
 
         $order->cos_finder_amount = ceil(($amount_used * $order->cos_percentage) / 100);
 
@@ -4096,6 +4196,17 @@ Class Utilities {
         $order->gst_finder_amount =  floor(($order->gst_percentage * $order->cos_finder_amount) / 100);
 
         $order->amount_transferred_to_vendor -= $order->gst_finder_amount;
+
+        if($order->amount_transferred_to_vendor > 0){
+            $base_amount = ($order->amount_transferred_to_vendor * 100) / 118;
+            $gst_amount = $base_amount * 0.18;
+            
+            $arr = array();
+			$arr['base_amount'] = intval(round($base_amount));
+            $arr['gst_amount'] = intval(round($gst_amount));
+            
+            $order->amount_transferred_to_vendor_breakup = $arr;
+        }
 
         $order->update();
     }
@@ -4294,8 +4405,110 @@ Class Utilities {
     public function checkPPSReferral($code, $customer_id){
 
         $customer = Customer::active()->where('pps_referral_code', strtoupper($code))->first();
-
+        
         if($customer){
+
+            if(!empty($customer['pps_referral_credits']) && $customer['pps_referral_credits'] >= 5){
+                return ['status'=>400, 'message'=>'The referral limit has been exceeded', 'customer'=>$customer];
+            }
+            
+           
+
+
+            Order::$withoutAppends = true;
+            
+            $orders_count = Order::active()->where("coupon_code", 'like', $code)->count();
+
+            if($orders_count >= 10){
+                return ['status'=>400, 'message'=>'The referral limit has been exceeded', 'customer'=>$customer];
+            }
+        
+            
+            if($customer['_id'] != $customer_id){
+            
+                
+                $customer_email = Input::json()->get('customer_email');
+                
+                if(!empty($customer_email)){
+                    
+                    Customer::$withoutAppends = true;
+                    $current_customer = Customer::where('email', strtolower($customer_email))->first();
+                    $customer_id = $current_customer['_id'];
+                    $customer_phone = $current_customer['customer_phone'];
+
+                }else{
+
+                    $order_id = \Input::get('order_id');        
+                    
+                    if(!empty($order_id)){
+                    
+                        \Order::$withoutAppends = true;
+                    
+                        $order = \Order::find(intval($order_id), ['customer_id']);
+                    
+                        if(!empty($order['customer_id'])){
+                            $customer_id = $order['customer_id'];
+                            $customer_phone = $order['customer_phone'];
+                        }
+                    
+                    }   
+                }
+                
+            }
+
+            if(!empty($customer_phone)){
+                
+                Customer::$withoutAppends = true;
+                $self_coupons = Customer::where('contact_no', $customer_phone)->lists('referral_code');
+
+                $orders_phone_number = Order::raw(function($query) use ($self_coupons, $customer_phone){
+
+                    $aggregate = [
+                        [
+                            '$match'=>[
+                                'status'=>'1',
+                                'customer_phone'=>$customer_phone,
+                                'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{8}[rR]$"]
+                            ],
+                        ],
+                        [
+                            '$project'=>[
+                                'coupon_uppercase'=>['$toUpper'=>'$coupon_code']
+                            ]
+                        ],
+                        [
+                            '$addFields'=>[
+                                'referral_type'=>[
+                                    '$cond'=>[
+                                        ['$in'=>['$coupon_uppercase', $self_coupons]],
+                                        'self',
+                                        'other'
+                                    ]
+                                ]
+                            ]
+                        ],
+                        [
+                            '$group'=>[
+                                '_id'=>['referral_type'=>'$referral_type'],
+                                'count'=>['$sum'=>1]
+                            ]
+                        ]
+                    ];
+        
+                    return $query->aggregate($aggregate);
+        
+                });
+                
+                $orders_phone_number = $orders_phone_number['result'];
+                
+                foreach($orders_phone_number as $x){
+                    
+                    if(($x['_id']['referral_type'] == 'other' && $x['count'] >= 1) || ($x['_id']['referral_type'] == 'self' && $x['count'] >= 5)){
+                        return ['status'=>400, 'message'=>'You have exhausted the limit of this coupon'];
+                    }
+                
+                }
+            }
 
             if($customer['_id'] == $customer_id){
 
@@ -4352,7 +4565,7 @@ Class Utilities {
 
     public function isPPSReferralCode($code){
         $code = strtoupper($code);
-		$assholeCodes = ["NIRA7325R","GAUR7726R","GAUR2025R","GAUR8976R","GAUR7374R","GAUR1952R","GAUR4066R","GAUR8183R","GAUR9928R","GAUR8907R","GAUR7850R","GAUR3786R","GAUR8213R","GAUR2389R","GAUR2098R","GAUR3549R","GAUR1798R","GAUR3347R","GAUR4958R","GAUR6830R","GAUR7014R","GAUR7675R","GAUR9502R","GAUR3739R","RAJ5078R","RAHU2157R","RAJ1993R","GAUR2466R","GAUR8731R","RAHU4004R","RAJU6022R","GAUR3393R","GORU5013R","RAJ2108R","GAUR3839R","GAUR8786R","RAJ7506R","GAUR1239R","GORU8493R","RAJA9388R","RAHU2224R","RAM8335R","RAGH2992R","RAJ2752R","RAMA9818R","GAUR7926R","GAUR4087R","GANE6913R","GAUR1360R","RAVI1022R","RAIN7225R","RAJE4631R","RAVI7890R","RAGI5524R","DIVY4144R","RAVI7741R","RAVI5252R","RAMA3692R","PRIY2800R","RAM3154R","POOJ5073R","KRIS4965R","SHIV1177R","GAUT9460R","ROHI5588R","RAJE4868R","SNEH7426R","DHAR8793R","ANUJ5700R","AJAY8632R","KANH9604R","PURO8073R","HITE8333R","RAJR7176R","GAUR2482R","RAJE3868R","RAKE5575R","GAUR1404R","RAMG3131R","NIRA8347R","ROBI6419R","GAUT6627R","AMAN9183R","GANP9123R","RAMK8355R","RAJE2832R","RAMR6998R","HEMA1578R","KAMA7471R","GANP4203R","RAVI7593R","JAYA5318R","AMIT6423R","RAJU9276R","NAKU7625R","HARM5287R","NIKI1409R","RAJM9073R","YOGE5696R","BHAV2629R","SHRU6579R","RAJA1533R","SUDH2075R"];
+		$assholeCodes = ["NIRA7325R","GAUR7726R","GAUR2025R","GAUR8976R","GAUR7374R","GAUR1952R","GAUR4066R","GAUR8183R","GAUR9928R","GAUR8907R","GAUR7850R","GAUR3786R","GAUR8213R","GAUR2389R","GAUR2098R","GAUR3549R","GAUR1798R","GAUR3347R","GAUR4958R","GAUR6830R","GAUR7014R","GAUR7675R","GAUR9502R","GAUR3739R","RAJ5078R","RAHU2157R","RAJ1993R","GAUR2466R","GAUR8731R","RAHU4004R","RAJU6022R","GAUR3393R","GORU5013R","RAJ2108R","GAUR3839R","GAUR8786R","RAJ7506R","GAUR1239R","GORU8493R","RAJA9388R","RAHU2224R","RAM8335R","RAGH2992R","RAJ2752R","RAMA9818R","GAUR7926R","GAUR4087R","GANE6913R","GAUR1360R","RAVI1022R","RAIN7225R","RAJE4631R","RAVI7890R","RAGI5524R","DIVY4144R","RAVI7741R","RAVI5252R","RAMA3692R","PRIY2800R","RAM3154R","POOJ5073R","KRIS4965R","SHIV1177R","GAUT9460R","ROHI5588R","RAJE4868R","SNEH7426R","DHAR8793R","ANUJ5700R","AJAY8632R","KANH9604R","PURO8073R","HITE8333R","RAJR7176R","GAUR2482R","RAJE3868R","RAKE5575R","GAUR1404R","RAMG3131R","NIRA8347R","ROBI6419R","GAUT6627R","AMAN9183R","GANP9123R","RAMK8355R","RAJE2832R","RAMR6998R","HEMA1578R","KAMA7471R","GANP4203R","RAVI7593R","JAYA5318R","AMIT6423R","RAJU9276R","NAKU7625R","HARM5287R","NIKI1409R","RAJM9073R","YOGE5696R","BHAV2629R","SHRU6579R","RAJA1533R","SUDH2075R","DIVY3193R","GAUR3666R"];
 		if(in_array($code, $assholeCodes)){
 			return false;
 		}
@@ -4374,14 +4587,18 @@ Class Utilities {
             $customer = $referral_resp['customer'];
             
             if($referral_resp['type'] == 'self'){
-            
+                if(empty($customer->pps_referral_credits_used)) {
+                    $customer->pps_referral_credits_used = 0;
+                }
                 $customer->pps_referral_credits_used = $customer->pps_referral_credits_used + 1;
                 $customer->update();
 
                 $update_order = \Order::where('_id', $order['_id'])->update(['pps_referral'=> 'self']);
             
             }else{
-            
+                if(empty($customer->pps_referral_credits)) {
+                    $customer->pps_referral_credits = 0;
+                }
                 $customer->pps_referral_credits = $customer->pps_referral_credits + 1;
                 $pps_referral_customer_ids = isset($customer->pps_referral_customer_ids) ? $customer->pps_referral_customer_ids : [];
                 array_push($pps_referral_customer_ids, $customer_id);
@@ -5447,7 +5664,11 @@ Class Utilities {
         \Cache::tags('finder_detail_android')->forget($slug);
         \Cache::tags('finder_detail_ios')->forget($slug);
         \Cache::tags('finder_detail_ios_4_4_3')->forget($slug);
+        \Cache::tags('finder_detail_ios_5_1_5')->forget($slug);
+        \Cache::tags('finder_detail_ios_5_1_6')->forget($slug);
         \Cache::tags('finder_detail_android_4_4_3')->forget($slug);
+        \Cache::tags('finder_detail_android_5_1_8')->forget($slug);
+        \Cache::tags('finder_detail_android_5_1_9')->forget($slug);
         
     }
 
@@ -5646,23 +5867,23 @@ Class Utilities {
 		return null;
 	}
 	public function getWSNonPeakPrice($start=null,$end=null,$workoutSessionPrice=null,$service_cat=null,$just_tag=false) {
-		Log::info(func_get_args());
+        
 		try {
 			$peak=true;
 			if(!empty($start)&&!empty($end)&&!empty($service_cat))
 			{   
 				if($service_cat=='gym')
-				{
+				{   
 					if(intval($start)>=Config::get('app.non_peak_hours.gym.start')&&intval($end)<=Config::get('app.non_peak_hours.gym.end'))
 					{
 						(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.gym.off')*intval($workoutSessionPrice):"";$peak=false;
 					}
 				}
 				else if(intval($start)>=Config::get('app.non_peak_hours.studios.start')&&intval($end)<=Config::get('app.non_peak_hours.studios.end'))
-				{
+				{   
 					(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.studios.off')*intval($workoutSessionPrice):"";$peak=false;
 				}			
-			}
+            }
 			return ['wsprice'=>$workoutSessionPrice,'peak'=>$peak];
 		} catch (Exception $e) {
 			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
@@ -6155,7 +6376,7 @@ Class Utilities {
     } 
     
     public function assignVoucher($customer, $voucher_category){
-
+        
         $already_assigned_voucher = \LoyaltyVoucher::
                 where('milestone', $voucher_category->milestone)
                 ->where('voucher_category', $voucher_category->_id)
@@ -6164,15 +6385,16 @@ Class Utilities {
                 ->first();
 
         if($already_assigned_voucher){
+            // Log::info("already_assigned_voucher");
             return $already_assigned_voucher;
         }
 
         if(!empty($voucher_category['flags']['manual_redemption'])){
-
+            
             $new_voucher =  $this->assignManualVoucher($customer, $voucher_category);
         
         }else{
-
+            // Log::info("new".$voucher_category->_id);
             $new_voucher = \LoyaltyVoucher::active()
                 ->where('voucher_category', $voucher_category->_id)
                 ->where('customer_id', null)
@@ -6181,8 +6403,11 @@ Class Utilities {
                 ->first();
             
             if(!$new_voucher){
+                // Log::info("empty new_voucher");
                 return;
             }
+
+            // Log::info("new_voucher :: ", [$new_voucher]);
         
         }
 
@@ -6192,6 +6417,11 @@ Class Utilities {
         $new_voucher->terms = $voucher_category['terms'];
         $new_voucher->amount = $voucher_category['amount'];
         $new_voucher->claim_date = new \MongoDate();
+        $new_voucher->selected_voucher = $voucher_category['_id'];
+        $new_voucher->milestone = !empty($voucher_category['milestone']) ? $voucher_category['milestone'] : null;
+        if(!empty($voucher_category->fitcash)){
+            $new_voucher->code = $new_voucher->code.". Fitcash ".$voucher_category->fitcash." Added.";
+        }
 
         if(isset($voucher_category['flags'])){
             $new_voucher->flags = $voucher_category['flags'];
@@ -6247,7 +6477,7 @@ Class Utilities {
                 }else{
                     $milestone['enabled'] = true;
                     $milestone_next_count = $milestone['next_count'];
-                    $milestone['progress'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
+                        $milestone['progress'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
                     break;
                 }
             }
@@ -6295,6 +6525,11 @@ Class Utilities {
 				return ['status'=>400, 'message'=>'Customer not registered'];
             }
             
+            // if(!empty($customer->loyalty['brand_loyalty']) || (!empty($customer->loyalty['reward_type']) && $customer->loyalty['reward_type'] > 2 )){
+            //     if(!empty($data['finder_id']) && !empty($customer->loyalty['finder_id']) && $customer->loyalty['finder_id'] != $data['finder_id'] ){
+            //         return ['status'=>400, 'message'=>'Since you are registered with Fitsquad program of another Gym / Studio, this check-in is not valid'];
+            //     }
+            // }
             
 			$checkin = new \Checkin();
 			$checkin->finder_id = $data['finder_id'];
@@ -6364,8 +6599,8 @@ Class Utilities {
 
             $all_checkins = \Checkin::where('customer_id', $customer_id)->get();
 
-            Log::info('$all_checkins');
-            Log::info("$all_checkins");
+            // Log::info('$all_checkins');
+            // Log::info("$all_checkins");
 
             $checkin_count = count($all_checkins);
 
@@ -6449,11 +6684,13 @@ Class Utilities {
         }else if($type == 'booktrial' && !isset($data['third_party_details'])){
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
-            if(!empty($data['qrcodepayment']) && empty($data['checkin'])){
+            if((!empty($data['qrcodepayment']) || !empty($data['checkin_booking'])) && empty($data['checkin'])){
                 $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null ]);
             }
         }
 
+        \Queue::connection('redis')->push('TransactionController@afterTransQueued', array('data'=>$data, 'type'=> $type),Config::get('app.queue'));
+        
         return ['loyalty_registration'=>$loyalty_registration, 'checkin'=> $checkin];
     }
 
@@ -6590,7 +6827,7 @@ Class Utilities {
     		$data['success_date'] = date('Y-m-d H:i:s',time());
     		
     		$order = new Order($data); 
-    		$order->_id =Order::max('_id')+1;
+    		$order->_id =Order::maxId()+1;
     		$order->save();
     		Log::info(" free dietplan order ".print_r($order,true));
     		return array('order_id'=>$order->_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
@@ -6673,12 +6910,14 @@ Class Utilities {
 
         $data['offer_id'] = false;
 
-        $offer = Offer::where('ratecard_id',$ratecard['_id'])
-                ->where('hidden', false)
-                ->orderBy('order', 'asc')
-                ->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))
-                ->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))
-                ->first();
+        // $offer = Offer::where('ratecard_id',$ratecard['_id'])
+        //         ->where('hidden', false)
+        //         ->orderBy('order', 'asc')
+        //         ->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))
+        //         ->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))
+        //         ->first();
+        
+        $offer = Offer::getActiveV1('ratecard_id', intval($ratecard['_id']), intval($ratecard['finder_id']))->first();
 
         if($offer){
             if(isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"]){
@@ -6903,86 +7142,171 @@ Class Utilities {
     }
     
     public function autoRegisterCustomerLoyalty($data){
+
+        Log::info("autoRegisterCustomerLoyalty");
         try{
-            $customer = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->first();
-            if(!$customer){
-                return ['status'=>400, 'Customer already registered'];
-            }
+            Log::info("in try");
+            $customer = Customer::where('_id', $data['customer_id'])->first();
+            //->where('loyalty', 'exists', false)
             
-            if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
-                
-                Finder::$withoutAppends = true;
-                $finder = Finder::find($data['finder_id']);
-                $data['finder_flags'] = !empty($finder['flags']) ? $finder['flags'] : [];
-            
-            }
-
-            if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1]))){
-                return ['status'=>400, 'message'=>'No fitsquad for vendor'];
-            }
-            
-            
-            $loyalty = [
-                'start_date'=>new \MongoDate(strtotime('midnight')),
-                'start_date_time'=>new \MongoDate()
-            ];
-
-            if(!empty($data['start_date'])){
-                $loyalty['start_date'] = new \MongoDate(strtotime('midnight', strtotime($data['start_date'])));
-                $loyalty['start_date_time'] = new \MongoDate(strtotime($data['start_date']));
-            }
-            $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name','customer_membership']);
-            $loyalty = array_merge($loyalty, $fields_to_add);
-            $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
-            $duration = $duration > 180 ? 360 : $duration;
-            
-            if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
-                if(empty($finder)){
-                    Finder::$withoutAppends = true;
-                    $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+            // if(empty($customer['loyalty']) || (isset($customer['loyalty']['brand_loyalty'])) || (isset($customer['loyalty']['reward_type']))){
+                Log::info("in if (1)");
+                $existingLoyalty = [];
+                if(isset($customer['loyalty']['brand_loyalty'])) {
+                    $existingLoyalty = $customer['loyalty'];
                 }
-                if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty'))){
-                    $brand_loyalty = true;
-                    $loyalty['brand_loyalty'] = $finder['brand_id'];
-                    $loyalty['brand_loyalty_duration'] = $duration;
-                    $loyalty['brand_loyalty_city'] = $data['city_id'];
 
-                    if($loyalty['brand_loyalty'] == 135){
-                        if($loyalty['brand_loyalty_duration'] == 180){
-                            $loyalty['brand_version'] = 1;
-                        }else{
-                            $loyalty['brand_version'] = 2;
+                // if(!$customer){
+                //     return ['status'=>400, 'Customer already registered'];
+                // }
+                
+                $dontUpdateLoyalty = true;
+                Log::info("dontUpdateLoyalty 1",[$dontUpdateLoyalty]);
+                
+                if(!empty($data['finder_id'])){
+                    Finder::$withoutAppends = true;
+                    $finder = Finder::find($data['finder_id']);
+                }
+
+                if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
+                    
+                    // Finder::$withoutAppends = true;
+                    // $finder = Finder::find($data['finder_id']);
+                    $data['finder_flags'] = !empty($finder['flags']) ? $finder['flags'] : [];
+                
+                }
+                
+                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1])) && (empty($finder['brand_id']) || !in_array($finder['brand_id'], Config::get('app.brand_loyalty')) || in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))) ){
+                    Log::info("yolo");
+                    // $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
+
+                    // $update_data = [
+                    //     'loyalty'=>new \StdClass()
+                    // ];
+                    
+                    // $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
+                    // $this->deactivateCheckins($customer['_id'], 'loyalty_appropriation_autoupgrade_no_fitsquad_for_vendor'); 
+
+                    return ['status'=>400, 'message'=>'No fitsquad for vendor'];
+                }
+                
+                
+                $loyalty = [
+                    'start_date'=>new \MongoDate(strtotime('midnight')),
+                    'start_date_time'=>new \MongoDate()
+                ];
+
+                if(!empty($data['start_date'])){
+                    $loyalty['start_date'] = new \MongoDate(strtotime('midnight', strtotime($data['start_date'])));
+                    $loyalty['start_date_time'] = new \MongoDate(strtotime($data['start_date']));
+                }
+                $fields_to_add = array_only($data, ['order_id', 'booktrial_id', 'end_date', 'finder_id', 'type','custom_finder_name','customer_membership']);
+                $loyalty = array_merge($loyalty, $fields_to_add);
+                $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
+                $duration = $duration > 180 ? 360 : $duration;
+                
+                if(!empty($data['type']) && $data['type'] == 'workout-session' && ( empty($data['finder_flags']['reward_type']) || (!empty($data['finder_flags']['reward_type']) && $data['finder_flags']['reward_type'] != 1)) ){
+                    if(empty($customer['loyalty'])){
+                        $loyalty['reward_type'] = 2;
+                        $dontUpdateLoyalty = false;
+                        Log::info("dontUpdateLoyalty 2",[$dontUpdateLoyalty]);
+                    }
+                }else{
+
+                    if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
+                        if(empty($finder)){
+                            Finder::$withoutAppends = true;
+                            $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
                         }
-                    }else{
-                        $loyalty['brand_version'] = 1;
+                        
+                        if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
+                            $duration = 0;
+                        }
+    
+                        Log::info("brand_id",[$finder['brand_id']]);
+                        Log::info("loyalty brand_id",[Config::get('app.brand_loyalty')]);
+    
+                        if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
+                            Log::info("if brand");
+                            
+                            $brand_loyalty = true;
+                            $loyalty['brand_loyalty'] = $finder['brand_id'];
+                            $loyalty['brand_loyalty_duration'] = $duration;
+                            $loyalty['brand_loyalty_city'] = $data['city_id'];
+    
+                            if($loyalty['brand_loyalty'] == 135){
+                                if($loyalty['brand_loyalty_duration'] == 180){
+                                    $loyalty['brand_version'] = 1;
+                                }else{
+                                    $loyalty['brand_version'] = 2;
+                                }
+                            }else{
+                                $loyalty['brand_version'] = 1;
+                            }
+
+                            $dontUpdateLoyalty = false;
+                            Log::info("dontUpdateLoyalty 3",[$dontUpdateLoyalty]);
+                        }
+                    }
+                    
+                    // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
+                    // Log::info("type",[$data['type']]);
+                    // $dontUpdateLoyalty = true;
+                    if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
+                        $dontUpdateLoyalty = false;
+                        Log::info("dontUpdateLoyalty 4",[$dontUpdateLoyalty]);
+                        Log::info("if finder_flags reward_type");
+                        if((!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type']!=2 && empty($customer['loyalty']['brand_loyalty'])) || (!empty($customer['loyalty']['brand_loyalty'])) || empty($customer['loyalty'])){
+                            Log::info("if empty loyalty or brand");
+                            $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
+                            if(!empty($data['finder_flags']['cashback_type'])){
+                                $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
+                            }
+                        }
+                    } 
+                }
+
+                if(!empty($loyalty) && !empty($loyalty['brand_loyalty'])){
+                    if(!empty($loyalty['reward_type'])){
+                        unset($loyalty['reward_type']);
+                    }
+
+                    if(!empty($loyalty['cashback_type'])){
+                        unset($loyalty['cashback_type']);
                     }
                 }
-            }
-            
-            
-            if(empty($brand_loyalty) && !empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
-                
-                $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
-                if(!empty($data['finder_flags']['cashback_type'])){
-                    $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
+
+                $update_data = [
+                    'loyalty'=>$loyalty 
+                ];
+
+                $customer_update = false;
+
+                Log::info("dontUpdateLoyalty 7",[$dontUpdateLoyalty]);
+
+                if(!$dontUpdateLoyalty){
+                    $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
+                    $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
+                    $this->deactivateCheckins($customer['_id'], 'loyalty_appropriation_autoupgrade');                    
                 }
-            }
+                // ->where('loyalty', 'exists', false)
 
-            $update_data = [
-                'loyalty'=>$loyalty 
-            ];
-            $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update($update_data);
+                if($customer_update){
+                    return ['status'=>200];
+                }else{
+                    return ['status'=>400, 'message'=>'Customer already registered'];
+                }
+                // if($customer_update && $this->sendLoyaltyCommunication($data)){
 
-            if($customer_update && $this->sendLoyaltyCommunication($data)){
+                //     $customermailer = new CustomerMailer();
 
-                $customermailer = new CustomerMailer();
+                //     $customermailer->loyaltyRegister($customer->toArray());
 
-                $customermailer->loyaltyRegister($customer->toArray());
-
-                return ['status'=>200];
-            }else{
-                return ['status'=>400, 'message'=>'Customer already registered'];
-            }
+                //     return ['status'=>200];
+                // }else{
+                //     return ['status'=>400, 'message'=>'Customer already registered'];
+                // }
+            // }
         
         }catch(Exception $e){
         
@@ -7245,7 +7569,7 @@ Class Utilities {
     }
 
     public function assignManualVoucher($customer, $voucher_category){
-
+        
         $voucher_data = [
             'voucher_category'=>$voucher_category['_id'],
             'status'=>"1",
@@ -7254,6 +7578,10 @@ Class Utilities {
             'expiry_date'=>date('Y-m-d H:i:s',strtotime('+1 month')),
             'code'=>$voucher_category['name'],
         ];
+
+        if(isset($voucher_category['link'])){
+            $voucher_data['link'] = $voucher_category['link'];
+        }
 
         if(!empty($voucher_category['flags']['diet_plan'])){
         
@@ -7376,7 +7704,7 @@ Class Utilities {
 
         		$query = \Booktrial::where(function ($query) use($customer_email, $customer_phone) {
 								$query->orWhere('customer_email', $customer_email)
-									->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -10).'%');
+									->orWhere('customer_phone',substr($customer_phone, -10));
 							})
                         ->where('finder_id',(int)$finder_id)
                         ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
@@ -7396,7 +7724,7 @@ Class Utilities {
             // if($service_id){
             // 	$query->where('service_id',(int)$service_id);
             // }
-
+       
             $booktrial_count = $query->orderBy('created_at', 'desc')->get(['created_at'])->toArray();
         }
 
@@ -7466,8 +7794,10 @@ Class Utilities {
 
         if(!empty($data['schedule_date'])){
             $query
-                ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
-                ->where('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])));
+                // ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
+                ->where(function($query) use ($data){
+                    $query->where('ratecard_flags.unlimited_validity', true)->orWhere('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])));
+                });
         }
 
         return $query
@@ -7475,34 +7805,79 @@ Class Utilities {
             ->where('sessions_left', '>', 0)
             ->first();;
     }
-
-
-    public function getAllExtendedValidityOrders($data){
-
-
+    
+    public function getStudioExtendedValidityOrder($data){
+        
         if(!empty($data['order_customer_email'])){
             $data['customer_email'] = $data['order_customer_email'];
         }
 
+        if(empty($data['customer_id']) && empty($data['customer_email'])){
+            return;
+        }
+        Order::$withoutAppends = true;
+        $query = Order::active()->where('studio_extended_validity', true);
+        
         if(!empty($data['customer_email'])){
-            return Order::active()
-                ->where('customer_email', $data['customer_email'])
-                ->where('start_date', '<=', new DateTime())
-                ->where('end_date', '>=', new DateTime())
-                ->where('sessions_left', '>', 0)
-                ->first();
+            $query->where('customer_email', $data['customer_email']);
         }
 
         if(!empty($data['customer_id'])){
-            return Order::active()
-                ->where('customer_id', $data['customer_id'])
-                ->where('start_date', '<=', new DateTime())
-                ->where('end_date', '>=', new DateTime())
-                ->where('sessions_left', '>', 0)
-                ->first();
+            $query->where('customer_id', $data['customer_id']);
         }
 
-        return null;
+
+        $query
+            // ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
+            ->where(function($query) use ($data){
+                $query->where('studio_membership_duration.end_date', '<', new MongoDate(strtotime($data['schedule_date'])));
+                $query->where('studio_membership_duration.end_date_extended', '>', new MongoDate(strtotime($data['schedule_date'])));
+            });
+
+
+        $order =  $query
+            ->where(function($query) use ($data){ $query->orWhere('service_id', $data['service_id'])->orWhere('all_service_id', $data['service_id']);})
+            ->first();;
+        
+        $extended_count = 0;
+        if(!empty($order)){
+            $extended_count = Order::active()->where('studio_extended_validity_order_id', $order['_id'])->where('studio_extended_session', true)->count();
+        }
+
+        if(isset($order['studio_sessions']['cancelled']) && !empty($order['studio_sessions']['total_cancel_allowed']) && $extended_count < $order['studio_sessions']['cancelled']){
+            return $order;
+        }
+    }
+
+
+    public function getAllExtendedValidityOrders($data){
+
+        
+        if(!empty($data['order_customer_email'])){
+            $data['customer_email'] = $data['order_customer_email'];
+        }
+        
+        if(empty($data['customer_email']) && empty($data['customer_id'])){
+            return null;
+        }
+        
+        $order =  Order::active() 
+                    // ->where('start_date', '<=', new DateTime())
+                    ->where(function($query){
+                        $query->where('ratecard_flags.unlimited_validity', true)->orWhere('end_date', '>=', new DateTime());
+                    })
+                    ->where('sessions_left', '>', 0);
+
+        if(!empty($data['customer_email'])){
+             $order->where('customer_email', $data['customer_email']);
+        }
+
+        if(!empty($data['customer_id'])){
+            $order->where('customer_id', $data['customer_id']);
+        }
+
+        return  $order->first();
+
     }
 
     public function getExtendedValidityOrderFinder($data){
@@ -7512,7 +7887,12 @@ Class Utilities {
             $data['customer_email'] = $data['order_customer_email'];
         }
 
-        $orders = Order::active()->where('finder_id', $data['finder_id'])->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))->where('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])))->where('sessions_left', '>', 0);
+        $orders = Order::active()->where('finder_id', $data['finder_id'])
+            // ->where('start_date', '<=', new MongoDate(strtotime($data['schedule_date'])))
+            ->where(function($query) use ($data){
+                $query->where('ratecard_flags.unlimited_validity', true)->orWhere('end_date', '>=', new MongoDate(strtotime($data['schedule_date'])));
+            })
+            ->where('sessions_left', '>', 0);
 
         if(!empty($data['customer_email'])){
             return $orders->where('customer_email', $data['customer_email'])->get(['service_id','all_service_id']);
@@ -7527,11 +7907,31 @@ Class Utilities {
 
     public function giveFitcashforUpgrade($order){
 
-        if(!empty($order['upgrade_fitcash'])){
+        if(!empty($order['upgrade_fitcash']) || !empty($order['multifit'])){
+            return;
+        }
+        
+        $finder_detail = json_decode(json_encode(app(\FindersController::class)->finderdetail($order['finder_slug'])->getData()), true);
+        // return $finder_detail['finder']; 
+        $ratecards_array = array_column($finder_detail['finder']['services'], 'serviceratecard');
+        
+        $all_ratecards = [];
+        
+        foreach($ratecards_array as $v){
+            $all_ratecards = array_merge($all_ratecards, $v);
+        }
+
+        $all_upgradable_ratecards = array_filter($all_ratecards, function($rc){
+            return !empty($rc['upgrade_popup']);
+        });
+
+        $upgradable_ratecard_ids = array_column($all_upgradable_ratecards, '_id');
+
+        if(!in_array($order['ratecard_id'], $upgradable_ratecard_ids)){
             return;
         }
 
-        if(!empty($order['duration_day']) && !empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], Config::get('upgrade_membership.service_cat', [65, 111])) && in_array($order['duration_day'], Config::get('upgrade_membership.duration', [30])) && empty($order['extended_validity'])){
+        if(empty($order['extended_validity'])){
 
             $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
 
@@ -7543,23 +7943,28 @@ Class Utilities {
                 "amount_fitcash" => 0,
                 "amount_fitcash_plus" => $fitcash_amount,
                 "type"=>'FITCASHPLUS',
-                'description'=>"Added FitCash+ for upgrading 1 month ".ucwords($order['service_name'])." to 1 Year only at ".$order['finder_name'].", Expires On : ".date('d-m-Y',time()+(86400*$no_of_days)),
+                'description'=>"Added FitCash+ for upgrading 1 month ".ucwords($order['service_name'])." to 6 months or 1 year membership only at ".$order['finder_name'].", Expires On : ".date('d-m-Y',time()+(86400*$no_of_days)),
                 'entry'=>'credit',
                 'valid_finder_id'=>$order['finder_id'],
                 'service_id'=>$order['service_id'],
                 'remove_wallet_limit'=>true,
                 'validity'=>strtotime($order['start_date'])+(86400*$no_of_days),
-                'duration_day'=>360,
+                'duration_day'=>Config::get('upgrade_membership.upgradabe_to_membership_duration', [180, 360]),
                 'restricted_for'=>'upgrade',
                 'restricted'=>1,
                 'order_id'=>$order['_id'],
+                'upgradable_to_membership'=> $this->checkUpgradeAvailable($order,'membership'),
+                'upgradable_to_session_pack'=> $this->checkUpgradeAvailable($order)
             );
             
             $this->walletTransactionNew($request);
             
             $order->upgrade_fitcash = true;
 
-        }elseif(!empty($order['extended_validity']) && in_array($order['finder_id'], Config::get('app.upgrade_session_finder_id', []))){
+            $order->update();
+
+        }elseif(!empty($order['extended_validity'])){
+            
             $fitcash_amount = $order['amount_customer'] - (!empty($order['convinience_fee']) ? $order['convinience_fee'] : 0);
 
             $no_of_days = Config::get('upgrade_membership.fitcash_days');
@@ -7579,12 +7984,16 @@ Class Utilities {
                 'restricted'=>1,
                 'order_id'=>$order['_id'],
                 'order_type'=>['membership', 'memberships'],
-                'duration_day'=>Config::get('upgrade_membership.upgrade_session_duration', [90, 180, 360]),
+                'duration_day'=>Config::get('upgrade_membership.upgrade_session_duration', [180, 360]),
+                'session_pack_duration_gt'=>$order['duration'],
+                'upgradable_to_membership'=>$this->checkUpgradeAvailable($order,'membership'),
+                'upgradable_to_session_pack'=>$this->checkUpgradeAvailable($order),
             );
             
             $this->walletTransactionNew($request);
             
             $order->upgrade_fitcash = true;
+            $order->update();
         }
     }
 
@@ -7608,7 +8017,7 @@ Class Utilities {
         
         $token = Request::header('Authorization');
         
-        if(empty($token)){
+        if(empty($token) || $token=='undefined'){
             return;
         }
         
@@ -7715,6 +8124,18 @@ Class Utilities {
                 $match['$match']['brand_id'] =['$exists'=>false];
                 $match['$match']['duration'] =['$exists'=>false];
                 $match['$match']['city'] =['$exists'=>false];
+
+                if(!empty($filter['reward_type']) ){
+                    $match['$match']['reward_type'] = $filter['reward_type'];
+                }else{
+                    $match['$match']['reward_type'] = 2;
+                }
+    
+                if(!empty($filter['cashback_type']) ){
+                    $match['$match']['cashback_type'] = $filter['cashback_type'];
+                }else{
+                    $match['$match']['cashback_type'] =['$exists'=>false];
+                }
 			}
 			if(!empty($filter['brand_loyalty'])) {
 				if(!empty($filter['brand_version'])){
@@ -7725,17 +8146,6 @@ Class Utilities {
 				}
 			}
 
-            if(!empty($filter['reward_type']) ){
-                $match['$match']['reward_type'] = $filter['reward_type'];
-            }else{
-                $match['$match']['reward_type'] =['$exists'=>false];
-            }
-
-            if(!empty($filter['cashback_type']) ){
-                $match['$match']['cashback_type'] = $filter['cashback_type'];
-            }else{
-                $match['$match']['cashback_type'] =['$exists'=>false];
-            }
 
             // print_r($match);
             // exit();
@@ -7826,103 +8236,1270 @@ Class Utilities {
     }
 
 
-public function getPPSSearchResult($data){
-    $payload = [
-        'category' =>!empty($data['localName']) && !empty($data['name']) ? 
-            [
+    public function getPPSSearchResult($data){
+        $payload = [
+            'category' =>!empty($data['localName']) && !empty($data['name']) ?
                 [
-                    'localName' => !empty($data['localName']) ? $data['localName'] : '',
-                    'name' => !empty($data['name']) ? $data['name'] : '',
-                    'subcategory' =>
-                        [],
-                ],
-        ] : [],
-        'time_tag' => !empty($data['time_tag']) ? $data['time_tag'] : '',
-        'keys' =>!empty($data['keys']) ? $data['keys'] :
-            [
-            'id',
-            'address',
-            'average_rating',
-            'category',
-            'commercial_type',
-            'geolocation',
-            'location',
-            'name',
-            'slug',
-            'total_rating_count',
-            'slots',
-            'vendor_name',
-            'price',
-            'coverimage',
-            'total_slots',
-            'next_slot',
-            'vendor_slug',
-            'overlayimage',
-            'trial_header',
-            'membership_header',
-        ],
-        'location' =>
-            [
-            'city' => !empty($data['city']) ? $data['city'] : 'mumbai',
-            'geo' =>
+                    [
+                        'localName' => !empty($data['localName']) ? $data['localName'] : '',
+                        'name' => !empty($data['name']) ? $data['name'] : '',
+                        'subcategory' =>
+                            [],
+                    ],
+            ] : [],
+            'time_tag' => !empty($data['time_tag']) ? $data['time_tag'] : '',
+            'keys' =>!empty($data['keys']) ? $data['keys'] :
                 [
-                'lat' => !empty($data['lat']) ? $data['lat'] : null,
-                'lon' => !empty($data['lon']) ? $data['lon'] : null,
-                'radius' => !empty($data['radius']) ? $data['radius'] : null,
+                'id',
+                'address',
+                'average_rating',
+                'category',
+                'commercial_type',
+                'geolocation',
+                'location',
+                'name',
+                'slug',
+                'total_rating_count',
+                'slots',
+                'vendor_name',
+                'price',
+                'coverimage',
+                'total_slots',
+                'next_slot',
+                'vendor_slug',
+                'overlayimage',
+                'trial_header',
+                'membership_header',
             ],
-            'regions'=>!empty($data['regions']) ? $data['regions'] : [],
-        ],
-        'offset' =>
-            [
-            'from' => 0,
-            'number_of_records' => !empty($data['number_of_records']) ? $data['number_of_records'] : "4",
-        ],
-        'price_range' => '',
-        'skipTimings' => false,
-        'sort' =>
-            [
-            'order' => 'desc',
-            'sortField' => 'popularity',
-        ],
-    ];
+            'location' =>
+                [
+                'city' => !empty($data['city']) ? $data['city'] : 'mumbai',
+                'geo' =>
+                    [
+                    'lat' => !empty($data['lat']) ? $data['lat'] : null,
+                    'lon' => !empty($data['lon']) ? $data['lon'] : null,
+                    'radius' => !empty($data['radius']) ? $data['radius'] : null,
+                ],
+                'regions'=>!empty($data['regions']) ? $data['regions'] : [],
+            ],
+            'offset' =>
+                [
+                'from' => 0,
+                'number_of_records' => !empty($data['number_of_records']) ? $data['number_of_records'] : "4",
+            ],
+            'price_range' => '',
+            'skipTimings' => false,
+            'sort' =>
+                [
+                'order' => 'desc',
+                'sortField' => 'popularity',
+            ],
+        ];
 
-    $url = "search/paypersession";
+        $url = "search/paypersession";
 
-    $finder = [];
+        $finder = [];
 
-    try {
-        $client = new Client( ['debug' => false, 'base_uri' =>Config::get('app.new_search_url')."/"] );
-        $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
-        return $response;
-    }catch(Exception $e){
-        Log::info($e);
-        return null;
+        try {
+            $client = new Client( ['debug' => false, 'base_uri' =>Config::get('app.new_search_url')."/"] );
+            $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+            return $response;
+        }catch(Exception $e){
+            Log::info($e);
+            return null;
+        }
     }
-}
 
-public function remaningVoucherNotification($voucher_category){
+    public function remaningVoucherNotification($voucher_category){
   
-    $remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('name', $voucher_category->name)->count();
-    //$remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('name', '1 Month extension')->count();
- 
-    if($remainingVoucherCount < 50){
+        $remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('name', $voucher_category->name)->count();
+        //$remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('name', '1 Month extension')->count();
+    
+        if($remainingVoucherCount < 50){
+            
+            $data = array(
+                'voucherName' => $voucher_category->name,
+                //'voucherName' => '1 Month extension',
+                'remainingCount' => $remainingVoucherCount,
+            );
         
-        $data = array(
-            'voucherName' => $voucher_category->name,
-            //'voucherName' => '1 Month extension',
-            'remainingCount' => $remainingVoucherCount,
-        );
-    
-        $customermailer = new CustomerMailer();
-    
-        $customermailer->remainingVoucher($data);
-    }else{
-        exit;
+            $customermailer = new CustomerMailer();
+        
+            $customermailer->remainingVoucher($data);
+        }else{
+            exit;
+        }
+
+    }
+            
+    public function validateInput($functionName, $data){
+        switch($functionName){
+            case 'generateFreeSP':
+            $rules = [
+                'customer_name'=>'required',
+                'customer_email'=>'required|email',
+                'customer_phone'=>'required',
+                'order_id'=>'required|integer'
+            ];
+        }
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return ['status' => 404,'message' => error_message($validator->errors())];
+        }else{
+            return ['status'=>200];
+        }
+
+    }        
+
+    public function archiveCustomerData($customer_id, $data, $reason) {
+		Log::info('----- Entered archiveCustomerData -----');
+		$custArchive = new \CustomerArchive();
+		$custArchive['customer_id'] = $customer_id;
+		$custArchive['data'] = $data;
+		$custArchive['reason'] = $reason;
+		$custArchive->save();
+		Log::info('----- Completed archiveCustomerData -----');
+	}
+
+    public function deactivateCheckins($customer_id, $reason) {
+		Log::info('----- Entered deactivateCheckins -----');
+		\Checkin::where('customer_id', $customer_id)->update([
+			'status' => '0',
+			'deactivated_on' => new \MongoDate(),
+			'deactivated_for' => $reason
+		]);
+		Log::info('----- Completed deactivateCheckins -----');
+	}
+
+    public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false){
+        Log::info('----- Entered getLoyaltyAppropriationConsentMsg -----');
+        $device_type = Request::header('Device-Type');
+        $cashbackMap = ['A','B','C','D','E','F'];
+        $retObj = null;
+        if(empty($order_id) && empty($customer_id)){
+            return $retObj;
+        }
+        else if(empty($order_id) && isset($customer_id)){
+            Log::info('----- finding order for customer -----');
+            $order = Order::active()->where('customer_id', $customer_id)->where('type', 'memberships')
+            ->where('end_date', '>' ,new MongoDate(time()))->orderBy('_id', 'desc')->first();
+            if(empty($order)){
+                return $retObj;
+            }
+        }
+        else{
+            $order = Order::active()->where('_id', intval($order_id))->first();
+        }
+        $customer = Customer::active()
+                            ->where('_id', $order['customer_id'])
+                            ->first();
+        if(!empty($customer) && (!isset($order['loyalty_registration']) || !$order['loyalty_registration'])){
+            // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
+            $existingLoyalty = null;
+            $message = null;
+            $newMessage = null;
+            if(!empty($customer['loyalty'])){
+                $retObj = [];
+                $retObj['customer_name'] = $customer['name'];
+                if(!empty($customer['loyalty']['brand_loyalty']) && !in_array($order['finder_id'], \Config::get('app.brand_finder_without_loyalty'))){
+                    $finderMilestone = FinderMilestone::where('duration', $customer['loyalty']['brand_loyalty_duration'])
+                                            ->where('brand_id', $customer['loyalty']['brand_loyalty'])
+                                            ->where('brand_version', $customer['loyalty']['brand_version'])
+                                            ->first();
+                }
+                else if (!empty($customer['loyalty']['reward_type'])) {
+                    if($customer['loyalty']['reward_type']==2){
+                        $finderMilestone = Config::get('loyalty_constants');
+                    }
+                    else {
+                        $query = FinderMilestone::where('reward_type', $customer['loyalty']['reward_type']);
+                        if(!empty($customer['loyalty']['cashback_type'])){
+                            $query->where('cashback_type', $customer['loyalty']['cashback_type']);
+                        }
+                        $finderMilestone = $query->first();
+                    }
+                }
+                else {
+                    $finderMilestone = Config::get('loyalty_constants');
+                }
+
+                $existingLoyalty = [
+                    'checkins' => (!empty($customer['loyalty']['checkins']))?$customer['loyalty']['checkins']:0,
+                    'end_date' => null,
+                    'finder_name' => null,
+                    'reward_type' => 2,
+                    'cashback_type' => null,
+                    'cashback_type_num' => null,
+                    'new_end_date' => null
+                ];
+
+                $retObj['next_milestone'] = null;
+                $retObj['checkins_left_next_milestone'] = null;
+
+                if(!empty($finderMilestone['milestones'])){
+                    $finderMilestone = $finderMilestone['milestones'];
+                    $milestone = array_filter($finderMilestone, function($mile) use ($existingLoyalty){
+                        return $existingLoyalty['checkins']>=$mile['count'] && (empty($mile['next_count']) || $existingLoyalty['checkins']<$mile['next_count']);
+                    });
+                    $milestone = (!empty($milestone))?array_values($milestone)[0]:$milestone;
+                    if(!empty($milestone['next_count'])){
+                        $retObj['next_milestone'] = ($milestone['milestone']<5)?($milestone['milestone'] + 1):0;
+                        $retObj['checkins_left_next_milestone'] = $milestone['next_count'] - $existingLoyalty['checkins'];
+                    }
+                    else {
+                        $retObj['next_milestone'] = 0;
+                        $retObj['checkins_left_next_milestone'] = 0;
+                    }
+                }
+
+                if(!empty($customer['loyalty']['end_date'])){
+                    $endDateType = gettype($customer['loyalty']['end_date']);
+                    if($endDateType=='string'){
+                        $existingLoyalty['end_date'] = date('d-m-Y', strtotime(substr($customer['loyalty']['end_date'],0,10)));
+                    }
+                    else {
+                        $existingLoyalty['end_date'] = date('d-m-Y', $customer['loyalty']['end_date']->sec);
+                    }
+                }
+            // }
+            // if(!empty($existingLoyalty)){
+                if(empty($existingLoyalty['end_date'])){
+                    $existingLoyalty['end_date'] = date('d-m-Y', strtotime('midnight', strtotime('+1 year',$customer['loyalty']['start_date']->sec)));
+                }
+                
+                if(!empty($order)){
+                    if(!empty($order['finder_name'])) {
+                        $existingLoyalty['finder_name'] = $order['finder_name'];
+                    }
+                    if(!empty($order['finder_flags']['reward_type'])) {
+                        $existingLoyalty['reward_type'] = $order['finder_flags']['reward_type'];
+                    }
+                    if(!empty($order['finder_flags']['cashback_type']) && $order['finder_flags']['cashback_type']>0) {
+                        $existingLoyalty['cashback_type'] = $cashbackMap[$order['finder_flags']['cashback_type'] - 1];
+                        $existingLoyalty['cashback_type_num'] = $order['finder_flags']['cashback_type'];
+                    }
+                    if(!empty($order['end_date'])) {
+                        $existingLoyalty['new_end_date'] = date('d-m-Y', strtotime('midnight',strtotime('+1 year', strtotime($order['start_date']))));
+                    }
+                }
+                // "Hi, ".$customer_name.",<br>
+                // $message = "<br>Current check-ins: <b>".$existingLoyalty["checkins"]."</b>. <br>Your workout counter will reset on: <b>".$existingLoyalty["end_date"]."</b><br>You are currently on a Fitsquad with <b>".$existingLoyalty["checkins"]."</b> check-ins completed.<br>Do you want to upgrade to <b>".$existingLoyalty["finder_name"]."</b> specific Fitsquad with ";
+                $rewardsExist = false;
+
+                $retObj['checkins'] = $existingLoyalty["checkins"];
+
+                if(!empty($existingLoyalty['end_date'])) {
+                    $retObj['end_date'] = $existingLoyalty["end_date"];
+                }
+                if(!empty($existingLoyalty['finder_name'])) {
+                    $retObj['finder_name'] = $existingLoyalty["finder_name"];
+                }
+                if(!empty($existingLoyalty['new_end_date'])) {
+                    $retObj['new_end_date'] = $existingLoyalty['new_end_date'];
+                }
+                $retObj['reward'] = false;
+                $retObj['cashback'] = false;
+                if(in_array($existingLoyalty['reward_type'],[1,2,3,4])){
+                    $retObj['reward'] = true;
+                    $retObj['reward_type'] = $existingLoyalty['reward_type'];
+                    $retObj['cashback_type'] = $existingLoyalty['cashback_type'];
+                    $retObj['cashback_type_num'] = $existingLoyalty['cashback_type_num'];
+                    if(!empty($device_type) && in_array($device_type, ['android', 'ios'])){
+                        // $message .= "rewards (<a onclick=''>Checkout Rewards</a>)";
+                        $retObj['finder_name'] = $existingLoyalty["finder_name"];
+                    }
+                    else {
+                        // $message .= "rewards (<a onclick=\"cashbackPopup('".$existingLoyalty['reward_type']."', '".$cashbackMap[intval($existingLoyalty['cashback_type'])-1]."')\">Checkout Rewards</a>)";
+                    }
+                    $rewardsExist = true;
+                }
+                if(in_array($existingLoyalty['reward_type'],[3,4,5,6])){
+                    $retObj['cashback'] = true;
+                    $retObj['reward_type'] = $existingLoyalty['reward_type'];
+                    $retObj['cashback_type'] = $existingLoyalty['cashback_type'];
+                    $retObj['cashback_type_num'] = $existingLoyalty['cashback_type_num'];
+                    if($rewardsExist){
+                        // $message .= " & ";
+                    }
+                    if(in_array($existingLoyalty['cashback_type'],['A', 'B'])){
+                        $retObj['cashback_percent'] = 120;
+                        // $message .= "<b>120%</b> cashback";
+                    }
+                    else {
+                        $retObj['cashback_percent'] = 100;
+                        // $message .= '<b>100%</b> cashback';
+                    }
+                }
+                // $message .= ".<br>Please note : On switching, your check-in counter will reset to <b>0</b> with a check-in validity till <b>".$existingLoyalty['new_end_date']."</b>";
+                // $message .= ".<br><a href=''>Continue with current</a> / <a href='".$this->api_url."customer/loyaltyAppropriation?customer_id=".$customer_id."&order_id=".$order_id."'>Upgrade to new</a>";
+
+                $newMessage = "As you have purchased ".$order['finder_name']." membership, upgrading your Fitsquad will let you unlock new reward & increase the Fitsquad validity. However, you will loose your current check-in streak (check-ins done till now: ".$retObj['checkins'].")";
+
+                $message = "Current check-ins: ".$retObj['checkins'].".<br/>Your workout counter will reset on ".$retObj['end_date'].".";
+                if($retObj['next_milestone']==0){
+                    $message .= "<br/>You have reached the final milestone.";
+                }
+                else {
+                    $message .= "<br/>You are ".$retObj['checkins_left_next_milestone']." check-ins away from milestone ".$retObj['next_milestone'].".";
+                }
+                
+                $newEndDate = (!empty($retObj['new_end_date']))?$retObj['new_end_date']:'';
+
+                $message .= "<br/>You can upgrade to ".$retObj['finder_name']." specific rewards by visiting the profile section of your account on the website.<br/>Please note : On switching, your check-in counter will reset to 0 with a check-in validity till ".$newEndDate.".";
+                
+                if(!empty($customer['loyalty']['reward_type'])){
+                    $rewTypeChk = $customer['loyalty']['reward_type']==$retObj['reward_type'];
+                }
+                else {
+                    $rewTypeChk = empty($retObj['reward_type']);
+                }
+                if(!empty($customer['loyalty']['cashback_type'])){
+                    $cbkTypeChk = $customer['loyalty']['cashback_type']==$retObj['cashback_type_num'];
+                }
+                else {
+                    $cbkTypeChk = empty($retObj['cashback_type']);
+                }
+                $finder = Finder::active()->where('_id', $order['finder_id'])->first();
+                $isDowngrade = false;
+                $brandIdTypeChk = false;
+                $sameBrand = false;
+                $sameFinder = false;
+
+                if(!empty($customer['loyalty']['finder_id'])){
+                    $sameFinder = $finder['_id'] == $customer['loyalty']['finder_id'];
+                }
+
+                if(!empty($customer['loyalty']['brand_loyalty'])){
+                   $sameBrand = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];
+                    if($sameBrand){
+                        $brand_loyalty_data = $this->buildBrandLoyaltyInfoFromOrder($finder, $order);
+                        $sameBrand = $customer['loyalty']['brand_loyalty']==$brand_loyalty_data['brand_loyalty']
+                        && $customer['loyalty']['brand_loyalty_duration']==$brand_loyalty_data['brand_loyalty_duration']
+                        && $customer['loyalty']['brand_loyalty_city']==$brand_loyalty_data['brand_loyalty_city']
+                        && $customer['loyalty']['brand_version']==$brand_loyalty_data['brand_version'];
+                        Log::info('$brand_loyalty_data: ', [$brand_loyalty_data]);
+                    }
+                }
+                else {
+                    $brandIdTypeChk = empty($finder['brand_id'])||!in_array($finder['brand_id'], Config::get('app.brand_loyalty'))||!in_array($order['duration_day'], [180, 360])||in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'));
+
+                    $isDowngrade = (!(((empty($finder['flags']['reward_type'])) || ($finder['flags']['reward_type']!=2)) && ((empty($customer['loyalty']['reward_type'])) || $customer['loyalty']['reward_type']==2))) && $brandIdTypeChk;
+                }
+                
+                Log::info('$sameFinder: ', [$sameFinder]);
+                Log::info('$sameBrand: ', [$sameBrand]);
+                Log::info('$rewTypeChk: ', [$rewTypeChk]);
+                Log::info('$cbkTypeChk: ', [$cbkTypeChk]);
+                Log::info('$brandIdTypeChk: ', [$brandIdTypeChk]);
+                Log::info('$isDowngrade: ', [$isDowngrade]);
+
+                if($sameFinder || $sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade || (!empty($finder['flags']['reward_type']) && $finder['flags']['reward_type'] == 1) ){
+                    // same grid - no need to upgrade
+                    $retObj = null;
+                } else {
+                    if(!empty($finder['brand_id'])){
+                        $retObj['brand_id'] = $finder['brand_id'];
+                    }
+                }
+            }
+            // return $message;
+            return ($messageOnly)?$newMessage:$retObj;
+        }
+        else {
+            return null;
+        }
     }
 
-}
+
+    public function buildBrandLoyaltyInfoFromOrder($finder, $order){
+        $data = null;
+        
+        $duration = !empty($order['duration_day']) ? $order['duration_day'] : (!empty($order['order_duration_day']) ? $order['order_duration_day'] : 0);
+		$duration = $duration > 180 ? 360 : $duration;
+        
+        if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
+            $duration = 0;
+        }
+
+		if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
+			$data['brand_loyalty'] = $finder['brand_id'];
+			$data['brand_loyalty_duration'] = $duration;
+			$data['brand_loyalty_city'] = $order['city_id'];
+
+			if($data['brand_loyalty'] == 135){
+				if($data['brand_loyalty_duration'] == 180){
+					$data['brand_version'] = 1;
+				}else{
+					$data['brand_version'] = 2;
+				}
+			}else{
+				$data['brand_version'] = 1;
+			}
+		}
+		return $data;
+	}
+
+
+    public function getFreeSPRatecard($data, $source='order', $free_sp_rc_all=[]){
+
+        try{
+            
+            if($source == 'ratecard'){
+                $data['duration_day'] = $this->getDurationDay(($data));
+            }
+            
+            $sessions = $duration = null;
+            if(in_array($data['finder_id'], Config::get('app.women_mixed_finder_id')) && in_array($data['type'], ['memberships', 'membership']) && empty($data['extended_validity']) && !empty($data['duration_day']) && in_array($data['duration_day'], [360, 180, 30, 90])){
+                switch($data['duration_day']){
+                    case 30:
+                    case 90:    
+                        $duration = 4;
+                        break;
+                    case 180:
+                        $duration= 12;
+                        break;
+                    case 360:
+                        $duration= 20;
+                }
+
+                if(empty($free_sp_rc_all)){
+
+                    $free_sp_rc_all = Ratecard::where('flags.free_sp', true);
+                    if(!empty($data['finder_id'])){
+                        $free_sp_rc_all->where('finder_id', $data['finder_id']);
+                    }
+                    if(!empty($data['service_id'])){
+                        $free_sp_rc_all->where('service_id', $data['service_id']);
+                    }
+                    
+                    $free_sp_rc_all = $free_sp_rc_all->where('duration', $duration)->get();
+                }
+
+                if(!empty($free_sp_rc_all)){
+                    $free_sp_rc_all_map = [];
+
+                    foreach($free_sp_rc_all as $f){
+                        $free_sp_rc_all_map[$f['service_id'].'-'.$f['duration']] = $f;
+                    }
+
+                    if(!empty($free_sp_rc_all_map[$data['service_id'].'-'.$duration])){
+                        $free_sp_rc = $free_sp_rc_all_map[$data['service_id'].'-'.$duration];
+                    }
+                }
+                
+                if(!empty($free_sp_rc)){
+                    
+                    return $free_sp_rc;
+                
+                }
+            }
+            
+
+            return null;
+
+        }catch(Exception $e){
+
+            Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+            return null;
+
+        }
+    }
+
+     public function getFreeSPRatecardsByFinder($data){
+        return Ratecard::where('flags.free_sp', true)->where('finder_id', $data['finder_id'])->get();
+    }
+
+    public function addFitcashforVoucherCatageory($data){
+        $validity = strtotime('+90 days');
+        $request = array(
+            "customer_id"=> $data['id'],
+            "amount"=> $data['voucher_catageory']['fitcash'],
+            "amount_fitcash" => 0,
+            "amount_fitcash_plus" => $data['voucher_catageory']['fitcash'],
+            "type"=>'FITCASHPLUS',
+            "validity"=>$validity,
+            'description'=>"Added FitCash for Fitsquad milestone ".$data['voucher_catageory']['milestone']." Expires On : ".date('d-m-Y', $validity),
+            'entry'=>'credit',
+            'for'=>'Fitsquad',
+            'details'=> array(
+                'for'=>'Fitsquad',
+                'voucher_name'=>$data['voucher_catageory']['name'],
+                'voucher_catageory_id'=> $data['voucher_catageory']['_id']
+            )
+        );
+        $this->walletTransactionNew($request);
+    }
+
+    public function getRatecardPrice($ratecard){
+        return !empty($ratecard['offers'][0]['price']) ? $ratecard['offers'][0]['price'] : (!empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price']);        
+    }
+
+    public function getBatchDaysOfWeek($batch) {
+        $daysList = [];
+        foreach($batch as $slot) {
+            array_push($daysList, $slot['weekday']);
+        }
+        return $daysList;
+    }
+
+    public function getBatchSlotTimeDaywise($batch){
+        $slotTime = [];
+        foreach($batch as $slot) {
+            $slotTime[$slot['weekday']] = $slot['slots'][0]['slot_time'];
+        }
+        return $slotTime;
+    }
+
+    public function getDatesToSchedule($order) {
+        $batchDaysOfWeek = $this->getBatchDaysOfWeek($order['batch']);
+        $scheduleDates = [];
+        $prevDate = date('Y-m-d', strtotime($order['start_date']));
+        $dayOfWeekMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        $slotTimes = $this->getBatchSlotTimeDaywise($order['batch']);
+        $limit = $order['studio_sessions']['total'];
+        for($i=0; $i<$limit; $i++) {
+            while(empty($scheduleDates[$i])){
+                $dayofweek = $dayOfWeekMap[date('w', strtotime($prevDate))];
+                if(in_array($dayofweek, $batchDaysOfWeek)){
+                    array_push($scheduleDates, [
+                        'schedule_date' => date('d-m-Y', strtotime($prevDate)),
+                        'day' => $dayofweek,
+                        'schedule_slot' => $slotTimes[$dayofweek]
+                    ]);
+                }
+                $prevDate = date('Y-m-d', strtotime('+1 day', strtotime($prevDate)));
+            }
+        }
+        return $scheduleDates;
+    }
+
+    public function getExtendedSessionDate($order) {
+        $studioSessions = $order['studio_sessions'];
+        $cancelled = $studioSessions['cancelled'];
+        $total_cancel_allowed = $studioSessions['total_cancel_allowed'];
+
+        if($cancelled <= $total_cancel_allowed) {
+
+            Booktrial::$withoutAppends = true;
+            $lastBooktrial = Booktrial::where('going_status','!=',2)->where('studio_extended_validity_order_id', $order['_id'])->orderBy('schedule_date_time', 'desc')->first();
+
+            Log::info('$lastBooktrial - schedule_date:: ', [$lastBooktrial['schedule_date']]);
+            $scheduleDateStart = strtotime('+1 day', strtotime($lastBooktrial['schedule_date']));
+            $scheduleDateEnd = strtotime('+1 day', $order['studio_membership_duration']['end_date_extended']->sec);
+            $scheduleDates = [];
+            $currTime = time();
+            if($currTime>$scheduleDateStart){
+                $scheduleDateStart = strtotime('+1 day', $currTime);
+            }
+            if($scheduleDateEnd>$currTime){
+                $batchDaysOfWeek = $this->getBatchDaysOfWeek($order['batch']);
+                $prevDate = date('Y-m-d', $scheduleDateStart);
+                $dayOfWeekMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                $slotTimes = $this->getBatchSlotTimeDaywise($order['batch']);
+                while(empty($scheduleDates[0])){
+                    $dayofweek = $dayOfWeekMap[date('w', strtotime($prevDate))];
+                    if(in_array($dayofweek, $batchDaysOfWeek)){
+                        array_push($scheduleDates, [
+                            'schedule_date' => date('d-m-Y', strtotime($prevDate)),
+                            'day' => $dayofweek,
+                            'schedule_slot' => $slotTimes[$dayofweek]
+                        ]);
+                    }
+                    $prevDate = date('Y-m-d', strtotime('+1 day', strtotime($prevDate)));
+                }
+            }
+            return $scheduleDates;
+        }
+        else {
+            return null;
+        }
+
+    }
+
+    public function scheduleStudioBookings($order_id, $isPaid=false) {
+
+		Log::info('Utilities scheduleStudioBookings:: ', [$order_id]);
+
+		Order::$withoutAppends = true;
+		$order = Order::where('_id', $order_id)->first();
+
+        $existingOrdersCount = Order::active()->where('studio_extended_validity_order_id', $order_id)->count();
+
+		if(!empty($order['studio_extended_validity']) && $order['studio_extended_validity'] && ((!empty($order['studio_sessions']['total']) && isset($existingOrdersCount) && $existingOrdersCount<$order['studio_sessions']['total']) || ($isPaid && $order['studio_sessions']['cancelled']<$order['studio_sessions']['total_cancel_allowed']))){
+			Log::info('making studio bookings...');
+
+			$scheduleDates = [];
+
+            if($isPaid) {
+                $scheduleDates = $this->getExtendedSessionDate($order);
+                Log::info('scheduleDates:: ', [$scheduleDates]);
+            }
+            else {
+                $scheduleDates = $this->getDatesToSchedule($order);
+            }
+
+            if(!empty($scheduleDates) && count($scheduleDates)>0){
+
+                Log::info('scheduleDates: ', [count($scheduleDates)]);
+
+                // $tc=new \TransactionController( new CustomerMailer(), new CustomerSms(), new Sidekiq(), new FinderMailer(), new FinderSms(), $this,new CustomerReward(), new CustomerNotification(), new Fitapi(), new Fitweb());
+
+                // $sc=new \SchedulebooktrialsController( new CustomerMailer(), new FinderMailer(), new CustomerSms(), new FinderSms(), new CustomerNotification(), new Fitnessforce(), new Sidekiq(), new OzontelOutboundCall(new Sidekiq()), $this,new CustomerReward(), new Jwtauth());
+
+                $ratecard = Ratecard::active()->where('service_id', $order['service_id'])->where('type', 'workout session')->first();
+
+                foreach($scheduleDates as $booking_date) {
+                    $existingOrdersCountRecheck = Order::active()->where('studio_extended_validity_order_id', $order_id)->count();
+                    if(($existingOrdersCountRecheck<$order['studio_sessions']['total']) || ($isPaid && $order['studio_sessions']['cancelled']<$order['studio_sessions']['total_cancel_allowed'])){
+                        Log::info('booking now....');
+                        $captureReq = [
+                            "booking_for_others" => false,
+                            "cashback" => false,
+                            "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+                            "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+                            "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+                            "customer_source" => (!empty($order['customer_source']))?$order['customer_source']:null,
+                            "wallet" => false,
+                            "device_type" => (!empty($order['device_type']))?$order['device_type']:null,
+                            "finder_id" => $order['finder_id'],
+                            "gender" => $order['gender'],
+                            "gcm_reg_id" => (!empty($order['gcm_reg_id']))?$order['gcm_reg_id']:null,
+                            "schedule_date" => $booking_date['schedule_date'],
+                            "schedule_slot" => $booking_date['schedule_slot'],
+                            "pt_applied" => (!empty($order['pt_applied']))?$order['pt_applied']:null,
+                            "customer_quantity" => 1,
+                            "ratecard_id" => $ratecard['_id'],
+                            "reward_ids" => [],
+                            "service_id" => $order['service_id'],
+                            "type" => "workout-session",
+                            "studio_extended_validity_order_id" => $order['_id']
+                        ];
+                        if($isPaid){
+                            $captureReq['studio_extended_session'] = true;
+                        }
+                        // $captureRes = json_decode(json_encode($tc->capture($captureReq)), true);
+                        $captureRes = json_decode(json_encode(app(\TransactionController::class)->capture($captureReq)), true);
+
+                        if(!(empty($captureRes['status']) || $captureRes['status'] != 200 || empty($captureRes['data']['orderid']) || empty($captureRes['data']['email']))){
+                            $booktrialReq = [
+                                "order_id" => $captureRes['data']['orderid'],
+                                "status" => "success",
+                                "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+                                "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+                                "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+                                "schedule_date" => $booking_date['schedule_date'],
+                                "schedule_slot" => $booking_date['schedule_slot'],
+                                "finder_id" => $order['finder_id'],
+                                "service_name" => $captureRes['data']['service_name'],
+                                "service_id" => $order['service_id'],
+                                "ratecard_id" => $ratecard['_id'],
+                                "type" => "workout-session",
+                                "studio_extended_validity_order_id" => $order['_id'],
+                                "communications" => [
+                                    "customer" => [
+                                        "mails" => [
+                                            'bookTrialReminderBefore3Hour',
+                                            'bookTrialReminderBefore12Hour',
+                                            'cancelBookTrial',
+                                            'cancelBookTrialByVendor'
+                                        ],
+                                        "sms" => [
+                                            'bookTrialReminderBefore3Hour',
+                                            'bookTrialReminderBefore12Hour',
+                                            'cancelBookTrial',
+                                            'cancelBookTrialByVendor'
+                                        ],
+                                        "notifications" => [
+                                            'bookTrialReminderBefore3Hour',
+                                            'bookTrialReminderBefore12Hour',
+                                            'cancelBookTrial',
+                                            'cancelBookTrialByVendor'
+                                        ]
+                                    ],
+                                    "finder" => [
+                                        "mails" => [],
+                                        "sms" => [],
+                                        "notifications" => []
+                                    ]
+                                ]
+                            ];
+
+                            if($isPaid){
+                                $booktrialReq['studio_extended_session'] = true;
+                                if(!empty($booktrialReq['communications']['customer'])) {
+                                    unset($booktrialReq['communications']['customer']);
+                                }
+                                $booktrialReq["communications"]["finder"] = [
+                                    "mails" => [
+                                        'bookTrial',
+                                        'cancelBookTrial'
+                                    ],
+                                    "sms" => [
+                                        'bookTrial',
+                                        'cancelBookTrial'
+                                    ]
+                                ];
+                            }
+                            // $booktrialRes = json_decode(json_encode($sc->bookTrialPaid($booktrialReq)), true);
+                            $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)), true);
+                        }
+                        Log::info('booking done....');
+                        sleep(3);
+                    }
+                }
+                Log::info('....All bookings done....');
+
+            }
+            else {
+                Log::info('Number of cancellable sessions exceeded...');
+            }
+        }
+
+		
+
+	}
+
+    public function multifitFinder($cache = true){
+        Log::info("multifitFinder");
+
+        $multifit_finder = $cache ? \Cache::tags('multifit_finder_detail')->has('multifitFinder') : false;
+        
+        if(!$multifit_finder){
+            
+            Finder::$withoutAppends=true;
+            
+            $finFinderId = Finder::where('brand_id', 88)->where('status','1')->lists('_id');
+            
+            \Cache::tags('multifit_finder_detail')->put("multifitFinder" ,$finFinderId,Config::get('cache.cache_time'));
+            Log::info("!cache");
+            return $finFinderId;
+        }
+        
+        $multifit_finder = \Cache::tags('multifit_finder_detail')->get('multifitFinder');
+        return $multifit_finder;
+    }
+    
+    public function checkCouponApplied(){
+        return !empty($GLOBALS['coupon_applied']);
+    }
+
+    public function getMultifitWebsiteHeader(){
+        
+        $source = Request::header('Source');
+
+        if(!empty($source)){
+            return $source;
+        }
+
+        return;
+    }
+    
+    public function scheduleSessionFromOrder($order_id) {
+
+		Log::info('Utilities scheduleStudioBookings:: ', [$order_id]);
+
+		Order::$withoutAppends = true;
+        
+        $order = Order::active()->where('_id', $order_id)->where('extended_validity', true)->first();
+
+        if(empty($order)){
+            return ['status'=>400, 'error'=>1, 'message'=>'Session pack does not exist'];
+        }
+        
+        $ratecard = Ratecard::active()->where('service_id', $order['service_id'])->where('type', 'workout session')->first();
+        
+        $schedule_date = date('Y-m-d');
+        $schedule_slot = date("h:i a");
+
+        $captureReq = [
+            "cashback" => false,
+            "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+            "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+            "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+            "customer_source" => Request::header('Device-Type'),
+            "wallet" => true,
+            "device_type" => (!empty($order['device_type']))?$order['device_type']:null,
+            "finder_id" => $order['finder_id'],
+            "gender" => $order['gender'],
+            "gcm_reg_id" => (!empty($order['gcm_reg_id']))?$order['gcm_reg_id']:null,
+            "schedule_date" => $schedule_date,
+            "schedule_slot" => $schedule_slot,
+            "customer_quantity" => 1,
+            "ratecard_id" => $ratecard['_id'],
+            "reward_ids" => [],
+            "service_id" => $order['service_id'],
+            "type" => "workout-session",
+            "from_checkin" => true,
+            "customer_source"=>$this->device_type,
+            "checkin_booking"=>true
+        ];
+        // return app(\TransactionController::class)->capture($captureReq);
+        $captureRes = json_decode(json_encode(app(\TransactionController::class)->capture($captureReq)), true);
+
+        if(!(empty($captureRes['status']) || $captureRes['status'] != 200 || empty($captureRes['data']['orderid']) || empty($captureRes['data']['email']))){
+            
+            $booktrialReq = [
+                "order_id" => $captureRes['data']['orderid'],
+                "status" => "success",
+                "customer_name" => (!empty($order['customer_name']))?$order['customer_name']:null,
+                "customer_email" => (!empty($order['customer_email']))?$order['customer_email']:null,
+                "customer_phone" => (!empty($order['customer_phone']))?$order['customer_phone']:null,
+                "finder_id" => $order['finder_id'],
+                "service_name" => $captureRes['data']['service_name'],
+                "service_id" => $order['service_id'],
+                "ratecard_id" => $ratecard['_id'],
+                "type" => "workout-session",
+                "schedule_date" => $schedule_date,
+                "schedule_slot" => $schedule_slot,
+                "amount" => $captureRes['data']['amount'],
+            ];
+            
+            return $booktrialRes = json_decode(json_encode(app(\SchedulebooktrialsController::class)->bookTrialPaid($booktrialReq)->getData()), true);
+                       
+        }
+    }
+
+    public function checkUpgradeAvailable($order, $type=''){
+        
+        if($type == "membership"){
+            if(
+                empty($order['extended_validity']) 
+            || !(empty($order['no_of_sessions']) && $order['no_of_sessions'] < Config::get('upgrade_membership.session_pack_to_membership_upgradable_sessions_limit', 20))
+            ){
+                return true;
+            }
+        
+        }else{
+
+            if(!empty($order['extended_validity'])){
+                return true;
+            }
+
+        }
+
+        return false;
+            
+
+    }
+
+    public function getSuccessCommonInputFields(){
+        return ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","finder_address","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","ratecard_id","customer_identity","customer_source","customer_location","customer_quantity","init_source","multifit","wallet"];
+    }
+
+    public function sendEnquiryToFitnessForce($captureData, $vendor=null, $location=null) {
+
+        Log::info('----- inside sendEnquiryToFitnessForce -----');
+
+        $enquiryData = [];
+        $client = new Client( ['debug' => false] );
+
+        if(!empty($vendor)) {
+            $vendorId = $vendor->_id;
+        }
+        else if(!empty($captureData) && $captureData['capture_type']=='multifit-contactuspage'){
+            $vendorId = 1935; // multifit kalyani nagar
+        }else{
+            return;
+        }
+
+        Finder::$withoutAppends = true;
+        $finder = Finder::where('_id', $vendorId)->first(['_id', 'title', 'slug', 'flags']);
+        if(!empty($finder['flags']['ff_tenant_id'])) {
+            $captureData['finder_id'] = $finder['_id'];
+            $captureData['finder_name'] = $finder['title'];
+            $captureData['finder_slug'] = $finder['slug'];
+            $captureData['tenantid'] = $finder['flags']['ff_tenant_id'];
+            $captureData['authkey'] = $finder['flags']['ff_auth_key'];
+
+            if(!empty($location)) {
+                $captureData['location_id'] = $location->_id;
+                $captureData['location_name'] = $location->name;
+            }
+            $captureData['source'] = Config::get('app.ffDetails.source');
+            $enquiryData['authenticationkey'] = $captureData['authkey'];
+            $enquiryData['name'] = $captureData['customer_name'];
+            $enquiryData['mobileno'] = $captureData['customer_phone'];
+            $enquiryData['emailaddress'] = $captureData['customer_email'];
+            $enquiryData['enquirytype'] = $captureData['capture_type'];
+            $enquiryData['enquirysource'] = 'fitternity';
+
+            // $url = Config::get('app.ffEnquiryAPI').$captureData['source'].'&tenantid='.$captureData['tenantid'].'&authkey='.$captureData['authkey'];
+            $url = Config::get('app.ffEnquiryAPI');
+
+            try {
+                $responseString = $client->post($url,['json' => $enquiryData, 'headers' => ['authenticationKey' => $captureData['authkey']]])->getBody()->getContents();
+            }catch (Exception $ex){
+                $responseString = $ex->getMessage();
+            }
+            Log::info('fitnessForce Enquiry Response String: ', [$responseString]);
+
+            if(!empty($captureData['customer_name'])) {
+                $nameArr = explode(' ', $captureData['customer_name']);
+                if(!empty($nameArr) && count($nameArr)>0) {
+                    $countNameArr = count($nameArr);
+                    $captureData['first_name'] = $nameArr[0];
+                    if($countNameArr>1) {
+                        $captureData['last_name'] = $nameArr[$countNameArr-1];
+                    }
+                }
+            }
+
+            $fflogParam = [
+                'url' => $url,
+                'request_query' => [
+                    'source' => $captureData['source'],
+                    'tenantid' => (!empty($captureData['tenantid']))?$captureData['tenantid']:null,
+                    'authkey' => (!empty($captureData['authkey']))?$captureData['authkey']:null
+                ],
+                'request_body' => $enquiryData,
+                'response' => $responseString,
+                'type' => 'enquiry_succ',
+                'success' => false,
+                'capture_id' => $captureData['capture_id'],
+            ];
+
+            if(!empty($captureData['finder_id'])){
+                $fflogParam['finder_id'] = $captureData['finder_id'];
+            }
+
+            if(!empty($responseString)) {
+                $response = json_decode($responseString, true);
+                Log::info('fitnessForce Response: ', [$response]);
+                
+                $fflogParam['response'] = (!empty($response))?$response:$fflogParam['response'];
+                
+                if(!empty($response) && !empty($response['success'])) {
+                    $fflogParam['success'] = true;
+                    Customer::where('_id', $captureData['customer_id'])->update(['ff_member_id'=>$response['success'][0]['memberid']]);
+                    Capture::where('_id', $captureData['capture_id'])->update(['ff_member_id'=>$response['success'][0]['memberid']]);
+                }
+            }
+
+            $fflog = new FitnessForceAPILog($fflogParam);
+            $fflog->save();
+
+            return $response;
+        }
+        Log::info('Enquiry - FF tenant ID not found for the vendor');
+        return  null;
+    }
+ 
+    public function fitnessForce($data=null){
+        if(empty($data['data']['order_id'])) {
+            return;
+        }
+        $post_data = array_only($data['data'],
+            [
+                "order_id",
+                "customer_name",
+                "customer_phone",
+                "customer_email",
+                "customer_gender",
+                "service_name",
+                "service_category_id",
+                "service_category",
+                "schedule_date_time",
+                "schedule_slot",
+                "amount",
+                "service_duration",
+                "start_date",
+                "finder_name",
+                "finder_city",
+                "finder_location"
+            ]
+        );
+        Log::info('fitnessforce $data: ', [$data]);
+        $order = Order::where('_id', $data['data']['order_id'])->first();
+        Log::info('fitnessforce $order: ', [$order['_id']]);
+
+        if((!empty($order['studio_extended_validity_order_id']) && empty($order['studio_extended_session'])) || (!empty($order['extended_validity_order_id'])) || (!empty($order['third_party_details'])) ) {
+            Log::info('fitnessforce studio_extended_validity_order_id or extended_validity_order_id or ABW');
+            return;
+        }
+
+        Ratecard::$withoutAppends = true;
+        Finder::$withoutAppends = true;
+        $ratecard = Ratecard::where('_id', $order['ratecard_id'])->first();
+        $finder = Finder::where('_id', $order['finder_id'])->first();
+
+        if(!empty($finder['flags']['ff_tenant_id']) && !empty($ratecard['flags']['ff_product_id'])) {
+            if(!empty($post_data['customer_name'])) {
+                $nameArr = explode(' ', $post_data['customer_name']);
+                if(!empty($nameArr) && count($nameArr)>0) {
+                    $countNameArr = count($nameArr);
+                    $post_data['first_name'] = $nameArr[0];
+                    if($countNameArr>1) {
+                        $post_data['last_name'] = $nameArr[$countNameArr-1];
+                    }
+                }
+            }
+            $post_data['source'] = Config::get('app.ffDetails.source');//'fitternity';//'gymtrekker';
+            $post_data['tenantid'] = $finder['flags']['ff_tenant_id']; //1909
+            $post_data['authkey'] = $finder['flags']['ff_auth_key']; //'FFT_M_1909'
+            
+            // $post_data['productid'] = 34767;
+            // $post_data['packageid'] = 45;
+            // $post_data['campaignid'] = 45;
+
+            $post_data['productid'] = $ratecard['flags']['ff_product_id'];
+            if(!empty($ratecard['flags']['ff_package_id'])) {
+                $post_data['packageid'] = $ratecard['flags']['ff_package_id'];
+            }
+            if(!empty($ratecard['flags']['ff_campaign_id'])) {
+                $post_data['campaignid'] = $ratecard['flags']['ff_campaign_id'];
+            }
+            Log::info('$order[success_date]::: ', [$order['success_date']]);
+            Log::info('strtotime($order[success_date])::: ', [strtotime($order['success_date'])]);
+            Log::info('strtotime($order[success_date])::: ', [strtotime($order['success_date'])]);
+            Log::info('date(Y-m-d,strtotime($order[success_date])):: ', [date('Y-m-d',strtotime($order['success_date']))]);
+            Log::info('gettype($order[success_date]):: ', [gettype($order['success_date'])]);
+            Log::info('get_class($order[success_date]):: ', [get_class($order['success_date'])]);
+            Log::info('ff order: ', [$order['_id']]);
+            if(empty($order['success_date'])) {
+                $post_data['purchasedate'] = date('Y-m-d',time());
+            }
+            else {
+                $post_data['purchasedate'] = date('Y-m-d',strtotime($order['success_date']));
+            }
+            if(!(empty($data['type'])) && $data['type']=='workout-session') {
+                $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['schedule_date_time']));
+            }
+            else if(!empty($data['data']['preferred_starting_date'])){
+                $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['preferred_starting_date'])); // '2019-05-29';
+            }
+            // $post_data['total'] = $order['amount_transferred_to_vendor'];
+            // $post_data['productprice'] = ((100 * $order['amount_transferred_to_vendor'])/118); // total - 18% GST
+            $post_data['total'] = $order['amount'];
+            $post_data['productprice'] = ((100 * $order['amount'])/118); // total - 18% GST
+            $post_data['paymentmode'] = Config::get('app.ffDetails.paymentmode'); //'fitternity';
+            $post_data['amountpaid'] = $order['amount'];
+            // $post_data['paymentmode'] = 'gymtrekker';
+            // $post_data['amountpaid'] = $order['amount_transferred_to_vendor'];
+            // $post_data['addpaymentids'] = '13731'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
+            // $post_data['addpaymentvalues'] = '0'; // Ganesh Dhumal said they will be making this non-mandatory, keep it for now...
+
+            Log::info('fitnessForce: ', $post_data);
+
+            $fitnessForceData = ['form_params' => []];
+            $fitnessForceData['form_params']['firstname'] = $post_data['first_name'];
+            if(!empty($post_data['last_name'])) {
+                $fitnessForceData['form_params']['lastname'] = $post_data['last_name'];
+            }
+            $fitnessForceData['form_params']['mobileno'] = $post_data['customer_phone'];
+            $fitnessForceData['form_params']['emailid'] = $post_data['customer_email'];
+            $fitnessForceData['form_params']['productprice'] = $post_data['productprice'];
+            $fitnessForceData['form_params']['paymentmode'] = $post_data['paymentmode'];//'gymtrekker';
+            // $fitnessForceData['form_params']['addpaymentids'] = $post_data['addpaymentids'];
+            // $fitnessForceData['form_params']['addpaymentvalues'] = $post_data['addpaymentvalues'];
+            $fitnessForceData['form_params']['amountpaid'] = $post_data['amountpaid'];
+            $fitnessForceData['form_params']['total'] = $post_data['total'];
+            $fitnessForceData['form_params']['productprice'] = $post_data['productprice'];
+            $fitnessForceData['form_params']['purchasedate'] = $post_data['purchasedate'];
+            $fitnessForceData['form_params']['activationdate'] = $post_data['activationdate'];
+            $fitnessForceData['form_params']['productid'] = $post_data['productid'];
+            if(!empty($post_data['packageid'])) {
+                $fitnessForceData['form_params']['packageid'] = $post_data['packageid'];
+            }
+            if(!empty($post_data['packageid'])) {
+                $fitnessForceData['form_params']['campaignid'] = $post_data['campaignid'];
+            }
+
+            $client = new Client( ['debug' => false ] );
+
+            $url = Config::get('app.ffTransactionAPI').$post_data['source'].'&tenantid='.$post_data['tenantid'].'&authkey='.$post_data['authkey'];
+
+            $payload = $fitnessForceData;
+            try {
+                $responseString = $client->post($url,$payload)->getBody()->getContents();
+            }catch (Exception $ex){
+                $responseString = $ex->getMessage();
+            }
+            Log::info('fitnessForce Response String: ', [$responseString]);
+
+            $fflogParam = [
+                'url' => $url,
+                'request_query' => [
+                    'source' => $post_data['source'],
+                    'tenantid' => $post_data['tenantid'],
+                    'authkey' => $post_data['authkey']
+                ],
+                'request_body' => $fitnessForceData['form_params'],
+                'response' => $responseString,
+                'type' => 'trans_succ',
+                'success' => false,
+                'order_id' => $order['_id'],
+            ];
+
+            if(!empty($responseString)) {
+                $response = json_decode($responseString, true);
+                Log::info('fitnessForce Response: ', [$response]);
+                
+                $fflogParam['response'] = !(empty($response))?$response:$fflogParam['response'];
+                
+                if(!empty($response) && $response['isSuccess']) {
+                    $fflogParam['success'] = true;
+                    if(!empty($response['response'][0]['billid'])) {
+                        $fflogParam['ff_bill_id'] = $response['response'][0]['billid'];
+                    }
+                    if(!empty($response['response'][0]['receiptid'])) {
+                        $fflogParam['ff_receipt_id'] = $response['response'][0]['receiptid'];
+                    }
+
+                    $fflogParam['success'] = true;
+                    Order::where('_id', $order['_id'])->update(['ff_bill_id'=>$response['response'][0]['billid'],'ff_receipt_id'=>$response['response'][0]['receiptid']]);
+                    if(!empty($order['booktrial_id'])) {
+                        Booktrial::where('_id', $order['booktrial_id'])->update(['ff_bill_id'=>$response['response'][0]['billid'],'ff_receipt_id'=>$response['response'][0]['receiptid']]);
+                    }
+                }
+            }
+                
+            if(!empty($order['booktrial_id'])) {
+                $fflogParam['booktrial_id'] = $order['booktrial_id'];
+            }
+
+            $fflog = new FitnessForceAPILog($fflogParam);
+            $fflog->save();
+
+            return $response;
+        }
+    }
+
+      
+    public function getRewardGridImages($rewardType=2, $cashbackType=1) {
+        if($rewardType == 2) {
+            return 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final%20(1)%20(1).jpg';
+        }
+        else if($rewardType == 3) {
+            $cashbackImageMap = [
+                0 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A1.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],
+                1 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%201A1.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],
+                2 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%202A1.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],				
+                3 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A1.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],				
+                4 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "250"],				
+                5 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "275"],				
+                6 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "300"]
+            ];
+            return $cashbackImageMap[$cashbackType]['image'];
+        }
+        else if(in_array($rewardType, [4, 6])) {
+            $cashbackImageMap = [
+                0 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A1.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],
+                1 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20rewards%20type%20A2.png", "cashback_rate" => "120%", "cashback_days" => "10, 30, 75, 150, 250, 275, 300"],
+                2 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20rewards%20type%20B2.png", "cashback_rate" => "120%", "cashback_days" => "10, 30, 75, 150, 250, 275, 300"],				
+                3 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20C2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 250, 275, 300"],				
+                4 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20D2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 250"],				
+                5 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20E2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 275"],				
+                6 => ["image" => "https://b.fitn.in/global/cashback/rewards/100%25%20cash%20back%20%2B%20rewards%20type%20F2.png", "cashback_rate" => "100%", "cashback_days" => "10, 30, 75, 150, 300"]
+            ];
+            return $cashbackImageMap[$cashbackType]['image'];
+        }
+        else if($rewardType == 5) {
+            $cashbackImageMap = [
+                0 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A1.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],
+                1 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%201A.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],
+                2 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%202A.png", "cashback_rate" => "120%", "cashback_days" => "250, 275, 300"],				
+                3 => ["image" => "https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20instant%20assured%20rewards%20grid%203A.png", "cashback_rate" => "100%", "cashback_days" => "250, 275, 300"],				
+                4 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "250"],				
+                5 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "275"],				
+                6 => ["image" => "", "cashback_rate" => "100%", "cashback_days" => "300"]
+            ];
+            return $cashbackImageMap[$cashbackType]['image'];
+        }
+    }
+
+    public function openrewardlist($value, $id, $curcity){
+		$rewardDuration = $value;
+		$curcity = (empty($curcity))?'':$curcity;
+		//$('.gold-fit-rewards').find('.mui-row').addClass('hide');
+		$reward_image = '';
+		if (!(empty($id)) && $id == '88') {
+			//$('.gold-fit-rewards .multifit').removeClass('hide');
+			// $reward_image = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+			$reward_image = 'https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20rewards%20type%20B2.png';
+		}else if (!(empty($id)) && $id == '166') {
+			//$('.gold-fit-rewards .shivfit').removeClass('hide');
+			$reward_image = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
+		} else if (!(empty($id)) && $id == '56') {
+			//$('.gold-fit-rewards .hanman').removeClass('hide');
+			$reward_image = 'https://b.fitn.in/hanman/download2.jpeg';
+        } else if (!(empty($id)) && $id == '40') {    
+            $reward_image = 'https://b.fitn.in/global/Hype-Grid-Website.jpg';
+		} else {
+			if ($rewardDuration == '0') {
+				//$('.gold-fit-rewards .allvendors').removeClass('hide');
+				$reward_image = 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final%20%281%29%20%281%29.jpg';
+			} else if ($curcity == "mumbai" || $curcity == "pune") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixmum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvemum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else if ($curcity == "delhi" || $curcity == "noida" || $curcity == "gurgaon") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixdel').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvedel').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else if ($curcity == "bangalore") {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixbang').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvebang').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			} else {
+				if ($rewardDuration == '6') {
+					//$('.gold-fit-rewards .sixmum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/6%20MONTHS%20GRID.jpg';
+				} else {
+					//$('.gold-fit-rewards .twelvemum').removeClass('hide');
+					$reward_image = 'https://b.fitn.in/global/POP-UP-DESIGN-.jpg';
+				}
+			}
+		}
+		return $reward_image;
+		// openPopUp('gold-fit-rewards');
+		//customOpenPopup('gold-fit-rewards');
+	}
+
+    public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name){
+		$orderSummary = Config::get('orderSummary.slot_summary');
+		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
+		
+		//Log::info('order summary ::::::', [$orderSummary]);
+		foreach($slotsdata as &$slot){
+				$slot['order_summary']['header'] = $orderSummary['header']; 
+		}
+		return $slotsdata;
+    }
+    
+    public function orderSummarySlots($slotsdata, $service_name, $vendor_name){
+        $orderSummary = Config::get('orderSummary.slot_summary');
+		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
+		
+		foreach($slotsdata as &$slot){
+			foreach($slot['data'] as &$sd){
+                $sd['order_summary']['header'] = $orderSummary['header']; 
+			}
+		}
+		return $slotsdata;
+    }
+    
+    public function orderSummaryService($service){
+		Log::info('service name at order summary3', [$service['name']]);
+		$summary= Config::get('orderSummary.service_summary');
+		$summary['header'] = (strtr($summary['header'], ['vendor_name'=>$service['finder_name'], 'service_name'=>$service['name']]));
+        
+        $service['order_summary']['header']= $summary['header'];
+        	
+		return $service;
+	}
 
 }
-
-
-

@@ -49,12 +49,10 @@ class Ratecard extends \Basemodel {
 	}
 
 	public function scopeActive ($query){
-		return 	$query
+		return 	$query->where('flags.free_sp', '!=', true)
 		->where(function($query){$query->orWhere('start_date', 'exists', false)->orWhere('start_date', '<', new DateTime());})
 						->where(function($query){$query->orWhere('expiry_date', 'exists', false)->orWhere('expiry_date', '>', new DateTime(date("d-m-Y",strtotime('-1 days', time()))));})
 						;
 	}
-	
-	
 
 }
