@@ -1530,6 +1530,7 @@ class TransactionController extends \BaseController {
             $resp['data']['payment_modes'] = [];
 
             if(isset($order->amount_final) && $order->amount_final ){
+                Log::info('order amount final:::::::');
                 $resp['data']['payment_modes'] = $this->getPaymentModes($resp, $order->toArray());
             }
         // }
@@ -6373,10 +6374,9 @@ class TransactionController extends \BaseController {
                 'value' => 'emi',
             );
         }
-        
+        Log::info('before adding cash pickup');
         if(!$this->vendor_token){
-            if(!empty($data['cash_pickup']) && $data['cash_pickup'] && empty($data['coupon_code'])){
-                Log::info('coupon code checking and:::::::', [$data['coupon_code']]);
+            if(!empty($data['cash_pickup']) && $data['cash_pickup'] && empty($data['data']['coupon_details']['applied'])){
                 $payment_modes[] = array(
                     'title' => 'Cash Pickup',
                     'subtitle' => 'Schedule cash payment pick up',
@@ -8436,7 +8436,6 @@ class TransactionController extends \BaseController {
     		);
     	} */
     	
-    	Log::info('coupon code in get payment options::::::::::::::::::::::', [$data['coupon_code']]);
         array_push($payment_modes, ['title' => 'Online Payment','subtitle' => 'Transact online with netbanking, card and wallet','value' => 'paymentgateway','payment_options'=>$payment_options]);
         //array_push($payment_modes, ['title' => 'Cash Pickup','subtitle' => 'Schedule cash payment pick up','value' => 'cod']);
     	$emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));    		
