@@ -8313,13 +8313,11 @@ Class Utilities {
     public function remaningVoucherNotification($voucher_category){
   
         $remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('name', $voucher_category->name)->count();
-        //$remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('name', '1 Month extension')->count();
-    
+        
         if($remainingVoucherCount < 50){
             
             $data = array(
                 'voucherName' => $voucher_category->name,
-                //'voucherName' => '1 Month extension',
                 'remainingCount' => $remainingVoucherCount,
             );
         

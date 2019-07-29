@@ -890,10 +890,10 @@ Class CustomerMailer extends Mailer {
 
 	public function remainingVoucher($data){
 
-		$label = 'Remaining Voucher Notification Mail';
+		$label = 'RemainingVoucherNotificationMail-Fitternity';
 
 		$message_data = array(
-			'user_email' => array("vinichellani@fitternity.com", 'dhruvsarawagi@fitternity.com', 'sailismart@fitternity.com', 'kananigopi@fitternity.com', 'ankitamamnia@gmail.com'),
+			'user_email' => array("vinichellani@fitternity.com", 'dhruvsarawagi@fitternity.com', 'sailismart@fitternity.com', 'kananigopi@fitternity.com', 'ankitamamnia@fitternity.com'),
 			'user_name' => 'Fitternity',
 		);
 
