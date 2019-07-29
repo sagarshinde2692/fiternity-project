@@ -369,8 +369,18 @@ class BrandsController extends \BaseController {
 			}
 		}
 
-		if(!empty($home)){
-			return array('status'=>true, "data"=>$home);
+		$hiit = $home[0]['brand_website']['hiit'];
+		foreach($hiit as $key=>$value){
+			if(!in_array($key, ['name','path'], true)){
+				foreach($value['image'] as $imageIndex=>$imageName){
+					$hiit[$key]['image'][$imageIndex] =  $base_url.$hiit['path'].$imageName;
+				}
+			}
+		}
+		$home1[0]['brand_website']['hiit'] = $hiit;
+
+		if(!empty($home1)){
+			return array('status'=>true, "data"=>$home1);
 		}
 		else{
 			return array('status'=>true, "data"=>$home);
