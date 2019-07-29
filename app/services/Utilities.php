@@ -8369,7 +8369,7 @@ Class Utilities {
             $order = Order::active()->where('_id', intval($order_id))->first();
         }
         $customer = Customer::active()
-                            ->where('email', $order['customer_email'])
+                            ->where('_id', $order['customer_id'])
                             ->first();
         if(!empty($customer) && (!isset($order['loyalty_registration']) || !$order['loyalty_registration'])){
             // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';

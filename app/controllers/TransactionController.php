@@ -6376,11 +6376,11 @@ class TransactionController extends \BaseController {
 
         if(!$this->vendor_token){
             if(!empty($data['cash_pickup']) && $data['cash_pickup']){
-                $payment_modes[] = array(
-                    'title' => 'Cash Pickup',
-                    'subtitle' => 'Schedule cash payment pick up',
-                    'value' => 'cod',
-                );
+                // $payment_modes[] = array(
+                //     'title' => 'Cash Pickup',
+                //     'subtitle' => 'Schedule cash payment pick up',
+                //     'value' => 'cod',
+                // );
             }
 
             if(!empty($data['part_payment']) && $data['part_payment']){
