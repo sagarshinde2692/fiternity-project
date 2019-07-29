@@ -6373,7 +6373,7 @@ class TransactionController extends \BaseController {
                 'value' => 'emi',
             );
         }
-        Log::info('before adding cash pickup');
+        
         if(!$this->vendor_token){
             if(!empty($data['cash_pickup']) && $data['cash_pickup'] && empty($data['data']['coupon_details']['applied'])){
                 $payment_modes[] = array(
