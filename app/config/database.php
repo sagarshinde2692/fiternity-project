@@ -1,18 +1,24 @@
 <?php
+
 //local
 // $host = "localhost";
 // $username = "";
 // $password = "";
+
 //stage
 // $host = "apistage.fitn.in";
 // $username = "admin";
 // $password = "fit123";
 // $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
+
 //production
+
 $host = "54.179.134.14"; 
 $username = ""; 
 $password = ""; 
+
 return array(
+
 	/*
 	|--------------------------------------------------------------------------
 	| PDO Fetch Style
@@ -23,7 +29,9 @@ return array(
 	| array format for simplicity. Here you can tweak the fetch style.
 	|
 	*/
+
 	'fetch' => PDO::FETCH_CLASS, 
+
 	/*
 	|--------------------------------------------------------------------------
 	| Default Database Connection Name
@@ -34,7 +42,10 @@ return array(
 	| you may use many connections at once using the Database library.
 	|
 	*/
+
+
 	'default' => 'mongodb', 
+
 	/*
 	|--------------------------------------------------------------------------
 	| Database Connections
@@ -50,7 +61,9 @@ return array(
 	| choice installed on your machine before you begin development.
 	|
 	*/
+
 	'connections' => array(
+
 		'mongodb' => array(
 			'driver' => 'mongodb', 
 			'host' => $host, 
@@ -63,6 +76,7 @@ return array(
 			// 		'db' => 'admin' // sets the authentication database required by mongo 3
 			// 	]
 		), 
+
 		'mongodb2' => array(
 			'driver' => 'mongodb', 
 			'host' => $host, 
@@ -75,6 +89,7 @@ return array(
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]
 		), 
+
 		'fitcheckins' => array(
 			'driver' => 'mongodb', 
 			'host' => $host, 
@@ -99,6 +114,8 @@ return array(
 		// 	// 	'db' => 'admin' // sets the authentication database required by mongo 3
 		// 	// ]
 		// ), 
+
+
 		// 'mongodb3' => array(
 		// 	'driver'   => 'mongodb',
         //     'host'     => $host,
@@ -107,11 +124,14 @@ return array(
         //     'username' => $username,
         //     'password' => $password
 		// ),
+
+
 		/*'sqlite' => array(
 			'driver'   => 'sqlite',
 			'database' => __DIR__.'/../database/production.sqlite', 
 			'prefix' => '', 
 			), 
+
 		'mysql' => array(
 			'driver' => 'mysql', 
 			'host' => 'apistage.fitn.in', 
@@ -122,6 +142,7 @@ return array(
 			'collation' => 'utf8_unicode_ci', 
 			'prefix' => '', 
 			), 
+
 		'pgsql' => array(
 			'driver' => 'pgsql', 
 			'host' => 'localhost', 
@@ -132,6 +153,7 @@ return array(
 			'prefix' => '', 
 			'schema' => 'public', 
 			), 
+
 		'sqlsrv' => array(
 			'driver' => 'sqlsrv', 
 			'host' => 'localhost', 
@@ -140,7 +162,9 @@ return array(
 			'password' => '', 
 			'prefix' => '', 
 			),  */
+
 			), 
+
 	/*
 	|--------------------------------------------------------------------------
 	| Migration Repository Table
@@ -151,7 +175,9 @@ return array(
 	| the migrations on disk have not actually be run in the databases.
 	|
 	*/
+
 	'migrations' => 'migrations', 
+
 	/*
 	|--------------------------------------------------------------------------
 	| Redis Databases
@@ -162,8 +188,11 @@ return array(
 	| such as APC or Memcached. Laravel makes it easy to dig right in.
 	|
 	*/
+
 	'redis' => array(
+
 		'cluster' => false, 
+
 		'default' => array(
 			'host' => '127.0.0.1', 
 			'port' => 6379, 
