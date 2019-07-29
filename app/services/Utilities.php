@@ -7166,7 +7166,7 @@ Class Utilities {
                     $finder = Finder::find($data['finder_id']);
                 }
 
-                if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
+                if((empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin') || (empty($data['finder_flags']) && !empty($finder))){
                     
                     // Finder::$withoutAppends = true;
                     // $finder = Finder::find($data['finder_id']);
