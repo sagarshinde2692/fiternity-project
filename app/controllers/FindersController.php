@@ -1359,48 +1359,36 @@ class FindersController extends \BaseController {
                     Log::info("Error while sorting ratecard");
                 }
                 
-                if(empty($response['vendor_stripe_data']['text'])){
-                    // if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
-                        
-                    //     if(!empty($finder['flags']['cashback_type'])){
-                            
-                    //         $text1 = $this->getVendorStripeCashbackText($finder);
-                            
-                    //         $response['vendor_stripe_data']	=	[
-                    //             'text1'=> $text1,
-                    //             'text3'=>"",
-                    //             'background-color'=> "",
-                    //             'text_color'=> '$fff',
-                    //             'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
-                    //         ];
-                            
-                    //     }
-                    //     if(empty($finder['flags']['no_disc_mar'])){
-
-                    //         if(!empty($finder['flags']['fit500'])){
-                    //             $response['vendor_stripe_data']	=	[
-                                    
-                    //                 'text1'=> "Lowest Prices + Get flat Rs 500 off | Code: FIT500",
-                    //                 'text3'=>"",
-                    //                 'background-color'=> "",
-                    //                 'text_color'=> '$fff',
-                    //                 'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
-                    //             ];
-                                
-                    //         }else{
-                    //             $response['vendor_stripe_data']	=	[
-                    //                 'text1'=> "Lowest Prices + Get addnl flat 10% off | Code: FIT10 - *T&C Applicable",
-                    //                 'text3'=>"",
-                    //                 'background-color'=> "",
-                    //                 'text_color'=> '$fff',
-                    //                 'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
-                    //             ];
-                    //         }
-                    //     }
-                        // if(in_array($finder['_id'], Config::get('app.anytime_finder_ids', []))){
-                            
+                if(empty($response['vendor_stripe_data']['text']) ){
+                    if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
+                    
+                        if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
-                                
+                            
+                                'text1'=> "Biggest Monsoon Flash Sale <br> Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20 (App Only Deal) || Book Workout Sessions At INR 99 Only (No Code Required)",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '#49bfb3'
+                            ];
+
+                            $response['show_timer'] = true;
+                        
+                        }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
+                            $response['vendor_stripe_data']	= [
+                            
+                                'text1'=> "Biggest Monsoon Flash Sale || Book Workout Sessions At INR 99 Only (No Code Required)",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '#49bfb3'
+                            ];
+
+                            $response['show_timer'] = true;
+                        
+                        }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
+                            $response['vendor_stripe_data']	= [
+                            
                                 'text1'=> "Biggest Monsoon Flash Sale <br>  Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20 (App Only Deal)",
                                 'text3'=>"",
                                 'background-color'=> "",
@@ -1408,27 +1396,10 @@ class FindersController extends \BaseController {
                                 'background'=> '#49bfb3'
                             ];
 
-                            if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
-                                $response['vendor_stripe_data']	= [
-                                
-                                    'text1'=> "Biggest Monsoon Flash Sale <br> Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20 (App Only Deal) || Book Workout Sessions At INR 99 Only (No Code Required)",
-                                    'text3'=>"",
-                                    'background-color'=> "",
-                                    'text_color'=> '$fff',
-                                    'background'=> '#49bfb3'
-                                ];
-                            }
-
-                        // }elseif(!empty($finder['flags']['sfit'])){
-                            // $response['vendor_stripe_data']	=	[
-                                
-                            //     'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | USE CODE: THUNDER | OFFER EXPIRES IN",
-                            //     'text3'=>"",
-                            //     'background-color'=> "",
-                            //     'text_color'=> '$fff',
-                            //     'background'=> '#49bfb3'
-                            // ];
-                        // }
+                            $response['show_timer'] = true;
+                        
+                        }
+                    }
 					
                 }else if(!empty($response['vendor_stripe_data']['text'])){
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
@@ -3860,16 +3831,13 @@ class FindersController extends \BaseController {
 	}
 
 	public function getFinderOneLiner($data) {
-		if($this->device_type == 'android'){
-			$line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20<br><br>- Get 100% Instant Cashback on Pay-Per-Session. Use Code : FITBACK";
-		}else{
-			$line = "\nBiggest Monsoon Flash Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20\n\n- Get 100% Instant Cashback on Pay-Per-Session. Use Code : FITBACK";
-		}
-        
-        if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
+        $line = null;
+        if(empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !empty($data['finder']['flags']['monsoon_campaign_pps'])){
+
+            
             if($this->device_type == 'android'){
-                
+            
                 $line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20<br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
 
             }else{
@@ -3877,7 +3845,25 @@ class FindersController extends \BaseController {
                 $line = "\nBiggest Monsoon Flash Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
             
             }
+            
+        }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
+            if($this->device_type == 'android'){
+                $line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20<br><br>- Get 100% Instant Cashback on Pay-Per-Session. Use Code : FITBACK";
+            }else{
+                $line = "\nBiggest Monsoon Flash Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20\n\n- Get 100% Instant Cashback on Pay-Per-Session. Use Code : FITBACK";
+            }
+        
+        }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
+            if($this->device_type == 'android'){
+                
+                $line = "<u>Biggest Monsoon Flash Sale</u><br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
+
+            }else{
+                
+                $line = "Biggest Monsoon Flash Sale\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
+            
+            }
         }
 
         return $line;
@@ -3939,7 +3925,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderDetailApp($slug, $cache = true){
+	public function finderDetailApp($slug, $cache = false){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -8284,7 +8270,7 @@ class FindersController extends \BaseController {
 			foreach($service['ratecard'] as &$rc){
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
-				if(in_array($rc['type'], ['membership', 'extended validity'])){
+				if(in_array($rc['type'], ['membership', 'extended validity']) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nGet upto 50% off + Additional 20% Off. Use Code: BIG20");
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
