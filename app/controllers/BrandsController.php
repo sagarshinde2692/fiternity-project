@@ -428,7 +428,6 @@ class BrandsController extends \BaseController {
 		}
 
 		$home1['own_franchise']['banner_image']['image'] = $base_url.$home1['own_franchise']['banner_image']['path'].$home1['own_franchise']['banner_image']['image'];
-		//$home1['own_franchise']['partners_list'] = $this->addPartenersList();
 		$home[0]['brand_website'] =  $home1;
 
 
@@ -477,33 +476,4 @@ class BrandsController extends \BaseController {
 		}
 	}
 
-	public function addPartenersList(){
-		return[ 
-			[
-				"logo" => "https://b.fitn.in/brand/partner-1-bw.png",
-				"colored_logo" => "https://b.fitn.in/brand/partner-1.jpg",
-				"url" => ""
-			],
-			[
-				"logo" => "https://b.fitn.in/brand/partner-2-bw.png",
-				"colored_logo" => "https://b.fitn.in/brand/partner-2.jpg",
-				"url" => ""
-			], 
-			[
-				"logo" => "https://b.fitn.in/brand/partner-3-bw.png",
-				"colored_logo" => "https://b.fitn.in/brand/partner-3.png",
-				"url" => ""
-			], 
-			[
-				"logo" => "https://b.fitn.in/brand/partner-4-bw.png",
-				"colored_logo" => "https://b.fitn.in/brand/partner-4.png",
-				"url" => ""
-			], 
-			[
-				"logo" => "https://b.fitn.in/brand/partner-5-bw.png",
-				"colored_logo" => "https://b.fitn.in/brand/partner-5.png",
-				"url" => ""
-			]
-			];
-	}
 }
