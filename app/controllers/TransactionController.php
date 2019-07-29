@@ -6373,7 +6373,7 @@ class TransactionController extends \BaseController {
                 'value' => 'emi',
             );
         }
-        Log::info('coupon code checking and:::::::');
+        Log::info('coupon code checking and:::::::', [$data['coupon_code']]);
         if(!$this->vendor_token){
             if(!empty($data['cash_pickup']) && $data['cash_pickup'] && empty($data['coupon_code'])){
                 $payment_modes[] = array(
