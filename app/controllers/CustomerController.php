@@ -861,7 +861,11 @@ class CustomerController extends \BaseController {
 		if(isset($data['vendor_login']) && $data['vendor_login']){
 
 			return $this->vendorLogin($data);
-		}
+        }
+        
+        if(!empty($data['direct_login_key']) && empty($data['direct_login'])){
+            $this->directLogin($data);
+        }
 
 		if(isset($data['identity']) && !empty($data['identity'])){
 
@@ -1076,9 +1080,16 @@ class CustomerController extends \BaseController {
 			'email' => 'required|email',
 			'password' => 'required'
 		];
-
-		$validator = Validator::make($data = Input::json()->all(),$rules);
-
+        
+        if(!empty($data['direct_login_key']){
+            $rules = [
+                'email' => 'required|email',
+                'password' => 'required'
+            ];  
+        }
+        
+        $validator = Validator::make($data = Input::json()->all(),$rules);
+        
 		if($validator->fails()) {
 			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 		}
@@ -1120,7 +1131,7 @@ class CustomerController extends \BaseController {
 		}
 		$customer->update();
 
-		
+
 		$resp = $this->checkIfpopPup($customer);
 		
 		$customer_data = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
@@ -9693,5 +9704,21 @@ class CustomerController extends \BaseController {
 		$customerUpdate->update();
 		return array("status"=>200, "message"=>"Success");
 		//'loyalty.loyalty_upgraded'=false
-	}
+    }
+    
+    public function directLogin($data){
+
+        $customer_exists = Customer::where('email', 'like', $data['email'])->count();
+        
+        $data['identity'] = 'email';
+        $data['direct_login'] = true;
+
+        if(!empty($customer_exists)){
+            return $this->customerLogin($data);
+        }else{
+            return $this->register($data);
+        }
+
+
+    }
 }
