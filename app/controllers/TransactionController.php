@@ -1530,7 +1530,6 @@ class TransactionController extends \BaseController {
             $resp['data']['payment_modes'] = [];
 
             if(isset($order->amount_final) && $order->amount_final ){
-                Log::info('order amount final:::::::');
                 $resp['data']['payment_modes'] = $this->getPaymentModes($resp, $order->toArray());
             }
         // }
