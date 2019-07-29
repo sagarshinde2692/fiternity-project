@@ -6392,7 +6392,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if($this->vendor_token || !empty($data['ratecard_pay_at_vendor'])){
+        if(($this->vendor_token || !empty($data['ratecard_pay_at_vendor'])) && empty($data['data']['coupon_details']['applied'])){
 
             $payment_modes[] = array(
                 'title' => 'Pay at Studio',
