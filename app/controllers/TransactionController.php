@@ -8435,16 +8435,18 @@ class TransactionController extends \BaseController {
     		);
     	} */
     	
+        
         array_push($payment_modes, ['title' => 'Online Payment','subtitle' => 'Transact online with netbanking, card and wallet','value' => 'paymentgateway','payment_options'=>$payment_options]);
         //array_push($payment_modes, ['title' => 'Cash Pickup','subtitle' => 'Schedule cash payment pick up','value' => 'cod']);
+
     	$emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));    		
     	if(!empty($data['emi']) && $data['emi'])
     	   array_push($payment_modes, ['title' => 'EMI','subtitle' => 'Transact online with credit installments','value' => 'emi']);
     	
     	   
-        if($this->vendor_token){
+        if($this->vendor_token)
             array_push($payment_modes, ['title' => 'Pay at Studio','subtitle' => 'Transact via paying cash at the Center','value' => 'pay_at_vendor']);
-        }
+
     		
     	return $payment_modes;
     }
