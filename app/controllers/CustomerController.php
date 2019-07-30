@@ -8855,7 +8855,7 @@ class CustomerController extends \BaseController {
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
 			$customer = Customer::find($customer_id);
-			$milestones = $this->getCustomerMilestones($customer);
+			$milestones = $this->getCustomerMilestones($customer, true);
 
 
             if(!empty($_GET['milestone']) && !empty($milestones[intval($_GET['milestone'])]['voucher'])){
@@ -9792,9 +9792,9 @@ class CustomerController extends \BaseController {
      * @param $customer
      * @return array
      */
-    public function getCustomerMilestones($customer)
+    public function getCustomerMilestones($customer, $isReward=false)
     {
-		if(!empty($customer->corporate_id)){
+		if(!empty($customer->corporate_id) && $isReward){
 			return !empty($customer->corporate_rewards['milestones']) ? $customer->corporate_rewards['milestones'] : [];
 		}
         return !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];

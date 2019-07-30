@@ -567,7 +567,7 @@ Class RelianceService {
                 'workout_image' => Config::get('health_config.health_images.workout_image'),
                 // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
                 'achievement' => (!empty($relCity))?'#'.$selfRank.' in '.ucwords($relCity):null,
-                'remarks' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
+                'remarks' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']),
                 'target' => Config::get('health_config.individual_steps.goal'),
                 'progress' => $stepsAgg['ind_total_steps_count'],
                 // 'checkout_rewards' => 'Check Rewards',
@@ -643,7 +643,7 @@ Class RelianceService {
         $users = [];
         $earnSteps = Config::get('health_config.leader_board.earn_steps');
         $checkout = Config::get('health_config.leader_board.checkout');
-        $earnSteps['description'] = 'The leaderboard is updated till '.date('d-m-Y', time()).' 11:59 PM';
+        $earnSteps['description'] = 'The leaderboard is updated till '.date('d-m-Y', strtotime('-1 days')).' 11:59 PM';
 
 
         $customer = Customer::where('_id', $customerId)->where('status', '1')->where('corporate_id', 'exists', true)->first();
