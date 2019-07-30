@@ -996,10 +996,14 @@ Class RelianceService {
             $rawData = $_values1['result'][0]['one'];
             $cities = $_values1['result'][0]['two'];
             
-            $tmp_depart = array_map(function($item){
-                return ['name'=> $item];
-            }, $rawData[0]['Departments']);
-            
+            $tmp_depart = [];
+
+            if(!empty($rawData)) {
+                $tmp_depart = array_map(function($item){
+                    return ['name'=> $item];
+                }, $rawData[0]['Departments']);
+            }
+
             $finalFiltersList = [];
 
             if(empty($external_reliance)){
