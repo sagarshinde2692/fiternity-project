@@ -13,6 +13,7 @@ use App\Services\Utilities as Utilities;
 use App\Services\CustomerInfo as CustomerInfo;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\ShortenUrl as ShortenUrl;
+use App\Services\RelianceService as RelianceService;
 use App\Services\Emi as Emi;
 use App\Mailers\FinderMailer as FinderMailer;
 
@@ -28,7 +29,8 @@ class CustomerController extends \BaseController {
 		CustomerSms $customersms,
 		Utilities $utilities,
 		CustomerReward $customerreward,
-		FinderMailer $findermailer
+		FinderMailer $findermailer,
+		RelianceService $relianceService
 	) {
 		parent::__construct();
 
@@ -37,6 +39,7 @@ class CustomerController extends \BaseController {
 		$this->utilities	=	$utilities;
 		$this->customerreward = $customerreward;
 		$this->findermailer             =   $findermailer;
+		$this->relianceService = $relianceService;
 
 		$this->vendor_token = false;
 
@@ -660,7 +663,7 @@ class CustomerController extends \BaseController {
                 ->where(function($query) use($data) {
                     $query->orWhere('email', 'exists', false)->orWhere('email','=','');
                 })
-                ->first();
+				->first();
             }
 
 			if(!empty($customerNoEmail)){
@@ -679,6 +682,27 @@ class CustomerController extends \BaseController {
 					$customerNoEmail->email = $data['email'];
 					$customerNoEmail->identity = $data['identity'];
 					$customerNoEmail->demonetisation = time();
+					if(!empty($customerNoEmail['email'])) {
+						$relCust = $this->relianceService->getRelianceCustomerDetails($customerNoEmail['email']);
+						$emailList = $this->relianceService->getRelianceCustomerEmailList();
+						if(in_array($customerNoEmail['email'], $emailList) || $this->relianceService->isRelianceSAPEmailId($customerNoEmail['email'])) {
+							$customerNoEmail->corporate_id = Config::get('health_config.reliance.corporate_id');
+							if($relCust) {
+								if(!empty($relCust['designation'])) {
+									$customerNoEmail->reliance_designation = $relCust['designation'];
+								}
+								if(!empty($relCust['department'])) {
+									$customerNoEmail->reliance_department = $relCust['department'];
+								}
+								if(!empty($relCust['location'])) {
+									$customerNoEmail->reliance_location = strtolower($relCust['location']);
+								}
+								if(!empty($relCust['city'])) {
+									$customerNoEmail->reliance_city = strtolower($relCust['city']);
+								}
+							}
+						}
+					}
 					$customerNoEmail->update();
 					$customer_data = array('name'=>ucwords($customerNoEmail['name']),'email'=>$customerNoEmail['email']);
 					if(isset($data['password'])){
@@ -747,6 +771,27 @@ class CustomerController extends \BaseController {
 							$customer->demonetisation = time();
 							$customer->referral_code = generateReferralCode($customer->name);
 							$customer->old_customer = false;
+							if(!empty($customer['email'])) {
+								$relCust = $this->relianceService->getRelianceCustomerDetails($customer['email']);
+								$emailList = $this->relianceService->getRelianceCustomerEmailList();
+								if(in_array($customer['email'], $emailList) || $this->relianceService->isRelianceSAPEmailId($customer['email'])) {
+									$customer->corporate_id = Config::get('health_config.reliance.corporate_id');
+									if($relCust) {
+										if(!empty($relCust['designation'])) {
+											$customer->reliance_designation = $relCust['designation'];
+										}
+										if(!empty($relCust['department'])) {
+											$customer->reliance_department = $relCust['department'];
+										}
+										if(!empty($relCust['location'])) {
+											$customer->reliance_location = strtolower($relCust['location']);
+										}
+										if(!empty($relCust['city'])) {
+											$customer->reliance_city = strtolower($relCust['city']);
+										}
+									}
+								}
+							}
 							$customer->save();
 							$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email']);
 
@@ -871,7 +916,7 @@ class CustomerController extends \BaseController {
 
 				if(isset($resp["token"])){
 					$response = $resp["token"];
-					if($resp["popup"]["show_popup"] == "true"){
+					if($resp["popup"]["show_popup"] == "true" && empty($resp['customer_data']['corporate_id'])){
 						$response["extra"] = $resp["popup"];
 					}else{
 						$response["extra"] = array("show_popup" => false);
@@ -905,8 +950,11 @@ class CustomerController extends \BaseController {
 				$resp = $this->socialLogin($data);
 				if(isset($resp["token"])){
 					$response = $resp["token"];
-					if($resp["popup"]["show_popup"] == "true"){
+					if($resp["popup"]["show_popup"] == "true" && empty($resp['customer_data']['corporate_id'])){
 						$response["extra"] = $resp["popup"];
+					}
+					else {
+						$response["extra"] = array("show_popup" => false);
 					}
 				}else{
 					$response = $resp;
@@ -1118,12 +1166,35 @@ class CustomerController extends \BaseController {
 		{
 			$customer->cart_id=$cart_id;
 		}
+
+		if(!empty($customer['email'])) {
+			$relCust = $this->relianceService->getRelianceCustomerDetails($customer['email']);
+			$emailList = $this->relianceService->getRelianceCustomerEmailList();
+			if(in_array($customer['email'], $emailList) || $this->relianceService->isRelianceSAPEmailId($customer['email'])) {
+				$customer->corporate_id = Config::get('health_config.reliance.corporate_id');
+				if($relCust) {
+					if(!empty($relCust['designation'])) {
+						$customer->reliance_designation = $relCust['designation'];
+					}
+					if(!empty($relCust['department'])) {
+						$customer->reliance_department = $relCust['department'];
+					}
+					if(!empty($relCust['location'])) {
+						$customer->reliance_location = strtolower($relCust['location']);
+					}
+					if(!empty($relCust['city'])) {
+						$customer->reliance_city = strtolower($relCust['city']);
+					}
+				}
+			}
+		}
+
 		$customer->update();
 
 		
 		$resp = $this->checkIfpopPup($customer);
 		
-		$customer_data = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
+		$customer_data = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender','corporate_id']);
 		
         $token = $this->createToken($customer);
 		
@@ -1235,10 +1306,10 @@ class CustomerController extends \BaseController {
 					return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 				}
 
-				$customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
+				$customer = Customer::active()->where('facebook_id','=',$data['facebook_id'])->first();
 
 				if(empty($customer)){
-					$customer = Customer::where('email','=',$data['email'])->first();
+					$customer = Customer::active()->where('email','=',$data['email'])->first();
 				}
 
 				if(!empty($customer)){
@@ -1260,7 +1331,7 @@ class CustomerController extends \BaseController {
 					return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 				}else{
 
-					$customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
+					$customer = Customer::active()->where('facebook_id','=',$data['facebook_id'])->first();
 
 					if(empty($customer) || !isset($customer->email) || $customer->email == ''){
 						return array('status' => 401,'message' => 'email is missing');
@@ -1280,7 +1351,7 @@ class CustomerController extends \BaseController {
 				return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 			}
 
-			$customer = Customer::where('email','=',$data['email'])->first();
+			$customer = Customer::active()->where('email','=',$data['email'])->first();
 		}
 
 		if(empty($customer)){
@@ -1317,9 +1388,32 @@ class CustomerController extends \BaseController {
 		}
 
 		$customer->last_visited = Carbon::now();
+
+		if(!empty($customer['email'])) {
+			$relCust = $this->relianceService->getRelianceCustomerDetails($customer['email']);
+			$emailList = $this->relianceService->getRelianceCustomerEmailList();
+			if(in_array($customer['email'], $emailList) || $this->relianceService->isRelianceSAPEmailId($customer['email'])) {
+				$customer->corporate_id = Config::get('health_config.reliance.corporate_id');
+				if($relCust) {
+					if(!empty($relCust['designation'])) {
+						$customer->reliance_designation = $relCust['designation'];
+					}
+					if(!empty($relCust['department'])) {
+						$customer->reliance_department = $relCust['department'];
+					}
+					if(!empty($relCust['location'])) {
+						$customer->reliance_location = strtolower($relCust['location']);
+					}
+					if(!empty($relCust['city'])) {
+						$customer->reliance_city = strtolower($relCust['city']);
+					}
+				}
+			}
+		}
+
 		$customer->update();
 		$resp = $this->checkIfpopPup($customer);
-		return array("token" => $this->createToken($customer), "popup" => $resp);
+		return array("token" => $this->createToken($customer), "popup" => $resp, "customer_data"=>$customer);
 		// return $this->createToken($customer);
 	}
 
@@ -1418,6 +1512,7 @@ class CustomerController extends \BaseController {
 		$customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
 		$customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
 		$customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
+		$customer['city_id'] = (isset($customer['city_id'])) ? $customer['city_id'] : "";
 
 		$data = array(
 					'_id'=>$customer['_id'],
@@ -1434,14 +1529,21 @@ class CustomerController extends \BaseController {
 						'mob'=>$customer['extra']['mob'],
 						'location'=>$customer['extra']['location']
 					),
-					'corporate_login'=>$this->utilities->checkCorporateEmail($customer['email'])
+					'corporate_login'=>$this->utilities->checkCorporateEmail($customer['email']),
+					'city_id'=> $customer['city_id']
 				);
+		if(!empty($customer['corporate_id'])) {
+			$data['corporate_id'] = $customer['corporate_id'];
+		}
 		if(!empty($customer['cart_id']))
 			$data['cart_id']=$customer['cart_id'];
 		if(!empty($customer['referral_code']))
 			$data['referral_code'] = $customer['referral_code'];
 		if(!empty($customer['freshchat_restore_id']))
 			$data['freshchat_restore_id'] = $customer['freshchat_restore_id'];
+		if(!empty($customer['external_reliance'])) {
+			$data['external_reliance'] = $customer['external_reliance'];
+		}
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
 			"nbf" => Config::get('app.jwt.nbf'),
@@ -2314,7 +2416,7 @@ class CustomerController extends \BaseController {
 			'fitness_goal',
 			'city',
 			'place',
-			'freshchat_restore_id'))->toArray();
+			'freshchat_restore_id', 'corporate_id', 'external_reliance'))->toArray();
 			
 			
 		if($customer){
@@ -2334,16 +2436,21 @@ class CustomerController extends \BaseController {
             if(!empty($customer[0]['address']) && is_string($customer[0]['address'])){
 				unset($customer[0]['address']);
 			}
-
-			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
-
-			$customer_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);                
 			
-			// $response['level'] = [
-			// 	'header'=>'You’re on a workout streak!',
-			// 	'sub_header'=>'Level '.$customer_level_data['current_level']['level'],
-			// 	'image'=>Config::get('app.streak_data')[$customer_level_data['current_level']['level'] - 1]['unlock_icon']
-			// ];
+			$customer[0]['show_pass'] = false; // uncomment this for pass, commented for android during android release 
+            $reliance_customer = $this->relianceService->getCorporateId(null, $customer_id);
+			$corporate_id  = $reliance_customer['corporate_id'];
+            if(!empty($corporate_id) && !empty($customer[0])){
+				$customer[0]['is_health_shown'] = true;
+				if(empty($customer[0]['external_reliance']) || !($customer[0]['external_reliance'])) {
+					$customer[0]['corporate_manual_request'] = 'Request Profile Changes';
+				}
+            }
+
+			if(!empty($customer[0]['dob']) && !empty($customer[0]['dob']->sec)){
+				$customer[0]['dob'] = date('d-M-Y', $customer[0]['dob']->sec);
+			}
+			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
 
 		}else{
 
@@ -2369,7 +2476,6 @@ class CustomerController extends \BaseController {
 		}
 		$customer_detail = $this->customerDetail($customer_id);
 
-		
 
 		return $customer_detail;
 
@@ -3379,7 +3485,11 @@ class CustomerController extends \BaseController {
 				
                 $customeremail = $decoded->customer->email;
 				$customer_id = $decoded->customer->_id;
-
+				$reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
+				$corporate_id  = $reliance_customer['corporate_id'];
+				$external_reliance = $reliance_customer['external_reliance'];
+				
+				Log::info('corporate id and external data::::::', [$corporate_id, $external_reliance]);
 				Log::info("------------home------------$customeremail");
 
 				Log::info('device_type'.$this->device_type);
@@ -3661,8 +3771,12 @@ class CustomerController extends \BaseController {
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
 			if(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 4.2)){
-				
-				$category_new = citywise_categories($city);
+				$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+				$_city = $city;
+				if(empty($_citydata)) {
+					$_city = "all";
+				}
+				$category_new = citywise_categories($_city);
 
 				foreach ($category_new as $key => $value) {
 					// $category_new[$key]['pps_available'] = false;
@@ -3696,8 +3810,12 @@ class CustomerController extends \BaseController {
 				}
 				$cache_tag = 'customer_home_by_city_ios';
 			}else{
-
-				$category_new = citywise_categories($city);
+				$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+				$_city = $city;
+				if(empty($_citydata)) {
+					$_city = "all";
+				}
+				$category_new = citywise_categories($_city);
 
 				foreach ($category_new as $key => $value) {
 					// $category_new[$key]['pps_available'] = false;
@@ -3714,15 +3832,21 @@ class CustomerController extends \BaseController {
 		$customer_home_by_city = $cache ? Cache::tags($cache_tag)->has($city) : false;
 		if(!$customer_home_by_city){
 			$category = $locations = $popular_finders =	$recent_blogs =	array();
-			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+			$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+			$_city = $city;
+			if(empty($_citydata)) {
+				$_city = "all";
+			}
+			$citydata 		=	City::where('slug', '=', $_city)->first(array('name','slug'));
 			if(!$citydata){
-				if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
-					$citydata['name'] 		= 	"mumbai";
-					$citydata['_id']		= 	1;
-				}else{
-					return $this->responseNotFound('City does not exist');
-				}
-				
+				$citydata['name'] = $city;
+				$citydata['_id'] = 10000;
+				// if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
+				// 	$citydata['name'] 		= 	"mumbai";
+				// 	$citydata['_id']		= 	1;
+				// }else{
+				// 	return $this->responseNotFound('City does not exist');
+				// }
 			}
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];
@@ -3842,7 +3966,32 @@ class CustomerController extends \BaseController {
                    }
 
                    usort($campaigns, "cmp");
-               }
+			   }
+			   
+				if(!empty($customer_id) && !empty($corporate_id) && empty($external_reliance) && $corporate_id == 1) {
+					$customerRec = Customer::active()->where('email', $customeremail)->first();
+					$result['health_popup'] = Config::get('health_config.health_popup');
+					if(!empty($customerRec) && empty($customerRec->dob)) {
+						$result['dob_popup'] = Config::get('health_config.dob_popup');
+					}
+					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city);
+					$result['is_health_rewad_shown'] = true;
+				}
+				else if(!empty($customer_id)){
+					$customerRec = Customer::active()->where('email', $customeremail)->first();
+					$result['non_reliance'] = Config::get('health_config.non_reliance');
+					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city);
+					if(!empty($customerRec) && empty($customerRec->dob)) {
+						$result['dob_popup'] = Config::get('health_config.dob_popup');
+					}
+					if($this->device_type== 'android' && !empty($corporate_id)){
+						unset($result['non_reliance']);
+					}
+				}
+
+				if(!empty($result['health']['steps'])){
+					unset($result['health']['steps']);
+				}
 			}
             // commented above on 26 Jan - end
             
@@ -4044,6 +4193,23 @@ class CustomerController extends \BaseController {
             // 'footer' => "Available across 2500+ outlets across ".ucwords($city)." | Starting at <b>&#8377; 149</b>"
             'footer' => "Book Workout Sessions At INR 99 Only"
         ];
+
+		if($result['city_id']==10000) {
+			unset($result['banner']);
+			unset($result['upcoming']);
+			unset($result['session_packs']);
+			unset($result['collections']);
+			unset($result['campaigns']);
+			unset($result['near_by_vendor']);
+			unset($result['trendingheader']);
+			unset($result['trendingsubheader']);
+			unset($result['fitex']);
+			unset($result['fitsquad_upgrade']);
+			$result['nodata'] = [
+				'title' => '',
+				'message' => 'Sorry, We are currently not operational in your city. We will be launching here soon.'
+			];
+		}
 
 		return Response::json($result);
 		
@@ -8293,6 +8459,14 @@ class CustomerController extends \BaseController {
 						$booktrial->post_trial_status_date = time();
 					}
 					$booktrial->update();
+					if(!empty($booktrial->corporate_id)) {
+						// $this->relianceService->updateServiceStepCount();
+						$orderId = null;
+						if(!empty($booktrial['order_id'])) {
+							$orderId = $booktrial->order_id;
+						}
+						\Queue::connection('redis')->push('RelianceController@updateServiceStepCountJob', array('booktrialId'=>$booktrial->_id, 'deviceDate'=>time()),Config::get('app.queue'));
+					}
 				}
 				else array_push($not_located,$value['_id']);
 			}
@@ -8343,18 +8517,23 @@ class CustomerController extends \BaseController {
 	}
 
 	public function loyaltyProfile(){
-		Log::info("asdas");
+		$input = Input::get();
 		$post = false;
 		$jwt_token = Request::header('Authorization');
+
 		$customer = null;
         $filter = [];
-        
-        $customer = $this->utilities->getCustomerFromTokenAsObject();
-		
-        if(!empty($customer->_id)){
+		$isReward = !empty($input['isReward']) && ($input['isReward']!=false && $input['isReward']!="false");
 
-            $customer = Customer::active()->where('_id', $customer->_id)->where('loyalty', 'exists', true)->first();
-            $filter = $this->utilities->getMilestoneFilterData($customer);
+        $customer = $this->utilities->getCustomerFromTokenAsObject();
+        if(!empty($customer->_id)){
+			if(isset($customer->corporate_id)){
+				$customer = Customer::active()->where('_id', $customer->_id)->where('corporate_id', 1)->first();	
+			}
+			else {
+				$customer = Customer::active()->where('_id', $customer->_id)->where('loyalty', 'exists', true)->first();
+			}
+            $filter = $this->utilities->getMilestoneFilterData($customer, $isReward);
 
 			if($customer && !empty($customer['loyalty'])){
 				$post = true;
@@ -8373,7 +8552,8 @@ class CustomerController extends \BaseController {
             if(!$post ){
                 $voucher_categories_map[$vc['_id']][0]['max_amount'] = $vc['amount'];
             }
-        }
+		}
+		
 		//check onece for it should availabe with postloyaltyregistration and preloyalty registration or with both ->>>>>>>>>> now sendoing with both
 		$fitsquad_upgrade= null;
 		//if((isset($_REQUEST['device_type']) || isset($_REQUEST['Device_Type'])) && (in_array($_REQUEST['device_type'],['ios','android']) || in_array($_REQUEST['Device_type'],['ios','android'])) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
@@ -8383,7 +8563,11 @@ class CustomerController extends \BaseController {
 				$fitsquad_upgrade = $fitsquadUpgradeOrder;
 			}
 		//}
-        if($post){
+        if(!empty($input['isReward']) && ($input['isReward']!=false && $input['isReward']!="false")) {
+			Log::info('reliance customer');
+			return $this->reliancePostLoyalty($customer, $voucher_categories_map);
+		}
+		if($post){
 			$postloyalty = $this->postLoyaltyRegistration($customer, $voucher_categories_map);
 			if($fitsquad_upgrade)
 				$postloyalty['post_register']['fitsquad_upgrade'] = $fitsquad_upgrade;
@@ -8593,12 +8777,146 @@ class CustomerController extends \BaseController {
 						$milestones[$voucher_category['milestone']-1]['claimed'] = true; */
 						
                         $voucherAttached = $voucherAttached->toArray();
-                        $voucherAttached['claimed_date_time'] = new \MongoDate();                  
-                        $milestones[$voucher_category['milestone']-1]['voucher'] = !empty($milestones[$voucher_category['milestone']-1]['voucher']) ? $milestones[$voucher_category['milestone']-1]['voucher'] : [];
-                        array_push($milestones[$voucher_category['milestone']-1]['voucher'], $voucherAttached);           
-                        $loyalty = $customer->loyalty;
-                        $loyalty['milestones'] = $milestones;
-                        $customer->loyalty = $loyalty;             
+						$voucherAttached['claimed_date_time'] = new \MongoDate();                  
+						if(!empty($customer->corporate_id)) {
+                        	$milestones[$voucher_category['milestone']]['voucher'] = !empty($milestones[$voucher_category['milestone']]['voucher']) ? $milestones[$voucher_category['milestone']]['voucher'] : [];
+							array_push($milestones[$voucher_category['milestone']]['voucher'], $voucherAttached); 
+							$corporate_rewards = $customer->corporate_rewards;
+							$corporate_rewards['milestones'] = $milestones;
+							$customer->corporate_rewards = $corporate_rewards;
+						}
+						else {
+							$milestones[$voucher_category['milestone']-1]['voucher'] = !empty($milestones[$voucher_category['milestone']-1]['voucher']) ? $milestones[$voucher_category['milestone']-1]['voucher'] : [];
+							array_push($milestones[$voucher_category['milestone']-1]['voucher'], $voucherAttached); 
+							$loyalty = $customer->loyalty;
+							$loyalty['milestones'] = $milestones;
+							$customer->loyalty = $loyalty;
+						}
+                        $customer->update();
+                    // }
+
+                    $communication = true;
+
+                }else{
+                    
+                    return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (3).'));
+                
+                }
+            }
+
+            $resp =  [
+                'voucher_data'=>[
+                    'header'=>"VOUCHER UNLOCKED",
+                    'sub_header'=>"You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : ""),
+                    'coupon_title'=>(!empty($voucherAttached['description']) ? $voucherAttached['description'] : ""),
+                    'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
+                    'coupon_image'=>(!empty($voucherAttached['image']) ? $voucherAttached['image'] : ""),
+                    'coupon_code'=>strtoupper($voucherAttached['code']),
+                    'coupon_subtext'=>'(also sent via email/sms)',
+                    'unlock'=>'UNLOCK VOUCHER',
+                    'terms_text'=>'T & C applied.'
+                ]
+            ];
+            if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
+				$resp['voucher_data']['coupon_text']= $voucherAttached['name'];
+				$resp['voucher_data']['header']= "REWARD UNLOCKED";
+				
+				if(isset($voucherAttached['link'])){
+					$resp['voucher_data']['sub_header']= "You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name'])."<br> Share your details & get your insurance policy activated. " : "");
+					$resp['voucher_data']['coupon_text']= $voucherAttached['link'];
+				}
+                
+            }
+
+            if(!empty($voucher_category['email_text'])){
+                $resp['voucher_data']['email_text']= $voucher_category['email_text'];
+            }
+            $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
+            if(!empty($communication)){
+				$redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
+            }
+
+            return $resp;
+
+		}
+	}
+
+	public function claimExternalCouponRewards($_id=null){
+
+		$data = Input::json()->all();
+		
+		if(!$_id){
+			return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (1).'));
+		}
+		
+		$jwt_token = Request::header('Authorization');
+		if(!empty($jwt_token)){
+
+			$decoded = decode_customer_token($jwt_token);
+			$customer_id = $decoded->customer->_id;
+			$customer = Customer::find($customer_id);
+			$milestones = $this->getCustomerMilestones($customer);
+
+
+            if(!empty($_GET['milestone']) && !empty($milestones[intval($_GET['milestone'])]['voucher'])){
+                
+                if(!isset($_GET['index']) || empty($milestones[intval($_GET['milestone'])]['voucher'][(int)$_GET['index']])){
+			        return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (4).'));
+                }
+
+                $voucherAttached = $milestones[intval($_GET['milestone'])]['voucher'][(int)$_GET['index']];
+
+            }else{
+
+                $voucher_category = VoucherCategory::find($_id);
+				
+				if(!empty($milestones[$voucher_category['milestone']]) && !empty($milestones[$voucher_category['milestone']]['verified'])){
+
+    				/* if(!empty($milestones[$voucher_category['milestone']]['claimed'])){
+    
+    					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
+    
+					} */
+					
+					$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
+					// Log::info('before adding fitcash-> voucher_catageory', $voucher_category);
+					// Log::info('before adding fitcash-> customer_id', $customer_id);	
+					try{
+						if(!empty($voucher_category->fitcash)){
+							$voucher_category_fitcash = array(
+								"id"=>$customer_id,
+								"voucher_catageory"=>$voucher_category
+							);
+							$this->utilities->addFitcashforVoucherCatageory($voucher_category_fitcash);
+						}
+					}
+					catch(\Exception $err){
+						return Response::json(array('status' => 400,'message' => 'Cannot Claim Fitcash. Please contact customer support (5).'));
+					}
+                    if(!$voucherAttached){
+                        return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (2).'));
+                    }
+                    /* return
+                    if(empty($milestones[$voucher_category['milestone']]['claimed'])){
+    					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
+						$milestones[$voucher_category['milestone']]['claimed'] = true; */
+						
+                        $voucherAttached = $voucherAttached->toArray();
+						$voucherAttached['claimed_date_time'] = new \MongoDate();                  
+						if(!empty($customer->corporate_id)) {
+                        	$milestones[$voucher_category['milestone']]['voucher'] = !empty($milestones[$voucher_category['milestone']]['voucher']) ? $milestones[$voucher_category['milestone']]['voucher'] : [];
+							array_push($milestones[$voucher_category['milestone']]['voucher'], $voucherAttached); 
+							$corporate_rewards = $customer->corporate_rewards;
+							$corporate_rewards['milestones'] = $milestones;
+							$customer->corporate_rewards = $corporate_rewards;
+						}
+						else {
+							$milestones[$voucher_category['milestone']]['voucher'] = !empty($milestones[$voucher_category['milestone']]['voucher']) ? $milestones[$voucher_category['milestone']]['voucher'] : [];
+							array_push($milestones[$voucher_category['milestone']]['voucher'], $voucherAttached); 
+							$loyalty = $customer->loyalty;
+							$loyalty['milestones'] = $milestones;
+							$customer->loyalty = $loyalty;
+						}
                         $customer->update();
                     // }
 
@@ -8991,8 +9309,9 @@ class CustomerController extends \BaseController {
 		
         $milestones = $brand_milestones['milestones'];
 		$checkin_limit = $brand_milestones['checkin_limit'];
-		
-        $milestones_data = $this->utilities->getMilestoneSection($customer, $brand_milestones);
+	
+        $milestones_data = $this->utilities->getMilestoneSection($customer, $brand_milestones, 'fitsquad');
+        
         $post_register['milestones']['data'] = $milestones_data['data'];
 		
         $next_milestone_checkins = !empty($milestones[$milestone_no]['next_count']) ? $milestones[$milestone_no]['next_count'] : 225;
@@ -9475,6 +9794,9 @@ class CustomerController extends \BaseController {
      */
     public function getCustomerMilestones($customer)
     {
+		if(!empty($customer->corporate_id)){
+			return !empty($customer->corporate_rewards['milestones']) ? $customer->corporate_rewards['milestones'] : [];
+		}
         return !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
     }
 
@@ -9694,4 +10016,201 @@ class CustomerController extends \BaseController {
 		return array("status"=>200, "message"=>"Success");
 		//'loyalty.loyalty_upgraded'=false
 	}
+
+	public function reliancePostLoyalty($customer, $voucher_categories_map) {
+
+		$milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
+		$customerMilestoneCountMap = $this->relianceService->getCustomerMilestoneCount();
+		$customer = $this->relianceService->updateMilestoneDetails($customer['_id'], $customer['corporate_id']);
+		$customer_milestones = !empty($customer['corporate_rewards']['milestones'])?$customer['corporate_rewards']['milestones']:[];
+		$lastMilestone = (!empty($customer_milestones))?max(array_column($customer_milestones, 'milestone')):null;
+		$lastMilestoneDetails = array_values(array_filter($customer_milestones, function($rec) use ($lastMilestone) {
+			return $rec['milestone']==$lastMilestone;
+		}));
+
+		if(!empty($lastMilestoneDetails) && count($lastMilestoneDetails)>0) {
+			$lastMilestoneDetails = $lastMilestoneDetails[0];
+		}
+
+        $post_register = Config::get('relianceLoyaltyProfile.post_register');
+        
+        $type = (!empty(Input::get('isReward') && (Input::get('isReward')!=false && Input::get('isReward')!="false"))) ? "reliance" : "fitsquad";
+		$milestones_data = $this->utilities->getMilestoneSection($customer, null, $type);
+		$post_register['milestones']['data'] = $milestones_data['data'];
+		
+		$nextMilestone = (!empty($lastMilestoneDetails['milestone']))?$lastMilestoneDetails['milestone']:0;
+        $next_count = !empty($milestones[$nextMilestone]['next_count']) ? $milestones[$nextMilestone]['next_count'] : $milestones[$nextMilestone]['count'];
+		$total_steps = $this->relianceService->getCustomerFitnessData($customer->_id, $customer->corporate_id)['ind_total_steps_count_overall'];
+		$remaining_steps = $next_count-$total_steps;
+		
+		$milestone_text = '';
+
+        if(!empty($nextMilestone)){
+            $milestone_text = $milestone_text.'You are on milestone '.$nextMilestone;
+        }else{
+            $milestone_text = $milestone_text.'Rush to your first milestone to earn rewards';
+        }
+
+        
+
+        // $milestone_next_count = $milestones_data['milestone_next_count'];
+        $all_milestones_done = !empty($milestones_data['all_milestones_done']) ? true : false;
+        
+        
+        $post_register['header']['text'] = strtr($post_register['header']['text'], ['customer_name'=>$customer->name, 'total_steps'=> $this->relianceService->formatStepsText($total_steps), 'next_count'=> $this->relianceService->formatStepsText($next_count), 'milestone'=>$nextMilestone, 'milestone_text'=>$milestone_text]);
+        $post_register['milestones']['subheader'] = strtr($post_register['milestones']['subheader'], ['remaining_steps'=>$this->relianceService->formatStepsText($remaining_steps), 'next_milestone'=>$nextMilestone+1]);
+
+        if(!empty($all_milestones_done)){
+            $post_register['milestones']['subheader'] = "You have completed all your milestones";
+        }
+
+
+        $post_register['milestones']['footer'] = strtr($post_register['milestones']['footer'], ['start_date'=>date('d M Y', Config::get('health_config.reliance.start_date'))]);
+        // $post_register['Terms']['url'] = $post_register['Terms']['url'].'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false');
+        
+        $post_register_rewards_data = [];
+        $reward_open_index = null;
+
+
+		foreach($milestones as $key => $milestone){
+            if(!$milestone['milestone']){
+                continue;
+            }
+            $post_reward_template = Config::get('loyalty_screens.post_register_rewards_data_outer_template');
+            $post_reward_template['title'] = strtr($post_reward_template['title'], $milestone);
+            
+            $post_reward_template['_id'] = $key;
+
+            $claimed_vouchers = [];
+            $milestone_claim_count = 1;
+            if(!empty($voucher_categories_map[$milestone['milestone']])){
+                
+                $claimed_vouchers =  !empty($customer_milestones[$milestone['milestone']]['voucher']) ? $customer_milestones[$milestone['milestone']]['voucher'] : [];
+                $achieved_milestone =  !empty($customer_milestones[$milestone['milestone']]['achieved']) ? $customer_milestones[$milestone['milestone']]['achieved'] : [];
+                $claimed_voucher_categories = [];
+                
+                if(!empty($claimed_vouchers)){
+
+                    foreach($claimed_vouchers as $key => $claimed_voucher){
+                        $claimed_voucher = (array)$claimed_voucher;
+                        
+                        unset($claimed_voucher['flags']);
+                        $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
+                        $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $claimed_voucher);
+                        $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $claimed_voucher);
+						$post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $claimed_voucher);
+						if($achieved_milestone) {
+							$post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcouponrewards/'.$claimed_voucher['_id']."?milestone=".$milestone['milestone']."&index=".$key;
+						}
+                        $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $claimed_voucher);
+                        $post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $claimed_voucher);
+                        $post_reward_data_template['claim_enabled'] = true;
+                        $post_reward_data_template['button_title'] = "View";
+
+                        if(in_array($this->device_type, ['ios']) || in_array($this->device_type, ['android']) && $this->app_version >= 5.12){
+                            unset($post_reward_data_template['claim_message']);
+                        }
+
+                        $post_reward_template['data'][] = $post_reward_data_template;
+
+                        array_push($claimed_voucher_categories, $claimed_voucher);
+
+                    }
+                
+                    $claimed_voucher_categories = array_column($claimed_voucher_categories, 'name');
+                
+                }
+
+                $milestone_claim_count = !empty($milestone['vouchers_claimable']) ? $milestone['vouchers_claimable'] : 1;
+
+                if(count($claimed_vouchers) < $milestone_claim_count){
+                    foreach($voucher_categories_map[$milestone['milestone']] as $vc){
+                        if(in_array($vc['name'], $claimed_voucher_categories)){
+                            continue;
+                        }
+                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description']);
+                        $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
+                        $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);
+                        $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
+						$post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $vc);
+						if(($nextMilestone >= $milestone['milestone'])) {
+							$post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcouponrewards/'.$post_reward_data_template['_id'];
+						}
+                        unset($vc['finder_ids']);
+                        $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
+						$post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
+						if($milestone_claim_count > 1){
+							$post_reward_data_template['claim_message'] = "Are you sure you want to claim this reward?";
+						}
+                        if(($nextMilestone >= $milestone['milestone']) && $achieved_milestone){
+							$post_reward_data_template['button_title'] = "Claim";
+                            $post_reward_data_template['claim_enabled'] = true;
+                        }else{
+							unset($post_reward_data_template['button_title']);
+                            $post_reward_data_template['claim_enabled'] = false;
+                        } 
+                        $post_reward_template['data'][] = $post_reward_data_template;
+                    }
+                }
+
+            }
+
+            $post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s). (".($milestone['users'] - $customerMilestoneCountMap[$key])."/".$milestone['users']." left)");
+            $post_register_rewards_data[] = $post_reward_template;
+            
+		}
+		
+		!isset($reward_open_index) ? $reward_open_index = ($nextMilestone < count($milestones) ? $nextMilestone : $nextMilestone-1) : null;
+        $post_register['rewards']['open_index'] = $reward_open_index;
+
+        $post_register['rewards']['data'] = $post_register_rewards_data;
+		$post_register['header']['share_info'] = 'I am winning rewards in the journey of walk challenge';
+        return ['post_register'=>$post_register];
+		// return $this->relianceService->getMilestoneSectionOfreliance($customer, true);
+	}
+
+	public function enableRelianceCampaign(){
+		$data = Input::get();
+		$token = Request::header('Authorization');
+		$rules = [
+			'city' => 'required | string', 
+			'location' => 'required | string', 
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails() || empty($token)) {
+
+			return Response::json(array('status' => 400,'message' =>'Invalid Request'));
+		}
+
+		$customerTokenDecode = $this->customerTokenDecode($token);
+		$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
+
+		$customer = Customer::active()->where('_id', $data['customer_id'])->first();
+
+		try{
+			Customer::where('_id', $data['customer_id'])
+			->update(
+				[
+					'reliance_location' => strtolower($data['location']),
+					'reliance_city' => strtolower($data['city']),
+					'corporate_id' => 1,
+					'external_reliance' => true
+				]
+			);
+		}catch(\Exception $e){
+			Log::info('exception occured while enabling customer for reliance campaign', [$e]);
+			return Response::json(array('status' => 400,'message' =>'Something Went Wrong.'));
+		}
+
+		$customer['corporate_id'] = 1;
+		$customer['external_reliance'] = true;
+		$data['token'] = $this->createToken($customer)['token'];
+		$data['status'] = 200;
+		$response = Response::make($data);
+		$response->headers->set('token', $data['token'] );
+		return $response;
+	}
+
 }

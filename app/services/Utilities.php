@@ -34,6 +34,7 @@ use MongoDate;
 use Coupon;
 use \GuzzleHttp\Client;
 use Input;
+use App\Services\RelianceService as RelianceService;
 
 use App\Services\Fitnessforce as Fitnessforce;
 
@@ -6434,7 +6435,7 @@ Class Utilities {
     }
 
 
-    public function getMilestoneSection($customer=null, $brand_milestones=null){
+    public function getMilestoneSection($customer=null, $brand_milestones=null, $type=null){
 
         if(empty($customer)){
             $jwt_token = Request::header('Authorization');
@@ -6442,8 +6443,14 @@ Class Utilities {
 		    $customer_id = $decoded->customer->_id;
 		    $customer = Customer::find($customer_id);
         }
+
+        if( (!empty($type) && $type == 'reliance') || (empty($type) && !empty($customer['corporate_id']) && empty($customer['external_reliance'])) ){
+            $relianceService = new RelianceService();
+            return $relianceService->getMilestoneSectionOfreliance($customer);
+        }
+
         if(empty($customer['loyalty'])){
-            return ['data'=>[]];
+            return;
         }
         
         
@@ -8022,7 +8029,7 @@ Class Utilities {
         $token_decoded = customerTokenDecode($token);
 
         $customer = $token_decoded->customer;
-
+       
         return $customer;
 
     }
@@ -8092,8 +8099,11 @@ Class Utilities {
     
     }
 
-    public function getMilestoneFilterData($customer){
+    public function getMilestoneFilterData($customer, $includeCorporate=false){
         $filter = [];
+        if($includeCorporate) {
+            $filter['corporate_id'] = !empty($customer->corporate_id) ? $customer->corporate_id : null;
+        }
         $filter['brand_loyalty'] = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
         $filter['brand_loyalty_city'] = !empty($customer->loyalty['brand_loyalty_city']) ? $customer->loyalty['brand_loyalty_city'] : null;
         $filter['brand_loyalty_duration'] = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
@@ -8114,35 +8124,40 @@ Class Utilities {
                 
             ];
             
-            if(!empty($filter['brand_loyalty']) && !empty($filter['brand_loyalty_duration']) && !empty($filter['brand_loyalty_city'])){
-                $match['$match']['brand_id'] = $filter['brand_loyalty'];
-                $match['$match']['duration'] = $filter['brand_loyalty_duration'];
-				$match['$match']['city'] = $filter['brand_loyalty_city'];
-            }else{
-                $match['$match']['brand_id'] =['$exists'=>false];
-                $match['$match']['duration'] =['$exists'=>false];
-                $match['$match']['city'] =['$exists'=>false];
+            if(!empty($filter['corporate_id'])) {
+                $match['$match']['corporate_id'] = $filter['corporate_id'];
+            }
+            else {
+                if(!empty($filter['brand_loyalty']) && !empty($filter['brand_loyalty_duration']) && !empty($filter['brand_loyalty_city'])){
+                    $match['$match']['brand_id'] = $filter['brand_loyalty'];
+                    $match['$match']['duration'] = $filter['brand_loyalty_duration'];
+                    $match['$match']['city'] = $filter['brand_loyalty_city'];
+                }else{
+                    $match['$match']['brand_id'] =['$exists'=>false];
+                    $match['$match']['duration'] =['$exists'=>false];
+                    $match['$match']['city'] =['$exists'=>false];
 
-                if(!empty($filter['reward_type']) ){
-                    $match['$match']['reward_type'] = $filter['reward_type'];
-                }else{
-                    $match['$match']['reward_type'] = 2;
+                    if(!empty($filter['reward_type']) ){
+                        $match['$match']['reward_type'] = $filter['reward_type'];
+                    }else{
+                        $match['$match']['reward_type'] = 2;
+                    }
+        
+                    if(!empty($filter['cashback_type']) ){
+                        $match['$match']['cashback_type'] = $filter['cashback_type'];
+                    }else{
+                        $match['$match']['cashback_type'] =['$exists'=>false];
+                    }
                 }
-    
-                if(!empty($filter['cashback_type']) ){
-                    $match['$match']['cashback_type'] = $filter['cashback_type'];
-                }else{
-                    $match['$match']['cashback_type'] =['$exists'=>false];
+                if(!empty($filter['brand_loyalty'])) {
+                    if(!empty($filter['brand_version'])){
+                        $match['$match']['brand_version'] = $filter['brand_version'];
+                    }
+                    else {
+                        $match['$match']['brand_version'] = 1;
+                    }
                 }
-			}
-			if(!empty($filter['brand_loyalty'])) {
-				if(!empty($filter['brand_version'])){
-					$match['$match']['brand_version'] = $filter['brand_version'];
-				}
-				else {
-					$match['$match']['brand_version'] = 1;
-				}
-			}
+            }
 
 
             // print_r($match);

@@ -8,15 +8,18 @@
  */
 use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
+use App\Services\RelianceService as RelianceService;
 
 
 class ServiceController extends \BaseController {
 
-	public function __construct(Utilities $utilities) {
+	public function __construct(Utilities $utilities, RelianceService $relianceService) {
 
 		parent::__construct();
 
 		$this->utilities = $utilities;
+		$this->relianceService = $relianceService;
+
 		$this->vendor_token = false;
         
         $vendor_token = Request::header('Authorization-Vendor');
@@ -1810,6 +1813,10 @@ class ServiceController extends \BaseController {
 			}
 			
 			$service_details['calorie_burn'] = "BURN ".$service_details['calorie_burn']['avg']." ".((isset($service_details['calorie_burn']['type']) && $service_details['calorie_burn']['type'] != "") ? strtoupper($service_details['calorie_burn']['type']) : "KCAL");
+            $relianceCustomer = $this->relianceService->getCorporateId();
+            if( $relianceCustomer['corporate_id'] && !empty($steps = $this->relianceService->getStepsByServiceCategory($service_details['servicecategory_id']))){
+                $service_details['calorie_burn'] = "Earn ".$steps. " Steps";
+            }
 
 			$reviews = [];
 
@@ -2185,8 +2192,18 @@ class ServiceController extends \BaseController {
 		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
 
 		$order = [65, 5, 19, 1, 123, 3, 4, 2, 114, 86];
+		
+		if(!empty($city)) {
+			$city = strtolower($city);
+		}
+		$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$_city = $city;
+		if(empty($_citydata)) {
+			$_city = "all";
+			$city_id = 10000;
+		}
 
-		$included_ids = citywiseServiceCategoryIds(strtolower($city));
+		$included_ids = citywiseServiceCategoryIds(strtolower($_city));
 
 		$ordered_categories = [];
 		$servicecategories	 = 	Servicecategory::active()->whereIn('_id', $included_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->whereNotIn('_id', $not_included_ids)->orderBy('name')->get(array('_id','name','slug'));
@@ -2330,7 +2347,15 @@ class ServiceController extends \BaseController {
 			
 		}
 		// return DB::getQueryLog();
-
+		if(!empty($city_id) && $city_id==10000) {
+			unset($data['feedback']);
+			unset($data['nearby_options']);
+			unset($data['rebook_trials']);
+			$data['nodata'] = [
+				'title' => '',
+				'message' => 'Sorry, We are currently not operational in your city. We will be launching here soon.'
+			];
+		}
 		return $data;
 
 	}

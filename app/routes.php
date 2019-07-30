@@ -1299,6 +1299,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('listcheckins', 'CustomerController@listCheckins');
 
 	Route::get('claimexternalcoupon/{_id}', 'CustomerController@claimExternalCoupon');
+	Route::get('claimexternalcouponrewards/{_id}', 'CustomerController@claimExternalCouponRewards');
 
 	Route::get('markcheckin/{finder_id}', 'CustomerController@markCheckin');
 
@@ -1370,3 +1371,10 @@ Route::get('brandwebsite/hiit/{brand_id}', 'BrandsController@getBrandWebsiteHiit
 Route::get('brandwebsite/contactus/{brand_id}', 'BrandsController@getBrandWebsiteContactUs');
 Route::get('brandwebsite/ownfranchise/{brand_id}', 'BrandsController@getBrandWebsiteOwnFranchise');
 Route::get('multifitDataMigration', 'DebugController@multifitDataMigration');
+
+Route::post('reliance/updateAppStepCount', 'RelianceController@updateAppStepCount');
+Route::post('reliance/updateservicestepcount', 'RelianceController@updateServiceStepCount');
+Route::get('reliance/getLeaderboard', 'RelianceController@getLeaderboard');
+Route::post('reliance/leaderboard', 'RelianceController@getLeaderboard');
+Route::post('customer/storedob', 'RelianceController@storeDob');
+Route::post('customer/enablereliancecampaign', 'CustomerController@enableRelianceCampaign');

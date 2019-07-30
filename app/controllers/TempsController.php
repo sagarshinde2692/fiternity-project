@@ -11,6 +11,7 @@ use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Sms\FinderSms as FinderSms;
 use App\Services\Sidekiq as Sidekiq;
+use App\Services\RelianceService as RelianceService;
 use App\Mailers\FinderMailer as FinderMailer;
 
 class TempsController extends \BaseController {
@@ -24,7 +25,8 @@ class TempsController extends \BaseController {
         Utilities $utilities,
         FinderSms $findersms,
         Sidekiq $sidekiq,
-        FinderMailer $findermailer
+        FinderMailer $findermailer,
+        RelianceService $relianceService
     ) {
         //parent::__construct();
         $this->findersms            =   $findersms;
@@ -35,6 +37,7 @@ class TempsController extends \BaseController {
         $this->utilities = $utilities;
         $this->sidekiq              =   $sidekiq;
         $this->findermailer         =   $findermailer;
+        $this->relianceService         =   $relianceService;
 
         $this->vendor_token = false;
 
@@ -469,10 +472,10 @@ class TempsController extends \BaseController {
 
                 if($customer_id == ""){
 
-                    $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
+                    $customer = Customer::select('name','email','contact_no','dob','gender','corporate_id')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
                 }else{
 
-                    $customer = Customer::find($customer_id,['name','email','contact_no','dob','gender'.'freshchat_restore_id']);
+                    $customer = Customer::find($customer_id,['name','email','contact_no','dob','gender'.'freshchat_restore_id','corporate_id']);
                 }
                 
                 if($customer) {
@@ -480,6 +483,26 @@ class TempsController extends \BaseController {
                     $customer->verified = true;
                     
                     $customer->contact_no = substr($temp['customer_phone'], -10);
+                    
+                    $relCust = $this->relianceService->getRelianceCustomerDetails($customer->email);
+                    $emailList = $this->relianceService->getRelianceCustomerEmailList();
+                    if(in_array($customer->email, $emailList) || $this->relianceService->isRelianceSAPEmailId($customer['email'])) {
+                        $customer->corporate_id = Config::get('health_config.reliance.corporate_id');
+                        if($relCust) {
+                            if(!empty($relCust['designation'])) {
+                                $customer->reliance_designation = $relCust['designation'];
+                            }
+                            if(!empty($relCust['department'])) {
+                                $customer->reliance_department = $relCust['department'];
+                            }
+                            if(!empty($relCust['location'])) {
+                                $customer->reliance_location = strtolower($relCust['location']);
+                            }
+                            if(!empty($relCust['city'])) {
+                                $customer->reliance_city = strtolower($relCust['city']);
+                            }
+                        }
+                    }
 
                     $customer->update();
 
@@ -583,7 +606,7 @@ class TempsController extends \BaseController {
 
                             Customer::$withoutAppends = true;
                             
-                            $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+                            $customer = Customer::select('name','email','contact_no','dob','gender','corporate_id')->find((int)$booktrial->customer_id);
 
                             if($customer) {
 
@@ -697,7 +720,7 @@ class TempsController extends \BaseController {
                         $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
    
                         Customer::$withoutAppends = true;
-                        $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+                        $customer = Customer::select('name','email','contact_no','dob','gender','corporate_id')->find((int)$booktrial->customer_id);
                         
                         if($customer) {
 
@@ -842,7 +865,7 @@ class TempsController extends \BaseController {
   
                         Customer::$withoutAppends = true;
 
-                        $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$order->customer_id);
+                        $customer = Customer::select('name','email','contact_no','dob','gender','corporate_id')->find((int)$order->customer_id);
                         
                         if($customer) {
 
@@ -1188,11 +1211,11 @@ class TempsController extends \BaseController {
         }
         if(!empty($customer_id)){
         
-            $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('_id', $customer_id)->get();
+            $customers = Customer::active()->select('name','email','contact_no','dob','gender','corporate_id')->where('_id', $customer_id)->get();
         
         }else{
             
-            $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
+            $customers = Customer::active()->select('name','email','contact_no','dob','gender','corporate_id')->where('email', 'exists', true)->where('contact_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
 
         }
         
@@ -1201,13 +1224,13 @@ class TempsController extends \BaseController {
 
         if(!empty($customers) && count($customers)>0){
             if(count($customers) != 1){
-                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no', substr($data['customer_phone'], -10))->where('default_account', true)->orderBy('_id','desc')->get();
+                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender','corporate_id')->where('email', 'exists', true)->where('contact_no', substr($data['customer_phone'], -10))->where('default_account', true)->orderBy('_id','desc')->get();
 
                 Log::info("Customers by primary contact no default");
                 Log::info($defaultCustomer);
                 
                 if(count($defaultCustomer) == 0){
-                    $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_verified_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
+                    $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender','corporate_id')->where('email', 'exists', true)->where('secondary_verified_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
                 }
 
                 Log::info("Customers by primary secondary contact no");
@@ -1226,7 +1249,7 @@ class TempsController extends \BaseController {
             // golds-fitcash
             Log::info('golds fitcash condition');
 
-            $customersGold = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', false)->where('contact_no',substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
+            $customersGold = Customer::active()->select('name','email','contact_no','dob','gender','corporate_id')->where('email', 'exists', false)->where('contact_no',substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
 
             Log::info('$customersGold:: ', [$customersGold]);
 

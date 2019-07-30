@@ -464,10 +464,16 @@ if(!function_exists('getmy_city')){
 
 
 if(!function_exists('ifCityPresent')){
-    function ifCityPresent($city){
+    function ifCityPresent($city, $bypass=false){
         $city = strtolower($city);
         $send_city = $city;
         $ifcity = false;
+        if((!empty($bypass)) && $bypass=="true") {
+            $bypass = true;
+        }
+        else if((!empty($bypass)) && $bypass=="false") {
+            $bypass = false;
+        }
         switch($city){
             case "dombivli":
             case "kalyan":
@@ -530,7 +536,14 @@ if(!function_exists('ifCityPresent')){
                 $ifcity = true;
                 break;		    
         };
-        $response = array("city"=>$send_city,"found"=>$ifcity);
+        if($ifcity) {
+            $bypass = false;
+        }
+        if($bypass) {
+            $ifcity = true;
+            $bypass = true;
+        }
+        $response = array("city"=>$send_city,"found"=>$ifcity,"bypass"=>$bypass);
         return $response;
     }
 }
@@ -2632,7 +2645,12 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                     'location'=>$customer['extra']['location']
                                 )
                             ); 
-
+                    if(!empty($customer['corporate_id'])) {
+                        $data['corporate_id'] = $customer['corporate_id'];
+                    }
+                    if(!empty($customer['external_reliance'])) {
+                        $data['external_reliance'] = $customer['external_reliance'];
+                    }
                     if(!empty($customer['referral_code']))
                     	$data['referral_code'] = $customer['referral_code'];	
                     if(!empty($customer['cart_id']))
@@ -4430,6 +4448,16 @@ if (!function_exists('createBucket')) {
         return $buckets;
         
         
+    
+    }
+
+}
+
+if (!function_exists('isExternalCity')) {
+
+    function isExternalCity($city){
+        
+        return !in_array($city, ['mumbai','delhi','hyderabad','bangalore','gurgaon','noida','pune','chandigarh','jaipur']);
     
     }
 

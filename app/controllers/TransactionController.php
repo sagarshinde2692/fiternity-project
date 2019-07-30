@@ -773,6 +773,11 @@ class TransactionController extends \BaseController {
  
         }
 
+        $corporateCustomer = Customer::where('_id', $data['customer_id'])->first();
+        if(!empty($corporateCustomer['corporate_id'])) {
+            $data['corporate_id'] = $corporateCustomer['corporate_id'];
+        }
+
         $order = false;
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
@@ -2460,7 +2465,6 @@ class TransactionController extends \BaseController {
                     // $updated_order->upgrade_fitcash = true;
                 }
 
-
                 // if($updated_order && !empty($updated_order->reward_content)){
                 //     $order->reward_content = $updated_order->reward_content;
                 // }
@@ -2675,6 +2679,7 @@ class TransactionController extends \BaseController {
                     return ['status' => 400, 'statustxt' => 'failed', 'message' => "Transaction Failed :)"];
                 }
             }
+
 
             $order->update($data);
 
@@ -3065,7 +3070,20 @@ class TransactionController extends \BaseController {
         }
 
         $customer = Customer::find((int)$customer_id);
+
+        if(!empty($customer['corporate_id'])){
+            $data['corporate_id']  = $customer['corporate_id'];
+        }
         
+        if(!empty($customer['external_reliance'])){
+            $data['external_reliance']  = $customer['external_reliance'];
+        }
+
+        if(isset($data['customer_address']) && $data['customer_address'] != ''){
+
+            $data['address']  = $data['customer_address'];
+        }
+
         if($data['type'] == 'product'){
             if(!empty($customer['cart_id']))
                 $data['cart_id']  = $customer['cart_id'];
@@ -5479,7 +5497,7 @@ class TransactionController extends \BaseController {
 
                         $sms_data['customer_phone'] = $transaction['customer_phone'];
 
-                        $sms_data['message'] = "Hi ".ucwords($transaction['customer_name']).". Hope you liked your trial workout at".ucwords($transaction['finder_name']).". You have Rs. ".$transaction['wallet_balance']." in your Fittenrity wallet. Use it now to buy the membership at lowest price with assured complimentary rewards like cool fitness merchandise and Diet Plan. ".$transaction['vendor_link'].".  Valid for 7 days. For quick assistance call Fitternity on ".Config::get('app.contact_us_customer_number');
+                        $sms_data['message'] = "Hi ".ucwords($transaction['customer_name']).". Hope you liked your trial workout at".ucwords($transaction['finder_name']).". You have Rs. ".$transaction['wallet_balance']." in your Fitternity wallet. Use it now to buy the membership at lowest price with assured complimentary rewards like cool fitness merchandise and Diet Plan. ".$transaction['vendor_link'].".  Valid for 7 days. For quick assistance call Fitternity on ".Config::get('app.contact_us_customer_number');
 
                         $this->customersms->custom($sms_data);
 

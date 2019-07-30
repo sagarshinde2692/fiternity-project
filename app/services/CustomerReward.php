@@ -2189,7 +2189,21 @@ Class CustomerReward {
 
                 $order_count = \Order::active()->where('customer_email',$customer_email)->where('coupon_code','like',strtolower($couponCode))->count();
 
-                if($order_count > $coupon['usage_per_user']){
+                if(($order_count <= $coupon['usage_per_user']) && (!empty($coupon['corporate_id']))) {
+                    if(isset($coupon['excess_discount_percent']) && $coupon['excess_discount_percent'] != ""){
+                        
+                        $coupon["discount_percent"] = intval($coupon["excess_discount_percent"]);
+
+                        $coupon["description"] = $coupon["excess_discount_description"];
+                    }
+                    
+                    if(isset($coupon['excess_discount_max']) && $coupon['excess_discount_max'] != ""){
+                        
+                        $coupon["discount_max"] = intval($coupon["excess_discount_max"]);
+                        
+                    }
+                }
+                else if(empty($coupon['corporate_id']) && $order_count > $coupon['usage_per_user']){
 
                     $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"This coupon is applicable only ".$coupon['usage_per_user']." time per user","user_login_error"=>true);
 

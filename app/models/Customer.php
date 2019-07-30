@@ -11,14 +11,14 @@ class Customer extends  \Basemodel {
 
 	protected $collection = "customers";
 	protected $dates = array('last_visited','birthday');
-	protected $appends = array('uber_trial','ttt_trial',"loyaltyvoucher_category");
+	protected $appends = array('uber_trial','ttt_trial',"loyaltyvoucher_category","is_health_shown");
 
 	public static $withoutAppends = false;
 
 	protected function getArrayableAppends()
 	{
 		if(self::$withoutAppends){
-			return [];
+			return ['is_health_shown'];
 		}
 		return parent::getArrayableAppends();
 	}
@@ -131,7 +131,12 @@ class Customer extends  \Basemodel {
         }
         Log::info("reiterating::".strval($identitycounter_count));
         return  $model::maxId();
-    
+	}
+	
+    public function getIsHealthShownAttribute(){
+        if(!empty($this->corporate_id)){
+            return true;
+        }
     }
 
 }

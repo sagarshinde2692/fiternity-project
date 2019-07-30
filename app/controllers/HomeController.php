@@ -8,6 +8,7 @@ use \GuzzleHttp\Client;
 use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
+use App\Services\RelianceService as RelianceService;
 
 class HomeController extends BaseController {
 
@@ -19,7 +20,7 @@ class HomeController extends BaseController {
     
 
 
-    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities) {
+    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService) {
         parent::__construct();
         $this->customernotification     =   $customernotification;
         $this->sidekiq = $sidekiq;
@@ -28,7 +29,7 @@ class HomeController extends BaseController {
         $this->initClient();
 
         $this->vendor_token = false;
-        
+        $this->relianceService = $relianceService;
         $vendor_token = Request::header('Authorization-Vendor');
 
         if($vendor_token){
@@ -1078,6 +1079,13 @@ class HomeController extends BaseController {
                     'header'=>'Attend More Earn More',
                     'items'=>$streak_items
                 ];
+
+                if(!empty($item['corporate_id']) && empty($item['external_reliance'])){
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps.';
+                    if(empty($item['pass_order_id'])){
+                        $subline = $subline.' Session activation also helps you earn cashback into your Fitternity Wallet.';
+                    }
+                }
 
                 $response = [
                     'status'=>200,
@@ -2206,9 +2214,9 @@ class HomeController extends BaseController {
                 }
 
 
-                if(!empty($customer['loyalty'])){
+                // if(!empty($customer['loyalty'])){
                     $resp['milestones'] = $this->utilities->getMilestoneSection();
-                }
+                // }
 
             }
 
@@ -3931,7 +3939,13 @@ class HomeController extends BaseController {
     public function ifcity($city=null){
         Log::info("ifcity");
         Log::info($city);
-        $response = ifCityPresent($city);
+        if(!empty($_GET['bypass'])) {
+            $response = ifCityPresent($city, $_GET['bypass']);
+        }
+        else {
+            $response = ifCityPresent($city);
+        }
+        
         $jwt_token = Request::header('Authorization');
         if(!$response['found']){
             if($jwt_token){

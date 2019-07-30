@@ -22,6 +22,7 @@ use App\Services\CustomerInfo as CustomerInfo;
 
 use App\Services\Jwtauth as Jwtauth;
 use App\Services\Metropolis as Metropolis;
+use App\Services\RelianceService as RelianceService;
 
 
 class SchedulebooktrialsController extends \BaseController {
@@ -38,6 +39,7 @@ class SchedulebooktrialsController extends \BaseController {
     protected $utilities;
     protected $customerreward;
     protected $jwtauth;
+    protected $relianceService;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -50,7 +52,8 @@ class SchedulebooktrialsController extends \BaseController {
         OzontelOutboundCall $ozontelOutboundCall,
         Utilities $utilities,
         CustomerReward $customerreward,
-        Jwtauth $jwtauth
+        Jwtauth $jwtauth,
+        RelianceService $relianceService
     ) {
         parent::__construct();
         date_default_timezone_set("Asia/Kolkata");
@@ -65,8 +68,8 @@ class SchedulebooktrialsController extends \BaseController {
         $this->utilities            =   $utilities;
         $this->customerreward            =   $customerreward;
         $this->jwtauth 	=	$jwtauth;
-
         $this->vendor_token = false;
+        $this->relianceService = $relianceService;
 
         $vendor_token = Request::header('Authorization-Vendor');
 
@@ -2164,6 +2167,16 @@ class SchedulebooktrialsController extends \BaseController {
                 'ask_review'                    =>      true,
             );
 
+            $customer = Customer::where('_id', $customer_id)->first();
+            
+            if(!empty($customer['corporate_id'])) {
+                $booktrialdata['corporate_id'] = $customer['corporate_id'];
+            }
+            
+            if(!empty($customer['external_reliance'])) {
+                $booktrialdata['external_reliance'] = $customer['external_reliance'];
+            }
+
             if(!empty($data['studio_extended_validity_order_id'])){
                 $booktrialdata['studio_extended_validity_order_id'] = $data['studio_extended_validity_order_id'];
             }
@@ -3514,6 +3527,11 @@ class SchedulebooktrialsController extends \BaseController {
                 'pre_trial_status'              =>      'yet_to_connect',
                 'ask_review'                    =>      true
             );
+
+            $customer = Customer::where('_id', $customer_id)->first();
+            if(!empty($customer['corporate_id'])) {
+                $booktrialdata['corporate_id'] = $customer['corporate_id'];
+            }
 
             if(!empty($data['assisted_by'])){
                 $booktrialdata['assisted_by'] = $data['assisted_by'];
@@ -7118,6 +7136,9 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_date = time();
             $booktrial->update();
 
+            // $this->relianceService->updateServiceStepCount(['booktrialId'=>$booktrial['_id'], 'deviceDate'=>time()]);
+            Queue::connection('redis')->push('RelianceController@updateServiceStepCountJob', array('booktrialId'=>$booktrial->_id, 'deviceDate'=>time()),Config::get('app.queue'));
+
             if(isset($booktrial['send_communication']['customer_sms_after24hour']) && $booktrial['send_communication']['customer_sms_after24hour'] != ""){
                          
                 $booktrial->unset('customer_sms_after24hour');
@@ -7423,6 +7444,14 @@ class SchedulebooktrialsController extends \BaseController {
             ];
 
             $this->utilities->addCheckin(['customer_id'=>$booktrial['customer_id'], 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id']]);
+            if(!empty($booktrial->corporate_id)) {
+                // $this->relianceService->updateServiceStepCount();
+                $orderId = null;
+                if(!empty($booktrial['order_id'])) {
+                    $orderId = $booktrial->order_id;
+                }
+                \Queue::connection('redis')->push('RelianceController@updateServiceStepCountJob', array('booktrialId'=>$booktrial->_id, 'deviceDate'=>time()),Config::get('app.queue'));
+            }
         }
 
         return Response::json($response,200);

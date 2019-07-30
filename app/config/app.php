@@ -87,7 +87,9 @@ return array(
 		'source' => 'fitternity',
 		'paymentmode' => 'fitternity'
     ],
-    
+	
+	"reliance_coupon_code" => "RELIANCE",
+
     "pps_image"=> 'https://b.fitn.in/global/fit-exclusive-new-14-7-2019.png',    
     'fitsquad_upgrade_api'=> '/customer/loyaltyAppropriation',
 	'fitsquad_cancel_api'=>'/customer/remaincurrentloyalty',
