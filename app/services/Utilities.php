@@ -7285,6 +7285,10 @@ Class Utilities {
                     'loyalty'=>$loyalty 
                 ];
 
+                if(!empty($data['source']) && $data['source'] == 'register'){
+                    $dontUpdateLoyalty = false;
+                }
+
                 $customer_update = false;
 
                 Log::info("dontUpdateLoyalty 7",[$dontUpdateLoyalty]);
