@@ -22,6 +22,10 @@ Class CustomerMailer extends Mailer {
 			$label = 'AutoTrial-Instant-Multifit-Customer';
 		}
 
+		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
+			$label = 'AutoTrial-Instant-Customer-Reliance';
+		}
+
 		// return $data;
 
 		$message_data 	= array(
@@ -66,6 +70,10 @@ Class CustomerMailer extends Mailer {
 		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'AutoTrial-ReminderBefore12Hour-Multifit-Customer';
+		}
+
+		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
+			$label = 'AutoTrial-ReminderBefore12Hour-Customer-Reliance';
 		}
 
 		$message_data 	= array(
@@ -284,6 +292,10 @@ Class CustomerMailer extends Mailer {
 		$header = $this->multifitUserHeader();
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'Cancel-Trial-Multifit-Customer';
+		}
+
+		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
+			$label = 'Cancel-Trial-Customer-Reliance';
 		}
 
 		$message_data 	= array(
@@ -752,6 +764,10 @@ Class CustomerMailer extends Mailer {
 		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'BookTrialReminderBefore10Min-Multifit-Customer';
+		}
+
+		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
+			$label = 'BookTrialReminderBefore10Min-Customer-Reliance';
 		}
 		
 		$message_data 	= array(
