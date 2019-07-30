@@ -643,7 +643,7 @@ Class RelianceService {
         $users = [];
         $earnSteps = Config::get('health_config.leader_board.earn_steps');
         $checkout = Config::get('health_config.leader_board.checkout');
-        $earnSteps['description'] = 'The leaderboard is updated till '.date('d-m-Y', strtotime('-1 days')).' 11:59 PM';
+        $earnSteps['description'] = 'The leaderboard is updated till '.date('d-m-Y', time()).' 11:59 PM';
 
 
         $customer = Customer::where('_id', $customerId)->where('status', '1')->where('corporate_id', 'exists', true)->first();
@@ -666,8 +666,8 @@ Class RelianceService {
                     '$match' => [
                         'status' => '1',
                         'corporate_id' => $customer['corporate_id'],
-                        'customer_id' => ['$in' => $customerIds]
-                        // 'device_date' => ['$lte' => $endDate]
+                        'customer_id' => ['$in' => $customerIds],
+                        'device_date' => ['$lte' => $endDate]
                     ]
                 ],
                 [

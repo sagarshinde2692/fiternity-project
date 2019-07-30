@@ -69,27 +69,27 @@ return [
         'reliance_logo' => 'https://b.fitn.in/reliance/reliance_new_logo.jpg',
         'start_date' => 1560500400,
         'corporate_id' => 1,
-        'email_pattern' => '/\@(relianceada|fitternity)\.com$/',
+        'email_pattern' => '/\@(relianceada)\.com$/',
         'customer_email_list' => [
-            ['email' => 'akhilkulkarni@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
-            ['email' => 'dhruvsarawagi@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
-            ['email' => 'laxanshadesara@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
-            ['email' => 'gauravravi@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
-            ['email' => 'sailismart@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
-            ['email' => 'neha@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
-            ['email' => 'jayamvora@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
-            ['email' => 'kailashbajya@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
-            ['email' => 'ankitamamni@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
+            // ['email' => 'akhilkulkarni@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
+            // ['email' => 'dhruvsarawagi@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
+            // ['email' => 'laxanshadesara@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
+            // ['email' => 'gauravravi@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
+            // ['email' => 'sailismart@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
+            // ['email' => 'neha@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
+            // ['email' => 'jayamvora@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
+            // ['email' => 'kailashbajya@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
+            // ['email' => 'ankitamamni@fitternity.com', 'department' => 'IT', 'designation' => 'Software Engineer', 'location' => ''],
             // ['email' => 'jyotijuneja925@live.com', 'department' => '', 'designation' => '', 'location' => ''],
             // ['email' => 'jyotijuneja295@icloud.com', 'department' => '', 'designation' => '', 'location' => '']
         ],
         'customer_list' => [
-            '9619240452',
-            '9767000029',
-            '7506262489',
-            '7506026203',
-            '9824313243',
-            '8169961014'
+            // '9619240452',
+            // '9767000029',
+            // '7506262489',
+            // '7506026203',
+            // '9824313243',
+            // '8169961014'
         ]
     ],
 
