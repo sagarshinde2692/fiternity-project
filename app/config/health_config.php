@@ -68,7 +68,8 @@ return [
     ],
     'reliance' => [
         'reliance_logo' => 'https://b.fitn.in/reliance/reliance_new_logo.jpg',
-        'start_date' => 1560500400,
+        // 'start_date' => 1560500400,
+        'start_date' => 1564597800,
         'corporate_id' => 1,
         'email_pattern' => '/\@(relianceada)\.com$/',
         'customer_email_list' => [
