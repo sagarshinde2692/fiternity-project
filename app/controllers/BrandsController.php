@@ -226,9 +226,8 @@ class BrandsController extends \BaseController {
 
                 foreach($data['finders']['results'] as $key=>$value){
 
-                    if(!empty($value['coverimage_website_membership'])){
-                        
-                        $data['finders']['results'][$key]['coverimage'] = $value['coverimage_website_membership'];
+                    if(!empty($value['thumbnail_website_membership'])){
+                        $data['finders']['results'][$key]['coverimage'] = $value['thumbnail_website_membership'];
                     }
                 }
             }
@@ -370,8 +369,18 @@ class BrandsController extends \BaseController {
 			}
 		}
 
-		if(!empty($home)){
-			return array('status'=>true, "data"=>$home);
+		$hiit = $home[0]['brand_website']['hiit'];
+		foreach($hiit as $key=>$value){
+			if(!in_array($key, ['name','path'], true)){
+				foreach($value['image'] as $imageIndex=>$imageName){
+					$hiit[$key]['image'][$imageIndex] =  $base_url.$hiit['path'].$imageName;
+				}
+			}
+		}
+		$home1[0]['brand_website']['hiit'] = $hiit;
+
+		if(!empty($home1)){
+			return array('status'=>true, "data"=>$home1);
 		}
 		else{
 			return array('status'=>true, "data"=>$home);
@@ -421,8 +430,14 @@ class BrandsController extends \BaseController {
 		foreach($home1['own_franchise']['what_we_deliver']['details'] as $key=>$value){
 			$home1['own_franchise']['what_we_deliver']['details'][$key]['image'] =  $base_url.$home1['own_franchise']['what_we_deliver']['details'][$key]['path'].$home1['own_franchise']['what_we_deliver']['details'][$key]['image'];
 		}
+
+		foreach($home1['own_franchise']['partners_list'] as $key=>$value){
+			$home1['own_franchise']['partners_list'][$key]['logo'] = $base_url.$home1['own_franchise']['partners_list'][$key]['path'].$home1['own_franchise']['partners_list'][$key]['logo'];
+
+			$home1['own_franchise']['partners_list'][$key]['colored_logo'] = $base_url.$home1['own_franchise']['partners_list'][$key]['path'].$home1['own_franchise']['partners_list'][$key]['colored_logo'];
+		}
+
 		$home1['own_franchise']['banner_image']['image'] = $base_url.$home1['own_franchise']['banner_image']['path'].$home1['own_franchise']['banner_image']['image'];
-		$home1['own_franchise']['partners_list'] = $this->addPartenersList();
 		$home[0]['brand_website'] =  $home1;
 
 
@@ -471,33 +486,4 @@ class BrandsController extends \BaseController {
 		}
 	}
 
-	public function addPartenersList(){
-		return[ 
-			[
-				"logo" => "https://b.fitn.in/brand/partner-1-bw.png",
-				"colored_logo" => "https://b.fitn.in/brand/partner-1.jpg",
-				"url" => ""
-			],
-			[
-				"logo" => "https://b.fitn.in/brand/partner-2-bw.png",
-				"colored_logo" => "https://b.fitn.in/brand/partner-2.jpg",
-				"url" => ""
-			], 
-			[
-				"logo" => "https://b.fitn.in/brand/partner-3-bw.png",
-				"colored_logo" => "https://b.fitn.in/brand/partner-3.png",
-				"url" => ""
-			], 
-			[
-				"logo" => "https://b.fitn.in/brand/partner-4-bw.png",
-				"colored_logo" => "https://b.fitn.in/brand/partner-4.png",
-				"url" => ""
-			], 
-			[
-				"logo" => "https://b.fitn.in/brand/partner-5-bw.png",
-				"colored_logo" => "https://b.fitn.in/brand/partner-5.png",
-				"url" => ""
-			]
-			];
-	}
 }

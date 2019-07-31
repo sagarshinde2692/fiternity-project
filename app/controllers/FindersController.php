@@ -8459,6 +8459,10 @@ class FindersController extends \BaseController {
 					// 	}
 					// }
 				}
+
+				if(!empty($data['finder']['website_membership']['walk_through']['video'])){
+					$data['finder']['playOverVideo']['url'] = $data['finder']['website_membership']['walk_through']['video'];
+				}
 				unset($data['finder']['website_membership']);
 				unset($data['finder']['brand']['brand_detail']['brand_website']);
 			}
