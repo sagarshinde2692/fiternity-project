@@ -815,7 +815,7 @@ class ServiceController extends \BaseController {
 				'cost'=>'Free Via Fitternity',
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
 				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : "",
-                'free_trial_available'=>!empty($item['freeTrialRatecards'])
+				'free_trial_available'=>!empty($item['freeTrialRatecards'])
 			);
 
 			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
@@ -823,7 +823,9 @@ class ServiceController extends \BaseController {
 				$service['cost'] = 'Free';
 			}
 
-            if($service['servicecategory_id'] == 65){
+			$index = strpos($service['service_name'] , 'Gym ');
+			/*$service['servicecategory_id'] == 65 && $service['servicesubcategory_id']!=67*/
+            if(!($index ===false)){
                 $service['service_name'] = $this->utilities->getGymServiceNamePPS();
             }
 			

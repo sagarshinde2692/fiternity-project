@@ -2601,24 +2601,88 @@ Class CustomerReward {
                 $coupon["discount_max"] = $coupon['flags']['discount_max_overridable']['amount'];
             }
 
+            // if(!empty($coupon['flags']['discount_max_overridable']) && is_array($coupon['flags']['discount_max_overridable'])){
+            //     foreach($coupon['flags']['discount_max_overridable'] as $x){
+            //         // return $x;
+            //         // print_r($x);
+            //         // exit();
+            //         if(
+            //             !empty($x['discount_max']) 
+            //             && !empty($x['finder_flags_key']) 
+            //             && !empty($x['value']) 
+            //             && !empty($finder['flags'][$x['finder_flags_key']])  
+            //             && $finder['flags'][$x['finder_flags_key']] == $x['value']
+            //         ){
+            //             $coupon["discount_max"] = $x['discount_max'];
+            //             break;
+            //         }
+
+            //     }
+            
+            // }
+                // return $coupon;
             if(!empty($coupon['flags']['discount_max_overridable']) && is_array($coupon['flags']['discount_max_overridable'])){
 
                 foreach($coupon['flags']['discount_max_overridable'] as $x){
-                    // print_r($x);
-                    // exit();
-                    if(
-                        !empty($x['amount']) 
+
+                    if(!empty($x['conditions']) && is_array($x['conditions'])){
+                        $applied = true;
+                        foreach($x['conditions'] as $y){
+
+                            if($y['comparator'] == '='){
+
+                                $applicaple = !empty($finder['flags'][$y['finder_flags_key']]) && $finder['flags'][$y['finder_flags_key']] == $y['value'];
+                                if(!$applicaple){
+                                    $applied = false;
+                                    break;
+                                }
+                            }else if($y['comparator'] == '>='){
+                                $applicaple = !empty($finder['flags'][$y['finder_flags_key']]) && $finder['flags'][$y['finder_flags_key']] >= $y['value'];
+                                if(!$applicaple){
+                                    $applied = false;
+                                    break;
+                                }
+                            }
+
+
+                        }
+
+                        if(!empty($applied)){
+                            
+                            $selected_coupon = $x;
+                            break;
+                        
+                        }
+
+
+                    }else if(
+                        !empty($x['discount_max']) 
                         && !empty($x['finder_flags_key']) 
                         && !empty($x['value']) 
                         && !empty($finder['flags'][$x['finder_flags_key']])  
                         && $finder['flags'][$x['finder_flags_key']] == $x['value']
                     ){
-                        $coupon["discount_max"] = $x['amount'];
+                        $selected_coupon = $x;
                         break;
                     }
-
                 }
-            
+
+                if(!empty($selected_coupon) ){
+
+                    if(!empty($selected_coupon['discount_percent'])){
+                        $coupon['discount_percent'] = $selected_coupon['discount_percent'];
+                    }
+                    
+                    if(!empty($selected_coupon['discount_max'])){
+                        $coupon['discount_max'] = $selected_coupon['discount_max'];
+                    }
+                    
+                    if(!empty($selected_coupon['description'])){
+                        $coupon['description'] = $selected_coupon['description'];
+                    }
+                }
+
+
             }
             
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
