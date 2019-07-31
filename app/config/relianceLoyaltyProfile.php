@@ -137,25 +137,13 @@
                                 "_id" => "5bc0bc1745c2aa2dc0ae483a",
                                 "milestone" => 3,
                                 "order" => 1,
-                                "price" => "500",
+                                "price" => "1000",
                                 "price_header"=> "Worth",
                                 "claim_enabled"=> false,
                                 // "button_title"=> "Claim",
-                                "coupon_description" => "Puma Voucher",
-                                "terms" => "<p>Goqii</p><p>How to avail?</p><p>● Post claiming you will have to enter the delivery address into your Fitternity profile.</p><p>● The Goqii Vital Band along with a subscription code to avail the complimentary Goqii subscription will be provided.</p><p>● Follow the step mentioned on the box to avail the complimentary Goqii Subscription.</p><p>● Enjoy your Goqii Vital Band and Subscription.</p><p>&nbsp;Terms and Conditions:</p><p>● Products will take 7-10 days to get delivered.</p><p>● Ensure to put the delivery address into your Fitternity profile.</p><p>● Products once delivered cannot be returned or exchanged unless they are damaged.</p>",
-                                "logo" => "https://b.fitn.in/loyalty/goqii---logo-mobile.jpg"
-                            ],
-                            [ 
-                                "_id" => "5bc0bc1745c2aa2dc0ae483a",
-                                "milestone" => 3,
-                                "order" => 2,
-                                "price" => "500",
-                                "price_header"=> "Worth",
-                                "claim_enabled"=> false,
-                                // "button_title"=> "Claim",
-                                "coupon_description" => "Healthifyme Smart Diet Plan",
-                                "terms" => "<p><strong>Fitness Kit</strong></p><p>&nbsp;</p><p><span style=\"font-weight=> 400;\">How to Avail?</span></p><ul><li style=\"font-weight=> 400;\"><span style=\"font-weight=> 400;\">On claiming the reward you will have to provide your address.</span></li><li style=\"font-weight=> 400;\"><span style=\"font-weight=> 400;\">It will take 7 - 10 working days for us to deliver the kit to you.</span></li></ul><p><br/><br/></p><p dir=\"ltr\">Terms and Conditions</p><ul><li dir=\"ltr\"><p dir=\"ltr\">Products will take 7-10 days to get delivered</p></li><li dir=\"ltr\"><p dir=\"ltr\">Once the reward has been claimed it cannot be exchanged/ transferred or returned.</p></li><li dir=\"ltr\"><p dir=\"ltr\">Ensure to put the address where you want the products delivered.</p></li><li dir=\"ltr\"><p dir=\"ltr\">Products once delivered cannot be returned unless they are deliverd damaged.</p></li></ul>",
-                                "logo" => "https://b.fitn.in/loyalty/vouchers3/FITNESS%20GEAR.png"
+                                "coupon_description" => "Get 1 Session online diet consultation and support worth Rs. 500. and Puma Voucher worth of Rs. 500",
+                                "terms" => "<p><strong>Diet Consultation</strong></p><p>&nbsp;How to avail</p><ul><li>Please check your email &amp; sms to confirm your diet consultation</li><li>To book an appointment call&nbsp;88798-84168</li><li>Have a great diet session</li></ul><p>Terms and Conditions:</p><p>&nbsp;</p><ul><li>The session can be booked on Fittenity website or by calling 8879884168</li><li>Once the session has been booked, you will not be allowed to reschedule the session more than once</li><li>Once you have booked the session then you cannot refund or transfer the session to someone else</li></ul><p><br/><br/></p>",
+                                "logo" => "https://b.fitn.in/loyalty/vouchers3/diet%20consultation.png"
                             ],
                             [ 
                                 "_id" => "5bc0bc1745c2aa2dc0ae483a",

@@ -1,0 +1,14 @@
+{
+    
+    "name" : "Fitcash",
+    "milestone" : 3,
+    "order" : 2,
+    "amount" : 1500,
+    "display_amount" : "1500 Fitcash",
+    "description" : "Fitternity currency equal to Rs. 1500",
+    "image" : "https://b.fitn.in/loyalty/vouchers3/fitcash.png",
+    "terms" : "<p>FitCash</p><p>FitCash as the name suggests is Fitternity&rsquo;s Currency. You can use FitCash across 10,000 +<br />gyms and fitness studios to buy memberships, pay-per-session, diet consultation, etc.<br />How to Avail?<br />● On claiming the reward your FitCash will be directly be deposited into your Fitternity<br />Wallet<br />Terms and Conditions<br />● Once the Fitcash has been used/redeemed for any transaction on Fitternity, it cannot<br />be refunded<br />● FitCash cannot be transferred to someone else.<br />● Fitcash can be redeemed for any transactions on Fitternity<br />● Fitcash can be used/redeemed within 12 months.</p>",
+    "status" : "1",
+    "corporate_id" : 1,
+    "updated_at" : ISODate("2019-07-31T09:12:35.334Z")
+}
