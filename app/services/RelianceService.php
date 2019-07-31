@@ -1141,7 +1141,7 @@ Class RelianceService {
         $remaining_steps = 0;
 
         foreach($milestones['data'] as $key=>$value){
-            $next_milestones_step_counter = $value['next_count'];
+            $next_milestones_step_counter = (!empty($value['next_count']))?$value['next_count']:999999999;
            
             if($total_steps > $next_milestones_step_counter){   
                 
@@ -1151,7 +1151,7 @@ Class RelianceService {
             }else if($total_steps < $next_milestones_step_counter){   
 
                 $milestone_no = $key;
-                $remaining_steps = $next_milestones_step_counter - $total_steps;
+                $remaining_steps = (!empty($value['next_count']))?($next_milestones_step_counter - $total_steps):0;
                 $current_milestone_step = $value['count'];
                 $post_register_milestones['milestones']['data'][$key]['enabled'] = true;
                 $post_register_milestones['milestones']['data'][$key]['progress'] = round((($total_steps - $current_milestone_step) / ($next_milestones_step_counter- $current_milestone_step)) *100);
