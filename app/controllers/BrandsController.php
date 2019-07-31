@@ -371,7 +371,7 @@ class BrandsController extends \BaseController {
 
 		$hiit = $home[0]['brand_website']['hiit'];
 		foreach($hiit as $key=>$value){
-			if(!in_array($key, ['name','path'], true)){
+			if(!in_array($key, ['name','path'], true) && !empty($value['image'])){
 				foreach($value['image'] as $imageIndex=>$imageName){
 					$hiit[$key]['image'][$imageIndex] =  $base_url.$hiit['path'].$imageName;
 				}
