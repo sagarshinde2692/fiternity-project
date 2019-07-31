@@ -6429,8 +6429,11 @@ Class Utilities {
         }
 
         $new_voucher->update();
-
-        $this->remaningVoucherNotification($voucher_category);
+        try{
+            $this->remaningVoucherNotification($voucher_category);
+        }catch(Exception $e){
+            Log::info("remaningVoucherNotification failed");
+        }
 
         return $new_voucher;
 
