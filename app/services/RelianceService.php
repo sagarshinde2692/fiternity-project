@@ -957,11 +957,18 @@ Class RelianceService {
 
     public function getLeaderboardFiltersList($input, $external_reliance=null) {
         $filtersMap = Config::get('health_config.leader_board.filters');
+        if(empty($external_reliance)) {
+            $externalRelianceCondition = ['$exists' => false];
+        }
+        else {
+            $externalRelianceCondition = true;
+        }
         if(!empty($input['isNewLeaderBoard'])){
-            $_values1 = Customer::raw(function($collection){
+            $_values1 = Customer::raw(function($collection) use ($externalRelianceCondition){
                 $match = [
                     '$match' =>[
-                        'corporate_id'=>1
+                        'corporate_id' => 1,
+                        'external_reliance' => $externalRelianceCondition
                     ]
                 ];
     
