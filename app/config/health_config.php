@@ -31,7 +31,8 @@ return [
         'title' => '#WalkpeChal',
         // 'image' => 'https://b.fitn.in/reliance/reliance_logo.png',
         'image' => 'https://b.fitn.in/reliance/reliance_new_logo.jpg',
-        'message' => "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (“RNLIC”) on SMS or voice call or e-mail or WhatsApp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound to maintain utmost confidentiality of the same.\n\nReliance Nippon Life Insurance Company Limited, IRDAI Reg. 121, CIN – U66010MH2001PLC167089.\n\nTrade logo belongs to Anil Dhirubhai Ambani Ventures Private Limited & Nippon Life Insurance Company and used by Reliance Nippon Life Insurance Company Limited under license",
+        'message' => "By agreeing to take part in the walkpechal program I hereby grant consent:\n\n1. to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (“RNLIC”) on SMS or voice call or e-mail or WhatsApp.\n\n2. To share my data stored in the fitternity app with RNLIC for the purpose of walkpechal and other similar health campaigns.\n\nReliance Nippon Life Insurance Company Limited, IRDAI Reg. 121, CIN – U66010MH2001PLC167089.\nTrade logo belongs to Anil Dhirubhai Ambani Ventures Private Limited & Nippon Life Insurance Company and used by Reliance Nippon Life Insurance Company Limited under license",
+        // 'message' => "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (“RNLIC”) on SMS or voice call or e-mail or WhatsApp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound to maintain utmost confidentiality of the same.\n\nReliance Nippon Life Insurance Company Limited, IRDAI Reg. 121, CIN – U66010MH2001PLC167089.\n\nTrade logo belongs to Anil Dhirubhai Ambani Ventures Private Limited & Nippon Life Insurance Company and used by Reliance Nippon Life Insurance Company Limited under license",
         // 'message' => "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (\"RNLIC\") on sms or Whatsapp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound maintain utmost confidentiality of the same.\n\nI agree that all such information received shall be subject to the privacy policy available on the website of RNLIC.",
         'button_title' => 'I Agree'
     ],
@@ -93,6 +94,7 @@ return [
         ]
     ],
 
+
     "non_reliance"=> [
         "image" => "https://b.fitn.in/reliance/reliance_new_logo.jpg",
         "header"=> "#WalkpeChal",
@@ -103,8 +105,11 @@ return [
         'enable_button_text' => 'I Agree',
         // "section1"=> "Walking doesn't seem to be rewarding you yet. Taking the stairs at office or home is not motivating?...\n\nWhat if we tell you that every step you take, lets you earn exciting rewards.\n\nTo join, allow access to calculate daily steps & fitness activities.",
         // "section1"=> "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (\"RNLIC\") on sms or Whatsapp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound maintain utmost confidentiality of the same.\n\nI agree that all such information received shall be subject to the privacy policy available on the website of RNLIC."
-        "section1"=> "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (“RNLIC”) on SMS or voice call or e-mail or WhatsApp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound to maintain utmost confidentiality of the same.\n\nReliance Nippon Life Insurance Company Limited, IRDAI Reg. 121, CIN – U66010MH2001PLC167089.\n\nTrade logo belongs to Anil Dhirubhai Ambani Ventures Private Limited & Nippon Life Insurance Company and used by Reliance Nippon Life Insurance Company Limited under license",
+        // "section1"=> "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (“RNLIC”) on SMS or voice call or e-mail or WhatsApp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound to maintain utmost confidentiality of the same.\n\nReliance Nippon Life Insurance Company Limited, IRDAI Reg. 121, CIN – U66010MH2001PLC167089.\n\nTrade logo belongs to Anil Dhirubhai Ambani Ventures Private Limited & Nippon Life Insurance Company and used by Reliance Nippon Life Insurance Company Limited under license",
+        "section1"=> "By agreeing to take part in the walkpechal program I hereby grant consent:\n\n1. to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (“RNLIC”) on SMS or voice call or e-mail or WhatsApp.\n\n2. To share my data stored in the fitternity app with RNLIC for the purpose of walkpechal and other similar health campaigns.\n\nReliance Nippon Life Insurance Company Limited, IRDAI Reg. 121, CIN – U66010MH2001PLC167089.\nTrade logo belongs to Anil Dhirubhai Ambani Ventures Private Limited & Nippon Life Insurance Company and used by Reliance Nippon Life Insurance Company Limited under license",
     ]
 ];
 
 ?>
+
+
