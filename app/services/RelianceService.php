@@ -902,7 +902,7 @@ Class RelianceService {
         }
 
         $resp = ['status'=>200, 'data'=> $leaderBoard, 'msg'=>'Success'];
-        return $resp;
+        return (!$rankOnly)?$resp:null;
     }
 
     public function getRankText($rank) {
