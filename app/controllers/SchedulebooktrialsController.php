@@ -7152,8 +7152,10 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_date = time();
             $booktrial->update();
 
-            // $this->relianceService->updateServiceStepCount(['booktrialId'=>$booktrial['_id'], 'deviceDate'=>time()]);
-            Queue::connection('redis')->push('RelianceController@updateServiceStepCountJob', array('booktrialId'=>$booktrial->_id, 'deviceDate'=>time()),Config::get('app.queue'));
+            if(!empty($booktrial['corporate_id'])){
+                // $this->relianceService->updateServiceStepCount(['booktrialId'=>$booktrial['_id'], 'deviceDate'=>time()]);
+                Queue::connection('redis')->push('RelianceController@updateServiceStepCountJob', array('booktrialId'=>$booktrial->_id, 'deviceDate'=>time()),Config::get('app.queue'));
+            }
 
             if(isset($booktrial['send_communication']['customer_sms_after24hour']) && $booktrial['send_communication']['customer_sms_after24hour'] != ""){
                          
