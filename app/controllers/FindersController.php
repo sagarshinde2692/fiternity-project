@@ -1365,7 +1365,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-                                'text1'=> "Pay Day Sale <br>Get Extra 20% Off On Memberships & Session Packs. Use Code - PAYDAY || Book Workout Sessions At INR 99 (No Code Required)",
+                                'text1'=> "Pay Day Sale || Get Extra 20% Off On Memberships & Session Packs. Use Code - PAYDAY<br>Book Workout Sessions At INR 99 (No Code Required)",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1389,7 +1389,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-                                'text1'=> "Pay Day Sale <br> Get Upto 50% Off + Additional 20% Off On Memberships/Session Packs. Use Code - BIG20 (App Only Deal)",
+                                'text1'=> "Pay Day Sale <br> Get Extra 20% Off On Memberships & Session Packs. Use Code - PAYDAY",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
