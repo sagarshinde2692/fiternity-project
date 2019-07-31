@@ -6430,6 +6430,8 @@ Class Utilities {
 
         $new_voucher->update();
 
+        $this->remaningVoucherNotification($voucher_category);
+
         return $new_voucher;
 
     }
@@ -8326,7 +8328,27 @@ Class Utilities {
             return null;
         }
     }
-           
+
+    public function remaningVoucherNotification($voucher_category){
+  
+        $remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('name', $voucher_category->name)->count();
+        
+        if($remainingVoucherCount < 50){
+            
+            $data = array(
+                'voucherName' => $voucher_category->name,
+                'remainingCount' => $remainingVoucherCount,
+            );
+        
+            $customermailer = new CustomerMailer();
+        
+            $customermailer->remainingVoucher($data);
+        }else{
+            exit;
+        }
+
+    }
+            
     public function validateInput($functionName, $data){
         switch($functionName){
             case 'generateFreeSP':
