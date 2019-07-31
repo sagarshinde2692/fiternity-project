@@ -1,7 +1,6 @@
 <?php
 return array(
     "vendors_slug"=> [
-        ['name'=>'Mysure', 'slug'=>'multifitvendor/multifit---mysuru-mysuru', 'city_brand'=>false],
         ['name'=>'Mysuru', 'slug'=>'multifitvendor/multifit---mysuru-mysuru', 'city_brand'=>false],
         ['name'=>'Nagpur', 'slug'=>'multifitvendor/multifit-nagpur-dharampeth-nagpur', 'city_brand'=>false],
         ['name'=>'Salem', 'slug'=>'multifitvendor/multifit---salem-salem', 'city_brand'=>false]
