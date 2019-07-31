@@ -9814,7 +9814,11 @@ class CustomerController extends \BaseController {
 			return !empty($customer->corporate_rewards['milestones']) ? $customer->corporate_rewards['milestones'] : [];
 		}
         return !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
-    }
+	}
+	
+	public function test(){
+		$this->utilities->remaningVoucherNotification();
+	}
 
 	public function prepareLoyaltyData($order){
 		Log::info('----- Entered prepareLoyaltyData -----');

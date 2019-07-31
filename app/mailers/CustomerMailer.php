@@ -903,7 +903,20 @@ Class CustomerMailer extends Mailer {
 		);
 		return $this->common($label,$data,$message_data);
 	}
-    public function spinTheWheel($data, $delay=0){
+
+	public function remainingVoucher($data){
+
+		$label = 'RemainingVoucherNotificationMail-Fitternity';
+
+		$message_data = array(
+			'user_email' => array("vinichellani@fitternity.com", 'dhruvsarawagi@fitternity.com', 'sailismart@fitternity.com', 'kananigopi@fitternity.com', 'ankitamamnia@fitternity.com'),
+			'user_name' => 'Fitternity',
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+	
+	public function spinTheWheel($data, $delay=0){
 
 		$label = 'SpinTheWheel-Customer';
 		
