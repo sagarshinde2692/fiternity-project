@@ -10194,7 +10194,7 @@ class CustomerController extends \BaseController {
 		$token = Request::header('Authorization');
 		$rules = [
 			'city' => 'required | string', 
-			'location' => 'required | string', 
+			'location' => 'optional | string', 
 		];
 
 		$validator = Validator::make($data,$rules);
