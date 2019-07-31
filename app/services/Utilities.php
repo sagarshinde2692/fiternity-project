@@ -8334,7 +8334,7 @@ Class Utilities {
 
     public function remaningVoucherNotification($voucher_category){
   
-        $remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('name', $voucher_category->name)->count();
+        $remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('flags.manual_redemption', '!=', true)->where('name', $voucher_category->name)->count();
         
         if($remainingVoucherCount < 50){
             
