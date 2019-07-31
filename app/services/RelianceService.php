@@ -886,9 +886,9 @@ Class RelianceService {
                 'earnsteps' => $earnSteps,
                 'checkout' => $checkout
             ];
-            if(!empty($selfRank)) {
-                $leaderBoard['share_info'] = 'I am '.$this->getRankText($selfRank).' on the leader-board. Excited to be part of this walk initiative';
-            }
+            // if(!empty($selfRank)) {
+                $leaderBoard['share_info'] = 'I am #'.$this->getRankText($selfRank).' on the leader-board. Excited to be part of this walk initiative';
+            // }
             if(!empty($customer) && !empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']){
                 unset($leaderBoard['checkout']);
             }
