@@ -2189,7 +2189,7 @@ Class CustomerReward {
 
                 $order_count = \Order::active()->where('customer_email',$customer_email)->where('coupon_code','like',strtolower($couponCode))->count();
 
-                if(($order_count > $coupon['usage_per_user']) && (!empty($coupon['corporate_id']))) {
+                if(($order_count >= $coupon['usage_per_user']) && (!empty($coupon['corporate_id']))) {
                     if(isset($coupon['excess_discount_percent']) && $coupon['excess_discount_percent'] != ""){
                         
                         $coupon["discount_percent"] = intval($coupon["excess_discount_percent"]);
