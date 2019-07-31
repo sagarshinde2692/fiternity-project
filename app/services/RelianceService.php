@@ -840,10 +840,12 @@ Class RelianceService {
             else if (!empty($userExists)) {
                 $selfRank = null;
             }
+            $rankToShare = $selfRank;
             foreach ( $finalList as $key => &$value ) {
                 if($value['customer_id']==$customerId) {
                     $value['self_color'] = Config::get('health_config.leader_board')["self_color"];;
                     $_selfRank = (!empty($selfRank))?($selfRank.""):(($key+1)."");
+                    $rankToShare = $_selfRank;
                 }
                 else {
                     $_selfRank = null;
@@ -886,9 +888,9 @@ Class RelianceService {
                 'earnsteps' => $earnSteps,
                 'checkout' => $checkout
             ];
-            // if(!empty($selfRank)) {
-                $leaderBoard['share_info'] = 'I am #'.$this->getRankText($selfRank).' on the leader-board. Excited to be part of this walk initiative';
-            // }
+            if(!empty($rankToShare)) {
+                $leaderBoard['share_info'] = 'I am #'.$this->getRankText($rankToShare).' on the leader-board. Excited to be part of this walk initiative';
+            }
             if(!empty($customer) && !empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']){
                 unset($leaderBoard['checkout']);
             }
