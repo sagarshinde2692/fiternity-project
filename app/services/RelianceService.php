@@ -602,7 +602,7 @@ Class RelianceService {
         //     unset($res['personal_activity']['rewards_info']);
         // }
 
-        if(empty($relCity)) {
+        if(empty($relCity) || empty($selfRank)) {
             unset($res['personal_activity']['achievement']);
         }
 
@@ -664,7 +664,8 @@ Class RelianceService {
         else {
             $customerIds = $customerIds->where('external_reliance', '!=', true)->lists('_id');
         }
-        $endDate = new MongoDate(strtotime("-1 days"));
+        $dt = date('d-m-Y', strtotime('-1 days'));
+        $endDate = new MongoDate(strtotime($dt));
         $users = FitnessDeviceData::raw(function($collection) use($customer, $endDate, $filter, $isNewLeaderBoard, $customerIds) {
             $aggregate = [
                 [
