@@ -8346,8 +8346,6 @@ Class Utilities {
             $customermailer = new CustomerMailer();
         
             $customermailer->remainingVoucher($data);
-        }else{
-            exit;
         }
 
     }
