@@ -307,6 +307,10 @@ Class RelianceService {
             else {
                 $workoutDetails['service_steps'] = 0;
             }
+
+            if(empty($workoutDetails['corporate_id'])){
+                return $resp = ['status' => 400, 'data' => 'Failed', 'msg' => 'Not a reliance user'];
+            }
             $fdData = $this->prepareServiceDataForIns($workoutDetails);
             $fitnessDeviceData = new FitnessDeviceData($fdData);
             $fitnessDeviceData->save();
