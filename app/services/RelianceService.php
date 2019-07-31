@@ -63,7 +63,8 @@ Class RelianceService {
     public function getMilestoneDetails($steps) {
         $milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
         $current = array_values(array_filter($milestones, function($mile) use($steps) {
-            return $mile['count']<=$steps && $mile['next_count']>$steps;
+            $mileNextCount = (!empty($mile['next_count']))?$mile['next_count']:999999999;
+            return $mile['count']<=$steps && $mileNextCount>$steps;
         }));
         if(!empty($current) && count($current)>0) {
             $current = $current[0];
