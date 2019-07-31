@@ -172,8 +172,8 @@
                                 "price_header"=> "Worth",
                                 "claim_enabled"=> false,
                                 // "button_title"=> "Claim",
-                                "coupon_description" => "Goqii / Actofit Smart band",
-                                "terms" => "<p>Goqii</p><p>How to avail?</p><p>● Post claiming you will have to enter the delivery address into your Fitternity profile.</p><p>● The Goqii Vital Band along with a subscription code to avail the complimentary Goqii subscription will be provided.</p><p>● Follow the step mentioned on the box to avail the complimentary Goqii Subscription.</p><p>● Enjoy your Goqii Vital Band and Subscription.</p><p>&nbsp;Terms and Conditions:</p><p>● Products will take 7-10 days to get delivered.</p><p>● Ensure to put the delivery address into your Fitternity profile.</p><p>● Products once delivered cannot be returned or exchanged unless they are damaged.</p>",
+                                "coupon_description" => "Actofit Smart band",
+                                "terms" => "<p>Actofit</p><p>How to avail?</p><p>● Post claiming you will have to enter the delivery address into your Fitternity profile.</p><p>● The Actofit Smart band along with a subscription code to avail the complimentary Actofit subscription will be provided.</p><p>● Follow the step mentioned on the box to avail the complimentary Actofit Subscription.</p><p>● Enjoy your Actofit Smart band and Subscription.</p><p>&nbsp;Terms and Conditions:</p><p>● Products will take 7-10 days to get delivered.</p><p>● Ensure to put the delivery address into your Fitternity profile.</p><p>● Products once delivered cannot be returned or exchanged unless they are damaged.</p>",
                                 "logo" => "https://b.fitn.in/loyalty/goqii---logo-mobile.jpg"
                             ]
                         ]
