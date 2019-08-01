@@ -959,13 +959,13 @@ Class RelianceService {
                 Log::info('temp::::::::::::::', [$_temp[0]['values']]);
                 foreach($_temp[0]['values'] as &$filtersValue){
                     Log::info('inside temp::::::::::::::', [$filtersValue]);
-                    if(!empty($filtersValue['name'])){
+                    if(!empty($filtersValue['name']) && !in_array($filtersValue['name'], ["", "null", "Null"])){
                         $filter_status= true;
                         $filtersValue['name']= ucwords($filtersValue['name']);
                     }
                     if(!empty($filtersValue['data'])){
                         foreach($filtersValue['data'] as &$filtersList){
-                            if(empty($filtersList)){
+                            if(empty($filtersList) || in_array($filtersList, ["", "null", "Null"])){
                                 $index =array_search($filtersList, $filtersValue['data']);
                                 unset($filtersValue['data'][$index]);
                             }
@@ -1062,10 +1062,18 @@ Class RelianceService {
             ];
     
             foreach($cities as $key=>$value){
-                if($value['_id']){
+                if(!empty($value['_id']) && !in_array($value['_id'], ["", "null", "Null"])){
                     $value['name'] = ucwords($value['_id']);
                     foreach($value['location'] as &$location){
-                        $location = ucwords($location);
+                        Log::info('location values:::::::',[$location]);
+                        if(empty($location) || in_array($location, ["", "null", "Null"])){
+                            $index = array_search($location, $value['location']);
+                            unset($value['location'][$index]);
+                        }  
+                        else{
+                            $location = ucwords($location);
+                        }
+                    
                     }
                     $value['data'] = $value['location'];
                     unset($value['_id']);
