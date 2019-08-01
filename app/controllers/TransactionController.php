@@ -3496,6 +3496,7 @@ class TransactionController extends \BaseController {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
+            $corporate_discount = !empty($decoded->customer->corporate_discount) ? $decoded->customer->corporate_discount : false;
         }
         $data['ratecard_amount'] = $data['amount'];
         if(!empty($data['customer_quantity'])){
@@ -3624,7 +3625,7 @@ class TransactionController extends \BaseController {
 
         }
 
-        if(!empty(Request::header('corporate_discount')) && Request::header('corporate_discount')){
+        if(!empty($corporate_discount) && $corporate_discount){
             Log::info("corporate_discount");
             $coupon = Coupon::where('overall_coupon', true)->orderBy('_id', 'desc')->first(['code']);
             // return $coupon;
@@ -7320,7 +7321,16 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(!empty(Request::header('corporate_discount')) && Request::header('corporate_discount')){
+            $jwt_token = Request::header('Authorization');
+
+            $customer_id = $data['customer_id'];
+                
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                $decoded = customerTokenDecode($jwt_token);
+                $corporate_discount = !empty($decoded->customer->corporate_discount) ? $decoded->customer->corporate_discount : false;
+            }
+
+            if(!empty($corporate_discount) && $corporate_discount){
                 Log::info("corporate_discount");
                 $coupon = Coupon::where('overall_coupon', true)->orderBy('_id', 'desc')->first(['code']);
                 // return $coupon;
@@ -7331,7 +7341,7 @@ class TransactionController extends \BaseController {
                     $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
 
                     $resp1 = $this->customerreward->couponCodeDiscountCheck($ratecard, $coupon['code'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email);
-                    Log::info("resp1 :::", [$resp1]);
+                    // Log::info("resp1 :::", [$resp1]);
                     if($resp1["coupon_applied"]){
                         Log::info("corporate_discount_coupon_applied");
                         $data['coupon_discount'] = $data['amount_payable'] > $resp1['data']['discount'] ? $resp1['data']['discount'] : $data['amount_payable'];

@@ -645,6 +645,16 @@ class CustomerController extends \BaseController {
 			'identity' => 'required'
 		];
 
+		if(!empty($data['direct_login_key'])){
+			$rules = [
+				'email' => 'required|email|max:255',
+				'contact_no' => 'max:15',
+				'identity' => 'required'
+			];
+		}
+
+		Log::info("rules ::",[$rules]);
+
 		$validator = Validator::make($data,$rules);
 
 		if(!isset($data['contact_no']) && isset($data['mobile'])){
@@ -656,7 +666,7 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
 
 		}else{
-
+			
 			$data['email'] = strtolower($data['email']);
             if(!empty($data['contact_no'])){
                 $customerNoEmail = Customer::active()->where('contact_no', substr($data['contact_no'], -10))
@@ -742,6 +752,16 @@ class CustomerController extends \BaseController {
 
 						$new_validator = Validator::make($data, Customer::$rules);
 
+						if(!empty($data['direct_login_key'])){
+							$rules = [
+								'email' => 'required|email|max:255',
+								'contact_no' => 'max:15',
+								'identity' => 'required'
+							];
+
+							$new_validator = Validator::make($data, $rules);
+						}
+
 						if ($new_validator->fails()) {
 
 							return Response::json(array('status' => 401,'message' => $this->errorMessage($new_validator->errors())),$this->error_status);
@@ -752,7 +772,7 @@ class CustomerController extends \BaseController {
 							$account_link[$data['identity']] = 1;
 							$customer = new Customer();
 							$customer->_id = $inserted_id;
-							$customer->name = ucwords($data['name']) ;
+							$customer->name = (!empty($data['name'])) ? ucwords($data['name']) : "" ;
 							$customer->email = $data['email'];
 							isset($data['dob']) ? $customer->dob = $data['dob'] : null;
 							isset($data['gender']) ? $customer->gender = $data['gender'] : null;
@@ -771,6 +791,11 @@ class CustomerController extends \BaseController {
 							$customer->demonetisation = time();
 							$customer->referral_code = generateReferralCode($customer->name);
 							$customer->old_customer = false;
+
+							if(!empty($data['direct_login_key'])){
+								$customer->direct_corporate_login = "vital";
+							}
+
 							if(!empty($customer['email'])) {
 								$relCust = $this->relianceService->getRelianceCustomerDetails($customer['email']);
 								$emailList = $this->relianceService->getRelianceCustomerEmailList();
@@ -899,19 +924,21 @@ class CustomerController extends \BaseController {
 	}
 
 
-	public function customerLogin(){
+	public function customerLogin($data = null){
 
-		$data = Input::json()->all();
+		if(empty($data)){
+			$data = Input::json()->all();
+		}
 
 		if(isset($data['vendor_login']) && $data['vendor_login']){
 
 			return $this->vendorLogin($data);
         }
-        
-        if(!empty($data['direct_login_key']) && empty($data['direct_login'])){
-            $this->directLogin($data);
-        }
-
+		
+		if(!empty($data['direct_login_key']) && empty($data['direct_login'])){
+			return $this->directLogin($data);
+		}
+		
 		if(isset($data['identity']) && !empty($data['identity'])){
 
 			if($data['identity'] == 'email'){
@@ -933,7 +960,7 @@ class CustomerController extends \BaseController {
 
 					$customerTokenDecode = $this->customerTokenDecode($response['token']);
 					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
-
+					
 					$this->addCustomerRegId($data);
 				}
 
@@ -943,10 +970,10 @@ class CustomerController extends \BaseController {
 				}
 
 				if($response['status'] != 200){
-
+					
 					return Response::json($response,$this->error_status);
 				}
-
+				
 				return Response::json($response,$response['status']);
 
 			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
@@ -1123,27 +1150,30 @@ class CustomerController extends \BaseController {
 	}
 
 	public function emailLogin($data){
+		
+		if(empty($data)){
+			$data = Input::json()->all();
+		}
 
 		$rules = [
 			'email' => 'required|email',
 			'password' => 'required'
 		];
         
-        if(!empty($data['direct_login_key']){
+        if(!empty($data['direct_login_key'])){
             $rules = [
-                'email' => 'required|email',
-                'password' => 'required'
+                'email' => 'required|email'
             ];  
         }
         
-        $validator = Validator::make($data = Input::json()->all(),$rules);
+        $validator = Validator::make($data ,$rules);
         
 		if($validator->fails()) {
 			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 		}
 
 		$customer = Customer::where('email','=',$data['email'])->first();
-
+		
 		if(empty($customer)){
 			return array('status' => 400,'message' => 'Customer does not exists');
 		}
@@ -1153,16 +1183,22 @@ class CustomerController extends \BaseController {
 		if(empty($customer)){
 			return array('status' => 400,'message' => 'Customer is inactive');
 		}else{
-			if($customer['ishulluser'] == 1){
-				$customer->password = md5($data['password']);
-				$customer->ishulluser = 0;
-			}else{
-				if($customer['password'] != md5($data['password'])){
-					return array('status' => 400,'message' => 'Incorrect email or password');
+			if(empty($data['direct_login_key'])){
+				if($customer['ishulluser'] == 1){
+					$customer->password = md5($data['password']);
+					$customer->ishulluser = 0;
+				}else{
+					if($customer['password'] != md5($data['password'])){
+						return array('status' => 400,'message' => 'Incorrect email or password');
+					}
 				}
 			}
 		}
 
+		if(!empty($data['direct_login_key'])){
+			$customer->direct_corporate_login = "vital";
+		}
+		
 		if($customer['account_link'][$data['identity']] != 1)
 		{
 			$account_link = $customer['account_link'];
@@ -1429,7 +1465,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function socialRegister($data){
-
+		
 		$rules = [
 		'email' => 'required|email',
 		'name' => 'required',
@@ -1554,6 +1590,9 @@ class CustomerController extends \BaseController {
 			$data['freshchat_restore_id'] = $customer['freshchat_restore_id'];
 		if(!empty($customer['external_reliance'])) {
 			$data['external_reliance'] = $customer['external_reliance'];
+		}
+		if(!empty($customer['direct_corporate_login'])) {
+			$data['corporate_discount'] = true;
 		}
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
@@ -10247,19 +10286,19 @@ class CustomerController extends \BaseController {
 		$response->headers->set('token', $data['token'] );
 		return $response;
 	}
-
-    }
-    
+   
     public function directLogin($data){
-
+		Log::info("directLogin");
         $customer_exists = Customer::where('email', 'like', $data['email'])->count();
         
-        $data['identity'] = 'email';
-        $data['direct_login'] = true;
-
+        $data["identity"] = 'email';
+        $data["direct_login"] = true;
+		// Log::info("direct_login data   ::", [$data]);
         if(!empty($customer_exists)){
-            return $this->customerLogin($data);
+			Log::info("login");
+			return $this->customerLogin($data);
         }else{
+			Log::info("register");
             return $this->register($data);
         }
 
