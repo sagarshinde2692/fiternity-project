@@ -3988,9 +3988,9 @@ class CustomerController extends \BaseController {
 					if(!empty($customerRec) && empty($customerRec->dob)) {
 						$result['dob_popup'] = Config::get('health_config.dob_popup');
 					}
-					// if($this->device_type== 'android' && !empty($corporate_id)){
-					// 	unset($result['non_reliance']);
-					// }
+					if($this->device_type== 'android' && !empty($corporate_id)){
+						unset($result['non_reliance']);
+					}
 				}
 
 				if(!empty($result['health']['steps'])){
