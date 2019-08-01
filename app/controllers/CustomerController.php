@@ -10050,7 +10050,7 @@ class CustomerController extends \BaseController {
 			$milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
 		}
 		$customerMilestoneCountMap = $this->relianceService->getCustomerMilestoneCount();
-		$customer = $this->relianceService->updateMilestoneDetails($customer['_id'], $customer['corporate_id'], $customer['external_voucher']);
+		$customer = $this->relianceService->updateMilestoneDetails($customer['_id'], $customer['corporate_id']);
 		$customer_milestones = !empty($customer['corporate_rewards']['milestones'])?$customer['corporate_rewards']['milestones']:[];
 		$lastMilestone = (!empty($customer_milestones))?max(array_column($customer_milestones, 'milestone')):null;
 		$lastMilestoneDetails = array_values(array_filter($customer_milestones, function($rec) use ($lastMilestone) {
