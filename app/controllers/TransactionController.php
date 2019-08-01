@@ -3725,7 +3725,7 @@ class TransactionController extends \BaseController {
             $total_amount = null;
 
             if(!empty($data['customer_quantity'])){
-                $total_amount = $data['amount'];
+                $total_amount = $amount;
             }
 
             !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
@@ -7342,15 +7342,15 @@ class TransactionController extends \BaseController {
                     // Log::info("resp1 :::", [$resp1]);
                     if($resp1["coupon_applied"]){
                         Log::info("corporate_discount_coupon_applied");
-                        $data['coupon_discount'] = $data['amount_payable'] > $resp1['data']['discount'] ? $resp1['data']['discount'] : $data['amount_payable'];
+                        $data['corporate_coupon_discount'] = $data['amount_payable'] > $resp1['data']['discount'] ? $resp1['data']['discount'] : $data['amount_payable'];
 
-                        $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                        $data['amount_payable'] = $data['amount_payable'] - $data['corporate_coupon_discount'];
                         
-                        $data['you_save'] += $data['coupon_discount'];
+                        $data['you_save'] += $data['corporate_coupon_discount'];
                         
                         $result['payment_details']['amount_summary'][] = [
                             'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
-                            'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
+                            'value' => '-Rs. '.(string) number_format($data['corporate_coupon_discount'])
                         ];
                     
                     }
@@ -7769,15 +7769,15 @@ class TransactionController extends \BaseController {
 
                     if($resp1["coupon_applied"]){
                         
-                        $data['coupon_discount'] = $data['amount_payable'] > $resp1['data']['discount'] ? $resp1['data']['discount'] : $data['amount_payable'];
+                        $data['corporate_coupon_discount'] = $data['amount_payable'] > $resp1['data']['discount'] ? $resp1['data']['discount'] : $data['amount_payable'];
 
-                        $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                        $data['amount_payable'] = $data['amount_payable'] - $data['corporate_coupon_discount'];
                         
-                        $data['you_save'] += $data['coupon_discount'];
+                        $data['you_save'] += $data['corporate_coupon_discount'];
                         
                         $result['payment_details']['amount_summary'][] = [
                             'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
-                            'value' => '-Rs. '.(string)$data['coupon_discount']
+                            'value' => '-Rs. '.(string)$data['corporate_coupon_discount']
                         ];
                     
                     }
