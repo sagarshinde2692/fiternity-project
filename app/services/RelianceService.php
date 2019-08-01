@@ -61,7 +61,7 @@ Class RelianceService {
     }
 
     public function getMilestoneDetails($steps, $customer) {
-        if(!empty($customer['external_reliance'])){
+        if(empty($customer['external_reliance'])){
             $milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
         }
         else{
