@@ -7322,8 +7322,6 @@ class TransactionController extends \BaseController {
             }
 
             $jwt_token = Request::header('Authorization');
-
-            $customer_id = $data['customer_id'];
                 
             if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
                 $decoded = customerTokenDecode($jwt_token);
