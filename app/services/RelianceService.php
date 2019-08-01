@@ -955,9 +955,32 @@ Class RelianceService {
                 return $rec['header'] == $value;
             }));
             if(!empty($_temp) && count($_temp)>0) {
-                $filters[strtolower($_temp[0]['header'])] = $_temp[0]['values'];
+                $filter_status = false;
+                Log::info('temp::::::::::::::', [$_temp[0]['values']]);
+                foreach($_temp[0]['values'] as &$filtersValue){
+                    Log::info('inside temp::::::::::::::', [$filtersValue]);
+                    if(!empty($filtersValue['name'])){
+                        $filter_status= true;
+                        $filtersValue['name']= ucwords($filtersValue['name']);
+                    }
+                    if(!empty($filtersValue['data'])){
+                        foreach($filtersValue['data'] as &$filtersList){
+                            if(empty($filtersList)){
+                                Log::info('empty::::::::', [$filtersList]);
+                                $index =array_search($filtersList, $filtersValue['data']);
+                                unset($filtersValue['data'][$index]);
+                            }
+                            else{
+                                $filtersList = ucwords($filtersList);
+                            }
+                        }
+                    }
+                } 
+                if($filter_status){
+                    $filters[strtolower($_temp[0]['header'])] = $_temp[0]['values'];
+                }
             }
-        }
+        } 
         Log::info('fileters formated::::::::', [$filters]);
         return $filters;
     }
@@ -1041,7 +1064,10 @@ Class RelianceService {
     
             foreach($cities as $key=>$value){
                 if($value['_id']){
-                    $value['name'] = $value['_id'];
+                    $value['name'] = ucwords($value['_id']);
+                    foreach($value['location'] as &$location){
+                        $location = ucwords($location);
+                    }
                     $value['data'] = $value['location'];
                     unset($value['_id']);
                     unset($value['location']);
