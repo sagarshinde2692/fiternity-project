@@ -416,7 +416,7 @@ Class RelianceService {
         return ($diffDays>=1)?intval($diffDays):0;
     }
 
-    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null) {
+    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null, $appVersion=null) {
         Log::info('----- inside buildHealthObject -----');
 
         Customer::$withoutAppends = true;
@@ -613,6 +613,11 @@ Class RelianceService {
         if(!empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']) {
             $res['company_stats']['header'] = "OVERALL STATS";
         }
+
+        if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>5.26) {
+            $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_non_reliance');
+        }
+
 
         if(!empty($res['additional_info']) && !empty($city)){
             $city = getmy_city($city);
@@ -822,6 +827,7 @@ Class RelianceService {
         });
         if(!empty($users['result'])) {
             $users = $users['result'];
+            $lastUser = $users[(count($users))-1];
             $finalList = array_slice($users,0,20);
             $userExists = array_values(array_filter($finalList, function($val) use ($customerId){
                 return $val['customer_id']==$customerId;
@@ -835,12 +841,20 @@ Class RelianceService {
                 if(!empty($_arr) && count($_arr)>0) {
                     $keyList = array_keys($_arr);
                     if(empty($userExists)) {
+                        $_arr[$keyList[0]]['show_dots'] = true;
+                        $_arr[$keyList[0]]['rank'] = $keyList[0];
                         array_push($finalList, $_arr[$keyList[0]]);
                     }
                     $selfRank = $keyList[0];
                     // $finalList[$keyList[0]] = $_arr[$keyList[0]];
                 }
             // }
+
+            $lastUser['show_dots'] = true;
+            $lastUser['rank'] = strval((count($users))-1);
+            $lastUser['last_user'] = true;
+            array_push($finalList, $lastUser);
+
             if($rankOnly) {
                 return $selfRank+1;
             }
@@ -857,7 +871,9 @@ Class RelianceService {
                 else {
                     $_selfRank = null;
                 }
-                $value['rank'] = (!empty($_selfRank))?($_selfRank.""):(($key+1)."");
+                if(empty($value['last_user'])) {
+                    $value['rank'] = (!empty($_selfRank))?($_selfRank.""):(($key+1)."");
+                }
                 $value['steps'] = $this->formatStepsText($value['steps']);
                 if($key<3) {
                     $value['image'] = Config::get('health_config.leader_board')["leader_rank".($key+1)];
@@ -892,6 +908,7 @@ Class RelianceService {
                 'buildingLeaderboard' => false,
                 'background' => Config::get('health_config.leader_board.background'),
                 'users' => $finalList,
+                'my_rank_text' => !empty($rankToShare)?'My current rank is #'.$rankToShare:'',
                 // 'earnsteps' => $earnSteps,
                 'checkout' => $checkout
             ];

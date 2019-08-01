@@ -36,6 +36,72 @@ return [
         // 'message' => "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (\"RNLIC\") on sms or Whatsapp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound maintain utmost confidentiality of the same.\n\nI agree that all such information received shall be subject to the privacy policy available on the website of RNLIC.",
         'button_title' => 'I Agree'
     ],
+    'health_booking_android_reliance' => [
+        'title' => '#WalkpeChal',
+        'image' => 'https://b.fitn.in/reliance/reliance_new_logo.jpg',
+        'message' => "Get 2 Free Workouts: Use code RELIANCE to book a session at any Gym or Studio near you.",
+        'button_title' => 'Know More',
+        'slider' => [
+            'header' => 'Each workout gets you more steps and gets you closer to your goals.',
+            'categories' => [
+                [
+                    'name' => 'Gym',
+                    'steps' => '2000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Yoga',
+                    'steps' => '1000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Zumba',
+                    'steps' => '2000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Swimming',
+                    'steps' => '2500',
+                    'steps_text' => 'STEPS'
+                ]
+            ],
+            'more_text' => '& many more',
+            'button_title' => 'BOOK'
+        ]
+    ],
+    'health_booking_android_non_reliance' => [
+        'title' => '#WalkpeChal',
+        'image' => 'https://b.fitn.in/reliance/reliance_new_logo.jpg',
+        'message' => "Book workout at any Gym or Studio near you and get closer to your goals.",
+        'button_title' => 'Know More',
+        'slider' => [
+            'header' => 'Each workout gets you more steps and gets you closer to your goals.',
+            'categories' => [
+                [
+                    'name' => 'Gym',
+                    'steps' => '2000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Yoga',
+                    'steps' => '1000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Zumba',
+                    'steps' => '2000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Swimming',
+                    'steps' => '2500',
+                    'steps_text' => 'STEPS'
+                ]
+            ],
+            'more_text' => '& many more',
+            'button_title' => 'BOOK'
+        ]
+    ],
     'dob_popup' => [
         'header' => '#WalkpeChal',
         'title' => 'Date of Birth',
@@ -108,6 +174,22 @@ return [
         // "section1"=> "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (\"RNLIC\") on sms or Whatsapp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound maintain utmost confidentiality of the same.\n\nI agree that all such information received shall be subject to the privacy policy available on the website of RNLIC."
         // "section1"=> "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (“RNLIC”) on SMS or voice call or e-mail or WhatsApp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound to maintain utmost confidentiality of the same.\n\nReliance Nippon Life Insurance Company Limited, IRDAI Reg. 121, CIN – U66010MH2001PLC167089.\n\nTrade logo belongs to Anil Dhirubhai Ambani Ventures Private Limited & Nippon Life Insurance Company and used by Reliance Nippon Life Insurance Company Limited under license",
         "section1"=> "By agreeing to take part in the walkpechal program I hereby grant consent:\n\n1. to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (“RNLIC”) on SMS or voice call or e-mail or WhatsApp.\n\n2. To share my data stored in the fitternity app with RNLIC for the purpose of walkpechal and other similar health campaigns.\n\nReliance Nippon Life Insurance Company Limited, IRDAI Reg. 121, CIN – U66010MH2001PLC167089.\nTrade logo belongs to Anil Dhirubhai Ambani Ventures Private Limited & Nippon Life Insurance Company and used by Reliance Nippon Life Insurance Company Limited under license",
+    ],
+    "non_reliance_android"=> [
+        "image" => "https://b.fitn.in/reliance/reliance_new_logo.jpg",
+        "header"=> "#WalkpeChal",
+        "text"=> "MissionMoon | 30 Days | 100 Cr steps",
+        "Footer"=> "Get fit by walking. Join #walkpechal community along with other lakhs users",
+        "button_title"=> "Know More",
+        'enable_button_text' => 'ENABLE',
+        "section1"=> "\u2022 Join India's Largest Fitness Challenge and join lakhs of users.\n\n\u2022 30 days | 100 Cr. Steps | 600 Cities Challenge to Walk to the Moon\n\n\u2022 Get your Friends & Family and track your progress on the Leaderboard\n\n\u2022 Win exciting Rewards and Prizes on achieving each milestone.",
+        "tnc"=> [
+            "agree_text" => "I agree with the ",
+            "terms_condition_text" => "Terms and Conditions",
+            "terms_condition_link" => "https://www.fitternity.com/reliancetnc",
+            "title" => "Terms and Conditions",
+            "selected" => false
+        ]
     ]
 ];
 
