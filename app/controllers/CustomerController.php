@@ -3978,19 +3978,19 @@ class CustomerController extends \BaseController {
 					if(!empty($customerRec) && empty($customerRec->dob)) {
 						$result['dob_popup'] = Config::get('health_config.dob_popup');
 					}
-					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, $_GET['app_version'] );
+					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'] );
 					$result['is_health_rewad_shown'] = true;
 				}
 				else if(!empty($customer_id)){
 					$customerRec = Customer::active()->where('email', $customeremail)->first();
-					$result['non_reliance'] = ($this->device_type=='android' && $_GET['app_version']>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
-					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, $_GET['app_version'] );
+					$result['non_reliance'] = ($this->device_type=='android' && ((float)$_GET['app_version'])>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
+					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'] );
 					if(!empty($customerRec) && empty($customerRec->dob)) {
 						$result['dob_popup'] = Config::get('health_config.dob_popup');
 					}
-					if($this->device_type== 'android' && !empty($corporate_id)){
-						unset($result['non_reliance']);
-					}
+					// if($this->device_type== 'android' && !empty($corporate_id)){
+					// 	unset($result['non_reliance']);
+					// }
 				}
 
 				if(!empty($result['health']['steps'])){

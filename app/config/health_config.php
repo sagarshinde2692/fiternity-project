@@ -37,9 +37,7 @@ return [
         'button_title' => 'I Agree'
     ],
     'health_booking_android_reliance' => [
-        'title' => '#WalkpeChal',
-        'image' => 'https://b.fitn.in/reliance/reliance_new_logo.jpg',
-        'message' => "Get 2 Free Workouts: Use code RELIANCE to book a session at any Gym or Studio near you.",
+        'header' => "Get 2 Free Workouts: Use code RELIANCE to book a session at any Gym or Studio near you.",
         'button_title' => 'Know More',
         'slider' => [
             'header' => 'Each workout gets you more steps and gets you closer to your goals.',
@@ -70,9 +68,7 @@ return [
         ]
     ],
     'health_booking_android_non_reliance' => [
-        'title' => '#WalkpeChal',
-        'image' => 'https://b.fitn.in/reliance/reliance_new_logo.jpg',
-        'message' => "Book workout at any Gym or Studio near you and get closer to your goals.",
+        'header' => "Book workout at any Gym or Studio near you and get closer to your goals.",
         'button_title' => 'Know More',
         'slider' => [
             'header' => 'Each workout gets you more steps and gets you closer to your goals.',
