@@ -58,7 +58,7 @@ return [
         'earn_steps' => [
             // 'header' => 'Earn More Steps',
             // 'title' => 'Earn steps by attending more sessions',
-            'description' => 'You can earn more steps by taking more workout session on fitternity and increase your rank'
+            // 'description' => 'You can earn more steps by taking more workout session on fitternity and increase your rank'
         ],
         'filters' => [
             ['name' => 'Cities', 'field' => 'reliance_city'],
