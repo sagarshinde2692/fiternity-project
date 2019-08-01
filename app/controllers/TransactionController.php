@@ -3698,7 +3698,7 @@ class TransactionController extends \BaseController {
                         $data['corporate_discount_coupon_flags'] = $couponCheck1['flags'];
                     }
 
-                    $data['amount'] = $data['amount'] - $data["corporate_discount_coupon_discount_amount"];
+                    $amount = $amount - $data["corporate_discount_coupon_discount_amount"];
     
                 }
             }
@@ -3725,7 +3725,7 @@ class TransactionController extends \BaseController {
             $total_amount = null;
 
             if(!empty($data['customer_quantity'])){
-                $total_amount = $data['amount'];
+                $total_amount = $amount;
             }
 
             !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
