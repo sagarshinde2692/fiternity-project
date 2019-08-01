@@ -8139,6 +8139,9 @@ Class Utilities {
                 if(!empty($filter['external_reliance'])){
                     $match['$match']['external_reliance'] = $filter['external_reliance'];
                 }
+                else{
+                    $match['$match']['external_reliance']  = false;
+                }
             }
             else {
                 if(!empty($filter['brand_loyalty']) && !empty($filter['brand_loyalty_duration']) && !empty($filter['brand_loyalty_city'])){
