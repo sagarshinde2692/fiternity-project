@@ -2,20 +2,20 @@
 
 return [
     'service_cat_steps_map' => [
-        "65"=>	400,//Gym
-        "1"=>	250,//Yoga
-        "19"=>	350,//Zumba
-        "163"=>	350,//Fitness Studios
-        "17"=>	400,//MMA & Kickboxing
-        "5"=>	400,//Cross Functional Training
-        "2"=>	350,//Dance
-        "4"=>	250,//Pilates
-        "86"=>	400,//Spinning & Indoor Cycling
-        "118"=>	250,//Aerial Fitness
-        "97"=>	200,//Pre-Natal Fitness
-        "114"=>	700,//Marathon Training
-        "123"=>	500,//Swimming
-        "3"=>	400,//Martial Arts
+        "65"=>	2000,//Gym
+        "1"=>	1000,//Yoga
+        "19"=>	2000,//Zumba
+        "163"=>	1000,//Fitness Studios
+        "17"=>	1000,//MMA & Kickboxing
+        "5"=>	1000,//Cross Functional Training
+        "2"=>	2000,//Dance
+        "4"=>	1000,//Pilates
+        "86"=>	2000,//Spinning & Indoor Cycling
+        "118"=>	1000,//Aerial Fitness
+        "97"=>	1000,//Pre-Natal Fitness
+        "114"=>	3000,//Marathon Training
+        "123"=>	2500,//Swimming
+        "3"=>	1000,//Martial Arts
     ],
     'individual_steps' => [
         'goal' => 5000

@@ -74,7 +74,9 @@ class RelianceController extends \BaseController {
       else {
         $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard);
       }
-      $resp['data']['filters'] = $filters ;
+      if(!empty($resp['data']) && $resp['data']!='Failed') {
+        $resp['data']['filters'] = $filters ;
+      }
       return  Response::json($resp, $resp['status']);
     }
 

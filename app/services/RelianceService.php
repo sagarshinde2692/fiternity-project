@@ -396,7 +396,7 @@ Class RelianceService {
             return 0;
         }
         if($isCompany) {
-            return round((($totalSteps/$goal)*100), 2);
+            return round((($totalSteps/$goal)*100), 3);
         }
         return floor(($totalSteps/$goal)*100);
     }
@@ -514,6 +514,10 @@ Class RelianceService {
         }
 
         $companyProgPercent = $this->getAchievementPercentage($stepsAgg['corporate_steps_count'], Config::get('health_config.corporate_steps.goal'), true);
+
+        if(!empty($companyProgPercent) && $companyProgPercent<0.1 && $companyProgPercent>0) {
+            $companyProgPercent = 0.1;
+        }
 
         $footGoal = $this->formatStepsText($stepsAgg['ind_foot_steps_count']);
         $workoutGoal = $this->formatStepsText($stepsAgg['ind_workout_steps_count']);
@@ -649,7 +653,7 @@ Class RelianceService {
         $earnSteps = Config::get('health_config.leader_board.earn_steps');
         $checkout = Config::get('health_config.leader_board.checkout');
         // $earnSteps['description'] = 'The leaderboard is updated till '.date('d-m-Y', strtotime('-1 days')).' 11:59 PM';
-        $earnSteps['description'] = 'The leaderboard is upto date';
+        // $earnSteps['description'] = 'The leaderboard is upto date';
 
 
         $customer = Customer::where('_id', $customerId)->where('status', '1')->where('corporate_id', 'exists', true)->first();
