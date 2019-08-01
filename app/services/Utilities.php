@@ -8333,19 +8333,22 @@ Class Utilities {
     }
 
     public function remaningVoucherNotification($voucher_category){
-  
-        $remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('flags.manual_redemption', '!=', true)->where('name', $voucher_category->name)->count();
         
-        if($remainingVoucherCount < 50){
+        if(empty($voucher_category['flags']['manual_redemption'])){
+
+            $remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('flags.manual_redemption', '!=', true)->where('name', $voucher_category->name)->count();
             
-            $data = array(
-                'voucherName' => $voucher_category->name,
-                'remainingCount' => $remainingVoucherCount,
-            );
-        
-            $customermailer = new CustomerMailer();
-        
-            $customermailer->remainingVoucher($data);
+            if($remainingVoucherCount < 50){
+                
+                $data = array(
+                    'voucherName' => $voucher_category->name,
+                    'remainingCount' => $remainingVoucherCount,
+                );
+            
+                $customermailer = new CustomerMailer();
+            
+                $customermailer->remainingVoucher($data);
+            }
         }
 
     }
