@@ -966,7 +966,6 @@ Class RelianceService {
                     if(!empty($filtersValue['data'])){
                         foreach($filtersValue['data'] as &$filtersList){
                             if(empty($filtersList)){
-                                Log::info('empty::::::::', [$filtersList]);
                                 $index =array_search($filtersList, $filtersValue['data']);
                                 unset($filtersValue['data'][$index]);
                             }
