@@ -7320,7 +7320,8 @@ class TransactionController extends \BaseController {
                     }
                 }
             }
-
+            Log::info("amount_payable 1",[$data['amount_payable']]);
+            Log::info("you_save 1",[$data['you_save']]);
             $jwt_token = Request::header('Authorization');
                 
             if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
@@ -7352,11 +7353,16 @@ class TransactionController extends \BaseController {
                             'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
                             'value' => '-Rs. '.(string) number_format($data['corporate_coupon_discount'])
                         ];
+
+                        $data['amount'] = $data['amount'] - $data['corporate_coupon_discount'];
                     
                     }
                 }
                 
             }
+
+            Log::info("amount_payable 2",[$data['amount_payable']]);
+            Log::info("you_save 2",[$data['you_save']]);
 
             if(!empty($order['coupon_code'])){
                 $data['coupon'] = $order['coupon_code'];
@@ -7383,6 +7389,9 @@ class TransactionController extends \BaseController {
                 }
 
             }
+
+            Log::info("amount_payable 3",[$data['amount_payable']]);
+            Log::info("you_save 3",[$data['you_save']]);
                 
             if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
                 
@@ -7437,6 +7446,9 @@ class TransactionController extends \BaseController {
                 $customer = Customer::find($customer_id);
                 $result['register_loyalty'] = empty($customer['loyalty']);
             }
+
+            Log::info("amount_payable 4",[$data['amount_payable']]);
+            Log::info("you_save 4",[$data['you_save']]);
 
             $result['payment_details']['amount_payable'] = [
                 'field' => 'Total Amount Payable',
@@ -7538,6 +7550,9 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            Log::info("amount_payable 5",[$data['amount_payable']]);
+            Log::info("you_save 5",[$data['you_save']]);
+
             if(isset($data['cashback'])){
                 
 
@@ -7549,6 +7564,9 @@ class TransactionController extends \BaseController {
                 $data['you_save'] += intval($data['cashback']);
                 
             }
+
+            Log::info("amount_payable 6",[$data['amount_payable']]);
+            Log::info("you_save 6",[$data['you_save']]);
 
             if($data['finder_category_id']==42){
                 
