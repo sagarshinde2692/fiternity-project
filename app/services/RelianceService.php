@@ -648,7 +648,7 @@ Class RelianceService {
         return $res;
     }
 
-    public function getLeaderboard($customerId, $isNewLeaderBoard, $filter=null, $rankOnly = false) {
+    public function getLeaderboard($customerId, $isNewLeaderBoard, $filter=null, $rankOnly = false, $deviceType=null, $appVersion=null) {
         $resp = ['status'=>400, 'data'=>'Failed', 'msg'=>'Failed'];
         if(empty($customerId)) {
             return $resp;
@@ -841,8 +841,10 @@ Class RelianceService {
                 if(!empty($_arr) && count($_arr)>0) {
                     $keyList = array_keys($_arr);
                     if(empty($userExists)) {
-                        $_arr[$keyList[0]]['show_dots'] = true;
-                        $_arr[$keyList[0]]['rank'] = $keyList[0];
+                        if(!empty($deviceType) && $deviceType=='android' && !empty($appVersion) && $appVersion>5.26) {
+                            $_arr[$keyList[0]]['show_dots'] = true;
+                            $_arr[$keyList[0]]['rank'] = $keyList[0];
+                        }
                         array_push($finalList, $_arr[$keyList[0]]);
                     }
                     $selfRank = $keyList[0];
@@ -850,10 +852,12 @@ Class RelianceService {
                 }
             // }
 
-            $lastUser['show_dots'] = true;
-            $lastUser['rank'] = strval((count($users))-1);
-            $lastUser['last_user'] = true;
-            array_push($finalList, $lastUser);
+            if((!empty($deviceType) && $deviceType=='android') && (!empty($appVersion) && $appVersion>5.26)) {
+                $lastUser['show_dots'] = true;
+                $lastUser['rank'] = strval((count($users))-1);
+                $lastUser['last_user'] = true;
+                array_push($finalList, $lastUser);
+            }
 
             if($rankOnly) {
                 return $selfRank+1;
