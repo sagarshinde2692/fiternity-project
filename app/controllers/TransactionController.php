@@ -960,9 +960,9 @@ class TransactionController extends \BaseController {
              } 
         }
             //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
-
+        Log::info("outside");
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
-            
+            Log::info("inside");
             if(!empty($order['duration'])){
 
                 $GLOBALS['order_duration'] = $order['duration'];
@@ -971,6 +971,7 @@ class TransactionController extends \BaseController {
 
             if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
             }else{
+                Log::info("tyutuytyutyutyutuytuytuy");
                 $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
             
                 // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
@@ -3459,7 +3460,7 @@ class TransactionController extends \BaseController {
 
         $jwt_token = Request::header('Authorization');
 
-        Log::info('jwt_token : '.$jwt_token);
+        Log::info('jwt_token(getCashbackRewardWallet) : '.$jwt_token);
             
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
@@ -3486,7 +3487,7 @@ class TransactionController extends \BaseController {
         
         addAToGlobals('ratecard_id_for_wallet', (!empty($order['ratecard_id']) ? $order['ratecard_id'] : 0));
 
-        Log::info('new');
+        Log::info('new(getCashbackRewardWallet)');
 
         $jwt_token = Request::header('Authorization');
 
@@ -3621,6 +3622,86 @@ class TransactionController extends \BaseController {
                 }
             }
 
+        }
+
+        if(!empty(Request::header('corporate_discount')) && Request::header('corporate_discount')){
+            Log::info("corporate_discount");
+            $coupon = Coupon::where('overall_coupon', true)->orderBy('_id', 'desc')->first(['code']);
+            // return $coupon;
+            
+            if(!empty($coupon)){
+                Log::info("coupon_code :: ",[$coupon['code']]);
+                $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
+                $ticket = null;
+
+                if(isset($data['ticket_id'])){
+                    $ticket = Ticket::find($data['ticket_id']);
+                    if(!$ticket){
+                        $resp = array('status'=>400, 'message'=>'Ticket not found');
+                        return Response::json($resp, 400);
+                    }
+                }
+                
+                $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
+
+                $service_id = isset($data['service_id']) ? $data['service_id'] : null;
+
+                $total_amount = null;
+
+                if(!empty($data['customer_quantity'])){
+                    $total_amount = $data['amount'];
+                }
+
+                !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
+
+                $couponCheck1 = $this->customerreward->couponCodeDiscountCheck($ratecard,$coupon["code"],$customer_id, $ticket, $ticket_quantity, $service_id, $total_amount, $customer_email);
+
+                Log::info("couponCheck1");
+                Log::info($couponCheck1);
+
+                if(isset($couponCheck1["coupon_applied"]) && $couponCheck1["coupon_applied"]){
+
+                    $data['corporate_discount_coupon_code'] = $coupon['code'];
+
+                    if(isset($couponCheck1['vendor_commission'])){
+                        $data['vendor_commission'] = $couponCheck1['vendor_commission'];
+                    }
+                    if(isset($couponCheck1['description'])){
+                        $data['corporate_discount_coupon_description'] = $couponCheck1['description'];
+                    }
+                    
+                    if(isset($couponCheck1['spin_coupon'])){
+                        $data['corporate_discount_spin_coupon'] = $couponCheck1['spin_coupon'];
+                    }else{
+                        $data['corporate_discount_spin_coupon'] = "";
+                    }
+                    
+                    if(isset($couponCheck1['coupon_discount_percent'])){
+                        $data['corporate_discount_coupon_discount_percent'] = $couponCheck1['coupon_discount_percent'];
+                    }else{
+                        $data['corporate_discount_coupon_discount_percent'] = 0;
+                    }
+    
+                    $data["corporate_discount_coupon_discount_amount"] = $amount > $couponCheck1["data"]["discount"] ? $couponCheck1["data"]["discount"] : $amount;
+    
+                    $amount -= $data["corporate_discount_coupon_discount_amount"];
+                    
+                    if(isset($couponCheck1["vendor_coupon"]) && $couponCheck1["vendor_coupon"]){
+                        $data["payment_mode"] = "at the studio";
+                        $data["secondary_payment_mode"] = "cod_membership";
+                    }
+    
+                    if(!empty($couponCheck1['flags']['disc_by_vendor'])){
+                        $data['amount_finder'] -= $data["coupon_discount_amount"];
+                    }
+    
+                    if(!empty($couponCheck1['flags'])){
+                        $data['corporate_discount_coupon_flags'] = $couponCheck1['flags'];
+                    }
+    
+                }
+            }
+            
         }
 
         if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
@@ -7239,6 +7320,36 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            if(!empty(Request::header('corporate_discount')) && Request::header('corporate_discount')){
+                Log::info("corporate_discount");
+                $coupon = Coupon::where('overall_coupon', true)->orderBy('_id', 'desc')->first(['code']);
+                // return $coupon;
+                
+                if(!empty($coupon)){
+                    Log::info("coupon :::",[$coupon['code']]);
+                    $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
+                    $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
+
+                    $resp1 = $this->customerreward->couponCodeDiscountCheck($ratecard, $coupon['code'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email);
+                    Log::info("resp1 :::", [$resp1]);
+                    if($resp1["coupon_applied"]){
+                        Log::info("corporate_discount_coupon_applied");
+                        $data['coupon_discount'] = $data['amount_payable'] > $resp1['data']['discount'] ? $resp1['data']['discount'] : $data['amount_payable'];
+
+                        $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                        
+                        $data['you_save'] += $data['coupon_discount'];
+                        
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
+                            'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
+                        ];
+                    
+                    }
+                }
+                
+            }
+
             if(!empty($order['coupon_code'])){
                 $data['coupon'] = $order['coupon_code'];
             }
@@ -7638,6 +7749,33 @@ class TransactionController extends \BaseController {
             if(!empty($order['ratecard_id'])){
                 $ratecard = Ratecard::where('_id',$order['ratecard_id'])->first();
             }
+
+            if(!empty(Request::header('corporate_discount')) && Request::header('corporate_discount')){
+                Log::info("corporate_discount");
+                $coupon = Coupon::where('overall_coupon', true)->orderBy('_id', 'desc')->first(['code']);
+                // return $coupon;
+                
+                if(!empty($coupon) && !empty($ratecard)){
+                    
+                    $resp1 = $this->customerreward->couponCodeDiscountCheck($ratecard, $coupon['code']);
+
+                    if($resp1["coupon_applied"]){
+                        
+                        $data['coupon_discount'] = $data['amount_payable'] > $resp1['data']['discount'] ? $resp1['data']['discount'] : $data['amount_payable'];
+
+                        $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                        
+                        $data['you_save'] += $data['coupon_discount'];
+                        
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
+                            'value' => '-Rs. '.(string)$data['coupon_discount']
+                        ];
+                    
+                    }
+                }
+                
+            }
             
             if(!empty($data['coupon']) && !empty($ratecard)){
                 
@@ -7709,61 +7847,61 @@ class TransactionController extends \BaseController {
             $result['order_details'] = array_values($result['order_details']);
             
 
-        //     $ratecard = Ratecard::find(intval($order->ratecard_id));
+            //     $ratecard = Ratecard::find(intval($order->ratecard_id));
+                    
+            //     $order_details= $this->getBookingDetails($order->toArray());
                 
-        //     $order_details= $this->getBookingDetails($order->toArray());
-            
-        //     $result['order_details'] = [];
+            //     $result['order_details'] = [];
 
-        //     $reward_amount = 0;
+            //     $reward_amount = 0;
 
-        //     if(isset($order['reward_ids']) && !empty($order['reward_ids'])){
-        //         $reward_ids = array_map('intval',$data['reward_ids']);
-        //         $rewards = Reward::whereIn('_id',$reward_ids)->get(array('payload'));
-        //         if(count($rewards) > 0){
-        //             foreach ($rewards as $value) {
-        //                 $reward_amount += $value['payload']['price'];
-        //             }
-        //         }
-        //     }
-        //     if(isset($order['cashback']) && $order['cashback']){
-        //         $reward_amount += $order['cashback_detail']['wallet_amount'];
-        //     }
+            //     if(isset($order['reward_ids']) && !empty($order['reward_ids'])){
+            //         $reward_ids = array_map('intval',$data['reward_ids']);
+            //         $rewards = Reward::whereIn('_id',$reward_ids)->get(array('payload'));
+            //         if(count($rewards) > 0){
+            //             foreach ($rewards as $value) {
+            //                 $reward_amount += $value['payload']['price'];
+            //             }
+            //         }
+            //     }
+            //     if(isset($order['cashback']) && $order['cashback']){
+            //         $reward_amount += $order['cashback_detail']['wallet_amount'];
+            //     }
 
-        //     foreach($order_details as $value){
-        //         if(in_array($value['field'], ['ADDRESS', 'START DATE'])){
-        //             continue;
-        //         }
+            //     foreach($order_details as $value){
+            //         if(in_array($value['field'], ['ADDRESS', 'START DATE'])){
+            //             continue;
+            //         }
 
-        //         if(!in_array($value['field'], ['REWARD', 'DURATION'])){
-        //             $value['field'] = "";
-        //         }
+            //         if(!in_array($value['field'], ['REWARD', 'DURATION'])){
+            //             $value['field'] = "";
+            //         }
 
-        //         if(in_array($value['field'], ['DURATION'])){
-        //             $value['field'] = "";
-        //             $value['value'] = "Rs. ".$ratecard['price'];
-        //         }
+            //         if(in_array($value['field'], ['DURATION'])){
+            //             $value['field'] = "";
+            //             $value['value'] = "Rs. ".$ratecard['price'];
+            //         }
 
-        //         $result['order_details'][] = $value;
+            //         $result['order_details'][] = $value;
 
-        //     }
+            //     }
 
-        //     $result['payment_details'] = $this->getPaymentDetails($order->toArray(),'paymentgateway');
-            
-        //     if($reward_amount > 0){
-        //         if(isset($result['payment_details']['savings'])){
-        //             $savings_amount = $reward_amount + $result['payment_details']['savings']['amount'];
-        //             $result['payment_details']['savings'] = [
-        //                 'field' => 'Your total savings',
-        //                 'value' => "Rs. ".$savings_amount
-        //             ];
-        //         }else{
-        //             $result['payment_details']['savings'] = [
-        //                 'field' => 'Your total savings',
-        //                 'value' => "Rs.".$reward_amount
-        //             ];
-        //         }
-        //     }
+            //     $result['payment_details'] = $this->getPaymentDetails($order->toArray(),'paymentgateway');
+                
+            //     if($reward_amount > 0){
+            //         if(isset($result['payment_details']['savings'])){
+            //             $savings_amount = $reward_amount + $result['payment_details']['savings']['amount'];
+            //             $result['payment_details']['savings'] = [
+            //                 'field' => 'Your total savings',
+            //                 'value' => "Rs. ".$savings_amount
+            //             ];
+            //         }else{
+            //             $result['payment_details']['savings'] = [
+            //                 'field' => 'Your total savings',
+            //                 'value' => "Rs.".$reward_amount
+            //             ];
+            //         }
+            //     }
             
         }
 
