@@ -3684,8 +3684,6 @@ class TransactionController extends \BaseController {
                     }
     
                     $data["corporate_discount_coupon_discount_amount"] = $amount > $couponCheck1["data"]["discount"] ? $couponCheck1["data"]["discount"] : $amount;
-    
-                    $amount -= $data["corporate_discount_coupon_discount_amount"];
                     
                     if(isset($couponCheck1["vendor_coupon"]) && $couponCheck1["vendor_coupon"]){
                         $data["payment_mode"] = "at the studio";
@@ -3699,6 +3697,8 @@ class TransactionController extends \BaseController {
                     if(!empty($couponCheck1['flags'])){
                         $data['corporate_discount_coupon_flags'] = $couponCheck1['flags'];
                     }
+
+                    $data['amount'] = $data['amount'] - $data["corporate_discount_coupon_discount_amount"];
     
                 }
             }
@@ -3725,7 +3725,7 @@ class TransactionController extends \BaseController {
             $total_amount = null;
 
             if(!empty($data['customer_quantity'])){
-                $total_amount = $amount;
+                $total_amount = $data['amount'];
             }
 
             !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
