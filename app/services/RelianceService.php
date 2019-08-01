@@ -614,8 +614,8 @@ Class RelianceService {
             $res['company_stats']['header'] = "OVERALL STATS";
         }
 
-        if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>5.26) {
-            $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_non_reliance');
+        if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>=5.26) {
+            $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
         }
 
 
