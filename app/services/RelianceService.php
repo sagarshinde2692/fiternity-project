@@ -892,7 +892,7 @@ Class RelianceService {
                 'buildingLeaderboard' => false,
                 'background' => Config::get('health_config.leader_board.background'),
                 'users' => $finalList,
-                'earnsteps' => $earnSteps,
+                // 'earnsteps' => $earnSteps,
                 'checkout' => $checkout
             ];
             if(!empty($rankToShare)) {
