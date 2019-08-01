@@ -1414,7 +1414,7 @@ Class Utilities {
                     $allDeviceCount = Device::where('customer_id', (int)$data['customer_id'])->where('type','!=','web')->count();
                 }*/
 
-                $device_id = Device::max('_id') + 1;
+                $device_id = Device::maxId() + 1;
                 $device = new Device();
                 $device->_id = $device_id;
                 $device->reg_id = $data['reg_id'];

@@ -6627,7 +6627,7 @@ class CustomerController extends \BaseController {
 		$addWebDevice["browser"] = $data["browser"];
 		$addWebDevice["endpoint"] = $data["subscription"]["endpoint"];
 		$addWebDevice["keys"] = $data["subscription"]["keys"];
-		$device_id = Device::max('_id') + 1;
+		$device_id = Device::maxId() + 1;
 
 		$device = new Device();
 		$device->_id = $device_id;

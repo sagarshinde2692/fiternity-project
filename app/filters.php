@@ -298,7 +298,7 @@ Route::filter('device',function(){
 
         } else {
 
-            $device_id = Device::max('_id') + 1;
+            $device_id = Device::maxId() + 1;
             $device = new Device();
             $device->_id = $device_id;
 
