@@ -805,6 +805,7 @@ Class RelianceService {
                         '$match' => $match
                     ];
                 }
+                Log::info('match:::',[$match]);
             }
 
             $aggregate[] = ['$sort' => [ 'steps' => -1 ]];
@@ -956,9 +957,7 @@ Class RelianceService {
             }));
             if(!empty($_temp) && count($_temp)>0) {
                 $filter_status = false;
-                Log::info('temp::::::::::::::', [$_temp[0]['values']]);
                 foreach($_temp[0]['values'] as &$filtersValue){
-                    Log::info('inside temp::::::::::::::', [$filtersValue]);
                     if(!empty($filtersValue['name']) && !in_array($filtersValue['name'], ["", "null", "Null"])){
                         $filter_status= true;
                         $filtersValue['name']= ucwords($filtersValue['name']);
@@ -1065,7 +1064,6 @@ Class RelianceService {
                 if(!empty($value['_id']) && !in_array($value['_id'], ["", "null", "Null"])){
                     $value['name'] = ucwords($value['_id']);
                     foreach($value['location'] as &$location){
-                        Log::info('location values:::::::',[$location]);
                         if(empty($location) || in_array($location, ["", "null", "Null"])){
                             $index = array_search($location, $value['location']);
                             unset($value['location'][$index]);
