@@ -852,7 +852,7 @@ Class RelianceService {
                 }
             // }
 
-            if((!empty($deviceType) && $deviceType=='android') && (!empty($appVersion) && $appVersion>5.26)) {
+            if((!empty($deviceType) && $deviceType=='android') && (!empty($appVersion) && $appVersion>5.26) && (empty($customer['external_reliance']) || !$customer['external_reliance'])) {
                 $lastUser['show_dots'] = true;
                 $lastUser['rank'] = strval((count($users))-1);
                 $lastUser['last_user'] = true;
