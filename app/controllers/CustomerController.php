@@ -2442,9 +2442,13 @@ class CustomerController extends \BaseController {
 			$corporate_id  = $reliance_customer['corporate_id'];
             if(!empty($corporate_id) && !empty($customer[0])){
 				$customer[0]['is_health_shown'] = true;
-				if(empty($customer[0]['external_reliance']) || !($customer[0]['external_reliance'])) {
-					$customer[0]['corporate_manual_request'] = 'Request Profile Changes';
-				}
+				// if(empty($customer[0]['external_reliance']) || !($customer[0]['external_reliance'])) {
+				// 	$customer[0]['corporate_manual_request'] = 'Request Profile Changes';
+				// }
+            }
+
+            if(!empty($customer[0])){
+                $customer[0]['corporate_manual_request'] = 'Request Profile Changes';
             }
 
 			if(!empty($customer[0]['dob']) && !empty($customer[0]['dob']->sec)){
