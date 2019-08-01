@@ -430,6 +430,19 @@ if(!function_exists('citywise_category')){
             if(isset($cat[$city])){
                 $category_slug = $cat[$city];
             }
+            else {
+                $category_slug = [
+                    ["name" => "All Fitness Options","slug" => "fitness", "_id" => 0],
+                    ["name" => "Gyms","slug" => "gyms","_id" => 5],
+                    ["name" => "Zumba","slug" => "zumba-classes","_id" => 12],
+                    ["name" => "Cross Functional Training","slug" => "functional-training","_id" => 35],
+                    ["name" => "Fitness Studios","slug" => "fitness-studios", "_id" => 43],
+                    ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes", "_id" => 8],
+                    ["name" => "Yoga","slug" => "yoga-classes", "_id" => 6],
+                    ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
+                    ["name" => "Dance","slug" => "dance-classes", "_id" => 7],
+                ];
+            }
 
             return $category_slug;
     }
