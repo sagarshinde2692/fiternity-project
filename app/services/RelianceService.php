@@ -240,7 +240,7 @@ Class RelianceService {
             FitnessDeviceData::insert($fdData);
             $this->updateMilestoneDetails($custInfo['_id'], $custInfo['corporate_id'], $data['sync_time']);
             $resp['data'] = [
-                'health' => $this->buildHealthObject($custInfo['_id'], $custInfo['corporate_id'])
+                'health' => $this->buildHealthObject($custInfo['_id'], $custInfo['corporate_id'], $device, null, $version)
             ];
             if(!empty($resp['data']['health']['steps'])){
                 unset($resp['data']['health']['steps']);
