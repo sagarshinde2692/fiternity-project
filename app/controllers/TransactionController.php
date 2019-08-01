@@ -3724,7 +3724,7 @@ class TransactionController extends \BaseController {
 
             $service_id = isset($data['service_id']) ? $data['service_id'] : null;
 
-            $total_amount = null;
+            // $total_amount = null;
 
             if(!empty($data['customer_quantity'])){
                 $total_amount = $amount;
