@@ -212,12 +212,12 @@ Class RelianceService {
                 $lastSyncDate = $lastSyncDate->toArray();
             }
 
-            $datesList = array_column($data['data'], 'date');
+            // $datesList = array_column($data['data'], 'date');
 
-            $existingFitnessDetails = FitnessDeviceData::where('customer_id', $custInfo['_id'])
-                                    ->whereIn('device_date', $datesList)
-                                    ->orderBy('device_date', 'asc')
-                                    ->get(['device_date', 'type', 'value'])->toArray();
+            // $existingFitnessDetails = FitnessDeviceData::where('customer_id', $custInfo['_id'])
+            //                         ->whereIn('device_date', $datesList)
+            //                         ->orderBy('device_date', 'asc')
+            //                         ->get(['device_date', 'type', 'value'])->toArray();
 
             if(!empty($lastSyncDate['end_time_epoch'])) {
                 $lastSyncDate = $lastSyncDate['end_time_epoch'];
@@ -905,11 +905,11 @@ Class RelianceService {
                     if(empty($userExists)) {
                         if(!empty($deviceType) && $deviceType=='android' && !empty($appVersion) && $appVersion>=5.26) {
                             $_arr[$keyList[0]]['show_dots'] = true;
-                            $_arr[$keyList[0]]['rank'] = $keyList[0];
+                            $_arr[$keyList[0]]['rank'] = $keyList[0]+1;
                         }
                         array_push($finalList, $_arr[$keyList[0]]);
                     }
-                    $selfRank = $keyList[0];
+                    $selfRank = $keyList[0]+1;
                     // $finalList[$keyList[0]] = $_arr[$keyList[0]];
                 }
             // }
@@ -941,15 +941,15 @@ Class RelianceService {
             foreach ( $finalList as $key => &$value ) {
                 if($value['customer_id']==$customerId) {
                     $value['self_color'] = Config::get('health_config.leader_board')["self_color"];;
-                    $_selfRank = (!empty($selfRank))?($selfRank.""):(($key+1)."");
+                    $_selfRank = (!empty($selfRank))?($selfRank.""):(strval(($key+1))."");
                     $rankToShare = $_selfRank;
                     $selfStepCount = $this->formatStepsText($value['steps']);
                 }
                 else {
                     $_selfRank = null;
                 }
-                if(empty($value['last_user'])) {
-                    $value['rank'] = (!empty($_selfRank))?($_selfRank.""):(($key+1)."");
+                if(empty($value['last_user']) && ($value['customer_id']!=$customerId)) {
+                    $value['rank'] = (!empty($_selfRank))?($_selfRank.""):(strval(($key+1))."");
                 }
                 $value['steps'] = $this->formatStepsText($value['steps']);
                 if($key<3) {
