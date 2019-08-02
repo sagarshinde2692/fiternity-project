@@ -114,7 +114,7 @@ return [
         'color_rank3' => '#fc9c29',
         'self_color' => '#4fa4a3',
         "checkout"=> [
-            "text"=> "Hurry up & reach your steps milestone to achieve exciting rewards.",
+            "text"=> "Achieve your steps milestone to earn exciting rewards",
             "button_title"=> "Rewards"
         ],
         'earn_steps' => [
