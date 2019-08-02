@@ -579,7 +579,8 @@ Class RelianceService {
                 'workout_steps' => $workoutGoal,
                 'workout_image' => Config::get('health_config.health_images.workout_image'),
                 // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
-                'achievement' => (!empty($relCity))?'#'.$selfRank.' in '.$ranks['total'].' '.ucwords($relCity):null,
+                'achievement' => (!empty($relCity))?'#'.$selfRank.' in '.ucwords($relCity):null,
+                'total_participates' => (!empty($relCity) && !empty($ranks['total']))?'Total Participates '.$ranks['total'].' in '.ucwords($relCity):null,
                 'remarks' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']),
                 'target' => Config::get('health_config.individual_steps.goal'),
                 'progress' => $stepsAgg['ind_total_steps_count'],
@@ -616,6 +617,7 @@ Class RelianceService {
 
         if(!empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']) {
             $res['company_stats']['header'] = "OVERALL STATS";
+            unset($res['personal_activity']['total_participates']);
         }
 
         if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>=5.26) {
