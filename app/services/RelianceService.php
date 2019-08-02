@@ -889,7 +889,7 @@ Class RelianceService {
         if(!empty($users['result'])) {
             $users = $users['result'];
             $totalUsers = count($users);
-            $lastUser = $users[(count($users))-1];
+            $lastUser = $users[($totalUsers)-1];
             $finalList = array_slice($users,0,20);
             $userExists = array_values(array_filter($finalList, function($val) use ($customerId){
                 return $val['customer_id']==$customerId;
@@ -914,7 +914,7 @@ Class RelianceService {
                 }
             // }
 
-            if((!empty($deviceType) && $deviceType=='android') && (!empty($appVersion) && $appVersion>=5.26) && (empty($customer['external_reliance']) || !$customer['external_reliance'])) {
+            if((!empty($deviceType) && $deviceType=='android') && (!empty($appVersion) && $appVersion>=5.26) && (empty($customer['external_reliance']) || !$customer['external_reliance']) && $totalUsers>20) {
                 $lastUser['show_dots'] = true;
                 $lastUser['rank'] = strval((count($users))-1);
                 $lastUser['last_user'] = true;
