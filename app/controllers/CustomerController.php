@@ -4531,8 +4531,8 @@ class CustomerController extends \BaseController {
                     "dismiss" => false,
                     "force_update" => true
                     ];
-            }
-			$result_android['force_update'] = false;
+			}
+
 			return Response::json($result_android,200);
 		}
 
