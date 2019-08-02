@@ -556,7 +556,11 @@ Class RelianceService {
         if(!empty($filters)) {
             $parsedFilters = $this->parseLeaderboardFilters($filter['filters']);
         }
-        $selfRank = $this->getLeaderboard($customerId, true, $parsedFilters, true);
+        else{
+            $parsedFilters = null;
+        }
+        $ranks = $this->getLeaderboard($customerId, true, $parsedFilters, true);
+        $selfRank = $ranks['selfRank'];
         $res = [
             'intro'=> [
                 'image' => Config::get('health_config.reliance.reliance_logo'),
@@ -575,7 +579,7 @@ Class RelianceService {
                 'workout_steps' => $workoutGoal,
                 'workout_image' => Config::get('health_config.health_images.workout_image'),
                 // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
-                'achievement' => (!empty($relCity))?'#'.$selfRank.' in '.ucwords($relCity):null,
+                'achievement' => (!empty($relCity))?'#'.$selfRank.' in '.$ranks['total'].' '.ucwords($relCity):null,
                 'remarks' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']),
                 'target' => Config::get('health_config.individual_steps.goal'),
                 'progress' => $stepsAgg['ind_total_steps_count'],
@@ -827,6 +831,7 @@ Class RelianceService {
         });
         if(!empty($users['result'])) {
             $users = $users['result'];
+            $totalUsers = count($users);
             $lastUser = $users[(count($users))-1];
             $finalList = array_slice($users,0,20);
             $userExists = array_values(array_filter($finalList, function($val) use ($customerId){
@@ -858,16 +863,21 @@ Class RelianceService {
                 $lastUser['last_user'] = true;
                 array_push($finalList, $lastUser);
             }
-
+            Log::info('final list:::::::::::', [$finalList]);
+            $return = [
+                "total" =>$totalUsers
+            ];
             if($rankOnly) {
-                Log::info('self rank:::::', [$selfRank]);
                 if(!empty($selfRank)){
-                    return $selfRank+1;
+                    $return['selfRank'] =  $selfRank+1;
+                    return $return;
                 }
-                return null;
+                $return['selfRank'] =  null;
+                return $return;
             }
             else if (!empty($userExists)) {
-                $selfRank = null;
+                $return['selfRank'] =  null;
+                return $return;
             }
             $rankToShare = $selfRank;
             foreach ( $finalList as $key => &$value ) {
