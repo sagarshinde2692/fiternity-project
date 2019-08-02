@@ -178,7 +178,7 @@ return [
         "Footer"=> "Get fit by walking. Join #walkpechal community along with other lakhs users",
         "button_title"=> "Know More",
         'enable_button_text' => 'ENABLE',
-        "section1"=> "\u2022 Join India's Largest Fitness Challenge and join lakhs of users.\n\n\u2022 30 days | 100 Cr. Steps | 600 Cities Challenge to Walk to the Moon\n\n\u2022 Get your Friends & Family and track your progress on the Leaderboard\n\n\u2022 Win exciting Rewards and Prizes on achieving each milestone.",
+        "section1"=> "Join India's Largest Fitness Challenge and join lakhs of users.\n\n 30 days | 100 Cr. Steps | 600 Cities Challenge to Walk to the Moon\n\n Get your Friends & Family and track your progress on the Leaderboard\n\n Win exciting Rewards and Prizes on achieving each milestone.",
         "tnc"=> [
             "agree_text" => "",
             "terms_condition_text" => "Please read the terms & conditions before you agree",
