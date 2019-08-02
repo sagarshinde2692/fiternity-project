@@ -863,7 +863,7 @@ Class RelianceService {
                 $lastUser['last_user'] = true;
                 array_push($finalList, $lastUser);
             }
-            Log::info('final list:::::::::::', [$finalList]);
+
             $return = [
                 "total" =>$totalUsers
             ];
