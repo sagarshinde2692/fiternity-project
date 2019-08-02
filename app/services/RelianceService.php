@@ -876,8 +876,7 @@ Class RelianceService {
                 return $return;
             }
             else if (!empty($userExists)) {
-                $return['selfRank'] =  null;
-                return $return;
+                $selfRank=  null;
             }
             $rankToShare = $selfRank;
             foreach ( $finalList as $key => &$value ) {
