@@ -60,8 +60,13 @@ Class RelianceService {
         return $rel;
     }
 
-    public function getMilestoneDetails($steps) {
-        $milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
+    public function getMilestoneDetails($steps, $customer) {
+        if(empty($customer['external_reliance'])){
+            $milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
+        }
+        else{
+            $milestones = Config::get('nonRelianceLoyaltyProfile.post_register.milestones.data');
+        }
         $current = array_values(array_filter($milestones, function($mile) use($steps) {
             $mileNextCount = (!empty($mile['next_count']))?$mile['next_count']:999999999;
             return $mile['count']<=$steps && $mileNextCount>$steps;
@@ -128,7 +133,7 @@ Class RelianceService {
         $currCustMilestone = Customer::where('_id', $customerId)->first();
         $fitnessDeviceData = FitnessDeviceData::where('customer_id', $customerId)->where('corporate_id', $corporateId)->sum('value');
         if(!empty($fitnessDeviceData)) {
-            $milestone = $this->getMilestoneDetails($fitnessDeviceData);
+            $milestone = $this->getMilestoneDetails($fitnessDeviceData, $currCustMilestone);
             if($milestone['milestone']>=0) {
                 $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone']);
                 if(isset($customerMilestoneCount['result'])) {
@@ -535,8 +540,13 @@ Class RelianceService {
             $workoutGoal = '--';
             // $workoutGoal = preg_replace("/[\s\S]/", "-", $_temp);
         }
-
-        $nextMilestoneData = array_values(array_filter(Config::get('relianceLoyaltyProfile.post_register.milestones.data'), function($rec) use ($stepsAgg){
+        if(empty($customer['external_reliance'])){
+            $milestone_data =Config::get('relianceLoyaltyProfile.post_register.milestones.data');
+        }
+        else{
+            $milestone_data =Config::get('nonRelianceLoyaltyProfile.post_register.milestones.data');
+        }
+        $nextMilestoneData = array_values(array_filter($milestone_data, function($rec) use ($stepsAgg){
             return $rec['count']>$stepsAgg['ind_total_steps_count_overall'];
         }));
         if(!empty($nextMilestoneData)) {
@@ -999,9 +1009,9 @@ Class RelianceService {
             if(!empty($rankToShare)) {
                 $leaderBoard['share_info'] = 'I am #'.$this->getRankText($rankToShare).' on the leader-board. Excited to be part of this walk initiative';
             }
-            if(!empty($customer) && !empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']){
-                unset($leaderBoard['checkout']);
-            }
+            // if(!empty($customer) && !empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']){
+            //     unset($leaderBoard['checkout']);
+            // }
         } else {
             $leaderBoard = [
                 'buildingLeaderboard' => true,
@@ -1274,8 +1284,12 @@ Class RelianceService {
         else{
             $customerStepData = $customerStepData['result'][0];
         }
-
-        $post_register_milestones = Config::get('relianceLoyaltyProfile.post_register');
+        if(empty($customer['external_reliance'])){
+            $post_register_milestones = Config::get('relianceLoyaltyProfile.post_register');
+        }
+        else{
+            $post_register_milestones = Config::get('nonRelianceLoyaltyProfile.post_register');
+        }
         $milestones = $post_register_milestones['milestones'];
         $rewards = $post_register_milestones['rewards'];
         $total_steps = $customerStepData['total_steps'];

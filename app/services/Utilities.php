@@ -8112,6 +8112,7 @@ Class Utilities {
         $filter = [];
         if($includeCorporate) {
             $filter['corporate_id'] = !empty($customer->corporate_id) ? $customer->corporate_id : null;
+            $filter['external_reliance'] = !empty($customer->external_reliance) ? $customer->external_reliance : ['$exists'=> false];      
         }
         $filter['brand_loyalty'] = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
         $filter['brand_loyalty_city'] = !empty($customer->loyalty['brand_loyalty_city']) ? $customer->loyalty['brand_loyalty_city'] : null;
@@ -8135,6 +8136,9 @@ Class Utilities {
             
             if(!empty($filter['corporate_id'])) {
                 $match['$match']['corporate_id'] = $filter['corporate_id'];
+                if(!empty($filter['external_reliance'])){
+                    $match['$match']['external_reliance'] = $filter['external_reliance'];
+                }
             }
             else {
                 if(!empty($filter['brand_loyalty']) && !empty($filter['brand_loyalty_duration']) && !empty($filter['brand_loyalty_city'])){
