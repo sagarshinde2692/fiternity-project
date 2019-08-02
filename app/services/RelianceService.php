@@ -860,7 +860,11 @@ Class RelianceService {
             }
 
             if($rankOnly) {
-                return $selfRank+1;
+                Log::info('self rank:::::', [$selfRank]);
+                if(!empty($selfRank)){
+                    return $selfRank+1;
+                }
+                return null;
             }
             else if (!empty($userExists)) {
                 $selfRank = null;
