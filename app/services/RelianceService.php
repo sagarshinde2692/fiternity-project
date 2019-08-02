@@ -560,7 +560,10 @@ Class RelianceService {
             $parsedFilters = null;
         }
         $ranks = $this->getLeaderboard($customerId, true, $parsedFilters, true);
-        $selfRank = $ranks['selfRank'];
+
+        if(!empty($ranks['selfRank'])){
+            $selfRank = $ranks['selfRank'];
+        }
         $res = [
             'intro'=> [
                 'image' => Config::get('health_config.reliance.reliance_logo'),
@@ -613,6 +616,7 @@ Class RelianceService {
 
         if(empty($relCity) || empty($ranks['selfRank'])) {
             unset($res['personal_activity']['achievement']);
+            unset($res['personal_activity']['remarks']);
         }
 
         if(!empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']) {
@@ -920,6 +924,7 @@ Class RelianceService {
             $return = [
                 "total" =>$totalUsers
             ];
+            Log::info('seld: rank:::::::::', [$return]);
             if($rankOnly) {
                 if(!empty($selfRank)){
                     $return['selfRank'] =  $selfRank+1;
