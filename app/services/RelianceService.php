@@ -870,7 +870,7 @@ Class RelianceService {
                         $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
                     }else{
                         Log::info("tttt1");
-                        $title = (!empty($cityArr) && count($cityArr) > 1) ? "Leaderboard - RNLIC - ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : "Leaderboard - ".$cityArr[0] ;
+                        $title = (!empty($cityArr) && count($cityArr) > 1) ? "Leaderboard - RNLIC - ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : "Leaderboard - RNLIC - ".$cityArr[0] ;
                         $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
                     }
                 }else{
