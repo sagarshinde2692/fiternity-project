@@ -69,11 +69,13 @@ class RelianceController extends \BaseController {
       if(!empty($data['filters'])) {
         $parsedFilters = $this->relianceService->parseLeaderboardFilters($data['filters']);
         $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard, $parsedFilters);
+        Log::info('resp 72:::::', [$resp]);
         $resp['data']['selected_filters'] = $data['filters'];
       }
       else {
         $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard);
       }
+      Log::info('resp 81:::::', [$resp]);
       if(!empty($resp['data']) && $resp['data']!='Failed') {
         $resp['data']['filters'] = $filters ;
       }
