@@ -644,7 +644,7 @@ Class RelianceService {
     }
 
     public function getLeaderboard($customerId, $isNewLeaderBoard, $filter=null, $rankOnly = false) {
-        $resp = ['status'=>400, 'data'=>[], 'msg'=>'Failed'];
+        $resp = ['status'=>400, 'data'=>'Failed', 'msg'=>'Failed'];
         if(empty($customerId)) {
             return $resp;
         }
