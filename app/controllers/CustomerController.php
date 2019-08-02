@@ -826,7 +826,11 @@ class CustomerController extends \BaseController {
 							// $this->customermailer->register($customer_data);
 
 							Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
-
+							
+							if(!empty($data['direct_login_key'])){
+								$customer->corporate_discount = true;
+							}
+							
 							$response = $this->createToken($customer);
 								$resp = $this->checkIfpopPup($customer,$data);	
 								if($resp["show_popup"] == "true")
@@ -1243,6 +1247,10 @@ class CustomerController extends \BaseController {
 		
 		$customer_data = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender','corporate_id']);
 		
+		if(!empty($data['direct_login_key'])){
+			$customer->corporate_discount = true;
+		}
+
         $token = $this->createToken($customer);
 		
 		if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
@@ -1591,7 +1599,7 @@ class CustomerController extends \BaseController {
 		if(!empty($customer['external_reliance'])) {
 			$data['external_reliance'] = $customer['external_reliance'];
 		}
-		if(!empty($customer['direct_corporate_login'])) {
+		if(!empty($customer['corporate_discount']) && $customer['corporate_discount']) {
 			$data['corporate_discount'] = true;
 		}
 		$jwt_claim = array(
