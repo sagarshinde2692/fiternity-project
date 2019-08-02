@@ -556,7 +556,11 @@ Class RelianceService {
         if(!empty($filters)) {
             $parsedFilters = $this->parseLeaderboardFilters($filter['filters']);
         }
-        $selfRank = $this->getLeaderboard($customerId, true, $parsedFilters, true);
+        else{
+            $parsedFilters = null;
+        }
+        $ranks = $this->getLeaderboard($customerId, true, $parsedFilters, true);
+        $selfRank = $ranks['selfRank'];
         $res = [
             'intro'=> [
                 'image' => Config::get('health_config.reliance.reliance_logo'),
@@ -576,6 +580,7 @@ Class RelianceService {
                 'workout_image' => Config::get('health_config.health_images.workout_image'),
                 // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
                 'achievement' => (!empty($relCity))?'#'.$selfRank.' in '.ucwords($relCity):null,
+                'total_participates' => (!empty($relCity) && !empty($ranks['total']))?'Total Participates in '.ucwords($relCity) .' : '.$ranks['total']:null,
                 'remarks' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']),
                 'target' => Config::get('health_config.individual_steps.goal'),
                 'progress' => $stepsAgg['ind_total_steps_count'],
@@ -606,12 +611,13 @@ Class RelianceService {
         //     unset($res['personal_activity']['rewards_info']);
         // }
 
-        if(empty($relCity) || empty($selfRank)) {
+        if(empty($relCity) || empty($ranks['selfRank'])) {
             unset($res['personal_activity']['achievement']);
         }
 
         if(!empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']) {
             $res['company_stats']['header'] = "OVERALL STATS";
+            unset($res['personal_activity']['total_participates']);
         }
 
         if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>=5.26) {
@@ -827,6 +833,7 @@ Class RelianceService {
         });
         if(!empty($users['result'])) {
             $users = $users['result'];
+            $totalUsers = count($users);
             $lastUser = $users[(count($users))-1];
             $finalList = array_slice($users,0,20);
             $userExists = array_values(array_filter($finalList, function($val) use ($customerId){
@@ -859,15 +866,19 @@ Class RelianceService {
                 array_push($finalList, $lastUser);
             }
 
+            $return = [
+                "total" =>$totalUsers
+            ];
             if($rankOnly) {
-                Log::info('self rank:::::', [$selfRank]);
                 if(!empty($selfRank)){
-                    return $selfRank+1;
+                    $return['selfRank'] =  $selfRank+1;
+                    return $return;
                 }
-                return null;
+                $return['selfRank'] =  null;
+                return $return;
             }
             else if (!empty($userExists)) {
-                $selfRank = null;
+                $selfRank=  null;
             }
             $rankToShare = $selfRank;
             foreach ( $finalList as $key => &$value ) {
