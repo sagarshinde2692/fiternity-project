@@ -560,7 +560,7 @@ Class RelianceService {
             $parsedFilters = null;
         }
         $ranks = $this->getLeaderboard($customerId, true, $parsedFilters, true);
-
+        $selfRank = null;
         if(!empty($ranks['selfRank'])){
             $selfRank = $ranks['selfRank'];
         }
