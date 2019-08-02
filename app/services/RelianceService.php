@@ -644,7 +644,7 @@ Class RelianceService {
     }
 
     public function getLeaderboard($customerId, $isNewLeaderBoard, $filter=null, $rankOnly = false) {
-        $resp = ['status'=>400, 'data'=>'Failed', 'msg'=>'Failed'];
+        $resp = ['status'=>400, 'data'=>[], 'msg'=>'Failed'];
         if(empty($customerId)) {
             return $resp;
         }
@@ -1048,6 +1048,7 @@ Class RelianceService {
             $finalFiltersList = [];
 
             if(empty($external_reliance)){
+                sort($tmp_depart);
                 $finalFiltersList[] = [
                     'header' => "Departments",
                     'values' => $tmp_depart
@@ -1073,13 +1074,18 @@ Class RelianceService {
                         }
                     
                     }
+                    sort($value['location']);
                     $value['data'] = $value['location'];
                     unset($value['_id']);
                     unset($value['location']);
                     array_push($tmp['values'], $value);
                 }
             }
-    
+
+            usort($tmp['values'], function($a, $b) { 
+                return $a['name'] < $b['name'] ? -1 : 1; 
+            });
+
             array_push($finalFiltersList, $tmp);
             return $finalFiltersList;
         }
