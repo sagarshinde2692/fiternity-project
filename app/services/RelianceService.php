@@ -610,7 +610,7 @@ Class RelianceService {
         //     unset($res['personal_activity']['rewards_info']);
         // }
 
-        if(empty($relCity) || empty($selfRank)) {
+        if(empty($relCity) || empty($ranks['selfRank'])) {
             unset($res['personal_activity']['achievement']);
         }
 
