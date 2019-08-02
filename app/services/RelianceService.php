@@ -862,12 +862,12 @@ Class RelianceService {
                 if(!empty($cityArr)){
                     if(isset($custInfo->customer->external_reliance) && $custInfo->customer->external_reliance){
                         Log::info("tttt");
-                        $title = (!empty($cityArr) && count($cityArr) > 1) ? "Leaderboard - ".$cityArr[0]." +".(count($cityArr)-1)." city" : "Leaderboard - ".$cityArr[0] ;
-                        $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".$cityArr[0]." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
+                        $title = (!empty($cityArr) && count($cityArr) > 1) ? "Leaderboard - ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : "Leaderboard - ".$cityArr[0] ;
+                        $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
                     }else{
                         Log::info("tttt1");
-                        $title = (!empty($cityArr) && count($cityArr) > 1) ? "Leaderboard - RNLIC - ".$cityArr[0]." +".(count($cityArr)-1)." city" : "Leaderboard - ".$cityArr[0] ;
-                        $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".$cityArr[0]." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
+                        $title = (!empty($cityArr) && count($cityArr) > 1) ? "Leaderboard - RNLIC - ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : "Leaderboard - ".$cityArr[0] ;
+                        $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
                     }
                 }else{
                     if(isset($custInfo->customer->external_reliance) && $custInfo->customer->external_reliance){
@@ -985,7 +985,7 @@ Class RelianceService {
                 'buildingLeaderboard' => false,
                 'background' => Config::get('health_config.leader_board.background'),
                 'users' => $finalList,
-                'my_rank_text' => !empty($rankToShare)?'Your current rank is #'.$rankToShare.''.$my_rank_text.". ".$stepCountText:' ',
+                'my_rank_text' => !empty($rankToShare)?'Your current rank is #'.$rankToShare.''.ucwords($my_rank_text).". ".$stepCountText:' ',
                 // 'earnsteps' => $earnSteps,
                 'checkout' => $checkout,
                 'title' => $title
