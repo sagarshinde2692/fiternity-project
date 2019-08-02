@@ -658,8 +658,6 @@ Class RelianceService {
 
         $customer = Customer::where('_id', $customerId)->where('status', '1')->where('corporate_id', 'exists', true)->first();
         if(empty($customer)){
-            $resp['status'] =200;
-            $resp['msg'] = "Not Registered with for campaign";
             return $resp;
         }
         
