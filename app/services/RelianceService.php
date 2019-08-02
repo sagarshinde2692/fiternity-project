@@ -991,7 +991,7 @@ Class RelianceService {
         else {
             $externalRelianceCondition = true;
         }
-        if(!empty($input['isNewLeaderBoard']) && empty($external_reliance)){
+        if(!empty($input['isNewLeaderBoard'])){
             $_values1 = Customer::raw(function($collection) use ($externalRelianceCondition){
                 $match = [
                     '$match' =>[
