@@ -825,9 +825,10 @@ Class RelianceService {
         });
         if(!empty($users['result'])) {
             $users = $users['result'];
+            $last_rank = count($users);
             $finalList = array_slice($users,0,20);
             if(count($users)> 20){
-                $lastPosition = array_slice($users,count($users-1),1);
+                $lastPosition = array_slice($users,count($users)-1,1);
                 $finalList = array_merge($finalList, $lastPosition);
             }
             $userExists = array_values(array_filter($finalList, function($val) use ($customerId){
@@ -865,6 +866,9 @@ Class RelianceService {
                     $_selfRank = null;
                 }
                 $value['rank'] = (!empty($_selfRank))?($_selfRank.""):(($key+1)."");
+                if($key==(count($finalList)-1)){
+                    $value['rank'] = $last_rank;
+                }
                 $value['steps'] = $this->formatStepsText($value['steps']);
                 if($key<3) {
                     $value['image'] = Config::get('health_config.leader_board')["leader_rank".($key+1)];
