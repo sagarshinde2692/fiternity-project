@@ -10042,11 +10042,11 @@ class CustomerController extends \BaseController {
 	}
 
 	public function reliancePostLoyalty($customer, $voucher_categories_map) {
-		if(!empty($customer['external_voucher'])){
+		if(!empty($customer['external_reliance'])){
 			$milestones = Config::get('nonRelianceLoyaltyProfile.post_register.milestones.data');
 		}
 		else{
-			$customer['external_voucher']= null;
+			$customer['external_reliance']= null;
 			$milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
 		}
 		$customerMilestoneCountMap = $this->relianceService->getCustomerMilestoneCount();
@@ -10187,9 +10187,13 @@ class CustomerController extends \BaseController {
                     }
                 }
 
-            }
+			}
+			
+			$post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s).");
+			if($milestone['users'] > 0){
 
-            $post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s). (".($milestone['users'] - $customerMilestoneCountMap[$key])."/".$milestone['users']." left)");
+				$post_reward_template['description']  = $post_reward_template['description'] ."(".($milestone['users'] - $customerMilestoneCountMap[$key])."/".$milestone['users']." left)";
+			}
             $post_register_rewards_data[] = $post_reward_template;
             
 		}
