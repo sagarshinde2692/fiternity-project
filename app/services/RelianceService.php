@@ -924,7 +924,7 @@ Class RelianceService {
             $return = [
                 "total" =>$totalUsers
             ];
-            Log::info('seld: rank:::::::::', [$return]);
+
             if($rankOnly) {
                 if(!empty($selfRank)){
                     $return['selfRank'] =  $selfRank+1;
