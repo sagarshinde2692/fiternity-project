@@ -827,6 +827,7 @@ Class RelianceService {
                         '$match' => $match
                     ];
                 }
+                Log::info('match:::',[$match]);
             }
 
             $aggregate[] = ['$sort' => [ 'steps' => -1 ]];
@@ -1055,9 +1056,29 @@ Class RelianceService {
                 return $rec['header'] == $value;
             }));
             if(!empty($_temp) && count($_temp)>0) {
-                $filters[strtolower($_temp[0]['header'])] = $_temp[0]['values'];
+                $filter_status = false;
+                foreach($_temp[0]['values'] as &$filtersValue){
+                    if(!empty($filtersValue['name']) && !in_array($filtersValue['name'], ["", "null", "Null"])){
+                        $filter_status= true;
+                        $filtersValue['name']= ucwords($filtersValue['name']);
+                    }
+                    if(!empty($filtersValue['data'])){
+                        foreach($filtersValue['data'] as &$filtersList){
+                            if(empty($filtersList) || in_array($filtersList, ["", "null", "Null"])){
+                                $index =array_search($filtersList, $filtersValue['data']);
+                                unset($filtersValue['data'][$index]);
+                            }
+                            else{
+                                $filtersList = ucwords($filtersList);
+                            }
+                        }
+                    }
+                } 
+                if($filter_status){
+                    $filters[strtolower($_temp[0]['header'])] = $_temp[0]['values'];
+                }
             }
-        }
+        } 
         Log::info('fileters formated::::::::', [$filters]);
         return $filters;
     }
@@ -1127,6 +1148,7 @@ Class RelianceService {
             $finalFiltersList = [];
 
             if(empty($external_reliance)){
+                sort($tmp_depart);
                 $finalFiltersList[] = [
                     'header' => "Departments",
                     'values' => $tmp_depart
@@ -1140,15 +1162,30 @@ Class RelianceService {
             ];
     
             foreach($cities as $key=>$value){
-                if($value['_id']){
-                    $value['name'] = $value['_id'];
+                if(!empty($value['_id']) && !in_array($value['_id'], ["", "null", "Null"])){
+                    $value['name'] = ucwords($value['_id']);
+                    foreach($value['location'] as &$location){
+                        if(empty($location) || in_array($location, ["", "null", "Null"])){
+                            $index = array_search($location, $value['location']);
+                            unset($value['location'][$index]);
+                        }  
+                        else{
+                            $location = ucwords($location);
+                        }
+                    
+                    }
+                    sort($value['location']);
                     $value['data'] = $value['location'];
                     unset($value['_id']);
                     unset($value['location']);
                     array_push($tmp['values'], $value);
                 }
             }
-    
+
+            usort($tmp['values'], function($a, $b) { 
+                return $a['name'] < $b['name'] ? -1 : 1; 
+            });
+
             array_push($finalFiltersList, $tmp);
             return $finalFiltersList;
         }
@@ -1334,6 +1371,17 @@ Class RelianceService {
             "msg" => "Successfully Updated"
         ];
 
+    }
+
+    public function getFilterForNonReliance($customerId){
+        Customer::$withoutAppends = true;
+        $reliance_city = Customer::active()->where('_id', $customerId)->where('corporate_id',1)->first(['reliance_city']);
+        
+        $finalFiltersList =null;
+        if(!empty($reliance_city['reliance_city'])){
+            $finalFiltersList = ['filters' => [["header"=>"Cities","subheader" => "Select Subtype","values"=>[["name"=>$reliance_city['reliance_city'],"data"=>[]]]]], "isNewLeaderBoard" => true];
+        }
+        return $finalFiltersList;
     }
 
 }   

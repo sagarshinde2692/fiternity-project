@@ -3492,8 +3492,7 @@ class CustomerController extends \BaseController {
 				$reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
 				$corporate_id  = $reliance_customer['corporate_id'];
 				$external_reliance = $reliance_customer['external_reliance'];
-				
-				Log::info('corporate id and external data::::::', [$corporate_id, $external_reliance]);
+
 				Log::info("------------home------------$customeremail");
 
 				Log::info('device_type'.$this->device_type);
@@ -3971,7 +3970,7 @@ class CustomerController extends \BaseController {
 
                    usort($campaigns, "cmp");
 			   }
-			   
+
 				if(!empty($customer_id) && !empty($corporate_id) && empty($external_reliance) && $corporate_id == 1) {
 					$customerRec = Customer::active()->where('email', $customeremail)->first();
 					$result['health_popup'] = Config::get('health_config.health_popup');

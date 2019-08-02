@@ -62,8 +62,14 @@ class RelianceController extends \BaseController {
       else{
         return  Response::json(['msg'=> "Invalid Request."], 400);
       }
+      
+      if(empty($custInfo->customer->external_reliance)){
+        $filters = $this->relianceService->getLeaderboardFiltersList($data, (isset($custInfo->customer->external_reliance))?$custInfo->customer->external_reliance:null);
+      }
+      else{
+        $data = $this->relianceService->getFilterForNonReliance($custInfo->customer->_id);
+      }
 
-      $filters = $this->relianceService->getLeaderboardFiltersList($data, (isset($custInfo->customer->external_reliance))?$custInfo->customer->external_reliance:null);
       $isNewLeaderBoard = !empty($data['isNewLeaderBoard']) ? true: false;
       Log::info('is new leader board:::::', [$isNewLeaderBoard]);
       if(!empty($data['filters'])) {
@@ -74,7 +80,7 @@ class RelianceController extends \BaseController {
       else {
         $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard, null, null, $device, $version);
       }
-      if(!empty($resp['data']) && $resp['data']!='Failed') {
+      if(!empty($resp['data']) && $resp['data']!='Failed' && empty($custInfo->customer->external_reliance)) {
         $resp['data']['filters'] = $filters ;
       }
       return  Response::json($resp, $resp['status']);
