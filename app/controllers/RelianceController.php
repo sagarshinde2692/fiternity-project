@@ -62,9 +62,14 @@ class RelianceController extends \BaseController {
       else{
         return  Response::json(['msg'=> "Invalid Request."], 400);
       }
+      
       if(empty($custInfo->customer->external_reliance)){
         $filters = $this->relianceService->getLeaderboardFiltersList($data, (isset($custInfo->customer->external_reliance))?$custInfo->customer->external_reliance:null);
       }
+      else{
+        $data['filters'] = null;
+      }
+
       $isNewLeaderBoard = !empty($data['isNewLeaderBoard']) ? true: false;
       Log::info('is new leader board:::::', [$isNewLeaderBoard]);
       if(!empty($data['filters'])) {
