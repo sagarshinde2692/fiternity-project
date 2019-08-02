@@ -841,7 +841,7 @@ Class RelianceService {
                 if(!empty($_arr) && count($_arr)>0) {
                     $keyList = array_keys($_arr);
                     if(empty($userExists)) {
-                        if(!empty($deviceType) && $deviceType=='android' && !empty($appVersion) && $appVersion>5.26) {
+                        if(!empty($deviceType) && $deviceType=='android' && !empty($appVersion) && $appVersion>=5.26) {
                             $_arr[$keyList[0]]['show_dots'] = true;
                             $_arr[$keyList[0]]['rank'] = $keyList[0];
                         }
@@ -852,7 +852,7 @@ Class RelianceService {
                 }
             // }
 
-            if((!empty($deviceType) && $deviceType=='android') && (!empty($appVersion) && $appVersion>5.26) && (empty($customer['external_reliance']) || !$customer['external_reliance'])) {
+            if((!empty($deviceType) && $deviceType=='android') && (!empty($appVersion) && $appVersion>=5.26) && (empty($customer['external_reliance']) || !$customer['external_reliance'])) {
                 $lastUser['show_dots'] = true;
                 $lastUser['rank'] = strval((count($users))-1);
                 $lastUser['last_user'] = true;

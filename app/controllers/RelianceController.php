@@ -72,7 +72,7 @@ class RelianceController extends \BaseController {
         $resp['data']['selected_filters'] = $data['filters'];
       }
       else {
-        $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard);
+        $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard, null, null, $device, $version);
       }
       if(!empty($resp['data']) && $resp['data']!='Failed') {
         $resp['data']['filters'] = $filters ;
