@@ -583,7 +583,7 @@ Class RelianceService {
                 'workout_image' => Config::get('health_config.health_images.workout_image'),
                 // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
                 'achievement' => (!empty($relCity))?'#'.$selfRank.' in '.ucwords($relCity):null,
-                'remarks' => (!empty($relCity) && !empty($ranks['total']))?'Total Participates in '.ucwords($relCity) .' : '.$ranks['total']:null,
+                'remarks' => (!empty($relCity) && !empty($ranks['total']))?'Total participants in '.ucwords($relCity) .' : '.$ranks['total']:null,
                 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']),
                 'target' => Config::get('health_config.individual_steps.goal'),
                 'progress' => $stepsAgg['ind_total_steps_count'],
