@@ -10060,7 +10060,7 @@ class CustomerController extends \BaseController {
 		if(!empty($lastMilestoneDetails) && count($lastMilestoneDetails)>0) {
 			$lastMilestoneDetails = $lastMilestoneDetails[0];
 		}
-		if(!empty($customer['external_voucher'])){
+		if(!empty($customer['external_reliance'])){
 			$post_register = Config::get('nonRelianceLoyaltyProfile.post_register');
 		}
 		else{
