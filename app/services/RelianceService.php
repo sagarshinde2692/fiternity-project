@@ -950,12 +950,11 @@ Class RelianceService {
         Log::info('filters data:::::::;', [$_filters]);
         $keys = array_column($_filters, 'header');
         $filters = null;
-        Log::info('keys:::::::::', [$keys]);
         foreach($keys as $value) {
             //Log::info();
             $_temp = array_values(array_filter($_filters, function($rec) use ($value) {
                 return $rec['header'] == $value;
-            }));Log::info('filtered:::::::::', [$_temp]);
+            }));
             if(!empty($_temp) && count($_temp)>0) {
                 $filter_status = false;
                 foreach($_temp[0]['values'] as &$filtersValue){
