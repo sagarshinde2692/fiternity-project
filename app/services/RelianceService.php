@@ -991,7 +991,7 @@ Class RelianceService {
         else {
             $externalRelianceCondition = true;
         }
-        if(!empty($input['isNewLeaderBoard'])){
+        if(!empty($input['isNewLeaderBoard']) && empty($external_reliance)){
             $_values1 = Customer::raw(function($collection) use ($externalRelianceCondition){
                 $match = [
                     '$match' =>[
@@ -1271,6 +1271,27 @@ Class RelianceService {
             "msg" => "Successfully Updated"
         ];
 
+    }
+
+    public function getFilterForNonReliance($customerId){
+        Customer::$withoutAppends = true;
+        $reliance_city = Customer::active()
+        ->where('_id', $customerId)
+        ->where('corporate_id',1)
+        ->lists('relaince_city');
+
+        $finalFiltersList =null;
+        if(!empty($reliance_city)){
+            $finalFiltersList = [
+                'header' => 'Cities',
+                'subheader' => 'Select Locality',
+                'values' => [
+                    'name' => $reliance_city,
+                    'data' =>[]
+                ]
+            ];
+        }
+        return $finalFiltersList;
     }
 
 }   

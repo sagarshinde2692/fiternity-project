@@ -67,7 +67,7 @@ class RelianceController extends \BaseController {
         $filters = $this->relianceService->getLeaderboardFiltersList($data, (isset($custInfo->customer->external_reliance))?$custInfo->customer->external_reliance:null);
       }
       else{
-        $data['filters'] = null;
+        $data['filters'] = $this->reliance->getFilterForNonReliance($custInfo->customer->_id);
       }
 
       $isNewLeaderBoard = !empty($data['isNewLeaderBoard']) ? true: false;
