@@ -660,7 +660,14 @@ Class RelianceService {
             return $resp;
         }
 
+        $token = Request::header('Authorization');
+      
+        if(!empty($token)) {
+            $custInfo = (new Utilities())->customerTokenDecode($token);
+        }
+
         $users = [];
+        $title = "";
         $earnSteps = Config::get('health_config.leader_board.earn_steps');
         $checkout = Config::get('health_config.leader_board.checkout');
         // $earnSteps['description'] = 'The leaderboard is updated till '.date('d-m-Y', strtotime('-1 days')).' 11:59 PM';
@@ -831,6 +838,50 @@ Class RelianceService {
 
             return $collection->aggregate($aggregate);
         });
+
+        if(isset($custInfo->customer->external_reliance) && $custInfo->customer->external_reliance){
+            $title = "Leaderboard - All India";
+            $my_rank_text = " in India";
+        }else{
+            $title = "Leaderboard - RNLIC - All India";
+            $my_rank_text = " in India";
+        }
+
+        if(!empty($filter)){
+            $cityArr = array();
+                foreach($filter as $fk => $fv){
+                    if(strtolower($fk)=='cities'){
+                        foreach($fv as $city){
+                            array_push($cityArr, $city['name']);
+                        }
+                    }
+                }
+
+                Log::info("cityArr", [$cityArr]);
+
+                if(!empty($cityArr)){
+                    if(isset($custInfo->customer->external_reliance) && $custInfo->customer->external_reliance){
+                        Log::info("tttt");
+                        $title = (!empty($cityArr) && count($cityArr) > 1) ? "Leaderboard - ".$cityArr[0]." +".(count($cityArr)-1)." city" : "Leaderboard - ".$cityArr[0] ;
+                        $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".$cityArr[0]." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
+                    }else{
+                        Log::info("tttt1");
+                        $title = (!empty($cityArr) && count($cityArr) > 1) ? "Leaderboard - RNLIC - ".$cityArr[0]." +".(count($cityArr)-1)." city" : "Leaderboard - ".$cityArr[0] ;
+                        $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".$cityArr[0]." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
+                    }
+                }else{
+                    if(isset($custInfo->customer->external_reliance) && $custInfo->customer->external_reliance){
+                        $title = "Leaderboard - All India";
+                        $my_rank_text = " in India";
+                    }else{
+                        $title = "Leaderboard - RNLIC - All India";
+                        $my_rank_text = " in India";
+                    }
+                }
+            }
+
+            Log::info("title" ,[$title]);
+        
         if(!empty($users['result'])) {
             $users = $users['result'];
             $totalUsers = count($users);
@@ -881,11 +932,13 @@ Class RelianceService {
                 $selfRank=  null;
             }
             $rankToShare = $selfRank;
+            $selfStepCount = null;
             foreach ( $finalList as $key => &$value ) {
                 if($value['customer_id']==$customerId) {
                     $value['self_color'] = Config::get('health_config.leader_board')["self_color"];;
                     $_selfRank = (!empty($selfRank))?($selfRank.""):(($key+1)."");
                     $rankToShare = $_selfRank;
+                    $selfStepCount = $this->formatStepsText($value['steps']);
                 }
                 else {
                     $_selfRank = null;
@@ -923,13 +976,19 @@ Class RelianceService {
                 unset($value['city']);
                 unset($value['location']);
             }
+            $stepCountText = "";
+            if(!empty($selfStepCount)) {
+                $stepCountText = 'Your steps till now: '.$selfStepCount;
+            }
+
             $leaderBoard = [
                 'buildingLeaderboard' => false,
                 'background' => Config::get('health_config.leader_board.background'),
                 'users' => $finalList,
-                'my_rank_text' => !empty($rankToShare)?'My current rank is #'.$rankToShare:'',
+                'my_rank_text' => !empty($rankToShare)?'Your current rank is #'.$rankToShare.''.$my_rank_text.". ".$stepCountText:' ',
                 // 'earnsteps' => $earnSteps,
-                'checkout' => $checkout
+                'checkout' => $checkout,
+                'title' => $title
             ];
             if(!empty($rankToShare)) {
                 $leaderBoard['share_info'] = 'I am #'.$this->getRankText($rankToShare).' on the leader-board. Excited to be part of this walk initiative';
