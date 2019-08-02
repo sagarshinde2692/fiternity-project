@@ -826,6 +826,10 @@ Class RelianceService {
         if(!empty($users['result'])) {
             $users = $users['result'];
             $finalList = array_slice($users,0,20);
+            if(count($users)> 20){
+                $lastPosition = array_slice($users,count($users-1),1);
+                $finalList = array_merge($finalList, $lastPosition);
+            }
             $userExists = array_values(array_filter($finalList, function($val) use ($customerId){
                 return $val['customer_id']==$customerId;
             }));
