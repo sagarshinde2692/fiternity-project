@@ -68,7 +68,7 @@ class RelianceController extends \BaseController {
       Log::info('is new leader board:::::', [$isNewLeaderBoard]);
       if(!empty($data['filters'])) {
         $parsedFilters = $this->relianceService->parseLeaderboardFilters($data['filters']);
-        $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard, $parsedFilters, $device, $version);
+        $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard, $parsedFilters, null, $device, $version);
         $resp['data']['selected_filters'] = $data['filters'];
       }
       else {
