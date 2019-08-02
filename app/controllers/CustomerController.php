@@ -10181,6 +10181,7 @@ class CustomerController extends \BaseController {
                         }else{
 							unset($post_reward_data_template['button_title']);
                             $post_reward_data_template['claim_enabled'] = false;
+                            unset($post_reward_data_template['terms']);
                         } 
                         $post_reward_template['data'][] = $post_reward_data_template;
                     }
