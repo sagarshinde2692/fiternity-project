@@ -9989,15 +9989,18 @@ class CustomerController extends \BaseController {
 		$customer = Customer::active()->where('_id', $data['customer_id'])->first();
 
 		try{
-			Customer::where('_id', $data['customer_id'])
-			->update(
-				[
-					'reliance_location' => strtolower($data['location']),
-					'reliance_city' => strtolower($data['city']),
-					'corporate_id' => 1,
-					'external_reliance' => true
-				]
-			);
+
+            $update = [
+                'reliance_city' => strtolower($data['city']),
+                'corporate_id' => 1,
+                'external_reliance' => true
+            ];
+
+            if(!empty($data['location'])){
+                $update['reliance_location'] = strtolower($data['location']);
+            }
+
+			Customer::where('_id', $data['customer_id'])->update($update);
 		}catch(\Exception $e){
 			Log::info('exception occured while enabling customer for reliance campaign', [$e]);
 			return Response::json(array('status' => 400,'message' =>'Something Went Wrong.'));
