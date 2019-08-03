@@ -3933,23 +3933,23 @@ class CustomerController extends \BaseController {
 		$result['trendingheader'] = "Trending in ".ucwords($city);
 		$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($city);
 
-		// if(!empty($_REQUEST['auto_detect']) && $_REQUEST['auto_detect'] === true){
+		if(!empty($_REQUEST['auto_detect']) && $_REQUEST['auto_detect'] === true){
 
-		// 	$result['categoryheader'] = "Discover | Try | Buy";
-		// 	$result['categorysubheader'] = "Fitness services near you";
-		// 	$result['trendingheader'] = "Trending near you";
-		// 	$result['trendingsubheader'] = "Checkout fitness services near you";
-		// }
+			$result['categoryheader'] = "Discover | Try | Buy";
+			$result['categorysubheader'] = "Fitness services near you";
+			$result['trendingheader'] = "Trending near you";
+			$result['trendingsubheader'] = "Checkout fitness services near you";
+		}
 
-		// if(!empty($_REQUEST['selected_region'])){
+		if(!empty($_REQUEST['selected_region'])){
 
-        //     // $result['categoryheader'] = "Discover & Book Gyms & Fitness Classes in ".ucwords($_REQUEST['selected_region']);
-        //     $result['categoryheader'] = "Discover & Book";
-		// 	// $result['categoryheader'] = "Discover | Try | Buy";
-		// 	$result['categorysubheader'] = "Gyms and Fitness Centers in ".ucwords($_REQUEST['selected_region']);
-		// 	$result['trendingheader'] = "Trending in ".ucwords($_REQUEST['selected_region']);
-		// 	$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($_REQUEST['selected_region']);
-		// }
+            // $result['categoryheader'] = "Discover & Book Gyms & Fitness Classes in ".ucwords($_REQUEST['selected_region']);
+            $result['categoryheader'] = "Discover & Book";
+			// $result['categoryheader'] = "Discover | Try | Buy";
+			$result['categorysubheader'] = "Gyms and Fitness Centers in ".ucwords($_REQUEST['selected_region']);
+			$result['trendingheader'] = "Trending in ".ucwords($_REQUEST['selected_region']);
+			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($_REQUEST['selected_region']);
+		}
 
         $result['fitex'] =[
             'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
@@ -10032,11 +10032,11 @@ class CustomerController extends \BaseController {
 
     public function getNearbyVendors($city){
         
-        // $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
-        // $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
-        $trending = getFromCache(['tag'=>'trending', 'key'=>$city]);
+        $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
+        $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
+        // $trending = getFromCache(['tag'=>'trending', 'key'=>$city]);
 
-        if(empty($trending)){
+        // if(empty($trending)){
             $near_by_vendor_request = [
                 "offset" => 0,
                 "limit" => 9,
@@ -10061,10 +10061,10 @@ class CustomerController extends \BaseController {
             $geoLocationFinder = geoLocationFinder($near_by_vendor_request, 'customerhome');
             $trending = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
             
-            if(!empty($trending)){
-                setCache(['tag'=>'trending', 'key'=>$city, 'data'=>$trending]);
-            }
-        }
+            // if(!empty($trending)){
+            //     setCache(['tag'=>'trending', 'key'=>$city, 'data'=>$trending]);
+            // }
+        // }
         
         return $trending;
                 
