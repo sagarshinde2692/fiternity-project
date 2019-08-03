@@ -4517,7 +4517,7 @@ if (!function_exists('getFromCache')) {
 if (!function_exists('setCache')) {
 
     function setCache($data){
-        
+        Log::info("Setting, cache", $data);
         if(empty($data['time'])){
             $data['time'] = 86400;
         }

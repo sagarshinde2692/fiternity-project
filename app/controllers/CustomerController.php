@@ -3470,23 +3470,28 @@ class CustomerController extends \BaseController {
         }
 
 		$upcoming = array();
+        $decoded = $GLOBALS['decoded_token'];
+
+        if($decoded){
+            
+            $customeremail = $decoded->customer->email;
+            $customer_id = $decoded->customer->_id;
+
+        }
 		
 		// $city = strtolower($city);
 		$city = getmy_city($city);
 
-		if(!empty($GLOBALS['decoded_token'])){
+		if($decoded && !isExternalCity($city)){
 
 			try {
 
-				$decoded = $GLOBALS['decoded_token'];
 				Log::info('token values',[$decoded]);
 
                 // if(empty($decoded->customer)){
                 //     return ['isSessionExpired'=>true];
                 // }
 				
-                $customeremail = $decoded->customer->email;
-                $customer_id = $decoded->customer->_id;
                 
                 Log::info("------------home------------$customeremail");
 
@@ -3779,7 +3784,7 @@ class CustomerController extends \BaseController {
 			
 		}else{
 			
-            $_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+            $_citydata 		=	$this->utilities->getCityData($city);
             $_city = $city;
             if(empty($_citydata)) {
                 $_city = "all";
@@ -3830,7 +3835,7 @@ class CustomerController extends \BaseController {
         
         $result['collections'] = [];
 		
-		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
+		if(!isExternalCity($city) && isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
 			
 			$city_id = $this->utilities->getCityData($city);
 			
@@ -3881,72 +3886,70 @@ class CustomerController extends \BaseController {
             /***************************Banners end********************** */
 
             $result['campaigns'] =  $campaigns;
-
-            $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
-	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
-            // return $city;
-            $result['near_by_vendor'] = $this->getNearbyVendors($city);
+ 
             
-            
-            $reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
-            $corporate_id  = $reliance_customer['corporate_id'];
-            $external_reliance = $reliance_customer['external_reliance'];
-            
-            Customer::$withoutAppends = true;
-            if(!empty($customer_id) && !empty($corporate_id) && $corporate_id == 1 && empty($external_reliance)) {
-
-
-                $customerRec = Customer::active()->where('email', $customeremail)->first(['dob']);
-                $result['health_popup'] = Config::get('health_config.health_popup');
-                if(!empty($customerRec) && empty($customerRec->dob)) {
-                    $result['dob_popup'] = Config::get('health_config.dob_popup');
-                }
-                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);
-                $result['is_health_rewad_shown'] = true;
-            }
-            else if(!empty($customer_id)){
-                $customerRec = Customer::active()->where('email', $customeremail)->first(['dob']);
-                $result['non_reliance'] = ($this->device_type=='android' && ((float)$_GET['app_version'])>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
-                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);
-                if(!empty($customerRec) && empty($customerRec->dob)) {
-                    $result['dob_popup'] = Config::get('health_config.dob_popup');
-                }
-                if($this->device_type== 'android' && !empty($corporate_id)){
-                    unset($result['non_reliance']);
-                }
-            }
-
-            if(!empty($result['health']['steps'])){
-                unset($result['health']['steps']);
-            }
 			
-		}
+        }
+        $reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
+        $corporate_id  = $reliance_customer['corporate_id'];
+        $external_reliance = $reliance_customer['external_reliance'];
+        
+        Customer::$withoutAppends = true;
+        if(!empty($customer_id) && !empty($corporate_id) && $corporate_id == 1 && empty($external_reliance)) {
+
+
+            $customerRec = Customer::active()->where('email', $customeremail)->first(['dob']);
+            $result['health_popup'] = Config::get('health_config.health_popup');
+            if(!empty($customerRec) && empty($customerRec->dob)) {
+                $result['dob_popup'] = Config::get('health_config.dob_popup');
+            }
+            $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);
+            $result['is_health_rewad_shown'] = true;
+        }
+        else if(!empty($customer_id)){
+            $customerRec = Customer::active()->where('email', $customeremail)->first(['dob']);
+            $result['non_reliance'] = ($this->device_type=='android' && ((float)$_GET['app_version'])>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
+            $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);
+            if(!empty($customerRec) && empty($customerRec->dob)) {
+                $result['dob_popup'] = Config::get('health_config.dob_popup');
+            }
+            if($this->device_type== 'android' && !empty($corporate_id)){
+                unset($result['non_reliance']);
+            }
+        }
+
+        if(!empty($result['health']['steps'])){
+            unset($result['health']['steps']);
+        }
+        // return $city;
+        if(!isExternalCity($city)){
+            $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
+            $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
+            $result['near_by_vendor'] = $this->getNearbyVendors($city);
+        }
         
 		$result['categoryheader'] = "Discover | Try | Buy";
 		$result['categorysubheader'] = "Fitness services in ".ucwords($city);
 		$result['trendingheader'] = "Trending in ".ucwords($city);
 		$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($city);
 
-		if(!empty($_REQUEST['auto_detect']) && $_REQUEST['auto_detect'] === true){
+		// if(!empty($_REQUEST['auto_detect']) && $_REQUEST['auto_detect'] === true){
 
-			$result['categoryheader'] = "Discover | Try | Buy";
-			$result['categorysubheader'] = "Fitness services near you";
-			$result['trendingheader'] = "Trending near you";
-			$result['trendingsubheader'] = "Checkout fitness services near you";
-		}
+		// 	$result['categoryheader'] = "Discover | Try | Buy";
+		// 	$result['categorysubheader'] = "Fitness services near you";
+		// 	$result['trendingheader'] = "Trending near you";
+		// 	$result['trendingsubheader'] = "Checkout fitness services near you";
+		// }
 
-		if(!empty($_REQUEST['selected_region'])){
+		// if(!empty($_REQUEST['selected_region'])){
 
-            // $result['categoryheader'] = "Discover & Book Gyms & Fitness Classes in ".ucwords($_REQUEST['selected_region']);
-            $result['categoryheader'] = "Discover & Book";
-			// $result['categoryheader'] = "Discover | Try | Buy";
-			$result['categorysubheader'] = "Gyms and Fitness Centers in ".ucwords($_REQUEST['selected_region']);
-			$result['trendingheader'] = "Trending in ".ucwords($_REQUEST['selected_region']);
-			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($_REQUEST['selected_region']);
-		}
-		else {
-            $result['categoryheader'] = "Discover & Book";
-        }
+        //     // $result['categoryheader'] = "Discover & Book Gyms & Fitness Classes in ".ucwords($_REQUEST['selected_region']);
+        //     $result['categoryheader'] = "Discover & Book";
+		// 	// $result['categoryheader'] = "Discover | Try | Buy";
+		// 	$result['categorysubheader'] = "Gyms and Fitness Centers in ".ucwords($_REQUEST['selected_region']);
+		// 	$result['trendingheader'] = "Trending in ".ucwords($_REQUEST['selected_region']);
+		// 	$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($_REQUEST['selected_region']);
+		// }
 
         $result['fitex'] =[
             'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
@@ -10029,33 +10032,42 @@ class CustomerController extends \BaseController {
 
     public function getNearbyVendors($city){
         
-        $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
-        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
-        
-			$near_by_vendor_request = [
-	            "offset" => 0,
-	            "limit" => 9,
-	            "radius" => "2km",
-	            "category"=>"",
-	            "lat"=>$lat,
-	            "lon"=>$lon,
-	            "city"=>strtolower($city),
-	            "keys"=>[
-	              "average_rating",
-	              "contact",
-	              "coverimage",
-	              "location",
-	              "multiaddress",
-	              "slug",
-	              "name",
-	              "id",
-	              "categorytags",
-	              "category"
-	            ]
-	        ];
+        // $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
+        // $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
+        $trending = getFromCache(['tag'=>'trending', 'key'=>$city]);
+
+        if(empty($trending)){
+            $near_by_vendor_request = [
+                "offset" => 0,
+                "limit" => 9,
+                "radius" => "2km",
+                "category"=>"",
+                "lat"=>"",
+                "lon"=>"",
+                "city"=>strtolower($city),
+                "keys"=>[
+                    "average_rating",
+                    "contact",
+                    "coverimage",
+                    "location",
+                    "multiaddress",
+                    "slug",
+                    "name",
+                    "id",
+                    "categorytags",
+                    "category"
+                ]
+            ];
             $geoLocationFinder = geoLocationFinder($near_by_vendor_request, 'customerhome');
-			return $result['near_by_vendor'] = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
+            $trending = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
+            
+            if(!empty($trending)){
+                setCache(['tag'=>'trending', 'key'=>$city, 'data'=>$trending]);
+            }
+        }
         
+        return $trending;
+                
     }
 
 }
