@@ -634,7 +634,7 @@ Class RelianceService {
             unset($res['personal_activity']['remarks']);
         }
 
-        if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>=5.26) {
+        if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>5.26) {
             $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
         }
 
@@ -925,7 +925,7 @@ Class RelianceService {
                 }
             // }
 
-            if((!empty($deviceType) && $deviceType=='android') && (!empty($appVersion) && $appVersion>=5.26) && (empty($customer['external_reliance']) || !$customer['external_reliance']) && $totalUsers>20) {
+            if((!empty($deviceType) && $deviceType=='android') && (!empty($appVersion) && $appVersion>5.26) && (empty($customer['external_reliance']) || !$customer['external_reliance']) && $totalUsers>20) {
                 $lastUser['show_dots'] = true;
                 $lastUser['rank'] = strval((count($users))-1);
                 $lastUser['last_user'] = true;
