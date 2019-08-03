@@ -1419,4 +1419,89 @@ Class RelianceService {
         return $finalFiltersList;
     }
 
+    public function buildHealthObjectStructure($customerId, $deviceType=null, $city=null, $appVersion=null){
+        Customer::$withoutAppends = true;
+        $customer = Customer::where('_id', $customerId)->first()->toArray();
+        $ranks['total'] =20;
+        $ranks['selfRank'] =1;
+        $selfRank =1;
+        if(!empty($customer['reliance_city'])){
+            $relCity  = $customer['reliance_city'];
+        }
+        else{
+            $relCity = 'mumbai';
+        }
+
+        $res = [
+            'intro'=> [
+                'image' => Config::get('health_config.reliance.reliance_logo'),
+                'header' => "#WalkpeChal",
+                'text' => "MissionMoon | 30 Days | 100 Cr steps"
+            ],
+            'personal_activity' => [
+                'name' => $customer['name'],
+                'header' => " Your Activity Today",
+                'text' => $this->getFormattedDate(),
+                'center_header' => "Your Steps Today",
+                'center_text' => 0,
+                'goal' => "Goal : ".$this->formatStepsText(Config::get('health_config.individual_steps.goal')),
+                'foot_image' => Config::get('health_config.health_images.foot_image'),
+                'foot_steps' => 0 ,
+                'workout_steps' => 0,
+                'workout_image' => Config::get('health_config.health_images.workout_image'),
+                // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
+                'achievement' => (!empty($relCity))?'#'.$selfRank.' in '.ucwords($relCity):null,
+                'remarks' => (!empty($relCity) && !empty($ranks['total']))?'Total participants in '.ucwords($relCity) .' : '.$ranks['total']:null,
+                'rewards_info' => 'Your steps till now: 0',
+                'target' => Config::get('health_config.individual_steps.goal'),
+                'progress' => 0,
+                // 'checkout_rewards' => 'Check Rewards',
+                // 'rewards_info' => 'You\'ve covered '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).' total steps & are '.$this->formatStepsText($remainingSteps).' steps away from milestone '.$nextMilestoneData['milestone'].' (Hurry! Eligible for first '.$nextMilestoneData['users'].' users)',
+                // 'checkout_rewards' => 'Go to Profile',
+                // 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
+                'share_info' => 'Hey! I feel fit today – have completed '.(($deviceType=='android')?'%d':0).' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                'total_steps_count' => 1
+            ],
+            'company_stats' => [
+                'header' => "COMPANY STATS",
+                'text' => "0 steps | 0 days so far",
+                'button_title' => "View Leaderboard",
+                'progress' => 0,
+                'progress_text' => "0 %"
+            ],
+            'additional_info' => [
+                'header' => "Easy way to get closer to your goals by booking workouts at Gym / studio near you. Use code : ",
+                'code' => Config::get('app.reliance_coupon_code'),
+                'button_title' => "Book"
+            ],
+            "steps" => 1,
+            'sync_time' => Config::get('health_config.reliance.start_date')
+        ];
+
+        if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>5.26) {
+            $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
+        }
+
+
+        if(!empty($res['additional_info']) && !empty($city)){
+            $city = getmy_city($city);
+            if(isExternalCity($city)){
+
+                if(empty($customer['external_reliance'])){
+
+                    $res['additional_info']['header'] = 'Loose 5 kgs in 1 month on a personalised diet plan for you or your spouse. Check email from "support@fitternity.com"  to subscribe & get started.';
+                    if(!empty($res['additional_info']['code'])){
+                        unset($res['additional_info']['code']);
+                    }
+                    if(!empty($res['additional_info']['button_title'])){
+                        unset($res['additional_info']['button_title']);
+                    }
+                }else{
+                    unset($res['additional_info']);
+                }
+            }
+        }
+        return $res;
+    }
+
 }   
