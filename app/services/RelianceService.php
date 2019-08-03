@@ -384,7 +384,7 @@ Class RelianceService {
 
     public function formatStepsText($stepsCount, $decimals=0) {
         if($stepsCount>9999999) {
-            $val = number_format(($stepsCount/1000000), $decimals);
+            $val = number_format(($stepsCount/10000000), $decimals);
             return $val.'Cr';
         }
         else if($stepsCount>9999) {
