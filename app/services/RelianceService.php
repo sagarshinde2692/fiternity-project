@@ -920,7 +920,7 @@ Class RelianceService {
                             (
                                 ($deviceType=='android' && !empty($appVersion) && $appVersion>5.26) 
                                 || 
-                                ($deviceType=='ios' && !empty($appVersion) && $appVersion>5.2)
+                                ($deviceType=='ios' && !empty($appVersion) && $appVersion>= "5.2.1")
                             ) 
                         ) {
                             $_arr[$keyList[0]]['show_dots'] = true;
@@ -939,7 +939,7 @@ Class RelianceService {
                 (
                     ($deviceType=='android' && !empty($appVersion) && $appVersion>5.26) 
                     || 
-                    ($deviceType=='ios' && !empty($appVersion) && $appVersion>5.2)
+                    ($deviceType=='ios' && !empty($appVersion) && $appVersion >= "5.2.1")
                 ) 
                 && 
                     (empty($customer['external_reliance']) || !$customer['external_reliance']) 
