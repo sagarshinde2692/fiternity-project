@@ -3564,8 +3564,8 @@ class CustomerController extends \BaseController {
 
 						// 		$data['finder_average_rating'] = $finder['average_rating'];
 						// 	}
-						// }
-
+                        // }
+                        
 						foreach ($data as $key => $value) {
 							if(!in_array(gettype($value), ['boolean'])){
 								$data[$key] = ucwords(strip_tags($value));
@@ -3609,7 +3609,7 @@ class CustomerController extends \BaseController {
 
 								$data['checklist'] = true;
 
-								$fitcash_amount = $this->utilities->getFitcash($trial);
+                                $fitcash_amount = $this->utilities->getFitcash($trial);
 
 								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to unlock your ".$fitcash_amount." Fitcash as discount";
 							
@@ -3722,7 +3722,8 @@ class CustomerController extends \BaseController {
 						
 						$upcoming[] = $data;
 
-					}
+                    }
+
 					if($this->app_version > '4.4.3'){
 						
 						foreach($upcoming as $x){
@@ -3760,131 +3761,119 @@ class CustomerController extends \BaseController {
         // if($this->app_version > '')
         $active_session_packs = [];
 
-        // try{
-        //     $active_session_packs = [];
-        //     if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
-        //         $active_session_packs = $this->getSessionPacks(null, null, true, $customer_id, 'home')['data'];
-        //     }
+		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
+			if(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 4.2)){
+				// $_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+				$_citydata 		=	$this->utilities->getCityData($city);
+				$_city = $city;
+				if(empty($_citydata)) {
+					$_city = "all";
+				}
+				$category_new = citywise_categories($_city);
 
-        // }catch(Exception $e){
+				foreach ($category_new as $key => $value) {
+					// $category_new[$key]['pps_available'] = false;
+					if(isset($value["slug"]) && $value["slug"] == "fitness"){
+						unset($category_new[$key]);
+					}
+				}
 
-        //     $active_session_packs = [];
-        
-        // }
+				$category_new = array_values($category_new);
 
-		// if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
-		// 	if(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 4.2)){
-		// 		// $_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-		// 		$_citydata 		=	$this->utilities->getCityData($city);
-		// 		$_city = $city;
-		// 		if(empty($_citydata)) {
-		// 			$_city = "all";
-		// 		}
-		// 		$category_new = citywise_categories($_city);
+				$cache_tag = 'customer_home_by_city_4_2';
+			}elseif(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
+				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+				$cache_tag = 'customer_home_by_city_2_5';
+			}else{
+				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*//*,"luxury-hotels"*//*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+				$cache_tag = 'customer_home_by_city';
+			}
+		}else{
+			if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios") && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 4.1)){
+				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
+				$cat = array();
+				$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
+				$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","swimming"/*,"luxury-hotels"*//*,"sport-nutrition-supliment-stores"*/,"aerobics"/*,"kids-fitness"*/,"pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+				$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+				$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+				$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+				$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"cross-functional-training","mma-and-kick-boxing","dance",/*"kids-fitness","pre-natal-classes"*/);
+				if(isset($cat[$city])){
+					$category_slug = $cat[$city];
+				}
+				$cache_tag = 'customer_home_by_city_ios';
+			}else{
+				$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+				$_city = $city;
+				if(empty($_citydata)) {
+					$_city = "all";
+				}
+				$category_new = citywise_categories($_city);
 
-		// 		foreach ($category_new as $key => $value) {
-		// 			// $category_new[$key]['pps_available'] = false;
-		// 			if(isset($value["slug"]) && $value["slug"] == "fitness"){
-		// 				unset($category_new[$key]);
-		// 			}
-		// 		}
+				foreach ($category_new as $key => $value) {
+					// $category_new[$key]['pps_available'] = false;
+					if(isset($value["slug"]) && $value["slug"] == "fitness"){
+						unset($category_new[$key]);
+					}
+				}
 
-		// 		$category_new = array_values($category_new);
+				$category_new = array_values($category_new);
+				$cache_tag = 'customer_home_by_city_ios_4.1';
 
-		// 		$cache_tag = 'customer_home_by_city_4_2';
-		// 	}elseif(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
-		// 		$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
-		// 		$cache_tag = 'customer_home_by_city_2_5';
-		// 	}else{
-		// 		$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*//*,"luxury-hotels"*//*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
-		// 		$cache_tag = 'customer_home_by_city';
-		// 	}
-		// }else{
-		// 	if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios") && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 4.1)){
-		// 		$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
-		// 		$cat = array();
-		// 		$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
-		// 		$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","swimming"/*,"luxury-hotels"*//*,"sport-nutrition-supliment-stores"*/,"aerobics"/*,"kids-fitness"*/,"pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-		// 		$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-		// 		$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-		// 		$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-		// 		$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"cross-functional-training","mma-and-kick-boxing","dance",/*"kids-fitness","pre-natal-classes"*/);
-		// 		if(isset($cat[$city])){
-		// 			$category_slug = $cat[$city];
-		// 		}
-		// 		$cache_tag = 'customer_home_by_city_ios';
-		// 	}else{
-		// 		$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-		// 		$_city = $city;
-		// 		if(empty($_citydata)) {
-		// 			$_city = "all";
-		// 		}
-		// 		$category_new = citywise_categories($_city);
-
-		// 		foreach ($category_new as $key => $value) {
-		// 			// $category_new[$key]['pps_available'] = false;
-		// 			if(isset($value["slug"]) && $value["slug"] == "fitness"){
-		// 				unset($category_new[$key]);
-		// 			}
-		// 		}
-
-		// 		$category_new = array_values($category_new);
-		// 		$cache_tag = 'customer_home_by_city_ios_4.1';
-
-		// 	}
-		// }
-		// $customer_home_by_city = $cache ? Cache::tags($cache_tag)->has($city) : false;
-		// if(empty($customer_home_by_city)){
-		// 	$category = $locations = $popular_finders =	$recent_blogs =	array();
-		// 	$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-		// 	$_city = $city;
-		// 	if(empty($_citydata)) {
-		// 		$_city = "all";
-		// 	}
-		// 	$citydata 		=	City::where('slug', '=', $_city)->first(array('name','slug'));
-		// 	if(!$citydata){
-		// 		$citydata['name'] = $city;
-		// 		$citydata['_id'] = 10000;
-		// 		// if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
-		// 		// 	$citydata['name'] 		= 	"mumbai";
-		// 		// 	$citydata['_id']		= 	1;
-		// 		// }else{
-		// 		// 	return $this->responseNotFound('City does not exist');
-		// 		// }
-		// 	}
-		// 	$city_name 		= 	$citydata['name'];
-		// 	$city_id		= 	(int) $citydata['_id'];
-		// 	if(isset($category_new)){
-		// 		$category			= 		$category_new;
-		// 		$ordered_category   = 		$category_new;
-		// 	}else{
-		// 		$category			= 		Findercategory::active()->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
-		// 		$ordered_category = array();
-		// 		foreach ($category_slug as $category_slug_key => $category_slug_value){
-		// 			foreach ($category as $category_key => $category_value){
-		// 				if($category_value['slug'] == $category_slug_value){
-		// 					$category_value['name'] = ucwords($category_value['name']);
-		// 					$ordered_category[] = $category_value;
-		// 					break;
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// 	// $locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group'));
-		// 	$collections 			= 	[]; //Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
+			}
+		}
+		$customer_home_by_city = $cache ? Cache::tags($cache_tag)->has($city) : false;
+		if(empty($customer_home_by_city)){
+			$category = $locations = $popular_finders =	$recent_blogs =	array();
+			$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+			$_city = $city;
+			if(empty($_citydata)) {
+				$_city = "all";
+			}
+			$citydata 		=	City::where('slug', '=', $_city)->first(array('name','slug'));
+			if(!$citydata){
+				$citydata['name'] = $city;
+				$citydata['_id'] = 10000;
+				// if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
+				// 	$citydata['name'] 		= 	"mumbai";
+				// 	$citydata['_id']		= 	1;
+				// }else{
+				// 	return $this->responseNotFound('City does not exist');
+				// }
+			}
+			$city_name 		= 	$citydata['name'];
+			$city_id		= 	(int) $citydata['_id'];
+			if(isset($category_new)){
+				$category			= 		$category_new;
+				$ordered_category   = 		$category_new;
+			}else{
+				$category			= 		Findercategory::active()->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
+				$ordered_category = array();
+				foreach ($category_slug as $category_slug_key => $category_slug_value){
+					foreach ($category as $category_key => $category_value){
+						if($category_value['slug'] == $category_slug_value){
+							$category_value['name'] = ucwords($category_value['name']);
+							$ordered_category[] = $category_value;
+							break;
+						}
+					}
+				}
+			}
+			// $locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group'));
+			$collections 			= 	[]; //Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
-		// 	$homedata 				= 	array('categorytags' => $ordered_category,
-		// 		// 'locations' => $locations,
-		// 		'city_name' => $city_name,
-		// 		'city_id' => $city_id,
-		// 		'collections' => $collections,
-		// 		'banner' => 'http://b.fitn.in/c/welcome/1.jpg'
-		// 		);
-		// 	Cache::tags($cache_tag)->put($city,$homedata,Config::get('cache.cache_time'));
-		// }
-		// $result             = Cache::tags($cache_tag)->get($city);
+			$homedata 				= 	array('categorytags' => $ordered_category,
+				// 'locations' => $locations,
+				'city_name' => $city_name,
+				'city_id' => $city_id,
+				'collections' => $collections,
+				'banner' => 'http://b.fitn.in/c/welcome/1.jpg'
+				);
+			Cache::tags($cache_tag)->put($city,$homedata,Config::get('cache.cache_time'));
+		}
+		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
-        $result['session_packs'] = $active_session_packs;
+        
         
         $result['collections'] = [];
 		
@@ -3903,7 +3892,6 @@ class CustomerController extends \BaseController {
 
 				$campaigns = [];
 
-            //    if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
                if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
 
                    $app_banners = $homepage['app_banners'];
@@ -3944,7 +3932,40 @@ class CustomerController extends \BaseController {
             $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
 	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
             // return $city;
-            return $result['near_by_vendor'] = $this->getNearbyVendors($lat, $lon, $city);
+            // $result['near_by_vendor'] = $this->getNearbyVendors($city);
+            
+            
+            $reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
+            $corporate_id  = $reliance_customer['corporate_id'];
+            $external_reliance = $reliance_customer['external_reliance'];
+            
+            Customer::$withoutAppends = true;
+            if(!empty($customer_id) && !empty($corporate_id) && $corporate_id == 1 && empty($external_reliance)) {
+
+
+                $customerRec = Customer::active()->where('email', $customeremail)->first(['dob']);
+                $result['health_popup'] = Config::get('health_config.health_popup');
+                if(!empty($customerRec) && empty($customerRec->dob)) {
+                    $result['dob_popup'] = Config::get('health_config.dob_popup');
+                }
+                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, $customerRec);
+                $result['is_health_rewad_shown'] = true;
+            }
+            else if(!empty($customer_id)){
+                $customerRec = Customer::active()->where('email', $customeremail)->first(['dob']);
+                $result['non_reliance'] = Config::get('health_config.non_reliance');
+                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, $customerRec);
+                if(!empty($customerRec) && empty($customerRec->dob)) {
+                    $result['dob_popup'] = Config::get('health_config.dob_popup');
+                }
+                if($this->device_type== 'android' && !empty($corporate_id)){
+                    unset($result['non_reliance']);
+                }
+            }
+
+            if(!empty($result['health']['steps'])){
+                unset($result['health']['steps']);
+            }
 			
 		}
         
@@ -5057,7 +5078,6 @@ class CustomerController extends \BaseController {
 	    $finderData['name'] = $order->finder_name;
 
 	    if(($order->type != "healthytiffinmembership")){
-
 	    	$finderData['address'] = strip_tags($order->finder_address);
 	    	$finderData['location'] = $order->finder_location;
 	    	$finderData['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
@@ -10040,36 +10060,34 @@ class CustomerController extends \BaseController {
     
     }
 
-    public function getNearbyVendors($lat=null, $lon=null, $city=null){
-
-        $lat = empty($lat) && isset($_GET['lat']) && $_GET['lat'] != "" ? $_GET['lat'] : "";
-        $lon = empty($lon) && isset($_GET['lon']) && $_GET['lon'] != "" ? $_GET['lon'] : "";
-        $city = empty($city) && isset($_GET['city']) && $_GET['city'] != "" ? $_GET['city'] : "";
+    public function getNearbyVendors($city){
         
-        $near_by_vendor_request = [
-            "offset" => 0,
-            "limit" => 9,
-            "radius" => "2km",
-            "category"=>"",
-            "lat"=>$lat,
-            "lon"=>$lon,
-            "city"=>strtolower($city),
-            "keys"=>[
-                "average_rating",
-                "contact",
-                "coverimage",
-                "location",
-                "multiaddress",
-                "slug",
-                "name",
-                "id",
-                "categorytags",
-                "category"
-            ]
-        ];
-        return geoLocationFinder($near_by_vendor_request, 'customerhome');
-        $geoLocationFinder = geoLocationFinder($near_by_vendor_request, 'customerhome');
-        return isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
+        $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
+        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
+        
+			$near_by_vendor_request = [
+	            "offset" => 0,
+	            "limit" => 9,
+	            "radius" => "2km",
+	            "category"=>"",
+	            "lat"=>$lat,
+	            "lon"=>$lon,
+	            "city"=>strtolower($city),
+	            "keys"=>[
+	              "average_rating",
+	              "contact",
+	              "coverimage",
+	              "location",
+	              "multiaddress",
+	              "slug",
+	              "name",
+	              "id",
+	              "categorytags",
+	              "category"
+	            ]
+	        ];
+            $geoLocationFinder = geoLocationFinder($near_by_vendor_request, 'customerhome');
+			return $result['near_by_vendor'] = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
         
     }
 
