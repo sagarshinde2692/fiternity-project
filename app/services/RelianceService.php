@@ -1419,7 +1419,7 @@ Class RelianceService {
         return $finalFiltersList;
     }
 
-    public function buildHealthObjectStructure($customerId, $deviceType=null, $city=null, $appVersion=null, $customer){
+    public function buildHealthObjectStructure($customerId, $corporate_id, $deviceType=null, $city=null, $appVersion=null, $customer){
         $ranks['total'] =20;
         $ranks['selfRank'] =1;
         $selfRank =1;
