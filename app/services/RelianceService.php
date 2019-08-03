@@ -1157,7 +1157,7 @@ Class RelianceService {
 
             $finalFiltersList = [];
 
-            if(empty($external_reliance)){
+            if(empty($external_reliance) && count($tmp_depart) > 0){
                 sort($tmp_depart);
                 $finalFiltersList[] = [
                     'header' => "Departments",
