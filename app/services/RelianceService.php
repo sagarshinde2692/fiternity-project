@@ -1419,9 +1419,7 @@ Class RelianceService {
         return $finalFiltersList;
     }
 
-    public function buildHealthObjectStructure($customerId, $deviceType=null, $city=null, $appVersion=null){
-        Customer::$withoutAppends = true;
-        $customer = Customer::where('_id', $customerId)->first()->toArray();
+    public function buildHealthObjectStructure($customerId, $deviceType=null, $city=null, $appVersion=null, $customer){
         $ranks['total'] =20;
         $ranks['selfRank'] =1;
         $selfRank =1;

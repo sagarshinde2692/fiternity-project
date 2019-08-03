@@ -3979,7 +3979,7 @@ class CustomerController extends \BaseController {
 					}
 
 					if(!empty($this->device_type) && !empty($this->app_version) && $this->device_type=='ios' && $this->app_version>= '5.2.1'){
-						$result['health'] = $this->relianceService->buildHealthObjectStructure($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'] );	
+						$result['health'] = $this->relianceService->buildHealthObjectStructure($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);	
 					}
 					else{
 						$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'] );
@@ -3990,7 +3990,7 @@ class CustomerController extends \BaseController {
 					$customerRec = Customer::active()->where('email', $customeremail)->first();
 					$result['non_reliance'] = ($this->device_type=='android' && ((float)$_GET['app_version'])>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
 					if(!empty($this->device_type) && !empty($this->app_version) && $this->device_type=='ios' && $this->app_version>= '5.2.1'){
-						$result['health'] = $this->relianceService->buildHealthObjectStructure($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'] );	
+						$result['health'] = $this->relianceService->buildHealthObjectStructure($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);	
 					}
 					else{
 						$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'] );
