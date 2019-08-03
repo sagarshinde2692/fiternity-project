@@ -384,7 +384,7 @@ Class RelianceService {
 
     public function formatStepsText($stepsCount, $decimals=0) {
         if($stepsCount>9999999) {
-            $val = number_format(($stepsCount/1000000), $decimals);
+            $val = number_format(($stepsCount/10000000), $decimals);
             return $val.'Cr';
         }
         else if($stepsCount>9999) {
@@ -1003,13 +1003,16 @@ Class RelianceService {
                 'buildingLeaderboard' => false,
                 'background' => Config::get('health_config.leader_board.background'),
                 'users' => $finalList,
-                'my_rank_text' => !empty($rankToShare)?'Your current rank is #'.$rankToShare.''.ucwords($my_rank_text).". ".$stepCountText:' ',
+                'my_rank_text' => !empty($rankToShare)?'Your current rank is #'.$rankToShare.''.ucwords($my_rank_text).". ".$stepCountText:null,
                 // 'earnsteps' => $earnSteps,
                 'checkout' => $checkout,
                 'title' => $title
             ];
             if(!empty($rankToShare)) {
                 $leaderBoard['share_info'] = 'I am #'.$this->getRankText($rankToShare).' on the leader-board. Excited to be part of this walk initiative';
+            }
+            else{
+                unset($leaderBoard['my_rank_text']);
             }
             // if(!empty($customer) && !empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']){
             //     unset($leaderBoard['checkout']);
@@ -1159,7 +1162,7 @@ Class RelianceService {
 
             $finalFiltersList = [];
 
-            if(empty($external_reliance)){
+            if(empty($external_reliance) && count($tmp_depart) > 0){
                 sort($tmp_depart);
                 $finalFiltersList[] = [
                     'header' => "Departments",
