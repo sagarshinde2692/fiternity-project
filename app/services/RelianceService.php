@@ -1021,7 +1021,7 @@ Class RelianceService {
                 'buildingLeaderboard' => false,
                 'background' => Config::get('health_config.leader_board.background'),
                 'users' => $finalList,
-                'my_rank_text' => !empty($rankToShare)?'Your current rank is #'.$rankToShare.''.ucwords($my_rank_text).". ".$stepCountText:' ',
+                'my_rank_text' => !empty($rankToShare)?'Your current rank is #'.$rankToShare.''.ucwords($my_rank_text).".\n ".$stepCountText:' ',
                 // 'earnsteps' => $earnSteps,
                 'checkout' => $checkout,
                 'title' => $title
