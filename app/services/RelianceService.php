@@ -416,11 +416,13 @@ Class RelianceService {
         return ($diffDays>=1)?intval($diffDays):0;
     }
 
-    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null) {
+    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null, $customer=null) {
         Log::info('----- inside buildHealthObject -----');
 
         Customer::$withoutAppends = true;
-        $customer = Customer::where('_id', $customerId)->first()->toArray();
+        if(empty($customer)){
+            $customer = Customer::where('_id', $customerId)->first()->toArray();
+        }
 
         $stepsAgg = FitnessDeviceData::raw(function($collection) use ($customerId, $corporateId) {
             $aggregate = [

@@ -237,8 +237,11 @@ Route::post('customer/update/webnotification', array('as' => 'customer.updateweb
 Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','uses' => 'CustomerController@addHealthInfo'));
 Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
 Route::group(array('before' => 'device'), function() {
-	Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
 });
+Route::group(array('before' => 'validatetoken'), function() {
+    Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
+});
+
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
 Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
 Route::get('app/forceupdate', array('as' => 'customer.forceupdate','uses' => 'CustomerController@forceUpdate'));
@@ -1380,3 +1383,5 @@ Route::get('reliance/getLeaderboard', 'RelianceController@getLeaderboard');
 Route::post('reliance/leaderboard', 'RelianceController@getLeaderboard');
 Route::post('customer/storedob', 'RelianceController@storeDob');
 Route::post('customer/enablereliancecampaign', 'CustomerController@enableRelianceCampaign');
+
+Route::get('nearbyvendors', 'CustomerController@getNearbyVendors');
