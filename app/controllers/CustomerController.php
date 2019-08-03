@@ -3948,13 +3948,13 @@ class CustomerController extends \BaseController {
                 if(!empty($customerRec) && empty($customerRec->dob)) {
                     $result['dob_popup'] = Config::get('health_config.dob_popup');
                 }
-                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, $customerRec);
+                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);
                 $result['is_health_rewad_shown'] = true;
             }
             else if(!empty($customer_id)){
                 $customerRec = Customer::active()->where('email', $customeremail)->first(['dob']);
-                $result['non_reliance'] = Config::get('health_config.non_reliance');
-                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, $customerRec);
+                $result['non_reliance'] = ($this->device_type=='android' && ((float)$_GET['app_version'])>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
+                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);
                 if(!empty($customerRec) && empty($customerRec->dob)) {
                     $result['dob_popup'] = Config::get('health_config.dob_popup');
                 }
@@ -4337,7 +4337,7 @@ class CustomerController extends \BaseController {
                     "dismiss" => false,
                     "force_update" => true
                     ];
-            }
+			}
 
 			return Response::json($result_android,200);
 		}
@@ -9847,8 +9847,13 @@ class CustomerController extends \BaseController {
 	}
 
 	public function reliancePostLoyalty($customer, $voucher_categories_map) {
-
-		$milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
+		if(!empty($customer['external_reliance'])){
+			$milestones = Config::get('nonRelianceLoyaltyProfile.post_register.milestones.data');
+		}
+		else{
+			$customer['external_reliance']= null;
+			$milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
+		}
 		$customerMilestoneCountMap = $this->relianceService->getCustomerMilestoneCount();
 		$customer = $this->relianceService->updateMilestoneDetails($customer['_id'], $customer['corporate_id']);
 		$customer_milestones = !empty($customer['corporate_rewards']['milestones'])?$customer['corporate_rewards']['milestones']:[];
@@ -9860,8 +9865,12 @@ class CustomerController extends \BaseController {
 		if(!empty($lastMilestoneDetails) && count($lastMilestoneDetails)>0) {
 			$lastMilestoneDetails = $lastMilestoneDetails[0];
 		}
-
-        $post_register = Config::get('relianceLoyaltyProfile.post_register');
+		if(!empty($customer['external_reliance'])){
+			$post_register = Config::get('nonRelianceLoyaltyProfile.post_register');
+		}
+		else{
+			$post_register = Config::get('relianceLoyaltyProfile.post_register');
+		}
         
         $type = (!empty(Input::get('isReward') && (Input::get('isReward')!=false && Input::get('isReward')!="false"))) ? "reliance" : "fitsquad";
 		$milestones_data = $this->utilities->getMilestoneSection($customer, null, $type);
@@ -9977,14 +9986,19 @@ class CustomerController extends \BaseController {
                         }else{
 							unset($post_reward_data_template['button_title']);
                             $post_reward_data_template['claim_enabled'] = false;
+                            unset($post_reward_data_template['terms']);
                         } 
                         $post_reward_template['data'][] = $post_reward_data_template;
                     }
                 }
 
-            }
+			}
+			
+			$post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s).");
+			if($milestone['users'] > 0){
 
-            $post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s). (".($milestone['users'] - $customerMilestoneCountMap[$key])."/".$milestone['users']." left)");
+				$post_reward_template['description']  = $post_reward_template['description'] ."(".($milestone['users'] - $customerMilestoneCountMap[$key])."/".$milestone['users']." left)";
+			}
             $post_register_rewards_data[] = $post_reward_template;
             
 		}
