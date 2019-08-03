@@ -1371,7 +1371,7 @@ Class RelianceService {
     public function updatedCustomerDOB($custInfo, $data){
         try{
             // $data['dob'] = new MongoDate(strtotime($data['dob']));
-            Customer::where('_id', $custInfo->_id)->update(['dob' => $data['dob'], 'dob_updated_by_reliance'=>true]); 
+            Customer::where('_id', $custInfo->_id)->update(['dob' => $data['dob'], 'dob_updated_by_reliance'=>true, 'reliance_reg_date' => new MongoDate()]); 
         }catch(\Exception $e){
             Log::info('error while updating customer dob:::::::', [$e]);
             return [
