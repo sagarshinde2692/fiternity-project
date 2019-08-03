@@ -3898,7 +3898,7 @@ class CustomerController extends \BaseController {
         if(!empty($customer_id) && !empty($corporate_id) && $corporate_id == 1 && empty($external_reliance)) {
 
 
-            $customerRec = Customer::active()->where('email', $customeremail)->first(['dob']);
+            $customerRec = Customer::active()->where('email', $customeremail)->first();
             $result['health_popup'] = Config::get('health_config.health_popup');
             if(!empty($customerRec) && empty($customerRec->dob)) {
                 $result['dob_popup'] = Config::get('health_config.dob_popup');
@@ -3907,7 +3907,7 @@ class CustomerController extends \BaseController {
             $result['is_health_rewad_shown'] = true;
         }
         else if(!empty($customer_id)){
-            $customerRec = Customer::active()->where('email', $customeremail)->first(['dob']);
+            $customerRec = Customer::active()->where('email', $customeremail)->first();
             $result['non_reliance'] = ($this->device_type=='android' && ((float)$_GET['app_version'])>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
             $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);
             if(!empty($customerRec) && empty($customerRec->dob)) {
