@@ -9523,4 +9523,13 @@ Class Utilities {
 		return $service;
 	}
 
+    public function getCityData($slug){
+        
+        $cities = Config::get('cities');
+        
+        $city_array = array_filter($cities,function ($e) use ($slug){return $e['slug'] == $slug;});
+        
+        return !empty($city_array) ? $city_array[0] : null;
+    }
+
 }

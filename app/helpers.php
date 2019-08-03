@@ -4498,5 +4498,46 @@ if (!function_exists('isExternalCity')) {
 
 }
 
+if (!function_exists('getFromCache')) {
+
+    function getFromCache($data){
+        
+        if(empty($data['tag']) || empty($data['key'])){
+            return null;
+        }
+        try{
+            return Cache::tags($data['tag'])->get($data['key']);
+        }catch(Exception $e){
+            Log::info("cache down getFromCache");
+        }
+    
+    }
+
+}
+if (!function_exists('setCache')) {
+
+    function setCache($data){
+        
+        if(empty($data['time'])){
+            $data['time'] = 86400;
+        }
+
+        if(empty($data['tag']) || empty($data['key']) || empty($data['data'])){
+            return null;
+        }
+        try{
+            // if(empty(Cache::tags($data['tag'])->has($data['key']))){
+                Cache::tags($data['tag'])->put($data['key'], $data['data'],$data['time']);
+            // }
+            
+        }catch(Exception $e){
+            Log::info("cache down setCache");
+        }
+    
+    }
+
+}
+
+
 
 ?>

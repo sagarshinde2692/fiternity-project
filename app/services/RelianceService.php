@@ -1081,6 +1081,8 @@ Class RelianceService {
         $corporateId = null;
         $external_reliance = null;
         $emailList = $this->getRelianceCustomerEmailList();
+        Customer::$withoutAppends = true;
+        
         if(!empty(Request::header('Authorization'))){
             $decodedToken = (new Utilities())->customerTokenDecode(Request::header('Authorization'));
         }
@@ -1093,12 +1095,12 @@ Class RelianceService {
             $corporateId = $decodedToken->customer->corporate_id;
         }
         else if (!empty($decodedToken) && !empty($decodedToken->customer->email) && (in_array($decodedToken->customer->email, $emailList) || $this->isRelianceSAPEmailId($decodedToken->customer->email))) {
-            $customer = Customer::where('_id', $customerId)->where('status', '1')->first();
+            $customer = Customer::where('_id', $customerId)->first(['corporate_id', 'external_reliance']);
             $corporateId = $customer['corporate_id'];
             $external_reliance = null;
         }
         else if(empty($decodedToken) && !empty($customerId)) {
-            $customer = Customer::where('_id', $customerId)->where('status', '1')->first();
+            $customer = Customer::where('_id', $customerId)->first();
             $corporateId = $customer['corporate_id'];
             $external_reliance = $customer['external_reliance'];
         }

@@ -25,7 +25,7 @@ class Homepage extends \Basemodel {
 		return parent::getArrayableAppends();
 	}
 		
-	protected $appends = array('rc');
+	protected $appends = array();
 
 	
 	
