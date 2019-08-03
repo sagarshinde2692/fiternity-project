@@ -659,12 +659,13 @@ Class RelianceService {
         }
 
 
-        if(empty($customer['fitness_data_last_sync'])) {
-            $res['sync_time'] = Config::get('health_config.reliance.start_date');
-        }
-        else {
-            $res['sync_time'] = $customer['fitness_data_last_sync'];
-        }
+        // if(empty($customer['fitness_data_last_sync'])) {
+        //     $res['sync_time'] = Config::get('health_config.reliance.start_date');
+        // }
+        // else {
+        //     $res['sync_time'] = $customer['fitness_data_last_sync'];
+        // }
+        $res['sync_time'] = Config::get('health_config.reliance.start_date');
         return $res;
     }
 
