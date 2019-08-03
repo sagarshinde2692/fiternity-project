@@ -10036,7 +10036,7 @@ class CustomerController extends \BaseController {
     public function getNearbyVendors($city){
         
         $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
-        $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
+        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
         // $trending = getFromCache(['tag'=>'trending', 'key'=>$city]);
 
         // if(empty($trending)){
@@ -10045,8 +10045,8 @@ class CustomerController extends \BaseController {
                 "limit" => 9,
                 "radius" => "2km",
                 "category"=>"",
-                "lat"=>"",
-                "lon"=>"",
+                "lat"=>$lat,
+                "lon"=>$lon,
                 "city"=>strtolower($city),
                 "keys"=>[
                     "average_rating",
