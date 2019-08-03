@@ -3500,7 +3500,7 @@ class CustomerController extends \BaseController {
 				Log::info('app_version'.$this->app_version);
                 $trials = [];
                 // $city = "jhansi";
-                if(!isExternalCity($city)){
+                if(!isExternalCity($city) && false){
                     if($this->app_version >= 5){
     
                         Log::info("Asdasdasdsss=======");
@@ -3560,17 +3560,17 @@ class CustomerController extends \BaseController {
 
 						$data['finder_average_rating'] = 0;
 
-						$finder = Finder::find((int) $data['finder_id']);
+						// $finder = Finder::find((int) $data['finder_id']);
 
-						if($finder){
+						// if($finder){
 
-							$finder = $finder->toArray();
+						// 	$finder = $finder->toArray();
 
-							if(isset($finder['average_rating'])){
+						// 	if(isset($finder['average_rating'])){
 
-								$data['finder_average_rating'] = $finder['average_rating'];
-							}
-						}
+						// 		$data['finder_average_rating'] = $finder['average_rating'];
+						// 	}
+						// }
 
 						foreach ($data as $key => $value) {
 							if(!in_array(gettype($value), ['boolean'])){
@@ -4042,12 +4042,12 @@ class CustomerController extends \BaseController {
             $geoLocationFinder = geoLocationFinder($near_by_vendor_request, 'customerhome');
 			$result['near_by_vendor'] = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
 			//checking for fitsquad upgrade
-			if(isset($customer_id)){
-				$fitsquadUpgradeOrder = $this->fitSquadUpgradeAvailability($customer_id);
-				if($fitsquadUpgradeOrder){
-					$result['fitsquad_upgrade'] = $fitsquadUpgradeOrder;
-				}
-			}
+			// if(isset($customer_id)){
+			// 	$fitsquadUpgradeOrder = $this->fitSquadUpgradeAvailability($customer_id);
+			// 	if($fitsquadUpgradeOrder){
+			// 		$result['fitsquad_upgrade'] = $fitsquadUpgradeOrder;
+			// 	}
+			// }
 		}
         
 		$result['categoryheader'] = "Discover | Try | Buy";
