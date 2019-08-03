@@ -674,11 +674,11 @@ Class RelianceService {
             return $resp;
         }
 
-        $token = Request::header('Authorization');
+        // $token = Request::header('Authorization');
       
-        if(!empty($token)) {
-            $custInfo = (new Utilities())->customerTokenDecode($token);
-        }
+        // if(!empty($token)) {
+        //     $custInfo = (new Utilities())->customerTokenDecode($token);
+        // }
 
         $users = [];
         $title = "";
@@ -854,7 +854,7 @@ Class RelianceService {
             return $collection->aggregate($aggregate);
         });
 
-        if(isset($custInfo->customer->external_reliance) && $custInfo->customer->external_reliance){
+        if(isset($customer['external_reliance']) && $customer['external_reliance']){
             $title = "Leaderboard - All India";
             $my_rank_text = " in India";
         }else{
@@ -875,7 +875,7 @@ Class RelianceService {
                 Log::info("cityArr", [$cityArr]);
 
                 if(!empty($cityArr)){
-                    if(isset($custInfo->customer->external_reliance) && $custInfo->customer->external_reliance){
+                    if(isset($customer['external_reliance']) && $customer['external_reliance']){
                         Log::info("tttt");
                         $title = (!empty($cityArr) && count($cityArr) > 1) ? "Leaderboard - ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : "Leaderboard - ".$cityArr[0] ;
                         $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
@@ -885,7 +885,7 @@ Class RelianceService {
                         $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
                     }
                 }else{
-                    if(isset($custInfo->customer->external_reliance) && $custInfo->customer->external_reliance){
+                    if(isset($customer['external_reliance']) && $customer['external_reliance']){
                         $title = "Leaderboard - All India";
                         $my_rank_text = " in India";
                     }else{
