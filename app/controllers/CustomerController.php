@@ -4530,8 +4530,8 @@ class CustomerController extends \BaseController {
                     "dismiss" => false,
                     "force_update" => true
                     ];
-            }
-			$result_android['force_update'] = false;
+			}
+
 			return Response::json($result_android,200);
 		}
 
@@ -10059,7 +10059,7 @@ class CustomerController extends \BaseController {
 		if(!empty($lastMilestoneDetails) && count($lastMilestoneDetails)>0) {
 			$lastMilestoneDetails = $lastMilestoneDetails[0];
 		}
-		if(!empty($customer['external_voucher'])){
+		if(!empty($customer['external_reliance'])){
 			$post_register = Config::get('nonRelianceLoyaltyProfile.post_register');
 		}
 		else{
