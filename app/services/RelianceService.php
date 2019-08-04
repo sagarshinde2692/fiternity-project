@@ -1423,6 +1423,9 @@ Class RelianceService {
         $ranks['total'] =20;
         $ranks['selfRank'] =1;
         $selfRank =1;
+        if(!empty($customer)) {
+            $customer = $customer->toarray();
+        }
         if(!empty($customer['reliance_city'])){
             $relCity  = $customer['reliance_city'];
         }
@@ -1448,8 +1451,8 @@ Class RelianceService {
                 'workout_steps' => "--",
                 'workout_image' => Config::get('health_config.health_images.workout_image'),
                 // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
-                'achievement' => (!empty($relCity))?'#'.$selfRank.' in '.ucwords($relCity):null,
-                'remarks' => (!empty($relCity) && !empty($ranks['total']))?'Total participants in '.ucwords($relCity) .' : ':null,
+                'achievement' => (!empty($relCity))?'# - in '.ucwords($relCity):null,
+                // 'remarks' => (!empty($relCity) && !empty($ranks['total']))?'Total participants in '.ucwords($relCity) .' : ':null,
                 'rewards_info' => 'Your steps till now: ',
                 'target' => Config::get('health_config.individual_steps.goal'),
                 'progress' => 0,
@@ -1462,10 +1465,10 @@ Class RelianceService {
             ],
             'company_stats' => [
                 'header' => "COMPANY STATS",
-                'text' => "0 steps | 0 days so far",
+                'text' => $this->getDateDifference($corporate_id)." days so far",
                 'button_title' => "View Leaderboard",
                 'progress' => 0,
-                'progress_text' => "0 %"
+                'progress_text' => "0%"
             ],
             'additional_info' => [
                 'header' => "Easy way to get closer to your goals by booking workouts at Gym / studio near you. Use code : ",
@@ -1475,6 +1478,8 @@ Class RelianceService {
             "steps" => 1,
             'sync_time' => Config::get('health_config.reliance.start_date')
         ];
+
+        
 
         if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>5.26) {
             $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
