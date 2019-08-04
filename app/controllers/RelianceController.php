@@ -23,9 +23,17 @@ class RelianceController extends \BaseController {
           $custInfo = $this->utilities->customerTokenDecode($token);
         }
 
-        $resp = $this->relianceService->updateAppStepCount($custInfo, $data, $device, $version);
-
-        return  Response::json($resp, $resp['status']);
+        $resp = ['status'=>400, 'msg'=>'failed'];
+        if($device == 'ios') {
+          $resp = $this->relianceService->uploadStepsFirebase($custInfo, $data, $device, $version, $token);
+          if(!empty($resp)) {
+            $resp = ['status'=>200, 'data' =>$resp, 'msg'=> 'success'];
+          }
+          else {
+            $resp = ['status'=>400, 'data' =>$resp, 'msg'=> 'failed'];
+          }
+        }
+        return  Response::json($resp, $resp['status']);  
     }
 
     public function updateServiceStepCount () {
