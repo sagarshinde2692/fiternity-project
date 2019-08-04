@@ -392,7 +392,7 @@ Class RelianceService {
                     // 'rewards_info' => 'You\'ve covered '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).' total steps & are '.$this->formatStepsText($remainingSteps).' steps away from milestone '.$nextMilestoneData['milestone'].' (Hurry! Eligible for first '.$nextMilestoneData['users'].' users)',
                     // 'checkout_rewards' => 'Go to Profile',
                     // 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
-                    'share_info' => 'Hey! I feel fit today – have completed '.(($device=='android')?'%d':'@').' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                    'share_info' => 'Hey! I feel fit today – have completed '.(($device=='android')?'%d':'%@').' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
                     'total_steps_count' => $this->formatStepsText($firebaseResponse['personal_activity']['total_steps'])
                 ],
                 'company_stats' => $firebaseResponse['company_stats'],
@@ -1658,14 +1658,14 @@ Class RelianceService {
                 // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
                 'achievement' => (!empty($relCity))?'# - in '.ucwords($relCity):null,
                 // 'remarks' => (!empty($relCity) && !empty($ranks['total']))?'Total participants in '.ucwords($relCity) .' : ':null,
-                'rewards_info' => 'Your steps till now: -',
+                'rewards_info' => 'Your steps till now: ',
                 'target' => Config::get('health_config.individual_steps.goal'),
                 'progress' => 0,
                 // 'checkout_rewards' => 'Check Rewards',
                 // 'rewards_info' => 'You\'ve covered '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).' total steps & are '.$this->formatStepsText($remainingSteps).' steps away from milestone '.$nextMilestoneData['milestone'].' (Hurry! Eligible for first '.$nextMilestoneData['users'].' users)',
                 // 'checkout_rewards' => 'Go to Profile',
                 // 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
-                'share_info' => 'Hey! I feel fit today – have completed '.(($deviceType=='android')?'%d':0).' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                'share_info' => 'Hey! I feel fit today – have completed '.(($deviceType=='android')?'%d':'%@').' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
                 'total_steps_count' => 1
             ],
             'company_stats' => [
