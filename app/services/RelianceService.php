@@ -14,6 +14,20 @@ use \GuzzleHttp\Client;
 
 Class RelianceService {
 
+    protected $base_uri;
+    protected $debug = false;
+    protected $client;
+
+    public function __construct() {
+        $this->initClient();
+    }
+
+    public function initClient($debug = false) {
+        $debug = ($debug) ? $debug : $this->debug;
+        $base_uri = \Config::get('app.uploadStepsStage');
+        $this->client = new Client( ['debug' => false, 'base_uri' => $base_uri] );
+    }
+
     public function prepareDataForIns($custInfo, $rec, $device, $version) {
         Log::info('----- prepareDataForIns -----');
         Log::info('$custInfo: ', [$custInfo]);
@@ -268,15 +282,15 @@ Class RelianceService {
 
         if(empty($custInfo['corporate_id']) && !empty($custInfo['_id'])) {
             Customer::$withoutAppends = true;
-            $custInfo = Customer::where('_id', $custInfo['_id'])->first()->toArray();
+            $custInfo = Customer::where('_id', $custInfo['_id'])->first();
+            if(!empty($custInfo)) {
+                $custInfo = $custInfo->toArray();
+            }
         }
-        
-        $base_uri = \Config::get('app.uploadStepsStage');
-        $this->client = new Client( ['debug' => false, 'base_uri' => $base_uri] );
 
         $json = $this->extractStepsData($data['data']);
 
-        if(!empty($json)) {
+        if(!empty($json) && !empty($custInfo)) {
 
             if(empty($custInfo['city']) && !empty($data['city'])) {
                 $json['city'] = $data['city'];
@@ -292,102 +306,134 @@ Class RelianceService {
             ];
 
             $firebaseResponse = $this->client->post('uploadSteps',['json'=>$json, 'headers'=>$headers])->getBody()->getContents();
-
-            if(!empty($firebaseResponse)) {
-                $firebaseResponse = json_decode($firebaseResponse);
-                $firebaseResponse = (array)$firebaseResponse->data;
-                $firebaseResponse['personal_activity'] = (array)$firebaseResponse['personal_activity'];
-                $firebaseResponse['company_stats'] = (array)$firebaseResponse['company_stats'];
-                $footGoal = $this->formatStepsText($firebaseResponse['personal_activity']['steps_today']);
-                $workoutGoal = $this->formatStepsText($firebaseResponse['personal_activity']['workout_steps_today']);
-                if(empty($footGoal) && empty($workoutGoal)) {
-                    $footGoal = '--';
-                    $workoutGoal = '--';
-                }
-                else if(empty($footGoal)) {
-                    $_temp = strval($workoutGoal);
-                    $footGoal = '--';
-                    // $footGoal = preg_replace("/[\s\S]/", "-", $_temp);
-                }
-                else if(empty($workoutGoal)) {
-                    $_temp = strval($footGoal);
-                    $workoutGoal = '--';
-                    // $workoutGoal = preg_replace("/[\s\S]/", "-", $_temp);
-                }
-
-                $res = [
-                    'intro'=> [
-                        'image' => Config::get('health_config.reliance.reliance_logo'),
-                        'header' => "#WalkpeChal",
-                        'text' => "MissionMoon | 30 Days | 100 Cr steps"
-                    ],
-                    'personal_activity' => [
-                        'name' => $custInfo['name'],
-                        'header' => " Your Activity Today",
-                        'text' => $this->getFormattedDate(),
-                        'center_header' => "Your Steps Today",
-                        'center_text' => $this->formatStepsText($firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today']),
-                        'goal' => "Goal : ".$this->formatStepsText(Config::get('health_config.individual_steps.goal')),
-                        'foot_image' => Config::get('health_config.health_images.foot_image'),
-                        'foot_steps' => $footGoal,
-                        'workout_steps' => $workoutGoal,
-                        'workout_image' => Config::get('health_config.health_images.workout_image'),
-                        // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
-                        'achievement' => $firebaseResponse['personal_activity']['achievement'],
-                        'remarks' => $firebaseResponse['personal_activity']['remarks'],
-                        'rewards_info' => $firebaseResponse['personal_activity']['rewards_info'],
-                        'target' => Config::get('health_config.individual_steps.goal'),
-                        'progress' => $firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today'],
-                        // 'checkout_rewards' => 'Check Rewards',
-                        // 'rewards_info' => 'You\'ve covered '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).' total steps & are '.$this->formatStepsText($remainingSteps).' steps away from milestone '.$nextMilestoneData['milestone'].' (Hurry! Eligible for first '.$nextMilestoneData['users'].' users)',
-                        // 'checkout_rewards' => 'Go to Profile',
-                        // 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
-                        'share_info' => 'Hey! I feel fit today – have completed '.(($device=='android')?'%d':$this->formatStepsText($firebaseResponse['personal_activity']['total_steps'])).' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
-                        'total_steps_count' => $this->formatStepsText($firebaseResponse['personal_activity']['total_steps'])
-                    ],
-                    'company_stats' => $firebaseResponse['company_stats'],
-                    // 'additonal_info' => $firebaseResponse['additonal_info'],
-                    'additional_info' => [
-                        'header' => "Easy way to get closer to your goals by booking workouts at Gym / studio near you. Use code : ",
-                        'code' => Config::get('app.reliance_coupon_code'),
-                        'button_title' => "Book"
-                    ],
-                    'steps' => $firebaseResponse['personal_activity']['total_steps'],
-                ];
-
-                if(!empty($res['additional_info']) && $device=='android' && $version>5.26) {
-                    $res['additional_info'] = ((!empty($custInfo['external_reliance']) && $custInfo['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
-                }
-                
-                $city = $data['city'];
-
-                if(!empty($res['additional_info']) && !empty($city)){
-                    $city = getmy_city($city);
-                    if(isExternalCity($city)){
-        
-                        if(empty($custInfo['external_reliance'])){
-        
-                            $res['additional_info']['header'] = 'Loose 5 kgs in 1 month on a personalised diet plan for you or your spouse. Check email from "support@fitternity.com"  to subscribe & get started.';
-                            if(!empty($res['additional_info']['code'])){
-                                unset($res['additional_info']['code']);
-                            }
-                            if(!empty($res['additional_info']['button_title'])){
-                                unset($res['additional_info']['button_title']);
-                            }
-                        }else{
-                            unset($res['additional_info']);
-                        }
-                    }
-                }
-
-                return $res;
-
-            }
-            return null;
+            return $this->buildFirebaseResponse($firebaseResponse, $custInfo, $data['city'], $device, $version);
         }
         return null;
 
     }
+
+    public function getStepsDataFromFirebase($token, $device, $version) {
+        $headers = [
+            'Authorization' => $token,
+            'Device-Type' => $device,
+            'App-Version' => $version
+        ];
+        $firebaseResponse = $this->client->get('getSteps',['headers'=>$headers])->getBody()->getContents();
+        return $firebaseResponse;
+    }
+
+    public function getFirebaseHealthObject($customerId, $corporateId, $city, $device, $version, $token) {
+        Log::info('----- inside uploadStepsFirebase -----');
+        Log::info('$customer_id: ', [$customerId]);
+        Log::info('$device: ', [$device]);
+        Log::info('$version: ', [$version]);
+
+        // if(empty($corporateId) && !empty($customerId)) {
+            Customer::$withoutAppends = true;
+            $custInfo = Customer::where('_id', $customerId)->first();
+            if(!empty($custInfo)) {
+                $custInfo = $custInfo->toArray();
+            }
+        // }
+        if(!empty($custInfo)) {
+            $firebaseResponse = $this->getStepsDataFromFirebase($token, $device, $version);
+            return $this->buildFirebaseResponse($firebaseResponse, $custInfo, $city, $device, $version);
+        }
+        return null;
+    }
+
+    public function buildFirebaseResponse($firebaseResponse, $custInfo, $city, $device, $version) {
+        if(!empty($firebaseResponse)) {
+            $firebaseResponse = json_decode($firebaseResponse);
+            $firebaseResponse = (array)$firebaseResponse->data;
+            $firebaseResponse['personal_activity'] = (array)$firebaseResponse['personal_activity'];
+            $firebaseResponse['company_stats'] = (array)$firebaseResponse['company_stats'];
+            $footGoal = $this->formatStepsText($firebaseResponse['personal_activity']['steps_today']);
+            $workoutGoal = $this->formatStepsText($firebaseResponse['personal_activity']['workout_steps_today']);
+            if(empty($footGoal) && empty($workoutGoal)) {
+                $footGoal = '--';
+                $workoutGoal = '--';
+            }
+            else if(empty($footGoal)) {
+                $_temp = strval($workoutGoal);
+                $footGoal = '--';
+                // $footGoal = preg_replace("/[\s\S]/", "-", $_temp);
+            }
+            else if(empty($workoutGoal)) {
+                $_temp = strval($footGoal);
+                $workoutGoal = '--';
+                // $workoutGoal = preg_replace("/[\s\S]/", "-", $_temp);
+            }
+
+            $res = [
+                'intro'=> [
+                    'image' => Config::get('health_config.reliance.reliance_logo'),
+                    'header' => "#WalkpeChal",
+                    'text' => "MissionMoon | 30 Days | 100 Cr steps"
+                ],
+                'personal_activity' => [
+                    'name' => $custInfo['name'],
+                    'header' => " Your Activity Today",
+                    'text' => $this->getFormattedDate(),
+                    'center_header' => "Your Steps Today",
+                    'center_text' => $this->formatStepsText($firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today']),
+                    'goal' => "Goal : ".$this->formatStepsText(Config::get('health_config.individual_steps.goal')),
+                    'foot_image' => Config::get('health_config.health_images.foot_image'),
+                    'foot_steps' => $footGoal,
+                    'workout_steps' => $workoutGoal,
+                    'workout_image' => Config::get('health_config.health_images.workout_image'),
+                    // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
+                    'achievement' => $firebaseResponse['personal_activity']['achievement'],
+                    'remarks' => $firebaseResponse['personal_activity']['remarks'],
+                    'rewards_info' => $firebaseResponse['personal_activity']['rewards_info'],
+                    'target' => Config::get('health_config.individual_steps.goal'),
+                    'progress' => $firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today'],
+                    // 'checkout_rewards' => 'Check Rewards',
+                    // 'rewards_info' => 'You\'ve covered '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).' total steps & are '.$this->formatStepsText($remainingSteps).' steps away from milestone '.$nextMilestoneData['milestone'].' (Hurry! Eligible for first '.$nextMilestoneData['users'].' users)',
+                    // 'checkout_rewards' => 'Go to Profile',
+                    // 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
+                    'share_info' => 'Hey! I feel fit today – have completed '.(($device=='android')?'%d':$this->formatStepsText($firebaseResponse['personal_activity']['total_steps'])).' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                    'total_steps_count' => $this->formatStepsText($firebaseResponse['personal_activity']['total_steps'])
+                ],
+                'company_stats' => $firebaseResponse['company_stats'],
+                // 'additonal_info' => $firebaseResponse['additonal_info'],
+                'additional_info' => [
+                    'header' => "Easy way to get closer to your goals by booking workouts at Gym / studio near you. Use code : ",
+                    'code' => Config::get('app.reliance_coupon_code'),
+                    'button_title' => "Book"
+                ],
+                'steps' => $firebaseResponse['personal_activity']['total_steps'],
+            ];
+
+            if(!empty($res['additional_info']) && $device=='android' && $version>5.26) {
+                $res['additional_info'] = ((!empty($custInfo['external_reliance']) && $custInfo['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
+            }
+
+            if(!empty($res['additional_info']) && !empty($city)){
+                $city = getmy_city($city);
+                if(isExternalCity($city)){
+    
+                    if(empty($custInfo['external_reliance'])){
+    
+                        $res['additional_info']['header'] = 'Loose 5 kgs in 1 month on a personalised diet plan for you or your spouse. Check email from "support@fitternity.com"  to subscribe & get started.';
+                        if(!empty($res['additional_info']['code'])){
+                            unset($res['additional_info']['code']);
+                        }
+                        if(!empty($res['additional_info']['button_title'])){
+                            unset($res['additional_info']['button_title']);
+                        }
+                    }else{
+                        unset($res['additional_info']);
+                    }
+                }
+            }
+
+            return $res;
+
+        }
+        return null;
+    }
+
 
     public function extractStepsData($steps) {
         $totalSteps = 0;
@@ -569,8 +615,12 @@ Class RelianceService {
         return ($diffDays>=1)?intval($diffDays):0;
     }
 
-    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null, $appVersion=null, $customer=null) {
+    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null, $appVersion=null, $customer=null, $token=null) {
         Log::info('----- inside buildHealthObject -----');
+
+        if($deviceType=='ios') {
+            return $this->getFirebaseHealthObject($customerId, $corporateId, $city, $deviceType, $appVersion, $token);
+        }
 
         if(empty($customer)){
             Customer::$withoutAppends = true;

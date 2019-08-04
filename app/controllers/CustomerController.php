@@ -3911,7 +3911,7 @@ class CustomerController extends \BaseController {
 					$result['health'] = $this->relianceService->buildHealthObjectStructure($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);	
 				}
 				else{
-					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'] );
+					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], null, $jwt_token );
 				}
 				$result['is_health_rewad_shown'] = true;
 			}
@@ -3922,7 +3922,7 @@ class CustomerController extends \BaseController {
 					$result['health'] = $this->relianceService->buildHealthObjectStructure($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);	
 				}
 				else{
-					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'] );
+					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], null, $jwt_token);
 				}
 				
 				if(!empty($customerRec) && empty($customerRec->dob_updated_by_reliance)) {
