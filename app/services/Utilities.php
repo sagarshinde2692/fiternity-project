@@ -8336,7 +8336,7 @@ Class Utilities {
         }
     }
 
-    public function remaningVoucherNotification($voucher_category){
+    public function remaningVoucherNotification($voucher_category=null){
         
         if(empty($voucher_category['flags']['manual_redemption'])){
 

@@ -3900,32 +3900,42 @@ class CustomerController extends \BaseController {
             $external_reliance = $reliance_customer['external_reliance'];
             
             Customer::$withoutAppends = true;
-            if(!empty($customer_id) && !empty($corporate_id) && $corporate_id == 1 && empty($external_reliance)) {
-    
-    
-                $customerRec = Customer::active()->where('email', $customeremail)->first();
-                $result['health_popup'] = Config::get('health_config.health_popup');
-                if(!empty($customerRec) && empty($customerRec->dob)) {
-                    $result['dob_popup'] = Config::get('health_config.dob_popup');
-                }
-                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);
-                $result['is_health_rewad_shown'] = true;
-            }
-            else if(!empty($customer_id)){
-                $customerRec = Customer::active()->where('email', $customeremail)->first();
-                $result['non_reliance'] = ($this->device_type=='android' && ((float)$_GET['app_version'])>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
-                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);
-                if(!empty($customerRec) && empty($customerRec->dob)) {
-                    $result['dob_popup'] = Config::get('health_config.dob_popup');
-                }
-                if($this->device_type== 'android' && !empty($corporate_id)){
-                    unset($result['non_reliance']);
-                }
-            }
-    
-            if(!empty($result['health']['steps'])){
-                unset($result['health']['steps']);
-            }
+            if(!empty($customer_id) && !empty($corporate_id) && empty($external_reliance) && $corporate_id == 1) {
+				$customerRec = Customer::active()->where('email', $customeremail)->first();
+				$result['health_popup'] = Config::get('health_config.health_popup');
+				if(!empty($customerRec) && empty($customerRec->dob_updated_by_reliance)) {
+					$result['dob_popup'] = Config::get('health_config.dob_popup');
+				}
+
+				if(!empty($this->device_type) && !empty($this->app_version) && $this->device_type=='ios' && $this->app_version>= '5.2.1'){
+					$result['health'] = $this->relianceService->buildHealthObjectStructure($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);	
+				}
+				else{
+					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'] );
+				}
+				$result['is_health_rewad_shown'] = true;
+			}
+			else if(!empty($customer_id)){
+				$customerRec = Customer::active()->where('email', $customeremail)->first();
+				$result['non_reliance'] = ($this->device_type=='android' && ((float)$_GET['app_version'])>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
+				if(!empty($this->device_type) && !empty($this->app_version) && $this->device_type=='ios' && $this->app_version>= '5.2.1'){
+					$result['health'] = $this->relianceService->buildHealthObjectStructure($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);	
+				}
+				else{
+					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'] );
+				}
+				
+				if(!empty($customerRec) && empty($customerRec->dob_updated_by_reliance)) {
+					$result['dob_popup'] = Config::get('health_config.dob_popup');
+				}
+				if($this->device_type== 'android' && !empty($corporate_id)){
+					unset($result['non_reliance']);
+				}
+			}
+
+			if(!empty($result['health']['steps'])){
+				unset($result['health']['steps']);
+			}
         }
         // return $city;
         if(!isExternalCity($city)){
