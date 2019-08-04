@@ -1453,7 +1453,7 @@ Class RelianceService {
                 // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
                 'achievement' => (!empty($relCity))?'# - in '.ucwords($relCity):null,
                 // 'remarks' => (!empty($relCity) && !empty($ranks['total']))?'Total participants in '.ucwords($relCity) .' : ':null,
-                'rewards_info' => 'Your steps till now: ',
+                'rewards_info' => 'Your steps till now: -',
                 'target' => Config::get('health_config.individual_steps.goal'),
                 'progress' => 0,
                 // 'checkout_rewards' => 'Check Rewards',
