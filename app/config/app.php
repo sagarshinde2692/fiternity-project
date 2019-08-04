@@ -43,7 +43,7 @@ return array(
 	// 'paypal_sandbox'=>true,
 	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
 	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
-	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-stage.cloudfunctions.net',
+	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-stage.cloudfunctions.net/',
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
