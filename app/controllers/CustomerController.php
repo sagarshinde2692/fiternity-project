@@ -4618,7 +4618,22 @@ class CustomerController extends \BaseController {
 			}
 
 			if(!empty($fitcashcode['flags']['mutual_dependent_codes'])){
-				if(in_array($customer['applied_promotion_codes'], $fitcashcode['flags']['mutual_dependent_codes'])){
+
+				$customer = Customer::where('_id',$customer_id)->select('applied_promotion_codes')->first();
+				$mutual_allied_code_status= false;
+				Log::info('customer cdaata', [$customer]);
+				if(!empty($customer['applied_promotion_codes'])){
+
+					foreach($fitcashcode['flags']['mutual_dependent_codes'] as $value){
+						if(in_array($value, $customer['applied_promotion_codes'])){
+							$mutual_allied_code_status = true;
+							break;
+						}
+					}
+
+				}
+
+				if($mutual_allied_code_status){
 					$resp 	= 	array('status' => 400,'message' => "Not Applicable For This Promo Code");
 					return  Response::json($resp, 400);
 				}
