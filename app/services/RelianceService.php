@@ -940,7 +940,7 @@ Class RelianceService {
 
             if($rankOnly) {
                 if(!empty($selfRank)){
-                    $return['selfRank'] =  $selfRank+1;
+                    $return['selfRank'] =  $selfRank;
                     return $return;
                 }
                 $return['selfRank'] =  null;
