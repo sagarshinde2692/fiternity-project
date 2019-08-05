@@ -377,7 +377,7 @@ Class RelianceService {
                 $workoutGoal = '--';
                 // $workoutGoal = preg_replace("/[\s\S]/", "-", $_temp);
             }
-
+            $center_number = $firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today'];
             $res = [
                 'intro'=> [
                     'image' => Config::get('health_config.reliance.reliance_logo'),
@@ -389,7 +389,7 @@ Class RelianceService {
                     'header' => " Your Activity Today",
                     'text' => $this->getFormattedDate(),
                     'center_header' => "Your Steps Today",
-                    'center_text' => $this->formatStepsText($firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today']),
+                    'center_text' => $this->formatStepsText($center_number),
                     'goal' => "Goal : ".$this->formatStepsText(Config::get('health_config.individual_steps.goal')),
                     'foot_image' => Config::get('health_config.health_images.foot_image'),
                     'foot_steps' => $footGoal,
