@@ -4617,10 +4617,10 @@ class CustomerController extends \BaseController {
                 }
 			}
 
-			if(in_array($code, ['startfit','relfit','relmfit'])){
-				$response = $this->checkForPormotionFitcashAplied($customer_id);
-				if(!empty($response)){
-					return $response;
+			if(!empty($fitcashcode['flags']['mutual_dependent_codes'])){
+				if(in_array($customer['applied_promotion_codes'], $fitcashcode['flags']['mutual_dependent_codes'])){
+					$resp 	= 	array('status' => 400,'message' => "Not Applicable For This Promo Code");
+					return  Response::json($resp, 400);
 				}
 			}
 			
@@ -10084,14 +10084,6 @@ class CustomerController extends \BaseController {
         
         return $trending;
                 
-    }
-
-	public function checkForPormotionFitcashAplied($customer_id){
-		$customer_applied_code = Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',['startfit','relfit','relmfit'])->count();
-		if($customer_applied_code){
-			$resp 	= 	array('status' => 400,'message' => "Not Applicable For This Promo Code");
-			return  Response::json($resp, 400);
-		}
-		return null;
 	}
+	
 }
