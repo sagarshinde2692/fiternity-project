@@ -306,7 +306,7 @@ Class RelianceService {
             ];
 
             $firebaseResponse = $this->client->post('uploadSteps',['json'=>$json, 'headers'=>$headers])->getBody()->getContents();
-            return $this->buildFirebaseResponse($firebaseResponse, $custInfo, $data['city'], $device, $version);
+            return ['health' => $this->buildFirebaseResponse($firebaseResponse, $custInfo, $data['city'], $device, $version)];
         }
         return null;
 
