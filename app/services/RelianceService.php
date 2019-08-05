@@ -397,7 +397,7 @@ Class RelianceService {
                     'workout_image' => Config::get('health_config.health_images.workout_image'),
                     // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
                     'achievement' => $firebaseResponse['personal_activity']['achievement'],
-                    'remarks' => $firebaseResponse['personal_activity']['remarks'],
+                    'remarks' => !empty($firebaseResponse['personal_activity']['remarks']) ?$firebaseResponse['personal_activity']['remarks']: null,
                     'rewards_info' => $firebaseResponse['personal_activity']['rewards_info'],
                     'target' => Config::get('health_config.individual_steps.goal'),
                     'progress' => $firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today'],
@@ -440,7 +440,9 @@ Class RelianceService {
                     }
                 }
             }
-
+            if(empty($res['personal_activity']['remarks'])){
+                unset($res['personal_activity']['remarks']);
+            }
             return $res;
 
         }
