@@ -1385,3 +1385,4 @@ Route::post('customer/storedob', 'RelianceController@storeDob');
 Route::post('customer/enablereliancecampaign', 'CustomerController@enableRelianceCampaign');
 
 Route::get('nearbyvendors', 'CustomerController@getNearbyVendors');
+Route::get('migrateStepsToFirestore', 'DebugController@getmigrateStepsToFirestore');

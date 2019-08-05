@@ -11340,7 +11340,107 @@ public function yes($msg){
 		}
 		
 		print_r($return);
-	}
+    }
 
+
+    public function migrateStepsToFirestore(){
+
+        $i = 0;
+        while(true){
+            
+            $steps_aggregate = FitnessDeviceData::raw(function($query) use ($i){
+                $limit = 10000;
+                $aggreagte = [
+                    [
+                        '$match'=>[
+                            // 'customer_id'=>87977,
+                            'status'=>'1'
+                        ]
+                        ],
+                    [
+                        '$addFields'=>[
+                           'foot_steps'=>[
+                               '$cond'=>[
+                                    [
+                                       '$eq'=>['$type', 'steps']
+                                    ] 
+                                    ,'$value', 
+                                    0
+                                ]
+                            ],
+                           'service_steps'=>[
+                               '$cond'=>[
+                                   [
+                                       '$eq'=>['$type', 'service_steps']
+                                    ],
+                                   '$value', 
+                                   0
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        '$group'=>[
+                            '_id'=>'$customer_id',
+                            'total_steps'=>['$sum'=>'$value'],
+                            'steps'=>['$sum'=>'$foot_steps'],
+                            'service_steps'=>['$sum'=>'$service_steps']
+                        ]
+                    ],
+                    // [
+                    //     '$skip'=>$i*$limit
+                    // ],
+                    // [
+                    //     '$limit'=>$limit
+                    // ],
+                    [
+                        '$lookup' => [
+                            'from' => 'customers',
+                            'localField' => '_id',
+                            'foreignField' => '_id',
+                            'as' => 'customer'
+                        ]
+                    ],
+                    [
+                        '$addFields'=>[
+                            'city' => ['$arrayElemAt' => ['$customer.reliance_city',0]],
+                            'name' => ['$arrayElemAt' => ['$customer.name',0]],
+                            'location' => ['$arrayElemAt' => ['$customer.reliance_location',0]],
+                            'external_reliance' => ['$arrayElemAt' => ['$customer.external_reliance',0]],
+                            'customer_id' => '$_id',
+                            'steps_today' => 0,
+                            'service_steps_today' => 0,
+                        ]
+                    ],
+                    [
+                        '$match'=>[
+                            'external_reliance'=>['$ne'=>true]
+                        ]
+                    ],
+                    [
+                        '$addFields'=>[
+                            'external_reliance'=>['$ifNull'=>['$external_reliance', false]]
+                        ]
+                        ],
+                    [
+                        '$project'=>[
+                            'customer'=>0
+                        ]
+                    ]
+
+                ];
+
+                return $query->aggregate($aggreagte);
+    
+            });
+
+
+            return $steps_aggregate;
+
+            if(empty($steps_aggregate)){
+                break;
+            }
+
+        }    
+    }
 }
-
