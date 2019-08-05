@@ -421,6 +421,9 @@ Class RelianceService {
             if(!empty($res['additional_info']) && $device=='android' && $version>5.26) {
                 $res['additional_info'] = ((!empty($custInfo['external_reliance']) && $custInfo['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
             }
+            else if(!empty($res['additional_info']) && $device=='ios') {
+                $res['additional_info'] = ((!empty($custInfo['external_reliance']) && $custInfo['external_reliance']))?Config::get('health_config.health_booking_ios_non_reliance'):Config::get('health_config.health_booking_ios_reliance');
+            }
 
             if(!empty($res['additional_info']) && !empty($city)){
                 $city = getmy_city($city);
