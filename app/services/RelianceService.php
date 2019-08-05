@@ -351,7 +351,12 @@ Class RelianceService {
                     $token = Request::header('Athorization');
                 }
 
-                $this->buildHealthObject($custInfo['_id'], $custInfo['corporate_id'], $device, $city, $version, $custInfo, $token, true);
+                $corporate_id= null;
+                if(!empty($custInfo['corporate_id'])){
+                    $corporate_id = $custInfo['corporate_id'];
+                }
+
+                $this->buildHealthObject($custInfo['_id'], $corporate_id, $device, $city, $version, $custInfo, $token, true);
             }
             $firebaseResponse = (array)$firebaseResponse->data;
             $firebaseResponse['personal_activity'] = (array)$firebaseResponse['personal_activity'];
