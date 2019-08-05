@@ -426,7 +426,7 @@ Class RelianceService {
 
         if(empty($customer)){
             Customer::$withoutAppends = true;
-            $customer = Customer::where('_id', $customerId)->first()->toArray();
+            $customer = Customer::where('_id', $customerId)->first();
         }
 
         $stepsAgg = FitnessDeviceData::raw(function($collection) use ($customerId, $corporateId) {

@@ -50,11 +50,11 @@ class RelianceController extends \BaseController {
     }
 
     public function getLeaderboard() {
-      $data = Input::json()->all();
-      $token = Request::header('Authorization');
-      $device = Request::header('Device-Type');
-      $version = Request::header('App-Version');
-      Log::info('updateAppStepCount: ', $data);
+        $data = Input::json()->all();
+        $token = Request::header('Authorization');
+        $device = Request::header('Device-Type');
+        $version = Request::header('App-Version');
+        Log::info('updateAppStepCount: ', $data);
 
       if(!empty($token)) {
         $custInfo = $this->utilities->customerTokenDecode($token);
