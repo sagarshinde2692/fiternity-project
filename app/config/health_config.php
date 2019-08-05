@@ -36,6 +36,14 @@ return [
         // 'message' => "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (\"RNLIC\") on sms or Whatsapp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound maintain utmost confidentiality of the same.\n\nI agree that all such information received shall be subject to the privacy policy available on the website of RNLIC.",
         'button_title' => 'I Agree'
     ],
+    'health_booking_ios_non_reliance' => [
+        'header' => "Book workout at any Gym or Studio near you and get closer to your goals.",
+        'button_title' => 'Know More'
+    ],
+    'health_booking_ios_reliance' => [
+        'header' => "Get 2 Free Workouts: Use code RELIANCE to book a session at any Gym or Studio near you.",
+        'button_title' => 'Know More'
+    ],
     'health_booking_android_reliance' => [
         'header' => "Get 2 Free Workouts: Use code RELIANCE to book a session at any Gym or Studio near you.",
         'button_title' => 'Know More',

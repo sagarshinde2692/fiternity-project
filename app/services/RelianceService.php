@@ -945,6 +945,9 @@ Class RelianceService {
         if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>5.26) {
             $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
         }
+        else if(!empty($res['additional_info']) && $deviceType=='ios') {
+            $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_ios_non_reliance'):Config::get('health_config.health_booking_ios_reliance');
+        }
 
 
         if(!empty($res['additional_info']) && !empty($city)){
@@ -1796,6 +1799,9 @@ Class RelianceService {
 
         if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>5.26) {
             $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
+        }
+        else if(!empty($res['additional_info']) && $deviceType=='ios') {
+            $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_ios_non_reliance'):Config::get('health_config.health_booking_ios_reliance');
         }
 
 
