@@ -4628,7 +4628,6 @@ class CustomerController extends \BaseController {
 			// $customer_update 	=	1;
 			$cashback_amount = 0;
 
-
 			if($customer_update){
 
 				$cashback_amount = $fitcashcode['amount'];
