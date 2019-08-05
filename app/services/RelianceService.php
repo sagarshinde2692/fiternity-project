@@ -345,7 +345,7 @@ Class RelianceService {
     public function buildFirebaseResponse($firebaseResponse, $custInfo, $city, $device, $version) {
         if(!empty($firebaseResponse)) {
             $firebaseResponse = json_decode($firebaseResponse);
-            if($firebaseResponse['status']!=200){
+            if($firebaseResponse->status!=200){
                 $token= null;
                 if(!empty(Request::header('Athorization'))){
                     $token = Request::header('Athorization');
