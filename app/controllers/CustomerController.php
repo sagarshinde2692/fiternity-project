@@ -3931,7 +3931,10 @@ class CustomerController extends \BaseController {
         if(!isExternalCity($city)){
             $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
             $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
-            $result['near_by_vendor'] = $this->getNearbyVendors($city);
+
+            if(!($this->device_type=='android' && !empty($this->app_version) && (float)$this->app_version>5.27)){
+                $result['near_by_vendor'] = $this->getNearbyVendors($city);
+            }
         }
         
 		$result['categoryheader'] = "Discover | Try | Buy";
@@ -10039,14 +10042,40 @@ class CustomerController extends \BaseController {
     
     }
 
-    public function getNearbyVendors($city){
+    public function getNearbyVendors($city=null, $only_data = null){
+
+        $result['trendingheader'] = "Trending in ".ucwords($city);
+		$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($city);
+
+        $data = $_GET;
         
-        $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
-        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
+        if(!empty($data['auto_detect']) && $data['auto_detect'] === true){
+
+			$result['categoryheader'] = "Discover | Try | Buy";
+			$result['categorysubheader'] = "Fitness services near you";
+			$result['trendingheader'] = "Trending near you";
+			$result['trendingsubheader'] = "Checkout fitness services near you";
+		}
+
+		if(!empty($data['selected_region'])){
+
+            // $result['categoryheader'] = "Discover & Book Gyms & Fitness Classes in ".ucwords($data['selected_region']);
+            $result['categoryheader'] = "Discover & Book";
+			// $result['categoryheader'] = "Discover | Try | Buy";
+			$result['categorysubheader'] = "Gyms and Fitness Centers in ".ucwords($data['selected_region']);
+			$result['trendingheader'] = "Trending in ".ucwords($data['selected_region']);
+			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($data['selected_region']);
+		}
+        
+        $lat = isset($data['lat']) && $data['lat'] != "" ? $data['lat'] : "";
+        $lon = isset($data['lon']) && $data['lon'] != "" ? $data['lon'] : "";
+        if(empty($city)){
+            $city = isset($data['city']) && $data['city'] != "" ? $data['city'] : "";
+        }
         // $trending = getFromCache(['tag'=>'trending', 'key'=>$city]);
 
         // if(empty($trending)){
-            $near_by_vendor_request = [
+             $near_by_vendor_request = [
                 "offset" => 0,
                 "limit" => 9,
                 "radius" => "2km",
@@ -10074,8 +10103,12 @@ class CustomerController extends \BaseController {
             //     setCache(['tag'=>'trending', 'key'=>$city, 'data'=>$trending]);
             // }
         // }
-        
-        return $trending;
+        if(!empty($only_data)){
+            return $trending;
+        }else{
+            $result['near_by_vendor'] = $trending;
+            return $result;
+        }
                 
     }
 
