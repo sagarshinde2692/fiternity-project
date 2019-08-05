@@ -66,7 +66,12 @@ return array(
 	// 'mobikwik_sandbox'=>true,
 	// 'paytm_sandbox'=>true,
 	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	// 'razorPayKey' => 'rzp_test_6TKjLnXzpuVIds',
 	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
+	// 'razorPaySecret' => 'rK7FwR1a4coHHLCuhSSLz8P5',
+	// "webhook_secret_key"=>"qwepoifghtyvb",
+	// "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
+	// 'paypal_sandbox'=>true,
 
 	//live
 	// 'new_search_url' =>'http://c1.fitternity.com/',	
