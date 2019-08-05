@@ -4539,7 +4539,7 @@ class CustomerController extends \BaseController {
 			}
 			
 			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
-
+			
 			if($code == 'gwdfit'){
 
 				$customer = Customer::find($customer_id);
@@ -4620,6 +4620,28 @@ class CustomerController extends \BaseController {
                 }
 			}
 
+			if(!empty($fitcashcode['flags']['mutual_dependent_codes'])){
+
+				$customer = Customer::where('_id',$customer_id)->select('applied_promotion_codes')->first();
+				$mutual_allied_code_status= false;
+				Log::info('customer cdaata', [$customer]);
+				if(!empty($customer['applied_promotion_codes'])){
+
+					foreach($fitcashcode['flags']['mutual_dependent_codes'] as $value){
+						if(in_array($value, $customer['applied_promotion_codes'])){
+							$mutual_allied_code_status = true;
+							break;
+						}
+					}
+
+				}
+
+				if($mutual_allied_code_status){
+					$resp 	= 	array('status' => 400,'message' => "This promo code can not be applied.");
+					return  Response::json($resp, 400);
+				}
+			}
+			
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
 			// $customer_update 	=	1;
 			$cashback_amount = 0;
@@ -10110,6 +10132,6 @@ class CustomerController extends \BaseController {
             return $result;
         }
                 
-    }
-
+	}
+	
 }
