@@ -71,7 +71,16 @@ class RelianceController extends \BaseController {
       else{
         return  Response::json(['msg'=> "Invalid Request."], 400);
       }
-      
+      if(!empty($device) && $device=='ios') {
+        $firebaseResponse = ($this->relianceService->getFirebaseLeaderboard($token, $device));
+        if(!empty($firebaseResponse)) {
+          return Response::json($firebaseResponse);
+        }
+        else {
+          return Response::json(['msg'=> "Invalid Request."], 400);;
+        }
+      }
+      // return $abc;
       if(empty($custInfo->customer->external_reliance)){
         $filters = $this->relianceService->getLeaderboardFiltersList($data, (isset($custInfo->customer->external_reliance))?$custInfo->customer->external_reliance:null);
       }

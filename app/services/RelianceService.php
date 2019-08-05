@@ -449,7 +449,6 @@ Class RelianceService {
         return null;
     }
 
-
     public function extractStepsData($steps) {
         $totalSteps = 0;
         $stepsToday = 0;
@@ -667,6 +666,18 @@ Class RelianceService {
             'ind_foot_steps_count_overall' => 0,
             'ind_workout_steps_count_overall' => 0
         ];
+    }
+
+    public function getFirebaseLeaderboard($token, $device) {
+        $headers = [
+            'Authorization' => $token,
+            'Device-Type' => $device
+        ];
+        $firebaseResponse = $this->client->post('getLeaderboard',['headers'=>$headers])->getBody()->getContents();
+        if(!empty($firebaseResponse)) {
+            $firebaseResponse = json_decode($firebaseResponse);
+        }
+        return $firebaseResponse;
     }
 
     public function getFormattedDate() {
