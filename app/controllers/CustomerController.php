@@ -4617,16 +4617,17 @@ class CustomerController extends \BaseController {
                 }
 			}
 
-			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
-			// $customer_update 	=	1;
-			$cashback_amount = 0;
-
 			if(in_array($code, ['startfit','relfit','relmfit'])){
 				$response = $this->checkForPormotionFitcashAplied($customer_id);
 				if(!empty($response)){
 					return $response;
 				}
 			}
+			
+			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
+			// $customer_update 	=	1;
+			$cashback_amount = 0;
+
 
 			if($customer_update){
 
