@@ -345,6 +345,14 @@ Class RelianceService {
     public function buildFirebaseResponse($firebaseResponse, $custInfo, $city, $device, $version) {
         if(!empty($firebaseResponse)) {
             $firebaseResponse = json_decode($firebaseResponse);
+            if($firebaseResponse['status']!=200){
+                $token= null;
+                if(!empty(Request::header('Athorization'))){
+                    $token = Request::header('Athorization');
+                }
+
+                $this->buildHealthObject($custInfo['_id'], $custInfo['corporate_id'], $device, $city, $version, $custInfo, $token, true);
+            }
             $firebaseResponse = (array)$firebaseResponse->data;
             $firebaseResponse['personal_activity'] = (array)$firebaseResponse['personal_activity'];
             $firebaseResponse['company_stats'] = (array)$firebaseResponse['company_stats'];
@@ -697,10 +705,10 @@ Class RelianceService {
         return ($diffDays>=1)?intval($diffDays):0;
     }
 
-    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null, $appVersion=null, $customer=null, $token=null) {
+    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null, $appVersion=null, $customer=null, $token=null, $skipFirebane=false) {
         Log::info('----- inside buildHealthObject -----');
 
-        if($deviceType=='ios') {
+        if($deviceType=='ios' && $skipFirebane) {
             return $this->getFirebaseHealthObject($customerId, $corporateId, $city, $deviceType, $appVersion, $token);
         }
 
