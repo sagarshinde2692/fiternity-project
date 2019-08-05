@@ -4537,6 +4537,10 @@ class CustomerController extends \BaseController {
 			
 			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
 
+			if(in_array($code, ['startfit','relfit','relmfit'])){
+				$this->checkForPormotionFitcashAplied($customer_id);
+			}
+			
 			if($code == 'gwdfit'){
 
 				$customer = Customer::find($customer_id);
@@ -10079,4 +10083,12 @@ class CustomerController extends \BaseController {
                 
     }
 
+	public function checkForPormotionFitcashAplied($customer_id){
+		$customer_applied_code = Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',['startfit','relfit','relmfit'])->count();
+
+		if($customer_applied_code){
+			$resp 	= 	array('status' => 400,'message' => "Not Applicable For This Promo Code");
+			return  Response::json($resp, 400);
+		}
+	}
 }
