@@ -1365,7 +1365,8 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-                                'text1'=> "Pay Day Sale || Get Extra 20% Off On Memberships & Session Packs. Use Code - PAYDAY<br>Book Workout Sessions At INR 99 (No Code Required)",
+								//'text1'=> "Pay Day Sale || Get Extra 20% Off On Memberships & Session Packs. Use Code - PAYDAY<br>Book Workout Sessions At INR 99 (No Code Required)",
+								'text1'=> "Get 100% Instant Cashback On Memberships & Session Packs. Use Code - CRAZYFIT<br>Book Workout Sessions At INR 99 (No Code Required)",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1377,7 +1378,8 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-                                'text1'=> "Pay Day Sale <br>Book Workout Sessions At INR 99 Only (No Code Required)",
+								//'text1'=> "Pay Day Sale <br>Book Workout Sessions At INR 99 Only (No Code Required)",
+								'text1'=> "Get 100% Instant Cashback On Memberships & Session Packs. Use Code - CRAZYFIT<br>Book Workout Sessions At INR 99 (No Code Required)",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1389,7 +1391,8 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-                                'text1'=> "Pay Day Sale <br> Get Extra 20% Off On Memberships & Session Packs. Use Code - PAYDAY",
+								//'text1'=> "Pay Day Sale <br> Get Extra 20% Off On Memberships & Session Packs. Use Code - PAYDAY",
+								'text1'=> "Get 100% Instant Cashback On Memberships, Session Packs and Pay-Per-Session. Use Code - CRAZYFIT",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3838,30 +3841,40 @@ class FindersController extends \BaseController {
             
             if($this->device_type == 'android'){
             
-                $line = "<u>Pay Day Sale</u><br><br>- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY<br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
-
+				//$line = "<u>Pay Day Sale</u><br><br>- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY<br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
+				$line = "- Get 100% instant cashback on Memberships & Session Packs, use code: CRAZYFIT<br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
+ 
             }else{
                 
-                $line = "\nPay Day Sale\n\n- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
+				//$line = "\nPay Day Sale\n\n- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
+				
+				$line = "- Get 100% instant cashback on Memberships & Session Packs, use code: CRAZYFIT\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
             
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-                $line = "<u>Pay Day Sale</u><br><br>- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY<br><br>- Get 100% Instant Cashback on Pay-Per-Session. Use Code - FITBACK";
+				//$line = "<u>Pay Day Sale</u><br><br>- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY<br><br>- Get 100% Instant Cashback on Pay-Per-Session. Use Code - FITBACK";
+				
+				$line = "- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CRAZYFIT";
             }else{
-                $line = "\nPay Day Sale\n\n- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY\n\n- Get 100% Instant Cashback on Pay-Per-Session. Use Code - FITBACK";
+				//$line = "\nPay Day Sale\n\n- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY\n\n- Get 100% Instant Cashback on Pay-Per-Session. Use Code - FITBACK";
+				
+				$line = "\n- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CRAZYFIT";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
             if($this->device_type == 'android'){
                 
-                $line = "<u>Pay Day Sale</u><br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
+				//$line = "<u>Pay Day Sale</u><br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
+				$line = "- Book Workout Sessions At INR 99 only";
 
             }else{
                 
-                $line = "Pay Day Sale\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
+				//$line = "Pay Day Sale\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
+				
+				$line = "Crazy Cashback Sale | 100% Instant Cashback | Code: CRAZYFIT";
             
             }
         }

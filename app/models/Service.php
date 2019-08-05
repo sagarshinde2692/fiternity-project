@@ -502,10 +502,10 @@ class Service extends \Basemodel{
                 }
 
                 if($this->servicecategory_id == 1 && $value['special_price'] == 99 && $value['type'] == "workout session" && isFinderIntegrated($finder) && isServiceIntegrated($this)){
-                    $value['remarks'] =  "Pay Day Sale | Book Workout Sessions At INR 99 only";
+                    $value['remarks'] =  'Book Workout Sessions At INR 99 only';//"Pay Day Sale | Book Workout Sessions At INR 99 only";
                     $value['remarks_imp'] =  true;
 				}else if(($offer_price == 99 || $value['price'] == 99 || $value['special_price'] == 99) && $value['type'] == "workout session" && !empty($finder['flags']['monsoon_campaign_pps']) && isFinderIntegrated($finder) && isServiceIntegrated($this)){
-                    $value['remarks'] =  "Pay Day Sale | Book Workout Sessions At INR 99 only";
+                    $value['remarks'] =  'Book Workout Sessions At INR 99 only';//"Pay Day Sale | Book Workout Sessions At INR 99 only";
                     $value['remarks_imp'] =  true;
                 }
                 
