@@ -4634,7 +4634,7 @@ class CustomerController extends \BaseController {
 				}
 
 				if($mutual_allied_code_status){
-					$resp 	= 	array('status' => 400,'message' => "This Promo Code can not be applied.");
+					$resp 	= 	array('status' => 400,'message' => "This promo code can not be applied.");
 					return  Response::json($resp, 400);
 				}
 			}
