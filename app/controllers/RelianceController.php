@@ -42,7 +42,8 @@ class RelianceController extends \BaseController {
             return;
         }
         Log::info('updateServiceStepCount: ', $data);
-        $resp = $this->relianceService->updateServiceStepCount($data);
+        // $resp = $this->relianceService->updateServiceStepCount($data);
+        $resp = $this->relianceService->uploadServiceStepsToFirebase($data);
         return Response::json($resp, $resp['status']);
     }
 

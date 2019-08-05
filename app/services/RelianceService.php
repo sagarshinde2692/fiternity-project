@@ -450,9 +450,91 @@ Class RelianceService {
         ];
     }
 
+    public function uploadServiceStepsToFirebase($data) {
+        Log::info('----- inside uploadServiceStepsToFirebase -----', []);
+        if(empty($data)) {
+            Log::info('$data: empty');
+            return;
+        }
+
+        $workoutDetails = Booktrial::raw(function($collection) use ($data){
+            $aggregate = [
+                ['$match' => ['_id' => $data['booktrialId']]],
+                ['$lookup' => [
+                    'from' => 'services',
+                    'localField' => 'service_id',
+                    'foreignField' => '_id',
+                    'as' => 'service'
+                ]],
+                ['$project' => [
+                    '_id' => 0,
+                    'order_id' => '$order_id',
+                    'booktrial_id' => '$_id',
+                    'corporate_id' => '$corporate_id',
+                    'customer_id' => '$customer_id',
+                    'customer_name' => '$customer_name',
+                    'customer_email' => '$customer_email',
+                    'customer_phone' => '$customer_phone',
+                    'device' => '$device_type',
+                    'app_version' => '$app_version',
+                    'type' => 'service_steps',
+                    'servicecategory_id' => ['$arrayElemAt' => ['$service.servicecategory_id', 0]]
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+        
+        if(!empty($workoutDetails['result'][0])) {
+            $workoutDetails = $workoutDetails['result'][0];
+            $serviceStepsMap = Config::get('health_config.service_cat_steps_map');
+            if(!empty($serviceStepsMap[$workoutDetails['servicecategory_id']])) {
+                $workoutDetails['service_steps'] = $serviceStepsMap[$workoutDetails['servicecategory_id']];
+            }
+            else {
+                $workoutDetails['service_steps'] = 0;
+            }
+            
+            if(empty($workoutDetails['corporate_id'])){
+                return ['status' => 400, 'data' => 'Failed', 'msg' => 'Not a reliance user'];
+            }
+            
+            Customer::$withoutAppends = true;
+            $customer = Customer::active()->where('_id', $workoutDetails['customer_id'])->first(['external_reliance']);
+            $external_reliance = (!empty($customer) && !empty($customer->external_reliance) && $customer->external_reliance);
+
+            $json = [
+                'service_steps_today' => $workoutDetails['service_steps'],
+                'customer_id' => $workoutDetails['customer_id'],
+                'name' => $workoutDetails['customer_name'],
+                'external_reliance' => $external_reliance,
+            ];
+
+            $headers = [
+                'admin_auth_key' => $data['admin_auth_key']
+            ];
+
+            $firebaseResponse = $this->client->post('uploadServiceSteps',['json'=>$json, 'headers'=>$headers])->getBody()->getContents();
+
+            if(!empty($firebaseResponse)) {
+                $firebaseResponse = json_decode($firebaseResponse);
+                if(!empty($firebaseResponse)) {
+                    if(!empty($data['orderId'])) {
+                        Order::where('_id', $data['orderId'])->update(['service_steps' => $workoutDetails['service_steps']]);
+                    }
+            
+                    if(!empty($data['booktrialId'])) {
+                        Booktrial::where('_id', $data['booktrialId'])->update(['service_steps' => $workoutDetails['service_steps']]);
+                    }
+                    return (array)$firebaseResponse;
+                }
+            }
+        }
+        return ['status' => 400, 'data' => 'Failed', 'msg' => 'Something went wrong!'];
+    }
 
     public function updateServiceStepCount($data) {
-        Log::info('----- inside updateAppStepCount -----');
+        Log::info('----- inside updateServiceStepCount -----');
         if(empty($data)) {
             Log::info('$data: empty');
             return;
