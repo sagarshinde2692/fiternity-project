@@ -3861,7 +3861,7 @@ class FindersController extends \BaseController {
 
             }else{
                 
-				$line = "Crazy Cashback Sale | 100% Instant Cashback | Code: CRAZYFIT";
+				$line = "Crazy Cashback Sale | Book Workout Sessions At INR 99 only";
             
             }
         }
