@@ -3894,7 +3894,7 @@ class CustomerController extends \BaseController {
 			
         }
 
-        if(!empty($decoded)){
+        if(!empty($decoded) && !empty($this->app_version) && !empty($this->device_type)){
             $reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
             $corporate_id  = $reliance_customer['corporate_id'];
             $external_reliance = $reliance_customer['external_reliance'];
@@ -3908,13 +3908,13 @@ class CustomerController extends \BaseController {
                 if(!empty($customerRec) && empty($customerRec->dob)) {
                     $result['dob_popup'] = Config::get('health_config.dob_popup');
                 }
-                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);
+                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$this->app_version, $customerRec);
                 $result['is_health_rewad_shown'] = true;
             }
             else if(!empty($customer_id)){
                 $customerRec = Customer::active()->where('email', $customeremail)->first();
-                $result['non_reliance'] = ($this->device_type=='android' && ((float)$_GET['app_version'])>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
-                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);
+                $result['non_reliance'] = ($this->device_type=='android' && ((float)$this->app_version)>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
+                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$this->app_version, $customerRec);
                 if(!empty($customerRec) && empty($customerRec->dob)) {
                     $result['dob_popup'] = Config::get('health_config.dob_popup');
                 }
