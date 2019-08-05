@@ -3933,7 +3933,7 @@ class CustomerController extends \BaseController {
             $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
 
             if(!($this->device_type=='android' && !empty($this->app_version) && (float)$this->app_version>5.27)){
-                $result['near_by_vendor'] = $this->getNearbyVendors($city);
+                $result['near_by_vendor'] = $this->getNearbyVendors($city, true);
             }
         }
         
