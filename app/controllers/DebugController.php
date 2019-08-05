@@ -31,25 +31,25 @@ class DebugController extends \BaseController {
 
 	}
 
-    public function __call($method, $arguments){
+    // public function __call($method, $arguments){
 
-        $file = fopen("$method.txt","w+");
-        Log::info("Checking lock");
-        if(flock($file,LOCK_EX)){
-            Log::info("Lock aquired");
-            $return = $this->$method();
-            Log::info("releasing lock");
-            return $return;
+    //     $file = fopen("$method.txt","w+");
+    //     Log::info("Checking lock");
+    //     if(flock($file,LOCK_EX)){
+    //         Log::info("Lock aquired");
+    //         $return = $this->$method();
+    //         Log::info("releasing lock");
+    //         return $return;
             
-        }else{
+    //     }else{
 
-            return  "Error locking file!";
+    //         return  "Error locking file!";
         
-        }
+    //     }
 
-        fclose($file);
+    //     fclose($file);
         
-    }
+    // }
 
 
 	public function invalidFinderStats(){
@@ -11344,12 +11344,12 @@ public function yes($msg){
 
 
     public function migrateStepsToFirestore(){
-
+        // return "asd";
         $i = 0;
         while(true){
             
             $steps_aggregate = FitnessDeviceData::raw(function($query) use ($i){
-                $limit = 10000;
+                $limit = 100000;
                 $aggreagte = [
                     [
                         '$match'=>[
@@ -11387,12 +11387,12 @@ public function yes($msg){
                             'service_steps'=>['$sum'=>'$service_steps']
                         ]
                     ],
-                    // [
-                    //     '$skip'=>$i*$limit
-                    // ],
-                    // [
-                    //     '$limit'=>$limit
-                    // ],
+                    [
+                        '$skip'=>$i*$limit
+                    ],
+                    [
+                        '$limit'=>$limit
+                    ],
                     [
                         '$lookup' => [
                             'from' => 'customers',
