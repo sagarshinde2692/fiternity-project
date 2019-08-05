@@ -3140,8 +3140,9 @@ if (!function_exists(('customerTokenDecode'))){
                 Log::info("Yes1");
                 return Response::json(array('status' => 400,'message' => 'User logged out'),400);
             }
-
-            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            // $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            $decodedToken = JWT::decode($jwt_token);
+        
             // Log::info($decodedToken);
             return $decodedToken;
 
