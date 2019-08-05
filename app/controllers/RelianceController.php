@@ -24,7 +24,7 @@ class RelianceController extends \BaseController {
         }
 
         $resp = ['status'=>400, 'msg'=>'failed'];
-        if($device == 'ios' && $version <= '5.1.9') {
+        if(!empty($device) && (($device == 'ios' && $version <= '5.1.9') || ($device == 'android' && $version <= '5.27'))) {
           $resp = $this->relianceService->uploadStepsFirebase($custInfo, $data, $device, $version, $token);
           if(!empty($resp)) {
             $resp = ['status'=>200, 'data' =>$resp, 'msg'=> 'success'];
@@ -71,7 +71,7 @@ class RelianceController extends \BaseController {
       else{
         return  Response::json(['msg'=> "Invalid Request."], 400);
       }
-      if(!empty($device) && $device=='ios') {
+      if(!empty($device) && (($device == 'ios' && $version <= '5.1.9') || ($device == 'android' && $version <= '5.27'))) {
         $firebaseResponse = ($this->relianceService->getFirebaseLeaderboard($token, $device));
         if(!empty($firebaseResponse)) {
           return Response::json($firebaseResponse);
