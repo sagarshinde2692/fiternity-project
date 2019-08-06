@@ -3894,7 +3894,7 @@ class CustomerController extends \BaseController {
 			
         }
 
-        if(!empty($decoded)){
+        if(!empty($decoded) && !empty($this->app_version) && !empty($this->device_type)){
             $reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
             $corporate_id  = $reliance_customer['corporate_id'];
             $external_reliance = $reliance_customer['external_reliance'];
@@ -3941,7 +3941,10 @@ class CustomerController extends \BaseController {
         if(!isExternalCity($city)){
             $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
             $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
-            $result['near_by_vendor'] = $this->getNearbyVendors($city);
+
+            if(!($this->device_type=='android' && !empty($this->app_version) && (float)$this->app_version>5.27)){
+                $result['near_by_vendor'] = $this->getNearbyVendors($city, true);
+            }
         }
         
 		$result['categoryheader'] = "Discover | Try | Buy";
@@ -4546,7 +4549,7 @@ class CustomerController extends \BaseController {
 			}
 			
 			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
-
+			
 			if($code == 'gwdfit'){
 
 				$customer = Customer::find($customer_id);
@@ -4627,6 +4630,28 @@ class CustomerController extends \BaseController {
                 }
 			}
 
+			if(!empty($fitcashcode['flags']['mutual_dependent_codes'])){
+
+				$customer = Customer::where('_id',$customer_id)->select('applied_promotion_codes')->first();
+				$mutual_allied_code_status= false;
+				Log::info('customer cdaata', [$customer]);
+				if(!empty($customer['applied_promotion_codes'])){
+
+					foreach($fitcashcode['flags']['mutual_dependent_codes'] as $value){
+						if(in_array($value, $customer['applied_promotion_codes'])){
+							$mutual_allied_code_status = true;
+							break;
+						}
+					}
+
+				}
+
+				if($mutual_allied_code_status){
+					$resp 	= 	array('status' => 400,'message' => "This promo code can not be applied.");
+					return  Response::json($resp, 400);
+				}
+			}
+			
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
 			// $customer_update 	=	1;
 			$cashback_amount = 0;
@@ -10052,14 +10077,40 @@ class CustomerController extends \BaseController {
     
     }
 
-    public function getNearbyVendors($city){
+    public function getNearbyVendors($city=null, $only_data = null){
+
+        $result['trendingheader'] = "Trending in ".ucwords($city);
+		$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($city);
+
+        $data = $_GET;
         
-        $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
-        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
+        if(!empty($data['auto_detect']) && $data['auto_detect'] === true){
+
+			$result['categoryheader'] = "Discover | Try | Buy";
+			$result['categorysubheader'] = "Fitness services near you";
+			$result['trendingheader'] = "Trending near you";
+			$result['trendingsubheader'] = "Checkout fitness services near you";
+		}
+
+		if(!empty($data['selected_region'])){
+
+            // $result['categoryheader'] = "Discover & Book Gyms & Fitness Classes in ".ucwords($data['selected_region']);
+            $result['categoryheader'] = "Discover & Book";
+			// $result['categoryheader'] = "Discover | Try | Buy";
+			$result['categorysubheader'] = "Gyms and Fitness Centers in ".ucwords($data['selected_region']);
+			$result['trendingheader'] = "Trending in ".ucwords($data['selected_region']);
+			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($data['selected_region']);
+		}
+        
+        $lat = isset($data['lat']) && $data['lat'] != "" ? $data['lat'] : "";
+        $lon = isset($data['lon']) && $data['lon'] != "" ? $data['lon'] : "";
+        if(empty($city)){
+            $city = isset($data['city']) && $data['city'] != "" ? $data['city'] : "";
+        }
         // $trending = getFromCache(['tag'=>'trending', 'key'=>$city]);
 
         // if(empty($trending)){
-            $near_by_vendor_request = [
+             $near_by_vendor_request = [
                 "offset" => 0,
                 "limit" => 9,
                 "radius" => "2km",
@@ -10087,9 +10138,13 @@ class CustomerController extends \BaseController {
             //     setCache(['tag'=>'trending', 'key'=>$city, 'data'=>$trending]);
             // }
         // }
-        
-        return $trending;
+        if(!empty($only_data)){
+            return $trending;
+        }else{
+            $result['near_by_vendor'] = $trending;
+            return $result;
+        }
                 
-    }
-
+	}
+	
 }

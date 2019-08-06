@@ -9510,9 +9510,11 @@ Class Utilities {
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		foreach($slotsdata as &$slot){
-			foreach($slot['data'] as &$sd){
-                $sd['order_summary']['header'] = $orderSummary['header']; 
-			}
+            if(is_array($slot['data'])){
+                foreach($slot['data'] as &$sd){
+                    $sd['order_summary']['header'] = $orderSummary['header']; 
+                }
+            }
 		}
 		return $slotsdata;
     }

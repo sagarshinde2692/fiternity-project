@@ -747,7 +747,7 @@ Class RelianceService {
 
         if(empty($customer)){
             Customer::$withoutAppends = true;
-            $customer = Customer::where('_id', $customerId)->first()->toArray();
+            $customer = Customer::where('_id', $customerId)->first();
         }
 
         $stepsAgg = FitnessDeviceData::raw(function($collection) use ($customerId, $corporateId) {
@@ -1291,7 +1291,7 @@ Class RelianceService {
 
             if($rankOnly) {
                 if(!empty($selfRank)){
-                    $return['selfRank'] =  $selfRank+1;
+                    $return['selfRank'] =  $selfRank;
                     return $return;
                 }
                 $return['selfRank'] =  null;

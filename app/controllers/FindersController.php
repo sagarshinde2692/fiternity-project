@@ -1364,8 +1364,8 @@ class FindersController extends \BaseController {
                     
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
-                            
-                                'text1'=> "Pay Day Sale || Get Extra 20% Off On Memberships & Session Packs. Use Code - PAYDAY<br>Book Workout Sessions At INR 99 (No Code Required)",
+								
+								'text1'=> "Crazy Cashback Sale || Get 100% Instant Cashback On Memberships & Session Packs. Use Code - CASHBACK<br>Book Workout Sessions At INR 99 (No Code Required)",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1377,7 +1377,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-                                'text1'=> "Pay Day Sale <br>Book Workout Sessions At INR 99 Only (No Code Required)",
+								'text1'=> "Crazy Cashback Sale <br>Get 100% Instant Cashback On Memberships & Session Packs. Use Code - CASHBACK<br>Book Workout Sessions At INR 99 (No Code Required)",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1389,7 +1389,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-                                'text1'=> "Pay Day Sale <br> Get Extra 20% Off On Memberships & Session Packs. Use Code - PAYDAY",
+								'text1'=> "Crazy Cashback Sale <br> Get 100% Instant Cashback On Memberships, Session Packs and Pay-Per-Session. Use Code - CASHBACK",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3837,31 +3837,31 @@ class FindersController extends \BaseController {
 
             
             if($this->device_type == 'android'){
-            
-                $line = "<u>Pay Day Sale</u><br><br>- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY<br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
-
+				
+				$line = "<u>Crazy Cashback Sale</u><br><br>- Get 100% instant cashback on Memberships & Session Packs, use code: CASHBACK<br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
+ 
             }else{
                 
-                $line = "\nPay Day Sale\n\n- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
+				$line = "\nCrazy Cashback Sale\n\n- Get 100% instant cashback on Memberships & Session Packs, use code: CASHBACK\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
             
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-                $line = "<u>Pay Day Sale</u><br><br>- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY<br><br>- Get 100% Instant Cashback on Pay-Per-Session. Use Code - FITBACK";
-            }else{
-                $line = "\nPay Day Sale\n\n- Get Extra 20% off on Memberships & Session Packs, use code: PAYDAY\n\n- Get 100% Instant Cashback on Pay-Per-Session. Use Code - FITBACK";
+				$line = "<u>Crazy Cashback Sale</u><br><br>- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+            }else{	
+				$line = "\nCrazy Cashback Sale\n\n- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
             if($this->device_type == 'android'){
                 
-                $line = "<u>Pay Day Sale</u><br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
+				$line = "<u>Crazy Cashback Sale</u><br><br>- Book Workout Sessions At INR 99 only";
 
             }else{
                 
-                $line = "Pay Day Sale\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
+				$line = "Crazy Cashback Sale\n\n- Book Workout Sessions At INR 99 only";
             
             }
         }
@@ -5308,7 +5308,7 @@ class FindersController extends \BaseController {
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
                             $ratecard['remarks'] = "100% Instant Cashback";
                             if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 99 || $ratecard['special_price'] == 99)){
-                                $ratecard['remarks'] = "Pay Day Sale | Book Workout Sessions At INR 99 only";
+                                $ratecard['remarks'] = "Crazy Cashback Sale | Book Workout Sessions At INR 99 only";
                             }
                         }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
@@ -8271,11 +8271,11 @@ class FindersController extends \BaseController {
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				if(in_array($rc['type'], ['membership', 'extended validity']) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Get Extra 20% Off. Use Code: PAYDAY");
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Get 100% instant cashback. Use Code: CASHBACK");
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
                     if(!empty($finder['flags']['monsoon_campaign_pps'])){
-                        $orderSummary['header'] .= ucwords("\n\n Get 100% instant cashback using code FITBACK on this booking. Book multiple workout sessions, buy session packs, memberships & more using this cashback for yourself, friends & family.");
+						$orderSummary['header'] .= ucwords("\n\n Get 100% instant cashback using code FITBACK on this booking. Book multiple workout sessions, buy session packs, memberships & more using this cashback for yourself, friends & family.");
                     }
 
                 }
