@@ -688,7 +688,7 @@ Class RelianceService {
         $headers = [
             'admin_auth_key' => 'asdasdASDad21!SD32asd@a'
         ];
-        $firebaseResponse = $this->client->get('getCurrentSteps',['json' => ['customer_id'=>$customerId, 'external_reliance' => $external_reliance],'headers'=>$headers])->getBody()->getContents();
+        $firebaseResponse = $this->client->post('getCurrentSteps',['json' => ['customer_id'=>$customerId, 'external_reliance' => $external_reliance],'headers'=>$headers])->getBody()->getContents();
         if(!empty($firebaseResponse)) {
             $firebaseResponse = json_decode($firebaseResponse);
         }
