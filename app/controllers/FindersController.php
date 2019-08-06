@@ -829,9 +829,7 @@ class FindersController extends \BaseController {
 										$pay_per_session = true;
 									
 									}
-									if($ratecard['type']=='trial'){
-										$this->addRemarkToraecardweb($ratecard, $service, $finder);
-									}
+
 								}
 							}
 
