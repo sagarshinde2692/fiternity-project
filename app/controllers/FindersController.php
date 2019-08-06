@@ -829,7 +829,6 @@ class FindersController extends \BaseController {
 										$pay_per_session = true;
 									
 									}
-
 								}
 							}
 
