@@ -672,10 +672,11 @@ Class RelianceService {
         ];
     }
 
-    public function getFirebaseLeaderboard($token, $device) {
+    public function getFirebaseLeaderboard($token, $device, $appVersion) {
         $headers = [
             'Authorization' => $token,
-            'Device-Type' => $device
+            'Device-Type' => $device,
+            'App-Version' => $appVersion
         ];
         $firebaseResponse = $this->client->post('getLeaderboard',['headers'=>$headers])->getBody()->getContents();
         if(!empty($firebaseResponse)) {

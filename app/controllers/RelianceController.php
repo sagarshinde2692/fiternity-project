@@ -72,7 +72,7 @@ class RelianceController extends \BaseController {
         return  Response::json(['msg'=> "Invalid Request."], 400);
       }
       if(!empty($device) && (($device == 'ios' && $version <= '5.1.9') || ($device == 'android' && $version <= '5.27'))) {
-        $firebaseResponse = ($this->relianceService->getFirebaseLeaderboard($token, $device));
+        $firebaseResponse = ($this->relianceService->getFirebaseLeaderboard($token, $device, $version));
         if(!empty($firebaseResponse)) {
           return Response::json($firebaseResponse);
         }
