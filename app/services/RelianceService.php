@@ -148,15 +148,8 @@ Class RelianceService {
         Customer::$withoutAppends = true;
         $currCustMilestone = Customer::where('_id', $customerId)->first();
         // $fitnessDeviceData = FitnessDeviceData::where('customer_id', $customerId)->where('corporate_id', $corporateId)->sum('value');
-        $fitnessDeviceData = $this->getCurrentSteps($customerId);
+        $fitnessDeviceData = $this->getCurrentSteps($customerId, !empty($currCustMilestone->external_reliance)?$currCustMilestone->external_reliance:false);
         if(!empty($fitnessDeviceData)) {
-            $fitnessDeviceData = json_decode($fitnessDeviceData);
-            if(!empty($fitnessDeviceData) && !empty($fitnessDeviceData->total_steps)) {
-                $fitnessDeviceData = $fitnessDeviceData->total_steps;
-            }
-            else {
-                return null;
-            }
             $milestone = $this->getMilestoneDetails($fitnessDeviceData, $currCustMilestone);
             if($milestone['milestone']>=0) {
                 $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone']);
@@ -206,7 +199,7 @@ Class RelianceService {
                 $currCustMilestone->update($updateObj);
             }
         }
-        return $currCustMilestone;
+        return ['milestone' => $currCustMilestone, 'steps' => $fitnessDeviceData];
     }
 
     public function updateAppStepCount($custInfo, $data, $device, $version) {
@@ -691,15 +684,15 @@ Class RelianceService {
         return $firebaseResponse;
     }
 
-    public function getCurrentSteps($customerId) {
+    public function getCurrentSteps($customerId, $external_reliance) {
         $headers = [
             'admin_auth_key' => 'asdasdASDad21!SD32asd@a'
         ];
-        $firebaseResponse = $this->client->get('getCurrentSteps',['headers'=>$headers])->getBody()->getContents();
+        $firebaseResponse = $this->client->get('getCurrentSteps',['json' => ['customer_id'=>$customerId, 'external_reliance' => $external_reliance],'headers'=>$headers])->getBody()->getContents();
         if(!empty($firebaseResponse)) {
             $firebaseResponse = json_decode($firebaseResponse);
         }
-        return ($firebaseResponse['total_steps'] || 0);
+        return !empty($firebaseResponse->data->total_steps)?$firebaseResponse->data->total_steps:0;
     }
 
     public function getFormattedDate() {

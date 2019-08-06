@@ -9827,7 +9827,9 @@ class CustomerController extends \BaseController {
 			$milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
 		}
 		$customerMilestoneCountMap = $this->relianceService->getCustomerMilestoneCount();
-		$customer = $this->relianceService->updateMilestoneDetails($customer['_id'], $customer['corporate_id']);
+		$_temp = $this->relianceService->updateMilestoneDetails($customer['_id'], $customer['corporate_id']);
+		$customer = $_temp['milestone'];
+		$steps = $_temp['steps'];
 		$customer_milestones = !empty($customer['corporate_rewards']['milestones'])?$customer['corporate_rewards']['milestones']:[];
 		$lastMilestone = (!empty($customer_milestones))?max(array_column($customer_milestones, 'milestone')):null;
 		$lastMilestoneDetails = array_values(array_filter($customer_milestones, function($rec) use ($lastMilestone) {
@@ -9850,7 +9852,8 @@ class CustomerController extends \BaseController {
 		
 		$nextMilestone = (!empty($lastMilestoneDetails['milestone']))?$lastMilestoneDetails['milestone']:0;
         $next_count = !empty($milestones[$nextMilestone]['next_count']) ? $milestones[$nextMilestone]['next_count'] : $milestones[$nextMilestone]['count'];
-		$total_steps = $this->relianceService->getCustomerFitnessData($customer->_id, $customer->corporate_id)['ind_total_steps_count_overall'];
+		// $total_steps = $this->relianceService->getCustomerFitnessData($customer->_id, $customer->corporate_id)['ind_total_steps_count_overall'];
+		$total_steps = $steps;
 		$remaining_steps = $next_count-$total_steps;
 		
 		$milestone_text = '';
