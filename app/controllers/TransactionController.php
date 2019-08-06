@@ -842,6 +842,8 @@ class TransactionController extends \BaseController {
                     }
 
                     $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
+                    $data['event_start_date'] = $ticket->start_date;
+                    $data['event_end_date'] = $ticket->end_date;
 
                     if($data['ticket_quantity'] == 4){
                         $data['combo_discount'] = 400;
