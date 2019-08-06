@@ -842,8 +842,6 @@ class TransactionController extends \BaseController {
                     }
 
                     $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
-                    $data['event_start_date'] = $ticket->start_date;
-                    $data['event_end_date'] = $ticket->end_date;
 
                     if($data['ticket_quantity'] == 4){
                         $data['combo_discount'] = 400;
@@ -879,7 +877,9 @@ class TransactionController extends \BaseController {
             if($event){
                 $data['event_name'] = $event->name;
 				$data['event_address'] = $event["contact"]["address"];
-				$data['event_venue'] = $event["venue"];
+                $data['event_venue'] = $event["venue"];
+                $data['event_start_date'] = $event['start_date'];
+                $data['event_end_date'] = $event['end_date'];
                 if(in_array($event['slug'],Config::get('app.my_fitness_party_slug')) || !empty($event['mfp'])){
                     $data['event_type'] = "TOI";
                     $data['qr_code'] = $this->utilities->encryptQr(['owner'=>'fitternity','order_id'=>$data['_id']]);
