@@ -8491,6 +8491,7 @@ class FindersController extends \BaseController {
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
 			$rateCard['remarks'] = "Crazy Cashback Sale | 100% Instant Cashback | Code: CASHBACK";
+			$rateCard['remarks_imp'] = true;
 		}
 	}
 }
