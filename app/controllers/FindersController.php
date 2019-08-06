@@ -822,9 +822,9 @@ class FindersController extends \BaseController {
 							$service['pay_per_session'] = false;
 
 							if(isset($finder['pay_per_session']) && $finder['pay_per_session'] && isset($service['trial']) && $service['trial'] != 'disable'){
-								foreach($service['serviceratecard'] as $ratecard){
+								foreach($service['serviceratecard'] as &$ratecard){
 									if($ratecard['type']=='workout session'){
-
+										$this->addRemarkToraecardweb($ratecard, $service, $finder);
 										$service['pay_per_session'] = true;
 										$pay_per_session = true;
 									
@@ -8483,5 +8483,11 @@ class FindersController extends \BaseController {
 			}	
 		}
 		return $first_block;
+	}
+
+	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
+		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
+			$rateCard['remarks'] = "Crazy Cashback Sale | 100% Instant Cashback | Code: CASHBACK";
+		}
 	}
 }
