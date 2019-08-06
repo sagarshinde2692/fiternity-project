@@ -1876,7 +1876,7 @@ class OrderController extends \BaseController {
             unset($orderdata->preferred_starting_date);
         }
 
-        if(!empty($orderdata->status) && !empty($orderdata->type) && $orderdata->type=='events' && !empty($orderdata->ticket_id)){
+        if(!empty($orderdata->type) && $orderdata->type=='events' && !empty($orderdata->ticket_id)){
             $ticket = Ticket::active()->where('_id', $orderdata->ticket_id)->select('start_date', 'end_date')->first();
             $data_time = [];
             if(!empty($ticket) && !empty($ticket['start_date'])){
