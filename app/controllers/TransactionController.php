@@ -3624,9 +3624,10 @@ class TransactionController extends \BaseController {
             }
 
         }
-        Log::info("corporate_discount  :::", [$corporate_discount]);
+        
         if(!empty($corporate_discount) && $corporate_discount){
             Log::info("corporate_discount");
+            Log::info("corporate_discount  :::", [$corporate_discount]);
             $coupon = Coupon::where('overall_coupon', true)->orderBy('_id', 'desc')->first(['code']);
             // return $coupon;
             
