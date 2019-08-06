@@ -1363,28 +1363,28 @@ class FindersController extends \BaseController {
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
                     
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
-                            // $response['vendor_stripe_data']	= [
+                            $response['vendor_stripe_data']	= [
 								
-							// 	'text1'=> "Crazy Cashback Sale || Get 100% Instant Cashback On Memberships & Session Packs. Use Code - CASHBACK<br>Book Workout Sessions At INR 99 (No Code Required)",
-                            //     'text3'=>"",
-                            //     'background-color'=> "",
-                            //     'text_color'=> '$fff',
-                            //     'background'=> '#49bfb3'
-                            // ];
+								'text1'=> "Crazy Cashback Sale <br> Get 100% Instant Cashback On On All Services Across Fitternity <br> Use Code - CASHBACK",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '#49bfb3'
+                            ];
 
-                            // $response['show_timer'] = true;
+                            $response['show_timer'] = true;
                         
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
-                            // $response['vendor_stripe_data']	= [
+                            $response['vendor_stripe_data']	= [
                             
-							// 	'text1'=> "Crazy Cashback Sale <br>Get 100% Instant Cashback On Memberships & Session Packs. Use Code - CASHBACK<br>Book Workout Sessions At INR 99 (No Code Required)",
-                            //     'text3'=>"",
-                            //     'background-color'=> "",
-                            //     'text_color'=> '$fff',
-                            //     'background'=> '#49bfb3'
-                            // ];
+								'text1'=> "Crazy Cashback Sale <br> Get 100% Instant Cashback On On All Services Across Fitternity <br> Use Code - CASHBACK",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '#49bfb3'
+                            ];
 
-                            // $response['show_timer'] = true;
+                            $response['show_timer'] = true;
                         
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
@@ -3836,15 +3836,11 @@ class FindersController extends \BaseController {
         if(empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
             
-            // if($this->device_type == 'android'){
-				
-			// 	$line = "<u>Crazy Cashback Sale</u><br><br>- Get 100% instant cashback on Memberships & Session Packs, use code: CASHBACK<br><br>- Book Workout Sessions At INR 99 Only (No Code Required)";
- 
-            // }else{
-                
-			// 	$line = "\nCrazy Cashback Sale\n\n- Get 100% instant cashback on Memberships & Session Packs, use code: CASHBACK\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
-            
-            // }
+			if($this->device_type == 'android'){
+				$line = "<u>Crazy Cashback Sale</u><br><br>- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+            }else{	
+				$line = "\nCrazy Cashback Sale\n\n- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+            }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
@@ -3855,15 +3851,13 @@ class FindersController extends \BaseController {
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
-            // if($this->device_type == 'android'){
-                
-			// 	$line = "<u>Crazy Cashback Sale</u><br><br>- Book Workout Sessions At INR 99 only";
 
-            // }else{
-                
-			// 	$line = "Crazy Cashback Sale\n\n- Book Workout Sessions At INR 99 only";
-            
-            // }
+			if($this->device_type == 'android'){
+				$line = "<u>Crazy Cashback Sale</u><br><br>- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+            }else{	
+				$line = "\nCrazy Cashback Sale\n\n- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+			}
+			
         }
 
         return $line;
