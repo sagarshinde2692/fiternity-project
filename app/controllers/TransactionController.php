@@ -872,7 +872,7 @@ class TransactionController extends \BaseController {
                 $data['finder_name'] = $finder->title;
             }
 
-            $event = DbEvent::where('_id', (int)$data['event_id'])->first(['name', 'slug','mfp','contact','venue']);
+            $event = DbEvent::where('_id', (int)$data['event_id'])->first(['name', 'slug','mfp','contact','venue', 'start_date', 'end_date']);
 
             if($event){
                 $data['event_name'] = $event->name;
