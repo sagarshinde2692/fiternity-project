@@ -147,8 +147,16 @@ Class RelianceService {
     public function updateMilestoneDetails($customerId, $corporateId, $syncTime = null) {
         Customer::$withoutAppends = true;
         $currCustMilestone = Customer::where('_id', $customerId)->first();
-        $fitnessDeviceData = FitnessDeviceData::where('customer_id', $customerId)->where('corporate_id', $corporateId)->sum('value');
+        // $fitnessDeviceData = FitnessDeviceData::where('customer_id', $customerId)->where('corporate_id', $corporateId)->sum('value');
+        $fitnessDeviceData = $this->getCurrentSteps($customerId);
         if(!empty($fitnessDeviceData)) {
+            $fitnessDeviceData = json_decode($fitnessDeviceData);
+            if(!empty($fitnessDeviceData) && !empty($fitnessDeviceData->total_steps)) {
+                $fitnessDeviceData = $fitnessDeviceData->total_steps;
+            }
+            else {
+                return null;
+            }
             $milestone = $this->getMilestoneDetails($fitnessDeviceData, $currCustMilestone);
             if($milestone['milestone']>=0) {
                 $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone']);
@@ -681,6 +689,17 @@ Class RelianceService {
             $firebaseResponse = json_decode($firebaseResponse);
         }
         return $firebaseResponse;
+    }
+
+    public function getCurrentSteps($customerId) {
+        $headers = [
+            'admin_auth_key' => 'asdasdASDad21!SD32asd@a'
+        ];
+        $firebaseResponse = $this->client->get('getCurrentSteps',['headers'=>$headers])->getBody()->getContents();
+        if(!empty($firebaseResponse)) {
+            $firebaseResponse = json_decode($firebaseResponse);
+        }
+        return ($firebaseResponse['total_steps'] || 0);
     }
 
     public function getFormattedDate() {
