@@ -3976,7 +3976,7 @@ class CustomerController extends \BaseController {
             'subheader' => 'Book sessions and only pay for days you workout',
             // 'knowmorelink' => 'know more',
             // 'footer' => "Available across 2500+ outlets across ".ucwords($city)." | Starting at <b>&#8377; 149</b>"
-            'footer' => "Book Workout Sessions At INR 99 Only"
+            'footer' => "Book Workout Sessions At 100% Instant Cashback"
         ];
 
 		if(!empty($result['city_id']) && $result['city_id']==10000) {
