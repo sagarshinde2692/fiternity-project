@@ -193,9 +193,9 @@ Class RelianceService {
                     $updateObj['corporate_rewards'] = ['milestones' => [$milestoneDetails]];
                 }
                 $currCustMilestone->corporate_rewards = $updateObj['corporate_rewards'];
-                if(!empty($syncTime)) {
-                    $currCustMilestone->fitness_data_last_sync = $syncTime;
-                }
+                // if(!empty($syncTime)) {
+                //     $currCustMilestone->fitness_data_last_sync = $syncTime;
+                // }
                 $currCustMilestone->update($updateObj);
             }
         }
