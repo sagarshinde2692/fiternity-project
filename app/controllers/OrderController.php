@@ -1881,20 +1881,21 @@ class OrderController extends \BaseController {
             $data_time = [];
             if(!empty($ticket) && !empty($ticket['start_date'])){
 
-                $data_time['start']['date'] = date('d M, Y', strtotime($ticket['start_date'].'+5hours30minutes'));
-                $data_time['start']['time'] = date('h:i A', strtotime($ticket['start_date'].'+5hours30minutes'));
+                $data_time['start']['date'] = date('d M, Y', strtotime($ticket['start_date']));
+                $data_time['start']['time'] = date('h:i A', strtotime($ticket['start_date']));
             }
 
             if(!empty($ticket) && !empty($ticket['end_date'])){
-                $data_time['end']['date'] = date('d M, Y',strtotime($ticket['end_date'].'+5hours30minutes'));
-                $data_time['end']['time'] = date('h:i A', strtotime($ticket['end_date'].'+5hours30minutes'));
+                $data_time['end']['date'] = date('d M, Y',strtotime($ticket['end_date']));
+                $data_time['end']['time'] = date('h:i A', strtotime($ticket['end_date']));
             }
             $orderdata->data_time = $data_time;
             $orderdata->subscription_code = $orderdata['code'];
-            //dummy data
-            $orderdata->top_text = 'this is top text';
-            $orderdata->footer_text = 'this is footer text';
-            $orderdata->cover_image = 'https://b.fitn.in/global/mfp/slider_01.jpg';
+
+            $mfp_success = Config::get('mfp_success');
+            $orderdata->top_text = $mfp_success['top_txt'];
+            $orderdata->footer_text = $mfp_success['footer_txt'];
+            $orderdata->cover_image = $mfp_success['cover_image'];
         }
         if(!$orderdata){
             return $this->responseNotFound('Order does not exist');
