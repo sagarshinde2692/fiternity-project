@@ -24,7 +24,7 @@ class RelianceController extends \BaseController {
         }
 
         $resp = ['status'=>400, 'msg'=>'failed'];
-        if(!empty($device) && (($device == 'ios' && $version <= '5.1.9') || ($device == 'android' && $version <= '5.27'))) {
+        // if(!empty($device) && (($device == 'ios' && $version <= '5.1.9') || ($device == 'android' && $version <= '5.27'))) {
           $resp = $this->relianceService->uploadStepsFirebase($custInfo, $data, $device, $version, $token);
           if(!empty($resp)) {
             $resp = ['status'=>200, 'data' =>$resp, 'msg'=> 'success'];
@@ -32,7 +32,7 @@ class RelianceController extends \BaseController {
           else {
             $resp = ['status'=>400, 'data' =>$resp, 'msg'=> 'failed'];
           }
-        }
+        // }
         return  Response::json($resp, $resp['status']);  
     }
 
@@ -71,7 +71,7 @@ class RelianceController extends \BaseController {
       else{
         return  Response::json(['msg'=> "Invalid Request."], 400);
       }
-      if(!empty($device) && (($device == 'ios' && $version <= '5.1.9') || ($device == 'android' && $version <= '5.27'))) {
+      // if(!empty($device) && (($device == 'ios' && $version <= '5.1.9') || ($device == 'android' && $version <= '5.27'))) {
         $firebaseResponse = ($this->relianceService->getFirebaseLeaderboard($token, $device, $version));
         if(!empty($firebaseResponse)) {
           return Response::json($firebaseResponse);
@@ -79,29 +79,29 @@ class RelianceController extends \BaseController {
         else {
           return Response::json(['msg'=> "Invalid Request."], 400);;
         }
-      }
+      // }
       // return $abc;
-      if(empty($custInfo->customer->external_reliance)){
-        $filters = $this->relianceService->getLeaderboardFiltersList($data, (isset($custInfo->customer->external_reliance))?$custInfo->customer->external_reliance:null);
-      }
-      else{
-        $data = $this->relianceService->getFilterForNonReliance($custInfo->customer->_id);
-      }
+      // if(empty($custInfo->customer->external_reliance)){
+      //   $filters = $this->relianceService->getLeaderboardFiltersList($data, (isset($custInfo->customer->external_reliance))?$custInfo->customer->external_reliance:null);
+      // }
+      // else{
+      //   $data = $this->relianceService->getFilterForNonReliance($custInfo->customer->_id);
+      // }
 
-      $isNewLeaderBoard = !empty($data['isNewLeaderBoard']) ? true: false;
-      Log::info('is new leader board:::::', [$isNewLeaderBoard]);
-      if(!empty($data['filters'])) {
-        $parsedFilters = $this->relianceService->parseLeaderboardFilters($data['filters']);
-        $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard, $parsedFilters, null, $device, $version);
-        $resp['data']['selected_filters'] = $data['filters'];
-      }
-      else {
-        $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard, null, null, $device, $version);
-      }
-      if(!empty($resp['data']) && $resp['data']!='Failed' && empty($custInfo->customer->external_reliance)) {
-        $resp['data']['filters'] = $filters ;
-      }
-      return  Response::json($resp, $resp['status']);
+      // $isNewLeaderBoard = !empty($data['isNewLeaderBoard']) ? true: false;
+      // Log::info('is new leader board:::::', [$isNewLeaderBoard]);
+      // if(!empty($data['filters'])) {
+      //   $parsedFilters = $this->relianceService->parseLeaderboardFilters($data['filters']);
+      //   $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard, $parsedFilters, null, $device, $version);
+      //   $resp['data']['selected_filters'] = $data['filters'];
+      // }
+      // else {
+      //   $resp = $this->relianceService->getLeaderboard($custInfo->customer->_id, $isNewLeaderBoard, null, null, $device, $version);
+      // }
+      // if(!empty($resp['data']) && $resp['data']!='Failed' && empty($custInfo->customer->external_reliance)) {
+      //   $resp['data']['filters'] = $filters ;
+      // }
+      // return  Response::json($resp, $resp['status']);
     }
 
     public function storeDob(){
