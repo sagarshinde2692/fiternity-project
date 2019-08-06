@@ -11412,11 +11412,11 @@ public function yes($msg){
                             'service_steps_today' => 0,
                         ]
                     ],
-                    [
-                        '$match'=>[
-                            'external_reliance'=>['$ne'=>true]
-                        ]
-                    ],
+                    // [
+                    //     '$match'=>[
+                    //         'external_reliance'=>['$ne'=>true]
+                    //     ]
+                    // ],
                     [
                         '$addFields'=>[
                             'external_reliance'=>['$ifNull'=>['$external_reliance', false]]
@@ -11426,7 +11426,14 @@ public function yes($msg){
                         '$project'=>[
                             'customer'=>0
                         ]
+                    ],
+                    [
+                        '$group'=>[
+                            '_id'=>'$external_reliance',
+                            'customers'=>['$push'=>'$$ROOT']
+                        ]
                     ]
+
 
                 ];
 
@@ -11434,8 +11441,19 @@ public function yes($msg){
     
             });
 
+            $steps_aggregate = $steps_aggregate['result'];
 
-            return $steps_aggregate;
+            $result = [];
+
+            foreach($steps_aggregate as $x){
+                if($x['_id']){
+                    $result['non_reliance'] = $x['customers'];
+                }else{
+                    $result['reliance'] = $x['customers'];
+                }
+            }
+
+            return $result;
 
             if(empty($steps_aggregate)){
                 break;
