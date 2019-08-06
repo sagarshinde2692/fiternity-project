@@ -57,11 +57,11 @@ class EventsController extends \BaseController {
 			}
 
 			if(!empty($eventInfo['start_date'])){
-				$eventInfo['start_date'] = date('d M, Y h:i A', strtotime($eventInfo['start_date']));
+				$eventInfo['start_day'] = date('d F', strtotime($eventInfo['start_date']));
 			}
 			
 			if(!empty($eventInfo['end_date'])){
-				$eventInfo['end_date'] = date('d M, Y h:i A', strtotime($eventInfo['end_date']));
+				$eventInfo['end_day'] = date('d F', strtotime($eventInfo['end_date']));
 			}
 
 			$response = array(
