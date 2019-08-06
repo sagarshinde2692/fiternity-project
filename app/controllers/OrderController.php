@@ -1876,19 +1876,16 @@ class OrderController extends \BaseController {
             unset($orderdata->preferred_starting_date);
         }
 
-        if(!empty($orderdata->type) && $orderdata->type=='events' && !empty($orderdata->ticket_id)){
-            $ticket = Ticket::active()->where('_id', $orderdata->ticket_id)->select('start_date', 'end_date')->first();
+        if(!empty($orderdata->type) && $orderdata->type=='events' && !empty($orderdata->event_start_date)){
+            $event_start_date = $orderdata->event_start_date['date'];
+            $event_end_date = $orderdata->event_end_date['date'];
             $data_time = [];
-            if(!empty($ticket) && !empty($ticket['start_date'])){
-
-                $data_time['start']['date'] = date('d M, Y', strtotime($ticket['start_date']));
-                $data_time['start']['time'] = date('h:i A', strtotime($ticket['start_date']));
-            }
-
-            if(!empty($ticket) && !empty($ticket['end_date'])){
-                $data_time['end']['date'] = date('d M, Y',strtotime($ticket['end_date']));
-                $data_time['end']['time'] = date('h:i A', strtotime($ticket['end_date']));
-            }
+            $data_time['start']['date'] = date('d M, Y', strtotime($event_start_date));
+            $data_time['start']['time'] = date('h:i A', strtotime($event_start_date));
+        
+            $data_time['end']['date'] = date('d M, Y',strtotime($event_end_date));
+            $data_time['end']['time'] = date('h:i A', strtotime($event_end_date));
+            
             $orderdata->data_time = $data_time;
             $orderdata->subscription_code = $orderdata['code'];
 
