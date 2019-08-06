@@ -177,7 +177,7 @@ Class CustomerMailer extends Mailer {
 			}
 		}
 		
-		if(!empty($data['type']) && ($data['type']='pass')){
+		if(!empty($data['type']) && ($data['type']=='pass')){
             $label = "Pass-Purchase-Customer";
 		}
 
