@@ -1894,6 +1894,7 @@ class OrderController extends \BaseController {
             //dummy data
             $orderdata->top_text = 'this is top text';
             $orderdata->footer_text = 'this is footer text';
+            $orderdata->cover_image = 'https://b.fitn.in/global/mfp/slider_01.jpg';
         }
         if(!$orderdata){
             return $this->responseNotFound('Order does not exist');
