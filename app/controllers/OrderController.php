@@ -1881,16 +1881,19 @@ class OrderController extends \BaseController {
             $data_time = [];
             if(!empty($ticket) && !empty($ticket['start_date'])){
 
-                $data_time['start']['date'] = date('Y-m-d', strtotime($ticket['start_date'].'+5hours30minutes'));
-                $data_time['start']['time'] = date('h:i:s A', strtotime($ticket['start_date'].'+5hours30minutes'));
+                $data_time['start']['date'] = date('d M, Y', strtotime($ticket['start_date'].'+5hours30minutes'));
+                $data_time['start']['time'] = date('h:i A', strtotime($ticket['start_date'].'+5hours30minutes'));
             }
 
             if(!empty($ticket) && !empty($ticket['end_date'])){
-                $data_time['end']['date'] = date('Y-m-d', strtotime($ticket['end_date'].'+5hours30minutes'));
-                $data_time['end']['time'] = date('h:i:s A', strtotime($ticket['end_date'].'+5hours30minutes'));
+                $data_time['end']['date'] = date('d M, Y',strtotime($ticket['end_date'].'+5hours30minutes'));
+                $data_time['end']['time'] = date('h:i A', strtotime($ticket['end_date'].'+5hours30minutes'));
             }
             $orderdata->data_time = $data_time;
             $orderdata->subscription_code = $orderdata['code'];
+            //dummy data
+            $orderdata->top_text = 'this is top text';
+            $orderdata->footer_text = 'this is footer text';
         }
         if(!$orderdata){
             return $this->responseNotFound('Order does not exist');
