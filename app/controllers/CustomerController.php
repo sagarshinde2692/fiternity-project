@@ -9872,7 +9872,7 @@ class CustomerController extends \BaseController {
 		}
         
         $type = (!empty(Input::get('isReward') && (Input::get('isReward')!=false && Input::get('isReward')!="false"))) ? "reliance" : "fitsquad";
-		$milestones_data = $this->utilities->getMilestoneSection($customer, null, $type);
+		$milestones_data = $this->utilities->getMilestoneSection($customer, null, $type, $_temp['steps']);
 		$post_register['milestones']['data'] = $milestones_data['data'];
 		
 		$nextMilestone = (!empty($lastMilestoneDetails['milestone']))?$lastMilestoneDetails['milestone']:0;
