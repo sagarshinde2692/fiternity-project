@@ -44,6 +44,7 @@ return array(
 	// 'paypal_sandbox'=>true,
 	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
 	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
+	// 'razorpay' => [ 'key_id' => 'rzp_test_6TKjLnXzpuVIds', 'secret_key' => 'rK7FwR1a4coHHLCuhSSLz8P5', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
 	// 'razorPayKey' => 'rzp_test_6TKjLnXzpuVIds',
 	// 'razorPaySecret' => 'rK7FwR1a4coHHLCuhSSLz8P5',
 	// "webhook_secret_key"=>"qwepoifghtyvb",
