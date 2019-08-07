@@ -1611,38 +1611,38 @@ Class RelianceService {
         return ["corporate_id" =>$corporateId, "external_reliance"=> $external_reliance];
     }
 
-    public function getMilestoneSectionOfreliance($customer, $all_data=false){
+    public function getMilestoneSectionOfreliance($customer, $all_data=false, $total_steps=0){
 
         $customer_id = $customer->_id;
 
-        $customerStepData = \FitnessDeviceData::raw(function($collection) use($customer_id){
+        // $customerStepData = \FitnessDeviceData::raw(function($collection) use($customer_id){
 
-            $query = [
-                [
-                    '$match' => [
-                        'customer_id' => $customer_id,
-                    ]
-                ],
-                [
-                    '$group' => [
-                        '_id' => '$customer_id',
-                        'total_steps' =>[
-                            '$sum' => '$value'
-                        ]
-                    ]
-                ]
-            ];
+        //     $query = [
+        //         [
+        //             '$match' => [
+        //                 'customer_id' => $customer_id,
+        //             ]
+        //         ],
+        //         [
+        //             '$group' => [
+        //                 '_id' => '$customer_id',
+        //                 'total_steps' =>[
+        //                     '$sum' => '$value'
+        //                 ]
+        //             ]
+        //         ]
+        //     ];
 
-            return $collection->aggregate($query);
-        });
-        Log::info('customer steps count result:::', [$customerStepData, $customer_id]);
+        //     return $collection->aggregate($query);
+        // });
+        // Log::info('customer steps count result:::', [$customerStepData, $customer_id]);
 
-        if(empty($customerStepData['result'][0])){
-            $customerStepData['total_steps'] = 0;
-        }
-        else{
-            $customerStepData = $customerStepData['result'][0];
-        }
+        // if(empty($customerStepData['result'][0])){
+        //     $customerStepData['total_steps'] = 0;
+        // }
+        // else{
+        //     $customerStepData = $customerStepData['result'][0];
+        // }
         if(empty($customer['external_reliance'])){
             $post_register_milestones = Config::get('relianceLoyaltyProfile.post_register');
         }
@@ -1651,7 +1651,7 @@ Class RelianceService {
         }
         $milestones = $post_register_milestones['milestones'];
         $rewards = $post_register_milestones['rewards'];
-        $total_steps = $customerStepData['total_steps'];
+        //$total_steps = $customerStepData['total_steps'];
         $milestones_step_counter = 0;
         $milestone_no = 0;
         $remaining_steps = 0;
