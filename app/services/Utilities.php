@@ -6440,7 +6440,7 @@ Class Utilities {
     }
 
 
-    public function getMilestoneSection($customer=null, $brand_milestones=null, $type=null){
+    public function getMilestoneSection($customer=null, $brand_milestones=null, $type=null, $steps=null){
 
         if(empty($customer)){
             $jwt_token = Request::header('Authorization');
@@ -6448,10 +6448,10 @@ Class Utilities {
 		    $customer_id = $decoded->customer->_id;
 		    $customer = Customer::find($customer_id);
         }
-return $customer;
+
         if( (!empty($type) && $type == 'reliance') || (empty($type) && !empty($customer['corporate_id']) && empty($customer['external_reliance'])) ){
             $relianceService = new RelianceService();
-            return $relianceService->getMilestoneSectionOfreliance($customer);
+            return $relianceService->getMilestoneSectionOfreliance($customer, false, $steps);
         }
 
         if(empty($customer['loyalty'])){
