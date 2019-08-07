@@ -6448,7 +6448,7 @@ Class Utilities {
 		    $customer_id = $decoded->customer->_id;
 		    $customer = Customer::find($customer_id);
         }
-
+return $customer;
         if( (!empty($type) && $type == 'reliance') || (empty($type) && !empty($customer['corporate_id']) && empty($customer['external_reliance'])) ){
             $relianceService = new RelianceService();
             return $relianceService->getMilestoneSectionOfreliance($customer);
