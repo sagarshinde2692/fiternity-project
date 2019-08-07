@@ -805,10 +805,12 @@ Class CustomerReward {
                         $amount_paid = $amount_paid - $order['convinience_fee'];
                     }
 
-                    if($amount_paid > 2000){
-                        $amount_paid = 2000;
-                    }
                 }
+
+                if($amount_paid > 2000){
+                    $amount_paid = 2000;
+                }
+
                 $cashback_amount = 0;
                 if($amount_paid != 0){
                     $cashback_amount = round(($amount_paid * 82) / 100);
