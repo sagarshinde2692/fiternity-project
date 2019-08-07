@@ -3628,84 +3628,87 @@ class TransactionController extends \BaseController {
         if(!empty($corporate_discount) && $corporate_discount){
             Log::info("corporate_discount");
             Log::info("corporate_discount  :::", [$corporate_discount]);
-            $coupon = Coupon::where('overall_coupon', true)->orderBy('_id', 'desc')->first(['code']);
+            $coupons = Coupon::where('overall_coupon', true)->orderBy('overall_coupon_order', 'desc')->get(['code']);
             // return $coupon;
+            if(!empty($coupons)){
+                foreach($coupons as $coupon){
+                    // if(!empty($coupon)){
+                        Log::info("coupon_code :: ",[$coupon['code']]);
+                        $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
+                        $ticket = null;
+        
+                        if(isset($data['ticket_id'])){
+                            $ticket = Ticket::find($data['ticket_id']);
+                            if(!$ticket){
+                                $resp = array('status'=>400, 'message'=>'Ticket not found');
+                                return Response::json($resp, 400);
+                            }
+                        }
+                        
+                        $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
+        
+                        $service_id = isset($data['service_id']) ? $data['service_id'] : null;
+        
+                        $total_amount = null;
+        
+                        if(!empty($data['customer_quantity'])){
+                            $total_amount = $data['amount'];
+                        }
+        
+                        !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
+        
+                        $couponCheck1 = $this->customerreward->couponCodeDiscountCheck($ratecard,$coupon["code"],$customer_id, $ticket, $ticket_quantity, $service_id, $total_amount, $customer_email, $corporate_discount_coupon = true);
+        
+                        Log::info("couponCheck1");
+                        Log::info($couponCheck1);
+        
+                        if(isset($couponCheck1["coupon_applied"]) && $couponCheck1["coupon_applied"]){
+        
+                            $data['corporate_discount_coupon_code'] = $coupon['code'];
+        
+                            if(isset($couponCheck1['vendor_commission'])){
+                                $data['vendor_commission'] = $couponCheck1['vendor_commission'];
+                            }
+                            if(isset($couponCheck1['description'])){
+                                $data['corporate_discount_coupon_description'] = $couponCheck1['description'];
+                            }
+                            
+                            if(isset($couponCheck1['spin_coupon'])){
+                                $data['corporate_discount_spin_coupon'] = $couponCheck1['spin_coupon'];
+                            }else{
+                                $data['corporate_discount_spin_coupon'] = "";
+                            }
+                            
+                            if(isset($couponCheck1['coupon_discount_percent'])){
+                                $data['corporate_discount_coupon_discount_percent'] = $couponCheck1['coupon_discount_percent'];
+                            }else{
+                                $data['corporate_discount_coupon_discount_percent'] = 0;
+                            }
             
-            if(!empty($coupon)){
-                Log::info("coupon_code :: ",[$coupon['code']]);
-                $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
-                $ticket = null;
-
-                if(isset($data['ticket_id'])){
-                    $ticket = Ticket::find($data['ticket_id']);
-                    if(!$ticket){
-                        $resp = array('status'=>400, 'message'=>'Ticket not found');
-                        return Response::json($resp, 400);
-                    }
-                }
-                
-                $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
-
-                $service_id = isset($data['service_id']) ? $data['service_id'] : null;
-
-                $total_amount = null;
-
-                if(!empty($data['customer_quantity'])){
-                    $total_amount = $data['amount'];
-                }
-
-                !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
-
-                $couponCheck1 = $this->customerreward->couponCodeDiscountCheck($ratecard,$coupon["code"],$customer_id, $ticket, $ticket_quantity, $service_id, $total_amount, $customer_email);
-
-                Log::info("couponCheck1");
-                Log::info($couponCheck1);
-
-                if(isset($couponCheck1["coupon_applied"]) && $couponCheck1["coupon_applied"]){
-
-                    $data['corporate_discount_coupon_code'] = $coupon['code'];
-
-                    if(isset($couponCheck1['vendor_commission'])){
-                        $data['vendor_commission'] = $couponCheck1['vendor_commission'];
-                    }
-                    if(isset($couponCheck1['description'])){
-                        $data['corporate_discount_coupon_description'] = $couponCheck1['description'];
-                    }
-                    
-                    if(isset($couponCheck1['spin_coupon'])){
-                        $data['corporate_discount_spin_coupon'] = $couponCheck1['spin_coupon'];
-                    }else{
-                        $data['corporate_discount_spin_coupon'] = "";
-                    }
-                    
-                    if(isset($couponCheck1['coupon_discount_percent'])){
-                        $data['corporate_discount_coupon_discount_percent'] = $couponCheck1['coupon_discount_percent'];
-                    }else{
-                        $data['corporate_discount_coupon_discount_percent'] = 0;
-                    }
-    
-                    $data["corporate_discount_coupon_discount_amount"] = $amount > $couponCheck1["data"]["discount"] ? $couponCheck1["data"]["discount"] : $amount;
-                    
-                    $amount -= $data["corporate_discount_coupon_discount_amount"];
-
-                    if(isset($couponCheck1["vendor_coupon"]) && $couponCheck1["vendor_coupon"]){
-                        $data["payment_mode"] = "at the studio";
-                        $data["secondary_payment_mode"] = "cod_membership";
-                    }
-    
-                    if(!empty($couponCheck1['flags']['disc_by_vendor'])){
-                        $data['amount_finder'] -= $data["coupon_discount_amount"];
-                    }
-    
-                    if(!empty($couponCheck1['flags'])){
-                        $data['corporate_discount_coupon_flags'] = $couponCheck1['flags'];
-                    }
-
-                    $total_amount = $data['amount_final'] - $data["corporate_discount_coupon_discount_amount"];
-    
-                }
-            }
+                            $data["corporate_discount_coupon_discount_amount"] = $amount > $couponCheck1["data"]["discount"] ? $couponCheck1["data"]["discount"] : $amount;
+                            
+                            $amount -= $data["corporate_discount_coupon_discount_amount"];
+        
+                            if(isset($couponCheck1["vendor_coupon"]) && $couponCheck1["vendor_coupon"]){
+                                $data["payment_mode"] = "at the studio";
+                                $data["secondary_payment_mode"] = "cod_membership";
+                            }
             
+                            if(!empty($couponCheck1['flags']['disc_by_vendor'])){
+                                $data['amount_finder'] -= $data["coupon_discount_amount"];
+                            }
+            
+                            if(!empty($couponCheck1['flags'])){
+                                $data['corporate_discount_coupon_flags'] = $couponCheck1['flags'];
+                            }
+        
+                            $total_amount = $data['amount_final'] - $data["corporate_discount_coupon_discount_amount"];
+                            
+                            break;
+                        }
+                    // }
+                }
+            }    
         }
 
         if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
@@ -7336,33 +7339,45 @@ class TransactionController extends \BaseController {
             Log::info("corporate_discount  :::", [$corporate_discount]);
             if(!empty($corporate_discount) && $corporate_discount){
                 Log::info("corporate_discount");
-                $coupon = Coupon::where('overall_coupon', true)->orderBy('_id', 'desc')->first(['code']);
+                $coupons = Coupon::where('overall_coupon', true)->orderBy('overall_coupon_order', 'desc')->get(['code', 'flags']);
                 // return $coupon;
-                
-                if(!empty($coupon)){
-                    Log::info("coupon :::",[$coupon['code']]);
-                    $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
-                    $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
-
-                    $resp1 = $this->customerreward->couponCodeDiscountCheck($ratecard, $coupon['code'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email);
-                    // Log::info("resp1 :::", [$resp1]);
-                    if($resp1["coupon_applied"]){
-                        Log::info("corporate_discount_coupon_applied");
-                        $data['corporate_coupon_discount'] = $data['amount_payable'] > $resp1['data']['discount'] ? $resp1['data']['discount'] : $data['amount_payable'];
-
-                        $data['amount_payable'] = $data['amount_payable'] - $data['corporate_coupon_discount'];
-                        
-                        $data['you_save'] += $data['corporate_coupon_discount'];
-                        
-                        $result['payment_details']['amount_summary'][] = [
-                            'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
-                            'value' => '-Rs. '.(string) number_format($data['corporate_coupon_discount'])
-                        ];
-
-                        $data['amount'] = $data['amount'] - $data['corporate_coupon_discount'];
-                    
+                if(!empty($coupons)){
+                    foreach($coupons as $coupon){
+                        // if(!empty($coupon)){
+                            Log::info("coupon :::",[$coupon['code']]);
+                            $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
+                            $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
+        
+                            $resp1 = $this->customerreward->couponCodeDiscountCheck($ratecard, $coupon['code'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email, $corporate_discount_coupon = true);
+                            // Log::info("resp1 :::", [$resp1]);
+                            if($resp1["coupon_applied"]){
+                                Log::info("corporate_discount_coupon_applied");
+                                $data['corporate_coupon_discount'] = $data['amount_payable'] > $resp1['data']['discount'] ? $resp1['data']['discount'] : $data['amount_payable'];
+        
+                                $data['amount_payable'] = $data['amount_payable'] - $data['corporate_coupon_discount'];
+                                
+                                $data['you_save'] += $data['corporate_coupon_discount'];
+                                
+                                if((isset($data['corporate_coupon_discount']) && $data['corporate_coupon_discount'] > 0) || (!empty($coupon['flags']['cashback_100_per']))){
+                                    $result['payment_details']['amount_summary'][] = [
+                                        'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
+                                        'value' => !empty($data['corporate_coupon_discount']) ? '-Rs. '.$data['corporate_coupon_discount'] : "100% Cashback"
+                                    ];
+                                }else{
+                                    $result['payment_details']['amount_summary'][] = [
+                                        'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
+                                        'value' => '-Rs. '.(string) number_format($data['corporate_coupon_discount'])
+                                    ];
+                                }
+        
+                                $data['amount'] = $data['amount'] - $data['corporate_coupon_discount'];
+                                
+                                break;
+                            }
+                        // }
                     }
                 }
+                
                 
             }
 
