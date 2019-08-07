@@ -805,10 +805,12 @@ Class CustomerReward {
                         $amount_paid = $amount_paid - $order['convinience_fee'];
                     }
 
-                    if($amount_paid > 2500){
-                        $amount_paid = 2500;
-                    }
                 }
+
+                if($amount_paid > 2000){
+                    $amount_paid = 2000;
+                }
+
                 $cashback_amount = 0;
                 if($amount_paid != 0){
                     $cashback_amount = round(($amount_paid * 82) / 100);
@@ -830,6 +832,7 @@ Class CustomerReward {
                             "order_type"=>["workout-session", "workout session"],
                             "description"=> "100% Cashback on workout-session booking at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14)),
                             "validity"=>time()+(86400*14),
+                            'app_only'=>true
                         );
                     
                         $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());
