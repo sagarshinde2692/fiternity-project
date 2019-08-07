@@ -4538,20 +4538,7 @@ if (!function_exists('setCache')) {
     }
 
 }
-if (!function_exists('curl_call_get')) {
-    function curl_call_get($wsUrl)
-    {
-        Log::info("curl_call_get", [$wsUrl]);
-        $c = curl_init();
-        curl_setopt($c, CURLOPT_URL, $wsUrl);
-        curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 30);
-        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
-        Log::info(curl_exec($c));
-        
-    }
-}
+
 
 
 ?>
