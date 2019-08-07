@@ -1,16 +1,18 @@
 <?php
-
+use App\Services\Cacheapi as Cacheapi;
 class CacheApiController extends BaseController {
 
-	public function __construct() {
-     	parent::__construct();	
+	public function __construct(Cacheapi $cacheapi) {
+         parent::__construct();	
+         $this->cacheapi = $cacheapi;
     }
 
 
 	public function flushTag($tag = false){
 
 		if($tag){
-			Cache::tags($tag)->flush();
+            Cache::tags($tag)->flush();
+            $this->cacheapi->flushCacheFromAllInstances($tag);
 			$responce = array('status'=>200);
 		}else{
 			$responce = array('status'=>400,'message'=>'error');
@@ -22,7 +24,8 @@ class CacheApiController extends BaseController {
 	public function flushTagKey($tag = false,$key = false){
 
 		if($tag && $key){
-			Cache::tags($tag)->forget($key);
+            Cache::tags($tag)->forget($key);
+            $this->cacheapi->flushCacheFromAllInstances($tag, $key);
 			$responce = array('status'=>200);
 		}else{
 			$responce = array('status'=>400,'message'=>'error');
@@ -33,7 +36,8 @@ class CacheApiController extends BaseController {
 
 	public function flushAll(){
 		
-		Cache::flush();
+        Cache::flush();
+        $this->cacheapi->flushCacheFromAllInstances();
 
 		$responce = array('status'=>200);
 
