@@ -47,11 +47,12 @@ Class Cacheapi {
 
     public function flushCacheFromAllInstances($tag=null, $key=null){
 
-        if(!\Config::get('app.debug')){
+        
+        if(!\Config::get('app.debug') && empty($_GET['dont_cycle'])){
+        
+            print_r($_SERVER['REQUEST_URI']);
 
             $api_instance_urls = ['r1.fitternity.com/', 'r2.fitternity.com/', 'r5.fitternity.com/'];
-            // $api_instance_urls = ['apistage.fitn.in/', 'apistage.fitn.in/', 'apistage.fitn.in/'];
-            // $api_instance_urls = ['apistage.fitn.in/'];
     
             if($tag && $key){
 
@@ -66,6 +67,8 @@ Class Cacheapi {
                 $route = 'cachedrop';
     
             }
+
+            $route .= '?dont_cycle=1';
             
             foreach($api_instance_urls as $url){
                 \Log::info(curl_call_get($url.$route));
