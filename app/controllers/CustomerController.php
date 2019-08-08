@@ -8704,8 +8704,7 @@ class CustomerController extends \BaseController {
 
             }else{
 
-                $voucher_category = VoucherCategory::find($_id);
-				
+				$voucher_category = VoucherCategory::find($_id);
 				if(!empty($milestones[$voucher_category['milestone']]) && !empty($milestones[$voucher_category['milestone']]['verified'])){
 
     				/* if(!empty($milestones[$voucher_category['milestone']]['claimed'])){
@@ -8714,12 +8713,11 @@ class CustomerController extends \BaseController {
     
 					} */
 					$combo_vouchers =[];
-					if(!empty($voucher_category->flags) && !empty($voucher_category->flags->combo_vouchers_list)){
-						$vouchers_list = [$voucher_category];
-						$combo_voucher_list =$voucher_category->flags->combo_vouchers_list;
+					if(!empty($voucher_category['flags']) && !empty($voucher_category['flags']['combo_vouchers_list'])){
+						$combo_voucher_list =$voucher_category['flags']['combo_vouchers_list'];
 						foreach($combo_voucher_list as $key=>$value){
 							$voucher = VoucherCategory::find($value);
-							$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher, true);
+							$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher);
 						}
 					}
 					if(count($combo_vouchers) > 0){
@@ -8729,8 +8727,9 @@ class CustomerController extends \BaseController {
 								return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (6).'));
 							}
 						}
-
-						$voucher_category->flags->manual_redemption = true;
+						$flags= $voucher_category['flags'];
+						$flags['manual_redemption'] = true;
+						$voucher_category['flags'] = $flags;
 					}
 					
 					$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
@@ -8783,15 +8782,19 @@ class CustomerController extends \BaseController {
                     return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (3).'));
                 
                 }
-            }
-			$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category);
-            if(!empty($communication) && count($combo_vouchers)== 0){
-				$redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
 			}
-			else{
+			
+			$resp = $this->utilities->voucherClaimedResponseReward($voucherAttached, $voucher_category);
+            if(!empty($communication) && !empty($combo_vouchers) && count($combo_vouchers)== 0){
+				$this->voucherEmailReward($resp, $customer);
+
+			}else if(!empty($communication)) {
+
 				foreach($combo_vouchers as $key=>$value){
-					$formated_resp = $this->utilities->voucherClaimedResponse($value, $voucher_category);
-					$this->utilities->voucherEmailReward($formated_resp, $customer);
+					$formated_resp = $this->utilities->voucherClaimedResponseReward($value, $voucher_category);
+					$email = $this->voucherEmailReward($formated_resp, $customer);
+					Log::info('email:::::', [$email]);
+					
 				}
 			}
 
@@ -10158,5 +10161,9 @@ class CustomerController extends \BaseController {
         }
                 
 	}
+
+	public function voucherEmailReward($resp, $customer){
+        return $redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
+    }
 	
 }
