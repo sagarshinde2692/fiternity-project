@@ -8713,8 +8713,28 @@ class CustomerController extends \BaseController {
     					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
     
 					} */
+					$combo_vouchers =[];
+					if(!empty($voucher_category->flags) && !empty($voucher_category->flags->combo_vouchers_list)){
+						$vouchers_list = [$voucher_category];
+						$combo_voucher_list =$voucher_category->flags->combo_vouchers_list;
+						foreach($combo_voucher_list as $key=>$value){
+							$voucher = VoucherCategory::find($value);
+							$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher, true);
+						}
+					}
+					if(count($combo_vouchers) > 0){
+						foreach($combo_vouchers as $key=>$value){
+							if(!$value){
+								$this->utilities->rollbackVouchers($customer, $combo_vouchers);
+								return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (6).'));
+							}
+						}
+
+						$voucher_category->flags->manual_redemption = true;
+					}
 					
 					$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
+					
 					// Log::info('before adding fitcash-> voucher_catageory', $voucher_category);
 					// Log::info('before adding fitcash-> customer_id', $customer_id);	
 					try{
@@ -8764,38 +8784,16 @@ class CustomerController extends \BaseController {
                 
                 }
             }
-
-            $resp =  [
-                'voucher_data'=>[
-                    'header'=>"VOUCHER UNLOCKED",
-                    'sub_header'=>"You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : ""),
-                    'coupon_title'=>(!empty($voucherAttached['description']) ? $voucherAttached['description'] : ""),
-                    'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
-                    'coupon_image'=>(!empty($voucherAttached['image']) ? $voucherAttached['image'] : ""),
-                    'coupon_code'=>strtoupper($voucherAttached['code']),
-                    'coupon_subtext'=>'(also sent via email/sms)',
-                    'unlock'=>'UNLOCK VOUCHER',
-                    'terms_text'=>'T & C applied.'
-                ]
-            ];
-            if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
-				$resp['voucher_data']['coupon_text']= $voucherAttached['name'];
-				$resp['voucher_data']['header']= "REWARD UNLOCKED";
-				
-				if(isset($voucherAttached['link'])){
-					$resp['voucher_data']['sub_header']= "You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name'])."<br> Share your details & get your insurance policy activated. " : "");
-					$resp['voucher_data']['coupon_text']= $voucherAttached['link'];
-				}
-                
-            }
-
-            if(!empty($voucher_category['email_text'])){
-                $resp['voucher_data']['email_text']= $voucher_category['email_text'];
-            }
-            $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
-            if(!empty($communication)){
+			$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category);
+            if(!empty($communication) && count($combo_vouchers)== 0){
 				$redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
-            }
+			}
+			else{
+				foreach($combo_vouchers as $key=>$value){
+					$formated_resp = $this->utilities->voucherClaimedResponse($value, $voucher_category);
+					$this->utilities->voucherEmailReward($formated_resp, $customer);
+				}
+			}
 
             return $resp;
 

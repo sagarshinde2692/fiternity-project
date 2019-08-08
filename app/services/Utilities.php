@@ -9541,4 +9541,91 @@ Class Utilities {
         return !empty($city_array) ? $city_array[0] : null;
     }
 
+    public function rollbackVouchers($customer, $combo_vouchers_list){
+        foreach($combo_vouchers_list as $key=>$value){
+
+            if(!empty($value['rollback_data'])){
+                array_push(
+                    $value['rollback_data'], 
+                    [
+                        'customer_id' => $value['customer_id'],
+                        'expiry_date' => $value['expiry_date'],
+                        'selected_voucher' => $value['selected_voucher'],
+                        'rollback_date' => new MongoDate(startotime('now'))
+                    ]
+                );
+            }else{
+                $value['rollback_data']=
+                    [
+                        'customer_id' => $value['customer_id'],
+                        'expiry_date' => $value['expiry_date'],
+                        'selected_voucher' => $value['selected_voucher'],
+                        'rollback_date' => new MongoDate(startotime('now'))
+                    ];
+            }
+
+            unset($value['customer_id']);
+            unset($value['expiry_date']);
+            unset($value['selected_voucher']);
+            unset($value['name']);
+            unset($value['image']);
+            unset($value['terms']);
+            unset($value['amount']);
+            unset($value['milestone']);
+            unset($value['code']);
+            unset($value['flags']);
+
+            $loyaltyVoucher = \LoyaltyVoucher::where('_id', $value['_id'])->first();
+
+
+            foreach($value as $voucherKey=>$voucherValue){
+                $loyaltyVoucher->$voucherKey = $voucherValue;
+            }
+            try{
+                $loyaltyVoucher->update();
+            }catch(\Exception $e){
+                Log::info('exception occured while rollback::::::::::::', [$e]);
+            }
+        }
+
+        return true;
+    }
+
+    public function voucherClaimedResponseReward($voucherAttached, $voucher_category){
+
+        $resp =  [
+            'voucher_data'=>[
+                'header'=>"VOUCHER UNLOCKED",
+                'sub_header'=>"You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : ""),
+                'coupon_title'=>(!empty($voucherAttached['description']) ? $voucherAttached['description'] : ""),
+                'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
+                'coupon_image'=>(!empty($voucherAttached['image']) ? $voucherAttached['image'] : ""),
+                'coupon_code'=>strtoupper($voucherAttached['code']),
+                'coupon_subtext'=>'(also sent via email/sms)',
+                'unlock'=>'UNLOCK VOUCHER',
+                'terms_text'=>'T & C applied.'
+            ]
+        ];
+        if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
+            $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
+            $resp['voucher_data']['header']= "REWARD UNLOCKED";
+            
+            if(isset($voucherAttached['link'])){
+                $resp['voucher_data']['sub_header']= "You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name'])."<br> Share your details & get your insurance policy activated. " : "");
+                $resp['voucher_data']['coupon_text']= $voucherAttached['link'];
+            }
+            
+        }
+
+        if(!empty($voucher_category['email_text'])){
+            $resp['voucher_data']['email_text']= $voucher_category['email_text'];
+        }
+        $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
+
+        return $resp;
+    }
+
+    public function voucherEmailReward($resp, $customer){
+        return $redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
+    }
 }
