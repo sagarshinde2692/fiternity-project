@@ -1524,13 +1524,13 @@ class FindersController extends \BaseController {
 
 		// 	$response['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 		// }
-<<<<<<< HEAD
+
 		if(!empty($customer_id)){
 			$this->addCreditPoints($response['finder']['services'], $customer_id);
 		}
-=======
+
 		$this->multifitGymWebsiteVendorUpdate($response);
->>>>>>> origin/master-reliance
+
 		return Response::json($response);
 
 	}
@@ -8393,7 +8393,7 @@ class FindersController extends \BaseController {
         }
 	}
 
-<<<<<<< HEAD
+
 	public function addCreditPoints(&$value, $customer_id){
 		
 		if(!empty($customer_id)){
@@ -8421,7 +8421,7 @@ class FindersController extends \BaseController {
 					}
 				}
 				
-=======
+
 	public function multifitGymWebsiteVendorUpdate(&$data){
 		
 		if(!empty(Request::header('Source')) && Request::header('Source') == "multifit"){
@@ -8500,13 +8500,11 @@ class FindersController extends \BaseController {
 				}
 				unset($data['finder']['website_membership']);
 				unset($data['finder']['brand']['brand_detail']['brand_website']);
->>>>>>> origin/master-reliance
+
 			}
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	public function pathAddingToVendorWebsite($first_block){
 		$base_url =Config::get('app.s3_bane_url');
 		foreach($first_block as $key=>$value){
@@ -8534,5 +8532,5 @@ class FindersController extends \BaseController {
 			$rateCard['remarks_imp'] = true;
 		}
 	}
->>>>>>> origin/master-reliance
+
 }

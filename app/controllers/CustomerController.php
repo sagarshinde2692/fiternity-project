@@ -31,11 +31,8 @@ class CustomerController extends \BaseController {
 		Utilities $utilities,
 		CustomerReward $customerreward,
 		FinderMailer $findermailer,
-<<<<<<< HEAD
-		PassService $passService
-=======
+		PassService $passService,
 		RelianceService $relianceService
->>>>>>> origin/master-reliance
 	) {
 		parent::__construct();
 
@@ -44,11 +41,8 @@ class CustomerController extends \BaseController {
 		$this->utilities	=	$utilities;
 		$this->customerreward = $customerreward;
 		$this->findermailer             =   $findermailer;
-<<<<<<< HEAD
 		$this->passService = $passService;
-=======
 		$this->relianceService = $relianceService;
->>>>>>> origin/master-reliance
 
 		$this->vendor_token = false;
 
@@ -3549,51 +3543,8 @@ class CustomerController extends \BaseController {
 
 				Log::info('device_type'.$this->device_type);
 				Log::info('app_version'.$this->app_version);
-<<<<<<< HEAD
-				$trials = [];
-				if($this->app_version >= 5){
-
-					Log::info("Asdasdasdsss=======");
-					$trials = Booktrial
-						::where('customer_email', '=', $customeremail)
-						->where('going_status_txt','!=','cancel')
-						->where('post_trial_status', '!=', 'no show')
-						->where('booktrial_type','auto')
-						->where(function($query){
-							$query->orWhere('schedule_date_time','>=',new DateTime())
-							->orWhere(function($query){
-								$query->where('payment_done', false)
-								->where('post_trial_verified_status', '!=', 'no')
-								->where('going_status_txt','!=','cancel');
-							})
-							->orWhere(function($query){
-									$query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))
-											->whereIn('post_trial_status', [null, '', 'unavailable']);	
-							})
-							->orWhere(function($query){
-                                $query	->where('ask_review', true)
-                                        ->where('schedule_date_time', '<', new DateTime(date('Y-m-d H:i:s', strtotime('-1 hour'))))
-										->whereIn('post_trial_status', ['attended'])
-										->where('has_reviewed', '!=', '1')
-										->where('skip_review', '!=', true);	
-							});
-						})
-						->orderBy('schedule_date_time', 'asc')
-						->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown', 'pass_order_id')
-						->get();
-				
-				}else if($this->app_version > '4.4.3'){
-					Log::info("4.4.3");
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount','studio_extended_validity_order_id','studio_block_shown', 'pass_order_id')->get();
-
-
-				}else{
-					
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id','amount','third_party_details', 'pass_order_id')->get();
-				}
-=======
                 $trials = [];
-                // $city = "jhansi";
+                
                 if(!isExternalCity($city)){
                     if($this->app_version >= 5){
     
@@ -3623,10 +3574,11 @@ class CustomerController extends \BaseController {
                                 });
                             })
                             ->orderBy('schedule_date_time', 'asc')
-                            ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown')
+                            ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id')
                             ->get();
                     
                     }else if($this->app_version > '4.4.3'){
+                        
                         Log::info("4.4.3");
                         $trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount','studio_extended_validity_order_id','studio_block_shown')->get();
     
@@ -3636,7 +3588,6 @@ class CustomerController extends \BaseController {
                         $trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id','amount','third_party_details')->get();
                     }
                 }
->>>>>>> origin/master-reliance
 				
 				$activate = [];
 				$let_us_know = [];
@@ -3988,6 +3939,7 @@ class CustomerController extends \BaseController {
         }
 
         if(!empty($decoded) && !empty($this->app_version) && !empty($this->device_type)){
+            
             $reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
             $corporate_id  = $reliance_customer['corporate_id'];
             $external_reliance = $reliance_customer['external_reliance'];
@@ -4039,29 +3991,26 @@ class CustomerController extends \BaseController {
 					unset($result['non_reliance']);
 				}
 			}
-<<<<<<< HEAD
-			$workout_sessions_near_customer = $this->getWorkoutSessions($near_by_vendor_request);
-			//removing fields from search
-			$this->nearVendorRemoveExtraFields($result['near_by_vendor']);
-		}
-=======
-
-			if(!empty($result['health']['steps'])){
-				unset($result['health']['steps']);
+            //removing fields from search
+            
+            if(!empty($result['health']['steps'])){
+                unset($result['health']['steps']);
 			}
-        }
-        // return $city;
+            
+		}
+        
         if(!isExternalCity($city)){
+            $workout_sessions_near_customer = $this->getWorkoutSessions($near_by_vendor_request);
             $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
             $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
 
             if(!($this->device_type=='android' && !empty($this->app_version) && (float)$this->app_version>5.27)){
                 $result['near_by_vendor'] = $this->getNearbyVendors($city, true);
+                $this->nearVendorRemoveExtraFields($result['near_by_vendor']);
             }
         }
->>>>>>> origin/master-reliance
         
-		$result['categoryheader'] = "Discover | Try | Buy";
+        $result['categoryheader'] = "Discover | Try | Buy";
 		$result['categorysubheader'] = "Fitness services in ".ucwords($city);
 		$result['trendingheader'] = "Trending in ".ucwords($city);
 		$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($city);
@@ -4084,12 +4033,12 @@ class CustomerController extends \BaseController {
 			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($_REQUEST['selected_region']);
 		}
 
-        $result['fitex'] =[
+        $result['fitex'] = [
             'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
             // 'knowmorelink' => 'know more',
-<<<<<<< HEAD
+
 			
 		];
 
@@ -4135,7 +4084,7 @@ class CustomerController extends \BaseController {
 			$response = setNewToken($response, !empty($pass));
 		}
 		return $response;
-=======
+
             // 'footer' => "Available across 2500+ outlets across ".ucwords($city)." | Starting at <b>&#8377; 149</b>"
             'footer' => "Book Workout Sessions At 100% Instant Cashback"
         ];
@@ -10005,7 +9954,7 @@ class CustomerController extends \BaseController {
 		//'loyalty.loyalty_upgraded'=false
 	}
 
-<<<<<<< HEAD
+
 	public function flexipassHome($passPurchased, &$result){
 		$passConfig = Config::get('pass');
 		Log::info('pass purchased: ::::::::::', [$passPurchased]);
@@ -10125,7 +10074,7 @@ class CustomerController extends \BaseController {
 		$subscription_pass['booking']['text1'] = (string)$this->getBookingOfPass($passPurchased['_id']);
 		$subscription_pass['swimming']['text1'] =(string) ($passPurchased['pass']['premium_sessions']- $passPurchased['premium_sessions_used']);
 	}
-=======
+
 	public function reliancePostLoyalty($customer, $voucher_categories_map) {
 		if(!empty($customer['external_reliance'])){
 			$milestones = Config::get('nonRelianceLoyaltyProfile.post_register.milestones.data');
@@ -10429,6 +10378,4 @@ class CustomerController extends \BaseController {
         }
                 
 	}
-	
->>>>>>> origin/master-reliance
 }

@@ -1371,7 +1371,7 @@ Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');
 Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
 Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
 Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
-<<<<<<< HEAD
+
 // Route::post('passcapture', 'TransactionController@classPassCapture');
 Route::get('listpass', 'PassController@listPasses');
 Route::post('razorpay/subscribe', 'RazorpayController@createSubscription');
@@ -1381,7 +1381,7 @@ Route::get('orderpasshistory',  array('as' => 'customer.orderpasshistory','uses'
 Route::get('passtermscondition', 'PassController@passTermsAndCondition');
 Route::get('passfaq', 'PassController@passFrequentAskedQuestion');
 Route::post('razorpaywebhooks', 'RazorpayController@razorpayWebhooks');
-=======
+
 Route::get('brandwebsite/home/{brand_id}', 'BrandsController@getBrandWebsiteHome');
 Route::get('brandwebsite/aboutus/{brand_id}', 'BrandsController@getBrandWebsiteAboutUs');
 Route::get('brandwebsite/programs/{brand_id}', 'BrandsController@getBrandWebsitePrograms');
@@ -1399,4 +1399,4 @@ Route::post('customer/enablereliancecampaign', 'CustomerController@enableRelianc
 
 Route::get('nearbyvendors', 'CustomerController@getNearbyVendors');
 Route::get('migrateStepsToFirestore', 'DebugController@migrateStepsToFirestore');
->>>>>>> origin/master-reliance
+

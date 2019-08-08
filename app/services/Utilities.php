@@ -34,11 +34,8 @@ use MongoDate;
 use Coupon;
 use \GuzzleHttp\Client;
 use Input;
-<<<<<<< HEAD
 use RazorpayPlans;
-=======
 use App\Services\RelianceService as RelianceService;
->>>>>>> origin/master-reliance
 
 use App\Services\Fitnessforce as Fitnessforce;
 
@@ -9546,7 +9543,7 @@ Class Utilities {
             )
         );
 
-<<<<<<< HEAD
+
         $razoPayUrl = Config::get('app.razorPayURL');
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $razoPayUrl);
@@ -9636,8 +9633,8 @@ Class Utilities {
 		}
 		return $result;
 	}
-}
-=======
+
+
     public function getCityData($slug){
         
         $cities = Config::get('cities');
@@ -9648,4 +9645,4 @@ Class Utilities {
     }
 
 }
->>>>>>> origin/master-reliance
+

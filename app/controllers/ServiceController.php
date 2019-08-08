@@ -8,30 +8,27 @@
  */
 use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
-<<<<<<< HEAD
+
 use App\Services\PassService as PassService;
-=======
+
 use App\Services\RelianceService as RelianceService;
->>>>>>> origin/master-reliance
+
 
 
 class ServiceController extends \BaseController {
 
-<<<<<<< HEAD
-	public function __construct(Utilities $utilities, PassService $passService) {
-=======
-	public function __construct(Utilities $utilities, RelianceService $relianceService) {
->>>>>>> origin/master-reliance
+	public function __construct(Utilities $utilities, RelianceService $relianceService, PassService $passService) {
+
 
 		parent::__construct();
 
 		$this->utilities = $utilities;
-<<<<<<< HEAD
+
 		$this->passService = $passService;
-=======
+
 		$this->relianceService = $relianceService;
 
->>>>>>> origin/master-reliance
+
 		$this->vendor_token = false;
         
         $vendor_token = Request::header('Authorization-Vendor');

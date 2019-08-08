@@ -2647,7 +2647,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     
                     if(empty($data)){ 
                     
-<<<<<<< HEAD
+
                         $customer = Customer::find($customer_id);
                         $customer = array_except($customer->toArray(), array('password'));
                         
@@ -2663,7 +2663,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         
                         $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
                         $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
-    //                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
+        //                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
 
                         $data = array(
                                     '_id'=>$customer['_id'],
@@ -2677,62 +2677,24 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                     "location"=>$customer['location'],
                                     'gender'=>$customer['gender'],
                                     'rx_user'=>$customer['rx_user'],
-    //                     			'rx_success_url'=>$customer['rx_success_url'],	
+        //                     			'rx_success_url'=>$customer['rx_success_url'],	
                                     'extra'=>array(
                                         'mob'=>$customer['extra']['mob'],
                                         'location'=>$customer['extra']['location']
                                     )
                                 ); 
-
+                        if(!empty($customer['corporate_id'])) {
+                            $data['corporate_id'] = $customer['corporate_id'];
+                        }
+                        if(!empty($customer['external_reliance'])) {
+                            $data['external_reliance'] = $customer['external_reliance'];
+                        }
                         if(!empty($customer['referral_code']))
                             $data['referral_code'] = $customer['referral_code'];	
                         if(!empty($customer['cart_id']))
                             $data['cart_id']=$customer['cart_id'];
                     }
-=======
-                    $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
-                    $customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
-                    $customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
-                    $customer['facebook_id'] = (isset($customer['facebook_id'])) ? $customer['facebook_id'] : "";
-                    $customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
-                    $customer['contact_no'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
-                    $customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
-                    $customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
-                    $customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
-                    
-                    $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
-                    $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
-//                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
 
-                    $data = array(
-                                '_id'=>$customer['_id'],
-                                'name'=>$customer['name'],
-                                "email"=>$customer['email'],
-                                "picture"=>$customer['picture'],
-                                'facebook_id'=>$customer['facebook_id'],
-                                "identity"=>$customer['identity'],
-                                "address"=>$customer['address'],
-                                "contact_no"=>$customer['contact_no'],
-                                "location"=>$customer['location'],
-                                'gender'=>$customer['gender'],
-                    			'rx_user'=>$customer['rx_user'],
-//                     			'rx_success_url'=>$customer['rx_success_url'],	
-                                'extra'=>array(
-                                    'mob'=>$customer['extra']['mob'],
-                                    'location'=>$customer['extra']['location']
-                                )
-                            ); 
-                    if(!empty($customer['corporate_id'])) {
-                        $data['corporate_id'] = $customer['corporate_id'];
-                    }
-                    if(!empty($customer['external_reliance'])) {
-                        $data['external_reliance'] = $customer['external_reliance'];
-                    }
-                    if(!empty($customer['referral_code']))
-                    	$data['referral_code'] = $customer['referral_code'];	
-                    if(!empty($customer['cart_id']))
-                    	$data['cart_id']=$customer['cart_id'];
->>>>>>> origin/master-reliance
                     		
                     $jwt_claim = array(
                         "iat" => Config::get('app.jwt.iat'),
@@ -4532,7 +4494,7 @@ if (!function_exists('createBucket')) {
 
 }
 
-<<<<<<< HEAD
+
 if (!function_exists('setNewToken')) {
 
     function setNewToken($response, $pass = false){
@@ -4562,19 +4524,18 @@ if (!function_exists('setNewToken')) {
         
         
         
-=======
+
 if (!function_exists('isExternalCity')) {
 
     function isExternalCity($city){
         
         return !in_array($city, ['mumbai','delhi','hyderabad','bangalore','gurgaon','noida','pune','chandigarh','jaipur']);
     
->>>>>>> origin/master-reliance
     }
 
 }
 
-<<<<<<< HEAD
+
 if (!function_exists('checkAppVersionFromHeader')) {
 
     function checkAppVersionFromHeader($data){        
@@ -4719,6 +4680,5 @@ if (!function_exists('curl_call_get')) {
     }
 }
 
->>>>>>> origin/master-reliance
 
 ?>

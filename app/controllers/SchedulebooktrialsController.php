@@ -2167,7 +2167,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'ask_review'                    =>      true,
             );
 
-<<<<<<< HEAD
+
             if(!empty($order['pass_order_id'])) {
                 $booktrialdata['pass_order_id'] = $order['pass_order_id'];
             }
@@ -2182,7 +2182,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(!empty($order['pass_type'])) {
                 $booktrialdata['pass_type'] = $order['pass_type'];
-=======
+
             $customer = Customer::where('_id', $customer_id)->first();
             
             if(!empty($customer['corporate_id'])) {
@@ -2191,7 +2191,7 @@ class SchedulebooktrialsController extends \BaseController {
             
             if(!empty($customer['external_reliance'])) {
                 $booktrialdata['external_reliance'] = $customer['external_reliance'];
->>>>>>> origin/master-reliance
+
             }
 
             if(!empty($data['studio_extended_validity_order_id'])){
@@ -7879,14 +7879,14 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
 
                 }
-<<<<<<< HEAD
+
                 if(!empty($booktrial->pass_order_id)){
                     unset($response['footer']);
-=======
+                }
+
 
                 if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
                     $response['sub_header_2'] = "Sorry, cancellation is available only 60 minutes prior to your session time.\n\nKeep booking workouts to get closer to your steps milestone.";
->>>>>>> origin/master-reliance
                 }
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
@@ -7923,10 +7923,11 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['reschedule_button'] = true;
                     $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
                 }
-<<<<<<< HEAD
+
                 if(!empty($booktrial->pass_order_id)){
                     unset($response['footer']);
-=======
+                }
+
 
                 if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
                     if($payment_done){
@@ -7936,7 +7937,6 @@ class SchedulebooktrialsController extends \BaseController {
                             $response['sub_header_2'] = $response['sub_header_2']."\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
                         }
                     }  
->>>>>>> origin/master-reliance
                 }
                 $this->cancel($booktrial->_id);
             break;
@@ -7983,10 +7983,11 @@ class SchedulebooktrialsController extends \BaseController {
                     
                 }
 
-<<<<<<< HEAD
+
                 if(isset($booktrial['pass_order_id'])){
                     unset($response['attend']);
-=======
+                }
+
                 if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
                     $response['attend']['sub_header_2'] = 'Attend this sessionand earn 300 Steps.';
                     
@@ -7997,7 +7998,6 @@ class SchedulebooktrialsController extends \BaseController {
                             $response['attend']['sub_header_2'] = 'Attend this session and earn '.$service_steps.' Steps.';
                         }
                     }
->>>>>>> origin/master-reliance
                 }
             break;
             case 'cancel':
