@@ -237,6 +237,8 @@ Route::post('customer/update/webnotification', array('as' => 'customer.updateweb
 Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','uses' => 'CustomerController@addHealthInfo'));
 Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
 Route::group(array('before' => 'device'), function() {
+});
+Route::group(array('before' => 'validatetoken'), function() {
     Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
 });
 
