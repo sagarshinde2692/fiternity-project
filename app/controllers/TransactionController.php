@@ -6969,8 +6969,10 @@ class TransactionController extends \BaseController {
     public function checkoutSummary(){
 
         $data = Input::json()->all();
-        $headerSource = Request::header('Source');
-
+        $headerSource = Request::header('Source');Log::info('checkout summary header ::::::::::source', [$headerSource]);
+        if(!empty($headerSource) && $headerSource=='multifit'){
+            $data['multifit'] = true;
+        }
         Log::info("checkoutSummary");
 
         Log::info($data);
