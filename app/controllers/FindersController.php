@@ -91,7 +91,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderdetail($slug, $cache = true){
+	public function finderdetail($slug, $cache = false){
 
 		// Log::info($_SERVER['REQUEST_URI']);        
 
@@ -1357,7 +1357,8 @@ class FindersController extends \BaseController {
                     $this->orderRatecards($response);
                 }catch(Exception $e){
                     Log::info("Error while sorting ratecard");
-                }
+				}
+
                 
                 if(empty($response['vendor_stripe_data']['text']) ){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
@@ -1407,7 +1408,12 @@ class FindersController extends \BaseController {
 
                 if(empty($response['vendor_stripe_data']['text1'])){
                     $response['vendor_stripe_data'] = "no-patti";
-                }
+				}
+				
+				$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+				if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+					$response['vendor_stripe_data'] = "no-patti";
+				}
 
                 $cashback_type_map = Config::get('app.cashback_type_map');
 
@@ -3864,7 +3870,12 @@ class FindersController extends \BaseController {
                 $line = "Pay Day Sale\n\n- Book Workout Sessions At INR 99 Only (No Code Required)";
             
             }
-        }
+		}
+		
+		$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+		if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+			$line = "";
+		}
 
         return $line;
 		
@@ -5310,7 +5321,13 @@ class FindersController extends \BaseController {
                             if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 99 || $ratecard['special_price'] == 99)){
                                 $ratecard['remarks'] = "Pay Day Sale | Book Workout Sessions At INR 99 only";
                             }
-                        }
+						}
+						
+						$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+						if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+							unset($ratecard['remarks']);
+						}
+
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
 							$ratecard_price = $ratecard['special_price'];
 						}else{
