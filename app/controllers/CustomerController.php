@@ -3519,7 +3519,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function home($city = 'mumbai',$cache = true){
-
+        
 
         Log::info('--------customer_home_app--------',$_GET);
         
@@ -3527,76 +3527,81 @@ class CustomerController extends \BaseController {
             $city = 'delhi';
         }
 
-		$jwt_token = Request::header('Authorization');
-		Log::info($jwt_token);
-		$upcoming = array();
+        $upcoming = array();
+        
+        $jwt_token = Request::header('Authorization');
+		
+        if(!empty($jwt_token)){
+            $decoded = $this->customerTokenDecode($jwt_token);
+            if(!empty($decoded)){
+                $customeremail = $decoded->customer->email;
+                $customer_id = $decoded->customer->_id;
+            }
+
+        }
 		
 		// $city = strtolower($city);
 		$city = getmy_city($city);
 
-		if($jwt_token != ""){
+		if($decoded && !isExternalCity($city)){
 
 			try {
 
-				$decoded = $this->customerTokenDecode($jwt_token);
 				Log::info('token values',[$decoded]);
 
                 // if(empty($decoded->customer)){
                 //     return ['isSessionExpired'=>true];
                 // }
 				
-                $customeremail = $decoded->customer->email;
-				$customer_id = $decoded->customer->_id;
-				$reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
-				$corporate_id  = $reliance_customer['corporate_id'];
-				$external_reliance = $reliance_customer['external_reliance'];
-				
-				Log::info('corporate id and external data::::::', [$corporate_id, $external_reliance]);
-				Log::info("------------home------------$customeremail");
+                
+                Log::info("------------home------------$customeremail");
 
 				Log::info('device_type'.$this->device_type);
 				Log::info('app_version'.$this->app_version);
-				$trials = [];
-				if($this->app_version >= 5){
-
-					Log::info("Asdasdasdsss=======");
-					$trials = Booktrial
-						::where('customer_email', '=', $customeremail)
-						->where('going_status_txt','!=','cancel')
-						->where('post_trial_status', '!=', 'no show')
-						->where('booktrial_type','auto')
-						->where(function($query){
-							$query->orWhere('schedule_date_time','>=',new DateTime())
-							->orWhere(function($query){
-								$query->where('payment_done', false)
-								->where('post_trial_verified_status', '!=', 'no')
-								->where('going_status_txt','!=','cancel');
-							})
-							->orWhere(function($query){
-									$query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))
-											->whereIn('post_trial_status', [null, '', 'unavailable']);	
-							})
-							->orWhere(function($query){
-                                $query	->where('ask_review', true)
-                                        ->where('schedule_date_time', '<', new DateTime(date('Y-m-d H:i:s', strtotime('-1 hour'))))
-										->whereIn('post_trial_status', ['attended'])
-										->where('has_reviewed', '!=', '1')
-										->where('skip_review', '!=', true);	
-							});
-						})
-						->orderBy('schedule_date_time', 'asc')
-						->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown')
-						->get();
-				
-				}else if($this->app_version > '4.4.3'){
-					Log::info("4.4.3");
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount','studio_extended_validity_order_id','studio_block_shown')->get();
-
-
-				}else{
-					
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id','amount','third_party_details')->get();
-				}
+                $trials = [];
+                // $city = "jhansi";
+                if(!isExternalCity($city)){
+                    if($this->app_version >= 5){
+    
+                        Log::info("Asdasdasdsss=======");
+                        $trials = Booktrial
+                            ::where('customer_email', '=', $customeremail)
+                            ->where('going_status_txt','!=','cancel')
+                            ->where('post_trial_status', '!=', 'no show')
+                            ->where('booktrial_type','auto')
+                            ->where(function($query){
+                                $query->orWhere('schedule_date_time','>=',new DateTime())
+                                ->orWhere(function($query){
+                                    $query->where('payment_done', false)
+                                    ->where('post_trial_verified_status', '!=', 'no')
+                                    ->where('going_status_txt','!=','cancel');
+                                })
+                                ->orWhere(function($query){
+                                        $query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))
+                                                ->whereIn('post_trial_status', [null, '', 'unavailable']);	
+                                })
+                                ->orWhere(function($query){
+                                    $query	->where('ask_review', true)
+                                            ->where('schedule_date_time', '<', new DateTime(date('Y-m-d H:i:s', strtotime('-1 hour'))))
+                                            ->whereIn('post_trial_status', ['attended'])
+                                            ->where('has_reviewed', '!=', '1')
+                                            ->where('skip_review', '!=', true);	
+                                });
+                            })
+                            ->orderBy('schedule_date_time', 'asc')
+                            ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown')
+                            ->get();
+                    
+                    }else if($this->app_version > '4.4.3'){
+                        Log::info("4.4.3");
+                        $trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount','studio_extended_validity_order_id','studio_block_shown')->get();
+    
+    
+                    }else{
+                        
+                        $trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id','amount','third_party_details')->get();
+                    }
+                }
 				
 				$activate = [];
 				$let_us_know = [];
@@ -3615,18 +3620,18 @@ class CustomerController extends \BaseController {
 
 						$data['finder_average_rating'] = 0;
 
-						$finder = Finder::find((int) $data['finder_id']);
+						// $finder = Finder::find((int) $data['finder_id']);
 
-						if($finder){
+						// if($finder){
 
-							$finder = $finder->toArray();
+						// 	$finder = $finder->toArray();
 
-							if(isset($finder['average_rating'])){
+						// 	if(isset($finder['average_rating'])){
 
-								$data['finder_average_rating'] = $finder['average_rating'];
-							}
-						}
-
+						// 		$data['finder_average_rating'] = $finder['average_rating'];
+						// 	}
+                        // }
+                        
 						foreach ($data as $key => $value) {
 							if(!in_array(gettype($value), ['boolean'])){
 								$data[$key] = ucwords(strip_tags($value));
@@ -3670,7 +3675,7 @@ class CustomerController extends \BaseController {
 
 								$data['checklist'] = true;
 
-								$fitcash_amount = $this->utilities->getFitcash($trial);
+                                $fitcash_amount = $this->utilities->getFitcash($trial);
 
 								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to unlock your ".$fitcash_amount." Fitcash as discount";
 							
@@ -3783,7 +3788,8 @@ class CustomerController extends \BaseController {
 						
 						$upcoming[] = $data;
 
-					}
+                    }
+
 					if($this->app_version > '4.4.3'){
 						
 						foreach($upcoming as $x){
@@ -3809,126 +3815,70 @@ class CustomerController extends \BaseController {
 
 				}
 
-				if(isset($_GET['notif_enabled']) && $_GET['notif_enabled']){
-					Customer::where('_id', $customer_id)->update(['notif_enabled'=>$_GET['notif_enabled']=='true' ? true : false]);
-				}
-
 			} catch (Exception $e) {
 				Log::error($e);
 			}
 			
 		}
         // if($this->app_version > '')
-        try{
-            $active_session_packs = [];
-            if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
-                $active_session_packs = $this->getSessionPacks(null, null, true, $customer_id, 'home')['data'];
-            }
-
-        }catch(Exception $e){
-
-            $active_session_packs = [];
-        
-        }
+        $active_session_packs = [];
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
-			if(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 4.2)){
-				$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-				$_city = $city;
-				if(empty($_citydata)) {
-					$_city = "all";
-				}
-				$category_new = citywise_categories($_city);
+			
+            $_citydata 		=	$this->utilities->getCityData($city);
+            $_city = $city;
+            if(empty($_citydata)) {
+                $_city = "all";
+            }
+            $category_new = citywise_categories($_city);
 
-				foreach ($category_new as $key => $value) {
-					// $category_new[$key]['pps_available'] = false;
-					if(isset($value["slug"]) && $value["slug"] == "fitness"){
-						unset($category_new[$key]);
-					}
-				}
+            foreach ($category_new as $key => $value) {
+                // $category_new[$key]['pps_available'] = false;
+                if(isset($value["slug"]) && $value["slug"] == "fitness"){
+                    unset($category_new[$key]);
+                }
+            }
 
-				$category_new = array_values($category_new);
+            $category_new = array_values($category_new);
 
-				$cache_tag = 'customer_home_by_city_4_2';
-			}elseif(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
-				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
-				$cache_tag = 'customer_home_by_city_2_5';
-			}else{
-				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*//*,"luxury-hotels"*//*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
-				$cache_tag = 'customer_home_by_city';
-			}
+            $cache_tag = 'customer_home_by_city_4_2';
+			
 		}else{
-			if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios") && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 4.1)){
-				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
-				$cat = array();
-				$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
-				$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","swimming"/*,"luxury-hotels"*//*,"sport-nutrition-supliment-stores"*/,"aerobics"/*,"kids-fitness"*/,"pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-				$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-				$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-				$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-				$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"cross-functional-training","mma-and-kick-boxing","dance",/*"kids-fitness","pre-natal-classes"*/);
-				if(isset($cat[$city])){
-					$category_slug = $cat[$city];
-				}
-				$cache_tag = 'customer_home_by_city_ios';
-			}else{
-				$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-				$_city = $city;
-				if(empty($_citydata)) {
-					$_city = "all";
-				}
-				$category_new = citywise_categories($_city);
+			
+            $_citydata 		=	$this->utilities->getCityData($city);
+            $_city = $city;
+            if(empty($_citydata)) {
+                $_city = "all";
+            }
+            $category_new = citywise_categories($_city);
 
-				foreach ($category_new as $key => $value) {
-					// $category_new[$key]['pps_available'] = false;
-					if(isset($value["slug"]) && $value["slug"] == "fitness"){
-						unset($category_new[$key]);
-					}
-				}
+            foreach ($category_new as $key => $value) {
+                // $category_new[$key]['pps_available'] = false;
+                if(isset($value["slug"]) && $value["slug"] == "fitness"){
+                    unset($category_new[$key]);
+                }
+            }
 
-				$category_new = array_values($category_new);
+            $category_new = array_values($category_new);
+            $cache_tag = 'customer_home_by_city_ios_4.1';
 
-				$cache_tag = 'customer_home_by_city_ios_4.1';
-			}
+			
 		}
 		$customer_home_by_city = $cache ? Cache::tags($cache_tag)->has($city) : false;
-		if(!$customer_home_by_city){
+		if(empty($customer_home_by_city)){
 			$category = $locations = $popular_finders =	$recent_blogs =	array();
-			$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-			$_city = $city;
-			if(empty($_citydata)) {
-				$_city = "all";
-			}
-			$citydata 		=	City::where('slug', '=', $_city)->first(array('name','slug'));
+			$citydata 		=	$this->utilities->getCityData($city);
 			if(!$citydata){
 				$citydata['name'] = $city;
 				$citydata['_id'] = 10000;
-				// if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
-				// 	$citydata['name'] 		= 	"mumbai";
-				// 	$citydata['_id']		= 	1;
-				// }else{
-				// 	return $this->responseNotFound('City does not exist');
-				// }
 			}
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];
-			if(isset($category_new)){
+			
 				$category			= 		$category_new;
 				$ordered_category   = 		$category_new;
-			}else{
-				$category			= 		Findercategory::active()->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
-				$ordered_category = array();
-				foreach ($category_slug as $category_slug_key => $category_slug_value){
-					foreach ($category as $category_key => $category_value){
-						if($category_value['slug'] == $category_slug_value){
-							$category_value['name'] = ucwords($category_value['name']);
-							$ordered_category[] = $category_value;
-							break;
-						}
-					}
-				}
-			}
-			// $locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group'));
+			
+			
 			$collections 			= 	[]; //Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
 			$homedata 				= 	array('categorytags' => $ordered_category,
@@ -3942,64 +3892,26 @@ class CustomerController extends \BaseController {
 		}
 		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
-        $result['session_packs'] = $active_session_packs;
-		// $result['campaign'] =  new \stdClass();
-		// $result['campaign'] = array(
-		// 	'image'=>'http://b.fitn.in/iconsv1/womens-day/women_banner_app_50.png',
-		// 	'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
-		// 	'title'=>'FitStart 2017',
-		// 	'height'=>1,
-		// 	'width'=>6,
-		// 	'ratio'=>1/6
-		// );
-
-		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios") && ((float)$_GET['app_version'] <= 4.1)){
-			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-			$city_id		= 	(int) $citydata['_id'];
-			$result['collections'] 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
-		}
-
-		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && ((float)$_GET['app_version'] <= 4.2)){
-			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-			$city_id		= 	(int) $citydata['_id'];
-			$result['collections'] 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
-		}
-
-		// if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
-			
-		// }
-		// $result['campaign'] =  new \stdClass();
-		// $result['campaign'] = array(
-		// 	// 'image'=>'http://b.fitn.in/iconsv1/offers/generic_banner.png',
-		// 	'image'=>'http://b.fitn.in/global/diwali/diwali_banner.png',
-		// 	'link'=>'',
-		// 	'title'=>'FitStart 2017',
-		// 	'height'=>1,
-		// 	'width'=>6,
-		// 	'ratio'=>1/6
-		// );
-
-		// if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "android"){
-		// 	$result['campaign']['link'] = 'ftrnty://ftrnty.com/search/all';
-		// }
+        
+        
+        $result['collections'] = [];
 		
-		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
+		if(!isExternalCity($city) && isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
 			
-			$city_id = City::where('slug', $city)->first(['_id']);
+			$city_id = $this->utilities->getCityData($city);
 			
-			// return $city_id;
 			$campaigns = [];
 			/***************************Banners start********************** */
 			// commented below on 26 Jan - start
 			
 			if($city){
 
-				$homepage = Homepage::where('city_id', $city_id['_id'])->first();
+                
+				$homepage = $this->getAppBanners(['_id'=>$city_id['_id']]);
 
 				$campaigns = [];
 
-            //    if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
-               if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners']) && count($homepage['app_banners']) >= 2){
+               if($homepage && !empty($homepage['app_banners']) && is_array($homepage['app_banners'])){
 
                    $app_banners = $homepage['app_banners'];
 
@@ -4029,197 +3941,59 @@ class CustomerController extends \BaseController {
 
                    usort($campaigns, "cmp");
 			   }
-			   
-				if(!empty($customer_id) && !empty($corporate_id) && empty($external_reliance) && $corporate_id == 1) {
-					$customerRec = Customer::active()->where('email', $customeremail)->first();
-					$result['health_popup'] = Config::get('health_config.health_popup');
-					if(!empty($customerRec) && empty($customerRec->dob)) {
-						$result['dob_popup'] = Config::get('health_config.dob_popup');
-					}
-					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city);
-					$result['is_health_rewad_shown'] = true;
-				}
-				else if(!empty($customer_id)){
-					$customerRec = Customer::active()->where('email', $customeremail)->first();
-					$result['non_reliance'] = Config::get('health_config.non_reliance');
-					$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city);
-					if(!empty($customerRec) && empty($customerRec->dob)) {
-						$result['dob_popup'] = Config::get('health_config.dob_popup');
-					}
-					if($this->device_type== 'android' && !empty($corporate_id)){
-						unset($result['non_reliance']);
-					}
-				}
-
-				if(!empty($result['health']['steps'])){
-					unset($result['health']['steps']);
-				}
 			}
             // commented above on 26 Jan - end
             
             /***************************Banners end********************** */
 
             $result['campaigns'] =  $campaigns;
-			// $result['campaigns'] =  [];
-
-			// $result['campaigns'][] = [
-			// 	'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/independance_app.png',
-			// 	'link'=>'ftrnty://ftrnty.com/search/all',
-			// 	'title'=>'Group Membership',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-			// ];
-
-			// if($city != "ahmedabad"){
-
-			// 	$result['campaigns'][] = [
-			// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/mumbai-gold.jpg',
-			// 		'link'=>'ftrnty://ftrnty.com/s?brand=golds-gym&city='.strtolower($city),
-			// 		'title'=>'Pledge for Fitness',
-			// 		'height'=>100,
-			// 		'width'=>375,
-			// 		'ratio'=>(float) number_format(100/375,2)
-			// 	];
-
-			// 	switch($city){
-			// 		case "pune":
-			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/pune-gold.jpg";
-			// 			if(intval(date('d', time())) % 2 == 0){
-			// 				$result['campaigns'][] = [
-			// 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
-			// 					'link'=>'ftrnty://ftrnty.com/s?brand=multifit&city='.strtolower($city),
-			// 					'title'=>'Pledge for Fitness',
-			// 					'height'=>100,
-			// 					'width'=>375,
-			// 					'ratio'=>(float) number_format(100/375,2)
-			// 				];
-			// 			}else{
-			// 				array_splice($result['campaigns'], count($result['campaigns'])-1, 0, [[
-			// 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
-			// 					'link'=>'ftrnty://ftrnty.com/s?brand=multifit&city='.strtolower($city),
-			// 					'title'=>'Pledge for Fitness',
-			// 					'height'=>100,
-			// 					'width'=>375,
-			// 					'ratio'=>(float) number_format(100/375,2)
-			// 				]]);
-			// 			}
-			// 		break;
-			// 		case "bangalore":
-			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/bangalore-gold.jpg";
-			// 			break;
-			// 		case "delhi":
-			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/delhi-gold.jpg";
-			// 			break;	
-			// 		case "noida":
-			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/noida-gold.jpg";
-			// 			break;
-			// 		case "hyderabad":
-			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/hyderabad-gold.jpg";
-			// 			break;					
-			// 		case "gurgaon":
-			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/gurgaon-gold.jpg";
-			// 			break;										
-			// 	}
-			// }
-
-			// if($city == "mumbai"){
-
-			// 	$result['campaigns'][] = [
-			// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/yfc-mumbai-app.jpg',
-			// 		'link'=>'ftrnty://ftrnty.com/s?brand=your-fitness-club&city='.strtolower($city),
-			// 		'title'=>'Your Fitness Club (YFC)',
-			// 		'height'=>100,
-			// 		'width'=>375,
-			// 		'ratio'=>(float) number_format(100/375,2)
-			// 	];
-
-			// }
-
-
-			// if(!$this->app_version || $this->app_version < '4.9'){
-			// 	foreach($result['campaigns'] as &$campaign){
-			// 		if(isset($campaign['title']) && $campaign['title'] == 'Pledge for Fitness'){
-			// 			$campaign['link'] = '';
-			// 		}
-			// 	}
-			// }
+ 
+            
 			
-			// if($_REQUEST['device_type'] == 'ios'){
+        }
 
-				// if($this->app_version > '4.4.3'){
+        if(!empty($decoded) && !empty($this->app_version) && !empty($this->device_type)){
+            $reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
+            $corporate_id  = $reliance_customer['corporate_id'];
+            $external_reliance = $reliance_customer['external_reliance'];
+            
+            Customer::$withoutAppends = true;
+            if(!empty($customer_id) && !empty($corporate_id) && $corporate_id == 1 && empty($external_reliance)) {
+    
+    
+                $customerRec = Customer::active()->where('email', $customeremail)->first();
+                $result['health_popup'] = Config::get('health_config.health_popup');
+                if(!empty($customerRec) && empty($customerRec->dob)) {
+                    $result['dob_popup'] = Config::get('health_config.dob_popup');
+                }
+                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$this->app_version, $customerRec);
+                $result['is_health_rewad_shown'] = true;
+            }
+            else if(!empty($customer_id)){
+                $customerRec = Customer::active()->where('email', $customeremail)->first();
+                $result['non_reliance'] = ($this->device_type=='android' && ((float)$this->app_version)>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
+                $result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$this->app_version, $customerRec);
+                if(!empty($customerRec) && empty($customerRec->dob)) {
+                    $result['dob_popup'] = Config::get('health_config.dob_popup');
+                }
+                if($this->device_type== 'android' && !empty($corporate_id)){
+                    unset($result['non_reliance']);
+                }
+            }
+    
+            if(!empty($result['health']['steps'])){
+                unset($result['health']['steps']);
+            }
+        }
+        // return $city;
+        if(!isExternalCity($city)){
+            $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
+            $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
 
-					// $result['campaigns'][] = [
-					// 	'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
-					// 	'link'=>'ftrnty://ftrnty.com/pps?',
-					// 	'title'=>'Pay Per Session',
-					// 	'height'=>100,
-					// 	'width'=>375,
-					// 	'ratio'=>(float) number_format(100/375,2)
-					// ];
-
-				// }
-
-			// }else{
-
-			// 	if($this->app_version > '4.4.3'){
-
-			// 		$result['campaigns'][] = [
-			// 			'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
-			// 			'link'=>'ftrnty://ftrnty.com/pps',
-			// 			'title'=>'Pay Per Session',
-			// 			'height'=>100,
-			// 			'width'=>375,
-			// 			'ratio'=>(float) number_format(100/375,2)
-			// 		];
-					
-			// 	}
-
-			// }
-
-			// $result['campaigns'][] = [
-			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
-			// 	'link'=>'https://www.fitternity.com/rewards?mobile_app=true',
-			// 	'title'=>'Complimentary Rewards',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-			// ];
-
-			$lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
-	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
-
-			$near_by_vendor_request = [
-	            "offset" => 0,
-	            "limit" => 9,
-	            "radius" => "2km",
-	            "category"=>"",
-	            "lat"=>$lat,
-	            "lon"=>$lon,
-	            "city"=>strtolower($city),
-	            "keys"=>[
-	              "average_rating",
-	              "contact",
-	              "coverimage",
-	              "location",
-	              "multiaddress",
-	              "slug",
-	              "name",
-	              "id",
-	              "categorytags",
-	              "category"
-	            ]
-	        ];
-            $geoLocationFinder = geoLocationFinder($near_by_vendor_request, 'customerhome');
-			$result['near_by_vendor'] = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
-			//checking for fitsquad upgrade
-			if(isset($customer_id)){
-				$fitsquadUpgradeOrder = $this->fitSquadUpgradeAvailability($customer_id);
-				if($fitsquadUpgradeOrder){
-					$result['fitsquad_upgrade'] = $fitsquadUpgradeOrder;
-				}
-			}
-		}
+            if(!($this->device_type=='android' && !empty($this->app_version) && (float)$this->app_version>5.27)){
+                $result['near_by_vendor'] = $this->getNearbyVendors($city, true);
+            }
+        }
         
 		$result['categoryheader'] = "Discover | Try | Buy";
 		$result['categorysubheader'] = "Fitness services in ".ucwords($city);
@@ -4243,9 +4017,6 @@ class CustomerController extends \BaseController {
 			$result['trendingheader'] = "Trending in ".ucwords($_REQUEST['selected_region']);
 			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($_REQUEST['selected_region']);
 		}
-		else {
-            $result['categoryheader'] = "Discover & Book";
-        }
 
         $result['fitex'] =[
             'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
@@ -4256,7 +4027,7 @@ class CustomerController extends \BaseController {
             'footer' => "Book Workout Sessions At INR 99 Only"
         ];
 
-		if($result['city_id']==10000) {
+		if(!empty($result['city_id']) && $result['city_id']==10000) {
 			unset($result['banner']);
 			unset($result['upcoming']);
 			unset($result['session_packs']);
@@ -4589,7 +4360,7 @@ class CustomerController extends \BaseController {
                     "dismiss" => false,
                     "force_update" => true
                     ];
-            }
+			}
 
 			return Response::json($result_android,200);
 		}
@@ -4826,7 +4597,7 @@ class CustomerController extends \BaseController {
 			}
 			
 			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
-
+			
 			if($code == 'gwdfit'){
 
 				$customer = Customer::find($customer_id);
@@ -4907,6 +4678,28 @@ class CustomerController extends \BaseController {
                 }
 			}
 
+			if(!empty($fitcashcode['flags']['mutual_dependent_codes'])){
+
+				$customer = Customer::where('_id',$customer_id)->select('applied_promotion_codes')->first();
+				$mutual_allied_code_status= false;
+				Log::info('customer cdaata', [$customer]);
+				if(!empty($customer['applied_promotion_codes'])){
+
+					foreach($fitcashcode['flags']['mutual_dependent_codes'] as $value){
+						if(in_array($value, $customer['applied_promotion_codes'])){
+							$mutual_allied_code_status = true;
+							break;
+						}
+					}
+
+				}
+
+				if($mutual_allied_code_status){
+					$resp 	= 	array('status' => 400,'message' => "This promo code can not be applied.");
+					return  Response::json($resp, 400);
+				}
+			}
+			
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
 			// $customer_update 	=	1;
 			$cashback_amount = 0;
@@ -5330,7 +5123,6 @@ class CustomerController extends \BaseController {
 	    $finderData['name'] = $order->finder_name;
 
 	    if(($order->type != "healthytiffinmembership")){
-
 	    	$finderData['address'] = strip_tags($order->finder_address);
 	    	$finderData['location'] = $order->finder_location;
 	    	$finderData['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
@@ -10100,8 +9892,13 @@ class CustomerController extends \BaseController {
 	}
 
 	public function reliancePostLoyalty($customer, $voucher_categories_map) {
-
-		$milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
+		if(!empty($customer['external_reliance'])){
+			$milestones = Config::get('nonRelianceLoyaltyProfile.post_register.milestones.data');
+		}
+		else{
+			$customer['external_reliance']= null;
+			$milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
+		}
 		$customerMilestoneCountMap = $this->relianceService->getCustomerMilestoneCount();
 		$customer = $this->relianceService->updateMilestoneDetails($customer['_id'], $customer['corporate_id']);
 		$customer_milestones = !empty($customer['corporate_rewards']['milestones'])?$customer['corporate_rewards']['milestones']:[];
@@ -10113,8 +9910,12 @@ class CustomerController extends \BaseController {
 		if(!empty($lastMilestoneDetails) && count($lastMilestoneDetails)>0) {
 			$lastMilestoneDetails = $lastMilestoneDetails[0];
 		}
-
-        $post_register = Config::get('relianceLoyaltyProfile.post_register');
+		if(!empty($customer['external_reliance'])){
+			$post_register = Config::get('nonRelianceLoyaltyProfile.post_register');
+		}
+		else{
+			$post_register = Config::get('relianceLoyaltyProfile.post_register');
+		}
         
         $type = (!empty(Input::get('isReward') && (Input::get('isReward')!=false && Input::get('isReward')!="false"))) ? "reliance" : "fitsquad";
 		$milestones_data = $this->utilities->getMilestoneSection($customer, null, $type);
@@ -10230,14 +10031,19 @@ class CustomerController extends \BaseController {
                         }else{
 							unset($post_reward_data_template['button_title']);
                             $post_reward_data_template['claim_enabled'] = false;
+                            unset($post_reward_data_template['terms']);
                         } 
                         $post_reward_template['data'][] = $post_reward_data_template;
                     }
                 }
 
-            }
+			}
+			
+			$post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s).");
+			if($milestone['users'] > 0){
 
-            $post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s). (".($milestone['users'] - $customerMilestoneCountMap[$key])."/".$milestone['users']." left)");
+				$post_reward_template['description']  = $post_reward_template['description'] ."(".($milestone['users'] - $customerMilestoneCountMap[$key])."/".$milestone['users']." left)";
+			}
             $post_register_rewards_data[] = $post_reward_template;
             
 		}
@@ -10272,15 +10078,18 @@ class CustomerController extends \BaseController {
 		$customer = Customer::active()->where('_id', $data['customer_id'])->first();
 
 		try{
-			Customer::where('_id', $data['customer_id'])
-			->update(
-				[
-					'reliance_location' => strtolower($data['location']),
-					'reliance_city' => strtolower($data['city']),
-					'corporate_id' => 1,
-					'external_reliance' => true
-				]
-			);
+
+            $update = [
+                'reliance_city' => strtolower($data['city']),
+                'corporate_id' => 1,
+                'external_reliance' => true
+            ];
+
+            if(!empty($data['location'])){
+                $update['reliance_location'] = strtolower($data['location']);
+            }
+
+			Customer::where('_id', $data['customer_id'])->update($update);
 		}catch(\Exception $e){
 			Log::info('exception occured while enabling customer for reliance campaign', [$e]);
 			return Response::json(array('status' => 400,'message' =>'Something Went Wrong.'));
@@ -10310,6 +10119,94 @@ class CustomerController extends \BaseController {
             return $this->register($data);
         }
 
-
     }
+    
+    public function getAppBanners($data){
+            
+        $homepage = getFromCache(['tag'=>'app_banners', 'key'=>'city-'.strval($data['_id'])]);
+
+        if(empty($homepage)){
+            
+            $homepage = Homepage::where('city_id', $data['_id'])->first(['app_banners']);
+            
+            if(!empty($homepage)){
+                $homepage = $homepage->toArray();
+                setCache(['tag'=>'app_banners', 'key'=>'city-'.strval($data['_id']), 'data'=>$homepage]);
+            }
+        }
+        
+        return $homepage;
+    
+    }
+
+    public function getNearbyVendors($city=null, $only_data = null){
+
+        $result['trendingheader'] = "Trending in ".ucwords($city);
+		$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($city);
+
+        $data = $_GET;
+        
+        if(!empty($data['auto_detect']) && $data['auto_detect'] === true){
+
+			$result['categoryheader'] = "Discover | Try | Buy";
+			$result['categorysubheader'] = "Fitness services near you";
+			$result['trendingheader'] = "Trending near you";
+			$result['trendingsubheader'] = "Checkout fitness services near you";
+		}
+
+		if(!empty($data['selected_region'])){
+
+            // $result['categoryheader'] = "Discover & Book Gyms & Fitness Classes in ".ucwords($data['selected_region']);
+            $result['categoryheader'] = "Discover & Book";
+			// $result['categoryheader'] = "Discover | Try | Buy";
+			$result['categorysubheader'] = "Gyms and Fitness Centers in ".ucwords($data['selected_region']);
+			$result['trendingheader'] = "Trending in ".ucwords($data['selected_region']);
+			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($data['selected_region']);
+		}
+        
+        $lat = isset($data['lat']) && $data['lat'] != "" ? $data['lat'] : "";
+        $lon = isset($data['lon']) && $data['lon'] != "" ? $data['lon'] : "";
+        if(empty($city)){
+            $city = isset($data['city']) && $data['city'] != "" ? $data['city'] : "";
+        }
+        // $trending = getFromCache(['tag'=>'trending', 'key'=>$city]);
+
+        // if(empty($trending)){
+             $near_by_vendor_request = [
+                "offset" => 0,
+                "limit" => 9,
+                "radius" => "2km",
+                "category"=>"",
+                "lat"=>$lat,
+                "lon"=>$lon,
+                "city"=>strtolower($city),
+                "keys"=>[
+                    "average_rating",
+                    "contact",
+                    "coverimage",
+                    "location",
+                    "multiaddress",
+                    "slug",
+                    "name",
+                    "id",
+                    "categorytags",
+                    "category"
+                ]
+            ];
+            $geoLocationFinder = geoLocationFinder($near_by_vendor_request, 'customerhome');
+            $trending = isset($geoLocationFinder['finder']) ? $geoLocationFinder['finder'] : $geoLocationFinder;
+            
+            // if(!empty($trending)){
+            //     setCache(['tag'=>'trending', 'key'=>$city, 'data'=>$trending]);
+            // }
+        // }
+        if(!empty($only_data)){
+            return $trending;
+        }else{
+            $result['near_by_vendor'] = $trending;
+            return $result;
+        }
+                
+	}
+	
 }

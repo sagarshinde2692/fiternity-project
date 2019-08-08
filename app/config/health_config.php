@@ -36,6 +36,68 @@ return [
         // 'message' => "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (\"RNLIC\") on sms or Whatsapp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound maintain utmost confidentiality of the same.\n\nI agree that all such information received shall be subject to the privacy policy available on the website of RNLIC.",
         'button_title' => 'I Agree'
     ],
+    'health_booking_android_reliance' => [
+        'header' => "Get 2 Free Workouts: Use code RELIANCE to book a session at any Gym or Studio near you.",
+        'button_title' => 'Know More',
+        'slider' => [
+            'header' => 'Each workout gets you more steps and gets you closer to your goals.',
+            'categories' => [
+                [
+                    'name' => 'Gym',
+                    'steps' => '2000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Yoga',
+                    'steps' => '1000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Zumba',
+                    'steps' => '2000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Swimming',
+                    'steps' => '2500',
+                    'steps_text' => 'STEPS'
+                ]
+            ],
+            'more_text' => '& many more',
+            'button_title' => 'BOOK'
+        ]
+    ],
+    'health_booking_android_non_reliance' => [
+        'header' => "Book workout at any Gym or Studio near you and get closer to your goals.",
+        'button_title' => 'Know More',
+        'slider' => [
+            'header' => 'Each workout gets you more steps and gets you closer to your goals.',
+            'categories' => [
+                [
+                    'name' => 'Gym',
+                    'steps' => '2000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Yoga',
+                    'steps' => '1000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Zumba',
+                    'steps' => '2000',
+                    'steps_text' => 'STEPS'
+                ],
+                [
+                    'name' => 'Swimming',
+                    'steps' => '2500',
+                    'steps_text' => 'STEPS'
+                ]
+            ],
+            'more_text' => '& many more',
+            'button_title' => 'BOOK'
+        ]
+    ],
     'dob_popup' => [
         'header' => '#WalkpeChal',
         'title' => 'Date of Birth',
@@ -52,7 +114,7 @@ return [
         'color_rank3' => '#fc9c29',
         'self_color' => '#4fa4a3',
         "checkout"=> [
-            "text"=> "Hurry up & reach your steps milestone to achieve exciting rewards.",
+            "text"=> "Achieve your steps milestone to earn exciting rewards",
             "button_title"=> "Rewards"
         ],
         'earn_steps' => [
@@ -101,13 +163,29 @@ return [
         "header"=> "#WalkpeChal",
         "text"=> "MissionMoon | 30 Days | 100 Cr steps",
         // "Footer"=> "Join Reliance Nippon Life #walkchallenge & get onto a step challenge with 40,000 other users.",
-        "Footer"=> "Get fit by walking. Join #walkpechal community along with other lakhs users",
+        "Footer"=> "Join India's largest fitness challenge along with other lakhs of users.",
         "button_title"=> "Know More",
         'enable_button_text' => 'I Agree',
         // "section1"=> "Walking doesn't seem to be rewarding you yet. Taking the stairs at office or home is not motivating?...\n\nWhat if we tell you that every step you take, lets you earn exciting rewards.\n\nTo join, allow access to calculate daily steps & fitness activities.",
         // "section1"=> "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (\"RNLIC\") on sms or Whatsapp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound maintain utmost confidentiality of the same.\n\nI agree that all such information received shall be subject to the privacy policy available on the website of RNLIC."
         // "section1"=> "I hereby grant consent to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (“RNLIC”) on SMS or voice call or e-mail or WhatsApp.\n\nI agree and understand that the information contained in the said communication is classified and confidential & that I am bound to maintain utmost confidentiality of the same.\n\nReliance Nippon Life Insurance Company Limited, IRDAI Reg. 121, CIN – U66010MH2001PLC167089.\n\nTrade logo belongs to Anil Dhirubhai Ambani Ventures Private Limited & Nippon Life Insurance Company and used by Reliance Nippon Life Insurance Company Limited under license",
         "section1"=> "By agreeing to take part in the walkpechal program I hereby grant consent:\n\n1. to override my NDNC registration and receive any communication from Reliance Nippon Life Insurance Company Ltd. (“RNLIC”) on SMS or voice call or e-mail or WhatsApp.\n\n2. To share my data stored in the fitternity app with RNLIC for the purpose of walkpechal and other similar health campaigns.\n\nReliance Nippon Life Insurance Company Limited, IRDAI Reg. 121, CIN – U66010MH2001PLC167089.\nTrade logo belongs to Anil Dhirubhai Ambani Ventures Private Limited & Nippon Life Insurance Company and used by Reliance Nippon Life Insurance Company Limited under license",
+    ],
+    "non_reliance_android"=> [
+        "image" => "https://b.fitn.in/reliance/reliance_new_logo.jpg",
+        "header"=> "#WalkpeChal",
+        "text"=> "MissionMoon | 30 Days | 100 Cr steps",
+        "Footer"=> "Join India's largest fitness challenge along with other lakhs of users.",
+        "button_title"=> "Know More",
+        'enable_button_text' => 'ENABLE',
+        "section1"=> "1. Join India's Largest Fitness Challenge and join lakhs of users.\n\n2. 30 days | 100 Cr. Steps | 600 Cities Challenge to Walk to the Moon\n\n3. Get your Friends & Family and track your progress on the Leaderboard\n\n4. Win exciting Rewards and Prizes on achieving each milestone.",
+        "tnc"=> [
+            "agree_text" => "",
+            "terms_condition_text" => "Please read the terms & conditions before you agree",
+            "terms_condition_link" => "https://www.fitternity.com/reliancetnc",
+            "title" => "Terms and Conditions",
+            "selected" => false
+        ]
     ]
 ];
 

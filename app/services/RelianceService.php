@@ -60,8 +60,13 @@ Class RelianceService {
         return $rel;
     }
 
-    public function getMilestoneDetails($steps) {
-        $milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
+    public function getMilestoneDetails($steps, $customer) {
+        if(empty($customer['external_reliance'])){
+            $milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
+        }
+        else{
+            $milestones = Config::get('nonRelianceLoyaltyProfile.post_register.milestones.data');
+        }
         $current = array_values(array_filter($milestones, function($mile) use($steps) {
             $mileNextCount = (!empty($mile['next_count']))?$mile['next_count']:999999999;
             return $mile['count']<=$steps && $mileNextCount>$steps;
@@ -128,7 +133,7 @@ Class RelianceService {
         $currCustMilestone = Customer::where('_id', $customerId)->first();
         $fitnessDeviceData = FitnessDeviceData::where('customer_id', $customerId)->where('corporate_id', $corporateId)->sum('value');
         if(!empty($fitnessDeviceData)) {
-            $milestone = $this->getMilestoneDetails($fitnessDeviceData);
+            $milestone = $this->getMilestoneDetails($fitnessDeviceData, $currCustMilestone);
             if($milestone['milestone']>=0) {
                 $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone']);
                 if(isset($customerMilestoneCount['result'])) {
@@ -240,7 +245,7 @@ Class RelianceService {
             FitnessDeviceData::insert($fdData);
             $this->updateMilestoneDetails($custInfo['_id'], $custInfo['corporate_id'], $data['sync_time']);
             $resp['data'] = [
-                'health' => $this->buildHealthObject($custInfo['_id'], $custInfo['corporate_id'])
+                'health' => $this->buildHealthObject($custInfo['_id'], $custInfo['corporate_id'], $device, null, $version)
             ];
             if(!empty($resp['data']['health']['steps'])){
                 unset($resp['data']['health']['steps']);
@@ -379,7 +384,7 @@ Class RelianceService {
 
     public function formatStepsText($stepsCount, $decimals=0) {
         if($stepsCount>9999999) {
-            $val = number_format(($stepsCount/1000000), $decimals);
+            $val = number_format(($stepsCount/10000000), $decimals);
             return $val.'Cr';
         }
         else if($stepsCount>9999) {
@@ -416,11 +421,13 @@ Class RelianceService {
         return ($diffDays>=1)?intval($diffDays):0;
     }
 
-    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null) {
+    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null, $appVersion=null, $customer=null) {
         Log::info('----- inside buildHealthObject -----');
 
-        Customer::$withoutAppends = true;
-        $customer = Customer::where('_id', $customerId)->first()->toArray();
+        if(empty($customer)){
+            Customer::$withoutAppends = true;
+            $customer = Customer::where('_id', $customerId)->first();
+        }
 
         $stepsAgg = FitnessDeviceData::raw(function($collection) use ($customerId, $corporateId) {
             $aggregate = [
@@ -535,8 +542,13 @@ Class RelianceService {
             $workoutGoal = '--';
             // $workoutGoal = preg_replace("/[\s\S]/", "-", $_temp);
         }
-
-        $nextMilestoneData = array_values(array_filter(Config::get('relianceLoyaltyProfile.post_register.milestones.data'), function($rec) use ($stepsAgg){
+        if(empty($customer['external_reliance'])){
+            $milestone_data =Config::get('relianceLoyaltyProfile.post_register.milestones.data');
+        }
+        else{
+            $milestone_data =Config::get('nonRelianceLoyaltyProfile.post_register.milestones.data');
+        }
+        $nextMilestoneData = array_values(array_filter($milestone_data, function($rec) use ($stepsAgg){
             return $rec['count']>$stepsAgg['ind_total_steps_count_overall'];
         }));
         if(!empty($nextMilestoneData)) {
@@ -556,7 +568,14 @@ Class RelianceService {
         if(!empty($filters)) {
             $parsedFilters = $this->parseLeaderboardFilters($filter['filters']);
         }
-        $selfRank = $this->getLeaderboard($customerId, true, $parsedFilters, true);
+        else{
+            $parsedFilters = null;
+        }
+        $ranks = $this->getLeaderboard($customerId, true, $parsedFilters, true);
+        $selfRank = null;
+        if(!empty($ranks['selfRank'])){
+            $selfRank = $ranks['selfRank'];
+        }
         $res = [
             'intro'=> [
                 'image' => Config::get('health_config.reliance.reliance_logo'),
@@ -576,7 +595,8 @@ Class RelianceService {
                 'workout_image' => Config::get('health_config.health_images.workout_image'),
                 // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
                 'achievement' => (!empty($relCity))?'#'.$selfRank.' in '.ucwords($relCity):null,
-                'remarks' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']),
+                'remarks' => (!empty($relCity) && !empty($ranks['total']))?'Total participants in '.ucwords($relCity) .' : '.$ranks['total']:null,
+                'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']),
                 'target' => Config::get('health_config.individual_steps.goal'),
                 'progress' => $stepsAgg['ind_total_steps_count'],
                 // 'checkout_rewards' => 'Check Rewards',
@@ -606,13 +626,20 @@ Class RelianceService {
         //     unset($res['personal_activity']['rewards_info']);
         // }
 
-        if(empty($relCity) || empty($selfRank)) {
+        if(empty($relCity) || empty($ranks['selfRank'])) {
             unset($res['personal_activity']['achievement']);
+            unset($res['personal_activity']['remarks']);
         }
 
         if(!empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']) {
             $res['company_stats']['header'] = "OVERALL STATS";
+            unset($res['personal_activity']['remarks']);
         }
+
+        if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>5.26) {
+            $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
+        }
+
 
         if(!empty($res['additional_info']) && !empty($city)){
             $city = getmy_city($city);
@@ -643,13 +670,20 @@ Class RelianceService {
         return $res;
     }
 
-    public function getLeaderboard($customerId, $isNewLeaderBoard, $filter=null, $rankOnly = false) {
+    public function getLeaderboard($customerId, $isNewLeaderBoard, $filter=null, $rankOnly = false, $deviceType=null, $appVersion=null) {
         $resp = ['status'=>400, 'data'=>'Failed', 'msg'=>'Failed'];
         if(empty($customerId)) {
             return $resp;
         }
 
+        // $token = Request::header('Authorization');
+      
+        // if(!empty($token)) {
+        //     $custInfo = (new Utilities())->customerTokenDecode($token);
+        // }
+
         $users = [];
+        $title = "";
         $earnSteps = Config::get('health_config.leader_board.earn_steps');
         $checkout = Config::get('health_config.leader_board.checkout');
         // $earnSteps['description'] = 'The leaderboard is updated till '.date('d-m-Y', strtotime('-1 days')).' 11:59 PM';
@@ -805,6 +839,7 @@ Class RelianceService {
                         '$match' => $match
                     ];
                 }
+                Log::info('match:::',[$match]);
             }
 
             $aggregate[] = ['$sort' => [ 'steps' => -1 ]];
@@ -820,8 +855,54 @@ Class RelianceService {
 
             return $collection->aggregate($aggregate);
         });
+
+        if(isset($customer['external_reliance']) && $customer['external_reliance']){
+            $title = "Leaderboard - All India";
+            $my_rank_text = " in India";
+        }else{
+            $title = "Leaderboard - RNLIC - All India";
+            $my_rank_text = " in India";
+        }
+
+        if(!empty($filter)){
+            $cityArr = array();
+                foreach($filter as $fk => $fv){
+                    if(strtolower($fk)=='cities'){
+                        foreach($fv as $city){
+                            array_push($cityArr, $city['name']);
+                        }
+                    }
+                }
+
+                Log::info("cityArr", [$cityArr]);
+
+                if(!empty($cityArr)){
+                    if(isset($customer['external_reliance']) && $customer['external_reliance']){
+                        Log::info("tttt");
+                        $title = (!empty($cityArr) && count($cityArr) > 1) ? "Leaderboard - ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : "Leaderboard - ".$cityArr[0] ;
+                        $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
+                    }else{
+                        Log::info("tttt1");
+                        $title = (!empty($cityArr) && count($cityArr) > 1) ? "Leaderboard - RNLIC - ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : "Leaderboard - RNLIC - ".$cityArr[0] ;
+                        $my_rank_text = (!empty($cityArr) && count($cityArr) > 1) ? " in ".ucwords($cityArr[0])." +".(count($cityArr)-1)." city" : " in ".$cityArr[0] ;
+                    }
+                }else{
+                    if(isset($customer['external_reliance']) && $customer['external_reliance']){
+                        $title = "Leaderboard - All India";
+                        $my_rank_text = " in India";
+                    }else{
+                        $title = "Leaderboard - RNLIC - All India";
+                        $my_rank_text = " in India";
+                    }
+                }
+            }
+
+            Log::info("title" ,[$title]);
+        
         if(!empty($users['result'])) {
             $users = $users['result'];
+            $totalUsers = count($users);
+            $lastUser = $users[($totalUsers)-1];
             $finalList = array_slice($users,0,20);
             $userExists = array_values(array_filter($finalList, function($val) use ($customerId){
                 return $val['customer_id']==$customerId;
@@ -835,29 +916,54 @@ Class RelianceService {
                 if(!empty($_arr) && count($_arr)>0) {
                     $keyList = array_keys($_arr);
                     if(empty($userExists)) {
+                        if(!empty($deviceType) && $deviceType=='android' && !empty($appVersion) && $appVersion>=5.26) {
+                            $_arr[$keyList[0]]['show_dots'] = true;
+                            $_arr[$keyList[0]]['rank'] = $keyList[0];
+                        }
                         array_push($finalList, $_arr[$keyList[0]]);
                     }
                     $selfRank = $keyList[0];
                     // $finalList[$keyList[0]] = $_arr[$keyList[0]];
                 }
             // }
+
+            if((!empty($deviceType) && $deviceType=='android') && (!empty($appVersion) && $appVersion>5.26) && (empty($customer['external_reliance']) || !$customer['external_reliance']) && $totalUsers>20) {
+                $lastUser['show_dots'] = true;
+                $lastUser['rank'] = strval((count($users))-1);
+                $lastUser['last_user'] = true;
+                array_push($finalList, $lastUser);
+            }
+
+            $return = [
+                "total" =>$totalUsers
+            ];
+
             if($rankOnly) {
-                return $selfRank+1;
+                if(!empty($selfRank)){
+                    $return['selfRank'] =  $selfRank;
+                    return $return;
+                }
+                $return['selfRank'] =  null;
+                return $return;
             }
             else if (!empty($userExists)) {
-                $selfRank = null;
+                $selfRank=  null;
             }
             $rankToShare = $selfRank;
+            $selfStepCount = null;
             foreach ( $finalList as $key => &$value ) {
                 if($value['customer_id']==$customerId) {
                     $value['self_color'] = Config::get('health_config.leader_board')["self_color"];;
-                    $_selfRank = (!empty($selfRank))?($selfRank.""):(($key+1)."");
+                    $_selfRank = (!empty($selfRank))?($selfRank.""):(strval(($key+1))."");
                     $rankToShare = $_selfRank;
+                    $selfStepCount = $this->formatStepsText($value['steps']);
                 }
                 else {
                     $_selfRank = null;
                 }
-                $value['rank'] = (!empty($_selfRank))?($_selfRank.""):(($key+1)."");
+                if(empty($value['last_user'])) {
+                    $value['rank'] = (!empty($_selfRank))?($_selfRank.""):(($key+1)."");
+                }
                 $value['steps'] = $this->formatStepsText($value['steps']);
                 if($key<3) {
                     $value['image'] = Config::get('health_config.leader_board')["leader_rank".($key+1)];
@@ -888,19 +994,29 @@ Class RelianceService {
                 unset($value['city']);
                 unset($value['location']);
             }
+            $stepCountText = "";
+            if(!empty($selfStepCount)) {
+                $stepCountText = 'Your steps till now: '.$selfStepCount;
+            }
+
             $leaderBoard = [
                 'buildingLeaderboard' => false,
                 'background' => Config::get('health_config.leader_board.background'),
                 'users' => $finalList,
+                'my_rank_text' => !empty($rankToShare)?'Your current rank is #'.$rankToShare.''.ucwords($my_rank_text).". ".$stepCountText:null,
                 // 'earnsteps' => $earnSteps,
-                'checkout' => $checkout
+                'checkout' => $checkout,
+                'title' => $title
             ];
             if(!empty($rankToShare)) {
                 $leaderBoard['share_info'] = 'I am #'.$this->getRankText($rankToShare).' on the leader-board. Excited to be part of this walk initiative';
             }
-            if(!empty($customer) && !empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']){
-                unset($leaderBoard['checkout']);
+            else{
+                unset($leaderBoard['my_rank_text']);
             }
+            // if(!empty($customer) && !empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']){
+            //     unset($leaderBoard['checkout']);
+            // }
         } else {
             $leaderBoard = [
                 'buildingLeaderboard' => true,
@@ -955,9 +1071,29 @@ Class RelianceService {
                 return $rec['header'] == $value;
             }));
             if(!empty($_temp) && count($_temp)>0) {
-                $filters[strtolower($_temp[0]['header'])] = $_temp[0]['values'];
+                $filter_status = false;
+                foreach($_temp[0]['values'] as &$filtersValue){
+                    if(!empty($filtersValue['name']) && !in_array($filtersValue['name'], ["", "null", "Null"])){
+                        $filter_status= true;
+                        $filtersValue['name']= ucwords($filtersValue['name']);
+                    }
+                    if(!empty($filtersValue['data'])){
+                        foreach($filtersValue['data'] as &$filtersList){
+                            if(empty($filtersList) || in_array($filtersList, ["", "null", "Null"])){
+                                $index =array_search($filtersList, $filtersValue['data']);
+                                unset($filtersValue['data'][$index]);
+                            }
+                            else{
+                                $filtersList = ucwords($filtersList);
+                            }
+                        }
+                    }
+                } 
+                if($filter_status){
+                    $filters[strtolower($_temp[0]['header'])] = $_temp[0]['values'];
+                }
             }
-        }
+        } 
         Log::info('fileters formated::::::::', [$filters]);
         return $filters;
     }
@@ -1026,7 +1162,8 @@ Class RelianceService {
 
             $finalFiltersList = [];
 
-            if(empty($external_reliance)){
+            if(empty($external_reliance) && count($tmp_depart) > 0){
+                sort($tmp_depart);
                 $finalFiltersList[] = [
                     'header' => "Departments",
                     'values' => $tmp_depart
@@ -1040,15 +1177,30 @@ Class RelianceService {
             ];
     
             foreach($cities as $key=>$value){
-                if($value['_id']){
-                    $value['name'] = $value['_id'];
+                if(!empty($value['_id']) && !in_array($value['_id'], ["", "null", "Null"])){
+                    $value['name'] = ucwords($value['_id']);
+                    foreach($value['location'] as &$location){
+                        if(empty($location) || in_array($location, ["", "null", "Null"])){
+                            $index = array_search($location, $value['location']);
+                            unset($value['location'][$index]);
+                        }  
+                        else{
+                            $location = ucwords($location);
+                        }
+                    
+                    }
+                    sort($value['location']);
                     $value['data'] = $value['location'];
                     unset($value['_id']);
                     unset($value['location']);
                     array_push($tmp['values'], $value);
                 }
             }
-    
+
+            usort($tmp['values'], function($a, $b) { 
+                return $a['name'] < $b['name'] ? -1 : 1; 
+            });
+
             array_push($finalFiltersList, $tmp);
             return $finalFiltersList;
         }
@@ -1081,6 +1233,8 @@ Class RelianceService {
         $corporateId = null;
         $external_reliance = null;
         $emailList = $this->getRelianceCustomerEmailList();
+        Customer::$withoutAppends = true;
+        
         if(!empty(Request::header('Authorization'))){
             $decodedToken = (new Utilities())->customerTokenDecode(Request::header('Authorization'));
         }
@@ -1093,12 +1247,12 @@ Class RelianceService {
             $corporateId = $decodedToken->customer->corporate_id;
         }
         else if (!empty($decodedToken) && !empty($decodedToken->customer->email) && (in_array($decodedToken->customer->email, $emailList) || $this->isRelianceSAPEmailId($decodedToken->customer->email))) {
-            $customer = Customer::where('_id', $customerId)->where('status', '1')->first();
+            $customer = Customer::where('_id', $customerId)->first(['corporate_id', 'external_reliance']);
             $corporateId = $customer['corporate_id'];
             $external_reliance = null;
         }
         else if(empty($decodedToken) && !empty($customerId)) {
-            $customer = Customer::where('_id', $customerId)->where('status', '1')->first();
+            $customer = Customer::where('_id', $customerId)->first();
             $corporateId = $customer['corporate_id'];
             $external_reliance = $customer['external_reliance'];
         }
@@ -1137,8 +1291,12 @@ Class RelianceService {
         else{
             $customerStepData = $customerStepData['result'][0];
         }
-
-        $post_register_milestones = Config::get('relianceLoyaltyProfile.post_register');
+        if(empty($customer['external_reliance'])){
+            $post_register_milestones = Config::get('relianceLoyaltyProfile.post_register');
+        }
+        else{
+            $post_register_milestones = Config::get('nonRelianceLoyaltyProfile.post_register');
+        }
         $milestones = $post_register_milestones['milestones'];
         $rewards = $post_register_milestones['rewards'];
         $total_steps = $customerStepData['total_steps'];
@@ -1220,7 +1378,7 @@ Class RelianceService {
     public function updatedCustomerDOB($custInfo, $data){
         try{
             // $data['dob'] = new MongoDate(strtotime($data['dob']));
-            Customer::where('_id', $custInfo->_id)->update(['dob' => $data['dob'], 'dob_updated_by_reliance'=>true]); 
+            Customer::where('_id', $custInfo->_id)->update(['dob' => $data['dob'], 'dob_updated_by_reliance'=>true, 'reliance_reg_date' => new MongoDate()]); 
         }catch(\Exception $e){
             Log::info('error while updating customer dob:::::::', [$e]);
             return [
@@ -1234,6 +1392,17 @@ Class RelianceService {
             "msg" => "Successfully Updated"
         ];
 
+    }
+
+    public function getFilterForNonReliance($customerId){
+        Customer::$withoutAppends = true;
+        $reliance_city = Customer::active()->where('_id', $customerId)->where('corporate_id',1)->first(['reliance_city']);
+        
+        $finalFiltersList =null;
+        if(!empty($reliance_city['reliance_city'])){
+            $finalFiltersList = ['filters' => [["header"=>"Cities","subheader" => "Select Subtype","values"=>[["name"=>$reliance_city['reliance_city'],"data"=>[]]]]], "isNewLeaderBoard" => true];
+        }
+        return $finalFiltersList;
     }
 
 }   

@@ -126,6 +126,9 @@ Route::filter('validatetoken',function(){
                 return Response::json(array('status' => 400,'message' => 'User logged out'),400);
             }
             $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            if(!empty($decoded)){
+                $GLOBALS['decoded_token'] = $decoded;
+            }
         }catch(DomainException $e){
             return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
         }catch(ExpiredException $e){
@@ -206,24 +209,16 @@ Route::filter('validatevendor',function(){
 
 Route::filter('device',function(){
 
-    $header_array = [
-        "Device-Type"=>"",
-        "Device-Model"=>"",
-        "App-Version"=>"",
-        "Os-Version"=>"",
-        "Device-Token"=>"",
-        "Device-Id"=>""
-    ];
-
+    $header_array = array_only(apache_request_headers(), [ "Device-Type", "Device-Model", "App-Version", "Os-Version", "Device-Token", "Device-Id"]);
+    
     $flag = false;
-
-    foreach ($header_array as $header_key => $header_value) {
-
-        $value = Request::header($header_key);
+    
+    foreach ($header_array as $key => $value) {
 
         if($value != "" && $value != null && $value != 'null'){
-           $header_array[$header_key] =  $value;
            $flag = true;
+        }else{
+            $header_array[$key] = "";
         }
         
     }

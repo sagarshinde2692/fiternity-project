@@ -8112,6 +8112,7 @@ Class Utilities {
         $filter = [];
         if($includeCorporate) {
             $filter['corporate_id'] = !empty($customer->corporate_id) ? $customer->corporate_id : null;
+            $filter['external_reliance'] = !empty($customer->external_reliance) ? $customer->external_reliance : ['$exists'=> false];      
         }
         $filter['brand_loyalty'] = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
         $filter['brand_loyalty_city'] = !empty($customer->loyalty['brand_loyalty_city']) ? $customer->loyalty['brand_loyalty_city'] : null;
@@ -8135,6 +8136,9 @@ Class Utilities {
             
             if(!empty($filter['corporate_id'])) {
                 $match['$match']['corporate_id'] = $filter['corporate_id'];
+                if(!empty($filter['external_reliance'])){
+                    $match['$match']['external_reliance'] = $filter['external_reliance'];
+                }
             }
             else {
                 if(!empty($filter['brand_loyalty']) && !empty($filter['brand_loyalty_duration']) && !empty($filter['brand_loyalty_city'])){
@@ -8333,19 +8337,22 @@ Class Utilities {
     }
 
     public function remaningVoucherNotification($voucher_category){
-  
-        $remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('flags.manual_redemption', '!=', true)->where('name', $voucher_category->name)->count();
         
-        if($remainingVoucherCount < 50){
+        if(empty($voucher_category['flags']['manual_redemption'])){
+
+            $remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('flags.manual_redemption', '!=', true)->where('name', $voucher_category->name)->count();
             
-            $data = array(
-                'voucherName' => $voucher_category->name,
-                'remainingCount' => $remainingVoucherCount,
-            );
-        
-            $customermailer = new CustomerMailer();
-        
-            $customermailer->remainingVoucher($data);
+            if($remainingVoucherCount < 50){
+                
+                $data = array(
+                    'voucherName' => $voucher_category->name,
+                    'remainingCount' => $remainingVoucherCount,
+                );
+            
+                $customermailer = new CustomerMailer();
+            
+                $customermailer->remainingVoucher($data);
+            }
         }
 
     }
@@ -9503,9 +9510,11 @@ Class Utilities {
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		foreach($slotsdata as &$slot){
-			foreach($slot['data'] as &$sd){
-                $sd['order_summary']['header'] = $orderSummary['header']; 
-			}
+            if(is_array($slot['data'])){
+                foreach($slot['data'] as &$sd){
+                    $sd['order_summary']['header'] = $orderSummary['header']; 
+                }
+            }
 		}
 		return $slotsdata;
     }
@@ -9529,6 +9538,15 @@ Class Utilities {
         }
 
         return $corporate_discount_branding;
+    }
+
+    public function getCityData($slug){
+        
+        $cities = Config::get('cities');
+        
+        $city_array = array_values(array_filter($cities,function ($e) use ($slug){return $e['slug'] == $slug;}));
+        
+        return !empty($city_array) ? $city_array[0] : null;
     }
 
 }

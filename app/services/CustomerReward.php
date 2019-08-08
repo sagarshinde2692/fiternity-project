@@ -1810,7 +1810,7 @@ Class CustomerReward {
             $finder_city = $finder->city_id;
 
             
-            if(strtolower($couponCode) == 'fitback' && !empty($ratecard['type']) && $ratecard['type'] == 'workout session' && (!empty($finder['flags']['monsoon_campaign_pps']) || $price == 99)){
+            if(strtolower($couponCode) == 'cashback' && !empty($ratecard['type']) && $ratecard['type'] == 'workout session' && (!empty($finder['flags']['monsoon_campaign_pps']) || $price == 99)){
                 $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Cashback is not applicable on this transaction");
                     return $resp;   
             }
