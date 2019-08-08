@@ -3904,7 +3904,7 @@ class CustomerController extends \BaseController {
 				$customerRec = Customer::active()->where('email', $customeremail)->first();
 				try{
 					if(empty($customerRec->reliance_city) && empty($customerRec->reliance_city_home) && (!empty($city))) {
-						Customer::where('_id', $customerRec->_id)->update('reliance_city_home', $city);
+						Customer::where('_id', $customerRec->_id)->update(['reliance_city_home'=> $city]);
 					}
 				} catch(Exception $e) {
 					Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
@@ -3926,7 +3926,7 @@ class CustomerController extends \BaseController {
 				$customerRec = Customer::active()->where('email', $customeremail)->first();
 				try{
 					if(empty($customerRec->reliance_city) && empty($customerRec->reliance_city_home) && (!empty($city))) {
-						Customer::where('_id', $customerRec->_id)->update('reliance_city_home', $city);
+						Customer::where('_id', $customerRec->_id)->update(['reliance_city_home'=> $city]);
 					}
 				} catch(Exception $e) {
 					Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
