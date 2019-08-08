@@ -4521,7 +4521,10 @@ if (!function_exists('setNewToken')) {
         }
         return $response;
 
-        
+    }
+
+}
+
         
         
 
@@ -4625,7 +4628,7 @@ if (!function_exists(('geoLocationWorkoutSession'))){
 
     }
 }
-=======
+
 if (!function_exists('getFromCache')) {
 
     function getFromCache($data){
