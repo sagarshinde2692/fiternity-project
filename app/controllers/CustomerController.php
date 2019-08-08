@@ -4038,8 +4038,7 @@ class CustomerController extends \BaseController {
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
             // 'knowmorelink' => 'know more',
-
-			
+            'footer' => "Book Workout Sessions At 100% Instant Cashback"
 		];
 
 		if(!empty($workout_sessions_near_customer) ){
@@ -4079,15 +4078,9 @@ class CustomerController extends \BaseController {
 			$this->sessionPackRemoveExtraFields($result['session_packs']);
 		}
 
-		$response = Response::make($result);
-		if(!empty($customeremail)){
-			$response = setNewToken($response, !empty($pass));
-		}
-		return $response;
+		
 
-            // 'footer' => "Available across 2500+ outlets across ".ucwords($city)." | Starting at <b>&#8377; 149</b>"
-            'footer' => "Book Workout Sessions At 100% Instant Cashback"
-        ];
+            
 
 		if(!empty($result['city_id']) && $result['city_id']==10000) {
 			unset($result['banner']);
@@ -4106,8 +4099,11 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		return Response::json($result);
->>>>>>> origin/master-reliance
+		$response = Response::make($result);
+		if(!empty($customeremail)){
+			$response = setNewToken($response, !empty($pass));
+		}
+		return $response;
 		
 	}
 
