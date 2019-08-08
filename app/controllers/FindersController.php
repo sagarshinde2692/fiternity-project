@@ -823,9 +823,9 @@ class FindersController extends \BaseController {
 							$service['pay_per_session'] = false;
 
 							if(isset($finder['pay_per_session']) && $finder['pay_per_session'] && isset($service['trial']) && $service['trial'] != 'disable'){
-								foreach($service['serviceratecard'] as $ratecard){
+								foreach($service['serviceratecard'] as &$ratecard){
 									if($ratecard['type']=='workout session'){
-
+										$this->addRemarkToraecardweb($ratecard, $service, $finder);
 										$service['pay_per_session'] = true;
 										$pay_per_session = true;
 									
@@ -1350,7 +1350,7 @@ class FindersController extends \BaseController {
 				// }
 
                 $this->removeEmptyServices($response, 'web');
-                // return $response;
+                
                 $this->removeUpgradeWhereNoHigherAvailable($response);
                 
                 $this->serviceRemoveFlexiIfExtendedPresent($response);
@@ -1359,66 +1359,48 @@ class FindersController extends \BaseController {
                 }catch(Exception $e){
                     Log::info("Error while sorting ratecard");
                 }
-
-                if(empty($response['vendor_stripe_data']['text'])){
-                    // if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
-                        
-                    //     if(!empty($finder['flags']['cashback_type'])){
-                            
-                    //         $text1 = $this->getVendorStripeCashbackText($finder);
-                            
-                    //         $response['vendor_stripe_data']	=	[
-                    //             'text1'=> $text1,
-                    //             'text3'=>"",
-                    //             'background-color'=> "",
-                    //             'text_color'=> '$fff',
-                    //             'background'=> '-webkit-linear-gradient(left, #f26c46 0%, #eea948 100%)'
-                    //         ];
-                            
-                    //     }
-                    //     if(empty($finder['flags']['no_disc_mar'])){
-
-                    //         if(!empty($finder['flags']['fit500'])){
-                    //             $response['vendor_stripe_data']	=	[
-                                    
-                    //                 'text1'=> "Lowest Prices + Get flat Rs 500 off | Code: FIT500",
-                    //                 'text3'=>"",
-                    //                 'background-color'=> "",
-                    //                 'text_color'=> '$fff',
-                    //                 'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
-                    //             ];
-                                
-                    //         }else{
-                    //             $response['vendor_stripe_data']	=	[
-                    //                 'text1'=> "Lowest Prices + Get addnl flat 10% off | Code: FIT10 - *T&C Applicable",
-                    //                 'text3'=>"",
-                    //                 'background-color'=> "",
-                    //                 'text_color'=> '$fff',
-                    //                 'background'=> '-webkit-linear-gradient(left, #425f72 0%, #425f72 100%)'
-                    //             ];
-                    //         }
-                    //     }
-                        // if(in_array($finder['_id'], Config::get('app.anytime_finder_ids', []))){
-                            
+                
+                if(empty($response['vendor_stripe_data']['text']) ){
+                    if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
+                    
+                        if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
-                                
-                                'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | USE CODE: THUNDER | OFFER EXPIRES IN",
+								
+								'text1'=> "Crazy Cashback Sale <br> Get 100% Instant Cashback On On All Services Across Fitternity <br> Use Code - CASHBACK",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
                                 'background'=> '#49bfb3'
                             ];
 
-                        // }elseif(!empty($finder['flags']['sfit'])){
-                            // $response['vendor_stripe_data']	=	[
-                                
-                            //     'text1'=> "MONSOON FITNESS MANIA | FLAT 10% OFF + ADDNL 5% OFF ON APP ONLY | USE CODE: THUNDER | OFFER EXPIRES IN",
-                            //     'text3'=>"",
-                            //     'background-color'=> "",
-                            //     'text_color'=> '$fff',
-                            //     'background'=> '#49bfb3'
-                            // ];
-                        // }
+                            $response['show_timer'] = true;
+                        
+                        }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
+                            $response['vendor_stripe_data']	= [
+                            
+								'text1'=> "Crazy Cashback Sale <br> Get 100% Instant Cashback On On All Services Across Fitternity <br> Use Code - CASHBACK",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '#49bfb3'
+                            ];
+
+                            $response['show_timer'] = true;
+                        
+                        }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
+                            $response['vendor_stripe_data']	= [
+                            
+								'text1'=> "Crazy Cashback Sale <br> Get 100% Instant Cashback On On All Services Across Fitternity <br> Use Code - CASHBACK",
+                                'text3'=>"",
+                                'background-color'=> "",
+                                'text_color'=> '$fff',
+                                'background'=> '#49bfb3'
+                            ];
+
+                            $response['show_timer'] = true;
+                        
+                        }
+                    }
 					
                 }else if(!empty($response['vendor_stripe_data']['text'])){
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
@@ -1433,8 +1415,11 @@ class FindersController extends \BaseController {
                 $response['finder']['type'] = !empty($finder['flags']['reward_type']) ?  $finder['flags']['reward_type'] : 2;
                 $response['finder']['sub_type'] = !empty($finder['flags']['cashback_type']) ?  $cashback_type_map[strval($finder['flags']['cashback_type'])] : null;
 
+				// if($this->utilities->isIntegratedVendor($response['finder'])){
+				// 	$response['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
+				// }
 
-
+				
                 /********** Flash Offer Section Start**********/
 
 
@@ -1477,7 +1462,7 @@ class FindersController extends \BaseController {
 				$updatefindersulg       = Urlredirect::whereIn('oldslug',array($tslug))->firstOrFail();
 				$data['finder']         = $updatefindersulg->newslug;
 				$data['statusfinder']   = 404;
-
+				
 				return Response::json($data);
 			}
 
@@ -1539,9 +1524,13 @@ class FindersController extends \BaseController {
 
 		// 	$response['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 		// }
+<<<<<<< HEAD
 		if(!empty($customer_id)){
 			$this->addCreditPoints($response['finder']['services'], $customer_id);
 		}
+=======
+		$this->multifitGymWebsiteVendorUpdate($response);
+>>>>>>> origin/master-reliance
 		return Response::json($response);
 
 	}
@@ -2495,10 +2484,16 @@ class FindersController extends \BaseController {
 		// $this->updateFinderRatingV2($finder);
 
 		// $review_detail = $this->updateFinderRatingV1($reviewdata);
-		
-		// $review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
-
-		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>null);
+		$review_detail = null;
+		$deviceType = Request::header('Device-Type');
+		if(empty($deviceType) || !in_array($deviceType, ['android','ios'])) {
+			$review_detail    =  ['rating' => [
+				'average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count, 'detail_rating_summary_average' => $finder->detail_rating_summary_average, 'detail_rating_summary_count' => $finder->detail_rating_summary_count
+			]];
+			
+			$review_detail['reviews'] = Review::active()->where('description', '!=', "")->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
+		}
+		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>$review_detail);
 
 		if(isset($data['booktrialid']) &&  $data['booktrialid'] != '' && isset($review_id) &&  $review_id != ''){
 			$booktrial_id   =   (int) $data['booktrialid'];
@@ -3748,7 +3743,7 @@ class FindersController extends \BaseController {
 					/*if($category->_id == 42){
 						array_push($ratecardArr, $rateval);
 					}else{*/
-						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages' || (!empty(Request::header('Authorization-Vendor')) && $rateval['type'] == 'extended validity' && in_array($rateval['finder_id'], [1490, 424]))){
+						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages' || (!empty(Request::header('Authorization-Vendor')) && $rateval['type'] == 'extended validity' && in_array($rateval['finder_id'], Config::get('app.tab_session_pack_vendor_ids', [])))){
 							
 							$appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
 
@@ -3845,9 +3840,36 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
-        return "Monsoon Fitness Mania | Get Addnl 15% off | Use code: THUNDER | Limited Slots Applicable till 30th June 2019";
-        
+        $line = null;
+        if(empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
+            
+			if($this->device_type == 'android'){
+				$line = "<u>Crazy Cashback Sale</u><br><br>- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+            }else{	
+				$line = "\nCrazy Cashback Sale\n\n- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+            }
+            
+        }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
+
+            if($this->device_type == 'android'){
+				$line = "<u>Crazy Cashback Sale</u><br><br>- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+            }else{	
+				$line = "\nCrazy Cashback Sale\n\n- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+            }
+        
+        }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
+
+			if($this->device_type == 'android'){
+				$line = "<u>Crazy Cashback Sale</u><br><br>- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+            }else{	
+				$line = "\nCrazy Cashback Sale\n\n- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+			}
+			
+        }
+
+        return $line;
+		
 		$brandMap = [
 			135 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹20,000 worth of rewards',
 			88 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹35,000 worth of rewards',
@@ -4021,7 +4043,7 @@ class FindersController extends \BaseController {
 				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
 				->with(array('reviews'=>function($query){$query->where('status','=','1')->where('description','!=', "")->select('_id','finder_id','customer_id','rating','description','updated_at','tag')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
-                ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews','brand_id'));
+                ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews','brand_id','custom_city','custom_location'));
                 
             
 			$finder = false;
@@ -4665,8 +4687,8 @@ class FindersController extends \BaseController {
 
 					if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
 						
-						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial', $data['finder']['trial']);
-						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session');
+						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial', $data['finder']['trial'],$data['finder']);
+						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session',null,$data['finder']);
 
                         
 						
@@ -4898,11 +4920,18 @@ class FindersController extends \BaseController {
                                 $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session';    
                             }else{
                                 $finderData['call_for_action_button']      =      "Book A Session";
-                                $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session';    
+								$finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session'; 
+								if(!empty($finderData['finder']['flags']['monsoon_campaign_pps'])){
+                                    // $finderData['call_for_action_button']      =      "Book a Session @ 99";
+                                }   
                             }
                         }else{
                             $finderData['call_for_action_button']      =      "Book A Session";
                             $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking sessions';    
+
+                            if(!empty($finderData['finder']['flags']['monsoon_campaign_pps'])){
+                                // $finderData['call_for_action_button']      =      "Book a Session @ 99";
+                            }
                         }
 
                     }
@@ -5227,7 +5256,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function getTrialWorkoutRatecard($finderservices,$findertype,$type, $finder_trial = null){
+	public function getTrialWorkoutRatecard($finderservices,$findertype,$type, $finder_trial = null, $finder=null){
 
 		$finderservicesArr  =   [];
 
@@ -5282,8 +5311,11 @@ class FindersController extends \BaseController {
 						if($type == "workout session" && in_array($ratecard["type"],["trial"])){
 							continue;
 						}
-                        if($ratecard['type'] == 'workout session'){
-                            $ratecard['remarks'] = "Get 100% instant cashback";
+                        if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
+                            $ratecard['remarks'] = "Crazy Cashback Sale | 100% Instant Cashback | Code: CASHBACK";
+                            // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 99 || $ratecard['special_price'] == 99)){
+                            //     $ratecard['remarks'] = "Crazy Cashback Sale | 100% Instant Cashback | Code: CASHBACK";
+                            // }
                         }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
 							$ratecard_price = $ratecard['special_price'];
@@ -6389,14 +6421,13 @@ class FindersController extends \BaseController {
 					$location_name = ", ".ucwords($location['name']);
 				}
 
-				if(isset($ratecard) && isset($ratecard['type']) && in_array($ratecard['type'],['membership','packages'])){
+				if(isset($ratecard) && isset($ratecard['type']) && in_array($ratecard['type'],['membership','packages','extended validity'])){
 
 					$tnc['description'] .= "<b> - </b>  Discount varies across different outlets depending on slot availability.";
 					$tnc['description'] .= "<br/><br/><b> - </b>  For memberships reserved by part payment and not fully paid for on date of joining, 5% of total membership value will be deducted as convenience fees & the remaining will be transferred in the wallet as Fitcash+ . The membership will also be terminated.";
 					$tnc['description'] .= "<br/><br/><b> - </b>  Memberships once purchased are not transferrable or resalable.";
-					$tnc['description'] .= "<br/><br/><b> - </b>  For any Refund/cancellation queries refer to <a href='https://www.fitternity.com/refund-cancellation'> https://www.fitternity.com/refund-cancellation</a>";
-					$tnc['description'] .= "<br/><br/><b> - </b>  For any Offer related queries refer to <a href='https://www.fitternity.com/offer-usage'>https://www.fitternity.com/offer-usage</a>";
-
+					$tnc['description'] .= "<br/><br/><b> - </b>  For detailed terms and conditions refer to <a href='https://www.fitternity.com/terms-conditions/all'> https://www.fitternity.com/terms-conditions/all</a>";
+					
 				}else{
 
 					$tnc['description'] .= "<b> - </b>  I recognise that staff at ".ucwords($finder['title']).$location_name.", their associates and staff at Fitternity Health E Solutions are not able to provide medical advice or assess whether it is suitable for me to participate in programs.";
@@ -7135,7 +7166,7 @@ class FindersController extends \BaseController {
 			$service = $this->addingRemarkToDuplicate($service, 'app');
 		}
 
-		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title']);
+		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title'],$data['finder']);
 		//updating duration name for extended validity ratecards
 		foreach($data['finder']['services'] as &$service){
 			foreach($service[$ratecard_key] as $key1=>&$ratecard){
@@ -8183,7 +8214,11 @@ class FindersController extends \BaseController {
         }
 
         foreach($data['finder']['services'] as &$service){
-
+            $trial_ratecards = [];
+            $trial_ratecards = array_filter($service[$serviceRatecards], function($rc){
+                return $rc['type'] == 'trial';
+            });
+            
             $ws_ratecards = array_filter($service[$serviceRatecards], function($rc){
                 return $rc['type'] == 'workout session';
             });
@@ -8204,7 +8239,7 @@ class FindersController extends \BaseController {
             usort($session_ratecards, "compareSessions");
             usort($studio_extended_validity, "compareSessions");
             // return $session_ratecards;
-            $all_ratecards = $ws_ratecards;
+            $all_ratecards = array_merge($trial_ratecards, $ws_ratecards);
 
             $membership_ratecards = array_map('duration_days', $membership_ratecards);
 
@@ -8231,7 +8266,7 @@ class FindersController extends \BaseController {
         }
     }
 	
-	public function orderSummary($services, $finder_name){
+	public function orderSummary($services, $finder_name, $finder=null){
         $orderSummary2 = Config::get('orderSummary.order_summary');
 		$orderSummary2['header'] = strtr($orderSummary2['header'], ['vendor_name'=>$finder_name]);
 		$title =  strtolower($orderSummary2['title']);
@@ -8241,10 +8276,15 @@ class FindersController extends \BaseController {
 			foreach($service['ratecard'] as &$rc){
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
-				if($rc['type']=='membership')
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
-				else
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
+				if(in_array($rc['type'], ['membership', 'extended validity']) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Get 100% instant cashback. Use Code: CASHBACK");
+                }else{
+                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
+                    if(!empty($finder['flags']['monsoon_campaign_pps'])){
+						$orderSummary['header'] .= ucwords("\n\n Get 100% instant cashback using code FITBACK on this booking. Book multiple workout sessions, buy session packs, memberships & more using this cashback for yourself, friends & family.");
+                    }
+
+                }
 				$orderSummary['title'] = ucwords($title);
 				$rc['order_summary'] = $orderSummary;
 				$remark_data=[];
@@ -8353,6 +8393,7 @@ class FindersController extends \BaseController {
         }
 	}
 
+<<<<<<< HEAD
 	public function addCreditPoints(&$value, $customer_id){
 		
 		if(!empty($customer_id)){
@@ -8380,8 +8421,118 @@ class FindersController extends \BaseController {
 					}
 				}
 				
+=======
+	public function multifitGymWebsiteVendorUpdate(&$data){
+		
+		if(!empty(Request::header('Source')) && Request::header('Source') == "multifit"){
+			Log::info('inside vendor update for multifit gym');
+			if(!empty($data['finder']['website_membership'])){
+				$data['finder']['website_membership'] = $this->pathAddingToVendorWebsite($data['finder']['website_membership']);
+	
+				if(!empty($data['finder']['website_membership']['cover']['image'])){
+	
+					$data['finder']['coverimage'] = $data['finder']['website_membership']['cover']['image'];
+					if(!empty($data['finder']['website_membership']['cover']['mobile_image'])){
+						$data['finder']['mobile_image'] = $data['finder']['website_membership']['cover']['mobile_image'];
+					}
+				}
+	
+				if(!empty($data['finder']['website_membership']['class_time_table']['image'])){
+	
+					$data['finder']['class_time_table'] = $data['finder']['website_membership']['class_time_table']['image'];
+				}
+	
+				if(!empty($data['finder']['website_membership']['address'])){
+
+					if(empty($data['finder']['contact'])){
+						$data['finder']['contact']= null;
+					}
+
+					$data['finder']['contact']['address'] = !empty($data['finder']['website_membership']['address']['location'])? $data['finder']['website_membership']['address']['location']: (!empty($data['finder']['contact']['address'])? $data['finder']['contact']['address']: null);
+
+					$data['finder']['contact']['phone'] = !empty($data['finder']['website_membership']['address']['contact_number']) ? $data['finder']['website_membership']['address']['contact_number']:  (!empty($data['finder']['contact']['phone'])? $data['finder']['contact']['phone']: null);
+
+					$data['finder']['contact']['email'] = !empty($data['finder']['website_membership']['address']['email']) ?$data['finder']['website_membership']['address']['email']: (!empty($data['finder']['contact']['email'])? $data['finder']['contact']['email']: null);
+
+					$data['finder']['contact']['pincode'] = !empty($data['finder']['website_membership']['address']['pincode'])?$data['finder']['website_membership']['address']['pincode']: (!empty($data['finder']['contact']['pincode'])? $data['finder']['contact']['pincode']: null);
+
+					foreach($data['finder']['contact'] as $key=>$value){
+						if(empty($value)){
+							unset($data['finder']['contact'][$key]);
+						}
+					}
+				}
+	
+				if(!empty($data['finder']['website_membership']['services_list'])){
+					$data['finder']['servicesfilter_fitt'] = $data['finder']['servicesfilter'];
+					$data['finder']['servicesfilter'] = $data['finder']['website_membership']['services_list'];
+					// foreach($data['finder']['website_membership']['services_list'] as $key=> $value){
+	
+					// 	foreach($data['finder']['servicesfilter'] as $serviceFilterKey=> $serviceFilterValue){
+	
+					// 		if(strtolower($value['name'])==  strtolower($serviceFilterValue['tag'])){
+					// 			Log::info('inside vendor update for multifit gym------------->>>>>>>>>>>>.matched service name image');
+					// 			$data['finder']['servicesfilter'][$serviceFilterKey]['image'] = $value['image'];
+					// 			break;
+					// 		}
+					// 	}
+					// }
+				}
+	
+				if(!empty($data['finder']['website_membership']['facilities_list'])){
+					$data['finder']['facilities_fitt'] = $data['finder']['facilities'];
+					$data['finder']['facilities'] = $data['finder']['website_membership']['facilities_list'];
+					// foreach($data['finder']['website_membership']['facilities_list'] as $key=> $value){
+	
+					// 	foreach($data['finder']['facilities'] as $facilitiesKey=> $facilitiesValue){
+	
+					// 		if(strtolower($value['name'])==  strtolower($facilitiesValue['name'])){
+					// 			Log::info('inside vendor update for multifit gym------------->>>>>>>>>>>>.matched filtes name image',[$value['image']]);
+					// 			$data['finder']['facilities'][$facilitiesKey]['image'] = $value['image'];
+					// 			break;
+					// 		}
+					// 	}
+					// }
+				}
+
+				if(!empty($data['finder']['website_membership']['walk_through']['video'])){
+					$data['finder']['playOverVideo']['url'] = $data['finder']['website_membership']['walk_through']['video'];
+				}
+				unset($data['finder']['website_membership']);
+				unset($data['finder']['brand']['brand_detail']['brand_website']);
+>>>>>>> origin/master-reliance
 			}
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	public function pathAddingToVendorWebsite($first_block){
+		$base_url =Config::get('app.s3_bane_url');
+		foreach($first_block as $key=>$value){
+			if(in_array($key,['cover', 'thumbnail', 'class_time_table']) && isset($first_block[$key]['image'])){	
+				$first_block[$key]['image'] =  $base_url.$first_block[$key]['path'].$first_block[$key]['image'] ;
+				if(!empty($first_block[$key]['mobile_image'])){
+					$first_block[$key]['mobile_image'] =  $base_url.$first_block[$key]['path'].$first_block[$key]['mobile_image'] ;
+				}
+			}	
+
+			if(in_array($key,['services_list', 'memberships_list', 'facilities_list'])){
+				foreach($first_block[$key] as $keyImage=>$valueImage){
+					if(!empty($first_block[$key][$keyImage]['image'])){
+						$first_block[$key][$keyImage]['image'] =  $base_url.$first_block[$key][$keyImage]['path'].$first_block[$key][$keyImage]['image'];
+					}
+				}
+			}	
+		}
+		return $first_block;
+	}
+
+	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
+		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
+			$rateCard['remarks'] = "Crazy Cashback Sale | 100% Instant Cashback | Code: CASHBACK";
+			$rateCard['remarks_imp'] = true;
+		}
+	}
+>>>>>>> origin/master-reliance
 }

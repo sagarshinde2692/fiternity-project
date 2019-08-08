@@ -967,7 +967,7 @@ class EmailSmsApiController extends \BaseController {
             'send_bcc_status'   => 1
         );
 
-        $capture_type = array('fitness_canvas','renew-membership','claim_listing','add_business', 'sale_pre_register_2018','walkthrough');
+        $capture_type = array('fitness_canvas','renew-membership','claim_listing','add_business', 'sale_pre_register_2018','walkthrough', 'multifit-franchisepage', 'multifit-contactuspage');
 
         if(in_array($data['capture_type'],$capture_type)){
 
@@ -977,6 +977,10 @@ class EmailSmsApiController extends \BaseController {
                     break;
                 case 'add_business':
                     $this->findermailer->addBusiness($data);
+                    break;
+                case 'multifit-franchisepage':
+                case 'multifit-contactuspage':
+                    $this->findermailer->multifitRequest($data);
                     break;
                 case 'sale_pre_register_2018':
                     $this->customersms->salePreregister($data);
@@ -1071,7 +1075,7 @@ class EmailSmsApiController extends \BaseController {
             else {
                 $this->utilities->sendEnquiryToFitnessForce($captureData);
             }
-        
+            
         }
 
         return Response::json($resp);

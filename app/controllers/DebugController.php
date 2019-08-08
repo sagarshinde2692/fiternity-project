@@ -31,25 +31,25 @@ class DebugController extends \BaseController {
 
 	}
 
-    public function __call($method, $arguments){
+    // public function __call($method, $arguments){
 
-        $file = fopen("$method.txt","w+");
-        Log::info("Checking lock");
-        if(flock($file,LOCK_EX)){
-            Log::info("Lock aquired");
-            $return = $this->$method();
-            Log::info("releasing lock");
-            return $return;
+    //     $file = fopen("$method.txt","w+");
+    //     Log::info("Checking lock");
+    //     if(flock($file,LOCK_EX)){
+    //         Log::info("Lock aquired");
+    //         $return = $this->$method();
+    //         Log::info("releasing lock");
+    //         return $return;
             
-        }else{
+    //     }else{
 
-            return  "Error locking file!";
+    //         return  "Error locking file!";
         
-        }
+    //     }
 
-        fclose($file);
+    //     fclose($file);
         
-    }
+    // }
 
 
 	public function invalidFinderStats(){
@@ -10553,6 +10553,58 @@ public function yes($msg){
 		Log::info('getFFOrderDetails reqBody:: ', [$reqBody]);
 		return ['status' => 200, 'msg' => 'done'];
 	}
+    
+    public function addTypeOfPpsVendor(){
+
+		$destinationPath = public_path();
+		$fileName = "add_vendor_pps_type.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+
+		// return $csv_to_array;
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if(!empty($value['finder_id']) && !empty($value['type'])){
+					
+					$type_of_vendor = '';
+					if($value['type'] == 'Fitternity'){
+						$type_of_vendor  = 'fitternity_pps';
+					}else if($value['type'] == 'ABW PFC'){
+						$type_of_vendor  = 'abw_pps';
+					}else if($value['type'] == 'Capitation'){
+						$type_of_vendor  = 'capitation_pps';
+					}
+
+					Log::info($key);
+
+					$finder = Finder::find((int) $value['finder_id']);
+					if($finder){
+						$flags = $finder->flags;
+                        $flags['type_of_vendor'] = $type_of_vendor;
+                        $finder->flags = $flags; 
+						$finder->type_of_vendor_updated = new MongoDate();
+						$finder->update();
+					}
+
+					$vendor = Vendor::find((int) $value['finder_id']);
+					if($vendor){
+						$flags = $vendor->flags;
+                        $flags['type_of_vendor'] = $type_of_vendor;
+                        $vendor->flags = $flags; 
+						$vendor->type_of_vendor_updated = new MongoDate();
+						$vendor->update();
+					}
+				}
+
+			}
+		}
+
+		echo "done";	
+    }
 
     public function fixCustomerQuantity(){
 
@@ -11128,7 +11180,285 @@ public function yes($msg){
 		}
 		
 		print_r($return);
+	}
+	
+	public function manualToSession(){
+		$ratecardIds = [81914,123404,29808,2164,40655,82774,82777,82778,104504,113859,113863,143698,143699,16890,96927,17367,17634,18526,18528,406,1728,31155,56275,126283,31385,31386,31390,31391,36667,36678,95715,95720,95725,43047,95729,44662,44666,44670,145379,53758,54291,54390,83307,83309,58968,83310,102815,102816,102817,119063,114689,137448,137449,137450,137451,130861,62953,143587,64026,64029,64032,69920,69921,69922,71824,71825,3229,3239,100833,100842,101469,101486,79528,79531,79534,79537,45798,81595,45800,45801,45811,45812,45813,98137,98158,83981,18638,86001,86009,86014,86018,86024,87698,18641,134981,94344,89920,103509,103512,103515,104494,104496,92495,92496,92937,92938,92941,104498,104500,145072,145074,145075,117542,144212,96332,96337,96342,96347,96354,96358,96362,96366,96416,96420,96424,96430,96439,96443,96447,96451,96458,96462,96466,96470,96476,96480,96484,96488,96494,96498,96502,96506,10441,110431,110434,110435,110437,110438,110458,110459,108815,145198,140588,140600,105434,105435,115035,141020,141025,141033,142807,142813,109015,132443,125442,125453,132006,132132,136421,140668,140675,134657,107368,104588,104594,106248,106250,106581,106582,106583,108106,89506,109727,109728,90079,127059,127061,121442,134826,137108,115937,117259,117260,89226,89239,122231,122236,122239,122242,122245,122408,102280,144277,126807,59234,95236,95238,136569,136647,144599,95340,95341,132817,98554,98559,98560,114828,113570,113575,127266,127269,127272,73828,6739,6740,6741,6742,74648,74649,74650,74651,144219,141289,141841,141842,142624,88901,88907,143160,143082,143626,104492,143973,143996,144010];
+		
+		$return = array();
+        $return['type'] = "extended validity";
+        $return['manually_mem_to_sp'] = true;
+
+		$update1 = Ratecard::whereIn('_id',$ratecardIds)->update($return);
+		$update2 = RatecardAPI::whereIn('_id',$ratecardIds)->update($return);
+
+		return [$update1, $update2];
+    }
+    
+    public function multifitDataMigration(){
+         $stageVendors = StageVendor::where('brand_id', 88)->where("website_membership", 'exists', true)->get(['website_membership']);
+
+         foreach($stageVendors as $vendor){
+            //  return $vendor;
+             Finder::where('_id', $vendor['_id'])->update(['website_membership'=>$vendor['website_membership']]);
+             Vendor::where('_id', $vendor['_id'])->update(['website_membership'=>$vendor['website_membership']]);
+            //  return;
+         }
+	}
+	
+	public function hyperLocal(){
+		$destinationPath = public_path();
+		$fileName = "vendor.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+		
+		$cat_ali = ["ft" => 'Cross functional'];
+
+		$finArr = array();
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if( !empty($value['_id']) && !empty($value['category']) && !empty($value['location']) ){
+					
+					$location = Location::where('name', $value['location'])->first(['_id']);
+					$value['location_id'] = $location['_id'];
+
+					// return $value;
+
+					$cat = explode(",",$value['category']);
+					if(!empty($cat)){
+						foreach($cat as $ck => $cv){
+							
+							$cv = trim(strtolower($cv));
+							if($cv == 'ft'){
+								$cv = $cat_ali[$cv];
+							}
+							
+							if($cv == 'gym' || $cv == 'gyms'){
+								$id['_id'] = 5;
+							}else{
+								$id = Findercategory::where('name', 'LIKE', '%'.$cv.'%')->first(['_id']);
+							}
+							$cat_id = $id['_id'];
+							$loc_cat = $value['location_id']."-".$cat_id; 
+														
+							if (array_key_exists($loc_cat,$finArr)){
+								if(!in_array($value['_id'], $finArr[$loc_cat])){
+									$finArr[$loc_cat][] = (int)$value['_id'];
+								}
+							}else{
+								$finArr[$loc_cat][] = (int)$value['_id'];
+							}
+							
+
+						}
+					}
+				}
+			}
+		}
+		return $finArr;
+	}
+
+	public function ppsRepeat(){
+		try{
+			ini_set('max_execution_time', 0);
+			
+			Order::$withoutAppends=true;
+			
+			$totalOrder = Order::where('type', 'workout-session')
+			->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
+			->where('pps_repeat', 'exists', false)
+			->where('status', '1')->count();
+			
+			$limit = 500;
+			$offset = ceil($totalOrder / $limit);
+			Log::info("totalOrder :: ",[$totalOrder]);
+			Log::info("limit :: ",[$limit]);
+			Log::info("offset :: ",[$offset]);
+			// return;
+			for($i = 0;$i < $offset;$i++){
+				$skip = $i*$limit;
+				Log::info("skip :: ",[$skip]);
+
+                $orders = Order::where('type', 'workout-session')
+				->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
+				->where('pps_repeat', 'exists', false)
+				->where('status', '1')->skip($skip)->take($limit)->orderBy('_id', 'desc')->get(['_id','customer_phone', 'created_at']);
+				// return $orders;
+				$updates = [];
+				foreach($orders as $k => $x){
+					
+					$count = Order::where('customer_phone', $x['customer_phone'])
+						->where('coupon_code', '!=', 'FIRSTPPSFREE')
+						->where('type', 'workout-session')
+						->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
+						->where('status', '1')
+						->where('created_at', '<', new DateTime( date("d-m-Y H:i:s", strtotime( $x['created_at'] )) ))
+						->where('_id', '!=', $x['_id'])
+						->count();
+
+					Log::info("order_id :: ",[$x['_id']]);
+					Log::info("customer_phone :: ",[$x['customer_phone']]);
+					Log::info("created_at :: ",[$x['created_at']]);
+
+					if($count > 0){
+						array_push($updates, [
+							"q"=>['_id'=> $x['_id']],
+							"u"=>[
+								'$set'=>[
+                            		'pps_repeat'=>true 
+                                ]
+							],
+							'multi' => false
+						]);
+					}
+					
+					// return $updates;
+
+				}
+
+				if(count($updates) > 0){
+					$update = $this->batchUpdate('mongodb', 'orders', $updates);
+				}	
+				
+
+			}
+		
+			$return = array('status'=>'done');
+		}catch(Exception $exception){
+			$message = array(
+				'type'    => get_class($exception),
+				'message' => $exception->getMessage(),
+				'file'    => $exception->getFile(),
+				'line'    => $exception->getLine(),
+			);
+			Log::error($exception);
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+		
+		print_r($return);
     }
 
-}
 
+    public function migrateStepsToFirestore(){
+        // return "asd";
+        $i = 0;
+        while(true){
+            
+            $steps_aggregate = FitnessDeviceData::raw(function($query) use ($i){
+                $limit = 100000;
+                $aggreagte = [
+                    [
+                        '$match'=>[
+                            // 'customer_id'=>87977,
+                            'status'=>'1'
+                        ]
+                        ],
+                    [
+                        '$addFields'=>[
+                           'foot_steps'=>[
+                               '$cond'=>[
+                                    [
+                                       '$eq'=>['$type', 'steps']
+                                    ] 
+                                    ,'$value', 
+                                    0
+                                ]
+                            ],
+                           'service_steps'=>[
+                               '$cond'=>[
+                                   [
+                                       '$eq'=>['$type', 'service_steps']
+                                    ],
+                                   '$value', 
+                                   0
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        '$group'=>[
+                            '_id'=>'$customer_id',
+                            'total_steps'=>['$sum'=>'$value'],
+                            'steps'=>['$sum'=>'$foot_steps'],
+                            'service_steps'=>['$sum'=>'$service_steps']
+                        ]
+                    ],
+                    [
+                        '$skip'=>$i*$limit
+                    ],
+                    [
+                        '$limit'=>$limit
+                    ],
+                    [
+                        '$lookup' => [
+                            'from' => 'customers',
+                            'localField' => '_id',
+                            'foreignField' => '_id',
+                            'as' => 'customer'
+                        ]
+                    ],
+                    [
+                        '$addFields'=>[
+                            'city' => ['$arrayElemAt' => ['$customer.reliance_city',0]],
+                            'name' => ['$arrayElemAt' => ['$customer.name',0]],
+                            'location' => ['$arrayElemAt' => ['$customer.reliance_location',0]],
+                            'external_reliance' => ['$arrayElemAt' => ['$customer.external_reliance',0]],
+                            'customer_id' => '$_id',
+                            'steps_today' => 0,
+                            'service_steps_today' => 0,
+                        ]
+                    ],
+                    // [
+                    //     '$match'=>[
+                    //         'external_reliance'=>['$ne'=>true]
+                    //     ]
+                    // ],
+                    [
+                        '$addFields'=>[
+                            'external_reliance'=>['$ifNull'=>['$external_reliance', false]]
+                        ]
+                        ],
+                    [
+                        '$project'=>[
+                            'customer'=>0
+                        ]
+                    ],
+                    [
+                        '$group'=>[
+                            '_id'=>'$external_reliance',
+                            'customers'=>['$push'=>'$$ROOT']
+                        ]
+                    ]
+
+
+                ];
+
+                return $query->aggregate($aggreagte);
+    
+            });
+
+            $steps_aggregate = $steps_aggregate['result'];
+
+            $result = [];
+
+            foreach($steps_aggregate as $x){
+                if($x['_id']){
+                    $result['non_reliance'] = $x['customers'];
+                }else{
+                    $result['reliance'] = $x['customers'];
+                }
+            }
+
+            return $result;
+
+            if(empty($steps_aggregate)){
+                break;
+            }
+
+        }    
+    }
+}

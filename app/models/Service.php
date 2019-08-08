@@ -490,7 +490,7 @@ class Service extends \Basemodel{
                     $value['duration_type'] = 'sessions';
                 }
 
-                if(!empty($value['type']) && $value['type'] == "workout session"){
+                if(isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
                     if(!empty($value['offers'][0]['remarks'])){
                         $value['offers'][0]['remarks'] = "Get 100% instant cashback";
                         $value['remarks_imp'] =  true;
@@ -501,8 +501,19 @@ class Service extends \Basemodel{
                 }
 
                 if($this->servicecategory_id == 1 && $value['special_price'] == 99 && $value['type'] == "workout session" && isFinderIntegrated($finder) && isServiceIntegrated($this)){
-                    $value['remarks'] =  "The Ultimate Yoga Fest. Book Multiple Sessions at Flat ₹99/session";
+                    $value['remarks'] =  '';
                     $value['remarks_imp'] =  true;
+				}else if(($offer_price == 99 || $value['price'] == 99 || $value['special_price'] == 99) && $value['type'] == "workout session" && !empty($finder['flags']['monsoon_campaign_pps']) && isFinderIntegrated($finder) && isServiceIntegrated($this)){
+                    $value['remarks'] =  '';
+                    $value['remarks_imp'] =  true;
+                }
+                
+                if(in_array($value['type'], ["membership", "extended validity"])&& isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios']) ){
+                    $value['campaign_offer'] =  "";
+                    $value['campaign_color'] = "";
+				}else{
+					$value['campaign_offer'] =  "";
+                    $value['campaign_color'] = "";
 				}
 				
 				unset($value['flags']['convinience_fee_applicable']);

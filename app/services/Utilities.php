@@ -34,7 +34,11 @@ use MongoDate;
 use Coupon;
 use \GuzzleHttp\Client;
 use Input;
+<<<<<<< HEAD
 use RazorpayPlans;
+=======
+use App\Services\RelianceService as RelianceService;
+>>>>>>> origin/master-reliance
 
 use App\Services\Fitnessforce as Fitnessforce;
 
@@ -1414,7 +1418,7 @@ Class Utilities {
                     $allDeviceCount = Device::where('customer_id', (int)$data['customer_id'])->where('type','!=','web')->count();
                 }*/
 
-                $device_id = Device::max('_id') + 1;
+                $device_id = Device::maxId() + 1;
                 $device = new Device();
                 $device->_id = $device_id;
                 $device->reg_id = $data['reg_id'];
@@ -1594,7 +1598,7 @@ Class Utilities {
 
         Log::info('entry', [$entry]);
 
-        if(isset($request['order_id']) &&  $request['order_id'] != 0){
+        if(isset($request['order_id']) &&  $request['order_id'] != 0 && empty($request['membership_instant_cashback'])){
 
             // Check Duplicacy of transaction request........
             $duplicateRequest = WalletTransaction::where('order_id', (int) $request['order_id'])
@@ -1917,6 +1921,9 @@ Class Utilities {
             }
             if(isset($request['session_pack_duration_gt'])){
                 $wallet->session_pack_duration_gt = $request['session_pack_duration_gt'];
+            }
+            if(isset($request['app_only'])){
+                $wallet->app_only = $request['app_only'];
             }
             
             $wallet->save();
@@ -2353,6 +2360,10 @@ Class Utilities {
             Log::info("wallet balance buy for other true");
             $query->where(function($query){$query->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
         }
+        
+        if(!in_array(Request::header('Device-Type'), ['android', 'ios'])){
+            $query->where('app_only', '!=', true);
+        }
 
         $wallet_balance = $query->sum('balance');
 
@@ -2633,6 +2644,10 @@ Class Utilities {
         
         }else{
 
+            if(!in_array(Request::header('Device-Type'), ['android', 'ios'])){
+                $query->where('app_only', '!=', true);
+            }
+
             if(!empty($request['extended_validity'])){
             
                 $duration = isset($GLOBALS['order_duration']) ? $GLOBALS['order_duration'] : 0;
@@ -2712,9 +2727,9 @@ Class Utilities {
                 }
 
                 
-                if(!empty($request['type']) && $request['type'] != "workout-session" && !empty($request['city_id']) && $request['city_id'] != '3'){
+                if(!empty($request['order_type']) && ($request['order_type'] != "workout-session" || $request['order_type'] != "workout session") && !empty($request['city_id']) && $request['city_id'] != '3'){
                     $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id)->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
-                }else if(!empty($request['type']) && ($request['type'] == "workout-session" || $request['type'] == "workout session") && !empty($request['city_id']) && $request['city_id'] == '3'){
+                }else if(!empty($request['order_type']) && ($request['order_type'] == "workout-session" || $request['order_type'] == "workout session") && !empty($request['city_id']) && $request['city_id'] == '3'){
                     
                 }else{
                     $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
@@ -6418,13 +6433,18 @@ Class Utilities {
         }
 
         $new_voucher->update();
+        try{
+            $this->remaningVoucherNotification($voucher_category);
+        }catch(Exception $e){
+            Log::info("remaningVoucherNotification failed");
+        }
 
         return $new_voucher;
 
     }
 
 
-    public function getMilestoneSection($customer=null, $brand_milestones=null){
+    public function getMilestoneSection($customer=null, $brand_milestones=null, $type=null, $steps=null){
 
         if(empty($customer)){
             $jwt_token = Request::header('Authorization');
@@ -6432,8 +6452,14 @@ Class Utilities {
 		    $customer_id = $decoded->customer->_id;
 		    $customer = Customer::find($customer_id);
         }
+
+        if( (!empty($type) && $type == 'reliance') || (empty($type) && !empty($customer['corporate_id']) && empty($customer['external_reliance'])) ){
+            $relianceService = new RelianceService();
+            return $relianceService->getMilestoneSectionOfreliance($customer, false, $steps);
+        }
+
         if(empty($customer['loyalty'])){
-            return ['data'=>[]];
+            return;
         }
         
         
@@ -6513,6 +6539,11 @@ Class Utilities {
 				return ['status'=>400, 'message'=>'Customer not registered'];
             }
             
+            // if(!empty($customer->loyalty['brand_loyalty']) || (!empty($customer->loyalty['reward_type']) && $customer->loyalty['reward_type'] > 2 )){
+            //     if(!empty($data['finder_id']) && !empty($customer->loyalty['finder_id']) && $customer->loyalty['finder_id'] != $data['finder_id'] ){
+            //         return ['status'=>400, 'message'=>'Since you are registered with Fitsquad program of another Gym / Studio, this check-in is not valid'];
+            //     }
+            // }
             
 			$checkin = new \Checkin();
 			$checkin->finder_id = $data['finder_id'];
@@ -7144,25 +7175,31 @@ Class Utilities {
                 // }
                 
                 $dontUpdateLoyalty = true;
-
-                if(empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin'){
-                    
+                Log::info("dontUpdateLoyalty 1",[$dontUpdateLoyalty]);
+                
+                if(!empty($data['finder_id'])){
                     Finder::$withoutAppends = true;
                     $finder = Finder::find($data['finder_id']);
+                }
+
+                if((empty($data['finder_flags']) && !empty($data['finder_id']) && !empty($data['order_success_flag']) && $data['order_success_flag'] == 'admin') || (empty($data['finder_flags']) && !empty($finder))){
+                    
+                    // Finder::$withoutAppends = true;
+                    // $finder = Finder::find($data['finder_id']);
                     $data['finder_flags'] = !empty($finder['flags']) ? $finder['flags'] : [];
                 
                 }
+                
+                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1])) && (empty($finder['brand_id']) || !in_array($finder['brand_id'], Config::get('app.brand_loyalty')) || in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty'))) ){
+                    Log::info("yolo");
+                    // $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
 
-                if(!empty($data['finder_flags']['reward_type']) && in_array($data['finder_flags']['reward_type'], Config::get('app.no_fitsquad_reg', [1]))){
-
-                    $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
-
-                    $update_data = [
-                        'loyalty'=>new \StdClass()
-                    ];
+                    // $update_data = [
+                    //     'loyalty'=>new \StdClass()
+                    // ];
                     
-                    $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
-                    $this->deactivateCheckins($customer['_id'], 'loyalty_appropriation_autoupgrade'); 
+                    // $customer_update = Customer::where('_id', $data['customer_id'])->update($update_data);
+                    // $this->deactivateCheckins($customer['_id'], 'loyalty_appropriation_autoupgrade_no_fitsquad_for_vendor'); 
 
                     return ['status'=>400, 'message'=>'No fitsquad for vendor'];
                 }
@@ -7182,69 +7219,88 @@ Class Utilities {
                 $duration = !empty($data['duration_day']) ? $data['duration_day'] : (!empty($data['order_duration_day']) ? $data['order_duration_day'] : 0);
                 $duration = $duration > 180 ? 360 : $duration;
                 
-                if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
-                    if(empty($finder)){
-                        Finder::$withoutAppends = true;
-                        $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+                if(!empty($data['type']) && $data['type'] == 'workout-session' && ( empty($data['finder_flags']['reward_type']) || (!empty($data['finder_flags']['reward_type']) && $data['finder_flags']['reward_type'] != 1)) ){
+                    if(empty($customer['loyalty'])){
+                        $loyalty['reward_type'] = 2;
+                        $dontUpdateLoyalty = false;
+                        Log::info("dontUpdateLoyalty 2",[$dontUpdateLoyalty]);
+                    }
+                }else{
+
+                    if(!empty($data['order_id']) && !empty($data['type']) && !empty($data['finder_id']) && in_array($data['type'], ['memberships']) && in_array($duration, [180, 360])){
+                        if(empty($finder)){
+                            Finder::$withoutAppends = true;
+                            $finder = Finder::find($data['finder_id'], ['brand_id', 'city_id']);
+                        }
+                        
+                        if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
+                            $duration = 0;
+                        }
+    
+                        Log::info("brand_id",[$finder['brand_id']]);
+                        Log::info("loyalty brand_id",[Config::get('app.brand_loyalty')]);
+    
+                        if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
+                            Log::info("if brand");
+                            
+                            $brand_loyalty = true;
+                            $loyalty['brand_loyalty'] = $finder['brand_id'];
+                            $loyalty['brand_loyalty_duration'] = $duration;
+                            $loyalty['brand_loyalty_city'] = $data['city_id'];
+    
+                            if($loyalty['brand_loyalty'] == 135){
+                                if($loyalty['brand_loyalty_duration'] == 180){
+                                    $loyalty['brand_version'] = 1;
+                                }else{
+                                    $loyalty['brand_version'] = 2;
+                                }
+                            }else{
+                                $loyalty['brand_version'] = 1;
+                            }
+
+                            $dontUpdateLoyalty = false;
+                            Log::info("dontUpdateLoyalty 3",[$dontUpdateLoyalty]);
+                        }
                     }
                     
-                    if(!empty($finder['brand_id']) && $finder['brand_id'] == 40 && $duration == 180){
-                        $duration = 0;
-                    }
-
-                    Log::info("brand_id",[$finder['brand_id']]);
-                    Log::info("loyalty brand_id",[Config::get('app.brand_loyalty')]);
-
-                    if(!empty($finder['brand_id']) && !empty($finder['city_id']) && in_array($finder['brand_id'], Config::get('app.brand_loyalty')) && !in_array($finder['_id'], Config::get('app.brand_finder_without_loyalty')) && in_array($duration, [180, 360])){
-                        Log::info("if brand");
-                        
-                        $brand_loyalty = true;
-                        $loyalty['brand_loyalty'] = $finder['brand_id'];
-                        $loyalty['brand_loyalty_duration'] = $duration;
-                        $loyalty['brand_loyalty_city'] = $data['city_id'];
-
-                        if($loyalty['brand_loyalty'] == 135){
-                            if($loyalty['brand_loyalty_duration'] == 180){
-                                $loyalty['brand_version'] = 1;
-                            }else{
-                                $loyalty['brand_version'] = 2;
-                            }
-                        }else{
-                            $loyalty['brand_version'] = 1;
-                        }
-
+                    // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
+                    // Log::info("type",[$data['type']]);
+                    // $dontUpdateLoyalty = true;
+                    if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
                         $dontUpdateLoyalty = false;
-                    }
-                }
-                
-                // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
-                // Log::info("type",[$data['type']]);
-                // $dontUpdateLoyalty = true;
-                if(!empty($data['finder_flags']['reward_type']) && !empty($data['type']) && $data['type'] == 'memberships'){
-                    $dontUpdateLoyalty = false;
-                    Log::info("if finder_flags reward_type");
-                    if((!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type']!=2 && empty($customer['loyalty']['brand_loyalty'])) || (!empty($customer['loyalty']['brand_loyalty'])) || empty($customer['loyalty'])){
-                        Log::info("if empty loyalty or brand");
-                        $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
-                        if(!empty($data['finder_flags']['cashback_type'])){
-                            $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
+                        Log::info("dontUpdateLoyalty 4",[$dontUpdateLoyalty]);
+                        Log::info("if finder_flags reward_type");
+                        if((!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type']!=2 && empty($customer['loyalty']['brand_loyalty'])) || (!empty($customer['loyalty']['brand_loyalty'])) || empty($customer['loyalty'])){
+                            Log::info("if empty loyalty or brand");
+                            $loyalty['reward_type'] = $data['finder_flags']['reward_type'];
+                            if(!empty($data['finder_flags']['cashback_type'])){
+                                $loyalty['cashback_type'] = $data['finder_flags']['cashback_type'];
+                            }
                         }
+                    } 
+                }
+
+                if(!empty($loyalty) && !empty($loyalty['brand_loyalty'])){
+                    if(!empty($loyalty['reward_type'])){
+                        unset($loyalty['reward_type']);
                     }
-                    else {
-                        $dontUpdateLoyalty = true;
+
+                    if(!empty($loyalty['cashback_type'])){
+                        unset($loyalty['cashback_type']);
                     }
-                } else if(empty($customer['loyalty'])) {
-                    $dontUpdateLoyalty = false;
-                    Log::info("if empty loyalty");
                 }
 
                 $update_data = [
                     'loyalty'=>$loyalty 
                 ];
 
+                if(!empty($data['source']) && $data['source'] == 'register'){
+                    $dontUpdateLoyalty = false;
+                }
+
                 $customer_update = false;
 
-                Log::info("dontUpdateLoyalty",[$dontUpdateLoyalty]);
+                Log::info("dontUpdateLoyalty 7",[$dontUpdateLoyalty]);
 
                 if(!$dontUpdateLoyalty){
                     $this->archiveCustomerData($customer['_id'], ['loyalty' => $customer['loyalty']], 'loyalty_appropriation_autoupgrade');
@@ -7979,14 +8035,14 @@ Class Utilities {
         
         $token = Request::header('Authorization');
         
-        if(empty($token)){
+        if(empty($token) || $token=='undefined'){
             return;
         }
         
         $token_decoded = customerTokenDecode($token);
 
         $customer = $token_decoded->customer;
-
+       
         return $customer;
 
     }
@@ -8056,8 +8112,12 @@ Class Utilities {
     
     }
 
-    public function getMilestoneFilterData($customer){
+    public function getMilestoneFilterData($customer, $includeCorporate=false){
         $filter = [];
+        if($includeCorporate) {
+            $filter['corporate_id'] = !empty($customer->corporate_id) ? $customer->corporate_id : null;
+            $filter['external_reliance'] = !empty($customer->external_reliance) ? $customer->external_reliance : ['$exists'=> false];      
+        }
         $filter['brand_loyalty'] = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
         $filter['brand_loyalty_city'] = !empty($customer->loyalty['brand_loyalty_city']) ? $customer->loyalty['brand_loyalty_city'] : null;
         $filter['brand_loyalty_duration'] = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
@@ -8078,35 +8138,43 @@ Class Utilities {
                 
             ];
             
-            if(!empty($filter['brand_loyalty']) && !empty($filter['brand_loyalty_duration']) && !empty($filter['brand_loyalty_city'])){
-                $match['$match']['brand_id'] = $filter['brand_loyalty'];
-                $match['$match']['duration'] = $filter['brand_loyalty_duration'];
-				$match['$match']['city'] = $filter['brand_loyalty_city'];
-            }else{
-                $match['$match']['brand_id'] =['$exists'=>false];
-                $match['$match']['duration'] =['$exists'=>false];
-                $match['$match']['city'] =['$exists'=>false];
+            if(!empty($filter['corporate_id'])) {
+                $match['$match']['corporate_id'] = $filter['corporate_id'];
+                if(!empty($filter['external_reliance'])){
+                    $match['$match']['external_reliance'] = $filter['external_reliance'];
+                }
+            }
+            else {
+                if(!empty($filter['brand_loyalty']) && !empty($filter['brand_loyalty_duration']) && !empty($filter['brand_loyalty_city'])){
+                    $match['$match']['brand_id'] = $filter['brand_loyalty'];
+                    $match['$match']['duration'] = $filter['brand_loyalty_duration'];
+                    $match['$match']['city'] = $filter['brand_loyalty_city'];
+                }else{
+                    $match['$match']['brand_id'] =['$exists'=>false];
+                    $match['$match']['duration'] =['$exists'=>false];
+                    $match['$match']['city'] =['$exists'=>false];
 
-                if(!empty($filter['reward_type']) ){
-                    $match['$match']['reward_type'] = $filter['reward_type'];
-                }else{
-                    $match['$match']['reward_type'] = 2;
+                    if(!empty($filter['reward_type']) ){
+                        $match['$match']['reward_type'] = $filter['reward_type'];
+                    }else{
+                        $match['$match']['reward_type'] = 2;
+                    }
+        
+                    if(!empty($filter['cashback_type']) ){
+                        $match['$match']['cashback_type'] = $filter['cashback_type'];
+                    }else{
+                        $match['$match']['cashback_type'] =['$exists'=>false];
+                    }
                 }
-    
-                if(!empty($filter['cashback_type']) ){
-                    $match['$match']['cashback_type'] = $filter['cashback_type'];
-                }else{
-                    $match['$match']['cashback_type'] =['$exists'=>false];
+                if(!empty($filter['brand_loyalty'])) {
+                    if(!empty($filter['brand_version'])){
+                        $match['$match']['brand_version'] = $filter['brand_version'];
+                    }
+                    else {
+                        $match['$match']['brand_version'] = 1;
+                    }
                 }
-			}
-			if(!empty($filter['brand_loyalty'])) {
-				if(!empty($filter['brand_version'])){
-					$match['$match']['brand_version'] = $filter['brand_version'];
-				}
-				else {
-					$match['$match']['brand_version'] = 1;
-				}
-			}
+            }
 
 
             // print_r($match);
@@ -8271,7 +8339,28 @@ Class Utilities {
             return null;
         }
     }
-           
+
+    public function remaningVoucherNotification($voucher_category=null){
+        
+        if(empty($voucher_category['flags']['manual_redemption'])){
+
+            $remainingVoucherCount = \LoyaltyVoucher::whereNull('customer_id')->where('flags.manual_redemption', '!=', true)->where('name', $voucher_category->name)->count();
+            
+            if($remainingVoucherCount < 50){
+                
+                $data = array(
+                    'voucherName' => $voucher_category->name,
+                    'remainingCount' => $remainingVoucherCount,
+                );
+            
+                $customermailer = new CustomerMailer();
+            
+                $customermailer->remainingVoucher($data);
+            }
+        }
+
+    }
+            
     public function validateInput($functionName, $data){
         switch($functionName){
             case 'generateFreeSP':
@@ -8333,7 +8422,7 @@ Class Utilities {
             $order = Order::active()->where('_id', intval($order_id))->first();
         }
         $customer = Customer::active()
-                            ->where('email', $order['customer_email'])
+                            ->where('_id', $order['customer_id'])
                             ->first();
         if(!empty($customer) && (!isset($order['loyalty_registration']) || !$order['loyalty_registration'])){
             // $customer_name = (!empty($customer['name']))?ucwords($customer['name']):'';
@@ -8512,7 +8601,7 @@ Class Utilities {
                 }
 
                 if(!empty($customer['loyalty']['brand_loyalty'])){
-                    $sameBrand = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];
+                   $sameBrand = $customer['loyalty']['brand_loyalty']==$finder['brand_id'];
                     if($sameBrand){
                         $brand_loyalty_data = $this->buildBrandLoyaltyInfoFromOrder($finder, $order);
                         $sameBrand = $customer['loyalty']['brand_loyalty']==$brand_loyalty_data['brand_loyalty']
@@ -8535,7 +8624,7 @@ Class Utilities {
                 Log::info('$brandIdTypeChk: ', [$brandIdTypeChk]);
                 Log::info('$isDowngrade: ', [$isDowngrade]);
 
-                if($sameFinder || $sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade){
+                if($sameFinder || $sameBrand || ($rewTypeChk && $cbkTypeChk && $brandIdTypeChk) || $isDowngrade || (!empty($finder['flags']['reward_type']) && $finder['flags']['reward_type'] == 1) ){
                     // same grid - no need to upgrade
                     $retObj = null;
                 } else {
@@ -9206,7 +9295,7 @@ Class Utilities {
             if(!(empty($data['type'])) && $data['type']=='workout-session') {
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['schedule_date_time']));
             }
-            else {
+            else if(!empty($data['data']['preferred_starting_date'])){
                 $post_data['activationdate'] = date('Y-m-d',strtotime($data['data']['preferred_starting_date'])); // '2019-05-29';
             }
             // $post_data['total'] = $order['amount_transferred_to_vendor'];
@@ -9356,7 +9445,8 @@ Class Utilities {
 		$reward_image = '';
 		if (!(empty($id)) && $id == '88') {
 			//$('.gold-fit-rewards .multifit').removeClass('hide');
-			$reward_image = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+			// $reward_image = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+			$reward_image = 'https://b.fitn.in/global/cashback/rewards/120%25%20cash%20back%20%2B%20rewards%20type%20B2.png';
 		}else if (!(empty($id)) && $id == '166') {
 			//$('.gold-fit-rewards .shivfit').removeClass('hide');
 			$reward_image = 'https://b.fitn.in/global/shivfit---grids-new.jpg';
@@ -9424,9 +9514,11 @@ Class Utilities {
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		foreach($slotsdata as &$slot){
-			foreach($slot['data'] as &$sd){
-                $sd['order_summary']['header'] = $orderSummary['header']; 
-			}
+            if(is_array($slot['data'])){
+                foreach($slot['data'] as &$sd){
+                    $sd['order_summary']['header'] = $orderSummary['header']; 
+                }
+            }
 		}
 		return $slotsdata;
     }
@@ -9454,6 +9546,7 @@ Class Utilities {
             )
         );
 
+<<<<<<< HEAD
         $razoPayUrl = Config::get('app.razorPayURL');
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $razoPayUrl);
@@ -9544,3 +9637,15 @@ Class Utilities {
 		return $result;
 	}
 }
+=======
+    public function getCityData($slug){
+        
+        $cities = Config::get('cities');
+        
+        $city_array = array_values(array_filter($cities,function ($e) use ($slug){return $e['slug'] == $slug;}));
+        
+        return !empty($city_array) ? $city_array[0] : null;
+    }
+
+}
+>>>>>>> origin/master-reliance

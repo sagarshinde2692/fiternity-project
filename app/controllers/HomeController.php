@@ -8,6 +8,7 @@ use \GuzzleHttp\Client;
 use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
+use App\Services\RelianceService as RelianceService;
 
 class HomeController extends BaseController {
 
@@ -19,7 +20,7 @@ class HomeController extends BaseController {
     
 
 
-    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities) {
+    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService) {
         parent::__construct();
         $this->customernotification     =   $customernotification;
         $this->sidekiq = $sidekiq;
@@ -28,7 +29,7 @@ class HomeController extends BaseController {
         $this->initClient();
 
         $this->vendor_token = false;
-        
+        $this->relianceService = $relianceService;
         $vendor_token = Request::header('Authorization-Vendor');
 
         if($vendor_token){
@@ -1079,6 +1080,13 @@ class HomeController extends BaseController {
                     'items'=>$streak_items
                 ];
 
+                if(!empty($item['corporate_id']) && empty($item['external_reliance'])){
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps.';
+                    if(empty($item['pass_order_id'])){
+                        $subline = $subline.' Session activation also helps you earn cashback into your Fitternity Wallet.';
+                    }
+                }
+
                 $response = [
                     'status'=>200,
                     'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
@@ -1791,6 +1799,11 @@ class HomeController extends BaseController {
                 Log::info('header at membership confirmed');
                 $header = "Membership Confirmed";
                 $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
+                
+                if(!empty($item['coupon_flags']['cashback_100_per'])){
+                    $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by using it on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
+                    
+                }
 
                 if(isset($item['extended_validity']) && $item['extended_validity']){  
                     $header = "Session Pack Confirmed";
@@ -1799,6 +1812,10 @@ class HomeController extends BaseController {
                         $duration = "valid for ".$serviceDurArr[1];
                     }
                     $subline = "Hi <b>".$item['customer_name']."</b>, your ".$serviceDurArr[0]." pack (".$duration.") for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed by paying Rs. ".(string)$item['amount_customer'].". We have also sent you a confirmation Email and SMS";
+                    
+                    if(!empty($item['coupon_flags']['cashback_100_per'])){
+                        $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by using it on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
+                    }
                 }
 
                 if(isset($item['booking_for_others']) && $item['booking_for_others']){
@@ -1865,9 +1882,17 @@ class HomeController extends BaseController {
                     default:
                         $header = "WORKOUT SESSION CONFIRMED";
                         $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying Rs ".$item['amount'].". We have also sent you a confirmation Email & SMS.";
+<<<<<<< HEAD
                         if(!empty($item['pass_order_id'])){
                             $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by using unlimited access pass. We have also sent you a confirmation Email & SMS."; 
                         };
+=======
+                        
+                        if(!empty($item['coupon_flags']['cashback_100_per'])){
+                            $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by using it on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
+                        }
+
+>>>>>>> origin/master-reliance
                         break;
                 }
 
@@ -2198,9 +2223,9 @@ class HomeController extends BaseController {
                 }
 
 
-                if(!empty($customer['loyalty'])){
+                // if(!empty($customer['loyalty'])){
                     $resp['milestones'] = $this->utilities->getMilestoneSection();
-                }
+                // }
 
             }
 
@@ -2283,10 +2308,16 @@ class HomeController extends BaseController {
                     $resp['kiosk_membership'] = $this->utilities->membershipBookedLocateScreen($item);
                 }
             }
+<<<<<<< HEAD
 
         
             $resp['branch_obj'] = $this->utilities->branchIOData($item);
 
+=======
+            if(!empty($item['coupon_flags'])){
+                $resp['coupon_flags'] = $item['coupon_flags'];
+            }
+>>>>>>> origin/master-reliance
             return Response::json($resp);
         }
     }
@@ -3924,7 +3955,13 @@ class HomeController extends BaseController {
     public function ifcity($city=null){
         Log::info("ifcity");
         Log::info($city);
-        $response = ifCityPresent($city);
+        if(!empty($_GET['bypass'])) {
+            $response = ifCityPresent($city, $_GET['bypass']);
+        }
+        else {
+            $response = ifCityPresent($city);
+        }
+        
         $jwt_token = Request::header('Authorization');
         if(!$response['found']){
             if($jwt_token){
@@ -5372,20 +5409,28 @@ class HomeController extends BaseController {
                 $data['header_data'] = apache_request_headers();
     
                 $crashlog = new ApiCrashLog($data);
-    
+
+                
                 if(empty(Config::get('app.debug')) && !empty($data["post_data"]["res_header"]) && (empty($data["post_data"]["res_header"]['Status']) || $data["post_data"]["res_header"]['Status'] != "200 OK")){
                     $crashlog->save();
-                    $message = json_encode(["text"=>strtoupper($data['header_data']['Device-Type'])."----".$crashlog['post_data']['url']]);
-                    // $message = json_encode(['text'=?""]);
-                    $c = curl_init();
-                    curl_setopt($c, CURLOPT_URL, "https://hooks.slack.com/services/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");
-                    curl_setopt($c, CURLOPT_POST, 1);
-                    curl_setopt($c, CURLOPT_POSTFIELDS, $message);
-                    curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 30);
-                    curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
-                    curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
-                    Log::info(curl_exec($c));
+                    
+                    $response_400 = !empty($data['post_data']['res_status']) && $data['post_data']['res_status'] == 400;
+
+                    if(!$response_400){
+
+                        $message = json_encode(["text"=>strtoupper($data['header_data']['Device-Type'])."----".$crashlog['post_data']['url']]);
+                        // $message = json_encode(['text'=?""]);
+                        $c = curl_init();
+                        curl_setopt($c, CURLOPT_URL, "https://hooks.slack.com/services/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");
+                        curl_setopt($c, CURLOPT_POST, 1);
+                        curl_setopt($c, CURLOPT_POSTFIELDS, $message);
+                        curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 30);
+                        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+                        curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
+                        curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
+                        Log::info(curl_exec($c));
+                    
+                    }
                 
                 }
                 // $customermailer = new CustomerMailer();

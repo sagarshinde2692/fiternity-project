@@ -237,8 +237,11 @@ Route::post('customer/update/webnotification', array('as' => 'customer.updateweb
 Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','uses' => 'CustomerController@addHealthInfo'));
 Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
 Route::group(array('before' => 'device'), function() {
-	Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
 });
+Route::group(array('before' => 'validatetoken'), function() {
+    Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
+});
+
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
 Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
 Route::get('app/forceupdate', array('as' => 'customer.forceupdate','uses' => 'CustomerController@forceUpdate'));
@@ -1301,6 +1304,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('listcheckins', 'CustomerController@listCheckins');
 
 	Route::get('claimexternalcoupon/{_id}', 'CustomerController@claimExternalCoupon');
+	Route::get('claimexternalcouponrewards/{_id}', 'CustomerController@claimExternalCouponRewards');
 
 	Route::get('markcheckin/{finder_id}', 'CustomerController@markCheckin');
 
@@ -1340,6 +1344,9 @@ Route::post('addServiceMultipleSessionPack','DebugController@addServiceMultipleS
 
 Route::get('orderOldSuccessDateToNew', 'DebugController@orderOldSuccessDateToNew');
 
+Route::get('test', 'CustomerController@test');
+Route::get('addTypeOfPpsVendor', 'DebugController@addTypeOfPpsVendor');
+
 Route::post('generatefreesp', 'TransactionController@generateFreeSP');
 Route::get('paidAndFreeFItcash', 'DebugController@paidAndFreeFItcash');
 
@@ -1364,6 +1371,7 @@ Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');
 Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
 Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
 Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
+<<<<<<< HEAD
 // Route::post('passcapture', 'TransactionController@classPassCapture');
 Route::get('listpass', 'PassController@listPasses');
 Route::post('razorpay/subscribe', 'RazorpayController@createSubscription');
@@ -1373,3 +1381,22 @@ Route::get('orderpasshistory',  array('as' => 'customer.orderpasshistory','uses'
 Route::get('passtermscondition', 'PassController@passTermsAndCondition');
 Route::get('passfaq', 'PassController@passFrequentAskedQuestion');
 Route::post('razorpaywebhooks', 'RazorpayController@razorpayWebhooks');
+=======
+Route::get('brandwebsite/home/{brand_id}', 'BrandsController@getBrandWebsiteHome');
+Route::get('brandwebsite/aboutus/{brand_id}', 'BrandsController@getBrandWebsiteAboutUs');
+Route::get('brandwebsite/programs/{brand_id}', 'BrandsController@getBrandWebsitePrograms');
+Route::get('brandwebsite/hiit/{brand_id}', 'BrandsController@getBrandWebsiteHiit');
+Route::get('brandwebsite/contactus/{brand_id}', 'BrandsController@getBrandWebsiteContactUs');
+Route::get('brandwebsite/ownfranchise/{brand_id}', 'BrandsController@getBrandWebsiteOwnFranchise');
+Route::get('multifitDataMigration', 'DebugController@multifitDataMigration');
+
+Route::post('reliance/updateAppStepCount', 'RelianceController@updateAppStepCount');
+Route::post('reliance/updateservicestepcount', 'RelianceController@updateServiceStepCount');
+Route::get('reliance/getLeaderboard', 'RelianceController@getLeaderboard');
+Route::post('reliance/leaderboard', 'RelianceController@getLeaderboard');
+Route::post('customer/storedob', 'RelianceController@storeDob');
+Route::post('customer/enablereliancecampaign', 'CustomerController@enableRelianceCampaign');
+
+Route::get('nearbyvendors', 'CustomerController@getNearbyVendors');
+Route::get('migrateStepsToFirestore', 'DebugController@migrateStepsToFirestore');
+>>>>>>> origin/master-reliance

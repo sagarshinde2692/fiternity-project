@@ -10,7 +10,7 @@ class GlobalPushController extends \BaseController
   protected $elasticsearch_url = "";
   protected $elasticsearch_default_url = "";
   protected $elasticsearch_host = "";
-  protected $citylist = array(1,2,3,4,5,6,8,9,10);
+  protected $citylist = array(1,2,3,4,5,6,8,9,10,11,12);
   protected $citynames = array('1' => 'mumbai','2' => 'pune', '3' => 'bangalore', '4' => 'delhi','5' => 'hyderabad','6' => 'ahmedabad', '8' => 'gurgaon', '9' => 'noida', '11' => 'jaipur', '12' => 'chandigarh', '10' => 'faridabad');
   protected $primaryfiltersrank = array('free trial' => '10', 'group classes' => '8', 'parking' => '6', 'sunday open' => '4', 'locker and shower facility' => '2');
 
@@ -574,7 +574,7 @@ class GlobalPushController extends \BaseController
             default:
               $string = ucwords($cat['name']).' in '.ucwords($loc['name']);
               break;                              }
-
+Log::info("location".$loc['name']);
           $postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['cities'][0]['name'], $cluster);
           $postfields_data = json_encode($postdata);
 

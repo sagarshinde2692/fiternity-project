@@ -380,6 +380,28 @@ if(!function_exists('citywise_category')){
                 // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
 
+            $cat['kolkata'] = [
+                ["name" => "All Fitness Options","slug" => "fitness"],
+                ["name" => "Gyms","slug" => "gyms"],
+                ["name" => "Fitness Studios","slug" => "fitness-studios"],
+                ["name" => "Yoga","slug" => "yoga-classes"],
+                ["name" => "Zumba","slug" => "zumba-classes"],
+                ["name" => "Dance","slug" => "dance-classes"],
+                ["name" => "Marathon Training","slug" => "marathon-training"],
+                ["name" => "Swimming","slug" => "swimming-pools"],                
+				["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
+                // ["name" => "Aerobics","slug" => "aerobics"],
+                // ["name" => "Swimming","slug" => "swimming-pools"],
+                // ["name" => "Aqua Fitness","slug" => "aqua-fitness"] 
+                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
+                // ["name" => "Personal Trainers","slug" => "personal-trainers"],
+                // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
+                // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
+                // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
+                // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
+            ];
+
             $cat['all'] = [
                 ["name" => "All Fitness Options","slug" => "fitness", "_id" => 0],
                 ["name" => "Gyms","slug" => "gyms","_id" => 5],
@@ -407,6 +429,19 @@ if(!function_exists('citywise_category')){
 
             if(isset($cat[$city])){
                 $category_slug = $cat[$city];
+            }
+            else {
+                $category_slug = [
+                    ["name" => "All Fitness Options","slug" => "fitness", "_id" => 0],
+                    ["name" => "Gyms","slug" => "gyms","_id" => 5],
+                    ["name" => "Zumba","slug" => "zumba-classes","_id" => 12],
+                    ["name" => "Cross Functional Training","slug" => "functional-training","_id" => 35],
+                    ["name" => "Fitness Studios","slug" => "fitness-studios", "_id" => 43],
+                    ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes", "_id" => 8],
+                    ["name" => "Yoga","slug" => "yoga-classes", "_id" => 6],
+                    ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
+                    ["name" => "Dance","slug" => "dance-classes", "_id" => 7],
+                ];
             }
 
             return $category_slug;
@@ -464,10 +499,16 @@ if(!function_exists('getmy_city')){
 
 
 if(!function_exists('ifCityPresent')){
-    function ifCityPresent($city){
+    function ifCityPresent($city, $bypass=false){
         $city = strtolower($city);
         $send_city = $city;
         $ifcity = false;
+        if((!empty($bypass)) && $bypass=="true") {
+            $bypass = true;
+        }
+        else if((!empty($bypass)) && $bypass=="false") {
+            $bypass = false;
+        }
         switch($city){
             case "dombivli":
             case "kalyan":
@@ -530,7 +571,14 @@ if(!function_exists('ifCityPresent')){
                 $ifcity = true;
                 break;		    
         };
-        $response = array("city"=>$send_city,"found"=>$ifcity);
+        if($ifcity) {
+            $bypass = false;
+        }
+        if($bypass) {
+            $ifcity = true;
+            $bypass = true;
+        }
+        $response = array("city"=>$send_city,"found"=>$ifcity,"bypass"=>$bypass);
         return $response;
     }
 }
@@ -2348,7 +2396,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                         } else {
 
-                            $device_id = Device::max('_id') + 1;
+                            $device_id = Device::maxId() + 1;
                             $device = new Device();
                             $device->_id = $device_id;
                             $device->reg_id = $data['reg_id'];
@@ -2445,7 +2493,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     Log::info("autoRegisterCustomer");
 					Log::info(print_r($data,true));
 
-                	$customer= Customer::active()->where('email', 'like', $data['customer_email'])->first();
+                	$customer= Customer::active()->where('email', $data['customer_email'])->first();
                     
                     if (!$customer) {
 
@@ -2599,6 +2647,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     
                     if(empty($data)){ 
                     
+<<<<<<< HEAD
                         $customer = Customer::find($customer_id);
                         $customer = array_except($customer->toArray(), array('password'));
                         
@@ -2640,6 +2689,50 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         if(!empty($customer['cart_id']))
                             $data['cart_id']=$customer['cart_id'];
                     }
+=======
+                    $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
+                    $customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
+                    $customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
+                    $customer['facebook_id'] = (isset($customer['facebook_id'])) ? $customer['facebook_id'] : "";
+                    $customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
+                    $customer['contact_no'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+                    $customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+                    $customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+                    $customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+                    
+                    $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
+                    $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
+//                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
+
+                    $data = array(
+                                '_id'=>$customer['_id'],
+                                'name'=>$customer['name'],
+                                "email"=>$customer['email'],
+                                "picture"=>$customer['picture'],
+                                'facebook_id'=>$customer['facebook_id'],
+                                "identity"=>$customer['identity'],
+                                "address"=>$customer['address'],
+                                "contact_no"=>$customer['contact_no'],
+                                "location"=>$customer['location'],
+                                'gender'=>$customer['gender'],
+                    			'rx_user'=>$customer['rx_user'],
+//                     			'rx_success_url'=>$customer['rx_success_url'],	
+                                'extra'=>array(
+                                    'mob'=>$customer['extra']['mob'],
+                                    'location'=>$customer['extra']['location']
+                                )
+                            ); 
+                    if(!empty($customer['corporate_id'])) {
+                        $data['corporate_id'] = $customer['corporate_id'];
+                    }
+                    if(!empty($customer['external_reliance'])) {
+                        $data['external_reliance'] = $customer['external_reliance'];
+                    }
+                    if(!empty($customer['referral_code']))
+                    	$data['referral_code'] = $customer['referral_code'];	
+                    if(!empty($customer['cart_id']))
+                    	$data['cart_id']=$customer['cart_id'];
+>>>>>>> origin/master-reliance
                     		
                     $jwt_claim = array(
                         "iat" => Config::get('app.jwt.iat'),
@@ -3090,8 +3183,9 @@ if (!function_exists(('customerTokenDecode'))){
                 Log::info("Yes1");
                 return Response::json(array('status' => 400,'message' => 'User logged out'),400);
             }
-
-            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            // $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            $decodedToken = JWT::decode($jwt_token);
+        
             // Log::info($decodedToken);
             return $decodedToken;
 
@@ -3672,7 +3766,7 @@ if (!function_exists('vendorsByBrand')) {
         $limit   = 50;
         $brand_id = $request['brand_id'];
         $city = $request['city'];
-        $keys = [ "id","address","average_rating","business_type","categorytags","commercial_type","contact","coverimage","distance","facilities","geolocation","location","locationtags","multiaddress","name","offer_available","offerings","photos","servicelist","slug","total_rating_count","vendor_type","subcategories","tractionscore","trial_offer","membership_offer" ];
+        $keys = [ "id","address","average_rating","business_type","categorytags","commercial_type","contact","coverimage","distance","facilities","geolocation","location","locationtags","multiaddress","name","offer_available","offerings","photos","servicelist","slug","total_rating_count","vendor_type","subcategories","tractionscore","trial_offer","membership_offer", "thumbnail_website_membership"];
         
         // $brand_id = $request['brand_id'];
         $payload = [ 
@@ -3940,7 +4034,18 @@ if (!function_exists(('isFinderIntegrated'))){
 	
 	 function isFinderIntegrated($finder){
         try{
-            if((!empty($finder['commercial_type']) && $finder['commercial_type'] == 0) || (!empty($finder['membership']) && $finder['membership'] == 'disable') || (!empty($finder['trial']) && $finder['trial'] == 'disable') || (!empty($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed']))){
+            if(
+                (
+                    !empty($finder['commercial_type']) && $finder['commercial_type'] == 0) 
+                ||
+                (
+                    (!empty($finder['membership']) && $finder['membership'] == 'disable') 
+                    && 
+                    (!empty($finder['trial']) && $finder['trial'] == 'disable')
+                ) 
+                ||
+                (!empty($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed']))
+            ){
                 return false;
             }else{
                 return true;
@@ -4427,6 +4532,7 @@ if (!function_exists('createBucket')) {
 
 }
 
+<<<<<<< HEAD
 if (!function_exists('setNewToken')) {
 
     function setNewToken($response, $pass = false){
@@ -4456,10 +4562,19 @@ if (!function_exists('setNewToken')) {
         
         
         
+=======
+if (!function_exists('isExternalCity')) {
+
+    function isExternalCity($city){
+        
+        return !in_array($city, ['mumbai','delhi','hyderabad','bangalore','gurgaon','noida','pune','chandigarh','jaipur']);
+    
+>>>>>>> origin/master-reliance
     }
 
 }
 
+<<<<<<< HEAD
 if (!function_exists('checkAppVersionFromHeader')) {
 
     function checkAppVersionFromHeader($data){        
@@ -4549,5 +4664,61 @@ if (!function_exists(('geoLocationWorkoutSession'))){
 
     }
 }
+=======
+if (!function_exists('getFromCache')) {
+
+    function getFromCache($data){
+        
+        if(empty($data['tag']) || empty($data['key'])){
+            return null;
+        }
+        try{
+            return Cache::tags($data['tag'])->get($data['key']);
+        }catch(Exception $e){
+            Log::info("cache down getFromCache");
+        }
+    
+    }
+
+}
+if (!function_exists('setCache')) {
+
+    function setCache($data){
+        Log::info("Setting, cache", $data);
+        if(empty($data['time'])){
+            $data['time'] = 86400;
+        }
+
+        if(empty($data['tag']) || empty($data['key']) || empty($data['data'])){
+            return null;
+        }
+        try{
+            // if(empty(Cache::tags($data['tag'])->has($data['key']))){
+                Cache::tags($data['tag'])->put($data['key'], $data['data'],$data['time']);
+            // }
+            
+        }catch(Exception $e){
+            Log::info("cache down setCache");
+        }
+    
+    }
+
+}
+if (!function_exists('curl_call_get')) {
+    function curl_call_get($wsUrl)
+    {
+        Log::info("curl_call_get", [$wsUrl]);
+        $c = curl_init();
+        curl_setopt($c, CURLOPT_URL, $wsUrl);
+        curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
+        Log::info(curl_exec($c));
+        
+    }
+}
+
+>>>>>>> origin/master-reliance
 
 ?>

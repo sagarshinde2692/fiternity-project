@@ -102,6 +102,18 @@ return array(
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]
 		), 
+		// 'stage' => array(
+		// 	'driver' => 'mongodb', 
+		// 	'host' => "apistage.fitn.in", 
+		// 	'port' => 27017, 
+		// 	'database' => 'fitapi', 
+		// 	'username' => 'admin, 
+		// 	'password' => 'fit123, 
+		// 	'options' => ['db' => 'admin','authMechanism' => 'MONGODB-CR']
+		// 	// 'options' => [
+		// 	// 	'db' => 'admin' // sets the authentication database required by mongo 3
+		// 	// ]
+		// ), 
 
 
 		// 'mongodb3' => array(

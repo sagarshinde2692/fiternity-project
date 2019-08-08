@@ -22,6 +22,7 @@ use App\Services\CustomerInfo as CustomerInfo;
 
 use App\Services\Jwtauth as Jwtauth;
 use App\Services\Metropolis as Metropolis;
+use App\Services\RelianceService as RelianceService;
 
 
 class SchedulebooktrialsController extends \BaseController {
@@ -38,6 +39,7 @@ class SchedulebooktrialsController extends \BaseController {
     protected $utilities;
     protected $customerreward;
     protected $jwtauth;
+    protected $relianceService;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -50,7 +52,8 @@ class SchedulebooktrialsController extends \BaseController {
         OzontelOutboundCall $ozontelOutboundCall,
         Utilities $utilities,
         CustomerReward $customerreward,
-        Jwtauth $jwtauth
+        Jwtauth $jwtauth,
+        RelianceService $relianceService
     ) {
         parent::__construct();
         date_default_timezone_set("Asia/Kolkata");
@@ -65,8 +68,8 @@ class SchedulebooktrialsController extends \BaseController {
         $this->utilities            =   $utilities;
         $this->customerreward            =   $customerreward;
         $this->jwtauth 	=	$jwtauth;
-
         $this->vendor_token = false;
+        $this->relianceService = $relianceService;
 
         $vendor_token = Request::header('Authorization-Vendor');
 
@@ -1972,7 +1975,7 @@ class SchedulebooktrialsController extends \BaseController {
             $finder_poc_for_customer_name       = 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
             $finder_poc_for_customer_no	       = 	(isset($finder['finder_poc_for_customer_mobile']) && $finder['finder_poc_for_customer_mobile'] != '') ? $finder['finder_poc_for_customer_mobile'] : "";
             $share_customer_no			       = 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
-
+            $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
 
             $service_name				       =	strtolower($data['service_name']);
             if(isset($data['schedule_slot'])){
@@ -2083,6 +2086,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'finder_lat'                    =>      $finder_lat,
                 'finder_lon'                    =>      $finder_lon,
                 'finder_photos'                 =>      $finder_photos,
+                'finder_flags'                  =>      $finder_flags,
                 'description'                   =>      $description,
                 'what_i_should_carry'           =>      $what_i_should_carry,
                 'what_i_should_expect'          =>      $what_i_should_expect,
@@ -2163,6 +2167,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'ask_review'                    =>      true,
             );
 
+<<<<<<< HEAD
             if(!empty($order['pass_order_id'])) {
                 $booktrialdata['pass_order_id'] = $order['pass_order_id'];
             }
@@ -2177,6 +2182,16 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(!empty($order['pass_type'])) {
                 $booktrialdata['pass_type'] = $order['pass_type'];
+=======
+            $customer = Customer::where('_id', $customer_id)->first();
+            
+            if(!empty($customer['corporate_id'])) {
+                $booktrialdata['corporate_id'] = $customer['corporate_id'];
+            }
+            
+            if(!empty($customer['external_reliance'])) {
+                $booktrialdata['external_reliance'] = $customer['external_reliance'];
+>>>>>>> origin/master-reliance
             }
 
             if(!empty($data['studio_extended_validity_order_id'])){
@@ -2242,6 +2257,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['multifit'] = $order['multifit'];
             }
 
+            if(!empty($order['jgs'])){
+                $booktrialdata['jgs'] = $order['jgs'];
+            }
+
             if(!empty($order['manual_order'])){
                 $booktrialdata['manual_order'] = $order['manual_order'];
             }
@@ -2271,6 +2290,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['service_flags'] = $order['service_flags'];
             }
 
+            if(!empty($order['coupon_flags'])){
+                $booktrialdata['coupon_flags'] = $order['coupon_flags'];
+            }
+
             if(!empty($order['ratecard_flags'])){
                 $booktrialdata['ratecard_flags'] = $order['ratecard_flags'];
             }
@@ -2283,6 +2306,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($order['recommended_booktrial_id']) && $order['recommended_booktrial_id'] != ""){
                 $booktrialdata['recommended_booktrial_id'] = (int)$order['recommended_booktrial_id'];
+            }
+
+            if(isset($order['servicecategory_id']) && $order['servicecategory_id'] != ""){
+                $booktrialdata['servicecategory_id'] = (int)$order['servicecategory_id'];
             }
 
             $workout_session_fields = ['customers_list', 'pay_later'];
@@ -2657,6 +2684,14 @@ class SchedulebooktrialsController extends \BaseController {
             $this->firstTrial($booktrial->toArray()); // first trial communication
 
             $booktrialdata = $booktrial->toArray();
+
+            $booktrialdata['service_steps'] = 300;
+            if(isset($booktrialdata['servicecategory_id']) && $booktrialdata['servicecategory_id'] != ''){
+                $service_cat_steps_map = Config::get('health_config.service_cat_steps_map');
+                if(in_array($booktrialdata['servicecategory_id'], array_keys($service_cat_steps_map))){
+                    $booktrialdata['service_steps'] = $service_cat_steps_map[$booktrialdata['servicecategory_id']];
+                }
+            }
 
             $currentDateTime 			       =	\Carbon\Carbon::now();
             $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
@@ -3556,6 +3591,11 @@ class SchedulebooktrialsController extends \BaseController {
                 'ask_review'                    =>      true
             );
 
+            $customer = Customer::where('_id', $customer_id)->first();
+            if(!empty($customer['corporate_id'])) {
+                $booktrialdata['corporate_id'] = $customer['corporate_id'];
+            }
+
             if(!empty($data['assisted_by'])){
                 $booktrialdata['assisted_by'] = $data['assisted_by'];
             }
@@ -3648,6 +3688,16 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['total_sessions'] = $data['total_sessions'];
                 $booktrialdata['total_sessions_used'] = $data['total_session_used'];
                 $booktrialdata['ratecard_id'] = $ratecard_id;
+
+                Customer::$withoutAppends = true;
+                $abwCust = Customer::where('third_party_details','exists',true)->where('status','1')->where('email', $customer_email)->first();
+                if(!empty($abwCust)) {
+                    if(empty($abwCust['total_sessions_used'])) {
+                        $abwCust['total_sessions_used'] = 0;
+                    }
+                    $abwCust['total_sessions_used'] = $abwCust['total_sessions_used'] + 1;
+                    $abwCust->update();
+                }
             }
 
             if(isset($data['_id'])){
@@ -5048,6 +5098,10 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 $emaildata['third_party_details'] = $booktrial['third_party_details'];
             
+            }
+
+            if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                $emaildata['corporate_id'] = $booktrial['corporate_id'];
             }
 
 
@@ -7149,6 +7203,11 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_date = time();
             $booktrial->update();
 
+            if(!empty($booktrial['corporate_id'])){
+                // $this->relianceService->updateServiceStepCount(['booktrialId'=>$booktrial['_id'], 'deviceDate'=>time()]);
+                Queue::connection('redis')->push('RelianceController@updateServiceStepCountJob', array('booktrialId'=>$booktrial->_id, 'deviceDate'=>time()),Config::get('app.queue'));
+            }
+
             if(isset($booktrial['send_communication']['customer_sms_after24hour']) && $booktrial['send_communication']['customer_sms_after24hour'] != ""){
                          
                 $booktrial->unset('customer_sms_after24hour');
@@ -7464,6 +7523,14 @@ class SchedulebooktrialsController extends \BaseController {
             ];
 
             $this->utilities->addCheckin(['customer_id'=>$booktrial['customer_id'], 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id']]);
+            if(!empty($booktrial->corporate_id)) {
+                // $this->relianceService->updateServiceStepCount();
+                $orderId = null;
+                if(!empty($booktrial['order_id'])) {
+                    $orderId = $booktrial->order_id;
+                }
+                \Queue::connection('redis')->push('RelianceController@updateServiceStepCountJob', array('booktrialId'=>$booktrial->_id, 'deviceDate'=>time()),Config::get('app.queue'));
+            }
         }
 
         return Response::json($response,200);
@@ -7685,6 +7752,29 @@ class SchedulebooktrialsController extends \BaseController {
                     }
                 }
 
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+
+                    if($payment_done){
+                        unset($response['sub_header_1']);
+                        $response['sub_header_2'] = "300 Steps will be added into your steps counter post your workout.";
+
+                        $response['sub_header_2'] = $response['sub_header_2']."\n\n".$customer_level_data['current_level']['cashback']."% cashback is added into your Fitternity wallet. Use it to book more workouts to reach your steps goal faster";
+
+                        if(isset($booktrial['servicecategory_id']) && $booktrial['servicecategory_id'] != ''){
+                            $service_cat_steps_map = Config::get('health_config.service_cat_steps_map');
+                            if(in_array($booktrial['servicecategory_id'], array_keys($service_cat_steps_map))){
+                                $service_steps = $service_cat_steps_map[$booktrial['servicecategory_id']];
+                                $response['sub_header_2'] = $service_steps." Steps will be added into your steps counter post your workout.";
+
+                                $response['sub_header_2'] = $response['sub_header_2']."\n\n".$customer_level_data['current_level']['cashback']."% cashback is added into your Fitternity wallet. Use it to book more workouts to reach your steps goal faster";
+                            }
+                        }
+                    }else{
+                        $response['payment'] = $pending_payment;
+                    }
+                    
+                }
+
                 if(isset($_GET['source']) && $_GET['source'] == 'let_us_know'){
                     $response['header'] = 'GREAT';
                 }
@@ -7736,6 +7826,20 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
                 }
 
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                    $response['sub_header_1'] = "300 Steps";
+                        
+                    if(isset($booktrial['servicecategory_id']) && $booktrial['servicecategory_id'] != ''){
+                        $service_cat_steps_map = Config::get('health_config.service_cat_steps_map');
+                        if(in_array($booktrial['servicecategory_id'], array_keys($service_cat_steps_map))){
+                            $service_steps = $service_cat_steps_map[$booktrial['servicecategory_id']]; 
+                            $response['sub_header_1'] = $service_steps." Steps";       
+                        }
+                    }
+
+                    $response['sub_header_2'] = "will be added into your steps counter post verifying your attendance from gym/studio.";    
+                }
+
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
@@ -7775,8 +7879,14 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
 
                 }
+<<<<<<< HEAD
                 if(!empty($booktrial->pass_order_id)){
                     unset($response['footer']);
+=======
+
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                    $response['sub_header_2'] = "Sorry, cancellation is available only 60 minutes prior to your session time.\n\nKeep booking workouts to get closer to your steps milestone.";
+>>>>>>> origin/master-reliance
                 }
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
@@ -7813,8 +7923,20 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['reschedule_button'] = true;
                     $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
                 }
+<<<<<<< HEAD
                 if(!empty($booktrial->pass_order_id)){
                     unset($response['footer']);
+=======
+
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                    if($payment_done){
+                        $response['sub_header_2'] = "Make sure you attend next time to earn steps into your steps counter to achieve your goal faster.";
+    
+                        if(!empty($booktrial->amount)){
+                            $response['sub_header_2'] = $response['sub_header_2']."\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
+                        }
+                    }  
+>>>>>>> origin/master-reliance
                 }
                 $this->cancel($booktrial->_id);
             break;
@@ -7861,8 +7983,21 @@ class SchedulebooktrialsController extends \BaseController {
                     
                 }
 
+<<<<<<< HEAD
                 if(isset($booktrial['pass_order_id'])){
                     unset($response['attend']);
+=======
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                    $response['attend']['sub_header_2'] = 'Attend this sessionand earn 300 Steps.';
+                    
+                    if(isset($booktrial['servicecategory_id']) && $booktrial['servicecategory_id'] != ''){
+                        $service_cat_steps_map = Config::get('health_config.service_cat_steps_map');
+                        if(in_array($booktrial['servicecategory_id'], array_keys($service_cat_steps_map))){
+                            $service_steps = $service_cat_steps_map[$booktrial['servicecategory_id']];
+                            $response['attend']['sub_header_2'] = 'Attend this session and earn '.$service_steps.' Steps.';
+                        }
+                    }
+>>>>>>> origin/master-reliance
                 }
             break;
             case 'cancel':
@@ -7910,6 +8045,10 @@ class SchedulebooktrialsController extends \BaseController {
                         $response['sub_header_2']  = 'Sorry, you have already availed '.$orderDetails['studio_sessions']['total_cancel_allowed'].' sessions extension of your membership.';  
                         $response['header']='Not Cancelled';
                     }
+                }
+
+                if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
+                    $response['sub_header_2'] = "Make sure you attend next time to earn steps into your steps counter to achieve your goal faster.";
                 }
                 
             break;

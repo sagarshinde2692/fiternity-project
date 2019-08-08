@@ -8,17 +8,30 @@
  */
 use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
+<<<<<<< HEAD
 use App\Services\PassService as PassService;
+=======
+use App\Services\RelianceService as RelianceService;
+>>>>>>> origin/master-reliance
 
 
 class ServiceController extends \BaseController {
 
+<<<<<<< HEAD
 	public function __construct(Utilities $utilities, PassService $passService) {
+=======
+	public function __construct(Utilities $utilities, RelianceService $relianceService) {
+>>>>>>> origin/master-reliance
 
 		parent::__construct();
 
 		$this->utilities = $utilities;
+<<<<<<< HEAD
 		$this->passService = $passService;
+=======
+		$this->relianceService = $relianceService;
+
+>>>>>>> origin/master-reliance
 		$this->vendor_token = false;
         
         $vendor_token = Request::header('Authorization-Vendor');
@@ -638,6 +651,7 @@ class ServiceController extends \BaseController {
         		$decodeKioskVendorToken = decodeKioskVendorToken();
         		$vendor = $decodeKioskVendorToken->vendor;
         		$finder_id = (int)$vendor->_id;
+                $request['type'] = 'workout-session';
         	}
         	else $finder_id = (int)$request['finder_id'];
         	
@@ -813,7 +827,7 @@ class ServiceController extends \BaseController {
 				'cost'=>'Free Via Fitternity',
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
 				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : "",
-                'free_trial_available'=>!empty($item['freeTrialRatecards'])
+				'free_trial_available'=>!empty($item['freeTrialRatecards'])
 			);
 
 			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
@@ -821,7 +835,9 @@ class ServiceController extends \BaseController {
 				$service['cost'] = 'Free';
 			}
 
-            if($service['servicecategory_id'] == 65){
+			$index = strpos($service['service_name'] , 'Gym ');
+			/*$service['servicecategory_id'] == 65 && $service['servicesubcategory_id']!=67*/
+            if(!($index ===false)){
                 $service['service_name'] = $this->utilities->getGymServiceNamePPS();
             }
 			
@@ -898,8 +914,18 @@ class ServiceController extends \BaseController {
 		    		$p_np=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 		    		if(!empty($p_np))
 		    		{	
-		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak'])." (100% Cashback)":((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $this->utilities->getRupeeForm($p_np['non_peak'] + $p_np['non_peak_discount'])." (100% Cashback)":"");
-		    			$nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak'])." (100% Cashback)":"";
+		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $this->utilities->getRupeeForm($p_np['non_peak'] + $p_np['non_peak_discount']):"");
+                        $nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
+                        
+                        if(empty($finder['flags']['monsoon_campaign_pps'])){
+                            if(!empty($rsh['price'])){
+                                $rsh['price'].=" (100% Cashback)";
+                            }
+                            if(!empty($rsh['price'])){
+                                $nrsh['price'].=" (100% Cashback)";
+                            }
+                            
+                        }
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
 				}
@@ -1112,12 +1138,16 @@ class ServiceController extends \BaseController {
 			if(!empty($ratecard_price) && !empty($non_peak_exists)){
                 if(!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])){
 				    
-                    $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title1'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off')))." (100% Cashback)",'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
+                    $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title1'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
 
                 }else{
 
-                    $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off')))." (100% Cashback)",'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
+                    $service['non_peak'] = ['text'=>Config::get('app.non_peak_hours.non_peak_title'), 'price'=>$this->utilities->getRupeeForm(floor($ratecard_price*Config::get('app.non_peak_hours.off'))),'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png'];
 
+                }
+
+                if(empty($finder['flags']['monsoon_campaign_pps'])){
+                    $service['non_peak']['price'] .= " (100% Cashback)";
                 }
             }
 			
@@ -1300,7 +1330,7 @@ class ServiceController extends \BaseController {
                         }
 					}
 					
-					if(isset($sc['free_trial_available']) && $sc['free_trial_available']){
+					if((isset($sc['free_trial_available']) && $sc['free_trial_available']) || !empty($finder['flags']['monsoon_campaign_pps'])){
 						$str = "";
 					}
 
@@ -1685,7 +1715,7 @@ class ServiceController extends \BaseController {
 				->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
 				->with('category')
 				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->where("description", "!=", "")->orderBy('updated_at', 'DESC')->limit(3);}))
-				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo', 'category_id']);
+				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo', 'category_id', 'flags']);
 
 			if(!$finder){
 				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
@@ -1734,6 +1764,7 @@ class ServiceController extends \BaseController {
 			
 			};
 			$service_details['finder_slug'] = $finder['slug'];
+			$service_details['finder_flags'] = $finder['flags'];
 			$service_details['lat'] = (string)$service_details['lat'];
 			$service_details['lon'] = (string)$service_details['lon'];
 
@@ -1776,10 +1807,24 @@ class ServiceController extends \BaseController {
 			};
 			
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
+            // $ratecard = Ratecard::where("service_id",(int)$value["service_id"])->where('type','workout session')->orderBy("_id","desc")->first();
+            $offer = Offer::where('hidden', false)->where('ratecard_id', $workout_session_ratecard['_id'])->orderBy('_id', 'desc')
+            ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+            ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()-86400) ))
+            ->first();		
 
+            if(!empty($offer)){
+                $service_details['amount'] = $offer['price'];
+            }
 			
-            $service_details['price'] = "₹".$service_details['amount']." (100% Cashback)";
+            $service_details['price'] = "₹".$service_details['amount'];
 
+            if(empty($finder['flags']['monsoon_campaign_pps'])){
+                $service_details['price'].=" (100% Cashback)";
+            }
+            if($service_details['amount'] != 99){
+                $service_details['finder_flags']['monsoon_campaign_pps'] = false;
+            }
             // if((!empty($finder['category_id']) && $finder['category_id'] == 47) || !empty($service_details['flags']['disable_dynamic_pricing'])){
             //     $service_details['price'] = "Starting at ₹".$service_details['amount'];
             // }else{
@@ -1813,6 +1858,10 @@ class ServiceController extends \BaseController {
 			}
 			
 			$service_details['calorie_burn'] = "BURN ".$service_details['calorie_burn']['avg']." ".((isset($service_details['calorie_burn']['type']) && $service_details['calorie_burn']['type'] != "") ? strtoupper($service_details['calorie_burn']['type']) : "KCAL");
+            $relianceCustomer = $this->relianceService->getCorporateId();
+            if( $relianceCustomer['corporate_id'] && !empty($steps = $this->relianceService->getStepsByServiceCategory($service_details['servicecategory_id']))){
+                $service_details['calorie_burn'] = "Earn ".$steps. " Steps";
+            }
 
 			$reviews = [];
 
@@ -2188,8 +2237,18 @@ class ServiceController extends \BaseController {
 		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
 
 		$order = [65, 5, 19, 1, 123, 3, 4, 2, 114, 86];
+		
+		if(!empty($city)) {
+			$city = strtolower($city);
+		}
+		$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$_city = $city;
+		if(empty($_citydata)) {
+			$_city = "all";
+			$city_id = 10000;
+		}
 
-		$included_ids = citywiseServiceCategoryIds(strtolower($city));
+		$included_ids = citywiseServiceCategoryIds(strtolower($_city));
 
 		$ordered_categories = [];
 		$servicecategories	 = 	Servicecategory::active()->whereIn('_id', $included_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->whereNotIn('_id', $not_included_ids)->orderBy('name')->get(array('_id','name','slug'));
@@ -2333,7 +2392,15 @@ class ServiceController extends \BaseController {
 			
 		}
 		// return DB::getQueryLog();
-
+		if(!empty($city_id) && $city_id==10000) {
+			unset($data['feedback']);
+			unset($data['nearby_options']);
+			unset($data['rebook_trials']);
+			$data['nodata'] = [
+				'title' => '',
+				'message' => 'Sorry, We are currently not operational in your city. We will be launching here soon.'
+			];
+		}
 		return $data;
 
 	}
@@ -2453,7 +2520,7 @@ class ServiceController extends \BaseController {
         $offers = Offer :: where('hidden', false)
                         ->where('ratecard_id', $ratecard_id)
 						->where('start_date', '<=', new MongoDate(strtotime($date)))
-						->where('end_date', '>', new MongoDate(strtotime($date)))
+						->where('end_date', '>', new MongoDate(strtotime($date)-86400))
 						->orderBy('_id', 'desc')
 						->select('price')->first();
 		$offer_price=0;
