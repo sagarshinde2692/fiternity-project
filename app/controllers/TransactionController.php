@@ -7606,6 +7606,10 @@ class TransactionController extends \BaseController {
                 ];
                 $data['amount_payable'] = $pass['price'];
 
+                $result['payment_details']['amount_summary'][] = [
+                    'field' => 'Total Payable Amount',
+                    'value' => 'Rs. '.(string)$pass['price']
+                ];
 
                 if($resp["coupon_applied"]){
                     
@@ -7619,11 +7623,11 @@ class TransactionController extends \BaseController {
                         'field' => 'Coupon Discount',
                         'value' => '-Rs. '.(string)$data['coupon_discount']
                     ];
-                    $result['payment_details']['amount_payable'] = [
-                        'field' => 'Total Amount Payable',
-                        'value' => 'Rs. '.(string)$data['amount_payable']
-                    ];
                 }
+                $result['payment_details']['amount_payable'] = [
+                    'field' => 'Total Amount Payable',
+                    'value' => 'Rs. '.(string)$data['amount_payable']
+                ];
 
             }
 
