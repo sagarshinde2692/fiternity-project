@@ -4000,9 +4000,9 @@ class CustomerController extends \BaseController {
 		}
         
         if(!isExternalCity($city)){
-            $workout_sessions_near_customer = $this->getWorkoutSessions($near_by_vendor_request);
-            $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
-            $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
+            // $workout_sessions_near_customer = $this->getWorkoutSessions($near_by_vendor_request);
+            // $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
+            // $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
 
             if(!($this->device_type=='android' && !empty($this->app_version) && (float)$this->app_version>5.27)){
                 $result['near_by_vendor'] = $this->getNearbyVendors($city, true);
