@@ -210,6 +210,7 @@ class PassService {
                 }
             }
             // $data['amount'] = 0;
+            $data['preferred_starting_date'] = (!empty($data['preferred_starting_date']))?date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date'])):null;
             $order = new Order($data);
             $order['_id'] = $data['_id'];
             $order->save();
@@ -230,7 +231,7 @@ class PassService {
             $result['hash'] = $order['payment_hash'];
             $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
             $result['finder_name'] = strtolower($order['finder_name']);
-            $result['preferred_starting_date'] = (!empty($data['preferred_starting_date']))?date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date'])):null;
+            $result['complementary_pass'] = $order['complementary_pass'];
             $result['type'] = 'pass';
             $resp = [
                 'status' => 200,
