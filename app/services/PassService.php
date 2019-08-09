@@ -197,6 +197,7 @@ class PassService {
                         if(!empty($couponCheck['flags']['corporate_coupon']) && $couponCheck['flags']['corporate_coupon'] == true){
                             $data['corporate_coupon'] = true;
                         }
+                        $data['amount'] = $amount;
 
                         // if(strtolower($data["coupon_code"]) == 'fit2018'){
                         //     $data['routed_order'] = "1";
