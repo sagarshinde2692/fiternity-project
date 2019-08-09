@@ -147,7 +147,64 @@ class PassService {
             }
             
             $hash = getHash($data);
-            
+            $data['amount_customer'] = $data['amount'];
+            if(!empty($data['coupon_code'])) {
+                $customerCoupon = Coupon::where('status', '1')->where('code', strtolower($data['coupon_code']))->where('pass', true)->where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime())->coupon();
+                if(!empty($customerCoupon)) {
+                    $couponCheck = $this->customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],$customer_id, null, null, null, null, null, $pass);
+
+                    Log::info("couponCheck");
+                    Log::info($couponCheck);
+                    $amount = $data['amount'];
+                    if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
+
+                        if(isset($couponCheck['vendor_commission'])){
+                            $data['vendor_commission'] = $couponCheck['vendor_commission'];
+                        }
+                        if(isset($couponCheck['description'])){
+                            $data['coupon_description'] = $couponCheck['description'];
+                        }
+                        
+                        if(isset($couponCheck['spin_coupon'])){
+                            $data['spin_coupon'] = $couponCheck['spin_coupon'];
+                        }else{
+                            $data['spin_coupon'] = "";
+                        }
+                        
+                        if(isset($couponCheck['coupon_discount_percent'])){
+                            $data['coupon_discount_percent'] = $couponCheck['coupon_discount_percent'];
+                        }else{
+                            $data['coupon_discount_percent'] = 0;
+                        }
+
+                        $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
+
+                        $amount -= $data["coupon_discount_amount"];
+                        
+                        if(isset($couponCheck["vendor_coupon"]) && $couponCheck["vendor_coupon"]){
+                            $data["payment_mode"] = "at the studio";
+                            $data["secondary_payment_mode"] = "cod_membership";
+                        }
+
+                        if(!empty($couponCheck['flags']['disc_by_vendor'])){
+                            $data['amount_finder'] -= $data["coupon_discount_amount"];
+                        }
+
+                        if(!empty($couponCheck['flags'])){
+                            $data['coupon_flags'] = $couponCheck['flags'];
+                        }
+
+                        if(!empty($couponCheck['flags']['corporate_coupon']) && $couponCheck['flags']['corporate_coupon'] == true){
+                            $data['corporate_coupon'] = true;
+                        }
+
+                        // if(strtolower($data["coupon_code"]) == 'fit2018'){
+                        //     $data['routed_order'] = "1";
+                        // }
+                    }
+                }
+            }
+            // $data['amount'] = 0;
             $data = array_merge($data,$hash);
             $order = new Order($data);
             $order['_id'] = $data['_id'];
@@ -169,6 +226,7 @@ class PassService {
             $result['hash'] = $order['payment_hash'];
             $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
             $result['finder_name'] = strtolower($order['finder_name']);
+            $result['preferred_starting_date'] = (!empty($data['preferred_starting_date']))?date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date'])):null;
             $result['type'] = 'pass';
             $resp = [
                 'status' => 200,

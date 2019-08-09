@@ -6484,7 +6484,7 @@ class TransactionController extends \BaseController {
         //     }
         // }
         
-        if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
+        if(!isset($data['ratecard_id']) && !isset($data['ticket_id']) && !isset($data['pass_id'])){
             $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
             return Response::json($resp,400);
         }
@@ -6641,7 +6641,11 @@ class TransactionController extends \BaseController {
                 }
             }
         }
-        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, $amount_without_fitcash, $customer_email); 
+        $pass = null;
+        if(!empty($data['pass_id'])) {
+            $pass = Pass::where('pass_id', intval($data['pass_id']))->first();
+        }
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, $amount_without_fitcash, $customer_email, $pass); 
         Log::info("REsponse from CustomerReward", $resp);
         if($resp["coupon_applied"]){
 
@@ -7016,7 +7020,7 @@ class TransactionController extends \BaseController {
 
         $data['you_save'] = 0;
 
-        if(!isset($data['ratecard_id']) && !isset($data['order_id']) && !isset($data['ticket_id'])){
+        if(!isset($data['ratecard_id']) && !isset($data['order_id']) && !isset($data['ticket_id']) && !isset($data['pass_id'])){
                 
                 return Response::json(array('status'=>400, 'message'=>'Order id or Ratecard id is required'), $this->error_status);
         }
@@ -7053,7 +7057,7 @@ class TransactionController extends \BaseController {
         
         }elseif(isset($data['ticket_id'])){
 			$ticket_id = intval($data['ticket_id']);
-		}else{
+		}elseif(isset($data['ratecard_id'])){
 
                 $ratecard_id = intval($data['ratecard_id']);
         }
@@ -7578,7 +7582,52 @@ class TransactionController extends \BaseController {
 
             $data['amount_payable'] = $total_amount;
 
-		}else{
+        }elseif (isset($data['pass_id'])){
+            $order = null;
+            if(!empty($data['order_id'])) {
+                $order_id = $data['order_id'];
+    
+                $order = Order::find(intval($order_id));
+            }
+            $coupon = null;
+            if(!empty($data['coupon'])) {
+                $coupon = $data['coupon'];
+            }
+            if(!empty($data['pass_id'])){
+                $pass = Pass::where('pass_id', intval($data['pass_id']))->first();
+                
+                $resp = $this->customerreward->couponCodeDiscountCheck(null, $coupon, false,  null, 1, null, null, null, $pass);
+
+                $result['order_details'] = [
+                    [
+                        "field"=> $pass['name'],
+                        "value"=> "₹ ".$pass['price']
+                    ]
+                ];
+                $data['amount_payable'] = $pass['price'];
+
+
+                if($resp["coupon_applied"]){
+                    
+                    $data['coupon_discount'] = $data['amount_payable'] > $resp['data']['discount'] ? $resp['data']['discount'] : $data['amount_payable'];
+
+                    $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                    
+                    $data['you_save'] += $data['coupon_discount'];
+                    
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.(string)$data['coupon_discount']
+                    ];
+                    $result['payment_details']['amount_payable'] = [
+                        'field' => 'Total Amount Payable',
+                        'value' => 'Rs. '.(string)$data['amount_payable']
+                    ];
+                }
+
+            }
+
+        }else{
 
             $order_id = $data['order_id'];
     
