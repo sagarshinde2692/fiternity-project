@@ -149,7 +149,7 @@ class PassService {
             $hash = getHash($data);
             $data['amount_customer'] = $data['amount'];
             if(!empty($data['coupon_code'])) {
-                $customerCoupon = Coupon::where('status', '1')->where('code', strtolower($data['coupon_code']))->where('pass', true)->where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime())->coupon();
+                $customerCoupon = Coupon::where('status', '1')->where('code', strtolower($data['coupon_code']))->where('pass', true)->where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime())->first();
                 if(!empty($customerCoupon)) {
                     $couponCheck = $this->customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],$customer_id, null, null, null, null, null, $pass);
 
