@@ -367,6 +367,78 @@ class PassService {
         return;
     }
 
+    public function getPassOrder($customerId) {
+        $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->where('end_date', '>', new MongoDate(time()))->first();
+        return (!empty($passOrder['pass']))?$passOrder['pass']:null;
+    }
+
+    public function getPremiumExpiryDates($bookingStartDate, $premiumBookingInterval, $duration) {
+        $time = time();
+        $totalCycles = floor($duration/$premiumBookingInterval);
+        $bookingEndDate = null;
+        if(!empty($totalCycles)) {
+            for($i=0; $i<$totalCycles; $i++) {
+                if(empty($bookingEndDate)) {
+                    $dateExpTest = ($bookingStartDate)*$i;
+                    if($time<$dateExpTest || $i==($totalCycles-1)) {
+                        $bookingEndDate = $dateExpTest;
+                    }
+                    else {
+                        $bookingStartDate = $dateExpTest;
+                    }
+                }
+            }
+            return ['bookingStartDate'=>$bookingStartDate, 'bookingEndDate'=>$bookingEndDate];
+        }
+        return null;
+    }
+
+    public function isPremiumSessionAvailable($passOrder) {
+        $premiumExpiryDate = $this->getPremiumExpiryDates($passOrder['success_date']->sec, $passOrder['pass']['premium_booking_interval'], $passOrder['pass']['duration']);
+        Order::$withoutAppends = true;
+        $bookingCount = Order::active()->whereIn('type', ['workout-session', 'booktrial', 'trial'])->where('pass_id', $passOrder['_id'])
+                        ->where('created_at', '<', new MongoDate($premiumExpiryDate['bookingEndDate']))
+                        ->where('created_at', '>=', new MongoDate($premiumExpiryDate['bookingStartDate']))
+                        ->where('amount','<=',$passOrder['premium_min_booking_price'])
+                        ->where('amount','>=',$passOrder['premium_max_booking_price'])
+                        ->count();
+        if(empty($premiumExpiryDate)) {
+            return false;
+        }
+        return (isset($bookingCount))?$bookingCount<1:false;
+    }
+
+    public function allowSession($amount, $customerId) {
+        if(empty($amount) && empty(!$customerId)) {
+            return;
+        }
+
+        if(!empty($customer)) {
+            $passOrder = $this->getPassOrder($customerId);
+        }
+
+        if(!empty($passOrder)) {
+            $passType = $passOrder['pass_type'];
+            Log::info('pass orders:::::::::::::::::', [$passOrder]);
+        }
+
+        if(!empty($passOrder)) {
+            if ($amount>=600 && $amount<=1000 && $this->isPremiumSessionAvailable($amount, $passOrder)) {
+                // 600 - 1000
+                return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_premium_session' => true, 'pass_type'=>$passType];
+            } else if ($amount>1000) {
+                // over 1000
+                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType];
+            }
+            else {
+                // below 600
+                return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType];
+            }
+        }
+        
+        return [ 'allow_session' => false, 'order_id' => $passOrder['_id']];
+    }
+
     public function getCreditsApplicable($amount, $customerId) {
 
         // credits: 0=>pass not applicable, -1=>unlimited access, >0=>monthly access credit points for the session
@@ -451,8 +523,8 @@ class PassService {
             return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
         }
 
-        if(!empty($order['pass']['cashback'])){
-            
+        if(!empty($order['pass']['cashback']) && empty($order['coupon_code'])){
+
             $walletData = array(
                 "order_id"=>$order['_id'],
                 "customer_id"=> intval($order['customer_id']),

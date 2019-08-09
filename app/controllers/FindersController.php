@@ -1525,9 +1525,10 @@ class FindersController extends \BaseController {
 		// 	$response['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 		// }
 
+		/* commented on 9th Augus - Akhil
 		if(!empty($customer_id)){
 			$this->addCreditPoints($response['finder']['services'], $customer_id);
-		}
+		}*/
 
 		$this->multifitGymWebsiteVendorUpdate($response);
 
@@ -5241,9 +5242,10 @@ class FindersController extends \BaseController {
 		}catch(Exception $e){
 			Log::info("Error while sorting ratecard", [$e]);
 		}
+		/* commented on 9th August - Akhil
 		if(!empty($customer_id)){
 			$this->addCreditPoints($finderData['finder']['services'], $customer_id);
-		}
+		}*/
 		//adding static data for hanman fitness
 		// if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
 		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
@@ -8401,10 +8403,11 @@ class FindersController extends \BaseController {
 				if(!empty($service['serviceratecard'])){
 					foreach($service['serviceratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
-							$creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
+							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
+							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['credits'] != 0 ){
-								$ratecards['price_text'] = 'Book Using Pass';	
+							if($creditApplicable['allow_session'] != 0 ){
+								$ratecards['price_text'] = 'Free for you';	
 							}
 						}
 					}
@@ -8412,15 +8415,18 @@ class FindersController extends \BaseController {
 				else if(!empty($service['ratecard'])){
 					foreach($service['ratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
-							$creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
+							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
+							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['credits'] != 0 ){
-								$ratecards['price_text'] = 'Book Using Pass';	
+							if($creditApplicable['allow_session'] != 0 ){
+								$ratecards['price_text'] = 'Free for you';	
 							}
 						}
 					}
 				}
-				
+			}
+		}
+	}
 
 	public function multifitGymWebsiteVendorUpdate(&$data){
 		

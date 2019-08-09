@@ -3585,23 +3585,21 @@ class TransactionController extends \BaseController {
     
             }
         }    
-
-        if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
+        
+        /*if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
             Order::$withoutAppends = true;
-            $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $data['customer_id']);
-            if($creditsApplicable['credits'] != 0) {
-                $data['pass_type'] = $creditsApplicable['pass_type'];
-                $data['pass_order_id'] = $creditsApplicable['order_id'];
+            $passSession = $this->passService->allowSession($data['amount'], $data['customer_id']);
+            if($passSession['allow_session'] != 0) {
+                $data['pass_type'] = $passSession['pass_type'];
+                $data['pass_order_id'] = $passSession['order_id'];
                 $data['pass_booking'] = true;
 
-                if(!empty($creditsApplicable['pass_premium_session'])) {
+                if(!empty($passSession['pass_premium_session'])) {
                     $data['pass_premium_session'] = true;
                 }
-
-                $data['pass_credits'] = $creditsApplicable['credits'];
                 $amount = 0;
             }
-        }
+        }*/
         
         if(!empty($data['amount'] ) && $data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
             Order::$withoutAppends = true;
@@ -7220,19 +7218,20 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            /* commented on 9th Aug - Akhil
             if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
                 if(!empty($decoded->customer->_id)) {
-                    $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $decoded->customer->_id);
-                    Log::info('getCreditApplicable capture checkout response:::::::::', [$creditsApplicable]);
-                    if($creditsApplicable['credits'] != 0) {
+                    $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id);
+                    Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
+                    if($passSession['allow_session'] != 0) {
                         $result['payment_details']['amount_summary'][] = [
-                            'field' => ((!empty($creditsApplicable['pass']['type']) && $creditsApplicable['pass']['type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
+                            'field' => ((!empty($passSession['pass_type']) && $passSession['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
                             'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'
                         ];
                         $data['amount_payable'] = 0;
                     }
                 }
-            }
+            }*/
 
             if((empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
