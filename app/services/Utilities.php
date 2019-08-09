@@ -9545,9 +9545,11 @@ Class Utilities {
         foreach($combo_vouchers_list as $key=>$value){
             if(!empty($value)){
                     
+            Log::info('key and value', [$key, $value]);
                 if(!empty($value['rollback_data'])){
+                    $rollBack = $value['rollback_data'];
                     array_push(
-                        $value['rollback_data'], 
+                        $rollBack, 
                         [
                             'customer_id' => $value['customer_id'],
                             'expiry_date' => $value['expiry_date'],
@@ -9555,35 +9557,22 @@ Class Utilities {
                             'rollback_date' => new MongoDate(strtotime('now'))
                         ]
                     );
+                    $value['rollback_data'] = $rollBack;
                 }else {
-                    $value['rollback_data']=
+                    $value['rollback_data']=[
                         [
                             'customer_id' => $value['customer_id'],
                             'expiry_date' => $value['expiry_date'],
                             'selected_voucher' => $value['selected_voucher'],
                             'rollback_date' => new MongoDate(strtotime('now'))
-                        ];
+                        ]
+                    ];
                 }
-
-                unset($value['customer_id']);
-                unset($value['expiry_date']);
-                unset($value['selected_voucher']);
-                unset($value['name']);
-                unset($value['image']);
-                unset($value['terms']);
-                unset($value['amount']);
-                unset($value['milestone']);
-                unset($value['code']);
-                unset($value['flags']);
-
-                $loyaltyVoucher = \LoyaltyVoucher::where('_id', $value['_id'])->first();
-
-
-                foreach($value as $voucherKey=>$voucherValue){
-                    $loyaltyVoucher->$voucherKey = $voucherValue;
-                }
+                $keys = ['customer_id', 'expiry_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags'];
+                
                 try{
-                    $loyaltyVoucher->update();
+                    Log::info('loyalty voucher::::::', [$value]);
+                    $value->unset($keys);
                 }catch(\Exception $e){
                     Log::info('exception occured while rollback::::::::::::', [$e]);
                 }
