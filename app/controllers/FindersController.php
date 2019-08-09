@@ -1365,7 +1365,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "Crazy Cashback Sale <br> Get 100% Instant Cashback On On All Services Across Fitternity <br> Use Code - CASHBACK",
+								'text1'=> "Independence Day Sale <br> Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - FREEDOM || Get 100% Instant Cashback on Workout Sessions. Use Code - CASHBACK",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1377,7 +1377,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "Crazy Cashback Sale <br> Get 100% Instant Cashback On On All Services Across Fitternity <br> Use Code - CASHBACK",
+								'text1'=> "Independence Day Sale <br> Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - FREEDOM || Get 100% Instant Cashback on Workout Sessions. Use Code - CASHBACK",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1389,7 +1389,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "Crazy Cashback Sale <br> Get 100% Instant Cashback On On All Services Across Fitternity <br> Use Code - CASHBACK",
+								'text1'=> "Independence Day Sale <br> Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - FREEDOM || Get 100% Instant Cashback on Workout Sessions. Use Code - CASHBACK",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3837,25 +3837,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Crazy Cashback Sale</u><br><br>- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+				$line = "<u>Independence Day Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - FREEDOM<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code - CASHBACK";
             }else{	
-				$line = "\nCrazy Cashback Sale\n\n- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+				$line = "\nIndependence Day Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - FREEDOM\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code - CASHBACK";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Crazy Cashback Sale</u><br><br>- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+				$line = "<u>Independence Day Sale</u><br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code - CASHBACK";
             }else{	
-				$line = "\nCrazy Cashback Sale\n\n- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+				$line = "\nIndependence Day Sale\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code - CASHBACK";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Crazy Cashback Sale</u><br><br>- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+				$line = "<u>Independence Day Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - FREEDOM";
             }else{	
-				$line = "\nCrazy Cashback Sale\n\n- Get 100% instant cashback on Memberships, Session Packs & Pay-Per-Session. use code: CASHBACK";
+				$line = "\nIndependence Day Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - FREEDOM";
 			}
 			
         }
@@ -5301,9 +5301,9 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-                            $ratecard['remarks'] = "Crazy Cashback Sale | 100% Instant Cashback | Code: CASHBACK";
+                            $ratecard['remarks'] = "Independence Day Sale | 100% Instant Cashback | Code: CASHBACK";
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 99 || $ratecard['special_price'] == 99)){
-                            //     $ratecard['remarks'] = "Crazy Cashback Sale | 100% Instant Cashback | Code: CASHBACK";
+                            //     $ratecard['remarks'] = "Independence Day Sale | 100% Instant Cashback | Code: CASHBACK";
                             // }
                         }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
@@ -8487,7 +8487,7 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			$rateCard['remarks'] = "Crazy Cashback Sale | 100% Instant Cashback | Code: CASHBACK";
+			$rateCard['remarks'] = "Independence Day Sale | 100% Instant Cashback | Code: CASHBACK";
 			$rateCard['remarks_imp'] = true;
 		}
 	}
