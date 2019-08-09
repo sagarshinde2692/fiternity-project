@@ -4,6 +4,7 @@ use Log;
 use Pass;
 use App\Services\RazorpayService as RazorpayService;
 use App\Services\Utilities as Utilities;
+use App\Services\CustomerReward as CustomerReward;
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Notification\CustomerNotification as CustomerNotification;
@@ -15,6 +16,7 @@ use Config;
 use Request;
 use Wallet;
 use Customer;
+use Coupon;
 use stdClass;
 
 class PassService {
@@ -147,11 +149,13 @@ class PassService {
             }
             
             $hash = getHash($data);
+            $data = array_merge($data,$hash);
             $data['amount_customer'] = $data['amount'];
             if(!empty($data['coupon_code'])) {
-                $customerCoupon = Coupon::where('status', '1')->where('code', strtolower($data['coupon_code']))->where('pass', true)->where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime())->first();
+                $customerCoupon = Coupon::where('status', '1')->where('code', strtolower($data['coupon_code']))->where('type', 'pass')->where('start_date', '<=', new \MongoDate())->where('end_date', '>=', new \MongoDate())->first();
                 if(!empty($customerCoupon)) {
-                    $couponCheck = $this->customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],$customer_id, null, null, null, null, null, $pass);
+                    $customerreward = new CustomerReward();
+                    $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],null, null, null, null, null, null, $pass);
 
                     Log::info("couponCheck");
                     Log::info($couponCheck);
@@ -199,7 +203,6 @@ class PassService {
                         }
                         $data['amount'] = $amount;
                         $data['complementary_pass'] = (!empty($amount))?($amount==0):false;
-
                         // if(strtolower($data["coupon_code"]) == 'fit2018'){
                         //     $data['routed_order'] = "1";
                         // }
@@ -207,7 +210,6 @@ class PassService {
                 }
             }
             // $data['amount'] = 0;
-            $data = array_merge($data,$hash);
             $order = new Order($data);
             $order['_id'] = $data['_id'];
             $order->save();
