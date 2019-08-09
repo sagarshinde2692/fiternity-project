@@ -202,7 +202,7 @@ class PassService {
                             $data['corporate_coupon'] = true;
                         }
                         $data['amount'] = $amount;
-                        $data['complementary_pass'] = (!empty($amount))?($amount==0):false;
+                        $data['complementary_pass'] = (isset($amount))?($amount==0):false;
                         // if(strtolower($data["coupon_code"]) == 'fit2018'){
                         //     $data['routed_order'] = "1";
                         // }
