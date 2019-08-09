@@ -7628,7 +7628,8 @@ class TransactionController extends \BaseController {
                     'field' => 'Total Amount Payable',
                     'value' => 'Rs. '.(string)$data['amount_payable']
                 ];
-
+                $result['finder_name'] = "ONEPASS";
+                $result['finder_location'] = strtoupper($pass['pass_type']);
             }
 
         }else{
