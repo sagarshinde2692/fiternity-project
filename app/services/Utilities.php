@@ -9568,7 +9568,7 @@ Class Utilities {
                         ]
                     ];
                 }
-                $keys = ['customer_id', 'expiry_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags'];
+                $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags'];
                 
                 try{
                     Log::info('loyalty voucher::::::', [$value]);
