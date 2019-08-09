@@ -295,6 +295,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('getwalletdetails/{limit?}/{offset?}',  array('as' => 'customer.getWalletDetails','uses' => 'CustomerController@getWalletDetails'));
 
 	Route::post('reportareview', array('as' => 'finderdetails.reportareview','uses' => 'FindersController@reportReview'));
+    
+    Route::post('passcapture', 'PassController@passCapture');
 
 });
 
@@ -1367,6 +1369,17 @@ Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');
 Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
 Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
 Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
+
+// Route::post('passcapture', 'TransactionController@classPassCapture');
+Route::get('listpass', 'PassController@listPasses');
+Route::post('razorpay/subscribe', 'RazorpayController@createSubscription');
+Route::post('razorpay/storepaymentdetails', 'RazorpayController@storePaymentDetails');
+Route::post('passsuccess', 'PassController@passSuccess');
+Route::get('orderpasshistory',  array('as' => 'customer.orderpasshistory','uses' => 'PassController@orderPassHistory'));
+Route::get('passtermscondition', 'PassController@passTermsAndCondition');
+Route::get('passfaq', 'PassController@passFrequentAskedQuestion');
+Route::post('razorpaywebhooks', 'RazorpayController@razorpayWebhooks');
+
 Route::get('brandwebsite/home/{brand_id}', 'BrandsController@getBrandWebsiteHome');
 Route::get('brandwebsite/aboutus/{brand_id}', 'BrandsController@getBrandWebsiteAboutUs');
 Route::get('brandwebsite/programs/{brand_id}', 'BrandsController@getBrandWebsitePrograms');
@@ -1384,3 +1397,4 @@ Route::post('customer/enablereliancecampaign', 'CustomerController@enableRelianc
 
 Route::get('nearbyvendors', 'CustomerController@getNearbyVendors');
 Route::get('migrateStepsToFirestore', 'DebugController@migrateStepsToFirestore');
+

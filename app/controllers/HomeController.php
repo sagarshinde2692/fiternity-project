@@ -1098,12 +1098,12 @@ class HomeController extends BaseController {
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
-
-                if(isset($item['extended_validity_order_id']) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
+                
+                if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
                     $response['streak']['header'] = '';
                     $response['streak']['items'] = [];
                 }
-                if(isset($item['extended_validity_order_id']) && (($device_type=='android' && $app_version > '5.17') || ($device_type=='ios' && $app_version > '5.1.4'))){
+                if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version > '5.17') || ($device_type=='ios' && $app_version > '5.1.4'))){
                     unset($response['streak']);
                 }
                 
@@ -1150,6 +1150,8 @@ class HomeController extends BaseController {
                     $response['subline'] = 'Your payment for '.$service_name.' session at '.$finder_name.' for '.$schedule_date.' at '.$schedule_slot.' is successful. Keep booking, reach milestones & earn rewards';
                 }
                 
+            
+                $response['branch_obj'] = $this->utilities->branchIOData($itemData);
 
                 return $response;
             }
@@ -1880,6 +1882,11 @@ class HomeController extends BaseController {
                     default:
                         $header = "WORKOUT SESSION CONFIRMED";
                         $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying Rs ".$item['amount'].". We have also sent you a confirmation Email & SMS.";
+
+                        if(!empty($item['pass_order_id'])){
+                            $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by using unlimited access pass. We have also sent you a confirmation Email & SMS."; 
+                        };
+
                         
                         if(!empty($item['coupon_flags']['cashback_100_per'])){
                             $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by using it on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
@@ -2300,9 +2307,16 @@ class HomeController extends BaseController {
                     $resp['kiosk_membership'] = $this->utilities->membershipBookedLocateScreen($item);
                 }
             }
+
+
+        
+            $resp['branch_obj'] = $this->utilities->branchIOData($item);
+
+
             if(!empty($item['coupon_flags'])){
                 $resp['coupon_flags'] = $item['coupon_flags'];
             }
+
             return Response::json($resp);
         }
     }

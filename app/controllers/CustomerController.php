@@ -16,6 +16,7 @@ use App\Services\ShortenUrl as ShortenUrl;
 use App\Services\RelianceService as RelianceService;
 use App\Services\Emi as Emi;
 use App\Mailers\FinderMailer as FinderMailer;
+use App\Services\PassService as PassService;
 
 class CustomerController extends \BaseController {
 
@@ -30,6 +31,7 @@ class CustomerController extends \BaseController {
 		Utilities $utilities,
 		CustomerReward $customerreward,
 		FinderMailer $findermailer,
+		PassService $passService,
 		RelianceService $relianceService
 	) {
 		parent::__construct();
@@ -39,6 +41,7 @@ class CustomerController extends \BaseController {
 		$this->utilities	=	$utilities;
 		$this->customerreward = $customerreward;
 		$this->findermailer             =   $findermailer;
+		$this->passService = $passService;
 		$this->relianceService = $relianceService;
 
 		$this->vendor_token = false;
@@ -54,28 +57,37 @@ class CustomerController extends \BaseController {
 
 	}
 
-	public function getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType='website', $type='lte') {
+	public function getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType='website', $type='lte', $orderId=null) {
 		if($deviceType=='website'){
 
 			// returning cancelled trials as well, for website...
 
-			return Booktrial::where('customer_email', '=', $customeremail)
+			$query = Booktrial::where('customer_email', '=', $customeremail)
 			->where('third_party_details','exists',false)
 			->whereIn('booktrial_type', array('auto'))
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
-			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')))
-			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
+			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')));
+
+			if(!empty($orderId)) {
+				$query->where('pass_order_id', $orderId);
+			}
+
+			return $query->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
 			->get($selectfields);
 		}
-		return Booktrial::where('customer_email', '=', $customeremail)
-		->where('third_party_details','exists',false)
+		$query = Booktrial::where('customer_email', '=', $customeremail)
+			->where('third_party_details','exists',false)
 			->whereIn('booktrial_type', array('auto'))
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
-			// ->where('going_status_txt','!=','cancel')
-			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')))
-			->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
+			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')));
+
+			if(!empty($orderId)) {
+				$query->where('pass_order_id', $orderId);
+			}
+
+			return $query->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
 			->get($selectfields);
 	}
 
@@ -186,7 +198,7 @@ class CustomerController extends \BaseController {
 			}catch(Exception $e){
 				Log::info($e);
 			}
-			if(!empty($trial['studio_extended_validity_order_id'])){
+			if(!empty($trial['studio_extended_validity_order_id']) || !empty($trial['pass_order_id'])){
 				$trial['fitcash_text'] = '';
 			}
 			array_push($bookings, $trial);
@@ -195,13 +207,13 @@ class CustomerController extends \BaseController {
 	}
 
     // Listing Schedule Tirals for Normal Customer
-	public function getAutoBookTrials($customeremail, $offset = 0, $limit = 12){
+	public function getAutoBookTrials($customeremail, $offset = 0, $limit = 12, $orderId=null){
 
 		$offset 			=	intval($offset);
 		$limit 				=	intval($limit);
 		$deviceType = (isset($_GET['device_type']))?$_GET['device_type']:"website";
 
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order','customer_id', 'studio_extended_validity_order_id');
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order','customer_id', 'studio_extended_validity_order_id', 'pass_order_id');
 
 		// if(isset($_GET['device_type']) && $_GET['device_type'] == "website"){
 
@@ -212,8 +224,34 @@ class CustomerController extends \BaseController {
 			// ->orderBy('_id', 'asc')->skip($offset)->take($limit)
 			// ->get($selectfields);
 
-			$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'gt');
-			$pastTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'lte');
+			if(isset($orderId)) {
+				$orderId = intval($orderId);
+				$passOrder = Order::where('_id', $orderId)->where('status', '1')->first();
+			}
+			if(!empty($passOrder)){
+				$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'gt', $orderId);
+				$pastTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'lte', $orderId);
+			}
+			else {
+				$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'gt');
+				$pastTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'lte');
+
+				if(!empty($upcomingTrialsQuery[0])) {
+					foreach($upcomingTrialsQuery as &$trial){
+						if(!empty($trial['pass_order_id'])) {
+							$trial['pass_stamp'] = 'https://b.fitn.in/passes/pass_stamp.png';
+						}
+					}
+				}
+
+				if(!empty($pastTrialsQuery[0])) {
+					foreach($pastTrialsQuery as &$trial){
+						if(!empty($trial['pass_order_id'])) {
+							$trial['pass_stamp'] = 'https://b.fitn.in/passes/pass_stamp.png';
+						}
+					}
+				}
+			}
 
 		// }else{
 		// 	$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, 'gt');
@@ -2240,12 +2278,17 @@ class CustomerController extends \BaseController {
 
 	public function getAllTrials($offset = 0, $limit = 12){
 
+		$data = Input::all();
+
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
 
+		$orderId = null;
+		if(!empty($data['order_id'])){
+			$orderId = $data['order_id'];
+		}
 
-
-		return $this->getAutoBookTrials($decoded->customer->email, $offset, $limit);
+		return $this->getAutoBookTrials($decoded->customer->email, $offset, $limit, $orderId);
 
 	// $selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
 
@@ -3501,7 +3544,7 @@ class CustomerController extends \BaseController {
 				Log::info('device_type'.$this->device_type);
 				Log::info('app_version'.$this->app_version);
                 $trials = [];
-                // $city = "jhansi";
+                
                 if(!isExternalCity($city)){
                     if($this->app_version >= 5){
     
@@ -3531,10 +3574,11 @@ class CustomerController extends \BaseController {
                                 });
                             })
                             ->orderBy('schedule_date_time', 'asc')
-                            ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown')
+                            ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id')
                             ->get();
                     
                     }else if($this->app_version > '4.4.3'){
+                        
                         Log::info("4.4.3");
                         $trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount','studio_extended_validity_order_id','studio_block_shown')->get();
     
@@ -3589,7 +3633,7 @@ class CustomerController extends \BaseController {
 
 
 							if($data['type'] == 'Workout-session'){
-								if(!isset($data['extended_validity_order_id'])) {
+								if(!isset($data['extended_validity_order_id']) && empty($data['pass_order_id'])) {
 									$data['unlock'] = [
 										// 'header'=>'Unlock Level '.$workout_session_level_data['next_session']['level'].'!',
 										'sub_header_2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions',
@@ -3895,6 +3939,7 @@ class CustomerController extends \BaseController {
         }
 
         if(!empty($decoded) && !empty($this->app_version) && !empty($this->device_type)){
+            
             $reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
             $corporate_id  = $reliance_customer['corporate_id'];
             $external_reliance = $reliance_customer['external_reliance'];
@@ -3946,22 +3991,26 @@ class CustomerController extends \BaseController {
 					unset($result['non_reliance']);
 				}
 			}
-
-			if(!empty($result['health']['steps'])){
-				unset($result['health']['steps']);
+            //removing fields from search
+            
+            if(!empty($result['health']['steps'])){
+                unset($result['health']['steps']);
 			}
-        }
-        // return $city;
+            
+		}
+        
         if(!isExternalCity($city)){
+            $workout_sessions_near_customer = $this->getWorkoutSessions($near_by_vendor_request);
             $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
             $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
 
             if(!($this->device_type=='android' && !empty($this->app_version) && (float)$this->app_version>5.27)){
                 $result['near_by_vendor'] = $this->getNearbyVendors($city, true);
+                $this->nearVendorRemoveExtraFields($result['near_by_vendor']);
             }
         }
         
-		$result['categoryheader'] = "Discover | Try | Buy";
+        $result['categoryheader'] = "Discover | Try | Buy";
 		$result['categorysubheader'] = "Fitness services in ".ucwords($city);
 		$result['trendingheader'] = "Trending in ".ucwords($city);
 		$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($city);
@@ -3984,14 +4033,54 @@ class CustomerController extends \BaseController {
 			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($_REQUEST['selected_region']);
 		}
 
-        $result['fitex'] =[
+        $result['fitex'] = [
             'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
             // 'knowmorelink' => 'know more',
-            // 'footer' => "Available across 2500+ outlets across ".ucwords($city)." | Starting at <b>&#8377; 149</b>"
             'footer' => "Book Workout Sessions At 100% Instant Cashback"
-        ];
+		];
+
+		if(!empty($workout_sessions_near_customer) ){
+			$result['fitex']['near_by_workouts']= $workout_sessions_near_customer;
+		}
+
+		if(!empty($customeremail))
+		{
+			$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
+			$this->flexipassHome($order, $result);
+			// if(empty($order)) {
+			// 	$result['buy_pass'] = [
+			// 		'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
+			// 		'header' => 'Flexi Pass!',
+			// 		'subheader' => 'Buy pass and book workouts',
+			// 		'footer' => 'Buy pass!!'
+			// 	];
+			// }
+			if(!empty($order)) {
+				
+				$pass = true;
+				$pass_bookings = [];
+				try{
+					$active_passes = [];
+					if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
+						$pass_bookings = $this->passService->getPassBookings($order['_id']);
+					}
+				}catch(Exception $e){
+					$pass_bookings = [];
+				}
+				
+				$result['pass_bookings'] = $pass_bookings;
+			}
+		}
+
+		if(!empty($result['session_packs'])){
+			$this->sessionPackRemoveExtraFields($result['session_packs']);
+		}
+
+		
+
+            
 
 		if(!empty($result['city_id']) && $result['city_id']==10000) {
 			unset($result['banner']);
@@ -4010,7 +4099,11 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		return Response::json($result);
+		$response = Response::make($result);
+		if(!empty($customeremail)){
+			$response = setNewToken($response, !empty($pass));
+		}
+		return $response;
 		
 	}
 
@@ -8205,7 +8298,7 @@ class CustomerController extends \BaseController {
 								
 								if($booktrial_update&&!empty($value['mark'])&& !(isset($booktrial->payment_done) && $booktrial->payment_done == false)){
 									
-									if(!isset($booktrial['extended_validity_order_id'])){
+									if(!isset($booktrial['extended_validity_order_id']) && !isset($booktrial['pass_order_id'])){
 										$fitcash = $this->utilities->getFitcash($booktrial->toArray());
 										$req = array(
 												"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
@@ -8248,7 +8341,7 @@ class CustomerController extends \BaseController {
 								}
 								if($booktrial_update&&!empty($value['mark'])){
 									$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
-									if(isset($booktrial['extended_validity_order_id'])) {
+									if(isset($booktrial['extended_validity_order_id']) || isset($booktrial['pass_order_id'])) {
 										if(isset($resp1) && isset($resp1['sub_header_1'])){
 											$resp1['sub_header_1'] = '';
 										}
@@ -8267,7 +8360,7 @@ class CustomerController extends \BaseController {
 								else  {
 									
 									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
-									if(isset($booktrial['extended_validity_order_id'])) {
+									if(isset($booktrial['extended_validity_order_id']) || isset($booktrial['pass_order_id'])) {
 										if(isset($resp1) && isset($resp1['sub_header_1'])){
 											$resp1['sub_header_1'] = '';
 										}
@@ -9857,6 +9950,127 @@ class CustomerController extends \BaseController {
 		//'loyalty.loyalty_upgraded'=false
 	}
 
+
+	public function flexipassHome($passPurchased, &$result){
+		$passConfig = Config::get('pass');
+		Log::info('pass purchased: ::::::::::', [$passPurchased]);
+		if(!empty($passPurchased) && ($passPurchased['pass']['type']=='trial')){
+
+			$subscription_pass = $passConfig['boughtflexipass'];
+			$this->fillBoughtPassData($passPurchased, $subscription_pass);
+			$subscription_pass['isUpgrade'] = true;
+			$subscription_pass['passtype'] = 'Upgrade';
+			$result['boughtflexipass'] = $subscription_pass;
+		}
+		else if(empty($passPurchased)){
+
+			$pass = $this->getPass('trial');
+			$trial_pass = $passConfig['trial_pass'];
+			$this->updateDataOfPass($trial_pass, $pass);
+
+			$result['flexipass'] = $trial_pass;
+			$result['flexipass_small'] = $passConfig['flexipass_small'];
+		}
+		else{
+			$subscription_pass = $passConfig['boughtflexipass'];
+			$this->fillBoughtPassData($passPurchased, $subscription_pass);
+			$subscription_pass['isUpgrade'] = false;
+			$subscription_pass['passtype'] = 'Subscription';
+			$result['boughtflexipass'] = $subscription_pass;
+		}
+	}
+
+	public function getPass($type){
+		return Pass::active()
+		->where('type', $type)
+		->first();
+	}
+
+	public function updateDataOfPass(&$pass_data, $pass){
+		$pass_data['pass']['header'] = strtr($pass_data['pass']['header'], ['pass_name'=> $pass['name']]);
+		$pass_data['pass']['subheader'] = strtr($pass_data['pass']['subheader'], ['duration_text'=> $pass['duration_text']]);
+		$pass_data['pass']['text'] = strtr($pass_data['pass']['text'], ['duration_text'=> strtoupper($pass['duration_text'])]);
+		$pass_data['pass']['type'] = strtr($pass_data['pass']['type'], ['pass_type'=> strtoupper($pass['type'])]);
+		$pass_data['pass']['price'] = strtr($pass_data['pass']['price'], ['pass_price'=> $pass['price']]);
+	}
+
+	public function getWorkoutSessions($near_by_workout_request){
+		// unset($near_by_workout_request['keys']);
+		// unset($near_by_workout_request['category']);
+		// $near_by_workout_request['category'] = [];
+		// $near_by_workout_request['keys'] = [  
+		// 	"average_rating",  
+		// 	"name", 
+		// 	"slug", 
+		// 	"vendor_slug", 
+		// 	"vendor_name",
+		// 	"coverimage", 
+		// 	"overlayimage", 
+		// 	"total_slots", 
+		// 	"next_slot"
+		// ];
+		// $near_by_workout_request['pass'] = true;
+		// $near_by_workout_request['time_tag'] = 'later-today';
+		// $near_by_workout_request['date'] = date('d-m-y');
+		// $workout = geoLocationWorkoutSession($near_by_workout_request, 'customerhome');
+		// $result=[
+		// 	'header'=> 'Workouts near me',
+		// 	'data'=>[]
+		// ];
+		// if(!empty($workout['workout'])){
+		// 	$result['data'] = $workout['workout'];
+		// }
+		// if(empty($near_by_workout_request['lat']) && empty($near_by_workout_request['lon'])){
+		// 	$result['header'] = "Workouts in ".ucwords($near_by_workout_request['city']);
+		// }
+		return $this->utilities->getWorkoutSessions($near_by_workout_request, 'customerHome');
+	}
+
+	public function nearVendorRemoveExtraFields(&$nearByVendors){
+		foreach($nearByVendors as &$value){
+			unset($value['flags']);
+			unset($value['pps_offer']);
+			unset($value['pps_offer_icon']);
+			unset($value['membership_header']);
+			unset($value['membership_icon']);
+			unset($value['membership_offer_default']);
+			unset($value['trial_header']);
+			unset($value['membership_offer']);
+			unset($value['credits']);
+			unset($value['address']);
+		}
+	}
+
+	public function sessionPackRemoveExtraFields(&$sessionPacks){
+		
+		foreach($sessionPacks as &$value){
+			unset($value['customer_id']);
+			unset($value['start_date']);
+			unset($value['end_date']);
+			unset($value['ratecard_flags']);
+			unset($value['finder_address']);
+			unset($value['subscription_text']);
+			unset($value['subscription_code']);
+			unset($value['finder_name_copy']);
+			unset($value['detail_text']);
+			unset($value['finder']);
+			unset($value['service']);
+		}
+	}
+
+	public function getBookingOfPass($pass_order_id){
+		return Order::active()
+		->where('pass_order_id', $pass_order_id)
+		->count();
+	}
+
+	public function fillBoughtPassData($passPurchased, &$subscription_pass){
+		
+		$subscription_pass['validity']['text1'] = strtr($subscription_pass['validity']['text1'], ["__duration" => $passPurchased['pass']['duration']]);
+		$subscription_pass['booking']['text1'] = (string)$this->getBookingOfPass($passPurchased['_id']);
+		$subscription_pass['swimming']['text1'] =(string) ($passPurchased['pass']['premium_sessions']- $passPurchased['premium_sessions_used']);
+	}
+
 	public function reliancePostLoyalty($customer, $voucher_categories_map) {
 		if(!empty($customer['external_reliance'])){
 			$milestones = Config::get('nonRelianceLoyaltyProfile.post_register.milestones.data');
@@ -10160,5 +10374,4 @@ class CustomerController extends \BaseController {
         }
                 
 	}
-	
 }

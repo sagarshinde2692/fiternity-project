@@ -21,6 +21,7 @@ use App\AmazonPaynon\PWAINBackendSDK as PWAINBackendSDKNon;
 use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
 use App\Services\Paytm as PaytmService;
+use App\Services\PassService as PassService;
 //use App\Controllers\PaymentGatewayController as GatewayController;
 //use App\config\paytm as paytmConfig;
 class TransactionController extends \BaseController {
@@ -37,6 +38,8 @@ class TransactionController extends \BaseController {
     protected $fitapi;
     protected $fitweb;
     protected $PaytmService;
+    protected $passService;
+    
     //protected $GatewayController;
     //protected $paytmConfig;
 
@@ -51,7 +54,8 @@ class TransactionController extends \BaseController {
         CustomerNotification $customernotification,
         Fitapi $fitapi,
         Fitweb $fitweb,
-        PaytmService $PaytmService
+        PaytmService $PaytmService,
+        PassService $passService
         //GatewayController $GatewayController,
         //paytmConfig $paytmConfig
     ) {
@@ -66,6 +70,7 @@ class TransactionController extends \BaseController {
         $this->customernotification =   $customernotification;
         $this->fitapi               =   $fitapi;
         $this->fitweb               =   $fitweb;
+        $this->passService          =   $passService;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
@@ -74,6 +79,7 @@ class TransactionController extends \BaseController {
 
         $this->vendor_token = false;
         $this->PaytmService = $PaytmService;
+        $this->passService = $passService;
         //$this->GatewayController = $GatewayController;
         //$this->paytmConfig = $paytmConfig;
         
@@ -2401,6 +2407,9 @@ class TransactionController extends \BaseController {
         
         if(!empty($order)&&!empty($order['type'])&&$order['type']=='giftcoupon')
         	return $this->giftCouponSuccess();
+        
+        if(!empty($order)&&!empty($order['type'])&&$order['type']=='pass')
+        	return $this->passService->passSuccessPayU($data);
 
         //If Already Status Successfull Just Send Response
         if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
@@ -3577,6 +3586,23 @@ class TransactionController extends \BaseController {
             }
         }    
 
+        if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
+            Order::$withoutAppends = true;
+            $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $data['customer_id']);
+            if($creditsApplicable['credits'] != 0) {
+                $data['pass_type'] = $creditsApplicable['pass_type'];
+                $data['pass_order_id'] = $creditsApplicable['order_id'];
+                $data['pass_booking'] = true;
+
+                if(!empty($creditsApplicable['pass_premium_session'])) {
+                    $data['pass_premium_session'] = true;
+                }
+
+                $data['pass_credits'] = $creditsApplicable['credits'];
+                $amount = 0;
+            }
+        }
+        
         if(!empty($data['amount'] ) && $data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
             Order::$withoutAppends = true;
             $extended_validity_order = $this->utilities->getExtendedValidityOrder($data);
@@ -3912,9 +3938,6 @@ class TransactionController extends \BaseController {
 
         }
         
-
-        
-
         $data['amount_final'] = $amount;
 
         if(isset($data['wallet']) && $data['wallet'] == true){
@@ -7197,6 +7220,19 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
+                if(!empty($decoded->customer->_id)) {
+                    $creditsApplicable = $this->passService->getCreditsApplicable($data['amount'], $decoded->customer->_id);
+                    Log::info('getCreditApplicable capture checkout response:::::::::', [$creditsApplicable]);
+                    if($creditsApplicable['credits'] != 0) {
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => ((!empty($creditsApplicable['pass']['type']) && $creditsApplicable['pass']['type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
+                            'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'
+                        ];
+                        $data['amount_payable'] = 0;
+                    }
+                }
+            }
 
             if((empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
@@ -9421,6 +9457,37 @@ class TransactionController extends \BaseController {
         }
 
         $this->successCommon($success_data);
+    }
+
+    public function classPassCapture(){
+        $data = Input::All();
+        $rules = array(
+            'amount'=>'required',
+            "pass_type"=> "required"
+        );
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+        return $this->getRazorpayPlans($data);
+        
+    }
+
+    public function getRazorpayPlans($data){
+        $amount = (int)$data['amount'];
+        $razorPayPlans = RazorpayPlans::Active()
+        ->where('amount',$amount)
+        ->select('plan_id')
+        ->first();
+        $plans = $razorPayPlans;
+        Log::info("plans:::::::::::", [$plans, $amount, $data['pass_type']]);
+        if(empty($plans)){
+            $plans = $this->utilities->createRazorpayPlans($amount, $data['pass_type']);
+        } 
+        Log::info("plans dattata::::::::::", [$plans]);
+
+        return $plans;
     }
 
 }
