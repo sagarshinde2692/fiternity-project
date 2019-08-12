@@ -3514,6 +3514,7 @@ class CustomerController extends \BaseController {
 
         $upcoming = array();
         
+        $decoded = null;
         $jwt_token = Request::header('Authorization');
 		
         if(!empty($jwt_token)){
