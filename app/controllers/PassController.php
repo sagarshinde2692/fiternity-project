@@ -10,7 +10,7 @@ class PassController extends \BaseController {
         $this->utilities = $utilities;
     }
 
-    public function listPasses(){
+    public function listPasses($pass_type=null){
 
         $jwt_token = Request::header('Authorization');
         $customer_id = null;
@@ -18,7 +18,7 @@ class PassController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
         }
-        $passes = $this->passService->listPasses($customer_id);
+        $passes = $this->passService->listPasses($customer_id, $pass_type);
         if(empty($passes)) {
             return [
                 "status" => 400,

@@ -25,7 +25,7 @@ class PassService {
 
     }
 
-    public function listPasses($customerId){
+    public function listPasses($customerId, $pass_type=null){
         
         $passList = Pass::where('status', '1');
 
@@ -38,6 +38,10 @@ class PassService {
 
         if(!empty($trialPurchased['status']) && $trialPurchased['status']) {
             $passList = $passList->where('type','!=', 'trial');
+        }
+        
+        if(!empty($pass_type)) {
+            $passList = $passList->where('pass_type', $pass_type);
         }
 
         $passList = $passList->orderBy('pass_id')->get();
@@ -301,7 +305,16 @@ class PassService {
 
         $order = Order::where('_id', $data['order_id'])->first();
 
+        if(!empty($order['status'])){
+            return ['status'=>400, 'message'=>'Order already successfull'];
+        }
+
         Log::info('pass success:: ', [$data]);
+
+        if(empty($order['amount'])){
+            $order->status ='1';
+            $order->update();
+        }
 
         $wallet_update = $this->updateWallet($order);
 
