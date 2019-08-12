@@ -305,9 +305,9 @@ class PassService {
 
         $order = Order::where('_id', $data['order_id'])->first();
 
-        if(!empty($order['status'])){
-            return ['status'=>400, 'message'=>'Order already successfull'];
-        }
+        // if(!empty($order['status'])){
+        //     return ['status'=>400, 'message'=>'Order already successfull'];
+        // }
 
         Log::info('pass success:: ', [$data]);
 
