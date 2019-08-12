@@ -110,8 +110,14 @@ class PassService {
         $data['payment_mode'] =  'paymentgateway';
         $data['pass_type'] = $pass['type'];
         
-        $data['start_date'] = new \MongoDate(strtotime('midnight', time()));
-        $data['end_date'] = new \MongoDate(strtotime('midnight', strtotime('+'.$pass['duration'].' days', time())));
+        
+        if(!empty($data['preferred_starting_date'])){
+            $data['start_date'] = new \MongoDate(strtotime('midnight', strtotime($data['preferred_starting_date'])));
+        }else{
+            $data['start_date'] = new \MongoDate(strtotime('midnight', time()));
+        }
+        
+        $data['end_date'] = new \MongoDate(strtotime('midnight', strtotime('+'.$pass['duration'].' days', strtotime($data['preferred_starting_date']))));
         
         if(!empty($pass['credits'])){
             
