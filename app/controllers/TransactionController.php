@@ -7029,6 +7029,10 @@ class TransactionController extends \BaseController {
 
             $order = Order::find(intval($data['order_id']));
 
+            if(!empty($order['pass_id'])){
+                $data['pass_id'] = $order['pass_id'];
+            }
+
             if(!empty($order['schedule_slot']) && !empty($order['schedule_date'])){
                 $data['slot'] = [
                     'slot_time'=>$order['schedule_slot'],
