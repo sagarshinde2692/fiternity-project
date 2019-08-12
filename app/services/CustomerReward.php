@@ -2190,9 +2190,22 @@ Class CustomerReward {
                 }
             }
 
-            if(!empty($coupon['usage_per_user']) && is_integer($coupon['usage_per_user'])){
+            if(!empty($coupon['usage_per_user']) && is_integer($coupon['usage_per_user']) || is_double($coupon['usage_per_user'])){
 
                 \Order::$withoutAppends = true;
+
+                if(empty($customer_email)){
+        
+                    $jwt_token = Request::header('Authorization');
+
+                    if(!empty($jwt_token)){
+
+                        $decoded = $this->customerTokenDecode($jwt_token);
+                        $customer_email = $decoded->customer->email;
+                    }
+
+                }
+
 
                 $order_count = \Order::active()->where('customer_email',$customer_email)->where('coupon_code','like',strtolower($couponCode))->count();
 
