@@ -8,8 +8,8 @@ return [
         'passes' => [
             [
                 'header' => 'ALL ACCESS PASS',
-                'subheader' => 'ALL ACCESS PASS UNLIMITED USAGE',
-                'text' => '1 MONTH | 3 MONTHS | 6 MONTHS',
+                'subheader' => 'UNLIMITED USAGE',
+                'text' => '',
                 'image' => $gold_logo,
                 'why_pass' => [
                     'header' => 'WHY GO FOR A PASS',
