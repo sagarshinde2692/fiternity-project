@@ -305,13 +305,13 @@ class PassService {
 
         $order = Order::where('_id', $data['order_id'])->first();
 
-        // if(!empty($order['status'])){
-        //     return ['status'=>400, 'message'=>'Order already successfull'];
-        // }
+        if(!empty($order['status'])){
+            $block_communication = true;
+        }
 
         Log::info('pass success:: ', [$data]);
 
-        if(empty($order['amount'])){
+        if(empty($order['amount']) && empty($order['status'])){
             $order->status ='1';
             $order->update();
         }
@@ -328,8 +328,10 @@ class PassService {
             return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (2)'];
         }
 
-        $communication = $this->passPurchaseCommunication($order);
-        $order->update(['communication'=> $communication]);
+        if(empty($block_communication)){
+            $communication = $this->passPurchaseCommunication($order);
+            $order->update(['communication'=> $communication]);
+        }
 
         $success_data = $this->getSuccessData($order);
 
