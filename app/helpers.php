@@ -2643,53 +2643,58 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             }
 
             if(!function_exists('createCustomerToken')){
-                function createCustomerToken($customer_id){
+                function createCustomerToken($customer_id, $data=null){
                     
-                    $customer = Customer::find($customer_id);
-                    $customer = array_except($customer->toArray(), array('password'));
+                    if(empty($data)){ 
                     
-                    $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
-                    $customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
-                    $customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
-                    $customer['facebook_id'] = (isset($customer['facebook_id'])) ? $customer['facebook_id'] : "";
-                    $customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
-                    $customer['contact_no'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
-                    $customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
-                    $customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
-                    $customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
-                    
-                    $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
-                    $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
-//                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
 
-                    $data = array(
-                                '_id'=>$customer['_id'],
-                                'name'=>$customer['name'],
-                                "email"=>$customer['email'],
-                                "picture"=>$customer['picture'],
-                                'facebook_id'=>$customer['facebook_id'],
-                                "identity"=>$customer['identity'],
-                                "address"=>$customer['address'],
-                                "contact_no"=>$customer['contact_no'],
-                                "location"=>$customer['location'],
-                                'gender'=>$customer['gender'],
-                    			'rx_user'=>$customer['rx_user'],
-//                     			'rx_success_url'=>$customer['rx_success_url'],	
-                                'extra'=>array(
-                                    'mob'=>$customer['extra']['mob'],
-                                    'location'=>$customer['extra']['location']
-                                )
-                            ); 
-                    if(!empty($customer['corporate_id'])) {
-                        $data['corporate_id'] = $customer['corporate_id'];
+                        $customer = Customer::find($customer_id);
+                        $customer = array_except($customer->toArray(), array('password'));
+                        
+                        $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
+                        $customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
+                        $customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
+                        $customer['facebook_id'] = (isset($customer['facebook_id'])) ? $customer['facebook_id'] : "";
+                        $customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
+                        $customer['contact_no'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+                        $customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+                        $customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+                        $customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+                        
+                        $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
+                        $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
+        //                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
+
+                        $data = array(
+                                    '_id'=>$customer['_id'],
+                                    'name'=>$customer['name'],
+                                    "email"=>$customer['email'],
+                                    "picture"=>$customer['picture'],
+                                    'facebook_id'=>$customer['facebook_id'],
+                                    "identity"=>$customer['identity'],
+                                    "address"=>$customer['address'],
+                                    "contact_no"=>$customer['contact_no'],
+                                    "location"=>$customer['location'],
+                                    'gender'=>$customer['gender'],
+                                    'rx_user'=>$customer['rx_user'],
+        //                     			'rx_success_url'=>$customer['rx_success_url'],	
+                                    'extra'=>array(
+                                        'mob'=>$customer['extra']['mob'],
+                                        'location'=>$customer['extra']['location']
+                                    )
+                                ); 
+                        if(!empty($customer['corporate_id'])) {
+                            $data['corporate_id'] = $customer['corporate_id'];
+                        }
+                        if(!empty($customer['external_reliance'])) {
+                            $data['external_reliance'] = $customer['external_reliance'];
+                        }
+                        if(!empty($customer['referral_code']))
+                            $data['referral_code'] = $customer['referral_code'];	
+                        if(!empty($customer['cart_id']))
+                            $data['cart_id']=$customer['cart_id'];
                     }
-                    if(!empty($customer['external_reliance'])) {
-                        $data['external_reliance'] = $customer['external_reliance'];
-                    }
-                    if(!empty($customer['referral_code']))
-                    	$data['referral_code'] = $customer['referral_code'];	
-                    if(!empty($customer['cart_id']))
-                    	$data['cart_id']=$customer['cart_id'];
+
                     		
                     $jwt_claim = array(
                         "iat" => Config::get('app.jwt.iat'),
@@ -4489,6 +4494,40 @@ if (!function_exists('createBucket')) {
 
 }
 
+
+if (!function_exists('setNewToken')) {
+
+    function setNewToken($response, $pass = false){
+        
+        $decodedToken = decode_customer_token();
+
+        $customer_data = (array)$decodedToken->customer;
+        Log::info(gettype($customer_data));
+        Log::info('gettype($customer_data)');
+        $pass_data = [];
+        if($pass && empty($customer_data['pass'])){
+            $pass_data = ['pass'=>1];
+            $customer_data = array_merge($customer_data, $pass_data);
+            $update_header = true;
+        }else if(!$pass && !empty($customer_data['pass'])){
+            unset($customer_data['pass']);
+            $update_header = true;
+        }
+        if(!empty($update_header)){
+            $new_token = createCustomerToken(null, $customer_data);
+            Log::info($new_token);
+            $response->headers->set('token', $new_token);
+
+        }
+        return $response;
+
+    }
+
+}
+
+        
+        
+
 if (!function_exists('isExternalCity')) {
 
     function isExternalCity($city){
@@ -4497,6 +4536,97 @@ if (!function_exists('isExternalCity')) {
     
     }
 
+}
+
+
+if (!function_exists('checkAppVersionFromHeader')) {
+
+    function checkAppVersionFromHeader($data){        
+        
+        $app_version = Request::header('App-Version');
+        $device_type = Request::header('Device-Type');
+
+        if($device_type == 'android' && $app_version >= $data['android']){
+            return true;
+        }
+        
+        if($device_type == 'ios' && $app_version >= $data['ios']){
+            return true;
+        }
+
+        return false;
+    }
+
+}
+
+if (!function_exists(('geoLocationWorkoutSession'))){
+
+    function geoLocationWorkoutSession($request, $from=null){
+        
+        $client = new Client( ['debug' => false, 'base_uri' => Config::get("app.url")."/"] );
+        $offset  = $request['offset'];
+        $limit   = $request['limit'];
+        $radius  = $request['radius'];
+        $lat    =  $request['lat'];
+        $lon    =  $request['lon'];
+        $category = $request['category'];
+        $keys = $request['keys'];
+        $city = $request['city'];
+        $not = isset($request['not']) ? $request['not'] : new \stdClass();
+        $region = isset($request['region']) ? $request['region'] : [];
+
+        $payload = [
+            "category"=>$category,
+            "sort"=>[
+              "order"=>"desc",
+              "sortfield"=>"popularity"
+            ],
+            "offset"=>[
+                "from"=>$offset,
+                "number_of_records"=>$limit
+            ],
+            "location"=>[
+                "geo"=>[
+                    "lat"=>$lat,
+                    "lon"=>$lon,
+                    "radius"=>$radius
+                ],
+                "regions"=>$region,
+                "city"=>$city
+            ],
+            "keys"=>$keys,
+            //"not"=>$not,
+            "pass"=>$request['pass'],
+            "time_tag"=> $request['time_tag'],
+            'date'=> $request['date']
+        ];
+
+        $url = Config::get('app.new_search_url')."/search/paypersession";
+
+        $workout = [];
+
+        try {
+
+            $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+
+            if(isset($response['results'])){
+                $workout = $response['results'];
+            }
+            
+            if(!empty($from)){
+                return ['total_records'=>$response['metadata']['total_records'], 'workout'=>$workout];
+            }
+            return $workout;
+
+        }catch (RequestException $e) {
+
+            return $workout;
+
+        }catch (Exception $e) {
+            return $workout;
+        }
+
+    }
 }
 
 if (!function_exists('getFromCache')) {

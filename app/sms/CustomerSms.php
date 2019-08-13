@@ -290,6 +290,10 @@ Class CustomerSms extends VersionNextSms{
 			}
 		}
 		
+		if(!empty($data['type']) && $data['type'] ==  "pass"){
+			Log::info('sending pass purchase sms::::::::::::::::::::');
+			$label = 'Pass-Purchase-Customer';
+		}
 		
 
 		$to = $data['customer_phone'];
