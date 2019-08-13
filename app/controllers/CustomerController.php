@@ -3516,12 +3516,14 @@ class CustomerController extends \BaseController {
         
         $decoded = null;
         $jwt_token = Request::header('Authorization');
-		
+		$rel_banner_shown = false;
+		$updatedToken = $jwt_token;
         if(!empty($jwt_token)){
             $decoded = $this->customerTokenDecode($jwt_token);
             if(!empty($decoded)){
                 $customeremail = $decoded->customer->email;
                 $customer_id = $decoded->customer->_id;
+                $rel_banner_shown = (!empty($decoded->customer->rel_banner_shown))?$decoded->customer->rel_banner_shown:null;
             }
 
         }
@@ -3893,8 +3895,18 @@ class CustomerController extends \BaseController {
 			
 			if($city){
 
-                
-				$homepage = $this->getAppBanners(['_id'=>$city_id['_id']]);
+				Customer::$withoutAppends = true;
+				$customerRec = Customer::active()->where('email', $customeremail)->first();
+				
+				if((empty($customerRec) || empty($customerRec['dob_updated_by_reliance'])) && !$rel_banner_shown) {
+					$homepage = $this->getAppBannersRel(['_id'=>$city_id['_id'], 'device' => $this->device_type]);
+				}
+				else {
+					$homepage = $this->getAppBanners(['_id'=>$city_id['_id'], 'device' => $this->device_type]);
+				}
+				if(!$rel_banner_shown) {
+					$updatedToken = createCustomerToken($customerRec['_id'], null, true);
+				}
 
 				$campaigns = [];
 
@@ -3947,7 +3959,9 @@ class CustomerController extends \BaseController {
             
             Customer::$withoutAppends = true;
             if(!empty($customer_id) && !empty($corporate_id) && empty($external_reliance) && $corporate_id == 1) {
-				$customerRec = Customer::active()->where('email', $customeremail)->first();
+				if(empty($customerRec)) {
+					$customerRec = Customer::active()->where('email', $customeremail)->first();
+				}
 				try{
 					if(empty($customerRec->reliance_city) && empty($customerRec->reliance_city_home) && (!empty($city))) {
 						Customer::where('_id', $customerRec->_id)->update(['reliance_city_home'=> $city]);
@@ -4101,7 +4115,11 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-        return $result;
+        // return $result;
+
+		$response = Response::make($result);
+		$response->headers->set('token', $updatedToken);
+		return $response;
 
 		// $response = Response::make($result);
 		// if(!empty($customeremail)){
@@ -10290,19 +10308,44 @@ class CustomerController extends \BaseController {
 		$response->headers->set('token', $data['token'] );
 		return $response;
     }
-    
-    public function getAppBanners($data){
+	
+	public function getAppBanners($data) {
+		$homepage = getFromCache(['tag'=>'app_banners', 'key'=>'city-'.strval($data['_id'])]);
+		if(empty($homepage)){
+			$homepage = Homepage::where('city_id', $data['_id'])->first(['app_banners']);
+			if(!empty($homepage)){
+				$homepage = $homepage->toArray();
+				$banners = [];
+				foreach($homepage as $home) {
+					if($home['title'] != 'Mission Moon') {
+						$banners[] = $home;
+					}
+				}
+			}
+			setCache(['tag'=>'app_banners', 'key'=>'city-'.strval($data['_id']), 'data'=>$banners]);
+		}
+		return $homepage;
+	}
+
+    public function getAppBannersRel($data){
             
-        $homepage = getFromCache(['tag'=>'app_banners', 'key'=>'city-'.strval($data['_id'])]);
+        $homepage = getFromCache(['tag'=>'app_banners', 'key'=>'city-rel-'.strval($data['_id'])]);
 
         if(empty($homepage)){
             
             $homepage = Homepage::where('city_id', $data['_id'])->first(['app_banners']);
             
             if(!empty($homepage)){
-                $homepage = $homepage->toArray();
-                setCache(['tag'=>'app_banners', 'key'=>'city-'.strval($data['_id']), 'data'=>$homepage]);
+				$homepage = $homepage->toArray();
+				foreach($homepage['app_banners'] as &$home) {
+					if($home['title'] == 'Mission Moon') {
+						if(!empty($data['device']) && $data['device']=='ios') {
+							$home['link'] = 'https://www.fitternity.com';
+						}
+					}
+				}
             }
+			setCache(['tag'=>'app_banners', 'key'=>'city-rel-'.strval($data['_id']), 'data'=>$homepage]);
         }
         
         return $homepage;
