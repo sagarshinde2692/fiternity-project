@@ -8018,7 +8018,7 @@ class CustomerController extends \BaseController {
 					Log::info($data['wallet_balance']);
 					
 // 					if(!empty($pnd_pymnt)){$resp['response']['payment']=$pnd_pymnt;return $resp;}
-					$serviceController=new ServiceController($this->utilities, $this->relianceService) ;
+					$serviceController=new ServiceController($this->utilities, $this->relianceService, $this->passService) ;
 					if(!empty($finderarr['services'])&&count($finderarr['services'])>0)
 					{
 						$finderarr=$finderarr->toArray();
