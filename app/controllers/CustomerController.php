@@ -4042,9 +4042,9 @@ class CustomerController extends \BaseController {
             'footer' => "Book Workout Sessions At 100% Instant Cashback"
 		];
 
-		if(!empty($workout_sessions_near_customer) ){
-			$result['fitex']['near_by_workouts']= $workout_sessions_near_customer;
-		}
+		// if(!empty($workout_sessions_near_customer) ){
+		// 	$result['fitex']['near_by_workouts']= $workout_sessions_near_customer;
+		// }
 
 		/* commented on 9th Aug - Akhil
 		if(!empty($customeremail))
@@ -4076,9 +4076,9 @@ class CustomerController extends \BaseController {
 			}
 		}*/
 
-		if(!empty($result['session_packs'])){
-			$this->sessionPackRemoveExtraFields($result['session_packs']);
-		}
+		// if(!empty($result['session_packs'])){
+		// 	$this->sessionPackRemoveExtraFields($result['session_packs']);
+		// }
 
 		
 
@@ -4101,11 +4101,13 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		$response = Response::make($result);
-		if(!empty($customeremail)){
-			$response = setNewToken($response, !empty($pass));
-		}
-		return $response;
+        return $result;
+
+		// $response = Response::make($result);
+		// if(!empty($customeremail)){
+		// 	$response = setNewToken($response, !empty($pass));
+		// }
+		// return $response;
 		
 	}
 
