@@ -9576,7 +9576,7 @@ Class Utilities {
                 "qty"=>!empty($data['customer_quantity']) ? ($data['customer_quantity']) : 1,
                 "price"=>!empty($data['amount_customer']) ? ($data['amount_customer']) : (!empty($data['amount']) ? ($data['amount']) : 0),
                 "sku"=> !empty($data['ratecard_id']) ? ($data['ratecard_id']) : 0,
-                "productname"=>$data['productinfo'],
+                "productname"=>!empty($data['productinfo']) ? $data['productinfo'] : "",
                 "productbrand"=>"fitternity",
                 "variant"=>$data['type'],
                 "txnid"=>!empty($data["txnid"]) ? strval($data["txnid"]) : "txnid",
