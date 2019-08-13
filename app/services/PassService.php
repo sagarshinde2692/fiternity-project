@@ -321,6 +321,9 @@ class PassService {
             $order->status ='1';
             $order->update();
         }
+        
+        $utilities = new Utilities();
+        $utilities->updateCoupon($order);
 
         $wallet_update = $this->updateWallet($order);
 

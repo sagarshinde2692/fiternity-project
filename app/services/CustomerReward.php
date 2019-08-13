@@ -2223,7 +2223,7 @@ Class CustomerReward {
                         
                     }
                 }
-                else if(empty($coupon['corporate_id']) && $order_count > $coupon['usage_per_user']){
+                else if(empty($coupon['corporate_id']) && $order_count >= $coupon['usage_per_user']){
 
                     $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"This coupon is applicable only ".$coupon['usage_per_user']." time per user","user_login_error"=>true);
 
