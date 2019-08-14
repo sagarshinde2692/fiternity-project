@@ -3236,13 +3236,13 @@ if (!function_exists(('isNotInoperationalDate'))){
 
         $inoperational_dates = ['2019-08-15'];
 
-        if( in_array($date, $inoperational_dates) && in_array($city_id, [1,2])){
+        if( in_array($date, $inoperational_dates)){
             return false;
         }
 
-        if( in_array($date, $inoperational_dates) && in_array($city_id, [3,5]) && !in_array($findercategory_id, [5])){
-            return false;
-        }
+        // if( in_array($date, $inoperational_dates) && in_array($city_id, [3,5]) && !in_array($findercategory_id, [5])){
+        //     return false;
+        // }
         
         return true;
 
