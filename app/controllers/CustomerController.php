@@ -10315,14 +10315,16 @@ class CustomerController extends \BaseController {
 			$homepage = Homepage::where('city_id', $data['_id'])->first(['app_banners']);
 			if(!empty($homepage)){
 				$homepage = $homepage->toArray();
-				$banners = [];
+				$banners = $homepage;
+				$banners['app_banners'] = [];
 				foreach($homepage['app_banners'] as $home) {
 					if($home['title'] != 'Mission Moon') {
-						$banners[] = $home;
+						$banners['app_banners'][] = $home;
 					}
 				}
 			}
 			setCache(['tag'=>'app_banners', 'key'=>'city-'.strval($data['_id']), 'data'=>$banners]);
+			return $banners;
 		}
 		return $homepage;
 	}
