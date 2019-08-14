@@ -9551,7 +9551,6 @@ Class Utilities {
                         $diet_order = Order::active()->where('_id', $value['diet_plan_order_id'])->first();
                         $diet_order_array = $diet_order->toArray();
                         $diet_order_array['status'] = '0';
-                        Log::info('diet order::::', [$diet_order]);
                         $diet_order->update($diet_order_array);
 
                     }
