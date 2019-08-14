@@ -10316,7 +10316,7 @@ class CustomerController extends \BaseController {
 			if(!empty($homepage)){
 				$homepage = $homepage->toArray();
 				$banners = [];
-				foreach($homepage as $home) {
+				foreach($homepage['app_banners'] as $home) {
 					if($home['title'] != 'Mission Moon') {
 						$banners[] = $home;
 					}
