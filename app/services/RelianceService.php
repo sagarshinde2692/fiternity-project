@@ -93,9 +93,9 @@ Class RelianceService {
         return $current;
     }
 
-    public function getCustomerMilestoneCount($milestone=null) {
+    public function getCustomerMilestoneCount($milestone=null, $relianceCustomer = false) {
         if(!empty($milestone)) {
-            $customerMilestoneCount = Customer::raw(function($collection) use ($milestone) {
+            $customerMilestoneCount = Customer::raw(function($collection) use ($milestone, $relianceCustomer) {
                 $aggregate = [
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
@@ -107,6 +107,13 @@ Class RelianceService {
                         'count' => ['$sum' => 1]
                     ]]
                 ];
+
+                if($relianceCustomer) {
+                    $aggregate[1]['$match']['$or'] = [['external_reliance' => false], ['external_reliance' => ['$exists' => false]]];
+                } else {
+                    $aggregate[1]['$match']['external_reliance'] = true;
+                }
+
                 return $collection->aggregate($aggregate);
             });
             if(!empty($customerMilestoneCount['result'])) {
@@ -181,6 +188,45 @@ Class RelianceService {
                 }
 
                 $updateObj['corporate_rewards'] = (!empty($currCustMilestone->corporate_rewards))?$currCustMilestone->corporate_rewards:[];
+
+                if(!empty($updateObj['corporate_rewards']['milestones']) || !empty($milestoneDetails)) {
+                    $_temp = (!empty($updateObj['corporate_rewards']['milestones']))?$updateObj['corporate_rewards']['milestones']:$milestoneDetails;
+
+                    for($i=0; $i<count($_temp); $i++) {
+                        if($_temp[$i]['milestone'] > $i) {
+                            $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone'], !empty($currCustMilestone->external_reliance)?$currCustMilestone->external_reliance:false);
+                            if(isset($customerMilestoneCount['result'])) {
+                                $customerMilestoneCount = $customerMilestoneCount['result'][0]['count'];
+                                array_splice($_temp, $i, 0, [
+                                    [
+                                        'milestone' => $i,
+                                        'claimed' => false,
+                                        'user_count' => $customerMilestoneCount+1,
+                                        'achieved' => true,
+                                        'verified' => true
+                                    ]
+                                ]);
+                            }
+                            else {
+                                array_splice($_temp, $i, 0, [
+                                    [
+                                        'milestone' => $i,
+                                        'claimed' => false,
+                                        'user_count' => 1,
+                                        'achieved' => true,
+                                        'verified' => true
+                                    ]
+                                ]);
+                            }
+                        }
+                        else if($_temp[$i]['milestone'] < $i && empty($_temp[$i]['voucher'])) {
+                            unset($_temp[$i]);
+                        }
+                    }
+                    if(!empty($_temp)) {
+                        $updateObj['corporate_rewards']['milestones'] = $_temp;
+                    }
+                }
                 if(!empty($milestoneDetails) && !empty($updateObj['corporate_rewards']['milestones'])) {
                     $milestoneAlreadyExists = array_filter($updateObj['corporate_rewards']['milestones'], function($mile) use ($milestoneDetails) {
                         return $mile['milestone']==$milestoneDetails['milestone'];

@@ -8475,7 +8475,8 @@ class CustomerController extends \BaseController {
         $filter = [];
 		$isReward = !empty($input['isReward']) && ($input['isReward']!=false && $input['isReward']!="false");
 
-        $customer = $this->utilities->getCustomerFromTokenAsObject();
+		$customer = $this->utilities->getCustomerFromTokenAsObject();
+		$customer->_id = 99901;
         if(!empty($customer->_id)){
 			if(isset($customer->corporate_id)){
 				$customer = Customer::active()->where('_id', $customer->_id)->where('corporate_id', 1)->first();	
