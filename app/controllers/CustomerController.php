@@ -10102,7 +10102,8 @@ class CustomerController extends \BaseController {
 			$customer['external_reliance']= null;
 			$milestones = Config::get('relianceLoyaltyProfile.post_register.milestones.data');
 		}
-		$customerMilestoneCountMap = $this->relianceService->getCustomerMilestoneCount();
+		$relianceCustomer = !empty($customer['external_reliance'])?$customer['external_reliance']:false;
+		$customerMilestoneCountMap = $this->relianceService->getCustomerMilestoneCount(null, $relianceCustomer);
 		$_temp = $this->relianceService->updateMilestoneDetails($customer['_id'], $customer['corporate_id']);
 		$customer = $_temp['milestone'];
 		$steps = $_temp['steps'];

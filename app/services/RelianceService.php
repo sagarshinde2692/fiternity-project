@@ -122,7 +122,7 @@ Class RelianceService {
             return 0;
         }
         else {
-            $customerMilestoneCount = Customer::raw(function($collection) {
+            $customerMilestoneCount = Customer::raw(function($collection) use ($relianceCustomer) {
                 $aggregate = [
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
@@ -133,6 +133,11 @@ Class RelianceService {
                         'count' => ['$sum' => 1]
                     ]]
                 ];
+                if($relianceCustomer) {
+                    $aggregate[1]['$match']['$or'] = [['external_reliance' => false], ['external_reliance' => ['$exists' => false]]];
+                } else {
+                    $aggregate[1]['$match']['external_reliance'] = true;
+                }
                 return $collection->aggregate($aggregate);
             });
             if(!empty($customerMilestoneCount['result'])) {
@@ -155,11 +160,12 @@ Class RelianceService {
         Customer::$withoutAppends = true;
         $currCustMilestone = Customer::where('_id', $customerId)->first();
         // $fitnessDeviceData = FitnessDeviceData::where('customer_id', $customerId)->where('corporate_id', $corporateId)->sum('value');
-        $fitnessDeviceData = $this->getCurrentSteps($customerId, !empty($currCustMilestone->external_reliance)?$currCustMilestone->external_reliance:false);
+        $relianceCustomer = !empty($currCustMilestone->external_reliance)?$currCustMilestone->external_reliance:false;
+        $fitnessDeviceData = $this->getCurrentSteps($customerId, $relianceCustomer);
         if(!empty($fitnessDeviceData)) {
             $milestone = $this->getMilestoneDetails($fitnessDeviceData, $currCustMilestone);
             if($milestone['milestone']>=0) {
-                $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone']);
+                $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone'], $relianceCustomer);
                 if(isset($customerMilestoneCount['result'])) {
                     $customerMilestoneCount = $customerMilestoneCount['result'][0]['count'];
                     $userReachedMilestoneCheck = $customerMilestoneCount<$milestone['users'];
@@ -194,7 +200,7 @@ Class RelianceService {
 
                     for($i=0; $i<count($_temp); $i++) {
                         if($_temp[$i]['milestone'] > $i) {
-                            $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone'], !empty($currCustMilestone->external_reliance)?$currCustMilestone->external_reliance:false);
+                            $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone'], $relianceCustomer);
                             if(isset($customerMilestoneCount['result'])) {
                                 $customerMilestoneCount = $customerMilestoneCount['result'][0]['count'];
                                 array_splice($_temp, $i, 0, [
