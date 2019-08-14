@@ -9547,6 +9547,9 @@ Class Utilities {
                 $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags'];
                 
                 try{
+                    if($value['flags']['diet_plan']){
+                        
+                    }
                     $value->unset($keys);
                 }catch(\Exception $e){
                     Log::info('exception occured while rollback::::::::::::', [$e]);
