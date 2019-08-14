@@ -9544,11 +9544,16 @@ Class Utilities {
     public function rollbackVouchers($customer, $combo_vouchers_list){
         foreach($combo_vouchers_list as $key=>$value){
             if(!empty($value)){
-                $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags'];
+                $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags', 'diet_plan_order_id'];
                 
                 try{
-                    if($value['flags']['diet_plan']){
-                        
+                    if($value['diet_plan_order_id']){
+                        $diet_order = Order::active()->where('_id', $value['diet_plan_order_id'])->first();
+                        $diet_order_array = $diet_order->toArray();
+                        $diet_order_array['status'] = '0';
+                        Log::info('diet order::::', [$diet_order]);
+                        $diet_order->update($diet_order_array);
+
                     }
                     $value->unset($keys);
                 }catch(\Exception $e){
