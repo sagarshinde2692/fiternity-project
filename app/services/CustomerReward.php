@@ -811,6 +811,12 @@ Class CustomerReward {
                     $amount_paid = 2000;
                 }
 
+                if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644])){
+                    if($amount_paid > 1000){
+                        $amount_paid = 1000;
+                    }
+                }
+
                 $cashback_amount = 0;
                 if($amount_paid != 0){
                     $cashback_amount = round(($amount_paid * 82) / 100);
