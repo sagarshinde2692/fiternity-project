@@ -3899,10 +3899,10 @@ class CustomerController extends \BaseController {
 				$customerRec = Customer::active()->where('email', $customeremail)->first();
 				
 				if((empty($customerRec) || empty($customerRec['dob_updated_by_reliance'])) && !$rel_banner_shown) {
-					$homepage = $this->getAppBannersRel(['_id'=>$city_id['_id'], 'device' => $this->device_type]);
+					$homepage = $this->getAppBannersRel(['_id'=>$city_id['_id'], 'device' => $this->device_type, 'version' => $this->app_version]);
 				}
 				else {
-					$homepage = $this->getAppBanners(['_id'=>$city_id['_id'], 'device' => $this->device_type]);
+					$homepage = $this->getAppBanners(['_id'=>$city_id['_id'], 'device' => $this->device_type, 'version' => $this->app_version]);
 				}
 				if(!$rel_banner_shown) {
 					$updatedToken = createCustomerToken($customerRec['_id'], null, true);
@@ -10341,7 +10341,7 @@ class CustomerController extends \BaseController {
 				$homepage = $homepage->toArray();
 				foreach($homepage['app_banners'] as &$home) {
 					if($home['title'] == 'Mission Moon') {
-						if(!empty($data['device']) && $data['device']=='ios') {
+						if(!empty($data['device']) && ($data['device']=='ios' || ($data['device']=='android' && !empty($data['version']) && $data['version']<5.29))) {
 							$home['link'] = 'https://www.fitternity.com/walkpechal';
 						}
 					}
