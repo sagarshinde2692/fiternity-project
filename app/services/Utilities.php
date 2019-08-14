@@ -9547,7 +9547,6 @@ Class Utilities {
                 $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags'];
                 
                 try{
-                    Log::info('loyalty voucher::::::', [$value]);
                     $value->unset($keys);
                 }catch(\Exception $e){
                     Log::info('exception occured while rollback::::::::::::', [$e]);
