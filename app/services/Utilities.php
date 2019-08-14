@@ -9544,30 +9544,6 @@ Class Utilities {
     public function rollbackVouchers($customer, $combo_vouchers_list){
         foreach($combo_vouchers_list as $key=>$value){
             if(!empty($value)){
-                    
-            Log::info('key and value', [$key, $value]);
-                if(!empty($value['rollback_data'])){
-                    $rollBack = $value['rollback_data'];
-                    array_push(
-                        $rollBack, 
-                        [
-                            'customer_id' => $value['customer_id'],
-                            'expiry_date' => $value['expiry_date'],
-                            'selected_voucher' => $value['selected_voucher'],
-                            'rollback_date' => new MongoDate(strtotime('now'))
-                        ]
-                    );
-                    $value['rollback_data'] = $rollBack;
-                }else {
-                    $value['rollback_data']=[
-                        [
-                            'customer_id' => $value['customer_id'],
-                            'expiry_date' => $value['expiry_date'],
-                            'selected_voucher' => $value['selected_voucher'],
-                            'rollback_date' => new MongoDate(strtotime('now'))
-                        ]
-                    ];
-                }
                 $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags'];
                 
                 try{
