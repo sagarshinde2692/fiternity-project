@@ -2643,7 +2643,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             }
 
             if(!function_exists('createCustomerToken')){
-                function createCustomerToken($customer_id, $data=null){
+                function createCustomerToken($customer_id, $data=null, $rel_banner_shown = false){
                     
                     if(empty($data)){ 
                     
@@ -2689,6 +2689,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         if(!empty($customer['external_reliance'])) {
                             $data['external_reliance'] = $customer['external_reliance'];
                         }
+                        $data['rel_banner_shown'] = $rel_banner_shown;
                         if(!empty($customer['referral_code']))
                             $data['referral_code'] = $customer['referral_code'];	
                         if(!empty($customer['cart_id']))
