@@ -943,7 +943,7 @@ class TransactionController extends \BaseController {
                 (empty($_GET['device_type'])) || 
                 $_GET['device_type'] == 'website')
             &&
-            $data["amount_finder"] != 99
+            $data["amount_finder"] != 73
         ){
             if($data['type'] == 'workout-session')
             {
