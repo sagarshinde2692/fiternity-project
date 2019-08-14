@@ -10342,7 +10342,7 @@ class CustomerController extends \BaseController {
 				foreach($homepage['app_banners'] as &$home) {
 					if($home['title'] == 'Mission Moon') {
 						if(!empty($data['device']) && $data['device']=='ios') {
-							$home['link'] = 'https://www.fitternity.com';
+							$home['link'] = 'https://www.fitternity.com/walkpechal';
 						}
 					}
 				}
