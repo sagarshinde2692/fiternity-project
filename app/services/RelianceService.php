@@ -196,7 +196,7 @@ Class RelianceService {
                 $updateObj['corporate_rewards'] = (!empty($currCustMilestone->corporate_rewards))?$currCustMilestone->corporate_rewards:[];
 
                 if(!empty($updateObj['corporate_rewards']['milestones']) || !empty($milestoneDetails)) {
-                    $_temp = (!empty($updateObj['corporate_rewards']['milestones']))?$updateObj['corporate_rewards']['milestones']:$milestoneDetails;
+                    $_temp = (!empty($updateObj['corporate_rewards']['milestones']))?$updateObj['corporate_rewards']['milestones']:[$milestoneDetails];
 
                     for($i=0; $i<count($_temp); $i++) {
                         if($_temp[$i]['milestone'] > $i) {
