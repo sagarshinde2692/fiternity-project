@@ -1819,7 +1819,7 @@ class ServiceController extends \BaseController {
             if(empty($finder['flags']['monsoon_campaign_pps'])){
                 $service_details['price'].=" (100% Cashback)";
             }
-            if($service_details['amount'] != 99){
+            if($service_details['amount'] != 73){
                 $service_details['finder_flags']['monsoon_campaign_pps'] = false;
             }
             // if((!empty($finder['category_id']) && $finder['category_id'] == 47) || !empty($service_details['flags']['disable_dynamic_pricing'])){
