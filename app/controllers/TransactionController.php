@@ -7336,7 +7336,7 @@ class TransactionController extends \BaseController {
                 $decoded = customerTokenDecode($jwt_token);
                 $corporate_discount = !empty($decoded->customer->corporate_discount) ? $decoded->customer->corporate_discount : false;
             }
-            Log::info("corporate_discount  :::", [$corporate_discount]);
+            // Log::info("corporate_discount  :::", [$corporate_discount]);
             if(!empty($corporate_discount) && $corporate_discount){
                 Log::info("corporate_discount");
                 $coupons = Coupon::where('overall_coupon', true)->orderBy('overall_coupon_order', 'desc')->get(['code', 'flags']);
