@@ -10161,14 +10161,14 @@ class CustomerController extends \BaseController {
         $reward_open_index = null;
 
 
-		foreach($milestones as $key => $milestone){
+		foreach($milestones as $key1 => $milestone){
             if(!$milestone['milestone']){
                 continue;
             }
             $post_reward_template = Config::get('loyalty_screens.post_register_rewards_data_outer_template');
             $post_reward_template['title'] = strtr($post_reward_template['title'], $milestone);
             
-            $post_reward_template['_id'] = $key;
+            $post_reward_template['_id'] = $key1;
 
             $claimed_vouchers = [];
             $milestone_claim_count = 1;
@@ -10248,7 +10248,7 @@ class CustomerController extends \BaseController {
 			$post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s).");
 			if($milestone['users'] > 0){
 
-				$post_reward_template['description']  = $post_reward_template['description'] ."(".($milestone['users'] - $customerMilestoneCountMap[$key+1])."/".$milestone['users']." left)";
+				$post_reward_template['description']  = $post_reward_template['description'] ."(".($milestone['users'] - $customerMilestoneCountMap[$key1])."/".$milestone['users']." left)";
 			}
             $post_register_rewards_data[] = $post_reward_template;
             
