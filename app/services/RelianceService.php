@@ -93,9 +93,9 @@ Class RelianceService {
         return $current;
     }
 
-    public function getCustomerMilestoneCount($milestone=null, $relianceCustomer = false) {
+    public function getCustomerMilestoneCount($milestone=null, $nonRelianceCustomer = false) {
         if(!empty($milestone)) {
-            $customerMilestoneCount = Customer::raw(function($collection) use ($milestone, $relianceCustomer) {
+            $customerMilestoneCount = Customer::raw(function($collection) use ($milestone, $nonRelianceCustomer) {
                 $aggregate = [
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
@@ -108,10 +108,10 @@ Class RelianceService {
                     ]]
                 ];
 
-                if($relianceCustomer) {
-                    $aggregate[1]['$match']['$or'] = [['external_reliance' => false], ['external_reliance' => ['$exists' => false]]];
-                } else {
+                if($nonRelianceCustomer) {
                     $aggregate[1]['$match']['external_reliance'] = true;
+                } else {
+                    $aggregate[1]['$match']['$or'] = [['external_reliance' => false], ['external_reliance' => ['$exists' => false]]];
                 }
 
                 return $collection->aggregate($aggregate);
@@ -122,7 +122,7 @@ Class RelianceService {
             return 0;
         }
         else {
-            $customerMilestoneCount = Customer::raw(function($collection) use ($relianceCustomer) {
+            $customerMilestoneCount = Customer::raw(function($collection) use ($nonRelianceCustomer) {
                 $aggregate = [
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
@@ -133,10 +133,10 @@ Class RelianceService {
                         'count' => ['$sum' => 1]
                     ]]
                 ];
-                if($relianceCustomer) {
-                    $aggregate[1]['$match']['$or'] = [['external_reliance' => false], ['external_reliance' => ['$exists' => false]]];
-                } else {
+                if($nonRelianceCustomer) {
                     $aggregate[1]['$match']['external_reliance'] = true;
+                } else {
+                    $aggregate[1]['$match']['$or'] = [['external_reliance' => false], ['external_reliance' => ['$exists' => false]]];
                 }
                 return $collection->aggregate($aggregate);
             });

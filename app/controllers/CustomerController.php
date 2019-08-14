@@ -8849,13 +8849,13 @@ class CustomerController extends \BaseController {
                     }
                     /* return
                     if(empty($milestones[$voucher_category['milestone']]['claimed'])){
-    					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
-						$milestones[$voucher_category['milestone']]['claimed'] = true; */
+    					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));*/
+						$milestones[$voucher_category['milestone']]['claimed'] = true; 
 						
                         $voucherAttached = $voucherAttached->toArray();
 						$voucherAttached['claimed_date_time'] = new \MongoDate();                  
 						if(!empty($customer->corporate_id)) {
-                        	$milestones[$voucher_category['milestone']]['voucher'] = !empty($milestones[$voucher_category['milestone']]['voucher']) ? $milestones[$voucher_category['milestone']]['voucher'] : [];
+							$milestones[$voucher_category['milestone']]['voucher'] = !empty($milestones[$voucher_category['milestone']]['voucher']) ? $milestones[$voucher_category['milestone']]['voucher'] : [];
 							array_push($milestones[$voucher_category['milestone']]['voucher'], $voucherAttached); 
 							$corporate_rewards = $customer->corporate_rewards;
 							$corporate_rewards['milestones'] = $milestones;
@@ -10248,7 +10248,7 @@ class CustomerController extends \BaseController {
 			$post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s).");
 			if($milestone['users'] > 0){
 
-				$post_reward_template['description']  = $post_reward_template['description'] ."(".($milestone['users'] - $customerMilestoneCountMap[$key])."/".$milestone['users']." left)";
+				$post_reward_template['description']  = $post_reward_template['description'] ."(".($milestone['users'] - $customerMilestoneCountMap[$key+1])."/".$milestone['users']." left)";
 			}
             $post_register_rewards_data[] = $post_reward_template;
             
