@@ -10339,16 +10339,17 @@ class CustomerController extends \BaseController {
             $homepage = Homepage::where('city_id', $data['_id'])->first(['app_banners']);
             
             if(!empty($homepage)){
-				$homepage = $homepage->toArray();
-				foreach($homepage['app_banners'] as &$home) {
-					if($home['title'] == 'Mission Moon') {
-						if(!empty($data['device']) && ($data['device']=='ios' || ($data['device']=='android' && !empty($data['version']) && $data['version']<5.29))) {
-							$home['link'] = 'https://www.fitternity.com/walkpechal';
-						}
-					}
-				}
+				$homepage = $homepage->toArray();	
             }
 			setCache(['tag'=>'app_banners', 'key'=>'city-rel-'.strval($data['_id']), 'data'=>$homepage]);
+        }
+
+        foreach($homepage['app_banners'] as &$home) {
+            if($home['title'] == 'Mission Moon') {
+                if(!empty($data['device']) && ($data['device']=='ios' || ($data['device']=='android' && !empty($data['version']) && $data['version']<5.29))) {
+                    $home['link'] = 'https://www.fitternity.com/walkpechal';
+                }
+            }
         }
         
         return $homepage;
