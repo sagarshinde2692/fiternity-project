@@ -9,6 +9,7 @@ return [
             [
                 'header' => 'ALL ACCESS PASS',
                 'subheader' => 'UNLIMITED USAGE',
+                'subheader' => 'red',
                 'text' => '',
                 'image' => $gold_logo,
                 'why_pass' => [
@@ -35,6 +36,7 @@ return [
             [
                 'header' => 'LIMITLESS VALIDITY PASS',
                 'subheader' => 'LIMITLESS VALIDITY',
+                'subheader' => 'black',
                 'text' => '',
                 'image' => $gold_logo,
                 'why_pass' => [
