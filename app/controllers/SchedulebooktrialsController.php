@@ -2584,6 +2584,15 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrial->amount_finder = $order->vendor_price * $customer_quantity;
 
                 $order->update();
+            
+            }else if(!empty($order->ratecard_price_wo_offer)){
+                
+                $customer_quantity = !empty($order->customer_quantity) ? intval($order->customer_quantity) : 1;
+                $order->original_amount_finder = $order->amount_finder;
+                $order->amount_finder = $order->ratecard_price_wo_offer * $customer_quantity;
+                $booktrial->amount_finder = $order->ratecard_price_wo_offer * $customer_quantity;
+
+                $order->update();
             }
             
             $booktrial->update();

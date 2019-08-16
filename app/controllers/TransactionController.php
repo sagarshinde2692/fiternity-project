@@ -4520,6 +4520,8 @@ class TransactionController extends \BaseController {
             $data['amount_finder'] = $ratecard['price'];
         }
 
+        $data['ratecard_price_wo_offer'] = $data['amount_finder'];
+
         $data['offer_id'] = false;
 
         // $offer = Offer::where('ratecard_id',$ratecard['_id'])
