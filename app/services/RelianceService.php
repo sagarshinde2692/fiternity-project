@@ -458,7 +458,8 @@ Class RelianceService {
                     // 'rewards_info' => 'You\'ve covered '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).' total steps & are '.$this->formatStepsText($remainingSteps).' steps away from milestone '.$nextMilestoneData['milestone'].' (Hurry! Eligible for first '.$nextMilestoneData['users'].' users)',
                     // 'checkout_rewards' => 'Go to Profile',
                     // 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
-                    'share_info' => 'Hey! I feel fit today – have completed '.(($device=='android')?'%d':(($device=='ios' && $version>'5.1.9')?'%@':($firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today']))).' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                    // 'share_info' => 'Hey! I feel fit today – have completed '.(($device=='android')?'%d':(($device=='ios' && $version>'5.1.9')?'%@':($firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today']))).' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                    'share_info' => "Fit is the new me! You can now join #walkpechal by Reliance Nippon Life Insurance and win exciting rewards presented by Fitternity along this journey. Download Fitternity App now (https://ftrnty.app.link/rwf) and click on walkpechal banner to join the mission.",
                     'total_steps_count' => $this->formatStepsText($firebaseResponse['personal_activity']['total_steps'])
                 ],
                 'company_stats' => $firebaseResponse['company_stats'],
@@ -1850,7 +1851,8 @@ Class RelianceService {
                 // 'rewards_info' => 'You\'ve covered '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).' total steps & are '.$this->formatStepsText($remainingSteps).' steps away from milestone '.$nextMilestoneData['milestone'].' (Hurry! Eligible for first '.$nextMilestoneData['users'].' users)',
                 // 'checkout_rewards' => 'Go to Profile',
                 // 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
-                'share_info' => 'Hey! I feel fit today – have completed '.(($deviceType=='android')?'%d':'%@').' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                // 'share_info' => 'Hey! I feel fit today – have completed '.(($deviceType=='android')?'%d':'%@').' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                'share_info' => "Fit is the new me! You can now join #walkpechal by Reliance Nippon Life Insurance and win exciting rewards presented by Fitternity along this journey. Download Fitternity App now (https://ftrnty.app.link/rwf) and click on walkpechal banner to join the mission.",
                 'total_steps_count' => 1
             ],
             'company_stats' => [
