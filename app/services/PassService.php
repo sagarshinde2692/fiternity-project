@@ -52,7 +52,7 @@ class PassService {
                 'pass_id' => $pass['pass_id'],
                 'header' => $pass['duration_text'],
                 'subheader' => strtr($response['subheader'], ['duration_text' => $pass['duration_text']]),
-                'text' => 'All Access',
+                'text' => (!empty($pass['pass_type']) && $pass['pass_type']=='red')?'All Access':'Limitless Validity',
                 'remarks' => ucwords($pass['type'])
             ];
             if($pass['unlimited_access']) {
@@ -60,15 +60,15 @@ class PassService {
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
                 $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
             } else{
-                $passDetails['header'] = $pass['credits'].' Sweat Points';
-                $passDetails['text'] = 'for 1 month';
-                $passDetails['offer'] = 'Get 100% instant cash back';
+            //     $passDetails['header'] = $pass['credits'].' Sweat Points';
+            //     $passDetails['text'] = 'for 1 month';
+            //     $passDetails['offer'] = 'Get 100% instant cash back';
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
                 $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
             }
         }
-        unset($response['passes'][1]);
+        // unset($response['passes'][1]);
         return $response;
     }
 
@@ -701,6 +701,7 @@ class PassService {
             $success_template['pass']['image'] = $success['pass_image_gold'];
             $success_template['pass']['type'] =  strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
+            $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
             $success_template['pass_image'] = $success['pass_image_gold'];
         }
         else{

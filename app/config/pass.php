@@ -33,10 +33,10 @@ return [
                 ]
             ],
             [
-                'header' => 'MONTHLY PASS',
-                'subheader' => 'MONTHLY PASS FOR LIMITED USAGE',
-                'text' => '1 MONTH',
-                'image' => 'https://b.fitn.in/passes/monthly_card.png',
+                'header' => 'LIMITLESS VALIDITY PASS',
+                'subheader' => 'LIMITLESS VALIDITY',
+                'text' => '',
+                'image' => $gold_logo,
                 'why_pass' => [
                     'header' => 'WHY GO FOR A PASS',
                     'text' => 'adfaf fs fsadf dadfdsf sf safasdf asf asdfsdf sfs dsdf',
@@ -47,12 +47,12 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'header' => 'Select a monthly pass',
-                    'text' => '(Limited Access)',
+                    'header' => 'LIMITLESS VALIDITY PASS',
+                    'text' => '(Unlimited Access)',
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => 'Limited access card gives you an access to all fitness centres around you.',
+                    'header' => 'Limitless validity - Your membership will never expire!',
                     'text' => 'view all terms and conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
@@ -66,7 +66,7 @@ return [
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
         ],
-        'subheader' => 'duration_text PASS FOR UNLIMITED USAGE',
+        'subheader' => 'duration_text PASS FOR LIMITLESS USAGE',
     ],
     "terms"=>[
         "<h2>terms and condition header</h2>
