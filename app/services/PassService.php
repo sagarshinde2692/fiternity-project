@@ -163,6 +163,9 @@ class PassService {
             $hash = getHash($data);
             $data = array_merge($data,$hash);
             $data['amount_customer'] = $data['amount'];
+
+            $this->applyFitcash($data);
+            
             if(!empty($data['coupon_code'])) {
                 $customerCoupon = Coupon::where('status', '1')->where('code', strtolower($data['coupon_code']))->where('type', 'pass')->where('start_date', '<=', new \MongoDate())->where('end_date', '>=', new \MongoDate())->first();
                 if(!empty($customerCoupon)) {
@@ -258,14 +261,9 @@ class PassService {
             $data['preferred_starting_date'] = (!empty($data['preferred_starting_date']))?date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date'])):null;
             $data['amount_customer'] = $data['amount'];
             $data['rp_subscription_amount'] = $data['amount_customer'];
-            $wallet = Wallet::active()->where('customer_id', $data['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
-            if(!empty($wallet)){
-                $data['fitcash'] = $wallet['balance'];
-                $data['amount'] = $data['amount'] - $data['fitcash'];
-                // $data['amount'] = 1;
-                $data['wallet_id'] = $wallet['_id'];
-                $data['rp_description'] = $data['fitcash'].' Rs Fitcash Applied.';
-            }
+            
+            $this->applyFitcash($data);
+            
             $data['rp_name'] = $data['pass']['duration_text'];
             $order = new Order($data);
             $order['_id'] = $data['_id'];
@@ -771,7 +769,7 @@ class PassService {
             
             if(empty($wallet_update)){
              
-                return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (1)'];    
+                return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (112)'];    
             
             }
 
@@ -971,5 +969,17 @@ class PassService {
             'sms' => $smsSent,
             'email' => $emailSent
         );
+    }
+
+    public function applyFitcash(&$data){
+        
+        $wallet = Wallet::active()->where('customer_id', $data['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
+        if(!empty($wallet)){
+            $data['fitcash'] = $wallet['balance'];
+            $data['amount'] = !empty($data['amount'] - $data['fitcash']) ? ($data['amount'] - $data['fitcash']) : 0;
+            $data['wallet_id'] = $wallet['_id'];
+            // $data['rp_description'] = $data['fitcash'].' Rs Fitcash Applied.';
+        }
+    
     }
 }
