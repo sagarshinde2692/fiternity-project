@@ -1526,9 +1526,9 @@ class FindersController extends \BaseController {
 		// }
 
 		// commented on 9th Augus - Akhil
-		if(!empty($customer_id)){
-			$this->addCreditPoints($response['finder']['services'], $customer_id);
-		}
+		// if(!empty($customer_id)){
+		// 	$this->addCreditPoints($response['finder']['services'], $customer_id);
+		// }
 
 		$this->multifitGymWebsiteVendorUpdate($response);
 
@@ -5262,9 +5262,9 @@ class FindersController extends \BaseController {
 			$finderData['finder']['pay_per_session'] = false;
 		}
 		// commented on 9th August - Akhil
-		if(!empty($customer_id)){
-			$this->addCreditPoints($finderData['finder']['services'], $customer_id);
-		}
+		// if(!empty($customer_id)){
+		// 	$this->addCreditPoints($finderData['finder']['services'], $customer_id);
+		// }
 		//adding static data for hanman fitness
 		// if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
 		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
