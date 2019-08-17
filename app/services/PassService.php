@@ -512,16 +512,20 @@ class PassService {
         }
 
         if(!empty($passOrder)) {
-            if ($amount>=600 && $amount<=1000 && $this->isPremiumSessionAvailable($amount, $passOrder)) {
-                // 600 - 1000
-                return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_premium_session' => true, 'pass_type'=>$passType];
-            } else if ($amount>1000) {
-                // over 1000
-                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType];
+            // if ($amount>=600 && $amount<=1000 && $this->isPremiumSessionAvailable($amount, $passOrder)) {
+            //     // 600 - 1000
+            //     return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_premium_session' => true, 'pass_type'=>$passType];
+            // } else if ($amount>1000) {
+            //     // over 1000
+            //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType];
+            // }
+            if ($amount>750) {
+                // over 750
+                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
             else {
-                // below 600
-                return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType];
+                // below 751
+                return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
         }
         

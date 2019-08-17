@@ -3586,7 +3586,8 @@ class TransactionController extends \BaseController {
             }
         }    
         
-        /*if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
+        //  commented on 9th Aug - Akhil
+        if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
             Order::$withoutAppends = true;
             $passSession = $this->passService->allowSession($data['amount'], $data['customer_id']);
             if($passSession['allow_session'] != 0) {
@@ -3599,7 +3600,7 @@ class TransactionController extends \BaseController {
                 }
                 $amount = 0;
             }
-        }*/
+        }
         
         if(!empty($data['amount'] ) && $data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
             Order::$withoutAppends = true;
