@@ -457,7 +457,7 @@ class PassService {
     }
 
     public function getPassOrder($customerId) {
-        $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->where('end_date', '>', new MongoDate(time()))->first();
+        $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->where('end_date', '>', new \MongoDate(time()))->first();
         return (!empty($passOrder['pass']))?$passOrder['pass']:null;
     }
 
@@ -486,8 +486,8 @@ class PassService {
         $premiumExpiryDate = $this->getPremiumExpiryDates($passOrder['success_date']->sec, $passOrder['pass']['premium_booking_interval'], $passOrder['pass']['duration']);
         Order::$withoutAppends = true;
         $bookingCount = Order::active()->whereIn('type', ['workout-session', 'booktrial', 'trial'])->where('pass_id', $passOrder['_id'])
-                        ->where('created_at', '<', new MongoDate($premiumExpiryDate['bookingEndDate']))
-                        ->where('created_at', '>=', new MongoDate($premiumExpiryDate['bookingStartDate']))
+                        ->where('created_at', '<', new \MongoDate($premiumExpiryDate['bookingEndDate']))
+                        ->where('created_at', '>=', new \MongoDate($premiumExpiryDate['bookingStartDate']))
                         ->where('amount','<=',$passOrder['premium_min_booking_price'])
                         ->where('amount','>=',$passOrder['premium_max_booking_price'])
                         ->count();
@@ -502,7 +502,7 @@ class PassService {
             return;
         }
 
-        if(!empty($customer)) {
+        if(!empty($customerId)) {
             $passOrder = $this->getPassOrder($customerId);
         }
 
