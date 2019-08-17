@@ -254,7 +254,7 @@ class PassService {
             
         }else{
             
-            
+            $data['preferred_starting_date'] = (!empty($data['preferred_starting_date']))?date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date'])):null;
             $data['amount_customer'] = $data['amount'];
             $data['rp_subscription_amount'] = $data['amount_customer'];
             $wallet = Wallet::active()->where('customer_id', $data['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
