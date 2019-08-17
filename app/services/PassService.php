@@ -574,15 +574,18 @@ class PassService {
 
             return [ 'credits' => -1, 'order_id' => $passOrder['_id'], 'pass_type' => $passType];
         }
-        else if(empty($passType)) {
-            return [ 'credits' => 0, 'order_id' => (!empty($passOrder['_id']))?$passOrder['_id']:null ];
-        }
-        if(!empty($passOrder['total_credits']) && empty($passOrder['total_credits_used'])) {
-            $passOrder['total_credits_used'] = 0;
-        }
-        if(isset($passOrder['total_credits']) && ($credits+$passOrder['total_credits_used'])<=$passOrder['total_credits']) {
-            return [ 'credits' => $credits, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
-        }
+        // else if(!empty($passOrder) && $passOder['pass']['classes']){
+        //     return [ 'credits' => -1, 'order_id' => $passOrder['_id'], 'pass_type' => $passType];
+        // }
+        // else if(empty($passType)) {
+        //     return [ 'credits' => 0, 'order_id' => (!empty($passOrder['_id']))?$passOrder['_id']:null ];
+        // }
+        // if(!empty($passOrder['total_credits']) && empty($passOrder['total_credits_used'])) {
+        //     $passOrder['total_credits_used'] = 0;
+        // }
+        // if(isset($passOrder['total_credits']) && ($credits+$passOrder['total_credits_used'])<=$passOrder['total_credits']) {
+        //     return [ 'credits' => $credits, 'order_id' => $passOrder['_id'], 'pass_type' => $passType ];
+        // }
         return [ 'credits' => 0, 'order_id' => $passOrder['_id'], 'pass_premium_session' => !empty($pass_premium_session), 'pass_type'=>$passType];
         
     }
@@ -718,7 +721,8 @@ class PassService {
             //         '__name'=> $order['pass']['name']
             //     ]
             // );
-
+            $success_template['pass']['price'] =  $order['pass']['price'];
+            $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
                 [
@@ -907,7 +911,7 @@ class PassService {
     }
     
     public function checkUmlimitedPass($data){
-        return !empty($data['pass']['unlimited_access']) || !empty($data['unlimited_access']);
+        return (!empty($data['pass']['unlimited_access']) && $data['pass']['unlimited_access']) || (!empty($data['unlimited_access'] && $data['unlimited_access']));
     }
 
     public function passPurchaseCommunication($data){
