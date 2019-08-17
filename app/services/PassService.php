@@ -620,8 +620,8 @@ class PassService {
             return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
         }
 
-        if(!empty($order['pass']['cashback']) && empty($order['coupon_code'])){
-
+        if(!empty($order['amount']) && !empty($order['pass']['cashback']) && empty($order['coupon_code'])){
+            $validity = time()+(86400*30);
             $walletData = array(
                 "order_id"=>$order['_id'],
                 "customer_id"=> intval($order['customer_id']),
@@ -631,8 +631,8 @@ class PassService {
                 "type"=>'CASHBACK',
                 'entry'=>'credit',
                 'order_type'=>['pass'],
-                "description"=> "100% Cashback on workout-session booking at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14)),
-                "validity"=>time()+(86400*14),
+                "description"=> "100% Cashback on buying trial pass, Expires On : ".date('d-m-Y',$validity),
+                "validity"=>$validity,
             );
     
             $utilities->walletTransaction($walletData);
