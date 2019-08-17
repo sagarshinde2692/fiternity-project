@@ -703,8 +703,8 @@ class PassService {
         $success_template['pass']['text'] = strtr(
             $success_template['pass']['text'],
             [
-                '__usage_remark' => $unlimited?'Unlimited Workouts':'Unlimited Validity',
-                '__end_date'=> date_format($order['end_date'],'d-M-Y')
+                '__usage_remark' => $unlimited?'Unlimited Workouts': $order['pass']['classes'].' sessions',
+                '__end_date'=> ($unlimited)?('Valid up to'. date_format($order['end_date'],'d-M-Y')):'Unlimited Validity'
             ]
         );
         

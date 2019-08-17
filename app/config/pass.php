@@ -100,7 +100,7 @@ return [
         "header" => "Your ___type pass is active",
         'subline'=>'Hi __customer_name, your __pass_name for __pass_duration is now active. We have also sent you a confirmation Email and SMS.',
         "pass" => [
-            "text" => "(__usage_remark) Valid up to __end_date",
+            "text" => "(__usage_remark) __end_date",
             'header' => 'pass_name',
             'subheader' => 'duration_text PASS FOR usage_text',
             'image' => $silver_logo,
