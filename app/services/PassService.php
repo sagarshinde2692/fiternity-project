@@ -691,15 +691,16 @@ class PassService {
             ]
         );
 
-
+        $unlimited = !empty($order['pass']['unlimited_access']) && $order['pass']['unlimited_access'];
         $success_template['pass']['text'] = strtr(
             $success_template['pass']['text'],
             [
+                '__usage_remark' => $unlimited?'Unlimited Workouts':'Unlimited Validity',
                 '__end_date'=> date_format($order['end_date'],'d-M-Y')
             ]
         );
         
-        if(!empty($order['pass']['unlimited_access'])){
+        if($unlimited){
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
                 [
@@ -712,6 +713,7 @@ class PassService {
             $success_template['pass']['price'] =  $order['pass']['price'];
             $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
             $success_template['pass_image'] = $success['pass_image_gold'];
+            $success_template['pass']['usage_text'] = 'UNLIMITED USAGE';
         }
         else{
             $success_template['pass']['header'] = $order['pass']['name'];
@@ -733,6 +735,7 @@ class PassService {
 
             $success_template['pass']['image'] = $success['pass_image_silver'];
             $success_template['pass_image'] = $success['pass_image_silver'];
+            $success_template['pass']['usage_text'] = 'UNLIMITED VALIDITY';
         }
        
         if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
