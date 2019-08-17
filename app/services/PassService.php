@@ -704,7 +704,8 @@ class PassService {
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
                 [
-                    'duration_text'=> $order['pass']['duration_text']
+                    'duration_text'=> $order['pass']['duration_text'],
+                    'usage_text' => 'UNLIMITED USAGE'
                 ]
             );
             $success_template['pass']['header'] = $order['pass']['name'];
@@ -729,7 +730,8 @@ class PassService {
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
                 [
-                    'duration_text'=> $order['pass']['duration_text']
+                    'duration_text'=> $order['pass']['duration_text'],
+                    'usage_text' => 'UNLIMITED VALIDITY'
                 ]
             );
 
