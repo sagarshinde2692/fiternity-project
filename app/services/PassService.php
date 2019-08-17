@@ -70,6 +70,13 @@ class PassService {
                 $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
             }
         }
+        $passConfig = Config::get('pass');
+        $passCount = Order::active()->where('type', 'pass')->count();
+        if($passCount>=$passConfig['total_available']) {
+            $response['sold_out'] = true;
+        }
+        $response['passes_left'] = $passConfig['total_available'] - $passCount;
+        $response['total_passes'] = $passConfig['total_available'];
         // unset($response['passes'][1]);
         return $response;
     }
