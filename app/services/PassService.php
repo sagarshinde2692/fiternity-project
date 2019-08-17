@@ -56,11 +56,11 @@ class PassService {
                 // 'text' => (!empty($pass['pass_type']) && $pass['pass_type']=='red')?'All Access':'Limitless Validity',
                 'text' => 'All Access',
                 'remarks' => ucwords($pass['type']),
-                'pass_type' => $pass['type']
+                'type' => $pass['type']
             ];
             if($pass['type']=='trial') {
                 $passDetails['header'] .= ' Trial';
-                $pass['cashback'] = '(100% cashback)';
+                $passDetails['cashback'] = '(100% cashback)';
             }
             if($pass['unlimited_access']) {
                 $passDetails['price'] = 'Rs. '.$pass['price'];
