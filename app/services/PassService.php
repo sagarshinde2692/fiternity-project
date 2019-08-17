@@ -687,7 +687,8 @@ class PassService {
         
         $success = Config::get('pass');
         $success_template = $success['success'];
-        $success_template['header'] = strtr($success_template['header'], ['___type' => ucwords($order['pass']['type'])]);
+        // $success_template['header'] = strtr($success_template['header'], ['___type' => ucwords($order['pass']['type'])]);
+        $success_template['header'] = '';
         $success_template['subline'] = strtr(
             $success_template['subline'], 
             [
