@@ -7226,7 +7226,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            /* commented on 9th Aug - Akhil
+            //  commented on 9th Aug - Akhil
             if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
                 if(!empty($decoded->customer->_id)) {
                     $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id);
@@ -7239,7 +7239,7 @@ class TransactionController extends \BaseController {
                         $data['amount_payable'] = 0;
                     }
                 }
-            }*/
+            }
 
             if((empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 

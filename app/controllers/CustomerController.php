@@ -4060,7 +4060,7 @@ class CustomerController extends \BaseController {
 		// 	$result['fitex']['near_by_workouts']= $workout_sessions_near_customer;
 		// }
 
-		/* commented on 9th Aug - Akhil
+		//  commented on 9th Aug - Akhil
 		if(!empty($customeremail))
 		{
 			$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
@@ -4088,7 +4088,7 @@ class CustomerController extends \BaseController {
 				
 				$result['pass_bookings'] = $pass_bookings;
 			}
-		}*/
+		}
 
 		// if(!empty($result['session_packs'])){
 		// 	$this->sessionPackRemoveExtraFields($result['session_packs']);
