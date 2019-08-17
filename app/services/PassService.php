@@ -721,6 +721,7 @@ class PassService {
             //         '__name'=> $order['pass']['name']
             //     ]
             // );
+            $success_template['pass']['type'] =  strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
             $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
             $success_template['pass']['subheader'] = strtr(
