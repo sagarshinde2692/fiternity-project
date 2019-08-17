@@ -34,8 +34,8 @@ return [
                 ]
             ],
             [
-                'header' => 'LIMITLESS VALIDITY PASS',
-                'subheader' => 'LIMITLESS VALIDITY',
+                'header' => 'ALL ACCESS PASS',
+                'subheader' => 'ALL ACCESS VALIDITY',
                 'subheader' => 'black',
                 'text' => '',
                 'image' => $gold_logo,
@@ -49,12 +49,12 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'header' => 'LIMITLESS VALIDITY PASS',
+                    'header' => 'ALL ACCESS PASS',
                     'text' => '(Unlimited Access)',
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => 'Limitless validity - Your membership will never expire!',
+                    'header' => 'Limitless validity',
                     'text' => 'view all terms and conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
@@ -68,7 +68,7 @@ return [
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
         ],
-        'subheader' => 'duration_text PASS FOR LIMITLESS USAGE',
+        'subheader' => 'duration_text PASS FOR usage_text',
     ],
     "terms"=>[
         "<h2>terms and condition header</h2>

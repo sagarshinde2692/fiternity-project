@@ -29,12 +29,12 @@ class PassService {
         
         $passList = Pass::where('status', '1');
 
-        //if(!Config::get('app.debug')) {
-            // $trialPurchased =$this->checkTrialPassUsedByCustomer($customerId);
-        // }
-        // else {
-        //     $trialPurchased = false;
-        // }
+        if(!Config::get('app.debug')) {
+            $trialPurchased =$this->checkTrialPassUsedByCustomer($customerId);
+        }
+        else {
+            $trialPurchased = false;
+        }
 
         if(!empty($trialPurchased['status']) && $trialPurchased['status']) {
             $passList = $passList->where('type','!=', 'trial');
@@ -48,11 +48,13 @@ class PassService {
         
         $response = Config::get('pass.list');
         foreach($passList as &$pass) {
+            $passSubHeader = strtr($response['subheader'], ['duration_text' => $pass['duration_text'], 'usage_text' => (($pass['pass_type']=='red')?'LIMITLESS WORKOUTS':'LIMITLESS VALIDITY')]);
             $passDetails = [
                 'pass_id' => $pass['pass_id'],
                 'header' => $pass['duration_text'],
-                'subheader' => strtr($response['subheader'], ['duration_text' => $pass['duration_text']]),
-                'text' => (!empty($pass['pass_type']) && $pass['pass_type']=='red')?'All Access':'Limitless Validity',
+                'subheader' => $passSubHeader,
+                // 'text' => (!empty($pass['pass_type']) && $pass['pass_type']=='red')?'All Access':'Limitless Validity',
+                'text' => 'All Access',
                 'remarks' => ucwords($pass['type'])
             ];
             if($pass['unlimited_access']) {
