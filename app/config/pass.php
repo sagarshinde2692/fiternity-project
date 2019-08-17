@@ -7,8 +7,8 @@ return [
     'list' => [
         'passes' => [
             [
-                'header' => 'ALL ACCESS PASS',
-                'subheader' => 'UNLIMITED USAGE',
+                'header' => 'UNLIMITED USAGE',
+                'subheader' => 'ALL ACCESS PASS',
                 'pass_type' => 'red',
                 'text' => '',
                 'image' => $gold_logo,
@@ -22,7 +22,7 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'header' => 'ALL ACCESS PASS',
+                    'header' => 'UNLIMITED USAGE PASS',
                     'text' => '(Limited Access)',
                     'ratecards' => []
                 ],
@@ -34,8 +34,8 @@ return [
                 ]
             ],
             [
-                'header' => 'ALL ACCESS PASS',
-                'subheader' => 'UNLIMITED VALIDITY',
+                'header' => 'UNLIMITED VALIDITY',
+                'subheader' => 'ALL ACCESS PASS',
                 'pass_type' => 'black',
                 'text' => '',
                 'image' => $gold_logo,
@@ -49,7 +49,7 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'header' => 'ALL ACCESS PASS',
+                    'header' => 'UNLIMITED VALIDITY PASS',
                     'text' => '(Unlimited Access)',
                     'ratecards' => []
                 ],

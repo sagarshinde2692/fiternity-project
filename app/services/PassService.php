@@ -55,8 +55,13 @@ class PassService {
                 'subheader' => $passSubHeader,
                 // 'text' => (!empty($pass['pass_type']) && $pass['pass_type']=='red')?'All Access':'Limitless Validity',
                 'text' => 'All Access',
-                'remarks' => ucwords($pass['type'])
+                'remarks' => ucwords($pass['type']),
+                'pass_type' => $pass['type']
             ];
+            if($pass['type']=='trial') {
+                $passDetails['header'] .= ' Trial';
+                $pass['cashback'] = '(100% cashback)';
+            }
             if($pass['unlimited_access']) {
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
@@ -70,13 +75,13 @@ class PassService {
                 $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
             }
         }
-        $passConfig = Config::get('pass');
-        $passCount = Order::active()->where('type', 'pass')->count();
-        if($passCount>=$passConfig['total_available']) {
-            $response['sold_out'] = true;
-        }
-        $response['passes_left'] = $passConfig['total_available'] - $passCount;
-        $response['total_passes'] = $passConfig['total_available'];
+        // $passConfig = Config::get('pass');
+        // $passCount = Order::active()->where('type', 'pass')->count();
+        // if($passCount>=$passConfig['total_available']) {
+        //     $response['sold_out'] = true;
+        // }
+        // $response['passes_left'] = $passConfig['total_available'] - $passCount;
+        // $response['total_passes'] = $passConfig['total_available'];
         // unset($response['passes'][1]);
         return $response;
     }
