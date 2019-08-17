@@ -119,7 +119,7 @@ class PassService {
             $data['start_date'] = new \MongoDate(strtotime('midnight', time()));
         }
         
-        $data['end_date'] = new \MongoDate(strtotime('midnight', strtotime('+'.$pass['duration'].' days', strtotime($data['preferred_starting_date']))));
+        $data['end_date'] = new \MongoDate(strtotime('midnight', strtotime('+'.$pass['duration'].' days', (!empty($data['preferred_starting_date']))?strtotime($data['preferred_starting_date']):time())));
         
         if(!empty($pass['credits'])){
             
@@ -167,7 +167,7 @@ class PassService {
                 $customerCoupon = Coupon::where('status', '1')->where('code', strtolower($data['coupon_code']))->where('type', 'pass')->where('start_date', '<=', new \MongoDate())->where('end_date', '>=', new \MongoDate())->first();
                 if(!empty($customerCoupon)) {
                     $customerreward = new CustomerReward();
-                    $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],null, null, null, null, null, null, $pass);
+                    $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],null, null, null, null, null, null, null, $pass);
 
                     Log::info("couponCheck");
                     Log::info($couponCheck);
