@@ -67,7 +67,7 @@ class RazorpayService {
             'plan_id' => $razorpayPlan['rp_plan_id'],
             'customer_id' => $rpCustomerId,
             'total_count' => $total_count,
-            'start_at'=> strtotime(Config::get('app.razorpay.subscription.interval')),
+            'start_at'=> strtotime(Config::get('app.razorpay.subscription.interval'), date('d-M-Y', $order['start_date']->sec)),
             'addons' => [
                 [
                     'item' => [
