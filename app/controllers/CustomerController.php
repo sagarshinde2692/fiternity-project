@@ -10175,7 +10175,13 @@ class CustomerController extends \BaseController {
             if(!empty($voucher_categories_map[$milestone['milestone']])){
                 
                 $claimed_vouchers =  !empty($customer_milestones[$milestone['milestone']]['voucher']) ? $customer_milestones[$milestone['milestone']]['voucher'] : [];
-                $achieved_milestone =  !empty($customer_milestones[$milestone['milestone']]['achieved']) ? $customer_milestones[$milestone['milestone']]['achieved'] : [];
+				$achieved_milestone =  !empty($customer_milestones[$milestone['milestone']]['achieved']) ? $customer_milestones[$milestone['milestone']]['achieved'] : [];
+				$claimsLeftCount = 0;
+				if(isset($milestone['users']) && isset($customerMilestoneCountMap[$key1])) {
+					$claimsLeftCount = ($milestone['users'] - $customerMilestoneCountMap[$key1]);
+					$claimsLeftCount = ($claimsLeftCount>0)?$claimsLeftCount:0;
+				}
+				$claimsLeft = ($claimsLeftCount>0);
                 $claimed_voucher_categories = [];
                 
                 if(!empty($claimed_vouchers)){
@@ -10231,7 +10237,7 @@ class CustomerController extends \BaseController {
 						if($milestone_claim_count > 1){
 							$post_reward_data_template['claim_message'] = "Are you sure you want to claim this reward?";
 						}
-                        if(($nextMilestone >= $milestone['milestone']) && $achieved_milestone){
+                        if(($nextMilestone >= $milestone['milestone']) && $achieved_milestone && $claimsLeft){
 							$post_reward_data_template['button_title'] = "Claim";
                             $post_reward_data_template['claim_enabled'] = true;
                         }else{
