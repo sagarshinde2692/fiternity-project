@@ -709,7 +709,7 @@ class PassService {
             $success_template['pass']['text'],
             [
                 '__usage_remark' => $unlimited?'Unlimited Workouts': $order['pass']['classes'].' sessions',
-                '__end_date'=> ($unlimited)?('Valid up to'. date_format($order['end_date'],'d-M-Y')):'Unlimited Validity'
+                '__end_date'=> ($unlimited)?('Valid up to '. date_format($order['end_date'],'d-M-Y')):'Unlimited Validity'
             ]
         );
         
@@ -721,7 +721,8 @@ class PassService {
                     'usage_text' => 'UNLIMITED USAGE'
                 ]
             );
-            $success_template['pass']['header'] = '';// $order['pass']['name'];
+            $success_template['pass']['subheader'] = $order['pass']['duration_text'].' Validity';
+            $success_template['pass']['header'] = 'UNLIMITED USAGE';// $order['pass']['name'];
             $success_template['pass']['image'] = $success['pass_image_gold'];
             $success_template['pass']['type'] = '';//strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
@@ -730,7 +731,7 @@ class PassService {
             $success_template['pass']['usage_text'] = 'UNLIMITED USAGE';
         }
         else{
-            $success_template['pass']['header'] = '';// $order['pass']['name'];
+            $success_template['pass']['header'] = strtoupper($order['pass']['duration_text']);// $order['pass']['name'];
             // strtr(
             //     $success_template['pass']['header'],
             //     [
@@ -747,7 +748,7 @@ class PassService {
                     'usage_text' => 'UNLIMITED VALIDITY'
                 ]
             );
-
+            $success_template['pass']['subheader'] = 'Unlimited Validity';
             $success_template['pass']['image'] = $success['pass_image_silver'];
             $success_template['pass_image'] = $success['pass_image_silver'];
             $success_template['pass']['usage_text'] = 'UNLIMITED VALIDITY';
@@ -960,6 +961,9 @@ class PassService {
             'lat' => $data['customer_lat'],
             'lon' => $data['customer_lon'],
             'selected_region' => $data['customer_region'],
+            'pass' => $data['pass'],
+            'code' => $data['code'],
+            'start_date' => strtotime($data['start_date']),
         );
 
         if(empty($data['communication']['sms'])){
