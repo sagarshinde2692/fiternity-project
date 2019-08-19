@@ -3846,25 +3846,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code:EOMS<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code:CB100 ";
             }else{	
-				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code:EOMS\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code:CB100 ";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code:EOMS<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code:CB100 ";
             }else{	
-				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code:EOMS\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code:CB100 ";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code:EOMS<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code:CB100 ";
             }else{	
-				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code:EOMS\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code:CB100 ";
             }
 			
         }
