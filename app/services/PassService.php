@@ -960,6 +960,7 @@ class PassService {
             'lat' => $data['customer_lat'],
             'lon' => $data['customer_lon'],
             'selected_region' => $data['customer_region'],
+            'pass' => $data['pass']
         );
 
         if(empty($data['communication']['sms'])){
