@@ -694,6 +694,7 @@ class PassService {
         $success_template = $success['success'];
         // $success_template['header'] = strtr($success_template['header'], ['___type' => ucwords($order['pass']['type'])]);
         $success_template['header'] = '';
+        $success_template['customer_name'] = $order['pass']['name'];
         $success_template['subline'] = strtr(
             $success_template['subline'], 
             [
@@ -722,7 +723,7 @@ class PassService {
             );
             $success_template['pass']['header'] = '';// $order['pass']['name'];
             $success_template['pass']['image'] = $success['pass_image_gold'];
-            $success_template['pass']['type'] =  strtoupper($order['pass']['type']);
+            $success_template['pass']['type'] = '';//strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
             $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
             $success_template['pass_image'] = $success['pass_image_gold'];
@@ -736,7 +737,7 @@ class PassService {
             //         '__name'=> $order['pass']['name']
             //     ]
             // );
-            $success_template['pass']['type'] =  strtoupper($order['pass']['type']);
+            $success_template['pass']['type'] = '';//strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
             $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
             $success_template['pass']['subheader'] = strtr(
