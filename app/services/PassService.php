@@ -720,7 +720,7 @@ class PassService {
                     'usage_text' => 'UNLIMITED USAGE'
                 ]
             );
-            $success_template['pass']['header'] = $order['pass']['name'];
+            $success_template['pass']['header'] = '';// $order['pass']['name'];
             $success_template['pass']['image'] = $success['pass_image_gold'];
             $success_template['pass']['type'] =  strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
@@ -729,7 +729,7 @@ class PassService {
             $success_template['pass']['usage_text'] = 'UNLIMITED USAGE';
         }
         else{
-            $success_template['pass']['header'] = $order['pass']['name'];
+            $success_template['pass']['header'] = '';// $order['pass']['name'];
             // strtr(
             //     $success_template['pass']['header'],
             //     [
