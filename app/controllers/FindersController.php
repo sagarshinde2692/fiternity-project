@@ -5243,24 +5243,25 @@ class FindersController extends \BaseController {
 			Log::info("Error while sorting ratecard", [$e]);
 		}
 
-		$workout_ratecard_arr = array();
-		foreach($finderData['finder']['services'] as $service){
-			foreach($service['ratecard'] as $ratecard){
-				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
-				Log::info("ratecard_id :::", [$ratecard['_id']]);
-					array_push($workout_ratecard_arr, 1);
-				}
-			}
-		}
+		// $workout_ratecard_arr = array();
+		// foreach($finderData['finder']['services'] as $service){
+		// 	foreach($service['ratecard'] as $ratecard){
+		// 		if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+		// 		Log::info("ratecard_id :::", [$ratecard['_id']]);
+		// 			array_push($workout_ratecard_arr, 1);
+		// 		}
+		// 	}
+		// }
 
-		Log::info("workout_ratecard_arr ::", [$workout_ratecard_arr]);
-		Log::info("count workout_ratecard_arr ::", [count($workout_ratecard_arr)]);
+		// Log::info("workout_ratecard_arr ::", [$workout_ratecard_arr]);
+		// Log::info("count workout_ratecard_arr ::", [count($workout_ratecard_arr)]);
 		
-		if(count($workout_ratecard_arr) == 0){
-			Log::info("no workout ratecard");
-			$finderData['call_for_action_button'] = "";
-			$finderData['finder']['pay_per_session'] = false;
-		}
+		// if(count($workout_ratecard_arr) == 0){
+		// 	Log::info("no workout ratecard");
+		// 	$finderData['call_for_action_button'] = "";
+		// 	$finderData['finder']['pay_per_session'] = false;
+		// }
+
 		// commented on 9th August - Akhil
 		// if(!empty($customer_id)){
 		// 	$this->addCreditPoints($finderData['finder']['services'], $customer_id);
