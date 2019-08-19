@@ -2238,7 +2238,8 @@ class ServiceController extends \BaseController {
 		if(!empty($city)) {
 			$city = strtolower($city);
 		}
-		$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		// $_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$_citydata 		=	$this->utilities->getCityData($city);;
 		$_city = $city;
 		if(empty($_citydata)) {
 			$_city = "all";
