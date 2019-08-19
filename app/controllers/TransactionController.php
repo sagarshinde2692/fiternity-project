@@ -3586,20 +3586,21 @@ class TransactionController extends \BaseController {
             }
         }    
         
-        /*if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
-            Order::$withoutAppends = true;
-            $passSession = $this->passService->allowSession($data['amount'], $data['customer_id']);
-            if($passSession['allow_session'] != 0) {
-                $data['pass_type'] = $passSession['pass_type'];
-                $data['pass_order_id'] = $passSession['order_id'];
-                $data['pass_booking'] = true;
+        //  commented on 9th Aug - Akhil
+        // if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
+        //     Order::$withoutAppends = true;
+        //     $passSession = $this->passService->allowSession($data['amount'], $data['customer_id']);
+        //     if($passSession['allow_session'] != 0) {
+        //         $data['pass_type'] = $passSession['pass_type'];
+        //         $data['pass_order_id'] = $passSession['order_id'];
+        //         $data['pass_booking'] = true;
 
-                if(!empty($passSession['pass_premium_session'])) {
-                    $data['pass_premium_session'] = true;
-                }
-                $amount = 0;
-            }
-        }*/
+        //         if(!empty($passSession['pass_premium_session'])) {
+        //             $data['pass_premium_session'] = true;
+        //         }
+        //         $amount = 0;
+        //     }
+        // }
         
         if(!empty($data['amount'] ) && $data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
             Order::$withoutAppends = true;
@@ -7229,20 +7230,20 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            /* commented on 9th Aug - Akhil
-            if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
-                if(!empty($decoded->customer->_id)) {
-                    $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id);
-                    Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
-                    if($passSession['allow_session'] != 0) {
-                        $result['payment_details']['amount_summary'][] = [
-                            'field' => ((!empty($passSession['pass_type']) && $passSession['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
-                            'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'
-                        ];
-                        $data['amount_payable'] = 0;
-                    }
-                }
-            }*/
+            //  commented on 9th Aug - Akhil
+            // if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
+            //     if(!empty($decoded->customer->_id)) {
+            //         $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id);
+            //         Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
+            //         if($passSession['allow_session'] != 0) {
+            //             $result['payment_details']['amount_summary'][] = [
+            //                 'field' => ((!empty($passSession['pass_type']) && $passSession['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
+            //                 'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'
+            //             ];
+            //             $data['amount_payable'] = 0;
+            //         }
+            //     }
+            // }
 
             if((empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
@@ -7603,6 +7604,17 @@ class TransactionController extends \BaseController {
             if(!empty($data['pass_id'])){
                 $pass = Pass::where('pass_id', intval($data['pass_id']))->first();
                 
+                $jwt_token = Request::header('Authorization');
+
+                if(!empty($jwt_token) && $jwt_token != 'null'){
+                    
+                    $decoded = customerTokenDecode($jwt_token);
+
+                    if(!empty($decoded)){
+                        $data['customer_id'] = $decoded->customer->_id;
+                    }
+                }                
+
                 $resp = $this->customerreward->couponCodeDiscountCheck(null, $coupon, false,  null, 1, null, null, null, $pass);
 
                 $result['order_details'] = [
@@ -7618,7 +7630,7 @@ class TransactionController extends \BaseController {
                     'value' => 'Rs. '.(string)$pass['price']
                 ];
 
-                if($resp["coupon_applied"]){
+                if(!empty($resp["coupon_applied"])){
                     
                     $data['coupon_discount'] = $data['amount_payable'] > $resp['data']['discount'] ? $resp['data']['discount'] : $data['amount_payable'];
 
@@ -7631,6 +7643,31 @@ class TransactionController extends \BaseController {
                         'value' => '-Rs. '.(string)$data['coupon_discount']
                     ];
                 }
+                
+                $data['amount'] = $data['amount_payable'];
+                
+                $this->passService->applyFitcash($data);
+
+                
+                if(!empty($data['fitcash'])){
+                    
+                    $data['fitcash_applied'] = $data['amount_payable'] > $data['fitcash'] ? $data['fitcash'] : $data['amount_payable'];
+                
+                    $data['amount_payable'] -= $data['fitcash_applied'];
+                    
+                    if($data['fitcash_applied'] > 0){
+    
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => 'Fitcash Applied',
+                            'value' => '-Rs. '.(string)number_format($data['fitcash_applied'])
+                        ];
+    
+                        $data['you_save'] += $data['fitcash_applied'];
+    
+                    }
+                }
+                // return $data;
+                
                 $result['payment_details']['amount_payable'] = [
                     'field' => 'Total Amount Payable',
                     'value' => 'Rs. '.(string)$data['amount_payable']
