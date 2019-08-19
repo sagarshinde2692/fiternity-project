@@ -986,7 +986,9 @@ class PassService {
     }
 
     public function applyFitcash(&$data){
-        
+        if(empty($data['customer_id'])){
+            return;
+        }
         $wallet = Wallet::active()->where('customer_id', $data['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
         if(!empty($wallet)){
             $data['fitcash'] = $wallet['balance'];

@@ -7601,6 +7601,17 @@ class TransactionController extends \BaseController {
             if(!empty($data['pass_id'])){
                 $pass = Pass::where('pass_id', intval($data['pass_id']))->first();
                 
+                $jwt_token = Request::header('Authorization');
+
+                if(!empty($jwt_token) && $jwt_token != 'null'){
+                    
+                    $decoded = customerTokenDecode($jwt_token);
+
+                    if(!empty($decoded)){
+                        $data['customer_id'] = $decoded->customer->_id;
+                    }
+                }                
+
                 $resp = $this->customerreward->couponCodeDiscountCheck(null, $coupon, false,  null, 1, null, null, null, $pass);
 
                 $result['order_details'] = [
@@ -7616,7 +7627,7 @@ class TransactionController extends \BaseController {
                     'value' => 'Rs. '.(string)$pass['price']
                 ];
 
-                if($resp["coupon_applied"]){
+                if(!empty($resp["coupon_applied"])){
                     
                     $data['coupon_discount'] = $data['amount_payable'] > $resp['data']['discount'] ? $resp['data']['discount'] : $data['amount_payable'];
 
@@ -7629,6 +7640,31 @@ class TransactionController extends \BaseController {
                         'value' => '-Rs. '.(string)$data['coupon_discount']
                     ];
                 }
+                
+                $data['amount'] = $data['amount_payable'];
+                
+                $this->passService->applyFitcash($data);
+
+                
+                if(!empty($data['fitcash'])){
+                    
+                    $data['fitcash_applied'] = $data['amount_payable'] > $data['fitcash'] ? $data['fitcash'] : $data['amount_payable'];
+                
+                    $data['amount_payable'] -= $data['fitcash_applied'];
+                    
+                    if($data['fitcash_applied'] > 0){
+    
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => 'Fitcash Applied',
+                            'value' => '-Rs. '.(string)number_format($data['fitcash_applied'])
+                        ];
+    
+                        $data['you_save'] += $data['fitcash_applied'];
+    
+                    }
+                }
+                // return $data;
+                
                 $result['payment_details']['amount_payable'] = [
                     'field' => 'Total Amount Payable',
                     'value' => 'Rs. '.(string)$data['amount_payable']
