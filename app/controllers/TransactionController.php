@@ -5978,8 +5978,9 @@ class TransactionController extends \BaseController {
             $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
         }
 
-        if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase. Use Code : CASHBACK','position'=>$position++];
+        // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
+        if(!empty($data['type']) && $data['type'] == 'workout-session'){
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase. Use Code : CB100','position'=>$position++];
         }
         
         $booking_details_all = [];

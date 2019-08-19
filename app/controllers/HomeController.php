@@ -1889,7 +1889,7 @@ class HomeController extends BaseController {
 
                         
                         if(!empty($item['coupon_flags']['cashback_100_per'])){
-                            $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by using it on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
+                            $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
                         }
 
                         break;

@@ -1366,7 +1366,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - RIGHT2FIT || Book Workout Sessions For FLAT INR 73 (No Code Required)",
+								'text1'=> "End Of Monsoon Sale <br> Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS || Get 100% Instant Cashback on Workout Sessions. Use Code - CB100",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1378,7 +1378,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - RIGHT2FIT || Book Workout Sessions For FLAT INR 73 (No Code Required)",
+								'text1'=> "End Of Monsoon Sale <br> Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS || Get 100% Instant Cashback on Workout Sessions. Use Code - CB100",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1390,7 +1390,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - RIGHT2FIT || Book Workout Sessions At 100% Instant Cashback, code: CASHBACK",
+								'text1'=> "End Of Monsoon Sale <br> Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS || Get 100% Instant Cashback on Workout Sessions. Use Code - CB100",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3846,25 +3846,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Independence Day Sale</u><br><br>- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - RIGHT2FIT<br><br>- Book Workout Sessions For FLAT INR 73 (No Code Required) ";
+				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
             }else{	
-				$line = "\nIndependence Day Sale\n\n- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - RIGHT2FIT\n\n- Book Workout Sessions For FLAT INR 73 (No Code Required) ";
+				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Independence Day Sale</u><br><br>- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - RIGHT2FIT<br><br>- Book Workout Sessions And Get 100% Instant Cashback, use code: CASHBACK";
+				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
             }else{	
-				$line = "\nIndependence Day Sale\n\n- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - RIGHT2FIT\n\n- Book Workout Sessions And Get 100% Instant Cashback, use code: CASHBACK";
+				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Independence Day Sale</u><br><br>- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - RIGHT2FIT<br><br>- Book Workout Sessions For FLAT INR 73 (No Code Required) ";
+				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
             }else{	
-				$line = "\nIndependence Day Sale\n\n- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - RIGHT2FIT\n\n- Book Workout Sessions For FLAT INR 73 (No Code Required) ";
+				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code - EOMS\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
             }
 			
         }
@@ -4922,17 +4922,17 @@ class FindersController extends \BaseController {
                             }else{
                                 $finderData['call_for_action_button']      =      "Book A Session";
 								$finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session'; 
-								if(!empty($finderData['finder']['flags']['monsoon_campaign_pps'])){
-                                    $finderData['call_for_action_button']      =      "Book a Session @ 73";
-                                }   
+								// if(!empty($finderData['finder']['flags']['monsoon_campaign_pps'])){
+                                //     $finderData['call_for_action_button']      =      "Book a Session @ 73";
+                                // }   
                             }
                         }else{
                             $finderData['call_for_action_button']      =      "Book A Session";
                             $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking sessions';    
 
-                            if(!empty($finderData['finder']['flags']['monsoon_campaign_pps'])){
-                                $finderData['call_for_action_button']      =      "Book a Session @ 73";
-                            }
+                            // if(!empty($finderData['finder']['flags']['monsoon_campaign_pps'])){
+                            //     $finderData['call_for_action_button']      =      "Book a Session @ 73";
+                            // }
                         }
 
                     }
@@ -5314,10 +5314,10 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-                            $ratecard['remarks'] = "Independence Day Sale |  Get 100% Instant Cashback | Code: CASHBACK";
-                            if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
-                                $ratecard['remarks'] = "Independence Day Sale |  Workout Sessions At FLAT INR 73";
-                            }
+                            $ratecard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+                            // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
+                            //     $ratecard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+                            // }
                         }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
 							$ratecard_price = $ratecard['special_price'];
@@ -8279,12 +8279,12 @@ class FindersController extends \BaseController {
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				if(in_array($rc['type'], ['membership', 'extended validity']) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Independence Day Sale \n\n Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - RIGHT2FIT || Book Workout Sessions For FLAT INR 73");
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n End Of Monsoon Sale \n\n Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code -EOMS");
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
-                    if(!empty($finder['flags']['monsoon_campaign_pps'])){
-						$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n Independence Day Sale\n\n Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - RIGHT2FIT || Book Workout Sessions For FLAT INR 73");
-                    }
+                    // if(!empty($finder['flags']['monsoon_campaign_pps'])){
+					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n End Of Monsoon Sale\n\n Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code -EOMS");
+                    // }
 
                 }
 				$orderSummary['title'] = ucwords($title);
@@ -8534,10 +8534,10 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			$rateCard['remarks'] = "Independence Day Sale | 100% Instant Cashback | Code: CASHBACK";
-			if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
-				$rateCard['remarks'] = "Independence Day Sale |  Workout Sessions At FLAT INR 73";
-			}
+			$rateCard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
+			// 	$rateCard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+			// }
 			$rateCard['remarks_imp'] = true;
 		}
 	}
