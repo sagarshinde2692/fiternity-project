@@ -117,7 +117,7 @@ class PassService {
 
         $data['pass'] = $pass;
         if(empty($data['rp_subscription_id'])){
-            $data['amount'] = $data['rp_subscription_amount'] = $pass['price'];
+            $data['amount'] = $pass['price'];
         }
 
         $data['type'] = 'pass';
