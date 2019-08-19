@@ -962,8 +962,7 @@ class PassService {
             'selected_region' => $data['customer_region'],
             'pass' => $data['pass'],
             'code' => $data['code'],
-            'start_date' => $data['start_date'],
-            'end_date' => $data['end_date']
+            'start_date' => strtotime($data['start_date']),
         );
 
         if(empty($data['communication']['sms'])){
