@@ -10181,7 +10181,7 @@ class CustomerController extends \BaseController {
 					$claimsLeftCount = ($milestone['users'] - $customerMilestoneCountMap[$key1]);
 					$claimsLeftCount = ($claimsLeftCount>0)?$claimsLeftCount:0;
 				}
-				$claimsLeft = ($claimsLeftCount>0);
+				$claimsLeft = ($milestone['users']==-1) || ($claimsLeftCount>0);
                 $claimed_voucher_categories = [];
                 
                 if(!empty($claimed_vouchers)){
@@ -10254,7 +10254,7 @@ class CustomerController extends \BaseController {
 			$post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s).");
 			if($milestone['users'] > 0){
 
-				$post_reward_template['description']  = $post_reward_template['description'] ."(".($milestone['users'] - $customerMilestoneCountMap[$key1])."/".$milestone['users']." left)";
+				$post_reward_template['description']  = $post_reward_template['description'] ."(".($claimsLeftCount)."/".$milestone['users']." left)";
 			}
             $post_register_rewards_data[] = $post_reward_template;
             
