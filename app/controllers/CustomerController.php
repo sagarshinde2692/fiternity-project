@@ -4061,34 +4061,34 @@ class CustomerController extends \BaseController {
 		// }
 
 		//  commented on 9th Aug - Akhil
-		// if(!empty($customeremail))
-		// {
-		// 	$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
-		// 	$this->flexipassHome($order, $result);
-		// 	// if(empty($order)) {
-		// 	// 	$result['buy_pass'] = [
-		// 	// 		'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
-		// 	// 		'header' => 'Flexi Pass!',
-		// 	// 		'subheader' => 'Buy pass and book workouts',
-		// 	// 		'footer' => 'Buy pass!!'
-		// 	// 	];
-		// 	// }
-		// 	if(!empty($order)) {
+		if(!empty($customeremail))
+		{
+			$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
+			$this->flexipassHome($order, $result);
+			// if(empty($order)) {
+			// 	$result['buy_pass'] = [
+			// 		'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
+			// 		'header' => 'Flexi Pass!',
+			// 		'subheader' => 'Buy pass and book workouts',
+			// 		'footer' => 'Buy pass!!'
+			// 	];
+			// }
+			if(!empty($order)) {
 				
-		// 		$pass = true;
-		// 		$pass_bookings = [];
-		// 		try{
-		// 			$active_passes = [];
-		// 			if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
-		// 				$pass_bookings = $this->passService->getPassBookings($order['_id']);
-		// 			}
-		// 		}catch(Exception $e){
-		// 			$pass_bookings = [];
-		// 		}
+				$pass = true;
+				$pass_bookings = [];
+				try{
+					$active_passes = [];
+					if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
+						$pass_bookings = $this->passService->getPassBookings($order['_id']);
+					}
+				}catch(Exception $e){
+					$pass_bookings = [];
+				}
 				
-		// 		$result['pass_bookings'] = $pass_bookings;
-		// 	}
-		// }
+				$result['pass_bookings'] = $pass_bookings;
+			}
+		}
 
 		// if(!empty($result['session_packs'])){
 		// 	$this->sessionPackRemoveExtraFields($result['session_packs']);
