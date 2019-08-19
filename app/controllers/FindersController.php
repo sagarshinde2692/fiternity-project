@@ -1525,10 +1525,10 @@ class FindersController extends \BaseController {
 		// 	$response['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 		// }
 
-		/* commented on 9th Augus - Akhil
-		if(!empty($customer_id)){
-			$this->addCreditPoints($response['finder']['services'], $customer_id);
-		}*/
+		// commented on 9th Augus - Akhil
+		// if(!empty($customer_id)){
+		// 	$this->addCreditPoints($response['finder']['services'], $customer_id);
+		// }
 
 		$this->multifitGymWebsiteVendorUpdate($response);
 
@@ -5242,10 +5242,29 @@ class FindersController extends \BaseController {
 		}catch(Exception $e){
 			Log::info("Error while sorting ratecard", [$e]);
 		}
-		/* commented on 9th August - Akhil
-		if(!empty($customer_id)){
-			$this->addCreditPoints($finderData['finder']['services'], $customer_id);
-		}*/
+
+		$workout_ratecard_arr = array();
+		foreach($finderData['finder']['services'] as $service){
+			foreach($service['ratecard'] as $ratecard){
+				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+				Log::info("ratecard_id :::", [$ratecard['_id']]);
+					array_push($workout_ratecard_arr, 1);
+				}
+			}
+		}
+
+		Log::info("workout_ratecard_arr ::", [$workout_ratecard_arr]);
+		Log::info("count workout_ratecard_arr ::", [count($workout_ratecard_arr)]);
+		
+		if(count($workout_ratecard_arr) == 0){
+			Log::info("no workout ratecard");
+			$finderData['call_for_action_button'] = "";
+			$finderData['finder']['pay_per_session'] = false;
+		}
+		// commented on 9th August - Akhil
+		// if(!empty($customer_id)){
+		// 	$this->addCreditPoints($finderData['finder']['services'], $customer_id);
+		// }
 		//adding static data for hanman fitness
 		// if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
 		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';

@@ -7,8 +7,9 @@ return [
     'list' => [
         'passes' => [
             [
-                'header' => 'ALL ACCESS PASS',
-                'subheader' => 'UNLIMITED USAGE',
+                'header' => 'UNLIMITED USAGE',
+                'subheader' => 'ALL ACCESS PASS',
+                'pass_type' => 'red',
                 'text' => '',
                 'image' => $gold_logo,
                 'why_pass' => [
@@ -21,7 +22,7 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'header' => 'ALL ACCESS PASS',
+                    'header' => 'UNLIMITED USAGE PASS',
                     'text' => '(Limited Access)',
                     'ratecards' => []
                 ],
@@ -33,10 +34,11 @@ return [
                 ]
             ],
             [
-                'header' => 'MONTHLY PASS',
-                'subheader' => 'MONTHLY PASS FOR LIMITED USAGE',
-                'text' => '1 MONTH',
-                'image' => 'https://b.fitn.in/passes/monthly_card.png',
+                'header' => 'UNLIMITED VALIDITY',
+                'subheader' => 'ALL ACCESS PASS',
+                'pass_type' => 'black',
+                'text' => '',
+                'image' => $gold_logo,
                 'why_pass' => [
                     'header' => 'WHY GO FOR A PASS',
                     'text' => 'adfaf fs fsadf dadfdsf sf safasdf asf asdfsdf sfs dsdf',
@@ -47,12 +49,12 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'header' => 'Select a monthly pass',
-                    'text' => '(Limited Access)',
+                    'header' => 'UNLIMITED VALIDITY PASS',
+                    'text' => '(Unlimited Access)',
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => 'Limited access card gives you an access to all fitness centres around you.',
+                    'header' => 'Limitless validity',
                     'text' => 'view all terms and conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
@@ -66,8 +68,9 @@ return [
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
         ],
-        'subheader' => 'duration_text PASS FOR UNLIMITED USAGE',
+        'subheader' => 'duration_text PASS FOR usage_text',
     ],
+    "total_available" => 300,
     "terms"=>[
         "<h2>terms and condition header</h2>
         <ul>
@@ -97,10 +100,10 @@ return [
         "header" => "Your ___type pass is active",
         'subline'=>'Hi __customer_name, your __pass_name for __pass_duration is now active. We have also sent you a confirmation Email and SMS.',
         "pass" => [
-            
-            "text" => "Valid up to __end_date",
+            // "text" => "(__usage_remark) __end_date",
+            "text" => "__end_date",
             'header' => 'pass_name',
-            'subheader' => 'duration_text PASS FOR UNLIMITED USAGE',
+            'subheader' => 'duration_text PASS FOR usage_text',
             'image' => $silver_logo,
             'name' => 'FLEXI PASS',
             'type' => 'pass_type',
@@ -109,7 +112,6 @@ return [
         'info'=>[
             'header'=>'Things to keep in mind',
             'data'=>[
-                'You get unlimited access to book classes at your favorate studios.',
                 'Download the app & get started.',
                 'Book classes at any gym/studio near you of your choice.',
                 'Not loving it? easy cancellation available.',
