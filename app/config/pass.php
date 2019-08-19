@@ -111,7 +111,6 @@ return [
         'info'=>[
             'header'=>'Things to keep in mind',
             'data'=>[
-                'You get unlimited access to book classes at your favourite studios.',
                 'Download the app & get started.',
                 'Book classes at any gym/studio near you of your choice.',
                 'Not loving it? easy cancellation available.',
