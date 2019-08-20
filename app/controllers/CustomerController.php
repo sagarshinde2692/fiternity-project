@@ -8707,18 +8707,7 @@ class CustomerController extends \BaseController {
 					$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
 					// Log::info('before adding fitcash-> voucher_catageory', $voucher_category);
 					// Log::info('before adding fitcash-> customer_id', $customer_id);	
-					try{
-						if(!empty($voucher_category->fitcash)){
-							$voucher_category_fitcash = array(
-								"id"=>$customer_id,
-								"voucher_catageory"=>$voucher_category
-							);
-							$this->utilities->addFitcashforVoucherCatageory($voucher_category_fitcash);
-						}
-					}
-					catch(\Exception $err){
-						return Response::json(array('status' => 400,'message' => 'Cannot Claim Fitcash. Please contact customer support (5).'));
-					}
+					
                     if(!$voucherAttached){
                         return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (2).'));
                     }
@@ -8729,20 +8718,20 @@ class CustomerController extends \BaseController {
 						
                         $voucherAttached = $voucherAttached->toArray();
 						$voucherAttached['claimed_date_time'] = new \MongoDate();                  
-						if(!empty($customer->corporate_id)) {
-                        	$milestones[$voucher_category['milestone']]['voucher'] = !empty($milestones[$voucher_category['milestone']]['voucher']) ? $milestones[$voucher_category['milestone']]['voucher'] : [];
-							array_push($milestones[$voucher_category['milestone']]['voucher'], $voucherAttached); 
-							$corporate_rewards = $customer->corporate_rewards;
-							$corporate_rewards['milestones'] = $milestones;
-							$customer->corporate_rewards = $corporate_rewards;
-						}
-						else {
+						// if(!empty($customer->corporate_id)) {
+                        // 	$milestones[$voucher_category['milestone']]['voucher'] = !empty($milestones[$voucher_category['milestone']]['voucher']) ? $milestones[$voucher_category['milestone']]['voucher'] : [];
+						// 	array_push($milestones[$voucher_category['milestone']]['voucher'], $voucherAttached); 
+						// 	$corporate_rewards = $customer->corporate_rewards;
+						// 	$corporate_rewards['milestones'] = $milestones;
+						// 	$customer->corporate_rewards = $corporate_rewards;
+						// }
+						// else {
 							$milestones[$voucher_category['milestone']-1]['voucher'] = !empty($milestones[$voucher_category['milestone']-1]['voucher']) ? $milestones[$voucher_category['milestone']-1]['voucher'] : [];
 							array_push($milestones[$voucher_category['milestone']-1]['voucher'], $voucherAttached); 
 							$loyalty = $customer->loyalty;
 							$loyalty['milestones'] = $milestones;
 							$customer->loyalty = $loyalty;
-						}
+						// }
                         $customer->update();
                     // }
 
