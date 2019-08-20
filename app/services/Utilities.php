@@ -7303,6 +7303,8 @@ Class Utilities {
                     }
                 }
 
+                $loyalty['updated_at'] = new \MongoDate();
+
                 $update_data = [
                     'loyalty'=>$loyalty 
                 ];
