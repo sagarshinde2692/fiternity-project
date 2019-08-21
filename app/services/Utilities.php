@@ -9564,7 +9564,10 @@ Class Utilities {
     }
 
     public function voucherClaimedResponseReward($voucherAttached, $voucher_category){
-
+        if(in_array($voucherAttached['name'], ['Jio Saavn second', 'Jio Saavn first', 'Jio Saavn 2'])){
+            $voucherAttached['name'] = "Jio Saavn";
+        }
+        
         $resp =  [
             'voucher_data'=>[
                 'header'=>"VOUCHER UNLOCKED",
