@@ -8,17 +8,26 @@
  */
 use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
+
+use App\Services\PassService as PassService;
+
 use App\Services\RelianceService as RelianceService;
+
 
 
 class ServiceController extends \BaseController {
 
-	public function __construct(Utilities $utilities, RelianceService $relianceService) {
+	public function __construct(Utilities $utilities, RelianceService $relianceService, PassService $passService) {
+
 
 		parent::__construct();
 
 		$this->utilities = $utilities;
+
+		$this->passService = $passService;
+
 		$this->relianceService = $relianceService;
+
 
 		$this->vendor_token = false;
         
@@ -688,7 +697,7 @@ class ServiceController extends \BaseController {
             $query->whereNotIn('trial',['manual', 'manualauto'])->orWhere('flags.enable_manual_booking_pps.status', true);
         });
 
-        $query->where('servicecategory_id','!=',163);
+        // $query->where('servicecategory_id','!=',163);
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
 		if(!empty($combine_service_ids)){
@@ -939,8 +948,8 @@ class ServiceController extends \BaseController {
 		    				$service['city_id']=$finderQr['city_id'];
 		    		}
 		    		
-		    	}
-		    	
+				}
+				$price_text = $this->addCreditPointsNew($ratecard_price);
 				foreach ($weekdayslots['slots'] as $slot) {
 
 					if(!empty($finder)&&!empty($finder['flags'])&&!empty($finder['flags']['newly_launched_date']))
@@ -1015,8 +1024,12 @@ class ServiceController extends \BaseController {
                             $decoded = decode_customer_token();
                             $customer_email = $decoded->customer->email;
                             $extended_validity_order =  $this->utilities->getExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
-                            // $studio_extended_validity_order =  $this->utilities->getStudioExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
-                            $service['extended_validity'] = !empty($extended_validity_order) || !empty($studio_extended_validity_order);
+							// $studio_extended_validity_order =  $this->utilities->getStudioExtendedValidityOrder(['customer_email'=>$customer_email, 'service_id'=>$item['_id'], 'schedule_date'=>$request['date']]);
+
+							if(!empty($price_text)){
+								$slot['price_text'] = $price_text;
+							}
+                            $service['extended_validity'] = !empty($extended_validity_order) || !empty($studio_extended_validity_order) || !empty($price_text);
 						}
 						
 						if(
@@ -1202,7 +1215,12 @@ class ServiceController extends \BaseController {
 
         $schedules = array();
 
-        $schedules = array_merge($schedules_sort_passed_false,$schedules_sort_passed_true,$schedules_slots_empty);
+		$schedules = array_merge($schedules_sort_passed_false,$schedules_sort_passed_true,$schedules_slots_empty);
+
+		if(!empty($price_text)){
+			$schedules[0]['price_text'] = $price_text;
+		}
+		
         if(!$flag && $count < 7 && $recursive){
 
         	$count += 1;
@@ -1303,9 +1321,9 @@ class ServiceController extends \BaseController {
                                 unset($x['image']);
                             }
 
-                            if(!empty($x['price']) && in_array($this->device_type, ['ios'])){
-								unset($x['price']);
-							}
+                            // if(!empty($x['price']) && in_array($this->device_type, ['ios'])){
+							// 	unset($x['price']);
+							// }
                         }
 					}
 					
@@ -1332,8 +1350,27 @@ class ServiceController extends \BaseController {
             
             if(!empty($data['slots']) && count($data['slots']) == 1 && !empty($data['slots'][0]['title'])){
                 $data['slots'][0]['title'] = "Select a slot";
-            }
-            
+			}
+			
+			if(!empty(Request::header('Authorization'))){
+				$decoded = decode_customer_token();
+				$customer_id = intval($decoded->customer->_id);
+			}
+
+            // if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && !empty($customer_id)){
+			// 	foreach($data['schedules'] as &$schedule){
+			// 		$this->addCreditPoints($schedule, $customer_id, $schedule['workout_session'], 'slots');
+			// 		unset($schedule['workout_session']);
+			// 	}
+			// }
+			// else if(!empty($data['slots'])  && !empty($customer_id)){
+			//  	foreach($data['slots'] as &$slot){
+			// 		$amount = !empty($slot['data'][0])? $slot['data'][0]['price']:0;
+			// 		$workout_amount = ['amount'=> $amount];
+			// 		$this->addCreditPoints($slot, $customer_id, $workout_amount, 'data');
+			//  	}
+			// }
+
             return Response::json($data,200);
         }
 
@@ -1782,7 +1819,7 @@ class ServiceController extends \BaseController {
             if(empty($finder['flags']['monsoon_campaign_pps'])){
                 $service_details['price'].=" (100% Cashback)";
             }
-            if($service_details['amount'] != 99){
+            if($service_details['amount'] != 73){
                 $service_details['finder_flags']['monsoon_campaign_pps'] = false;
             }
             // if((!empty($finder['category_id']) && $finder['category_id'] == 47) || !empty($service_details['flags']['disable_dynamic_pricing'])){
@@ -2201,7 +2238,8 @@ class ServiceController extends \BaseController {
 		if(!empty($city)) {
 			$city = strtolower($city);
 		}
-		$_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		// $_citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$_citydata 		=	$this->utilities->getCityData($city);;
 		$_city = $city;
 		if(empty($_citydata)) {
 			$_city = "all";
@@ -2494,6 +2532,52 @@ class ServiceController extends \BaseController {
 			}
 		}
 		return array("price"=>$offer_price, "slots"=> $slots);
+	}
+
+	public function addCreditPoints(&$data, $customerId, $workout_session, $key){
+		
+		$creditApplicable = $this->passService->getCreditsApplicable($workout_session['amount'], $customerId);
+		//$points =$this->passService->getCreditsForAmount($workout_session['amount']);
+		Log::info('credit appplicable"::::::', [$creditApplicable]);
+		if($creditApplicable['credits'] != 0 ){
+			if($key=='data'){
+				$data['price_text'] = 'Book Using Pass';
+			}
+			else if($key=='slots'){
+				$data['price_text'] = 'Book Using Pass';
+			}
+		}
+
+		// foreach($data[$key] as &$value){
+		// 	if($creditApplicable['credits'] == 0 ){
+		// 		$index=array_search($value, $data[$key]);
+		// 		unset($data[$key][$index]);
+		// 	}
+		// }
+	}
+
+	public function addCreditPointsNew($ratecard_price){
+		$price_text = null;
+		$jwt_token = Request::header('Authorization');
+		if(!empty($jwt_token)){
+			$decoded = decode_customer_token();
+			$customer_id = $decoded->customer->_id;
+		}
+		else{
+			return $price_text;
+		}
+
+		try{
+			$creditApplicable = $this->passService->getCreditsApplicable($ratecard_price, $customer_id);
+			if(!empty($creditApplicable['credits'])){
+				$price_text = 'Book Using Pass';
+			}
+			Log::info('ratecard and customer id and credits::::::::::', [$creditApplicable, $ratecard_price, !empty($creditApplicable['credits'])]);
+		}catch(\Exception $e){
+			$price_text = null;
+			Log::info('error occured::::::::', [$e]);
+		}
+		return $price_text;
 	}
 
 }

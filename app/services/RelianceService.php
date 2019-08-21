@@ -93,9 +93,9 @@ Class RelianceService {
         return $current;
     }
 
-    public function getCustomerMilestoneCount($milestone=null) {
+    public function getCustomerMilestoneCount($milestone=null, $nonRelianceCustomer = false) {
         if(!empty($milestone)) {
-            $customerMilestoneCount = Customer::raw(function($collection) use ($milestone) {
+            $customerMilestoneCount = Customer::raw(function($collection) use ($milestone, $nonRelianceCustomer) {
                 $aggregate = [
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
@@ -107,6 +107,13 @@ Class RelianceService {
                         'count' => ['$sum' => 1]
                     ]]
                 ];
+
+                if($nonRelianceCustomer) {
+                    $aggregate[1]['$match']['external_reliance'] = true;
+                } else {
+                    $aggregate[1]['$match']['$or'] = [['external_reliance' => false], ['external_reliance' => ['$exists' => false]]];
+                }
+
                 return $collection->aggregate($aggregate);
             });
             if(!empty($customerMilestoneCount['result'])) {
@@ -115,7 +122,7 @@ Class RelianceService {
             return 0;
         }
         else {
-            $customerMilestoneCount = Customer::raw(function($collection) {
+            $customerMilestoneCount = Customer::raw(function($collection) use ($nonRelianceCustomer) {
                 $aggregate = [
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
@@ -126,6 +133,11 @@ Class RelianceService {
                         'count' => ['$sum' => 1]
                     ]]
                 ];
+                if($nonRelianceCustomer) {
+                    $aggregate[1]['$match']['external_reliance'] = true;
+                } else {
+                    $aggregate[1]['$match']['$or'] = [['external_reliance' => false], ['external_reliance' => ['$exists' => false]]];
+                }
                 return $collection->aggregate($aggregate);
             });
             if(!empty($customerMilestoneCount['result'])) {
@@ -148,11 +160,12 @@ Class RelianceService {
         Customer::$withoutAppends = true;
         $currCustMilestone = Customer::where('_id', $customerId)->first();
         // $fitnessDeviceData = FitnessDeviceData::where('customer_id', $customerId)->where('corporate_id', $corporateId)->sum('value');
-        $fitnessDeviceData = $this->getCurrentSteps($customerId, !empty($currCustMilestone->external_reliance)?$currCustMilestone->external_reliance:false);
+        $relianceCustomer = !empty($currCustMilestone->external_reliance)?$currCustMilestone->external_reliance:false;
+        $fitnessDeviceData = $this->getCurrentSteps($customerId, $relianceCustomer);
         if(!empty($fitnessDeviceData)) {
             $milestone = $this->getMilestoneDetails($fitnessDeviceData, $currCustMilestone);
             if($milestone['milestone']>=0) {
-                $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone']);
+                $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone'], $relianceCustomer);
                 if(isset($customerMilestoneCount['result'])) {
                     $customerMilestoneCount = $customerMilestoneCount['result'][0]['count'];
                     $userReachedMilestoneCheck = $customerMilestoneCount<$milestone['users'];
@@ -181,6 +194,45 @@ Class RelianceService {
                 }
 
                 $updateObj['corporate_rewards'] = (!empty($currCustMilestone->corporate_rewards))?$currCustMilestone->corporate_rewards:[];
+
+                if(!empty($updateObj['corporate_rewards']['milestones']) || !empty($milestoneDetails)) {
+                    $_temp = (!empty($updateObj['corporate_rewards']['milestones']))?$updateObj['corporate_rewards']['milestones']:[$milestoneDetails];
+
+                    for($i=0; $i<count($_temp); $i++) {
+                        if($_temp[$i]['milestone'] > $i) {
+                            $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone'], $relianceCustomer);
+                            if(isset($customerMilestoneCount['result'])) {
+                                $customerMilestoneCount = $customerMilestoneCount['result'][0]['count'];
+                                array_splice($_temp, $i, 0, [
+                                    [
+                                        'milestone' => $i,
+                                        'claimed' => false,
+                                        'user_count' => $customerMilestoneCount+1,
+                                        'achieved' => true,
+                                        'verified' => true
+                                    ]
+                                ]);
+                            }
+                            else {
+                                array_splice($_temp, $i, 0, [
+                                    [
+                                        'milestone' => $i,
+                                        'claimed' => false,
+                                        'user_count' => 1,
+                                        'achieved' => true,
+                                        'verified' => true
+                                    ]
+                                ]);
+                            }
+                        }
+                        else if($_temp[$i]['milestone'] < $i && empty($_temp[$i]['voucher'])) {
+                            unset($_temp[$i]);
+                        }
+                    }
+                    if(!empty($_temp)) {
+                        $updateObj['corporate_rewards']['milestones'] = $_temp;
+                    }
+                }
                 if(!empty($milestoneDetails) && !empty($updateObj['corporate_rewards']['milestones'])) {
                     $milestoneAlreadyExists = array_filter($updateObj['corporate_rewards']['milestones'], function($mile) use ($milestoneDetails) {
                         return $mile['milestone']==$milestoneDetails['milestone'];
@@ -406,7 +458,8 @@ Class RelianceService {
                     // 'rewards_info' => 'You\'ve covered '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).' total steps & are '.$this->formatStepsText($remainingSteps).' steps away from milestone '.$nextMilestoneData['milestone'].' (Hurry! Eligible for first '.$nextMilestoneData['users'].' users)',
                     // 'checkout_rewards' => 'Go to Profile',
                     // 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
-                    'share_info' => 'Hey! I feel fit today – have completed '.(($device=='android')?'%d':(($device=='ios' && $version>'5.1.9')?'%@':($firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today']))).' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                    // 'share_info' => 'Hey! I feel fit today – have completed '.(($device=='android')?'%d':(($device=='ios' && $version>'5.1.9')?'%@':($firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today']))).' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                    'share_info' => "Fit is the new me! You can now join #walkpechal by Reliance Nippon Life Insurance and win exciting rewards presented by Fitternity along this journey. Download Fitternity App now (https://ftrnty.app.link/rwf) and click on walkpechal banner to join the mission.",
                     'total_steps_count' => $this->formatStepsText($firebaseResponse['personal_activity']['total_steps'])
                 ],
                 'company_stats' => $firebaseResponse['company_stats'],
@@ -1798,7 +1851,8 @@ Class RelianceService {
                 // 'rewards_info' => 'You\'ve covered '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).' total steps & are '.$this->formatStepsText($remainingSteps).' steps away from milestone '.$nextMilestoneData['milestone'].' (Hurry! Eligible for first '.$nextMilestoneData['users'].' users)',
                 // 'checkout_rewards' => 'Go to Profile',
                 // 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
-                'share_info' => 'Hey! I feel fit today – have completed '.(($deviceType=='android')?'%d':'%@').' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                // 'share_info' => 'Hey! I feel fit today – have completed '.(($deviceType=='android')?'%d':'%@').' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                'share_info' => "Fit is the new me! You can now join #walkpechal by Reliance Nippon Life Insurance and win exciting rewards presented by Fitternity along this journey. Download Fitternity App now (https://ftrnty.app.link/rwf) and click on walkpechal banner to join the mission.",
                 'total_steps_count' => 1
             ],
             'company_stats' => [

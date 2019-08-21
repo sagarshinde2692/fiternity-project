@@ -78,11 +78,5 @@ return array(
         "_id" => 12,
         "name" => "chandigarh",
         "slug" => "chandigarh"
-    ],
-    
-    [
-        "_id" => 13,
-        "name" => "Kolkata",
-        "slug" => "kolkata"
     ]
 );

@@ -1,6 +1,5 @@
 <?php
 use Illuminate\Support\Facades\Config;
-
 /** 
  * ModelName : Service.
  * Maintains a list of functions used for Service.
@@ -493,10 +492,10 @@ class Service extends \Basemodel{
 
                 if(isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
                     if(!empty($value['offers'][0]['remarks'])){
-                        $value['offers'][0]['remarks'] = "Get 100% instant cashback";
+                        $value['offers'][0]['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
                         $value['remarks_imp'] =  true;
                     }else{
-                        $value['remarks'] =  "Get 100% instant cashback";
+                        $value['remarks'] =  "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
                         $value['remarks_imp'] =  true;
                     }
                 }

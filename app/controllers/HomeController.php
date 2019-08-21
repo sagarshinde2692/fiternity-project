@@ -1061,6 +1061,10 @@ class HomeController extends BaseController {
 
                 $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there. FitCode helps you mark your attendance that let\'s you earn cashbacks.'."<br><br>Keep booking sessions at ".$item['finder_name']." without buying a membership and earn rewards on your every workout";  
 
+                if(!empty($item['coupon_flags']['cashback_100_per'])){
+                    $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
+                }
+
                 if(isset($item['pay_later']) && $item['pay_later']){
                     $subline .='<br><br>Attend and pay later to earn Cashback!</p>';
                 }else{
@@ -1098,12 +1102,12 @@ class HomeController extends BaseController {
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
-
-                if(isset($item['extended_validity_order_id']) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
+                
+                if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
                     $response['streak']['header'] = '';
                     $response['streak']['items'] = [];
                 }
-                if(isset($item['extended_validity_order_id']) && (($device_type=='android' && $app_version > '5.17') || ($device_type=='ios' && $app_version > '5.1.4'))){
+                if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version > '5.17') || ($device_type=='ios' && $app_version > '5.1.4'))){
                     unset($response['streak']);
                 }
                 
@@ -1150,6 +1154,8 @@ class HomeController extends BaseController {
                     $response['subline'] = 'Your payment for '.$service_name.' session at '.$finder_name.' for '.$schedule_date.' at '.$schedule_slot.' is successful. Keep booking, reach milestones & earn rewards';
                 }
                 
+            
+                $response['branch_obj'] = $this->utilities->branchIOData($itemData);
 
                 return $response;
             }
@@ -1798,10 +1804,10 @@ class HomeController extends BaseController {
                 $header = "Membership Confirmed";
                 $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
                 
-                if(!empty($item['coupon_flags']['cashback_100_per'])){
-                    $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by using it on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
+                // if(!empty($item['coupon_flags']['cashback_100_per'])){
+                //     $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by using it on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
                     
-                }
+                // }
 
                 if(isset($item['extended_validity']) && $item['extended_validity']){  
                     $header = "Session Pack Confirmed";
@@ -1811,9 +1817,9 @@ class HomeController extends BaseController {
                     }
                     $subline = "Hi <b>".$item['customer_name']."</b>, your ".$serviceDurArr[0]." pack (".$duration.") for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed by paying Rs. ".(string)$item['amount_customer'].". We have also sent you a confirmation Email and SMS";
                     
-                    if(!empty($item['coupon_flags']['cashback_100_per'])){
-                        $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by using it on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
-                    }
+                    // if(!empty($item['coupon_flags']['cashback_100_per'])){
+                    //     $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by using it on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
+                    // }
                 }
 
                 if(isset($item['booking_for_others']) && $item['booking_for_others']){
@@ -1880,9 +1886,14 @@ class HomeController extends BaseController {
                     default:
                         $header = "WORKOUT SESSION CONFIRMED";
                         $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying Rs ".$item['amount'].". We have also sent you a confirmation Email & SMS.";
+
+                        if(!empty($item['pass_order_id'])){
+                            $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by using unlimited access pass. We have also sent you a confirmation Email & SMS."; 
+                        };
+
                         
                         if(!empty($item['coupon_flags']['cashback_100_per'])){
-                            $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by using it on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
+                            $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
                         }
 
                         break;
@@ -2300,9 +2311,16 @@ class HomeController extends BaseController {
                     $resp['kiosk_membership'] = $this->utilities->membershipBookedLocateScreen($item);
                 }
             }
+
+
+        
+            $resp['branch_obj'] = $this->utilities->branchIOData($item);
+
+
             if(!empty($item['coupon_flags'])){
                 $resp['coupon_flags'] = $item['coupon_flags'];
             }
+
             return Response::json($resp);
         }
     }

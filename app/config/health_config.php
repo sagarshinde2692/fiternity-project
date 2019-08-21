@@ -186,7 +186,7 @@ return [
         "Footer"=> "Join India's largest fitness challenge along with other lakhs of users.",
         "button_title"=> "Know More",
         'enable_button_text' => 'ENABLE',
-        "section1"=> "1. Join India's Largest Fitness Challenge and join lakhs of users.\n\n2. 30 days | 100 Cr. Steps | 600 Cities Challenge to Walk to the Moon\n\n3. Get your Friends & Family and track your progress on the Leaderboard\n\n4. Win exciting Rewards and Prizes on achieving each milestone.",
+        "section1"=> "1. Join India's Biggest Fitness Challenge and join lakhs of users.\n\n2. 30 days | 100 Cr. Steps | 600 Cities Challenge to Walk to the Moon\n\n3. Get your Friends & Family and track your progress on the Leaderboard",
         "tnc"=> [
             "agree_text" => "",
             "terms_condition_text" => "Please read the terms & conditions before you agree",

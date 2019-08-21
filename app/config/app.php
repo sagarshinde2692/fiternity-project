@@ -22,13 +22,15 @@ return array(
 	// 'paypal_sandbox'=>true,
 	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
 	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
-	// 'uploadStepsStage'=>'http://localhost:5000/fitness-steps-stage/asia-east2/',
+	// 'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
+    // "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
+    // 'uploadStepsStage'=>'http://localhost:5000/fitness-steps-stage/asia-east2/',
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://apistage.fitn.in',
 	// 'admin_url' => 'http://adminstage.fitn.in',
-	// 'website' => 'http://apistage.fitn.in:8888',
+	// 'website' => 'http://apistage.fitn.in:1234',
 	// 'sidekiq_url' => 'http://kick.fitn.in/',
 	// 'queue' => 'booktrial',
 	// 'vendor_communication' => false,
@@ -43,9 +45,14 @@ return array(
 	// 'paypal_sandbox'=>true,
 	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
 	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
+	// 'razorpay' => [ 'key_id' => 'rzp_test_6TKjLnXzpuVIds', 'secret_key' => 'rK7FwR1a4coHHLCuhSSLz8P5', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
+	// 'razorPayKey' => 'rzp_test_6TKjLnXzpuVIds',
+	// 'razorPaySecret' => 'rK7FwR1a4coHHLCuhSSLz8P5',
+	// "webhook_secret_key"=>"qwepoifghtyvb",
+	// "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
 	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-stage.cloudfunctions.net/',
 
-	//beta
+    //beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://beta.fitn.in',
 	// 'admin_url' => 'http://adminstage.fitn.in',
@@ -62,7 +69,12 @@ return array(
 	// 'mobikwik_sandbox'=>true,
 	// 'paytm_sandbox'=>true,
 	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	// 'razorPayKey' => 'rzp_test_6TKjLnXzpuVIds',
 	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
+	// 'razorPaySecret' => 'rK7FwR1a4coHHLCuhSSLz8P5',
+	// "webhook_secret_key"=>"qwepoifghtyvb",
+	// "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
+	// 'paypal_sandbox'=>true,
 
 	//live
 	'new_search_url' =>'http://c1.fitternity.com/',	
@@ -85,6 +97,43 @@ return array(
 	'ffTransactionAPI'=>'https://demo.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
 	'ffEnquiryAPI'=>'http://api.fitnessforce.com/prospect',
 	'uploadStepsStage'=>'https://asia-east2-fitness-steps-live.cloudfunctions.net/',
+    'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
+
+    'creditMap' => [
+		['max_price'=>300, 'credits'=>2],
+		['max_price'=>500, 'credits'=>3],
+		['max_price'=>749, 'credits'=>4]
+	],
+
+	'pass_payment_options' => [
+		[
+				'title' => 'Paypal',
+				'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
+				'value' => 'paypal'
+		],
+		[
+				'title' => 'Paytm',
+				// 'subtitle' => 'Paytm',
+				'value' => 'paytm'
+		],
+		[
+				'title' => 'AmazonPay',
+				// 'subtitle' => 'AmazonPay',
+				'value' => 'amazonpay'
+		],
+		[
+				'title' => 'Mobikwik',
+				// 'subtitle' => 'Mobikwik',
+				'value' => 'mobikwik'
+		],
+		[
+				'title' => 'PayU',
+				// 'subtitle' => 'PayU',
+				'value' => 'payu'
+		]
+	],
+
+	'razorPayURL' =>'https://api.razorpay.com/v1/plans',
 	
 	'ffDetails' => [
 		'source' => 'fitternity',

@@ -50,7 +50,7 @@ Class Cacheapi {
         
         if(!\Config::get('app.debug') && empty($_GET['dont_cycle'])){
         
-            print_r($_SERVER['REQUEST_URI']);
+            // print_r($_SERVER['REQUEST_URI']);
 
             $api_instance_urls = ['r1.fitternity.com/', 'r2.fitternity.com/', 'r5.fitternity.com/'];
     
