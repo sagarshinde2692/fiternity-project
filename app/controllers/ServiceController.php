@@ -697,7 +697,7 @@ class ServiceController extends \BaseController {
             $query->whereNotIn('trial',['manual', 'manualauto'])->orWhere('flags.enable_manual_booking_pps.status', true);
         });
 
-        $query->where('servicecategory_id','!=',163);
+        // $query->where('servicecategory_id','!=',163);
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
 		if(!empty($combine_service_ids)){
