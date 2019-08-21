@@ -8787,9 +8787,9 @@ class CustomerController extends \BaseController {
 				$voucher_category = null;
 			}
 			$resp = $this->utilities->voucherClaimedResponseReward($voucherAttached, $voucher_category);
-            if(!empty($communication) && !empty($combo_vouchers) && count($combo_vouchers)== 0){
-				$this->voucherEmailReward($resp, $customer);
-
+            if(!empty($communication) && (empty($combo_vouchers) || (!empty($combo_vouchers) && count($combo_vouchers)== 0))){
+				$email = $this->voucherEmailReward($resp, $customer);
+				Log::info('email::::: of not combo reward::::', [$email]);
 			}else if(!empty($communication)) {
 
 				foreach($combo_vouchers as $key=>$value){
