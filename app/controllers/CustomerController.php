@@ -4015,6 +4015,34 @@ class CustomerController extends \BaseController {
 		}
         
         if(!isExternalCity($city)){
+        
+            $lat = isset($_GET['lat']) && $_GET['lat'] != "" ? $_GET['lat'] : "";
+            $lon = isset($_GET['lon']) && $_GET['lon'] != "" ? $_GET['lon'] : "";
+            // $trending = getFromCache(['tag'=>'trending', 'key'=>$city]);
+
+            // if(empty($trending)){
+            $near_by_vendor_request = [
+                "offset" => 0,
+                "limit" => 9,
+                "radius" => "2km",
+                "category"=>"",
+                "lat"=>$lat,
+                "lon"=>$lon,
+                "city"=>strtolower($city),
+                "keys"=>[
+                    "average_rating",
+                    "contact",
+                    "coverimage",
+                    "location",
+                    "multiaddress",
+                    "slug",
+                    "name",
+                    "id",
+                    "categorytags",
+                    "category"
+                ]
+            ];
+            
             $workout_sessions_near_customer = $this->getWorkoutSessions($near_by_vendor_request);
             // $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
             // $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
