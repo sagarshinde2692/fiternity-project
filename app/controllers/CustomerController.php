@@ -4015,7 +4015,7 @@ class CustomerController extends \BaseController {
 		}
         
         if(!isExternalCity($city)){
-            // $workout_sessions_near_customer = $this->getWorkoutSessions($near_by_vendor_request);
+            $workout_sessions_near_customer = $this->getWorkoutSessions($near_by_vendor_request);
             // $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
             // $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
 
@@ -4056,9 +4056,9 @@ class CustomerController extends \BaseController {
             'footer' => "Get 100% Instant Cashback on Workout Sessions"
 		];
 
-		// if(!empty($workout_sessions_near_customer) ){
-		// 	$result['fitex']['near_by_workouts']= $workout_sessions_near_customer;
-		// }
+		if(!empty($workout_sessions_near_customer) ){
+			$result['fitex']['near_by_workouts']= $workout_sessions_near_customer;
+		}
 
 		//  commented on 9th Aug - Akhil
 		if(!empty($customeremail))
