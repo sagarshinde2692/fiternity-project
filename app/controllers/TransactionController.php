@@ -7462,6 +7462,9 @@ class TransactionController extends \BaseController {
 
         }elseif(isset($ticket_id)){
 			if(isset($order)){
+                if(!empty($data['coupon'])){
+                    $order["coupon_code"] = $data['coupon'];
+                }
 				$data = $order;
 				$data["customer_quantity"] = $order["ticket_quantity"];
 				$data["ticket_id"] = $order["ticket_id"];
