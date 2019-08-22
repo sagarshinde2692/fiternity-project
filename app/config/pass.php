@@ -1,8 +1,8 @@
 <?php
 $apiUrl = \Config::get('app.url');
 $success_page_template = Config::get('successPage');
-$silver_logo = 'https://b.fitn.in/passes/monthly_card.png';
-$gold_logo = 'https://b.fitn.in/passes/all_access_card.png';
+$red_pass = 'https://b.fitn.in/global/classpass/mobile/red%20card-website.png';
+$black_pass = 'https://b.fitn.in/global/classpass/mobile/back%20card%20-%20website.png';
 return [
     'list' => [
         'passes' => [
@@ -11,7 +11,7 @@ return [
                 'subheader' => 'ALL ACCESS PASS',
                 'pass_type' => 'red',
                 'text' => '',
-                'image' => $gold_logo,
+                'image' => $red_pass,
                 'why_pass' => [
                     'header' => 'WHY GO FOR A PASS',
                     'text' => 'adfaf fs fsadf dadfdsf sf safasdf asf asdfsdf sfs dsdf',
@@ -38,7 +38,7 @@ return [
                 'subheader' => 'ALL ACCESS PASS',
                 'pass_type' => 'black',
                 'text' => '',
-                'image' => $gold_logo,
+                'image' => $black_pass,
                 'why_pass' => [
                     'header' => 'WHY GO FOR A PASS',
                     'text' => 'adfaf fs fsadf dadfdsf sf safasdf asf asdfsdf sfs dsdf',
@@ -62,6 +62,63 @@ return [
                 ]
             ]
         ],
+        'app_passes' => [
+            [
+                'header' => 'RED PASS',
+                'card_header' => 'UNLIMITED USAGE',
+                'subheader' => 'ALL ACCESS PASS',
+                'pass_type' => 'red',
+                'text' => '',
+                'image' => $red_pass,
+                'why_pass' => [
+                    'header' => 'WHY GO FOR A PASS',
+                    'text' => 'LIMITLESS WORKOUTS, LIMITLESS CHOICES, LIMITLESS VALIDITY, LIMITLESS YOU',
+                    'data' => [
+                        'ONEPass Fits In Your (Busy) Life',
+                        'ONEPass Gives You Membership Privileges'
+                    ]
+                ],
+                'offerings' => [
+                    'text' => "\u2713 Limitless workouts across 10,000+ fitness classes, gyms and sports facilities across India.\n\u2713 Use it like a fitness membership - choose a duration of 15 days to 1 year.",
+                    'button_text' => 'Checkout Studios',
+                    'ratecards' => []
+                ],
+                'remarks' => [
+                    'header' => 'Limited access card gives you an access to all fitness centres around you.', // need content
+                    'text' => 'view all terms and conditions',
+                    "title" =>'Terms and Conditions',
+                    'url' => $apiUrl.'/passtermscondition?type=unlimited'
+                ]
+            ],
+            [
+                'header' => 'BLACK PASS',
+                'card_header' => 'UNLIMITED VALIDITY',
+                'subheader' => 'ALL ACCESS PASS',
+                'pass_type' => 'black',
+                'text' => '',
+                'image' => $black_pass,
+                'why_pass' => [
+                    'header' => 'WHY GO FOR A PASS',
+                    'text' => 'LIMITLESS WORKOUTS, LIMITLESS CHOICES, LIMITLESS VALIDITY, LIMITLESS YOU',
+                    'data' => [
+                        'ONEPass Fits In Your (Busy) Life',
+                        'ONEPass Gives You Membership Privileges'
+                    ]
+                ],
+                'offerings' => [
+                    'text' => "\u2713 Get Limitless validity - Your membership will never expire!.\n\u2713 Replace your membership by choosing a pack - ranging from 30 to 180 sessions with lifetime validity.",
+                    'button_text' => 'Checkout Studios',
+                    'ratecards' => []
+                ],
+                'remarks' => [
+                    'header' => 'Limitless validity', // need content
+                    'text' => 'view all terms and conditions',
+                    "title" =>'Terms and Conditions',
+                    'url' => $apiUrl.'/passtermscondition?type=subscripe'
+
+                ]
+            ]
+        ],
         'faq' => [
             'header' => 'FAQs',
             'text' => 'sdfdfdsf sdfsd fsdf sdfs sf sf sdfs d',
@@ -72,13 +129,12 @@ return [
     ],
     "total_available" => 300,
     "terms"=>[
-        "<h2>terms and condition header</h2>
+        "<h2>Terms and Conditions</h2>
         <ul>
-            <li> terms1 vkvdfk</li>
-            <li> terms t2</li>
-            <li> tersm 4</li>
-            <li>terms 4</li>
-            <li> terms 5</li>
+            <li>OnePass bookings will start from 1st September 2019</li>
+            <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facili</li>
+            <li>Incase you're not enjoying OnePass - You can take a refund (No Questions asked). You pro-rata based un-utilized amount will be converted to Fitcash on Fitternity(1 Rupee = 1 Fitcash) and can be used to buy any other service/membership on Fitternity. 5% of your initial payment for OnePass upto a maximum of Rs 500 will be deducted to process this transition from OnePass to Fitcash</li>
+            <li>The cashback received via any OnePass transaction can be only be redeemed to upgrade your OnePass</li>
         </ul>"
     ],
     'question_list' => [
@@ -105,7 +161,7 @@ return [
             "text" => "__end_date",
             'header' => 'pass_name',
             'subheader' => 'duration_text PASS FOR usage_text',
-            'image' => $silver_logo,
+            'image' => $red_pass,
             'name' => 'FLEXI PASS',
             'type' => 'pass_type',
             'price' => 'pass_price'
@@ -121,19 +177,19 @@ return [
         "conclusion" => $success_page_template['conclusion'],
         "feedback" => $success_page_template["feedback"]
     ],
-    'pass_image_silver' => $silver_logo,
-    'pass_image_gold' => $gold_logo,
+    'pass_image_silver' => $red_pass,
+    'pass_image_gold' => $black_pass,
     'web_message'=>'Please note - The sessions are bookable only on Fitternity app. Download now.',
 
     'trial_pass' => [
-        "logo" => $silver_logo,
+        "logo" => $red_pass,
         "header" => "Experience the all-new freedom to workout",
         "subheader" => "Book sessions and only pay for days you workout",
         'pass' => [
             'header' => 'pass_name',
             'subheader' => 'duration_text PASS FOR UNLIMITED USAGE',
             'text' => 'duration_text',
-            'image' => $silver_logo,
+            'image' => $red_pass,
             'name' => 'FLEXI PASS',
             'type' => 'pass_type',
             'price' => 'pass_price'
@@ -147,14 +203,14 @@ return [
     ],
 
     'subscription_pass' => [
-        "logo" => $gold_logo,
+        "logo" => $black_pass,
         "header" => "Experience the all-new freedom to workout",
         "subheader" => "Book sessions and only pay for days you workout",
         'pass' => [
             'header' => 'pass_name',
             'subheader' => 'ALL ACCESS PASS UNLIMITED USAGE', // do have to mention pass duration time 
             'text' => 'duration_text', //need to confirm what have to show before purchase and after pass purchased
-            'image' => $gold_logo,
+            'image' => $black_pass,
             'name' => 'FLEXI PASS',
             'type' => 'pass_type',
             'price' => 'pass_price'

@@ -13,12 +13,14 @@ class PassController extends \BaseController {
     public function listPasses($pass_type=null){
 
         $jwt_token = Request::header('Authorization');
+        $device = Request::header('Device-Type');
+        $version = Request::header('App-Version');
         $customer_id = null;
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
         }
-        $passes = $this->passService->listPasses($customer_id, $pass_type);
+        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version);
         if(empty($passes)) {
             return [
                 "status" => 400,

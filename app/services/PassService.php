@@ -25,7 +25,7 @@ class PassService {
 
     }
 
-    public function listPasses($customerId, $pass_type=null){
+    public function listPasses($customerId, $pass_type=null, $device=null, $version=null){
         
         $passList = Pass::where('status', '1');
 
@@ -65,14 +65,21 @@ class PassService {
             if($pass['unlimited_access']) {
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
-                $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
+                if(!empty($device) && in_array($device, ['android', 'ios'])) {
+                    $response['list_passes'][0]['offerings']['ratecards'][] = $passDetails;
+                }
+                else {
+                    $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
+                }
             } else{
-            //     $passDetails['header'] = $pass['credits'].' Sweat Points';
-            //     $passDetails['text'] = 'for 1 month';
-            //     $passDetails['offer'] = 'Get 100% instant cash back';
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
-                $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
+                if(!empty($device) && in_array($device, ['android', 'ios'])) {
+                    $response['list_passes'][1]['offerings']['ratecards'][] = $passDetails;
+                }
+                else {
+                    $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
+                }
             }
         }
         // $passConfig = Config::get('pass');
