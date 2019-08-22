@@ -522,8 +522,12 @@ class TransactionController extends \BaseController {
             
             }
             if(!empty($data['event_extra_customer'])){
-                $data['event_customers_original'] = $data['event_customers'];
-                $data['event_customers'] = $data['event_extra_customer'];
+                if(!empty($data['event_customers'])){
+                    $data['event_customers'] = array_merge($data['event_customers'] ,$data['event_extra_customer']);
+                }
+                else{
+                    $data['event_customers']  = $data['event_extra_customer'];
+                }
             }
             if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
     
@@ -553,11 +557,6 @@ class TransactionController extends \BaseController {
                     }
                 }
                 
-            }
-
-            if(!empty($data['event_extra_customer'])){
-                $data['event_customers'] = $data['event_customers_original'];
-                unset($data['event_customers_original']);
             }
 
             if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
@@ -1393,10 +1392,6 @@ class TransactionController extends \BaseController {
             $result['full_payment_wallet'] = $data['full_payment_wallet'];
         }
 
-        if(!empty($data['event_extra_customer'])){
-            $data['event_customers_original'] = $data['event_customers'];
-            $data['event_customers'] = $data['event_extra_customer'];
-        }
 
         if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
             $auto_register_input = array('event_customers'=>$data['event_customers']);
@@ -1407,10 +1402,6 @@ class TransactionController extends \BaseController {
             Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', $auto_register_input, Config::get('app.queue'));
         }
 
-        if(!empty($data['event_extra_customer'])){
-            $data['event_customers'] = $data['event_customers_original'];
-            unset($data['event_customers_original']);
-        }
         
         if(in_array($data['type'],$this->membership_array)){
             $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
@@ -2787,9 +2778,6 @@ class TransactionController extends \BaseController {
                         }else{
 
                             if(!empty($emailData['event_type']) && $emailData['event_type'] == 'TOI' && !empty($emailData['event_customers'])){
-                                if(!empty($emailData['event_extra_customer'])){
-                                    $emailData['event_customers']=  array_merge($emailData['event_customers'],$emailData['event_extra_customer']);
-                                }
                                 foreach($emailData['event_customers'] as $c){
                                     $emailData['bbcustomer_name'] = $emailData['customer_name'];
                                     $emailData['customer_email'] = $c['customer_email'];
