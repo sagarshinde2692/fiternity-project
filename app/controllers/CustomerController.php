@@ -2480,7 +2480,7 @@ class CustomerController extends \BaseController {
 				unset($customer[0]['address']);
 			}
 			
-			$customer[0]['show_pass'] = true; // uncomment this for pass, commented for android during android release 
+			$customer[0]['show_pass'] = false; // uncomment this for pass, commented for android during android release 
             $reliance_customer = $this->relianceService->getCorporateId(null, $customer_id);
 			$corporate_id  = $reliance_customer['corporate_id'];
             if(!empty($corporate_id) && !empty($customer[0])){
@@ -4053,7 +4053,7 @@ class CustomerController extends \BaseController {
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
             // 'knowmorelink' => 'know more',
-            'footer' => "Book Workout Sessions For FLAT INR 73"
+            'footer' => "Get 100% Instant Cashback on Workout Sessions"
 		];
 
 		// if(!empty($workout_sessions_near_customer) ){
@@ -8707,18 +8707,7 @@ class CustomerController extends \BaseController {
 					$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
 					// Log::info('before adding fitcash-> voucher_catageory', $voucher_category);
 					// Log::info('before adding fitcash-> customer_id', $customer_id);	
-					try{
-						if(!empty($voucher_category->fitcash)){
-							$voucher_category_fitcash = array(
-								"id"=>$customer_id,
-								"voucher_catageory"=>$voucher_category
-							);
-							$this->utilities->addFitcashforVoucherCatageory($voucher_category_fitcash);
-						}
-					}
-					catch(\Exception $err){
-						return Response::json(array('status' => 400,'message' => 'Cannot Claim Fitcash. Please contact customer support (5).'));
-					}
+					
                     if(!$voucherAttached){
                         return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (2).'));
                     }
@@ -8729,20 +8718,20 @@ class CustomerController extends \BaseController {
 						
                         $voucherAttached = $voucherAttached->toArray();
 						$voucherAttached['claimed_date_time'] = new \MongoDate();                  
-						if(!empty($customer->corporate_id)) {
-                        	$milestones[$voucher_category['milestone']]['voucher'] = !empty($milestones[$voucher_category['milestone']]['voucher']) ? $milestones[$voucher_category['milestone']]['voucher'] : [];
-							array_push($milestones[$voucher_category['milestone']]['voucher'], $voucherAttached); 
-							$corporate_rewards = $customer->corporate_rewards;
-							$corporate_rewards['milestones'] = $milestones;
-							$customer->corporate_rewards = $corporate_rewards;
-						}
-						else {
+						// if(!empty($customer->corporate_id)) {
+                        // 	$milestones[$voucher_category['milestone']]['voucher'] = !empty($milestones[$voucher_category['milestone']]['voucher']) ? $milestones[$voucher_category['milestone']]['voucher'] : [];
+						// 	array_push($milestones[$voucher_category['milestone']]['voucher'], $voucherAttached); 
+						// 	$corporate_rewards = $customer->corporate_rewards;
+						// 	$corporate_rewards['milestones'] = $milestones;
+						// 	$customer->corporate_rewards = $corporate_rewards;
+						// }
+						// else {
 							$milestones[$voucher_category['milestone']-1]['voucher'] = !empty($milestones[$voucher_category['milestone']-1]['voucher']) ? $milestones[$voucher_category['milestone']-1]['voucher'] : [];
 							array_push($milestones[$voucher_category['milestone']-1]['voucher'], $voucherAttached); 
 							$loyalty = $customer->loyalty;
 							$loyalty['milestones'] = $milestones;
 							$customer->loyalty = $loyalty;
-						}
+						// }
                         $customer->update();
                     // }
 
@@ -10175,7 +10164,13 @@ class CustomerController extends \BaseController {
             if(!empty($voucher_categories_map[$milestone['milestone']])){
                 
                 $claimed_vouchers =  !empty($customer_milestones[$milestone['milestone']]['voucher']) ? $customer_milestones[$milestone['milestone']]['voucher'] : [];
-                $achieved_milestone =  !empty($customer_milestones[$milestone['milestone']]['achieved']) ? $customer_milestones[$milestone['milestone']]['achieved'] : [];
+				$achieved_milestone =  !empty($customer_milestones[$milestone['milestone']]['achieved']) ? $customer_milestones[$milestone['milestone']]['achieved'] : [];
+				$claimsLeftCount = 0;
+				if(isset($milestone['users']) && isset($customerMilestoneCountMap[$key1])) {
+					$claimsLeftCount = ($milestone['users'] - $customerMilestoneCountMap[$key1]);
+					$claimsLeftCount = ($claimsLeftCount>0)?$claimsLeftCount:0;
+				}
+				$claimsLeft = ($milestone['users']==-1) || ($claimsLeftCount>0);
                 $claimed_voucher_categories = [];
                 
                 if(!empty($claimed_vouchers)){
@@ -10231,7 +10226,7 @@ class CustomerController extends \BaseController {
 						if($milestone_claim_count > 1){
 							$post_reward_data_template['claim_message'] = "Are you sure you want to claim this reward?";
 						}
-                        if(($nextMilestone >= $milestone['milestone']) && $achieved_milestone){
+                        if(($nextMilestone >= $milestone['milestone']) && $achieved_milestone && $claimsLeft){
 							$post_reward_data_template['button_title'] = "Claim";
                             $post_reward_data_template['claim_enabled'] = true;
                         }else{
@@ -10248,7 +10243,7 @@ class CustomerController extends \BaseController {
 			$post_reward_template['description'] = ($milestone_claim_count <= count($claimed_vouchers) ) ? "Reward(s) Claimed" : ("Select ".($milestone_claim_count - count($claimed_vouchers) )." Reward(s).");
 			if($milestone['users'] > 0){
 
-				$post_reward_template['description']  = $post_reward_template['description'] ."(".($milestone['users'] - $customerMilestoneCountMap[$key1])."/".$milestone['users']." left)";
+				$post_reward_template['description']  = $post_reward_template['description'] ."(".($claimsLeftCount)."/".$milestone['users']." left)";
 			}
             $post_register_rewards_data[] = $post_reward_template;
             

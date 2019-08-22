@@ -811,6 +811,12 @@ Class CustomerReward {
                     $amount_paid = 2000;
                 }
 
+                if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644])){
+                    if($amount_paid > 2000){
+                        $amount_paid = 2000;
+                    }
+                }
+
                 $cashback_amount = 0;
                 if($amount_paid != 0){
                     $cashback_amount = round(($amount_paid * 82) / 100);
@@ -834,6 +840,13 @@ Class CustomerReward {
                             "validity"=>time()+(86400*14),
                             'app_only'=>true
                         );
+
+                        if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644])){
+                            $walletData['finder_id'] = (int)$order['finder_id'];
+                            $walletData['valid_finder_id'] = (int)$order['finder_id'];
+                            $walletData['description'] = "100% Cashback on workout-session booking at ".ucwords($order['finder_name'])." Applicable for buying a workout-session at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14));
+                            unset($walletData['app_only']);
+                        }
                     
                         $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());
                     
@@ -845,7 +858,8 @@ Class CustomerReward {
                     
                             $sms_data['customer_phone'] = $order['customer_phone'];
                     
-                            $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$cashback_amount." Fitcash has been added in your Fitternity wallet.Valid for 14 days from booking time. For quick assistance call ".Config::get('app.contact_us_customer_number');
+                            // $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$cashback_amount." Fitcash has been added in your Fitternity wallet.Valid for 14 days from booking time. For quick assistance call ".Config::get('app.contact_us_customer_number');
+                            $sms_data['message'] = "Congratulations on receiving your instant cashback of ".$cashback_amount." as Fitcash. Book multiple workout sessions using this cashback on Fitternity App for yourself as well as your friends & family without any restriction on spend value.\nValidity: 14 days\nHappy working out!";
                     
                             $customersms->custom($sms_data);
                         }
@@ -864,6 +878,13 @@ Class CustomerReward {
                             "membership_instant_cashback" => true,
                             'app_only'=>true
                         );
+
+                        if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644])){
+                            $walletData['finder_id'] = (int)$order['finder_id'];
+                            $walletData['valid_finder_id'] = (int)$order['finder_id'];
+                            $walletData['description'] = "100% Cashback on buying ".ucfirst($order['type'])." at ".ucwords($order['finder_name'])." Applicable at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*90));
+                            unset($walletData['app_only']);
+                        }
         
                         $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());
         

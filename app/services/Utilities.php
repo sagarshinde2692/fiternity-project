@@ -6394,6 +6394,19 @@ Class Utilities {
             return $already_assigned_voucher;
         }
 
+        try{
+            if(!empty($voucher_category->fitcash)){
+                $voucher_category_fitcash = array(
+                    "id"=>$customer->_id,
+                    "voucher_catageory"=>$voucher_category
+                );
+                $this->addFitcashforVoucherCatageory($voucher_category_fitcash);
+            }
+        }
+        catch(\Exception $err){
+            return Response::json(array('status' => 400,'message' => 'Cannot Claim Fitcash. Please contact customer support (5).'));
+        }
+
         if(!empty($voucher_category['flags']['manual_redemption'])){
             
             $new_voucher =  $this->assignManualVoucher($customer, $voucher_category);
@@ -7289,6 +7302,8 @@ Class Utilities {
                         unset($loyalty['cashback_type']);
                     }
                 }
+
+                $loyalty['updated_at'] = new \MongoDate();
 
                 $update_data = [
                     'loyalty'=>$loyalty 
