@@ -79,7 +79,7 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'text' => "\u2713 Limitless workouts across 10,000+ fitness classes, gyms and sports facilities across India.\n\u2713 Use it like a fitness membership - choose a duration of 15 days to 1 year.",
+                    'text' => '\u2713 Limitless workouts across 10,000+ fitness classes, gyms and sports facilities across India.\n\u2713 Use it like a fitness membership - choose a duration of 15 days to 1 year.',
                     'button_text' => 'Checkout Studios',
                     'ratecards' => []
                 ],
@@ -106,7 +106,7 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'text' => "\u2713 Get Limitless validity - Your membership will never expire!.\n\u2713 Replace your membership by choosing a pack - ranging from 30 to 180 sessions with lifetime validity.",
+                    'text' => '\u2713 Get Limitless validity - Your membership will never expire!.\n\u2713 Replace your membership by choosing a pack - ranging from 30 to 180 sessions with lifetime validity.',
                     'button_text' => 'Checkout Studios',
                     'ratecards' => []
                 ],
