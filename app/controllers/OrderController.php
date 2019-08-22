@@ -1887,7 +1887,7 @@ class OrderController extends \BaseController {
             $data_time['end']['time'] = date('h:i A', strtotime($event_end_date));
             
             $orderdata->data_time = $data_time;
-            $orderdata->subscription_code = $orderdata['code'];
+            $orderdata->subscription_code = $orderdata['_id'];
 
             $mfp_success = Config::get('mfp_success');
             $orderdata->top_text = $mfp_success['top_txt'];
