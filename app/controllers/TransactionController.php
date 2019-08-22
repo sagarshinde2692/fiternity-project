@@ -1387,8 +1387,11 @@ class TransactionController extends \BaseController {
 
 
         if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
-
-            Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', array('event_customers'=>$data['event_customers']),Config::get('app.queue'));
+            $auto_register_input = array('event_customers'=>$data['event_customers']);
+            if(!empty($data['event_type']) && $data['event_type']=='TOI'){
+                $auto_register_input['event_type'] =  $data['event_type'];
+            }
+            Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', $auto_register_input, Config::get('app.queue'));
         }
 
         if(in_array($data['type'],$this->membership_array)){
