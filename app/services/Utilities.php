@@ -6404,7 +6404,7 @@ Class Utilities {
             }
         }
         catch(\Exception $err){
-            return Response::json(array('status' => 400,'message' => 'Cannot Claim Fitcash. Please contact customer support (5).'));
+            return;
         }
 
         if(!empty($voucher_category['flags']['manual_redemption'])){
