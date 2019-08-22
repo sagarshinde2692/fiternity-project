@@ -66,7 +66,7 @@ class PassService {
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
                 if(!empty($device) && in_array($device, ['android', 'ios'])) {
-                    $response['list_passes'][0]['offerings']['ratecards'][] = $passDetails;
+                    $response['app_passes'][0]['offerings']['ratecards'][] = $passDetails;
                 }
                 else {
                     $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
@@ -75,12 +75,16 @@ class PassService {
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
                 if(!empty($device) && in_array($device, ['android', 'ios'])) {
-                    $response['list_passes'][1]['offerings']['ratecards'][] = $passDetails;
+                    $response['app_passes'][1]['offerings']['ratecards'][] = $passDetails;
                 }
                 else {
                     $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
                 }
             }
+        }
+        if(!empty($device) && in_array($device, ['android', 'ios'])) {
+            $response['passes'] = $response['app_passes'];
+            unset($response['app_passes']);
         }
         // $passConfig = Config::get('pass');
         // $passCount = Order::active()->where('type', 'pass')->count();
