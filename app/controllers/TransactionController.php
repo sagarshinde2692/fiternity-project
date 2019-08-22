@@ -557,7 +557,6 @@ class TransactionController extends \BaseController {
 
             if(!empty($data['event_extra_customer'])){
                 $data['event_customers'] = $data['event_customers_original'];
-                Log::info('unsetting key:::::');
                 unset($data['event_customers_original']);
             }
 
@@ -1404,13 +1403,12 @@ class TransactionController extends \BaseController {
             if(!empty($data['event_type']) && $data['event_type']=='TOI'){
                 $auto_register_input['event_type'] =  $data['event_type'];
             }
-            Log::info('checking for autoregister customers of event_customers:::', [$auto_register_input]);
+    
             Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', $auto_register_input, Config::get('app.queue'));
         }
 
         if(!empty($data['event_extra_customer'])){
             $data['event_customers'] = $data['event_customers_original'];
-            Log::info('unsetting key:::::');
             unset($data['event_customers_original']);
         }
         
