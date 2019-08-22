@@ -7031,6 +7031,9 @@ class TransactionController extends \BaseController {
             }
         
         }elseif(isset($data['ticket_id'])){
+            if(empty($data['customer_quantity'])){
+                return Response::json(array('status'=>400, 'message'=>'Customer quantity is required'), $this->error_status);
+            }
 			$ticket_id = intval($data['ticket_id']);
 		}else{
 

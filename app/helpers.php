@@ -2564,7 +2564,10 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 						if(!empty($data["thirdparty_register"]) && $data["thirdparty_register"] != false){
 							$customer->thirdparty_register=$data["thirdparty_register"];
                         	$customer->update();
-						}else{
+                        }else if(!empty($data['event_type']) && $data['event_type']=='TOI'){
+                            $customer->mfp_register = true;
+                            $customer->update();
+                        }else{
 							registerMail($customer->_id);
 						}
 
