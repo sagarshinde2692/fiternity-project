@@ -252,7 +252,7 @@ Class CustomerMailer extends Mailer {
 	protected function passPurchaseAlert($data){
 		$label = 'Pass-Purchase-Alert';
 		$message_data 	= array(
-			'user_email' =>['kailashbajya@fitternity.com', 'dhruvsarawagi@fitternity.com '],
+			'user_email' =>['sailismart@fitternity.com','neha@fitternity.com','jayamvora@fitternity.com', 'vinichellani@fitternity.com', 'pranjalisalvi@fitternity.com', 'dharatanna@fitternity.com'],
 			'user_name' => $data['customer_name']
 		);
 
