@@ -100,7 +100,7 @@ Class RelianceService {
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
                         'corporate_rewards.milestones.milestone' => $milestone,
-                        'corporate_rewards.milestones.claimed' => true
+                        'corporate_rewards.milestones.vouchers' => ['$exists' => true]
                     ]],
                     ['$group' => [
                         '_id' => null,
@@ -126,7 +126,7 @@ Class RelianceService {
                 $aggregate = [
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
-                        'corporate_rewards.milestones.claimed' => true
+                        'corporate_rewards.milestones.voucher' => ['$exists' => true]
                     ]],
                     ['$group' => [
                         '_id' => '$corporate_rewards.milestones.milestone',
