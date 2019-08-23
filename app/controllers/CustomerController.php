@@ -4077,22 +4077,26 @@ class CustomerController extends \BaseController {
 		}
 
         $result['fitex'] = [
-            'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
-            'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
-            'subheader' => 'Book sessions and only pay for days you workout',
+            'logo' => 'https://b.fitn.in/passes/home/pps_icon.png',
+            'header' => 'https://b.fitn.in/passes/home/pps_header.png',
+			'subheader' => "Choose your fitness form, book a workout, pay for that session and go workout, it's that simple.",
             // 'knowmorelink' => 'know more',
-            'footer' => "Get 100% Instant Cashback on Workout Sessions"
+			'footer' => "Get 100% Instant Cashback on Workout Sessions",
+			'button_text' => 'EXPLORE'
 		];
 
 		if(!empty($workout_sessions_near_customer) ){
 			$result['fitex']['near_by_workouts']= $workout_sessions_near_customer;
 		}
-
+		$passPurchased = false;
+		$passOrder = null;
 		//  commented on 9th Aug - Akhil
-		if(!empty($customeremail))
-		{
-			$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
-			$this->flexipassHome($order, $result);
+		if(!empty($customeremail)) {
+			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
+			if(!empty($order)) {
+				$passPurchased = true;
+			}
+			// $this->flexipassHome($order, $result);
 			// if(empty($order)) {
 			// 	$result['buy_pass'] = [
 			// 		'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
@@ -4101,21 +4105,21 @@ class CustomerController extends \BaseController {
 			// 		'footer' => 'Buy pass!!'
 			// 	];
 			// }
-			if(!empty($order)) {
+			// if(!empty($order)) {
 				
-				$pass = true;
-				$pass_bookings = [];
-				try{
-					$active_passes = [];
-					if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
-						$pass_bookings = $this->passService->getPassBookings($order['_id']);
-					}
-				}catch(Exception $e){
-					$pass_bookings = [];
-				}
+			// 	$pass = true;
+			// 	$pass_bookings = [];
+			// 	try{
+			// 		$active_passes = [];
+			// 		if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
+			// 			$pass_bookings = $this->passService->getPassBookings($order['_id']);
+			// 		}
+			// 	}catch(Exception $e){
+			// 		$pass_bookings = [];
+			// 	}
 				
-				$result['pass_bookings'] = $pass_bookings;
-			}
+			// 	$result['pass_bookings'] = $pass_bookings;
+			// }
 		}
 
 		// if(!empty($result['session_packs'])){
@@ -4123,7 +4127,13 @@ class CustomerController extends \BaseController {
 		// }
 
 		
-
+		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
+			$result['onepass_post'] = Config::get('pass.home.after_purchase'.$passOrder['pass']['pass_type']);
+			$result['onepass_post']['name'] = $passOrder['customer_name'];
+		}
+		else {
+			$result['onepass_pre'] = Config::get('pass.home.before_purchase');
+		}
             
 
 		if(!empty($result['city_id']) && $result['city_id']==10000) {

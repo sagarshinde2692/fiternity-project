@@ -251,5 +251,62 @@ return [
             "text2" => "Trial ends \n in "
         ],
         "footer"  => "Lorum lorum lorum lorum lorum"
+    ],
+
+    "home" => [
+        "before_purchase" => [
+            "logo"  => "https://b.fitn.in/passes/app-home/onepass_icon.png",
+            "header_img"  => "https://b.fitn.in/passes/app-home/onepass_header.png",
+            "text"  => "Enjoy limitless access across Fitternity's 12,000+ fitness classes, gyms and sports facilities across India",
+            "passes" => [
+                [
+                    "image" => "https://b.fitn.in/passes/app-home/op_black_thumb.png",
+                    "header1" => "ONEPASS",
+                    "header1_color" => "#000000",
+                    "header2" => "RED",
+                    "header2_color" => "#d50000",
+                    "subheader" => "UNLIMITED ACCESS",
+                    "desc_header" => "Limitless Workouts",
+                    "desc_subheader" => "With Expiry" 
+                ],
+                [
+                    "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
+                    "header1" => "ONEPASS",
+                    "header1_color" => "#000000",
+                    "header2" => "BLACK",
+                    "header2_color" => "#000000",
+                    "subheader" => "UNLIMITED VALIDITY",
+                    "desc_header" => "No Expiry",
+                    "desc_subheader" => "Limited Workouts"
+                ]
+            ],
+            "footer" => [
+                "index" => 0,
+                "text" => "Try the complementary pass @1799 & get 100% instant cashback",
+                "button_text" => "Know More"
+            ]
+        ],
+        "after_purchase" => [
+            "red" => [
+                "pass_image"  => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
+                "name"  => "",
+                "header" => "UNLIMITED USAGE",
+                "subheader" => "", // duration or sessions
+                "left_text"  => "UPCOMING: ",
+                "left_value"  => 0,
+                "right_text"  => "COMPLETED: ",
+                "right_value"  => 0
+            ],
+            "black" => [
+                "pass_image"  => "https://b.fitn.in/passes/app-home/op_black_thumb.png",
+                "name"  => "",
+                "header" => "UNLIMITED VALIDITY",
+                "subheader" => "", // duration or sessions
+                "left_text"  => "UPCOMING: ",
+                "left_value"  => 0,
+                "right_text"  => "COMPLETED: ",
+                "right_value"  => 0
+            ]
+        ]
     ]
 ];
