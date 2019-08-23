@@ -4077,7 +4077,7 @@ class CustomerController extends \BaseController {
 		}
 
         $result['fitex'] = [
-            'logo' => 'https://b.fitn.in/passes/app-home/pps_icon.png',
+            'logo' => 'https://b.fitn.in/passes/app-home/pps-icon-new.png',
             'header' => 'https://b.fitn.in/passes/app-home/pps_header.png',
 			'subheader' => "Choose your fitness form, book a workout, pay for that session and go workout, it's that simple.",
             // 'knowmorelink' => 'know more',

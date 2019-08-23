@@ -255,7 +255,7 @@ return [
 
     "home" => [
         "before_purchase" => [
-            "logo"  => "https://b.fitn.in/passes/app-home/onepass_icon.png",
+            "logo"  => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
             "header_img"  => "https://b.fitn.in/passes/app-home/onepass_header.png",
             "text"  => "Enjoy limitless access across Fitternity's 12,000+ fitness classes, gyms and sports facilities across India",
             "passes" => [
