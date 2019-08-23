@@ -648,6 +648,11 @@ class PassService {
             $utilities->walletTransaction($walletData);
         }
 
+        $wallet_update = $this->updateWallet($order);
+
+        if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
+            return $wallet_update;
+        }
 
         $order->status = '1';
         $communication = $this->passPurchaseCommunication($order);
