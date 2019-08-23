@@ -328,6 +328,12 @@ class PassService {
             $block_communication = true;
         }
 
+        $wallet_update = $this->updateWallet($order);
+
+        if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
+            return $wallet_update;
+        }
+
         Log::info('pass success:: ', [$data]);
 
         if(empty($order['amount']) && empty($order['status'])){
@@ -337,12 +343,6 @@ class PassService {
         
         $utilities = new Utilities();
         $utilities->updateCoupon($order);
-
-        $wallet_update = $this->updateWallet($order);
-
-        if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
-            return $wallet_update;
-        }
         
         $order = $this->passSuccessRazorpay($order, $data);
         
