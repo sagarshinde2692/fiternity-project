@@ -1109,6 +1109,6 @@ class PassService {
             }
         }
         $homePassData['pass_expired'] = $passExpired;
-        return [ 'status' => 200, 'data' => $homePassData, 'message' => 'Success' ];
+        return $homePassData;
     }
 }
