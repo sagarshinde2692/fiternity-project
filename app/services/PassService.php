@@ -183,8 +183,7 @@ class PassService {
                 $data['env'] = 1;
             }
             
-            $hash = getHash($data);
-            $data = array_merge($data,$hash);
+            
             $data['amount_customer'] = $data['amount'];
 
             $this->applyFitcash($data);
@@ -247,6 +246,9 @@ class PassService {
                     }
                 }
             }
+
+            $hash = getHash($data);
+            $data = array_merge($data,$hash);
             // $data['amount'] = 0;
             $data['preferred_starting_date'] = (!empty($data['preferred_starting_date']))?date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date'])):null;
             $data['code'] = (string) random_numbers(5);
@@ -314,6 +316,26 @@ class PassService {
             'data' => !empty($result) ? $result : $order,
             'message' => "Tmp Order Generated Sucessfully"
         ];
+
+        if(!empty($order['amount'])){
+            $resp['data']["coupon_details"] = [
+                "title" => "Apply Coupon Code",
+                "description" => "",
+                "applied" => false,
+                "remove_title" => "",
+                "remove_msg" => ""
+            ];
+        }
+
+        if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']))){
+            $resp['data']["coupon_details"] = [];
+            $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
+            $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
+            $resp['data']['coupon_details']['applied'] =  true;
+            if(isset($data['coupon_description'])){
+                $resp['data']['coupon_details']['description'] = $data['coupon_description'];
+            }
+        }
 
         $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
         
@@ -1022,9 +1044,10 @@ class PassService {
         }
         $wallet = Wallet::active()->where('customer_id', $data['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
         if(!empty($wallet)){
-            $data['fitcash'] = $wallet['balance'];
+            $data['fitcash'] = !empty($data['amount'] - $wallet['balance']) ? $wallet['balance'] : $data['amount']; 
             $data['amount'] = !empty($data['amount'] - $data['fitcash']) ? ($data['amount'] - $data['fitcash']) : 0;
             $data['wallet_id'] = $wallet['_id'];
+            $data['cashback_detail']['amount_deducted_from_wallet'] = $data['fitcash'];
             // $data['rp_description'] = $data['fitcash'].' Rs Fitcash Applied.';
         }
     
