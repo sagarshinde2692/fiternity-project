@@ -309,11 +309,27 @@ class PassService {
 
         }
 
-        return  [
+        $resp = [
             'status' => 200,
             'data' => !empty($result) ? $result : $order,
             'message' => "Tmp Order Generated Sucessfully"
         ];
+
+        $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
+        
+        $payment_mode_type_array = ['paymentgateway'];
+
+        foreach ($payment_mode_type_array as $payment_mode_type) {
+
+            $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+
+        }
+        
+        $resp['data']['payment_details'] = $payment_details;
+        
+        $resp['data']['payment_modes'] = $this->getPaymentModes($resp, $order->toArray());
+
+        return $resp;
 
     }
 
@@ -1110,5 +1126,291 @@ class PassService {
         }
         $homePassData['pass_expired'] = $passExpired;
         return [ 'status' => 200, 'data' => $homePassData, 'message' => 'Success' ];
+    }
+
+    function getBookingDetails($data){
+
+        $pass_type = ucwords($data['pass']['pass_type']);
+        $duration_field = $data['pass']['pass_type'] == 'red' ? 'Duration' : 'No of Sessions';
+        
+
+        $resp = [
+            [
+               'field' => 'PASS TYPE',
+               'value' => ucwords($data['pass']['pass_type']),
+            ],
+            [
+               'field' => $duration_field,
+               'value' => $data['pass']['duration_text'],
+            ],
+            [
+               'field' => 'START DATE',
+               'value' => date('l, j M Y',strtotime($data['start_date'])),
+            ]
+        ];
+
+        return $resp;
+    }
+
+    function getPaymentDetails($data,$payment_mode_type){
+
+        $amount_summary = [];
+        
+        $you_save = 0;
+        
+        $amount_summary[0] = array(
+            'field' => 'Total Amount',
+            'value' => 'Rs. '.(isset($data['original_amount_finder']) ? $data['original_amount_finder'] : $data['amount_customer'])
+        );
+        
+        if(isset($data['session_payment']) && $data['session_payment']){
+            $amount_summary[0]['value'] = 'Rs. '.$data['amount_customer'];
+        }
+
+        if(!empty($data['ratecard_amount'])){
+            $amount_summary[0] = array(
+                'field' => 'Session Amount',
+                'value' => 'Rs. '.$data['ratecard_amount']
+            );
+
+            if(!empty($data['type']) && in_array($data['type'], ['memberships', 'membership'])){
+                $amount_summary[0] = array(
+                    'field' => 'Membership Amount',
+                    'value' => 'Rs. '.(!empty($data['amount_customer']) ? $data['amount_customer'] - (!empty($data['convinience_fee']) ? $data['convinience_fee'] : 0) : $data['ratecard_amount'])
+                );  
+                if(!empty($data['extended_validity'])){
+                    $amount_summary[0] = array(
+                        'field' => 'Session Pack Amount',
+                        'value' => 'Rs. '.$data['ratecard_amount']
+                    ); 
+                }
+            }
+            // $amount_summary[] = array(
+            //     'field' => 'Quantity',
+            //     'value' => !empty($data['customer_quantity']) ? (string)$data['customer_quantity'] : '1'
+            // );
+            if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1){
+
+                $amount_summary[] = array(
+                    'field' => 'Total Amount',
+                    'value' => 'Rs. '.$data['amount_customer']
+                );
+            }
+        }
+
+        if(!empty($data['session_pack_discount'])){
+             $amount_summary[] = array(
+                    'field' => 'Session pack discount',
+                    'value' => '-Rs. '.$data['session_pack_discount']
+            );
+        }
+
+        $amount_payable = [];
+
+        $amount_payable= array(
+            'field' => 'Total Amount Payable',
+            'value' => 'Rs. '.$data['amount']
+        );
+
+        $amount_final = $data['amount'];
+
+        // if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
+
+        //     $remaining_amount = $data['amount_customer'];
+
+        //     if(isset($data["part_payment_calculation"]["part_payment_amount"]) && $data["part_payment_calculation"]["part_payment_amount"] > 0){
+
+        //         $remaining_amount -= $data["part_payment_calculation"]["part_payment_amount"];
+        //     }
+
+        //     if(isset($data["part_payment_calculation"]["convinience_fee"]) && $data["part_payment_calculation"]["convinience_fee"] > 0){
+
+        //         $remaining_amount -= $data["part_payment_calculation"]["convinience_fee"];
+        //     }
+
+        //     if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+
+        //         $remaining_amount -= $data['coupon_discount_amount'];
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Coupon Discount',
+        //             'value' => '-Rs. '.$data['coupon_discount_amount']
+        //         );
+
+        //         $you_save += intval($data['coupon_discount_amount']);
+                
+        //     }
+
+        //     if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
+
+        //         $remaining_amount -= $data['customer_discount_amount'];
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Corporate Discount',
+        //             'value' => '-Rs. '.$data['customer_discount_amount']
+        //         );
+
+        //         $you_save += intval($data['customer_discount_amount']);
+        //     }
+
+        //     if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+
+        //         $remaining_amount -= $data['app_discount_amount'];
+
+        //         $amount_summary[] = array(
+        //             'field' => 'App Discount',
+        //             'value' => '-Rs. '.$data['app_discount_amount']
+        //         );
+
+        //         $you_save += intval($data['app_discount_amount']);
+                
+        //     }
+
+        //     $amount_summary[] = array(
+        //         'field' => 'Remaining Amount Payable',
+        //         'value' => 'Rs. '.$remaining_amount
+        //     );
+
+        //     $amount_summary[] = array(
+        //         'field' => 'Booking Amount (20%)',
+        //         'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']
+        //     );
+
+        //     if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Convenience Fee',
+        //             'value' => '+Rs. '.$data['convinience_fee']
+        //         );
+
+        //     }
+
+        //     $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$data['type']);
+
+        //     // Log::info("asdasdasdasasd============adadasdasdas=");
+        //     // Log::info($cashback_detail);
+
+        //     if($cashback_detail['amount_deducted_from_wallet'] > 0){
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Fitcash Applied',
+        //             'value' => '-Rs. '.$cashback_detail['amount_deducted_from_wallet']
+        //         );
+
+        //     }
+
+        //     $amount_payable = array(
+        //         'field' => 'Total Amount Payable (20%)',
+        //         'value' => 'Rs. '.$data['part_payment_calculation']['amount']
+        //     );
+
+        // }else{
+
+            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+
+                $amount_summary[] = array(
+                    'field' => 'Convenience Fee',
+                    'value' => '+Rs. '.$data['convinience_fee']
+                );
+            }
+
+            if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0 ){
+                if($payment_mode_type != 'pay_later'){
+
+                    $amount_summary[] = array(
+                        'field' => 'Fitcash Applied',
+                        'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
+                    );
+                    $you_save += $data['cashback_detail']['amount_deducted_from_wallet'];
+                }else{
+                    $amount_final = $amount_final + $data['cashback_detail']['amount_deducted_from_wallet'];
+                    $amount_payable['value'] = "Rs. ".$amount_final;   
+                }
+                
+            }
+
+            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per']))){
+
+                if($payment_mode_type != 'pay_later'){
+
+                    $amount_summary[] = array(
+                        'field' => 'Coupon Discount',
+                        'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "100% Cashback"
+                    );
+                    $you_save += (!empty($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0);
+                }else{
+                    $amount_final = $amount_final + $data['coupon_discount_amount'];
+                    $amount_payable['value'] = "Rs. ".$amount_final;   
+                }
+                
+            }
+
+            if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
+
+                $amount_summary[] = array(
+                    'field' => 'Corporate Discount',
+                    'value' => '-Rs. '.$data['customer_discount_amount']
+                );
+                $you_save += $data['coupon_discount_amount'];
+                
+                
+            }
+
+            if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+
+                $amount_summary[] = array(
+                    'field' => 'App Discount',
+                    'value' => '-Rs. '.$data['app_discount_amount']
+                );
+
+                $you_save += $data['app_discount_amount'];
+                
+            }
+            
+            if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+
+                if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type != 'pay_later' && !(isset($data['session_payment']) && $data['session_payment']) && !empty($data['instant_payment_discount'])){
+                    
+                    $amount_summary[] = array(
+                        'field' => 'Instant Pay discount',
+                        'value' => '-Rs. '.$data['instant_payment_discount']
+                    );
+    
+                    $you_save += $data['instant_payment_discount'];
+                    
+                    if(isset($data['pay_later']) && $data['pay_later'] && !(isset($data['session_payment']) && $data['session_payment'])){
+                        
+                        $amount_payable['value'] = "Rs. ".($data['amount_final'] - $data['instant_payment_discount']);
+    
+                    }
+    
+                }
+            }
+
+            // if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later'){
+                
+            //     $amount_payable['value'] = "Rs. ".($data['amount_finder']+$data['convinience_fee']);
+            // }
+        // }
+
+        if(!empty($reward)){
+            $amount_summary[] = $reward;
+        }
+
+        
+        $payment_details  = [];
+        
+        $payment_details['amount_summary'] = $amount_summary;
+        $payment_details['amount_payable'] = $amount_payable;
+        
+        if($you_save > 0){
+            $result['payment_details']['savings'] = [
+                'field' => 'Your total savings',
+                'value' => "Rs.".$you_save
+            ];
+        }
+
+        return $payment_details;
+
     }
 }
