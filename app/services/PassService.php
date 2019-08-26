@@ -1052,20 +1052,29 @@ class PassService {
             $homePassData['subheader'] = $totalSessions.' SESSIONS';
             $homePassData['left_value'] = $pastBookings;
             $homePassData['right_value'] = $upcomingBookings;
-            if(!empty($usageLeft) && $usageLeft>3) {
-                $homePassData['footer'] = $homePassData['footer']['not_ending'];
-                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('schedule_date_time', 'desc')->first();
-                if(!empty($lastOrder)) {
-                    $homePassData['footer']['button1_subtext'] = ucwords($lastOrder->finder_name);
-                    $homePassData['footer']['no_last_order'] = false;
+            if(!$passExpired) {
+                if(!empty($usageLeft) && $usageLeft>5) {
+                    $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('schedule_date_time', 'desc')->first();
+                    if(!empty($lastOrder)) {
+                        $homePassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
+                        $homePassData['footer']['section1']['no_last_order'] = false;
+                        $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
+                    }
+                    unset($homePassData['footer']['section2']);
+                    unset($homePassData['footer']['section3']);
+                }
+                else {
+                    $homePassData['footer'] = $homePassData['footer']['ending'];
+                    $homePassData['footer']['text'] = strtr($homePassData['footer']['text'], ['remaining_text' => $usageLeft.' sessions']);
+                    unset($homePassData['footer']['section3']);
                 }
             }
             else {
-                $homePassData['footer'] = $homePassData['footer']['ending'];
-                $homePassData['footer']['text'] = strtr($homePassData['footer']['text'], ['remaining_text' => $usageLeft.' sessions']);
+                unset($homePassData['footer']['section1']);
+                unset($homePassData['footer']['section2']);
             }
         }
-        if($passOrder['pass']['pass_type']=='red') {
+        else if($passOrder['pass']['pass_type']=='red') {
             $totalDuration = $passOrder['pass']['duration'];
             $expiryDate = date("Y-m-d H:i:s", strtotime('+'.$totalDuration.' days', time()));
             $usageLeft = $this->getDateDifference($expiryDate);
@@ -1076,17 +1085,27 @@ class PassService {
             $homePassData['subheader'] = strtoupper($passOrder['pass']['duration_text']);
             $homePassData['left_value'] = $pastBookings;
             $homePassData['right_value'] = $upcomingBookings;
-            if(!empty($usageLeft) && $usageLeft>3) {
-                $homePassData['footer'] = $homePassData['footer']['not_ending'];
-                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('schedule_date_time', 'desc')->first();
-                if(!empty($lastOrder)) {
-                    $homePassData['footer']['button1_subtext'] = ucwords($lastOrder->finder_name);
-                    $homePassData['footer']['no_last_order'] = false;
+
+            if(!$passExpired) {
+                if(!empty($usageLeft) && $usageLeft>5) {
+                    $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('schedule_date_time', 'desc')->first();
+                    if(!empty($lastOrder)) {
+                        $homePassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
+                        $homePassData['footer']['section1']['no_last_order'] = false;
+                        $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
+                    }
+                    unset($homePassData['footer']['section2']);
+                    unset($homePassData['footer']['section3']);
+                }
+                else {
+                    $homePassData['footer'] = $homePassData['footer']['ending'];
+                    $homePassData['footer']['text'] = strtr($homePassData['footer']['text'], ['remaining_text' => $usageLeft.' days']);
+                    unset($homePassData['footer']['section3']);
                 }
             }
             else {
-                $homePassData['footer'] = $homePassData['footer']['ending'];
-                $homePassData['footer']['text'] = strtr($homePassData['footer']['text'], ['remaining_text' => $usageLeft.' days']);
+                unset($homePassData['footer']['section1']);
+                unset($homePassData['footer']['section2']);
             }
         }
         $homePassData['pass_expired'] = $passExpired;

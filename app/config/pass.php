@@ -294,19 +294,29 @@ return [
                 "name"  => "",
                 "header" => "UNLIMITED USAGE",
                 "subheader" => "", // duration or sessions
+                "top_right_button_text" => "BOOK >",
                 "left_text"  => "UPCOMING: ",
                 "left_value"  => 0,
                 "right_text"  => "COMPLETED: ",
                 "right_value"  => 0,
                 'footer' => [
-                    'not_ending' => [
+                    'section1' => [
                         'button1_text' => 'REPEAT LAST BOOKING',
                         // 'button1_subtext' => '',
                         'button2_text' => 'VIEW ALL BOOKINGS',
-                        'no_last_order' => true
+                        'no_last_order' => true,
+                        'contact_text' => 'Need Help? Contact your Personal Concierge',
+                        'contact_image' => 'https://b.fitn.in/passes/cards/onepass-black.png'
                     ],
-                    'ending' => [
-                        'text' => 'Your Onepass Red will expire after remaining_text'
+                    'section2' => [
+                        'text' => 'Your Onepass Red will expire after remaining_text',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW NOW'
+                    ],
+                    'section3' => [
+                        'text' => 'Your Onepass Red has expired',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW'
                     ]
                 ],
                 'pass_expired' => false
@@ -316,19 +326,29 @@ return [
                 "name"  => "",
                 "header" => "UNLIMITED VALIDITY",
                 "subheader" => "", // duration or sessions
+                "top_right_button_text" => "BOOK >",
                 "left_text"  => "UPCOMING: ",
                 "left_value"  => 0,
                 "right_text"  => "COMPLETED: ",
                 "right_value"  => 0,
                 'footer' => [
-                    'not_ending' => [
+                    'section1' => [
                         'button1_text' => 'REPEAT LAST BOOKING',
                         // 'button1_subtext' => '',
                         'button2_text' => 'VIEW ALL BOOKINGS',
-                        'no_last_order' => true
+                        'no_last_order' => true,
+                        'contact_text' => 'Need Help? Contact your Personal Concierge',
+                        'contact_image' => 'https://b.fitn.in/passes/cards/onepass-black.png'
                     ],
-                    'ending' => [
-                        'text' => 'Your Onepass Black will expire after remaining_text'
+                    'section2' => [
+                        'text' => 'Your Onepass Black will expire after remaining_text',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW NOW'
+                    ],
+                    'section3' => [
+                        'text' => 'Your Onepass Black has expired',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW'
                     ]
                 ],
                 'pass_expired' => false
