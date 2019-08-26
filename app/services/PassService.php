@@ -1148,7 +1148,8 @@ class PassService {
             }
             else {
                 unset($homePassData['footer']['section1']);
-                unset($homePassData['footer']['section2']);
+                $homePassData['footer']['section2'] = $homePassData['footer']['section3'];
+                unset($homePassData['footer']['section3']);
             }
         }
         $homePassData['pass_expired'] = $passExpired;
