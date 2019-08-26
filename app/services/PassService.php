@@ -1060,8 +1060,10 @@ class PassService {
                         $homePassData['footer']['section1']['no_last_order'] = false;
                         $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
                     }
-                    unset($homePassData['footer']['section2']);
-                    unset($homePassData['footer']['section3']);
+                    if(!Config::get('app.debug')) {
+                        unset($homePassData['footer']['section2']);
+                        unset($homePassData['footer']['section3']);
+                    }
                 }
                 else {
                     $homePassData['footer'] = $homePassData['footer']['ending'];
