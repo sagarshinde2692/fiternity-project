@@ -306,7 +306,7 @@ return [
                         'button2_text' => 'VIEW ALL BOOKINGS',
                         'no_last_order' => true,
                         'contact_text' => 'Need Help? Contact your Personal Concierge',
-                        'contact_image' => 'https://b.fitn.in/passes/cards/onepass-black.png'
+                        'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png'
                     ],
                     'section2' => [
                         'text' => 'Your Onepass Red will expire after remaining_text',
@@ -338,7 +338,7 @@ return [
                         'button2_text' => 'VIEW ALL BOOKINGS',
                         'no_last_order' => true,
                         'contact_text' => 'Need Help? Contact your Personal Concierge',
-                        'contact_image' => 'https://b.fitn.in/passes/cards/onepass-black.png'
+                        'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png'
                     ],
                     'section2' => [
                         'text' => 'Your Onepass Black will expire after remaining_text',
