@@ -135,6 +135,6 @@ class PassController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
         }
-        return $this->passService->homePostPassPurchaseData($customer_id);
+        return [ 'status' => 200, 'data' => $this->passService->homePostPassPurchaseData($customer_id), 'message' => 'Success' ];
     }
 }

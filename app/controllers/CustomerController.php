@@ -4093,7 +4093,7 @@ class CustomerController extends \BaseController {
 		//  commented on 9th Aug - Akhil
 		if(!empty($customeremail)) {
 			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
-			if(!empty($order)) {
+			if(!empty($passOrder)) {
 				$passPurchased = true;
 			}
 			// $this->flexipassHome($order, $result);
@@ -4128,7 +4128,8 @@ class CustomerController extends \BaseController {
 
 		
 		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
-			$result['onepass_post'] = Config::get('pass.home.after_purchase'.$passOrder['pass']['pass_type']);
+			// $result['onepass_post'] = Config::get('pass.home.after_purchase'.$passOrder['pass']['pass_type']);
+			$result['onepass_post'] = $this->passService->homePostPassPurchaseData($passOrder['customer_id']);
 			$result['onepass_post']['name'] = $passOrder['customer_name'];
 		}
 		else {
