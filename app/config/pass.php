@@ -262,7 +262,7 @@ return [
             "text"  => "Enjoy limitless access across Fitternity's 12,000+ fitness classes, gyms and sports facilities across India",
             "passes" => [
                 [
-                    "image" => "https://b.fitn.in/passes/app-home/op_black_thumb.png",
+                    "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
                     "header1" => "ONEPASS",
                     "header1_color" => "#000000",
                     "header2" => "RED",
@@ -272,7 +272,7 @@ return [
                     "desc_subheader" => "With Expiry" 
                 ],
                 [
-                    "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
+                    "image" => "https://b.fitn.in/passes/app-home/op_black_thumb.png",
                     "header1" => "ONEPASS",
                     "header1_color" => "#000000",
                     "header2" => "BLACK",

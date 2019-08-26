@@ -4047,10 +4047,10 @@ class CustomerController extends \BaseController {
             // $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
             // $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
 
-            if(!($this->device_type=='android' && !empty($this->app_version) && (float)$this->app_version>5.27)){
-                $result['near_by_vendor'] = $this->getNearbyVendors($city, true);
-                $this->nearVendorRemoveExtraFields($result['near_by_vendor']);
-            }
+            // if(!($this->device_type=='android' && !empty($this->app_version) && (float)$this->app_version>5.27)){
+            //     $result['near_by_vendor'] = $this->getNearbyVendors($city, true);
+            //     $this->nearVendorRemoveExtraFields($result['near_by_vendor']);
+            // }
         }
         
         $result['categoryheader'] = "Discover | Try | Buy";
@@ -4134,7 +4134,7 @@ class CustomerController extends \BaseController {
 		else {
 			$result['onepass_pre'] = Config::get('pass.home.before_purchase');
 		}
-            
+        $result['load_trending_vendors'] = false;
 
 		if(!empty($result['city_id']) && $result['city_id']==10000) {
 			unset($result['banner']);
