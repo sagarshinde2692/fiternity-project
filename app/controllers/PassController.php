@@ -128,4 +128,13 @@ class PassController extends \BaseController {
         return $this->passService->orderPassHistory($customer_id);
     }
 
+    public function homePostPassPurchaseData() {
+        $jwt_token = Request::header('Authorization');
+        $customer_id = null;
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
+        return $this->passService->homePostPassPurchaseData($customer_id);
+    }
 }

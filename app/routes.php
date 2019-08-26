@@ -1397,3 +1397,4 @@ Route::post('customer/enablereliancecampaign', 'CustomerController@enableRelianc
 
 Route::get('nearbyvendors', 'CustomerController@getNearbyVendors');
 Route::get('migrateStepsToFirestore', 'DebugController@migrateStepsToFirestore');
+Route::get('homepostpasspurchase', 'PassController@homePostPassPurchaseData');

@@ -1013,4 +1013,83 @@ class PassService {
         }
     
     }
+
+    public function getDateDifference($expiryDate) {
+        $expiryDate = strtotime($expiryDate);
+        $diff = ($expiryDate)-time();
+        $diffDays = ($diff/(60*60*24));
+        return ($diffDays>=1)?intval($diffDays):0;
+    }
+
+    public function homePostPassPurchaseData($customerId) {
+        Order::$withoutAppends = true;
+        $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->first();
+        if(empty($passOrder)){
+            return null;
+        }
+        Order::$withoutAppends = true;
+
+        $pastBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->where('schedule_date_time', '<', new \MongoDate())->count();
+        $upcomingBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->where('schedule_date_time', '>=', new \MongoDate())->count();
+        $totalBookings = $pastBookings + $upcomingBookings;
+
+        $passExpired = false;
+
+        $homePassData = Config::get('pass.home.after_purchase.'.$passOrder['pass']['pass_type']);
+
+        if($passOrder['pass']['pass_type']=='black') {
+            
+            $homePassData = $homePassData[$passOrder['pass']['pass_type']];
+
+            $totalSessions = $passOrder['pass']['duration'];
+            if($totalSessions <= $totalBookings) {
+                $passExpired = true;
+            }
+            else {
+                $usageLeft = $totalBookings - $totalSessions;
+            }
+            $homePassData['name'] = $passOrder['customer_name'];
+            $homePassData['subheader'] = $totalSessions.' SESSIONS';
+            $homePassData['left_value'] = $pastBookings;
+            $homePassData['right_value'] = $upcomingBookings;
+            if(!empty($usageLeft) && $usageLeft>3) {
+                $homePassData['footer'] = $homePassData['footer']['not_ending'];
+                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('schedule_date_time', 'desc')->first();
+                if(!empty($lastOrder)) {
+                    $homePassData['footer']['button1_subtext'] = ucwords($lastOrder->finder_name);
+                    $homePassData['footer']['no_last_order'] = false;
+                }
+            }
+            else {
+                $homePassData['footer'] = $homePassData['footer']['ending'];
+                $homePassData['footer']['text'] = strtr($homePassData['footer']['text'], ['remaining_text' => $usageLeft.' sessions']);
+            }
+        }
+        if($passOrder['pass']['pass_type']=='red') {
+            $totalDuration = $passOrder['pass']['duration'];
+            $expiryDate = date("Y-m-d H:i:s", strtotime('+'.$totalDuration.' days', time()));
+            $usageLeft = $this->getDateDifference($expiryDate);
+            if(empty($usageLeft) || $usageLeft<0) {
+                $passExpired = true;
+            }
+            $homePassData['name'] = trim($passOrder['customer_name']);
+            $homePassData['subheader'] = strtoupper($passOrder['pass']['duration_text']);
+            $homePassData['left_value'] = $pastBookings;
+            $homePassData['right_value'] = $upcomingBookings;
+            if(!empty($usageLeft) && $usageLeft>3) {
+                $homePassData['footer'] = $homePassData['footer']['not_ending'];
+                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('schedule_date_time', 'desc')->first();
+                if(!empty($lastOrder)) {
+                    $homePassData['footer']['button1_subtext'] = ucwords($lastOrder->finder_name);
+                    $homePassData['footer']['no_last_order'] = false;
+                }
+            }
+            else {
+                $homePassData['footer'] = $homePassData['footer']['ending'];
+                $homePassData['footer']['text'] = strtr($homePassData['footer']['text'], ['remaining_text' => $usageLeft.' days']);
+            }
+        }
+        $homePassData['pass_expired'] = $passExpired;
+        return [ 'status' => 200, 'data' => $homePassData, 'message' => 'Success' ];
+    }
 }

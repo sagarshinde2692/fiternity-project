@@ -1,8 +1,10 @@
 <?php
 $apiUrl = \Config::get('app.url');
 $success_page_template = Config::get('successPage');
-$red_pass = 'https://b.fitn.in/global/classpass/mobile/red%20card-website.png';
-$black_pass = 'https://b.fitn.in/global/classpass/mobile/back%20card%20-%20website.png';
+// $red_pass = 'https://b.fitn.in/global/classpass/mobile/red%20card-website.png';
+// $black_pass = 'https://b.fitn.in/global/classpass/mobile/back%20card%20-%20website.png';
+$red_pass = 'https://b.fitn.in/passes/cards/onepass-red.png';
+$black_pass = 'https://b.fitn.in/passes/cards/onepass-black.png';
 return [
     'list' => [
         'passes' => [
@@ -288,24 +290,48 @@ return [
         ],
         "after_purchase" => [
             "red" => [
-                "pass_image"  => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
+                "pass_image"  => "https://b.fitn.in/passes/cards/onepass-red.png",
                 "name"  => "",
                 "header" => "UNLIMITED USAGE",
                 "subheader" => "", // duration or sessions
                 "left_text"  => "UPCOMING: ",
                 "left_value"  => 0,
                 "right_text"  => "COMPLETED: ",
-                "right_value"  => 0
+                "right_value"  => 0,
+                'footer' => [
+                    'not_ending' => [
+                        'button1_text' => 'REPEAT LAST BOOKING',
+                        // 'button1_subtext' => '',
+                        'button2_text' => 'VIEW ALL BOOKINGS',
+                        'no_last_order' => true
+                    ],
+                    'ending' => [
+                        'text' => 'Your Onepass Red will expire after remaining_text'
+                    ]
+                ],
+                'pass_expired' => false
             ],
             "black" => [
-                "pass_image"  => "https://b.fitn.in/passes/app-home/op_black_thumb.png",
+                "pass_image"  => "https://b.fitn.in/passes/cards/onepass-black.png",
                 "name"  => "",
                 "header" => "UNLIMITED VALIDITY",
                 "subheader" => "", // duration or sessions
                 "left_text"  => "UPCOMING: ",
                 "left_value"  => 0,
                 "right_text"  => "COMPLETED: ",
-                "right_value"  => 0
+                "right_value"  => 0,
+                'footer' => [
+                    'not_ending' => [
+                        'button1_text' => 'REPEAT LAST BOOKING',
+                        // 'button1_subtext' => '',
+                        'button2_text' => 'VIEW ALL BOOKINGS',
+                        'no_last_order' => true
+                    ],
+                    'ending' => [
+                        'text' => 'Your Onepass Black will expire after remaining_text'
+                    ]
+                ],
+                'pass_expired' => false
             ]
         ]
     ]
