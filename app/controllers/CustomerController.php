@@ -4160,17 +4160,11 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-        // return $result;
-
 		$response = Response::make($result);
-		$response->headers->set('token', $updatedToken);
+		if(!empty($customeremail)){
+			$response = setNewToken($response, !empty($passOrder), $rel_banner_shown);
+		}
 		return $response;
-
-		// $response = Response::make($result);
-		// if(!empty($customeremail)){
-		// 	$response = setNewToken($response, !empty($pass));
-		// }
-		// return $response;
 		
 	}
 
