@@ -1889,10 +1889,11 @@ class OrderController extends \BaseController {
             $orderdata->data_time = $data_time;
             $orderdata->subscription_code = $orderdata['_id'];
 
+            $event_success = EventImage::where('city_id', (int)$orderdata['city_id'])->first();
             $mfp_success = Config::get('mfp_success');
             $orderdata->top_text = $mfp_success['top_txt'];
             $orderdata->footer_text = $mfp_success['footer_txt'];
-            $orderdata->cover_image = $mfp_success['cover_image'];
+            $orderdata->cover_image = $event_success['cover_image'];
         }
         if(!$orderdata){
             return $this->responseNotFound('Order does not exist');
