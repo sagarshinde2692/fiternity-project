@@ -1530,11 +1530,14 @@ class TransactionController extends \BaseController {
             }
             $payment_details = [];
 
-            foreach ($payment_mode_type_array as $payment_mode_type) {
+            // $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+            // if(!(!empty($onepassHoldCustomer) && $onepassHoldCustomer && !empty($data['type']) && $data['type'] == 'workout-session' && $data['amount_customer'] < 1001)){
+                foreach ($payment_mode_type_array as $payment_mode_type) {
 
-                $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
-
-            }
+                    $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+    
+                }
+            // }
             
             $resp['data']['payment_details'] = $payment_details;
 
@@ -5762,6 +5765,13 @@ class TransactionController extends \BaseController {
 
         $position = 0;
 
+        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
+            $booking_details_data["customer_name"] = ['field'=>'NAME','value'=>$data['customer_name'],'position'=>$position++];
+			$booking_details_data["customer_email"] = ['field'=>'EMAIL','value'=>$data['customer_email'],'position'=>$position++];
+			$booking_details_data["customer_contact_no"] = ['field'=>'CONTACT NO','value'=>$data['customer_phone'],'position'=>$position++];
+        }
+
         $booking_details_data["finder_name_location"] = ['field'=>'STUDIO NAME','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
 
         if(in_array($data['type'],["booktrials","workout-session","manualautotrial"])){
@@ -5982,6 +5992,10 @@ class TransactionController extends \BaseController {
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
             $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase. Use Code : CB100','position'=>$position++];
+            
+            if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001){
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
+            }
         }
         
         $booking_details_all = [];
