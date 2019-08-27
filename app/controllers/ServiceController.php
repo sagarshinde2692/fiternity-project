@@ -914,7 +914,17 @@ class ServiceController extends \BaseController {
 		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $this->utilities->getRupeeForm($p_np['non_peak'] + $p_np['non_peak_discount']):"");
                         $nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
                         
-                        if(empty($finder['flags']['monsoon_campaign_pps'])){
+						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+							if($rsh['price'] < 1001){
+								$rsh['price'] = Config::get('app.onepass_free_string');
+							}
+							
+							if($nrsh['price'] < 1001){
+								$nrsh['price'] = Config::get('app.onepass_free_string');
+							}
+							
+						}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                             if(!empty($rsh['price'])){
                                 $rsh['price'].=" (100% Cashback)";
                             }
@@ -922,12 +932,6 @@ class ServiceController extends \BaseController {
                                 $nrsh['price'].=" (100% Cashback)";
                             }
                             
-						}
-						
-						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
-							$rsh['price'] = Config::get('app.onepass_free_string');
-							$nrsh['price'] = Config::get('app.onepass_free_string');
 						}
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
@@ -1149,13 +1153,11 @@ class ServiceController extends \BaseController {
 
                 }
 
-                if(empty($finder['flags']['monsoon_campaign_pps'])){
-                    $service['non_peak']['price'] .= " (100% Cashback)";
-				}
-				
 				$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-				if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+				if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $service['non_peak']['price'] < 1001){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
+				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
+                    $service['non_peak']['price'] .= " (100% Cashback)";
 				}
             }
 			
@@ -1307,8 +1309,8 @@ class ServiceController extends \BaseController {
 			}else{
 				
 				foreach($data['schedules'] as &$sc){
-
-                    if(!empty($_GET['init_source']) && $_GET['init_source'] == 'pps'){
+					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+                    if((!empty($_GET['init_source']) && $_GET['init_source'] == 'pps') || (!empty($onepassHoldCustomer) && $onepassHoldCustomer)){
                         $sc['free_trial_available'] = false;
                     }
 					
@@ -1342,11 +1344,10 @@ class ServiceController extends \BaseController {
 						$str = "";
 					}
 
-					$sc['cost'] .= $str;
-
-					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $sc['cost'] < 1001){
 						$sc['cost'] = Config::get('app.onepass_free_string');
+					}else{
+						$sc['cost'] .= $str;
 					}
 					
 					if(!empty($service['extended_validity'])){
@@ -1833,13 +1834,11 @@ class ServiceController extends \BaseController {
 			
             $service_details['price'] = "₹".$service_details['amount'];
 
-            if(empty($finder['flags']['monsoon_campaign_pps'])){
-                $service_details['price'].=" (100% Cashback)";
-			}
-			
 			$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-			if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $service_details['amount'] < 1001){
 				$service_details['price'] = Config::get('app.onepass_free_string');
+			}else if(empty($finder['flags']['monsoon_campaign_pps'])){
+				$service_details['price'].=" (100% Cashback)";
 			}
 
             if($service_details['amount'] != 73){
