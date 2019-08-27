@@ -1075,7 +1075,7 @@ class PassService {
         $passExpired = false;
 
         $homePassData = Config::get('pass.home.after_purchase.'.$passOrder['pass']['pass_type']);
-
+        $homePassData['pass_order_id'] = $passOrder['_id'];
         if($passOrder['pass']['pass_type']=='black') {
             
             $homePassData = $homePassData[$passOrder['pass']['pass_type']];
