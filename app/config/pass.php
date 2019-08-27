@@ -341,7 +341,8 @@ return [
                         'button2_text' => 'VIEW ALL BOOKINGS',
                         'no_last_order' => true,
                         'contact_text' => 'Need Help? Contact your Personal Concierge',
-                        'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png'
+                        'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+                        'contact_no' => '+919876543210'
                     ],
                     'section2' => [
                         'text' => 'Your Onepass Black will expire after remaining_text',
