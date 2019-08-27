@@ -1889,7 +1889,7 @@ class OrderController extends \BaseController {
             $orderdata->data_time = $data_time;
             $orderdata->subscription_code = $orderdata['_id'];
 
-            $event_success = EventImage::where('city_id', (int)$orderdata['city_id'])->first();
+            $event_success = EventSuccess::where('city_id', (int)$orderdata['city_id'])->first();
             $orderdata->top_text = $event_success['top_text'];
             $orderdata->footer_text = $event_success['footer_text'];
             $orderdata->cover_image = $event_success['cover_image'];
