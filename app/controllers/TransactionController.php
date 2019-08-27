@@ -1530,14 +1530,14 @@ class TransactionController extends \BaseController {
             }
             $payment_details = [];
 
-            $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-            if(!(!empty($onepassHoldCustomer) && $onepassHoldCustomer && !empty($data['type']) && $data['type'] == 'workout-session' && $data['amount_customer'] < 1001)){
+            // $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+            // if(!(!empty($onepassHoldCustomer) && $onepassHoldCustomer && !empty($data['type']) && $data['type'] == 'workout-session' && $data['amount_customer'] < 1001)){
                 foreach ($payment_mode_type_array as $payment_mode_type) {
 
                     $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
     
                 }
-            }
+            // }
             
             $resp['data']['payment_details'] = $payment_details;
 
