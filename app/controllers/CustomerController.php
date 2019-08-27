@@ -4130,7 +4130,6 @@ class CustomerController extends \BaseController {
 		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
 			// $result['onepass_post'] = Config::get('pass.home.after_purchase'.$passOrder['pass']['pass_type']);
 			$result['onepass_post'] = $this->passService->homePostPassPurchaseData($passOrder['customer_id']);
-			$result['onepass_post']['name'] = $passOrder['customer_name'];
 		}
 		else {
 			$result['onepass_pre'] = Config::get('pass.home.before_purchase');
