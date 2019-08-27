@@ -1890,9 +1890,8 @@ class OrderController extends \BaseController {
             $orderdata->subscription_code = $orderdata['_id'];
 
             $event_success = EventImage::where('city_id', (int)$orderdata['city_id'])->first();
-            $mfp_success = Config::get('mfp_success');
-            $orderdata->top_text = $mfp_success['top_txt'];
-            $orderdata->footer_text = $mfp_success['footer_txt'];
+            $orderdata->top_text = $event_success['top_text'];
+            $orderdata->footer_text = $event_success['footer_text'];
             $orderdata->cover_image = $event_success['cover_image'];
         }
         if(!$orderdata){

@@ -66,6 +66,7 @@ class EventsController extends \BaseController {
 			if(!empty($eventInfo['images']['cover_image'])){
 				$eventInfo['coverimage'] = $eventInfo['images']['cover_image'];
 			}
+			unset($eventInfo['images']);
 
 			$response = array(
 				'event_info' => $eventInfo,
