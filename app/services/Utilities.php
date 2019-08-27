@@ -9684,7 +9684,7 @@ Class Utilities {
         return $pass;
     }
     public function bullet() {
-		return json_decode('"'."\u2713".'"');
+		return json_decode('"'."\u2022".'"');
 	}
 }
 
