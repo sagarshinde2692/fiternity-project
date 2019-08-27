@@ -1332,6 +1332,12 @@ class ServiceController extends \BaseController {
 					}
 
 					$sc['cost'] .= $str;
+
+					$onePassHoldCustomer = $this->utilities->onepassHoldCustomer();
+					if(!empty($onePassHoldCustomer) && $onepassHoldCustomer){
+						$sc['cost'] = Config::get('app.onepass_free_string');
+					}
+					
 					if(!empty($service['extended_validity'])){
 
                     }
@@ -1818,7 +1824,13 @@ class ServiceController extends \BaseController {
 
             if(empty($finder['flags']['monsoon_campaign_pps'])){
                 $service_details['price'].=" (100% Cashback)";
-            }
+			}
+			
+			$onePassHoldCustomer = $this->utilities->onepassHoldCustomer();
+			if(!empty($onePassHoldCustomer) && $onePassHoldCustomer){
+				$service_details['price'] = Config::get('app.onepass_free_string');
+			}
+
             if($service_details['amount'] != 73){
                 $service_details['finder_flags']['monsoon_campaign_pps'] = false;
             }
