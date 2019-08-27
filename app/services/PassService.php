@@ -1089,8 +1089,8 @@ class PassService {
             }
             $homePassData['name'] = $passOrder['customer_name'];
             $homePassData['subheader'] = $totalSessions.' SESSIONS';
-            $homePassData['left_value'] = $upcomingBookings;
-            $homePassData['right_value'] = $pastBookings;
+            $homePassData['left_value'] = $pastBookings;
+            $homePassData['right_value'] = $upcomingBookings;
             if(!$passExpired) {
                 if(!empty($usageLeft) && $usageLeft>5) {
                     $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('schedule_date_time', 'desc')->first();
