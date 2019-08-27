@@ -59,8 +59,16 @@ class PassService {
                 'type' => $pass['type']
             ];
             if($pass['type']=='trial') {
+                $utilities = new Utilities();
                 $passDetails['header'] .= ' Trial';
                 $passDetails['cashback'] = '(100% cashback)';
+                $passDetails['extra_info'] = [
+                    'title'=>'100% Instant Cashback',
+                    'description'=> $utilities->bullet()." The cashback will be added in the form of FitCash in the Fitternity Wallet (1 Fitcash point = INR 1).<br>".
+                                    $utilities->bullet()." FitCash received can only be used to upgrade ONEPASS subscription.<br>".
+                                    $utilities->bullet()." The instant cashback received is valid for 30 days starting from the date of pass activation.<br>".
+                                    $utilities->bullet()." The offer cannot be clubbed with any other offer.<br>"
+                ];
             }
             if($pass['unlimited_access']) {
                 $passDetails['price'] = 'Rs. '.$pass['price'];

@@ -9683,6 +9683,8 @@ Class Utilities {
         }
         return $pass;
     }
-
+    public function bullet() {
+		return json_decode('"'."\u20b9".'"');
+	}
 }
 
