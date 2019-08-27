@@ -1073,7 +1073,7 @@ class PassService {
 
     public function homePostPassPurchaseData($customerId) {
         Order::$withoutAppends = true;
-        $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->first();
+        $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->orderBy('_id', 'desc')->first();
         if(empty($passOrder)){
             return null;
         }
