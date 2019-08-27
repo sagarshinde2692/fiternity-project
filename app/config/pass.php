@@ -340,9 +340,9 @@ return [
                 "subheader" => "", // duration or sessions
                 "top_right_button_text" => "BOOK",
                 "left_text"  => "UPCOMING: ",
-                "left_value"  => 0,
+                "left_value"  => "0",
                 "right_text"  => "COMPLETED: ",
-                "right_value"  => 0,
+                "right_value"  => "0",
                 'footer' => [
                     'section1' => [
                         'button1_text' => 'REPEAT LAST BOOKING',
