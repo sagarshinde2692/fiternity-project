@@ -4162,7 +4162,7 @@ class CustomerController extends \BaseController {
 
 		$response = Response::make($result);
 		if(!empty($customeremail)){
-			$response = setNewToken($response, !empty($pass), $rel_banner_shown);
+			$response = setNewToken($response, !empty($passOrder), $rel_banner_shown);
 		}
 		return $response;
 		
