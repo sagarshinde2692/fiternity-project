@@ -1145,7 +1145,12 @@ class ServiceController extends \BaseController {
 
                 if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $service['non_peak']['price'] .= " (100% Cashback)";
-                }
+				}
+				
+				$onePassHoldCustomer = $this->utilities->onepassHoldCustomer();
+				if(!empty($onePassHoldCustomer) && $onepassHoldCustomer){
+					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
+				}
             }
 			
 			$peak_exists = false;
