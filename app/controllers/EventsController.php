@@ -14,7 +14,7 @@ class EventsController extends \BaseController {
 
 	public function getEventInfo($slug) {
 
-		$eventInfo = DbEvent::where('slug', $slug)->with(array('images'=>function($query){$query->select('cover_image');}))->first();
+		$eventInfo = DbEvent::where('slug', $slug)->with('images')->first();
 
 		if($eventInfo){
 
@@ -62,6 +62,9 @@ class EventsController extends \BaseController {
 			
 			if(!empty($eventInfo['end_date'])){
 				$eventInfo['end_day'] = date('jS F', strtotime($eventInfo['end_date']));
+			}
+			if(!empty($eventInfo['images']['cover_image'])){
+				$eventInfo['coverimage'] = $eventInfo['images']['cover_image'];
 			}
 
 			$response = array(
