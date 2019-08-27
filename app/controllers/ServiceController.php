@@ -922,7 +922,13 @@ class ServiceController extends \BaseController {
                                 $nrsh['price'].=" (100% Cashback)";
                             }
                             
-                        }
+						}
+						
+						$onePassHoldCustomer = $this->utilities->onepassHoldCustomer();
+						if(!empty($onePassHoldCustomer) && $onepassHoldCustomer){
+							$rsh['price'] = Config::get('app.onepass_free_string');
+							$nrsh['price'] = Config::get('app.onepass_free_string');
+						}
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
 				}
