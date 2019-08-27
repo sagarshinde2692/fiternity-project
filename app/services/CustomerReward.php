@@ -1828,6 +1828,10 @@ Class CustomerReward {
             $query->whereIn('tickets', [$ticket->_id]);
         }
         
+        if(!empty($pass)){
+            $query->where('ratecard_type', 'pass');
+        }
+        
         $coupon = $query->first();
 
         if(!empty($ratecard)){
