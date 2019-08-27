@@ -23,6 +23,6 @@ class Event extends \Basemodel {
 	}	
 
 	public function images(){
-		return $this->hasOne('App\Models\EventImage', 'city_id', 'city_id');
+		return $this->hasOne('EventImage', 'city_id', 'city_id');
 	}
 }
