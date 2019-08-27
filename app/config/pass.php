@@ -366,6 +366,7 @@ return [
                     ]
                 ],
                 'pass_expired' => false,
+                'tnc_text' => 'View T&C',
                 "terms" => "<h2>Terms and Conditions</h2>
                             <ul>
                                 <li>OnePass bookings will start from 1st September 2019</li>
