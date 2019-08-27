@@ -9662,5 +9662,27 @@ Class Utilities {
         return !empty($city_array) ? $city_array[0] : null;
     }
 
+    public function onepassHoldCustomer(){
+        Log::info("test");
+        $jwt_token = Request::header('Authorization');
+        $pass = false;
+        $customer_email = "";
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            Log::info("if");
+            $decoded = customerTokenDecode($jwt_token);
+            Log::info("decode : ",[$decoded]);
+            $customer_email = $decoded->customer->email;
+            if(!empty($decoded->customer->pass)){
+                $pass = true;
+            }
+            
+            Log::info("customer_email 1",[$customer_email]);
+            if($customer_email == "ankitamamnia@fitternity.com"){
+                $pass = true;
+            }
+        }
+        return $pass;
+    }
+
 }
 
