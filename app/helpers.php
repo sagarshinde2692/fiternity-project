@@ -4477,7 +4477,7 @@ if (!function_exists('createBucket')) {
 
 if (!function_exists('setNewToken')) {
 
-    function setNewToken($response, $pass = false){
+    function setNewToken($response, $pass = false, $rel_banner_shown = false){
         
         $decodedToken = decode_customer_token();
 
@@ -4493,14 +4493,12 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass']);
             $update_header = true;
         }
-        if(!empty($update_header)){
-            $new_token = createCustomerToken(null, $customer_data);
-            Log::info($new_token);
+        if(!empty($update_header) || $rel_banner_shown){
+            $new_token = createCustomerToken(null, $customer_data, $rel_banner_shown);
             $response->headers->set('token', $new_token);
-
         }
-        return $response;
 
+        return $response;
     }
 
 }
