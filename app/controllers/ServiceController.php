@@ -924,8 +924,8 @@ class ServiceController extends \BaseController {
                             
 						}
 						
-						$onePassHoldCustomer = $this->utilities->onepassHoldCustomer();
-						if(!empty($onePassHoldCustomer) && $onePassHoldCustomer){
+						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
 							$rsh['price'] = Config::get('app.onepass_free_string');
 							$nrsh['price'] = Config::get('app.onepass_free_string');
 						}
@@ -1153,8 +1153,8 @@ class ServiceController extends \BaseController {
                     $service['non_peak']['price'] .= " (100% Cashback)";
 				}
 				
-				$onePassHoldCustomer = $this->utilities->onepassHoldCustomer();
-				if(!empty($onePassHoldCustomer) && $onepassHoldCustomer){
+				$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+				if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
 				}
             }
@@ -1344,8 +1344,8 @@ class ServiceController extends \BaseController {
 
 					$sc['cost'] .= $str;
 
-					$onePassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					if(!empty($onePassHoldCustomer) && $onepassHoldCustomer){
+					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
 						$sc['cost'] = Config::get('app.onepass_free_string');
 					}
 					
@@ -1837,8 +1837,8 @@ class ServiceController extends \BaseController {
                 $service_details['price'].=" (100% Cashback)";
 			}
 			
-			$onePassHoldCustomer = $this->utilities->onepassHoldCustomer();
-			if(!empty($onePassHoldCustomer) && $onePassHoldCustomer){
+			$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+			if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
 				$service_details['price'] = Config::get('app.onepass_free_string');
 			}
 
