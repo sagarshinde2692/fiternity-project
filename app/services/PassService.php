@@ -1098,6 +1098,7 @@ class PassService {
                         $homePassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
                         $homePassData['footer']['section1']['no_last_order'] = false;
                         $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
+                        $homePassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
                     }
                     if(!Config::get('app.debug')) {
                         unset($homePassData['footer']['section2']);
@@ -1135,6 +1136,7 @@ class PassService {
                         $homePassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
                         $homePassData['footer']['section1']['no_last_order'] = false;
                         $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
+                        $homePassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
                     }
                     if(!Config::get('app.debug')) {
                         unset($homePassData['footer']['section2']);
