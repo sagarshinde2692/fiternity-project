@@ -21,4 +21,8 @@ class Event extends \Basemodel {
 	public function city(){
 		return $this->belongsTo('City');
 	}	
+
+	public function images(){
+		return $this->hasOne('App\Models\EventImage', 'city_id', 'city_id');
+	}
 }

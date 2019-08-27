@@ -14,7 +14,7 @@ class EventsController extends \BaseController {
 
 	public function getEventInfo($slug) {
 
-		$eventInfo = DbEvent::where('slug', $slug)->first();
+		$eventInfo = DbEvent::where('slug', $slug)->with(array('images'=>function($query){$query->select('cover_image');}))->first();
 
 		if($eventInfo){
 
