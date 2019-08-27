@@ -2418,7 +2418,7 @@ class CustomerController extends \BaseController {
 
 	}
 
-	public function customerDetail($customer_id){
+	public function customerDetail($customer_id, $onepassRequired = false){
 
 		$array = array('name'=>NULL,
 			'email'=>NULL,
@@ -2498,7 +2498,9 @@ class CustomerController extends \BaseController {
 				$customer[0]['dob'] = date('d-M-Y', $customer[0]['dob']->sec);
 			}
 
-			$customer[0]['onepass'] = $this->passService->homePostPassPurchaseData($customer_id);
+			if($onepassRequired) {
+				$customer[0]['onepass'] = $this->passService->homePostPassPurchaseData($customer_id);
+			}
 
 			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
 
@@ -2514,6 +2516,8 @@ class CustomerController extends \BaseController {
 	public function getCustomerDetail(){
 
 		$jwt_token = Request::header('Authorization');
+		$data = Input::all();
+		$onePassRequired = (!empty($data['onepass_required']))?in_array(strtoupper($data['onepass_required']), ['TRUE']):false;
 		Log::info($jwt_token);
 		$decoded = $this->customerTokenDecode($jwt_token);
 
@@ -2524,7 +2528,7 @@ class CustomerController extends \BaseController {
 			$af_instance_idData = ['af_instance_id' => $af_instance_id];
 			$customer->update($af_instance_idData);
 		}
-		$customer_detail = $this->customerDetail($customer_id);
+		$customer_detail = $this->customerDetail($customer_id, $onePassRequired);
 
 
 		return $customer_detail;
