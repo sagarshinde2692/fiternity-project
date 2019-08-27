@@ -2497,6 +2497,9 @@ class CustomerController extends \BaseController {
 			if(!empty($customer[0]['dob']) && !empty($customer[0]['dob']->sec)){
 				$customer[0]['dob'] = date('d-M-Y', $customer[0]['dob']->sec);
 			}
+
+			$customer[0]['onepass'] = $this->passService->homePostPassPurchaseData($customer_id);
+
 			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
 
 		}else{
@@ -4130,7 +4133,6 @@ class CustomerController extends \BaseController {
 		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
 			// $result['onepass_post'] = Config::get('pass.home.after_purchase'.$passOrder['pass']['pass_type']);
 			$result['onepass_post'] = $this->passService->homePostPassPurchaseData($passOrder['customer_id']);
-			$result['onepass_post']['name'] = $passOrder['customer_name'];
 		}
 		else {
 			$result['onepass_pre'] = Config::get('pass.home.before_purchase');

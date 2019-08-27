@@ -1087,7 +1087,7 @@ class PassService {
             else {
                 $usageLeft = $totalBookings - $totalSessions;
             }
-            $homePassData['name'] = $passOrder['customer_name'];
+            $homePassData['name'] = strtoupper(trim($passOrder['customer_name']));
             $homePassData['subheader'] = $totalSessions.' SESSIONS';
             $homePassData['left_value'] = $upcomingBookings;
             $homePassData['right_value'] = $pastBookings;
@@ -1099,6 +1099,10 @@ class PassService {
                         $homePassData['footer']['section1']['no_last_order'] = false;
                         $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
                         $homePassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
+                    }
+                    else {
+                        unset($homePassData['footer']['section1']['button1_text']);
+                        unset($homePassData['footer']['section1']['button2_text']);
                     }
                     if(!Config::get('app.debug')) {
                         unset($homePassData['footer']['section2']);
@@ -1137,6 +1141,10 @@ class PassService {
                         $homePassData['footer']['section1']['no_last_order'] = false;
                         $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
                         $homePassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
+                    }
+                    else {
+                        unset($homePassData['footer']['section1']['button1_text']);
+                        unset($homePassData['footer']['section1']['button2_text']);
                     }
                     if(!Config::get('app.debug')) {
                         unset($homePassData['footer']['section2']);
