@@ -912,15 +912,19 @@ class ServiceController extends \BaseController {
 		    		if(!empty($p_np))
 		    		{	
 		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $this->utilities->getRupeeForm($p_np['non_peak'] + $p_np['non_peak_discount']):"");
-                        $nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
-                        
+						$nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
+						
+						$rsh['price_only']=(isset($p_np['peak']))?$p_np['peak']:((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $p_np['non_peak'] + $p_np['non_peak_discount']:"");
+                        $nrsh['price_only']=(isset($p_np['non_peak']))?$p_np['non_peak']:"";
+                        Log::info("rsh price",[$rsh['price_only']]);
+                        Log::info("nrsh price",[$rsh['price_only']]);
 						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
-							if($rsh['price'] < 1001){
+						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < 1001 || $nrsh['price_only'] < 1001)){
+							if($rsh['price_only'] < 1001){
 								$rsh['price'] = Config::get('app.onepass_free_string');
 							}
 							
-							if($nrsh['price'] < 1001){
+							if($nrsh['price_only'] < 1001){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
 							}
 							
@@ -1310,7 +1314,7 @@ class ServiceController extends \BaseController {
 				
 				foreach($data['schedules'] as &$sc){
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-                    if((!empty($_GET['init_source']) && $_GET['init_source'] == 'pps') || (!empty($onepassHoldCustomer) && $onepassHoldCustomer)){
+                    if((!empty($_GET['init_source']) && $_GET['init_source'] == 'pps') || (!empty($onepassHoldCustomer) && $onepassHoldCustomer && $sc['cost'] < 1001)){
                         $sc['free_trial_available'] = false;
                     }
 					
