@@ -542,7 +542,7 @@ class TransactionController extends \BaseController {
     
                         return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),$this->error_status);
     
-                    }else{
+                    }else if(!empty($customer_data["customer_email"])){
     
                         $event_customer_email[] = strtolower($customer_data["customer_email"]);
                     }
@@ -551,7 +551,7 @@ class TransactionController extends \BaseController {
     
                         return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),$this->error_status);
     
-                    }else{
+                    }else if(!empty($customer_data["customer_phone"])){
     
                         $event_customer_phone[] = $customer_data["customer_phone"];
                     }
