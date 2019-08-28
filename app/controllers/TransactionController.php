@@ -848,15 +848,17 @@ class TransactionController extends \BaseController {
                         return Response::json($resp,$this->error_status);
                     }
 
+                    !empty($ticket['minimum_no_of_ticket']) ? $data['ticket_quantity'] = $ticket['minimum_no_of_ticket']: null;
+
                     $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
 
-                    if($data['ticket_quantity'] == 4){
-                        $data['combo_discount'] = 400;
-                        $data['combo_discount_remark'] = "Buy 4 tickets, get 400 off";
-                        $data['amount'] = $data['amount'] - $data['combo_discount'];
-                        $data['amount_customer'] = $data['amount_customer'] - $data['combo_discount'];
-                        $data['amount_finder'] = $data['amount_finder'] - $data['combo_discount'];
-                    }
+                    // if($data['ticket_quantity'] == 4){
+                    //     $data['combo_discount'] = 400;
+                    //     $data['combo_discount_remark'] = "Buy 4 tickets, get 400 off";
+                    //     $data['amount'] = $data['amount'] - $data['combo_discount'];
+                    //     $data['amount_customer'] = $data['amount_customer'] - $data['combo_discount'];
+                    //     $data['amount_finder'] = $data['amount_finder'] - $data['combo_discount'];
+                    // }
 
                 }else{
 
@@ -7514,6 +7516,7 @@ class TransactionController extends \BaseController {
                 // ]
             ];
             !empty($data['customer_quantity']) ? $data['customer_quantity'] = intval($data['customer_quantity']) : null;
+            !empty($ticket['minimum_no_of_ticket']) ? $data['customer_quantity']= intval(($ticket['minimum_no_of_ticket'])):null;
 			
             $total_amount = $ticket['price'] * intval($data['customer_quantity']);
 			$result['payment_details']['amount_summary'][] = [
