@@ -565,7 +565,7 @@ class PassService {
         return (isset($bookingCount))?$bookingCount<1:false;
     }
 
-    public function allowSession($amount, $customerId) {
+    public function allowSession($amount, $customerId, $date = null) {
         if(empty($amount) && empty(!$customerId)) {
             return;
         }
@@ -587,7 +587,7 @@ class PassService {
             //     // over 1000
             //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType];
             // }
-            if ($amount>750) {
+            if ($amount>1000) {
                 // over 750
                 return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
