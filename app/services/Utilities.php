@@ -4380,7 +4380,7 @@ Class Utilities {
 					"entry"=>"credit",
 					"type"=>"FITCASHPLUS"
 				];
-				$this->utilities->walletTransaction($addWalletData);
+				$this->walletTransaction($addWalletData);
 				$resp["show_popup"] = true;
 				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
 				$resp["popup"]["header_text"] = "Congratulations";
@@ -7482,7 +7482,7 @@ Class Utilities {
             $regData['reg_id'] = $gcm_reg_id;
             $regData['type'] = $device_type;
 
-            $this->utilities->addRegId($regData);
+            $this->addRegId($regData);
         }
 
         return array('status' => 200,'data' => $data);
