@@ -8099,7 +8099,7 @@ class CustomerController extends \BaseController {
 						// $booking_details = $
 						Log::info("mobile_verfied");
 						Log::info($this->mobile_verified);
-						$session_not_completed = checkInsList($customer['_id'], $this->device_id, true, $finderarr);
+						$session_not_completed = $this->checkInsList($customer['_id'], $this->device_id, true, $finderarr);
 						$this->getQRLoyaltyScreen($resp, $customer, $finderarr, $session_not_completed);
 						
 				}
@@ -9871,7 +9871,7 @@ class CustomerController extends \BaseController {
 		return $return;
 	}
 
-	public function checkinsList($customer_id, $device_id, $get_qr_loyalty_screen=null, $finderarr=null){
+	public function checkInsList($customer_id, $device_id, $get_qr_loyalty_screen=null, $finderarr=null){
 		$date = date('Y-m-d', time());//return $customer_id;
 
 		$checkins= Checkin:://where('device_id', $device_id)//->orWhere('customer_id', $customer_id)
