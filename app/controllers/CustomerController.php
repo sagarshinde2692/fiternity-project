@@ -9838,7 +9838,7 @@ class CustomerController extends \BaseController {
 			}
 			$return =$this->checkinCheckoutSuccessMsg($finder);
 			$return['header'] = "CHECK-OUT SUCCESSFULL";
-			$retur['sub_header_2'] = "Hope you had a great workout at ".$finder['title'].". This check-in is successfully marked into your workout journey. Continue with your workouts and achieve the milestones.";
+			$return['sub_header_2'] = "Hope you had a great workout at ".$finder['title'].". This check-in is successfully marked into your workout journey. Continue with your workouts and achieve the milestones.";
 			// $return =  [
 			// 	'header'=>'CHECK-OUT SUCCESSFUL!',
 			// 	'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
