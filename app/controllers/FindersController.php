@@ -5272,27 +5272,27 @@ class FindersController extends \BaseController {
 		// }
 		//Log::info('finder',[$finderData['finder']]);
 
-		foreach($finderData['finder']['services'] as &$service){
-			foreach($service['ratecard'] as &$ratecard){
-				if($ratecard['type'] == 'workout session'){
-					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-					Log::info("Price onepass ::",[$price]);
-					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
-						unset($ratecard['button_color']);
-						unset($ratecard['pps_know_more']);
-						unset($ratecard['pps_title']);
-						unset($ratecard['remarks']);
-						unset($ratecard['remarks_imp']);
-						unset($ratecard['special_price']);
+		// foreach($finderData['finder']['services'] as &$service){
+		// 	foreach($service['ratecard'] as &$ratecard){
+		// 		if($ratecard['type'] == 'workout session'){
+		// 			$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+		// 			Log::info("Price onepass ::",[$price]);
+		// 			$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+		// 			if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+		// 				unset($ratecard['button_color']);
+		// 				unset($ratecard['pps_know_more']);
+		// 				unset($ratecard['pps_title']);
+		// 				unset($ratecard['remarks']);
+		// 				unset($ratecard['remarks_imp']);
+		// 				unset($ratecard['special_price']);
 
-						unset($finderData['fit_ex']);
+		// 				unset($finderData['fit_ex']);
 
-						$ratecard['price'] = Config::get('app.onepass_free_string');
-					}
-				}
-			}
-		}
+		// 				$ratecard['price'] = Config::get('app.onepass_free_string');
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		return Response::json($finderData,$finderData['status']);
 
