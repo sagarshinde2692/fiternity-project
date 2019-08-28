@@ -5272,14 +5272,13 @@ class FindersController extends \BaseController {
 		// }
 		//Log::info('finder',[$finderData['finder']]);
 
-		foreach($finderData['finder']['services'] as $service){
+		foreach($finderData['finder']['services'] as &$service){
 			foreach($service['ratecard'] as &$ratecard){
 				if($ratecard['type'] == 'workout session'){
 					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-					Log::info("price onepass",[$price]);
+					Log::info("Price onepass ::",[$price]);
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
-						Log::info('unset');
 						unset($ratecard['button_color']);
 						unset($ratecard['pps_know_more']);
 						unset($ratecard['pps_title']);
