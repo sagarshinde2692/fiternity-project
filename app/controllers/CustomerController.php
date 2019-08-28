@@ -9880,12 +9880,12 @@ class CustomerController extends \BaseController {
 		->select('customer_id', 'created_at', 'status', 'device_id', 'checkout_status')
 		->first();
 
-		if(count($checkins) && $get_qr_loyalty_screen){
+		if(count($checkins) && !empty($get_qr_loyalty_screen)){
 			$d = strtotime($checkins['created_at']);	
 			$cd = strtotime(date("Y-m-d H:i:s"));
 			$difference = $cd -$d;
 			if($difference < 120 * 60){
-				return  [
+				return  array(
 					'status' => true,
 					'logo' => Config::get('loyalty_constants.fitsquad_logo'),
 					'header1' => 'CHECK-OUT FOR YOUR WORKOUT',
@@ -9893,13 +9893,18 @@ class CustomerController extends \BaseController {
 					'button_text' => 'CHECK-OUT',
 					'url' => Config::get('app.url').'/markcheckin/'.$finderarr['_id'],
 					'type' => 'checkin',
-				];
+				);
 			}
-			return array([
+			return array(
 				"status" => false
-			]);
+			);
 		}
 		else{
+			if( !empty($get_qr_loyalty_screen)){
+				return array(
+					"status" => false
+				);
+			}
 			return $checkins;
 		}
 	}
