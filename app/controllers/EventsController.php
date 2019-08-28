@@ -74,6 +74,15 @@ class EventsController extends \BaseController {
 			}
 			unset($eventInfo['images']);
 
+			$base_url= 'http://b.fitn.in/global/mfpschedule/';
+			$extention = '.jpg';
+			if(!empty($eventInfo['schedule'])){
+				foreach($eventInfo['schedule'] as &$value){
+					$tmp_lower = str_replace(' ', '-',strtolower($value['title']));
+					$value['image'] = $base_url.$tmp_lower.$extention;
+				}
+			}
+
 			$response = array(
 				'event_info' => $eventInfo,
 				'ticket_info' => $tickets,
