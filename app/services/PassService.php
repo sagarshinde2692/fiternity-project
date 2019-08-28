@@ -56,7 +56,9 @@ class PassService {
                 // 'text' => (!empty($pass['pass_type']) && $pass['pass_type']=='red')?'All Access':'Limitless Validity',
                 'text' => 'All Access',
                 'remarks' => ucwords($pass['type']),
-                'type' => $pass['type']
+                'type' => $pass['type'],
+                'min_start_date' => strtotime('01-09-2019'),
+                'max_start_date' => strtotime('31-12-2019')
             ];
             if($pass['type']=='trial') {
                 $utilities = new Utilities();
