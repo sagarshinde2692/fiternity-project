@@ -1696,6 +1696,9 @@ class TransactionController extends \BaseController {
             unset($resp['data']['quantity_details']);
             unset($resp['data']['payment_details']);
             unset($resp['data']['payment_modes']);
+            $resp['data']['quantity_details']= [];
+            $resp['data']['payment_details']= [];
+            $resp['data']['payment_modes']= [];
         }
         Log::info("capture response");
         Log::info($resp);
