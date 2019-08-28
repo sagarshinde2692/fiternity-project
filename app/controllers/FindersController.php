@@ -3877,7 +3877,8 @@ class FindersController extends \BaseController {
 			166 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹35,000 worth of rewards'
 		];
 
-		$brandsList = [135, 88, 166];
+		// $brandsList = [135, 88, 166];
+		$brandsList = [135, 166];
 
 		if (!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], $brandsList) && !in_array($data['finder']['_id'], Config::get('app.brand_finder_without_loyalty'))) {
 			if(!empty($brandMap[$data['finder']['brand_id']])){
@@ -7530,8 +7531,10 @@ class FindersController extends \BaseController {
 			'checkout_button' => null
 		];
 		
-		$brandsList = [135,88,166,56,40];
-		$nonHanmanBrandsList = [135,88,166,40];
+		// $brandsList = [135,88,166,56,40];
+		$brandsList = [135,166,56,40];
+		// $nonHanmanBrandsList = [135,88,166,40];
+		$nonHanmanBrandsList = [135,166,40];
 		$brandsMap = ['golds' => 135, 'multifit' => 88, 'shivfit' => 166, 'hanman' => 56, 'hype' => 40];
 		$finderDetails = $data['finder'];
 		$finderRewardType = (!empty($data['finder']['flags']['reward_type']))?$data['finder']['flags']['reward_type']:2;
