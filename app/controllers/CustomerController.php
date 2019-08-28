@@ -8675,16 +8675,16 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function checkinInitiate($finder_id, $finder_data){
+	public function checkinInitiate($finder_id, $finder_data, $customer_id){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
 		$finder_id = intval($finder_id);
 		
-		$jwt_token = Request::header('Authorization');
+		// $jwt_token = Request::header('Authorization');
 		
-		$decoded = decode_customer_token($jwt_token);
-		$customer_id = $decoded->customer->_id;
+		// $decoded = decode_customer_token($jwt_token);
+		// $customer_id = $decoded->customer->_id;
 
         $type = !empty($_GET['type']) ? $_GET['type'] : null;
         $session_pack = !empty($_GET['session_pack']) ? $_GET['session_pack'] : null;
@@ -8711,7 +8711,7 @@ class CustomerController extends \BaseController {
 			'checkout_status' => false,
 			'device_id' => $this->device_id
         ];
-		//Log::info('before schedule_sessions::::::::::::: device id',[$this->device_id]);
+		Log::info('before schedule_sessions::::::::::::: device id',[$this->device_id, $checkin_data]);
         if(!empty($_GET['receipt'])){
             $checkin_data['receipt'] = true;
         }
@@ -8748,7 +8748,10 @@ class CustomerController extends \BaseController {
 			// 	'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
 			// 	// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
 			// ];
-			return $this->checkinCheckoutSuccessMsg($finder);
+			$resp = $this->checkinCheckoutSuccessMsg($finder);
+			$resp['header'] = 'CHECK- IN SUCCESSFUL';
+			$resp['sub_header_2'] = 'Enjoy your workout at '.$finder['title'].'\n Make sure you check-out post your workout by scanning the QR code again to get the successful check-in towards the goal of reaching your milestone. \n\n Please note - The check-in will not be provided if your check-out time is not mapped out. Don`t forget to scan the QR code again post your workout.';
+			return $resp;
 			// if(!empty($addedCheckin['already_checked_in'])){
             //     $return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';
             // }
@@ -9653,16 +9656,19 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function checkForCheckinFromDevice($finder_id, $device_id, $finder){
+	public function checkForCheckinFromDevice($finder_id, $device_id, $finder, $customer_id){
 
-		$date = date('Y-m-d', time());
+		$date = date('Y-m-d', time());//return $customer_id;
 
-		$checkins= Checkin::where('device_id', $device_id)->where('date', '=', new MongoDate(strtotime($date)))
-							->select('customer_id', 'created_at', 'status', 'device_id', 'checkout_status')->first();
+		$checkins= Checkin:://where('device_id', $device_id)//->orWhere('customer_id', $customer_id)
+		where(function($query) use($customer_id, $device_id){$query->where('customer_id',$customer_id)->orWhere('device_id',$device_id);})
+		->where('date', '=', new MongoDate(strtotime($date)))
+		->select('customer_id', 'created_at', 'status', 'device_id', 'checkout_status')
+		->first();
 
 		$res = ["status"=> true];
 
-		//Log::info('chekcins:::::::::::;', [$checkins]);
+		Log::info('chekcins:::::::::::;', [$checkins, $customer_id]);
 
 		if(count($checkins)>0)
 		{
@@ -9670,6 +9676,18 @@ class CustomerController extends \BaseController {
 			$cd = strtotime(date("Y-m-d H:i:s"));
 			$difference = $cd -$d;
 			Log::info('differece:::::::::::', [$difference]);
+
+			if($checkins['device_id']!= $device_id){
+				$return = $this->checkinCheckoutSuccessMsg($finder);
+				$return['header'] = "Use Checkin device for Successfull Checkout.";
+				return $return;
+			}
+			else if($checkins['customer_id'] != $customer_id){
+				$return = $this->checkinCheckoutSuccessMsg($finder);
+				$return['header'] = "Allready checkin done by other user using this device.";
+				return $return;
+			}return;
+
 			if($checkins['checkout_status'])
 			{
 				//allreday checkdout
@@ -9682,14 +9700,15 @@ class CustomerController extends \BaseController {
 			{
 				//session is not complitated
 				$return = $this->checkinCheckoutSuccessMsg($finder);
-				$return['header'] = "session is not completed.";
+				$return['header'] = "Session is not completed.";
+				$return[''] = "Seems you have not completed your workout at ".$finder['title'].". The check-out time window is 45 minutes to 2 hours from your check-in time. Please make sure you check-out in the same window in order to get a successful check-in to level up on your workout milestone.";
 				return $return;
 				//return $res = ["status"=>false, "message"=>"session is not completed."];
 			}
 			else if(($difference > 45 * 60) &&($difference <= 120 * 60))
 			{
 				//checking out ----
-				return $this->checkoutInitiate($checkins['_id'], $finder, $finder_id);
+				return $this->checkoutInitiate($checkins['_id'], $finder, $finder_id, $customer_id);
 				//$res = ["status"=>true, "message"=>" checking- out for the day."];
 			}
 			else if($difference > 120 * 60)
@@ -9697,6 +9716,7 @@ class CustomerController extends \BaseController {
 				//times up not accaptable
 				$return  = $this->checkinCheckoutSuccessMsg($finder);
 				$return['header'] = "Times Up to checkout for the day.";
+				$return['sub_header_2'] = "Sorry you have lapsed the check-out time window for the day. (45 minutes to 2 hours from your check-in time) . This check-in will not be marked into your profile.\n Continue with your workouts and achieve the milestones.";
 				return $return;
 				//return $res = ["status"=>false, "message"=>"Times Up to checkout for the day."];
 			}
@@ -9704,7 +9724,7 @@ class CustomerController extends \BaseController {
 		else
 		{
 			//just checkinss ->>>>>> start checkoins
-			return $this->checkinInitiate($finder_id, $finder);
+			return $this->checkinInitiate($finder_id, $finder, $customer_id);
 		}
 
 		return $res;
@@ -9732,6 +9752,9 @@ class CustomerController extends \BaseController {
 		}
 		
 		$finder_id = (int) $finder_id;
+		$jwt_token = Request::header('Authorization');	
+		$decoded = decode_customer_token($jwt_token);
+		$customer_id = $decoded->customer->_id;
 		$customer_geo = [];
 		$finder_geo = [];
 
@@ -9756,7 +9779,7 @@ class CustomerController extends \BaseController {
 			$oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
 			if($oprtionalDays['status']){ // need to remove ! 
 				//Log::info('device ids:::::::::', [$this->device_id]);
-				return $this->checkForCheckinFromDevice($finder_id, $this->device_id, $finder);
+				return $this->checkForCheckinFromDevice($finder_id, $this->device_id, $finder, $customer_id);
 			}
 			else{
 				// return for now you are checking in for non operational day or time
@@ -9774,7 +9797,7 @@ class CustomerController extends \BaseController {
 		
 	}
 
-	public function checkoutInitiate($id, $finder, $finder_id){
+	public function checkoutInitiate($id, $finder, $finder_id, $customer_id){
 		Log::info('checing out::::::::');
 		$checkout = Checkin::where('_id', $id)->first();
 			$checkout->checkout_status=true;
@@ -9785,10 +9808,6 @@ class CustomerController extends \BaseController {
 			$session_pack = !empty($_GET['session_pack']) ? $_GET['session_pack'] : null;
 			$finder_id = intval($finder_id);
 
-			$jwt_token = Request::header('Authorization');
-			
-			$decoded = decode_customer_token($jwt_token);
-			$customer_id = $decoded->customer->_id;
 			$customer = Customer::find($customer_id);
 			$type = !empty($_GET['type']) ? $_GET['type'] : null;
 			$customer_update = \Customer::where('_id', $customer_id)->increment('loyalty.checkins');	
@@ -9819,6 +9838,7 @@ class CustomerController extends \BaseController {
 			}
 			$return =$this->checkinCheckoutSuccessMsg($finder);
 			$return['header'] = "CHECK-OUT SUCCESSFULL";
+			$retur['sub_header_2'] = "Hope you had a great workout at ".$finder['title'].". This check-in is successfully marked into your workout journey. Continue with your workouts and achieve the milestones.";
 			// $return =  [
 			// 	'header'=>'CHECK-OUT SUCCESSFUL!',
 			// 	'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
