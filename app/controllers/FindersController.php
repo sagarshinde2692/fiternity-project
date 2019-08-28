@@ -7592,14 +7592,14 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['checkout_button']['image'] = $this->utilities->openrewardlist('1', $finderDetails['brand_id'], $finderDetails['city_name']);
 				$data['fitsquad']['checkout_summary']['line1'] = 'On buying this, you get exclusive access into FitSquad Gold';
 			}
-			else if($brandsMap['multifit']==$finderDetails['brand_id']) {
-				$data['fitsquad']['image'] = "https://b.fitn.in/global/MULTIFIT-LOGO-VENDOR-PAGE.png";
-				$data['fitsquad']['title'] = "GET 120% CASHBACK + REWARDS";
-				$data['fitsquad']['subtitle'] = 'Buy/Renew a membership at '.$finderDetails['title'].' & earn ₹35,000 worth of rewards.';
-				//$data['fitsquad']['description'] = "<span>Just Workout for <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> Days & Earn Rewards Worth of ₹35,000";
-				// $data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
-				$data['fitsquad']['checkout_button']['image'] = $this->utilities->openrewardlist('1', $finderDetails['brand_id'], $finderDetails['city_name']);
-			}
+			// else if($brandsMap['multifit']==$finderDetails['brand_id']) {
+			// 	$data['fitsquad']['image'] = "https://b.fitn.in/global/MULTIFIT-LOGO-VENDOR-PAGE.png";
+			// 	$data['fitsquad']['title'] = "GET 120% CASHBACK + REWARDS";
+			// 	$data['fitsquad']['subtitle'] = 'Buy/Renew a membership at '.$finderDetails['title'].' & earn ₹35,000 worth of rewards.';
+			// 	//$data['fitsquad']['description'] = "<span>Just Workout for <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> Days & Earn Rewards Worth of ₹35,000";
+			// 	// $data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+			// 	$data['fitsquad']['checkout_button']['image'] = $this->utilities->openrewardlist('1', $finderDetails['brand_id'], $finderDetails['city_name']);
+			// }
 			else if($brandsMap['shivfit']==$finderDetails['brand_id']) {
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/SHIVFIT-LOGO---VENDOR-PAGE.png";
 				$data['fitsquad']['title'] = "TO GET EXCLUSIVE ACCESS TO FITSQUAD SHIVFIT BUY / RENEW YOUR MEMBERSHIP AT ".strtoupper($finderDetails['title']);
