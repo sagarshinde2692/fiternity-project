@@ -346,7 +346,7 @@ class GlobalPushController extends \BaseController
     
     // $this->pushBrandOutlets($index_name);
     $this->pushcategorylocations($index_name);
-    // $this->pushcategorycity($index_name);
+    $this->pushcategorycity($index_name);
     // $this->pushallfittnesslocation($index_name);
     // $this->pushservicecategorylocations($index_name);
     // $this->pushservicecategorycity($index_name);
@@ -575,7 +575,7 @@ class GlobalPushController extends \BaseController
               default:
                 $string = ucwords($cat['name']).' in '.ucwords($loc['name']);
                 break;                              }
-  Log::info("location".$loc['name']);
+            Log::info("location".$loc['name']);
             $postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['cities'][0]['name'], $cluster);
             
             array_push($data, $postdata);
