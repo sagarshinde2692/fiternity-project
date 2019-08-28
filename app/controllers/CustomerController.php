@@ -8099,7 +8099,8 @@ class CustomerController extends \BaseController {
 						// $booking_details = $
 						Log::info("mobile_verfied");
 						Log::info($this->mobile_verified);
-						$this->getQRLoyaltyScreen($resp, $customer, $finderarr);
+						$session_not_completed = checkInsList($customer['_id'], $this->device_id, true, $finderarr);
+						$this->getQRLoyaltyScreen($resp, $customer, $finderarr, $session_not_completed);
 						
 				}
 				
@@ -8840,7 +8841,7 @@ class CustomerController extends \BaseController {
 	   }
 	}
 
-	public function getQRLoyaltyScreen(&$resp, $customer, $finderarr){
+	public function getQRLoyaltyScreen(&$resp, $customer, $finderarr, $session_not_completed){
 		if(empty($customer['loyalty'])){
 			$resp['response']['title'] = "Register / Book Now";
 			$resp['response']['fitsquad'] = [
@@ -8864,7 +8865,10 @@ class CustomerController extends \BaseController {
 				'url' => Config::get('app.url').'/markcheckin/'.$finderarr['_id'],
 				'type' => 'checkin',
 			];
-			
+			if($session_not_completed['status']){
+				$resp['response']['fitsquad'] = $session_not_completed;
+				unset($resp['response']['fitsquad']['status']);
+			}
 			$direct_checkin = false;
 			
 			
@@ -8908,7 +8912,7 @@ class CustomerController extends \BaseController {
 
 			
 			
-			if(empty($direct_checkin)){
+			if(empty($direct_checkin) && $session_not_completed['status']){
 				
 				$resp['response']['fitsquad']['url'] = "";
 				$resp['response']['fitsquad']['data'] = [
@@ -9658,13 +9662,7 @@ class CustomerController extends \BaseController {
 
 	public function checkForCheckinFromDevice($finder_id, $device_id, $finder, $customer_id){
 
-		$date = date('Y-m-d', time());//return $customer_id;
-
-		$checkins= Checkin:://where('device_id', $device_id)//->orWhere('customer_id', $customer_id)
-		where(function($query) use($customer_id, $device_id){$query->where('customer_id',$customer_id)->orWhere('device_id',$device_id);})
-		->where('date', '=', new MongoDate(strtotime($date)))
-		->select('customer_id', 'created_at', 'status', 'device_id', 'checkout_status')
-		->first();
+		$checkins = $this->checkInsList($customer_id, $device_id);
 
 		$res = ["status"=> true];
 
@@ -9871,6 +9869,39 @@ class CustomerController extends \BaseController {
 			'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png'
 		];
 		return $return;
+	}
+
+	public function checkinsList($customer_id, $device_id, $get_qr_loyalty_screen=null, $finderarr=null){
+		$date = date('Y-m-d', time());//return $customer_id;
+
+		$checkins= Checkin:://where('device_id', $device_id)//->orWhere('customer_id', $customer_id)
+		where(function($query) use($customer_id, $device_id){$query->where('customer_id',$customer_id)->orWhere('device_id',$device_id);})
+		->where('date', '=', new MongoDate(strtotime($date)))
+		->select('customer_id', 'created_at', 'status', 'device_id', 'checkout_status')
+		->first();
+
+		if(count($checkins) && $get_qr_loyalty_screen){
+			$d = strtotime($checkins['created_at']);	
+			$cd = strtotime(date("Y-m-d H:i:s"));
+			$difference = $cd -$d;
+			if(($difference< 45 * 60) ||($difference > 45 * 60 && $difference < 120 * 60)){
+				return  [
+					'status' => true,
+					'logo' => Config::get('loyalty_constants.fitsquad_logo'),
+					'header1' => 'CHECK-OUT FOR YOUR WORKOUT',
+					'header3' => 'Hope you had a great workout today at '.$finderarr['title'].'. Hit the check-out button below to get the successful check-in and level up to reach your milestone.',
+					'button_text' => 'CHECK-OUT',
+					'url' => Config::get('app.url').'/markcheckin/'.$finderarr['_id'],
+					'type' => 'checkin',
+				];
+			}
+			return array([
+				"status" => false
+			]);
+		}
+		else{
+			return $checkins;
+		}
 	}
 
 }
