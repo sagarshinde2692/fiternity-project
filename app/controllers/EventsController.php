@@ -35,6 +35,9 @@ class EventsController extends \BaseController {
 					if(!empty($value['minimum_no_of_ticket'])){
 						$value['price'] = $value['minimum_no_of_ticket'] * $value['price'];
 					}
+					else if(isset($value['minimum_no_of_ticket'])){
+						unset($value['minimum_no_of_ticket']);
+					}
 
 					if($value['sold'] >= $value['quantity']){
 						$value['sold_out'] = true;
