@@ -434,7 +434,7 @@ class GlobalPushController extends \BaseController
 
       array_push($all_data, $postdata);
             
-      if(count($all_data) == 1000 || $index == count($indexdocs) - 1){
+      if(count($all_data) == 1000){
             $this->bulkPush($all_data, $index_name);
             $all_data = [];
         }
@@ -919,7 +919,7 @@ class GlobalPushController extends \BaseController
 
             }
             $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
-            if(count($all_data) == 1000 || $index == count($indexdocs) - 1){
+            if(count($all_data) == 1000){
                 $this->bulkPush($all_data, $index_name);
                 $all_data = [];
             }
