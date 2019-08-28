@@ -8912,7 +8912,7 @@ class CustomerController extends \BaseController {
 
 			
 			
-			if(empty($direct_checkin) && $session_not_completed['status']){
+			if(empty($direct_checkin) && !$session_not_completed['status']){
 				
 				$resp['response']['fitsquad']['url'] = "";
 				$resp['response']['fitsquad']['data'] = [
