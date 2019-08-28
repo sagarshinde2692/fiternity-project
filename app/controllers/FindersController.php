@@ -7535,7 +7535,8 @@ class FindersController extends \BaseController {
 		$brandsList = [135,166,56,40];
 		// $nonHanmanBrandsList = [135,88,166,40];
 		$nonHanmanBrandsList = [135,166,40];
-		$brandsMap = ['golds' => 135, 'multifit' => 88, 'shivfit' => 166, 'hanman' => 56, 'hype' => 40];
+		// $brandsMap = ['golds' => 135, 'multifit' => 88, 'shivfit' => 166, 'hanman' => 56, 'hype' => 40];
+		$brandsMap = ['golds' => 135, 'shivfit' => 166, 'hanman' => 56, 'hype' => 40];
 		$finderDetails = $data['finder'];
 		$finderRewardType = (!empty($data['finder']['flags']['reward_type']))?$data['finder']['flags']['reward_type']:2;
 		$finderCashbackType =(!empty($data['finder']['flags']['cashback_type']))?$data['finder']['flags']['cashback_type']:null;
