@@ -1530,14 +1530,11 @@ class TransactionController extends \BaseController {
             }
             $payment_details = [];
 
-            // $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-            // if(!(!empty($onepassHoldCustomer) && $onepassHoldCustomer && !empty($data['type']) && $data['type'] == 'workout-session' && $data['amount_customer'] < 1001)){
-                foreach ($payment_mode_type_array as $payment_mode_type) {
+            foreach ($payment_mode_type_array as $payment_mode_type) {
 
-                    $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+                $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
     
-                }
-            // }
+            }
             
             $resp['data']['payment_details'] = $payment_details;
 
@@ -1693,6 +1690,12 @@ class TransactionController extends \BaseController {
         // if(!empty($data['studio_extended_validity']) && $data['studio_extended_validity']) {
         //     $this->utilities->scheduleStudioBookings(null, $order_id);
         // }
+
+        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
+            unset($resp['data']["quantity_details"]);
+            $resp['data']['payment_modes']= [];
+        }
         Log::info("capture response");
         Log::info($resp);
         return $resp;
@@ -6271,6 +6274,16 @@ class TransactionController extends \BaseController {
                 'field' => 'Your total savings',
                 'value' => "Rs.".$you_save
             ];
+        }
+
+        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
+            $payment_details['amount_summary'] = [];
+            $payment_details['amount_payable'] = array(
+                'field' => 'Total Amount Payable',
+                'value' => Config::get('app.onepass_free_string')
+            );
+            unset($payment_details['payment_details']['savings']);
         }
 
         return $payment_details;

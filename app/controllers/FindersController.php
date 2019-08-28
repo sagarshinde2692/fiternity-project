@@ -5271,6 +5271,29 @@ class FindersController extends \BaseController {
 		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
 		// }
 		//Log::info('finder',[$finderData['finder']]);
+
+		foreach($finderData['finder']['services'] as &$service){
+			foreach($service['ratecard'] as &$ratecard){
+				if($ratecard['type'] == 'workout session'){
+					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+					Log::info("Price onepass ::",[$price]);
+					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+						unset($ratecard['button_color']);
+						unset($ratecard['pps_know_more']);
+						unset($ratecard['pps_title']);
+						unset($ratecard['remarks']);
+						unset($ratecard['remarks_imp']);
+						unset($ratecard['special_price']);
+
+						unset($finderData['fit_ex']);
+
+						$ratecard['price'] = Config::get('app.onepass_free_string');
+					}
+				}
+			}
+		}
+
 		return Response::json($finderData,$finderData['status']);
 
 	}
@@ -5383,7 +5406,6 @@ class FindersController extends \BaseController {
 							$ratecard['direct_payment_enable'] = "0";
 						}
 					}
-
 
 					array_push($ratecardArr, $ratecard);
 				}
@@ -8559,6 +8581,7 @@ class FindersController extends \BaseController {
 			// 	$rateCard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
 			// }
 			$rateCard['remarks_imp'] = true;
+		
 		}
 	}
 
