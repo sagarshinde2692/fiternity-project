@@ -9884,7 +9884,7 @@ class CustomerController extends \BaseController {
 			$d = strtotime($checkins['created_at']);	
 			$cd = strtotime(date("Y-m-d H:i:s"));
 			$difference = $cd -$d;
-			if(($difference< 45 * 60) ||($difference > 45 * 60 && $difference < 120 * 60)){
+			if($difference < 120 * 60){
 				return  [
 					'status' => true,
 					'logo' => Config::get('loyalty_constants.fitsquad_logo'),
