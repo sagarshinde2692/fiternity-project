@@ -9701,7 +9701,7 @@ class CustomerController extends \BaseController {
 				//session is not complitated
 				$return = $this->checkinCheckoutSuccessMsg($finder);
 				$return['header'] = "Session is not completed.";
-				$return[''] = "Seems you have not completed your workout at ".$finder['title'].". The check-out time window is 45 minutes to 2 hours from your check-in time. Please make sure you check-out in the same window in order to get a successful check-in to level up on your workout milestone.";
+				$return['sub_header_2'] = "Seems you have not completed your workout at ".$finder['title'].". The check-out time window is 45 minutes to 2 hours from your check-in time. Please make sure you check-out in the same window in order to get a successful check-in to level up on your workout milestone.";
 				return $return;
 				//return $res = ["status"=>false, "message"=>"session is not completed."];
 			}
