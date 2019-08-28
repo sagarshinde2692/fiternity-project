@@ -1693,11 +1693,8 @@ class TransactionController extends \BaseController {
 
         $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
         if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
-            unset($resp['data']['quantity_details']);
-            unset($resp['data']['payment_details']);
-            unset($resp['data']['payment_modes']);
             $resp['data']['quantity_details']= [];
-            $resp['data']['payment_details']= [];
+            // $resp['data']['payment_details']= [];
             $resp['data']['payment_modes']= [];
         }
         Log::info("capture response");
