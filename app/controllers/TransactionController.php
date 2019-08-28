@@ -6276,6 +6276,16 @@ class TransactionController extends \BaseController {
             ];
         }
 
+        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
+            $payment_details['amount_summary'] = [];
+            $payment_details['amount_payable'] = array(
+                'field' => 'Total Amount Payable',
+                'value' => Config::get('app.onepass_free_string')
+            );
+            unset($payment_details['payment_details']['savings']);
+        }
+
         return $payment_details;
 
     }
