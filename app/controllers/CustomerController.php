@@ -9686,7 +9686,7 @@ class CustomerController extends \BaseController {
 				$return = $this->checkinCheckoutSuccessMsg($finder);
 				$return['header'] = "Allready checkin done by other user using this device.";
 				return $return;
-			}return;
+			}
 
 			if($checkins['checkout_status'])
 			{
