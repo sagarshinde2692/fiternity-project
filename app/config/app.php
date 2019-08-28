@@ -978,7 +978,7 @@ return array(
 	'slotAllowance' =>['vendors'=>[1584],'services'=>[17626],'types'=>['workout-session','booktrials']],
 	'add_wallet_extra'=>10,
     'renewal_ids'=>[],
-	'brand_loyalty'=>[135,166,88,56,40],
+	'brand_loyalty'=>[135,166,56,40],
 	'brand_finder_without_loyalty'=>[579,1233,1261,1260,1262,1874,2105,5742,10675,9178,9171,13549,1259,1263,1266,2545,6525,12226,7651,9198,12077,5743,5741,7355,6530],
 
 	'first_free_string'=>' (First session Free)',
