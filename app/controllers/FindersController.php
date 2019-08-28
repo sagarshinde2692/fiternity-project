@@ -3928,7 +3928,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderDetailApp($slug, $cache = true){
+	public function finderDetailApp($slug, $cache = false){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -5384,6 +5384,18 @@ class FindersController extends \BaseController {
 						}
 					}
 
+					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+						unset($ratecard['button_color']);
+						unset($ratecard['pps_know_more']);
+						unset($ratecard['pps_title']);
+						unset($ratecard['remarks']);
+						unset($ratecard['remarks_imp']);
+						unset($ratecard['special_price']);
+
+						$ratecard['price'] = Config::get('app.onepass_free_string');
+					}
 
 					array_push($ratecardArr, $ratecard);
 				}
@@ -8559,6 +8571,7 @@ class FindersController extends \BaseController {
 			// 	$rateCard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
 			// }
 			$rateCard['remarks_imp'] = true;
+		
 		}
 	}
 
