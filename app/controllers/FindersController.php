@@ -3928,7 +3928,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderDetailApp($slug, $cache = false){
+	public function finderDetailApp($slug, $cache = true){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -5243,6 +5243,28 @@ class FindersController extends \BaseController {
 			Log::info("Error while sorting ratecard", [$e]);
 		}
 
+		$workout_ratecard_arr = array();
+		foreach($finderData['finder']['services'] as $service){
+			foreach($service['ratecard'] as $ratecard){
+				if($ratecard['type'] == 'workout session'){
+					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+						unset($ratecard['button_color']);
+						unset($ratecard['pps_know_more']);
+						unset($ratecard['pps_title']);
+						unset($ratecard['remarks']);
+						unset($ratecard['remarks_imp']);
+						unset($ratecard['special_price']);
+
+						unset($finderData['fit_ex']);
+
+						$ratecard['price'] = Config::get('app.onepass_free_string');
+					}
+				}
+			}
+		}
+
 		// $workout_ratecard_arr = array();
 		// foreach($finderData['finder']['services'] as $service){
 		// 	foreach($service['ratecard'] as $ratecard){
@@ -5382,20 +5404,6 @@ class FindersController extends \BaseController {
 						if(isset($ratecard['flags']['pay_at_vendor']) && $ratecard['flags']['pay_at_vendor']){
 							$ratecard['direct_payment_enable'] = "0";
 						}
-					}
-
-					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
-						unset($ratecard['button_color']);
-						unset($ratecard['pps_know_more']);
-						unset($ratecard['pps_title']);
-						unset($ratecard['remarks']);
-						unset($ratecard['remarks_imp']);
-						unset($ratecard['special_price']);
-						unset($ratecard['price']);
-
-						$ratecard['price_text'] = Config::get('app.onepass_free_string');
 					}
 
 					array_push($ratecardArr, $ratecard);
