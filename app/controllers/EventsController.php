@@ -32,6 +32,9 @@ class EventsController extends \BaseController {
 				foreach ($tickets as $key => &$value) {
 
 					$value['sold_out'] = false;
+					if(!empty($value['minimum_no_of_ticket'])){
+						$value['price'] = $value['minimum_no_of_ticket'] * $value['price'];
+					}
 
 					if($value['sold'] >= $value['quantity']){
 						$value['sold_out'] = true;
