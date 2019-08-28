@@ -329,7 +329,6 @@ Class FinderMailer extends Mailer {
 					$fitternity_email = [
 						'rahulsachdev@fitternity.com',
 						'kevalshah@fitternity.com',
-						'mitmehta@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
 						"rajivharichandani@fitternity.com",
@@ -339,7 +338,6 @@ Class FinderMailer extends Mailer {
 					break;
 				case 2 : 
 					$fitternity_email = [
-						'mitmehta@fitternity.com',
 						'vishankkapoor@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
@@ -371,7 +369,6 @@ Class FinderMailer extends Mailer {
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
 						'dharmindersingh@fitternity.com',
-						"mitmehta@fitternity.com",
 						"tanilmerchant@fitternity.com",
 						"deepdesai@fitternity.com",
 						"shreyajain@fitternity.com",
@@ -384,7 +381,6 @@ Class FinderMailer extends Mailer {
 						"priyankapatel@fitternity.com",
 						'vikramkhanna@fitternity.com',
 						"prachigupta@fitternity.com",
-						"mitmehta@fitternity.com",
 						"tanilmerchant@fitternity.com",
 						"niveditasomani@fitternity.com",
 						"arvindraj@fitternity.com",
