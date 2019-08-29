@@ -1847,7 +1847,7 @@ class ServiceController extends \BaseController {
 			$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 			if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $service_details['amount'] < 1001){
 				$service_details['price'] = Config::get('app.onepass_free_string');
-				$service_details['easy_cancel_text'] = "Easy cancellation available prior 1 hour";
+				$service_details['easy_cancel_text'] = "You can cancel session 1 hour prior to your session time. The paid amount will be refunded to you in form of Fitcash.";
 			}else if(empty($finder['flags']['monsoon_campaign_pps'])){
 				$service_details['price'].=" (100% Cashback)";
 			}

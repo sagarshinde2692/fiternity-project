@@ -1695,6 +1695,24 @@ class TransactionController extends \BaseController {
         if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
             unset($resp['data']["quantity_details"]);
             $resp['data']['payment_modes']= [];
+
+            $onepass_details = array(
+                "icon" => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
+                "header1" => "ONEPASS",
+                "header1_color" => "#000000",
+                "header2" => "RED",
+                "header2_color" => "#d50000",
+                "subheader" => "UNLIMITED ACCESS",
+                "description" => "You are booking your 5th session using Onepass Red"
+            );
+
+            $easy_cancellation = array(
+                "header" => "Easy Cancelletion",
+                "description" => "You can cancel this session 1 hour prior to your session time. The paid amount will be refunded to you in form of Fitcash."
+            );
+
+            $resp['data']['onepass_details'] = $onepass_details;
+            $resp['data']['easy_cancellation'] = $easy_cancellation;
         }
         Log::info("capture response");
         Log::info($resp);
