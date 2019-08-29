@@ -9660,9 +9660,9 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function checkForCheckinFromDevice($finder_id, $device_id, $finder, $customer_id){
+	public function checkForCheckinFromDevice($finder_id, $device_token, $finder, $customer_id){
 
-		$checkins = $this->checkInsList($customer_id, $device_id);
+		$checkins = $this->checkInsList($customer_id, $device_token);
 
 		$res = ["status"=> true];
 
@@ -9675,7 +9675,7 @@ class CustomerController extends \BaseController {
 			$difference = $cd -$d;
 			Log::info('differece:::::::::::', [$difference]);
 
-			if($checkins['device_id']!= $device_id){
+			if($checkins['device_token']!= $device_token){
 				$return = $this->checkinCheckoutSuccessMsg($finder);
 				$return['header'] = "Use Checkin device for Successfull Checkout.";
 				return $return;
@@ -9874,13 +9874,13 @@ class CustomerController extends \BaseController {
 		return $return;
 	}
 
-	public function checkInsList($customer_id, $device_id, $get_qr_loyalty_screen=null, $finderarr=null){
+	public function checkInsList($customer_id, $device_token, $get_qr_loyalty_screen=null, $finderarr=null){
 		$date = date('Y-m-d', time());//return $customer_id;
 
 		$checkins= Checkin:://where('device_id', $device_id)//->orWhere('customer_id', $customer_id)
-		where(function($query) use($customer_id, $device_id){$query->where('customer_id',$customer_id)->orWhere('device_id',$device_id);})
+		where(function($query) use($customer_id, $device_token){$query->where('customer_id',$customer_id)->orWhere('device_token',$device_token);})
 		->where('date', '=', new MongoDate(strtotime($date)))
-		->select('customer_id', 'created_at', 'status', 'device_id', 'checkout_status')
+		->select('customer_id', 'created_at', 'status', 'device_token', 'checkout_status')
 		->first();
 
 		if(count($checkins) && !empty($get_qr_loyalty_screen)){
