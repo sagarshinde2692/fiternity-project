@@ -5274,7 +5274,7 @@ class FindersController extends \BaseController {
 
 		foreach($finderData['finder']['services'] as &$service){
 			foreach($service['ratecard'] as &$ratecard){
-				if($ratecard['type'] == 'workout session'){
+				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
 					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 					Log::info("Price onepass ::",[$price]);
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
@@ -5284,13 +5284,12 @@ class FindersController extends \BaseController {
 						unset($ratecard['pps_title']);
 						unset($ratecard['remarks']);
 						unset($ratecard['remarks_imp']);
-						// unset($ratecard['special_price']);
-						// unset($ratecard['price']);
+						unset($ratecard['special_price']);
 
 						unset($finderData['fit_ex']);
 
-						// $ratecard['price'] = "";
-						// $ratecard['price_text'] = Config::get('app.onepass_free_string');
+						$ratecard['price'] = "0";
+						$ratecard['start_price_text'] = Config::get('app.onepass_free_string');
 					}
 				}
 			}
