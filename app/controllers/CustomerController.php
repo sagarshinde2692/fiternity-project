@@ -9712,7 +9712,7 @@ class CustomerController extends \BaseController {
 				return $this->checkoutInitiate($checkins['_id'], $finder, $finder_id, $customer_id, $checkins);
 				//$res = ["status"=>true, "message"=>" checking- out for the day."];
 			}
-			else if(($difference > 120 * 60) && ($difference <= 180 * 60))
+			else if(($difference > 120 * 60) && ($difference < 180 * 60))
 			{
 				//times up not accaptable
 				$return  = $this->checkinCheckoutSuccessMsg($finder);
@@ -9721,7 +9721,7 @@ class CustomerController extends \BaseController {
 				return $return;
 				//return $res = ["status"=>false, "message"=>"Times Up to checkout for the day."];
 			}
-			else if($difference > 180 * 60){
+			else if($difference >= 180 * 60){
 				return $this->checkinInitiate($finder_id, $finder, $customer_id);
 			}
 		}
