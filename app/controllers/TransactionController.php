@@ -1409,8 +1409,7 @@ class TransactionController extends \BaseController {
     
             Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', $auto_register_input, Config::get('app.queue'));
         }
-
-        
+      
         if(in_array($data['type'],$this->membership_array)){
             $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
             $order->update(array('redis_id'=>$redisid));
