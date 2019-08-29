@@ -9692,7 +9692,7 @@ class CustomerController extends \BaseController {
 				//$this->checkinInitiate($finder_id, $finder, $customer_id);
 				//finders
 				$finder_title = Finder::where('_id', $checkins['finder_id'])->lists('title');
-				$return = $this->checkinCheckoutSuccessMsg(['title'=> $finder_title]);
+				$return = $this->checkinCheckoutSuccessMsg(['title'=> $finder_title[0]]);
 				$return['header'] = 'CHECK-OUT ALREADY MARKED FOR TODAY';
 				return $return;
 				//return $res = ["status"=>false, "message"=>"You have already checked-out for the day."];
@@ -9880,7 +9880,7 @@ class CustomerController extends \BaseController {
 		$checkins= Checkin:://where('device_id', $device_id)//->orWhere('customer_id', $customer_id)
 		where(function($query) use($customer_id, $device_token){$query->where('customer_id',$customer_id)->orWhere('device_token',$device_token);})
 		->where('date', '=', new MongoDate(strtotime($date)))
-		->select('customer_id', 'created_at', 'status', 'device_token', 'checkout_status')
+		->select('customer_id', 'created_at', 'status', 'device_token', 'checkout_status', 'finder_id')
 		->first();
 
 		if(count($checkins) && !empty($get_qr_loyalty_screen)){
