@@ -5284,11 +5284,10 @@ class FindersController extends \BaseController {
 						unset($ratecard['pps_title']);
 						unset($ratecard['remarks']);
 						unset($ratecard['remarks_imp']);
-						unset($ratecard['special_price']);
 
 						unset($finderData['fit_ex']);
 
-						$ratecard['price'] = "0";
+						$ratecard['price'] = $ratecard['special_price'] = "0";
 						$ratecard['start_price_text'] = Config::get('app.onepass_free_string');
 					}
 				}
