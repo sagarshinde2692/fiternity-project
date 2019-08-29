@@ -5756,7 +5756,6 @@ class TransactionController extends \BaseController {
             $event_customers = $data["event_customers"];
 
             foreach ($event_customers as $customer_data) {
-                Log::info('event customer registered:::::', [$customer_data]);
                 if(!empty($data['event_type']) && $data['event_type']== 'TOI'){
                     $customer_data['event_type'] = 'TOI';
                 }
