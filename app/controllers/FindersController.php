@@ -3867,7 +3867,25 @@ class FindersController extends \BaseController {
 				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code : EOMS\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }
 			
-        }
+		}
+		
+		foreach($data['finder']['services'] as &$service){
+			foreach($service['ratecard'] as &$ratecard){
+				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+						if($this->device_type == 'android'){
+							$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code : EOMS";
+						}else{	
+							$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code : EOMS";
+						}
+						
+						break;
+					}
+				}
+			}
+		}
 
         return $line;
 		
