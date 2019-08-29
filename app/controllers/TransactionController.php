@@ -1406,7 +1406,7 @@ class TransactionController extends \BaseController {
             if(!empty($data['event_type']) && $data['event_type']=='TOI'){
                 $auto_register_input['event_type'] =  $data['event_type'];
             }
-    
+
             Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', $auto_register_input, Config::get('app.queue'));
         }
 
