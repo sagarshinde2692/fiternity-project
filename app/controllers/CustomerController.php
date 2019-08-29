@@ -9884,8 +9884,12 @@ class CustomerController extends \BaseController {
 			$d = strtotime($checkins['created_at']);	
 			$cd = strtotime(date("Y-m-d H:i:s"));
 			$difference = $cd -$d;
-			//if($difference < 120 * 60)
-			{
+			if(($difference > 45 * 60) && $checkins['status']){
+				return array(
+					"status" => false
+				);
+			}
+			else if($difference < 180 * 60){
 				return  array(
 					'status' => true,
 					'logo' => Config::get('loyalty_constants.fitsquad_logo'),
@@ -9896,6 +9900,7 @@ class CustomerController extends \BaseController {
 					'type' => 'checkin',
 				);
 			}
+
 			return array(
 				"status" => false
 			);
