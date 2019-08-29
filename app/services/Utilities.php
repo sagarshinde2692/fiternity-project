@@ -34,6 +34,7 @@ use MongoDate;
 use Coupon;
 use \GuzzleHttp\Client;
 use Input;
+use RazorpayPlans;
 use App\Services\RelianceService as RelianceService;
 
 use App\Services\Fitnessforce as Fitnessforce;
@@ -3100,6 +3101,9 @@ Class Utilities {
             return false;
         }
         
+        if(!empty($data['multifit'])){
+            return false;
+        }
         // if((!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"]))||(isset($finder) && $finder["commercial_type"] != 0)) {
         //     Log::info("returning true");
         //     return true;
@@ -3138,7 +3142,7 @@ Class Utilities {
             'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
             'amount'=>(string)$fitcash_amount,
             'title1'=>strtoupper('<b>review</b>'),
-            'title2'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
+            'title2'=>('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
             'description'=>'<b>Post    your    trial</b>    make    sure    you    review    your    experience    on    this    tab    &    get    <b>₹'.$fitcash_amount.'    Fitcash+</b>    in    your    Fitternity    Wallet    that    can    be    used    to    purchase    your    membership',
         ];
 
@@ -6390,6 +6394,19 @@ Class Utilities {
             return $already_assigned_voucher;
         }
 
+        try{
+            if(!empty($voucher_category->fitcash)){
+                $voucher_category_fitcash = array(
+                    "id"=>$customer->_id,
+                    "voucher_catageory"=>$voucher_category
+                );
+                $this->addFitcashforVoucherCatageory($voucher_category_fitcash);
+            }
+        }
+        catch(\Exception $err){
+            return;
+        }
+
         if(!empty($voucher_category['flags']['manual_redemption'])){
             
             $new_voucher =  $this->assignManualVoucher($customer, $voucher_category);
@@ -6440,7 +6457,7 @@ Class Utilities {
     }
 
 
-    public function getMilestoneSection($customer=null, $brand_milestones=null, $type=null){
+    public function getMilestoneSection($customer=null, $brand_milestones=null, $type=null, $steps=null){
 
         if(empty($customer)){
             $jwt_token = Request::header('Authorization');
@@ -6451,7 +6468,7 @@ Class Utilities {
 
         if( (!empty($type) && $type == 'reliance') || (empty($type) && !empty($customer['corporate_id']) && empty($customer['external_reliance'])) ){
             $relianceService = new RelianceService();
-            return $relianceService->getMilestoneSectionOfreliance($customer);
+            return $relianceService->getMilestoneSectionOfreliance($customer, false, $steps);
         }
 
         if(empty($customer['loyalty'])){
@@ -7285,6 +7302,8 @@ Class Utilities {
                         unset($loyalty['cashback_type']);
                     }
                 }
+
+                $loyalty['updated_at'] = new \MongoDate();
 
                 $update_data = [
                     'loyalty'=>$loyalty 
@@ -8336,7 +8355,7 @@ Class Utilities {
         }
     }
 
-    public function remaningVoucherNotification($voucher_category){
+    public function remaningVoucherNotification($voucher_category=null){
         
         if(empty($voucher_category['flags']['manual_redemption'])){
 
@@ -9527,7 +9546,112 @@ Class Utilities {
         $service['order_summary']['header']= $summary['header'];
         	
 		return $service;
+    }
+    
+    public function createRazorpayPlans($amount, $plan_name="Silver", $interval=30, $period="daily", $desciption="passes" ){
+        
+        $data =array(
+            "period"=>$period,
+            "interval"=>$interval, 
+            "item"=>array(
+                "name" => $plan_name,
+                "description" =>$desciption,
+                "amount"=> $amount,
+                "currency"=> "INR"
+            )
+        );
+
+
+        $razoPayUrl = Config::get('app.razorPayURL');
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $razoPayUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_USERPWD, Config::get('app.razorPayKey') . ":" . Config::get('app.razorPaySecret'));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        $output = json_decode(curl_exec($ch), true);
+        curl_close($ch);
+
+        Log::info('return of plan creation=>>>>>>>> ::::::::::::>>>>>>>>>>>>>>.',[$output]);
+        //$output['amount'] = $amount;
+        $planStore = new RazorpayPlans($output);
+        $planStore->save();
+        return array('plan'=>$output);
+    }
+
+    public function branchIOData($data){
+        if(
+            checkAppVersionFromHeader(['ios'=>'5.1.9', 'android'=>5.25])
+        ){
+
+            $branch_obj = [
+                "canonicalIdentifier"=>$data['type'],
+                "canonicalurl"=>"https://www.fitternity.com",
+                "title"=>$data['type'],
+                "qty"=>!empty($data['customer_quantity']) ? ($data['customer_quantity']) : 1,
+                "price"=>!empty($data['amount_customer']) ? ($data['amount_customer']) : (!empty($data['amount']) ? ($data['amount']) : 0),
+                "sku"=> !empty($data['ratecard_id']) ? ($data['ratecard_id']) : 0,
+                "productname"=>!empty($data['productinfo']) ? $data['productinfo'] : "",
+                "productbrand"=>"fitternity",
+                "variant"=>$data['type'],
+                "txnid"=>!empty($data["txnid"]) ? strval($data["txnid"]) : "txnid",
+                "revenue"=>!empty($data['amount_customer']) ? ($data['amount_customer']) : (!empty($data['amount']) ? ($data['amount']) : 0),
+                "shipping"=>0,
+                "tax"=>0,
+                "coupon"=>"",
+                "affiliation"=>"affiliation data",
+                "eventdescription"=>"buy_success",
+                "searchquery"=>"searchquery",
+                "customdata"=>[
+                    "key1"=>"value1",
+                    "key2"=>"value2"
+                ]
+            ];
+
+            return $branch_obj;
+
+        }
+    }
+
+    public function getWorkoutSessions($input, $source='passEmail'){
+        $near_by_workout_request = [
+            "offset" => 0,
+            "limit" => $input['limit'],
+            "radius" => "2km",
+            "category"=>[],
+            "lat"=>$input['lat'],
+            "lon"=>$input['lon'],
+            "city"=>strtolower($input['city']),
+            'keys' => [  
+                "average_rating",  
+                "name", 
+                "slug", 
+                "vendor_slug", 
+                "vendor_name",
+                "coverimage", 
+                "overlayimage", 
+                "total_slots", 
+                "next_slot"
+            ],
+		    'pass' => true,
+		    'time_tag' => 'later-today',
+            'date' => date('d-m-y')
+        ];
+        Log::info('payload:::::::::', [$near_by_workout_request]);
+		$workout = geoLocationWorkoutSession($near_by_workout_request, $source);
+		$result=[
+			'header'=> 'Workouts near me',
+			'data'=>[]
+		];
+		if(!empty($workout['workout'])){
+			$result['data'] = $workout['workout'];
+		}
+		if(empty($near_by_workout_request['lat']) && empty($near_by_workout_request['lon'])){
+			$result['header'] = "Workouts in ".ucwords($near_by_workout_request['city']);
+		}
+		return $result;
 	}
+
 
     public function getCityData($slug){
         
@@ -9536,6 +9660,65 @@ Class Utilities {
         $city_array = array_values(array_filter($cities,function ($e) use ($slug){return $e['slug'] == $slug;}));
         
         return !empty($city_array) ? $city_array[0] : null;
+    }
+
+    public function rollbackVouchers($customer, $combo_vouchers_list){
+        foreach($combo_vouchers_list as $key=>$value){
+            if(!empty($value)){
+                $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags', 'diet_plan_order_id'];
+                
+                try{
+                    if($value['diet_plan_order_id']){
+                        $diet_order = Order::active()->where('_id', $value['diet_plan_order_id'])->first();
+                        $diet_order_array = $diet_order->toArray();
+                        $diet_order_array['status'] = '0';
+                        $diet_order->update($diet_order_array);
+
+                    }
+                    $value->unset($keys);
+                }catch(\Exception $e){
+                    Log::info('exception occured while rollback::::::::::::', [$e]);
+                }
+            }
+        }
+        return true;
+    }
+
+    public function voucherClaimedResponseReward($voucherAttached, $voucher_category){
+        if(in_array($voucherAttached['name'], ['Jio Saavn second', 'Jio Saavn first', 'Jio Saavn 2'])){
+            $voucherAttached['name'] = "Jio Saavn";
+        }
+        
+        $resp =  [
+            'voucher_data'=>[
+                'header'=>"VOUCHER UNLOCKED",
+                'sub_header'=>"You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : ""),
+                'coupon_title'=>(!empty($voucherAttached['description']) ? $voucherAttached['description'] : ""),
+                'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
+                'coupon_image'=>(!empty($voucherAttached['image']) ? $voucherAttached['image'] : ""),
+                'coupon_code'=>strtoupper($voucherAttached['code']),
+                'coupon_subtext'=>'(also sent via email/sms)',
+                'unlock'=>'UNLOCK VOUCHER',
+                'terms_text'=>'T & C applied.'
+            ]
+        ];
+        if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
+            $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
+            $resp['voucher_data']['header']= "REWARD UNLOCKED";
+            
+            if(isset($voucherAttached['link'])){
+                $resp['voucher_data']['sub_header']= "You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name'])."<br> Share your details & get your insurance policy activated. " : "");
+                $resp['voucher_data']['coupon_text']= $voucherAttached['link'];
+            }
+            
+        }
+
+        if(!empty($voucher_category['email_text'])){
+            $resp['voucher_data']['email_text']= $voucher_category['email_text'];
+        }
+        $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
+
+        return $resp;
     }
 
 }

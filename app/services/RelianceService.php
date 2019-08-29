@@ -9,8 +9,24 @@ use Config;
 use Booktrial;
 use Request;
 use App\Services\Utilities;
+use \GuzzleHttp\Exception\RequestException;
+use \GuzzleHttp\Client;
 
 Class RelianceService {
+
+    protected $base_uri;
+    protected $debug = false;
+    protected $client;
+
+    public function __construct() {
+        $this->initClient();
+    }
+
+    public function initClient($debug = false) {
+        $debug = ($debug) ? $debug : $this->debug;
+        $base_uri = \Config::get('app.uploadStepsStage');
+        $this->client = new Client( ['debug' => false, 'base_uri' => $base_uri] );
+    }
 
     public function prepareDataForIns($custInfo, $rec, $device, $version) {
         Log::info('----- prepareDataForIns -----');
@@ -77,20 +93,27 @@ Class RelianceService {
         return $current;
     }
 
-    public function getCustomerMilestoneCount($milestone=null) {
+    public function getCustomerMilestoneCount($milestone=null, $nonRelianceCustomer = false) {
         if(!empty($milestone)) {
-            $customerMilestoneCount = Customer::raw(function($collection) use ($milestone) {
+            $customerMilestoneCount = Customer::raw(function($collection) use ($milestone, $nonRelianceCustomer) {
                 $aggregate = [
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
                         'corporate_rewards.milestones.milestone' => $milestone,
-                        'corporate_rewards.milestones.claimed' => true
+                        'corporate_rewards.milestones.vouchers' => ['$exists' => true]
                     ]],
                     ['$group' => [
                         '_id' => null,
                         'count' => ['$sum' => 1]
                     ]]
                 ];
+
+                if($nonRelianceCustomer) {
+                    $aggregate[1]['$match']['external_reliance'] = true;
+                } else {
+                    $aggregate[1]['$match']['$or'] = [['external_reliance' => false], ['external_reliance' => ['$exists' => false]]];
+                }
+
                 return $collection->aggregate($aggregate);
             });
             if(!empty($customerMilestoneCount['result'])) {
@@ -99,17 +122,22 @@ Class RelianceService {
             return 0;
         }
         else {
-            $customerMilestoneCount = Customer::raw(function($collection) {
+            $customerMilestoneCount = Customer::raw(function($collection) use ($nonRelianceCustomer) {
                 $aggregate = [
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
-                        'corporate_rewards.milestones.claimed' => true
+                        'corporate_rewards.milestones.voucher' => ['$exists' => true]
                     ]],
                     ['$group' => [
                         '_id' => '$corporate_rewards.milestones.milestone',
                         'count' => ['$sum' => 1]
                     ]]
                 ];
+                if($nonRelianceCustomer) {
+                    $aggregate[1]['$match']['external_reliance'] = true;
+                } else {
+                    $aggregate[1]['$match']['$or'] = [['external_reliance' => false], ['external_reliance' => ['$exists' => false]]];
+                }
                 return $collection->aggregate($aggregate);
             });
             if(!empty($customerMilestoneCount['result'])) {
@@ -131,11 +159,13 @@ Class RelianceService {
     public function updateMilestoneDetails($customerId, $corporateId, $syncTime = null) {
         Customer::$withoutAppends = true;
         $currCustMilestone = Customer::where('_id', $customerId)->first();
-        $fitnessDeviceData = FitnessDeviceData::where('customer_id', $customerId)->where('corporate_id', $corporateId)->sum('value');
+        // $fitnessDeviceData = FitnessDeviceData::where('customer_id', $customerId)->where('corporate_id', $corporateId)->sum('value');
+        $relianceCustomer = !empty($currCustMilestone->external_reliance)?$currCustMilestone->external_reliance:false;
+        $fitnessDeviceData = $this->getCurrentSteps($customerId, $relianceCustomer);
         if(!empty($fitnessDeviceData)) {
             $milestone = $this->getMilestoneDetails($fitnessDeviceData, $currCustMilestone);
             if($milestone['milestone']>=0) {
-                $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone']);
+                $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone'], $relianceCustomer);
                 if(isset($customerMilestoneCount['result'])) {
                     $customerMilestoneCount = $customerMilestoneCount['result'][0]['count'];
                     $userReachedMilestoneCheck = $customerMilestoneCount<$milestone['users'];
@@ -164,6 +194,45 @@ Class RelianceService {
                 }
 
                 $updateObj['corporate_rewards'] = (!empty($currCustMilestone->corporate_rewards))?$currCustMilestone->corporate_rewards:[];
+
+                if(!empty($updateObj['corporate_rewards']['milestones']) || !empty($milestoneDetails)) {
+                    $_temp = (!empty($updateObj['corporate_rewards']['milestones']))?$updateObj['corporate_rewards']['milestones']:[$milestoneDetails];
+
+                    for($i=0; $i<count($_temp); $i++) {
+                        if($_temp[$i]['milestone'] > $i) {
+                            $customerMilestoneCount = $this->getCustomerMilestoneCount($milestone['milestone'], $relianceCustomer);
+                            if(isset($customerMilestoneCount['result'])) {
+                                $customerMilestoneCount = $customerMilestoneCount['result'][0]['count'];
+                                array_splice($_temp, $i, 0, [
+                                    [
+                                        'milestone' => $i,
+                                        'claimed' => false,
+                                        'user_count' => $customerMilestoneCount+1,
+                                        'achieved' => true,
+                                        'verified' => true
+                                    ]
+                                ]);
+                            }
+                            else {
+                                array_splice($_temp, $i, 0, [
+                                    [
+                                        'milestone' => $i,
+                                        'claimed' => false,
+                                        'user_count' => 1,
+                                        'achieved' => true,
+                                        'verified' => true
+                                    ]
+                                ]);
+                            }
+                        }
+                        else if($_temp[$i]['milestone'] < $i && empty($_temp[$i]['voucher'])) {
+                            unset($_temp[$i]);
+                        }
+                    }
+                    if(!empty($_temp)) {
+                        $updateObj['corporate_rewards']['milestones'] = $_temp;
+                    }
+                }
                 if(!empty($milestoneDetails) && !empty($updateObj['corporate_rewards']['milestones'])) {
                     $milestoneAlreadyExists = array_filter($updateObj['corporate_rewards']['milestones'], function($mile) use ($milestoneDetails) {
                         return $mile['milestone']==$milestoneDetails['milestone'];
@@ -176,13 +245,13 @@ Class RelianceService {
                     $updateObj['corporate_rewards'] = ['milestones' => [$milestoneDetails]];
                 }
                 $currCustMilestone->corporate_rewards = $updateObj['corporate_rewards'];
-                if(!empty($syncTime)) {
-                    $currCustMilestone->fitness_data_last_sync = $syncTime;
-                }
+                // if(!empty($syncTime)) {
+                //     $currCustMilestone->fitness_data_last_sync = $syncTime;
+                // }
                 $currCustMilestone->update($updateObj);
             }
         }
-        return $currCustMilestone;
+        return ['milestone' => $currCustMilestone, 'steps' => $fitnessDeviceData];
     }
 
     public function updateAppStepCount($custInfo, $data, $device, $version) {
@@ -257,8 +326,286 @@ Class RelianceService {
         return $resp;
     }
 
+    public function uploadStepsFirebase($custInfo, $data, $device, $version, $token) {
+        Log::info('----- inside uploadStepsFirebase -----');
+        $custInfo = (array) $custInfo->customer;
+        Log::info('$custInfo: ', [$custInfo]);
+        Log::info('$device: ', [$device]);
+        Log::info('$version: ', [$version]);
+
+        if(empty($custInfo['corporate_id']) && !empty($custInfo['_id'])) {
+            Customer::$withoutAppends = true;
+            $custInfo = Customer::where('_id', $custInfo['_id'])->first();
+            if(!empty($custInfo)) {
+                $custInfo = $custInfo->toArray();
+            }
+        }
+
+        $json = $this->extractStepsData($data['data']);
+
+        if(!empty($json) && !empty($custInfo)) {
+
+            if(empty($custInfo['city']) && !empty($data['city'])) {
+                $json['city'] = $data['city'];
+            }
+            if(empty($custInfo['location']) && !empty($data['location'])) {
+                $json['location'] = $data['location'];
+            }
+
+            $headers = [
+                'Authorization' => $token,
+                'Device-Type' => $device,
+                'App-Version' => $version
+            ];
+
+            $firebaseResponse = $this->client->post('uploadSteps',['json'=>$json, 'headers'=>$headers])->getBody()->getContents();
+            return ['health' => $this->buildFirebaseResponse($firebaseResponse, $custInfo, $data['city'], $device, $version)];
+        }
+        return null;
+
+    }
+
+    public function getStepsDataFromFirebase($token, $device, $version) {
+        $headers = [
+            'Authorization' => $token,
+            'Device-Type' => $device,
+            'App-Version' => $version
+        ];
+        $firebaseResponse = $this->client->get('getSteps',['headers'=>$headers])->getBody()->getContents();
+        return $firebaseResponse;
+    }
+
+    public function getFirebaseHealthObject($customerId, $corporateId, $city, $device, $version, $token) {
+        Log::info('----- inside uploadStepsFirebase -----');
+        Log::info('$customer_id: ', [$customerId]);
+        Log::info('$device: ', [$device]);
+        Log::info('$version: ', [$version]);
+
+        // if(empty($corporateId) && !empty($customerId)) {
+            Customer::$withoutAppends = true;
+            $custInfo = Customer::where('_id', $customerId)->first();
+            if(!empty($custInfo)) {
+                $custInfo = $custInfo->toArray();
+            }
+        // }
+        if(!empty($custInfo)) {
+            $firebaseResponse = $this->getStepsDataFromFirebase($token, $device, $version);
+            return $this->buildFirebaseResponse($firebaseResponse, $custInfo, $city, $device, $version);
+        }
+        return null;
+    }
+
+    public function buildFirebaseResponse($firebaseResponse, $custInfo, $city, $device, $version) {
+        if(!empty($firebaseResponse)) {
+            $firebaseResponse = json_decode($firebaseResponse);
+            if($firebaseResponse->status!=200){
+                $token= null;
+                if(!empty(Request::header('Athorization'))){
+                    $token = Request::header('Athorization');
+                }
+
+                $corporate_id= null;
+                if(!empty($custInfo['corporate_id'])){
+                    $corporate_id = $custInfo['corporate_id'];
+                }
+
+                $this->buildHealthObject($custInfo['_id'], $corporate_id, $device, $city, $version, $custInfo, $token, true);
+            }
+            $firebaseResponse = (array)$firebaseResponse->data;
+            $firebaseResponse['personal_activity'] = (array)$firebaseResponse['personal_activity'];
+            $firebaseResponse['company_stats'] = (array)$firebaseResponse['company_stats'];
+            $footGoal = $this->formatStepsText($firebaseResponse['personal_activity']['steps_today']);
+            $workoutGoal = $this->formatStepsText($firebaseResponse['personal_activity']['workout_steps_today']);
+            if(empty($footGoal) && empty($workoutGoal)) {
+                $footGoal = '--';
+                $workoutGoal = '--';
+            }
+            else if(empty($footGoal)) {
+                $_temp = strval($workoutGoal);
+                $footGoal = '--';
+                // $footGoal = preg_replace("/[\s\S]/", "-", $_temp);
+            }
+            else if(empty($workoutGoal)) {
+                $_temp = strval($footGoal);
+                $workoutGoal = '--';
+                // $workoutGoal = preg_replace("/[\s\S]/", "-", $_temp);
+            }
+            $center_number = $firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today'];
+            $res = [
+                'intro'=> [
+                    'image' => Config::get('health_config.reliance.reliance_logo'),
+                    'header' => "#WalkpeChal",
+                    'text' => "MissionMoon | 30 Days | 100 Cr steps"
+                ],
+                'personal_activity' => [
+                    'name' => $custInfo['name'],
+                    'header' => " Your Activity Today",
+                    'text' => $this->getFormattedDate(),
+                    'center_header' => "Your Steps Today",
+                    'center_text' => $this->formatStepsText($center_number),
+                    'goal' => "Goal : ".$this->formatStepsText(Config::get('health_config.individual_steps.goal')),
+                    'foot_image' => Config::get('health_config.health_images.foot_image'),
+                    'foot_steps' => $footGoal,
+                    'workout_steps' => $workoutGoal,
+                    'workout_image' => Config::get('health_config.health_images.workout_image'),
+                    // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
+                    'achievement' => $firebaseResponse['personal_activity']['achievement'],
+                    'remarks' => !empty($firebaseResponse['personal_activity']['remarks']) ?$firebaseResponse['personal_activity']['remarks']: null,
+                    'rewards_info' => $firebaseResponse['personal_activity']['rewards_info'],
+                    'target' => Config::get('health_config.individual_steps.goal'),
+                    'progress' => $firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today'],
+                    // 'checkout_rewards' => 'Check Rewards',
+                    // 'rewards_info' => 'You\'ve covered '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).' total steps & are '.$this->formatStepsText($remainingSteps).' steps away from milestone '.$nextMilestoneData['milestone'].' (Hurry! Eligible for first '.$nextMilestoneData['users'].' users)',
+                    // 'checkout_rewards' => 'Go to Profile',
+                    // 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
+                    // 'share_info' => 'Hey! I feel fit today – have completed '.(($device=='android')?'%d':(($device=='ios' && $version>'5.1.9')?'%@':($firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today']))).' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                    'share_info' => "Fit is the new me! You can now join #walkpechal by Reliance Nippon Life Insurance and win exciting rewards presented by Fitternity along this journey. Download Fitternity App now (https://ftrnty.app.link/rwf) and click on walkpechal banner to join the mission.",
+                    'total_steps_count' => $this->formatStepsText($firebaseResponse['personal_activity']['total_steps'])
+                ],
+                'company_stats' => $firebaseResponse['company_stats'],
+                // 'additonal_info' => $firebaseResponse['additonal_info'],
+                'additional_info' => [
+                    'header' => "Easy way to get closer to your goals by booking workouts at Gym / studio near you. Use code : ",
+                    'code' => Config::get('app.reliance_coupon_code'),
+                    'button_title' => "Book"
+                ],
+                'steps' => $firebaseResponse['personal_activity']['total_steps'],
+            ];
+
+            if(!empty($res['additional_info']) && $device=='android' && $version>5.26) {
+                $res['additional_info'] = ((!empty($custInfo['external_reliance']) && $custInfo['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
+            }
+            else if(!empty($res['additional_info']) && $device=='ios') {
+                $res['additional_info'] = ((!empty($custInfo['external_reliance']) && $custInfo['external_reliance']))?Config::get('health_config.health_booking_ios_non_reliance'):Config::get('health_config.health_booking_ios_reliance');
+            }
+
+            if(!empty($res['additional_info']) && !empty($city)){
+                $city = getmy_city($city);
+                if(isExternalCity($city)){
+    
+                    if(empty($custInfo['external_reliance'])){
+    
+                        $res['additional_info']['header'] = 'Loose 5 kgs in 1 month on a personalised diet plan for you or your spouse. Check email from "support@fitternity.com"  to subscribe & get started.';
+                        if(!empty($res['additional_info']['code'])){
+                            unset($res['additional_info']['code']);
+                        }
+                        if(!empty($res['additional_info']['button_title'])){
+                            unset($res['additional_info']['button_title']);
+                        }
+                    }else{
+                        unset($res['additional_info']);
+                    }
+                }
+            }
+            if(empty($res['personal_activity']['remarks'])){
+                unset($res['personal_activity']['remarks']);
+            }
+            return $res;
+
+        }
+        return null;
+    }
+
+    public function extractStepsData($steps) {
+        $totalSteps = 0;
+        $stepsToday = 0;
+        foreach($steps as $step) {
+            if($step['date']==date('d-m-Y')) {
+                $stepsToday = $step['value'];
+            }
+            $totalSteps += $step['value'];
+        }
+        return [
+            'steps' => $stepsToday,
+            'total_steps' => $totalSteps
+        ];
+    }
+
+    public function uploadServiceStepsToFirebase($data) {
+        Log::info('----- inside uploadServiceStepsToFirebase -----', []);
+        if(empty($data)) {
+            Log::info('$data: empty');
+            return;
+        }
+
+        $workoutDetails = Booktrial::raw(function($collection) use ($data){
+            $aggregate = [
+                ['$match' => ['_id' => $data['booktrialId']]],
+                ['$lookup' => [
+                    'from' => 'services',
+                    'localField' => 'service_id',
+                    'foreignField' => '_id',
+                    'as' => 'service'
+                ]],
+                ['$project' => [
+                    '_id' => 0,
+                    'order_id' => '$order_id',
+                    'booktrial_id' => '$_id',
+                    'corporate_id' => '$corporate_id',
+                    'customer_id' => '$customer_id',
+                    'customer_name' => '$customer_name',
+                    'customer_email' => '$customer_email',
+                    'customer_phone' => '$customer_phone',
+                    'device' => '$device_type',
+                    'app_version' => '$app_version',
+                    'type' => 'service_steps',
+                    'servicecategory_id' => ['$arrayElemAt' => ['$service.servicecategory_id', 0]]
+                ]]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+        
+        if(!empty($workoutDetails['result'][0])) {
+            $workoutDetails = $workoutDetails['result'][0];
+            $serviceStepsMap = Config::get('health_config.service_cat_steps_map');
+            if(!empty($serviceStepsMap[$workoutDetails['servicecategory_id']])) {
+                $workoutDetails['service_steps'] = $serviceStepsMap[$workoutDetails['servicecategory_id']];
+            }
+            else {
+                $workoutDetails['service_steps'] = 0;
+            }
+            
+            if(empty($workoutDetails['corporate_id'])){
+                return ['status' => 400, 'data' => 'Failed', 'msg' => 'Not a reliance user'];
+            }
+            
+            Customer::$withoutAppends = true;
+            $customer = Customer::active()->where('_id', $workoutDetails['customer_id'])->first(['external_reliance']);
+            $external_reliance = (!empty($customer) && !empty($customer->external_reliance) && $customer->external_reliance);
+
+            $json = [
+                'service_steps_today' => $workoutDetails['service_steps'],
+                'customer_id' => $workoutDetails['customer_id'],
+                'name' => $workoutDetails['customer_name'],
+                'external_reliance' => $external_reliance,
+            ];
+
+            $headers = [
+                'admin_auth_key' => $data['admin_auth_key']
+            ];
+
+            $firebaseResponse = $this->client->post('uploadServiceSteps',['json'=>$json, 'headers'=>$headers])->getBody()->getContents();
+
+            if(!empty($firebaseResponse)) {
+                $firebaseResponse = json_decode($firebaseResponse);
+                if(!empty($firebaseResponse)) {
+                    if(!empty($data['orderId'])) {
+                        Order::where('_id', $data['orderId'])->update(['service_steps' => $workoutDetails['service_steps']]);
+                    }
+            
+                    if(!empty($data['booktrialId'])) {
+                        Booktrial::where('_id', $data['booktrialId'])->update(['service_steps' => $workoutDetails['service_steps']]);
+                    }
+                    return (array)$firebaseResponse;
+                }
+            }
+        }
+        return ['status' => 400, 'data' => 'Failed', 'msg' => 'Something went wrong!'];
+    }
+
     public function updateServiceStepCount($data) {
-        Log::info('----- inside updateAppStepCount -----');
+        Log::info('----- inside updateServiceStepCount -----');
         if(empty($data)) {
             Log::info('$data: empty');
             return;
@@ -378,6 +725,30 @@ Class RelianceService {
         ];
     }
 
+    public function getFirebaseLeaderboard($token, $device, $appVersion) {
+        $headers = [
+            'Authorization' => $token,
+            'Device-Type' => $device,
+            'App-Version' => $appVersion
+        ];
+        $firebaseResponse = $this->client->post('getLeaderboard',['headers'=>$headers])->getBody()->getContents();
+        if(!empty($firebaseResponse)) {
+            $firebaseResponse = json_decode($firebaseResponse);
+        }
+        return $firebaseResponse;
+    }
+
+    public function getCurrentSteps($customerId, $external_reliance) {
+        $headers = [
+            'admin_auth_key' => 'asdasdASDad21!SD32asd@a'
+        ];
+        $firebaseResponse = $this->client->post('getCurrentSteps',['json' => ['customer_id'=>$customerId, 'external_reliance' => $external_reliance],'headers'=>$headers])->getBody()->getContents();
+        if(!empty($firebaseResponse)) {
+            $firebaseResponse = json_decode($firebaseResponse);
+        }
+        return !empty($firebaseResponse->data->total_steps)?$firebaseResponse->data->total_steps:0;
+    }
+
     public function getFormattedDate() {
         return date('l\, j F Y');
     }
@@ -421,8 +792,12 @@ Class RelianceService {
         return ($diffDays>=1)?intval($diffDays):0;
     }
 
-    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null, $appVersion=null, $customer=null) {
+    public function buildHealthObject($customerId, $corporateId, $deviceType=null, $city=null, $appVersion=null, $customer=null, $token=null, $skipFirebane=false) {
         Log::info('----- inside buildHealthObject -----');
+
+        if($deviceType=='ios' && $skipFirebane) {
+            return $this->getFirebaseHealthObject($customerId, $corporateId, $city, $deviceType, $appVersion, $token);
+        }
 
         if(empty($customer)){
             Customer::$withoutAppends = true;
@@ -627,8 +1002,14 @@ Class RelianceService {
         // }
 
         if(empty($relCity) || empty($ranks['selfRank'])) {
-            unset($res['personal_activity']['achievement']);
-            unset($res['personal_activity']['remarks']);
+            if($deviceType=='ios') {
+                $res['personal_activity']['achievement'] = "";
+                $res['personal_activity']['remarks'] = "";
+            }
+            else {
+                unset($res['personal_activity']['achievement']);
+                unset($res['personal_activity']['remarks']);
+            }
         }
 
         if(!empty($customer['corporate_id']) && !empty($customer['external_reliance']) && $customer['external_reliance']) {
@@ -638,6 +1019,9 @@ Class RelianceService {
 
         if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>5.26) {
             $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
+        }
+        else if(!empty($res['additional_info']) && $deviceType=='ios') {
+            $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_ios_non_reliance'):Config::get('health_config.health_booking_ios_reliance');
         }
 
 
@@ -661,12 +1045,13 @@ Class RelianceService {
         }
 
 
-        if(empty($customer['fitness_data_last_sync'])) {
-            $res['sync_time'] = Config::get('health_config.reliance.start_date');
-        }
-        else {
-            $res['sync_time'] = $customer['fitness_data_last_sync'];
-        }
+        // if(empty($customer['fitness_data_last_sync'])) {
+        //     $res['sync_time'] = Config::get('health_config.reliance.start_date');
+        // }
+        // else {
+        //     $res['sync_time'] = $customer['fitness_data_last_sync'];
+        // }
+        $res['sync_time'] = Config::get('health_config.reliance.start_date');
         return $res;
     }
 
@@ -916,7 +1301,15 @@ Class RelianceService {
                 if(!empty($_arr) && count($_arr)>0) {
                     $keyList = array_keys($_arr);
                     if(empty($userExists)) {
-                        if(!empty($deviceType) && $deviceType=='android' && !empty($appVersion) && $appVersion>=5.26) {
+                        if(
+                            !empty($deviceType) 
+                            && 
+                            (
+                                ($deviceType=='android' && !empty($appVersion) && $appVersion>5.26) 
+                                || 
+                                ($deviceType=='ios' && !empty($appVersion) && $appVersion>= "5.2.1")
+                            ) 
+                        ) {
                             $_arr[$keyList[0]]['show_dots'] = true;
                             $_arr[$keyList[0]]['rank'] = $keyList[0];
                         }
@@ -927,7 +1320,19 @@ Class RelianceService {
                 }
             // }
 
-            if((!empty($deviceType) && $deviceType=='android') && (!empty($appVersion) && $appVersion>5.26) && (empty($customer['external_reliance']) || !$customer['external_reliance']) && $totalUsers>20) {
+            if(
+                !empty($deviceType) 
+                && 
+                (
+                    ($deviceType=='android' && !empty($appVersion) && $appVersion>5.26) 
+                    || 
+                    ($deviceType=='ios' && !empty($appVersion) && $appVersion >= "5.2.1")
+                ) 
+                && 
+                    (empty($customer['external_reliance']) || !$customer['external_reliance']) 
+                && 
+                    $totalUsers>20
+            ) {
                 $lastUser['show_dots'] = true;
                 $lastUser['rank'] = strval((count($users))-1);
                 $lastUser['last_user'] = true;
@@ -1003,7 +1408,7 @@ Class RelianceService {
                 'buildingLeaderboard' => false,
                 'background' => Config::get('health_config.leader_board.background'),
                 'users' => $finalList,
-                'my_rank_text' => !empty($rankToShare)?'Your current rank is #'.$rankToShare.''.ucwords($my_rank_text).". ".$stepCountText:null,
+                'my_rank_text' => !empty($rankToShare)?'Your current rank is #'.$rankToShare.''.ucwords($my_rank_text).".\n ".$stepCountText:' ',
                 // 'earnsteps' => $earnSteps,
                 'checkout' => $checkout,
                 'title' => $title
@@ -1259,38 +1664,38 @@ Class RelianceService {
         return ["corporate_id" =>$corporateId, "external_reliance"=> $external_reliance];
     }
 
-    public function getMilestoneSectionOfreliance($customer, $all_data=false){
+    public function getMilestoneSectionOfreliance($customer, $all_data=false, $total_steps=0){
 
         $customer_id = $customer->_id;
 
-        $customerStepData = \FitnessDeviceData::raw(function($collection) use($customer_id){
+        // $customerStepData = \FitnessDeviceData::raw(function($collection) use($customer_id){
 
-            $query = [
-                [
-                    '$match' => [
-                        'customer_id' => $customer_id,
-                    ]
-                ],
-                [
-                    '$group' => [
-                        '_id' => '$customer_id',
-                        'total_steps' =>[
-                            '$sum' => '$value'
-                        ]
-                    ]
-                ]
-            ];
+        //     $query = [
+        //         [
+        //             '$match' => [
+        //                 'customer_id' => $customer_id,
+        //             ]
+        //         ],
+        //         [
+        //             '$group' => [
+        //                 '_id' => '$customer_id',
+        //                 'total_steps' =>[
+        //                     '$sum' => '$value'
+        //                 ]
+        //             ]
+        //         ]
+        //     ];
 
-            return $collection->aggregate($query);
-        });
-        Log::info('customer steps count result:::', [$customerStepData, $customer_id]);
+        //     return $collection->aggregate($query);
+        // });
+        // Log::info('customer steps count result:::', [$customerStepData, $customer_id]);
 
-        if(empty($customerStepData['result'][0])){
-            $customerStepData['total_steps'] = 0;
-        }
-        else{
-            $customerStepData = $customerStepData['result'][0];
-        }
+        // if(empty($customerStepData['result'][0])){
+        //     $customerStepData['total_steps'] = 0;
+        // }
+        // else{
+        //     $customerStepData = $customerStepData['result'][0];
+        // }
         if(empty($customer['external_reliance'])){
             $post_register_milestones = Config::get('relianceLoyaltyProfile.post_register');
         }
@@ -1299,7 +1704,7 @@ Class RelianceService {
         }
         $milestones = $post_register_milestones['milestones'];
         $rewards = $post_register_milestones['rewards'];
-        $total_steps = $customerStepData['total_steps'];
+        //$total_steps = $customerStepData['total_steps'];
         $milestones_step_counter = 0;
         $milestone_no = 0;
         $remaining_steps = 0;
@@ -1403,6 +1808,98 @@ Class RelianceService {
             $finalFiltersList = ['filters' => [["header"=>"Cities","subheader" => "Select Subtype","values"=>[["name"=>$reliance_city['reliance_city'],"data"=>[]]]]], "isNewLeaderBoard" => true];
         }
         return $finalFiltersList;
+    }
+
+    public function buildHealthObjectStructure($customerId, $corporate_id, $deviceType=null, $city=null, $appVersion=null, $customer){
+        $ranks['total'] =20;
+        $ranks['selfRank'] =1;
+        $selfRank =1;
+        if(!empty($customer)) {
+            $customer = $customer->toarray();
+        }
+        if(!empty($customer['reliance_city'])){
+            $relCity  = $customer['reliance_city'];
+        }
+        else{
+            $relCity = 'mumbai';
+        }
+
+        $res = [
+            'intro'=> [
+                'image' => Config::get('health_config.reliance.reliance_logo'),
+                'header' => "#WalkpeChal",
+                'text' => "MissionMoon | 30 Days | 100 Cr steps"
+            ],
+            'personal_activity' => [
+                'name' => $customer['name'],
+                'header' => " Your Activity Today",
+                'text' => $this->getFormattedDate(),
+                'center_header' => "Your Steps Today",
+                'center_text' => 0,
+                'goal' => "Goal : ".$this->formatStepsText(Config::get('health_config.individual_steps.goal')),
+                'foot_image' => Config::get('health_config.health_images.foot_image'),
+                'foot_steps' => "--",
+                'workout_steps' => "--",
+                'workout_image' => Config::get('health_config.health_images.workout_image'),
+                // 'achievement' => "Achievement Level ".$this->getAchievementPercentage($stepsAgg['ind_total_steps_count'], Config::get('health_config.individual_steps.goal')).'%',
+                'achievement' => (!empty($relCity))?'# - in '.ucwords($relCity):null,
+                // 'remarks' => (!empty($relCity) && !empty($ranks['total']))?'Total participants in '.ucwords($relCity) .' : ':null,
+                'rewards_info' => 'Your steps till now: ',
+                'target' => Config::get('health_config.individual_steps.goal'),
+                'progress' => 0,
+                // 'checkout_rewards' => 'Check Rewards',
+                // 'rewards_info' => 'You\'ve covered '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).' total steps & are '.$this->formatStepsText($remainingSteps).' steps away from milestone '.$nextMilestoneData['milestone'].' (Hurry! Eligible for first '.$nextMilestoneData['users'].' users)',
+                // 'checkout_rewards' => 'Go to Profile',
+                // 'rewards_info' => 'Your steps till now: '.$this->formatStepsText($stepsAgg['ind_total_steps_count_overall']).'.',
+                // 'share_info' => 'Hey! I feel fit today – have completed '.(($deviceType=='android')?'%d':'%@').' steps on walkpechal – Mission Moon with Reliance Nippon Life Insurance powered with Fitternity',
+                'share_info' => "Fit is the new me! You can now join #walkpechal by Reliance Nippon Life Insurance and win exciting rewards presented by Fitternity along this journey. Download Fitternity App now (https://ftrnty.app.link/rwf) and click on walkpechal banner to join the mission.",
+                'total_steps_count' => 1
+            ],
+            'company_stats' => [
+                'header' => "COMPANY STATS",
+                'text' => $this->getDateDifference($corporate_id)." days so far",
+                'button_title' => "View Leaderboard",
+                'progress' => 0,
+                'progress_text' => "0%"
+            ],
+            'additional_info' => [
+                'header' => "Easy way to get closer to your goals by booking workouts at Gym / studio near you. Use code : ",
+                'code' => Config::get('app.reliance_coupon_code'),
+                'button_title' => "Book"
+            ],
+            "steps" => 1,
+            'sync_time' => Config::get('health_config.reliance.start_date')
+        ];
+
+        
+
+        if(!empty($res['additional_info']) && $deviceType=='android' && $appVersion>5.26) {
+            $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_android_non_reliance'):Config::get('health_config.health_booking_android_reliance');
+        }
+        else if(!empty($res['additional_info']) && $deviceType=='ios') {
+            $res['additional_info'] = ((!empty($customer['external_reliance']) && $customer['external_reliance']))?Config::get('health_config.health_booking_ios_non_reliance'):Config::get('health_config.health_booking_ios_reliance');
+        }
+
+
+        if(!empty($res['additional_info']) && !empty($city)){
+            $city = getmy_city($city);
+            if(isExternalCity($city)){
+
+                if(empty($customer['external_reliance'])){
+
+                    $res['additional_info']['header'] = 'Loose 5 kgs in 1 month on a personalised diet plan for you or your spouse. Check email from "support@fitternity.com"  to subscribe & get started.';
+                    if(!empty($res['additional_info']['code'])){
+                        unset($res['additional_info']['code']);
+                    }
+                    if(!empty($res['additional_info']['button_title'])){
+                        unset($res['additional_info']['button_title']);
+                    }
+                }else{
+                    unset($res['additional_info']);
+                }
+            }
+        }
+        return $res;
     }
 
 }   

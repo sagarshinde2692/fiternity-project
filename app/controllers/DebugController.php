@@ -31,25 +31,25 @@ class DebugController extends \BaseController {
 
 	}
 
-    public function __call($method, $arguments){
+    // public function __call($method, $arguments){
 
-        $file = fopen("$method.txt","w+");
-        Log::info("Checking lock");
-        if(flock($file,LOCK_EX)){
-            Log::info("Lock aquired");
-            $return = $this->$method();
-            Log::info("releasing lock");
-            return $return;
+    //     $file = fopen("$method.txt","w+");
+    //     Log::info("Checking lock");
+    //     if(flock($file,LOCK_EX)){
+    //         Log::info("Lock aquired");
+    //         $return = $this->$method();
+    //         Log::info("releasing lock");
+    //         return $return;
             
-        }else{
+    //     }else{
 
-            return  "Error locking file!";
+    //         return  "Error locking file!";
         
-        }
+    //     }
 
-        fclose($file);
+    //     fclose($file);
         
-    }
+    // }
 
 
 	public function invalidFinderStats(){
@@ -11340,7 +11340,125 @@ public function yes($msg){
 		}
 		
 		print_r($return);
-	}
+    }
 
+
+    public function migrateStepsToFirestore(){
+        // return "asd";
+        $i = 0;
+        while(true){
+            
+            $steps_aggregate = FitnessDeviceData::raw(function($query) use ($i){
+                $limit = 100000;
+                $aggreagte = [
+                    [
+                        '$match'=>[
+                            // 'customer_id'=>87977,
+                            'status'=>'1'
+                        ]
+                        ],
+                    [
+                        '$addFields'=>[
+                           'foot_steps'=>[
+                               '$cond'=>[
+                                    [
+                                       '$eq'=>['$type', 'steps']
+                                    ] 
+                                    ,'$value', 
+                                    0
+                                ]
+                            ],
+                           'service_steps'=>[
+                               '$cond'=>[
+                                   [
+                                       '$eq'=>['$type', 'service_steps']
+                                    ],
+                                   '$value', 
+                                   0
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        '$group'=>[
+                            '_id'=>'$customer_id',
+                            'total_steps'=>['$sum'=>'$value'],
+                            'steps'=>['$sum'=>'$foot_steps'],
+                            'service_steps'=>['$sum'=>'$service_steps']
+                        ]
+                    ],
+                    [
+                        '$skip'=>$i*$limit
+                    ],
+                    [
+                        '$limit'=>$limit
+                    ],
+                    [
+                        '$lookup' => [
+                            'from' => 'customers',
+                            'localField' => '_id',
+                            'foreignField' => '_id',
+                            'as' => 'customer'
+                        ]
+                    ],
+                    [
+                        '$addFields'=>[
+                            'city' => ['$arrayElemAt' => ['$customer.reliance_city',0]],
+                            'name' => ['$arrayElemAt' => ['$customer.name',0]],
+                            'location' => ['$arrayElemAt' => ['$customer.reliance_location',0]],
+                            'external_reliance' => ['$arrayElemAt' => ['$customer.external_reliance',0]],
+                            'customer_id' => '$_id',
+                            'steps_today' => 0,
+                            'service_steps_today' => 0,
+                        ]
+                    ],
+                    // [
+                    //     '$match'=>[
+                    //         'external_reliance'=>['$ne'=>true]
+                    //     ]
+                    // ],
+                    [
+                        '$addFields'=>[
+                            'external_reliance'=>['$ifNull'=>['$external_reliance', false]]
+                        ]
+                        ],
+                    [
+                        '$project'=>[
+                            'customer'=>0
+                        ]
+                    ],
+                    [
+                        '$group'=>[
+                            '_id'=>'$external_reliance',
+                            'customers'=>['$push'=>'$$ROOT']
+                        ]
+                    ]
+
+
+                ];
+
+                return $query->aggregate($aggreagte);
+    
+            });
+
+            $steps_aggregate = $steps_aggregate['result'];
+
+            $result = [];
+
+            foreach($steps_aggregate as $x){
+                if($x['_id']){
+                    $result['non_reliance'] = $x['customers'];
+                }else{
+                    $result['reliance'] = $x['customers'];
+                }
+            }
+
+            return $result;
+
+            if(empty($steps_aggregate)){
+                break;
+            }
+
+        }    
+    }
 }
-

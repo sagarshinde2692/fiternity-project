@@ -237,8 +237,6 @@ Route::post('customer/update/webnotification', array('as' => 'customer.updateweb
 Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','uses' => 'CustomerController@addHealthInfo'));
 Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
 Route::group(array('before' => 'device'), function() {
-});
-Route::group(array('before' => 'validatetoken'), function() {
     Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
 });
 
@@ -297,6 +295,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('getwalletdetails/{limit?}/{offset?}',  array('as' => 'customer.getWalletDetails','uses' => 'CustomerController@getWalletDetails'));
 
 	Route::post('reportareview', array('as' => 'finderdetails.reportareview','uses' => 'FindersController@reportReview'));
+    
+    Route::post('passcapture', 'PassController@passCapture');
 
 });
 
@@ -1369,6 +1369,17 @@ Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');
 Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
 Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
 Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
+
+// Route::post('passcapture', 'TransactionController@classPassCapture');
+Route::get('listpass/{pass_type?}', 'PassController@listPasses');
+Route::post('razorpay/subscribe', 'RazorpayController@createSubscription');
+Route::post('razorpay/storepaymentdetails', 'RazorpayController@storePaymentDetails');
+Route::post('passsuccess', 'PassController@passSuccess');
+Route::get('orderpasshistory',  array('as' => 'customer.orderpasshistory','uses' => 'PassController@orderPassHistory'));
+Route::get('passtermscondition', 'PassController@passTermsAndCondition');
+Route::get('passfaq', 'PassController@passFrequentAskedQuestion');
+Route::post('razorpaywebhooks', 'RazorpayController@razorpayWebhooks');
+
 Route::get('brandwebsite/home/{brand_id}', 'BrandsController@getBrandWebsiteHome');
 Route::get('brandwebsite/aboutus/{brand_id}', 'BrandsController@getBrandWebsiteAboutUs');
 Route::get('brandwebsite/programs/{brand_id}', 'BrandsController@getBrandWebsitePrograms');
@@ -1385,3 +1396,5 @@ Route::post('customer/storedob', 'RelianceController@storeDob');
 Route::post('customer/enablereliancecampaign', 'CustomerController@enableRelianceCampaign');
 
 Route::get('nearbyvendors', 'CustomerController@getNearbyVendors');
+Route::get('migrateStepsToFirestore', 'DebugController@migrateStepsToFirestore');
+

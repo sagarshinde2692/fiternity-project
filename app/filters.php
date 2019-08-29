@@ -240,12 +240,12 @@ Route::filter('device',function(){
     $data = [];
 
     $data['customer_id'] = $customer_id;
-    $data['device_id'] = $header_array['Device-Id'];
-    $data['os_version'] = $header_array['Os-Version'];
-    $data['app_version'] = $header_array['App-Version'];
-    $data['device_model'] = $header_array['Device-Model'];
-    $data['device_type'] = $header_array['Device-Type'];
-    $data['reg_id'] = $header_array['Device-Token'];
+    $data['device_id'] = !empty($header_array['Device-Id']) ? $header_array['Device-Id'] : "";
+    $data['os_version'] = !empty($header_array['Os-Version']) ? $header_array['Os-Version'] : "";
+    $data['app_version'] = !empty($header_array['App-Version']) ? $header_array['App-Version'] : "";
+    $data['device_model'] = !empty($header_array['Device-Model']) ? $header_array['Device-Model'] : "";
+    $data['device_type'] = !empty($header_array['Device-Type']) ? $header_array['Device-Type'] : "";
+    $data['reg_id'] = !empty($header_array['Device-Token']) ? $header_array['Device-Token'] : "";
 
     if($flag){
 

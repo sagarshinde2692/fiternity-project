@@ -805,10 +805,18 @@ Class CustomerReward {
                         $amount_paid = $amount_paid - $order['convinience_fee'];
                     }
 
-                    if($amount_paid > 2500){
-                        $amount_paid = 2500;
+                }
+
+                if($amount_paid > 2000){
+                    $amount_paid = 2000;
+                }
+
+                if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644]) || in_array((int) $order['finder_id'], [9427,16646])){
+                    if($amount_paid > 2000){
+                        $amount_paid = 2000;
                     }
                 }
+
                 $cashback_amount = 0;
                 if($amount_paid != 0){
                     $cashback_amount = round(($amount_paid * 82) / 100);
@@ -830,7 +838,15 @@ Class CustomerReward {
                             "order_type"=>["workout-session", "workout session"],
                             "description"=> "100% Cashback on workout-session booking at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14)),
                             "validity"=>time()+(86400*14),
+                            'app_only'=>true
                         );
+
+                        if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644]) || in_array((int) $order['finder_id'], [9427,16646])){
+                            $walletData['finder_id'] = (int)$order['finder_id'];
+                            $walletData['valid_finder_id'] = (int)$order['finder_id'];
+                            $walletData['description'] = "100% Cashback on workout-session booking at ".ucwords($order['finder_name'])." Applicable for buying a workout-session at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14));
+                            unset($walletData['app_only']);
+                        }
                     
                         $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());
                     
@@ -842,7 +858,8 @@ Class CustomerReward {
                     
                             $sms_data['customer_phone'] = $order['customer_phone'];
                     
-                            $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$cashback_amount." Fitcash has been added in your Fitternity wallet.Valid for 14 days from booking time. For quick assistance call ".Config::get('app.contact_us_customer_number');
+                            // $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$cashback_amount." Fitcash has been added in your Fitternity wallet.Valid for 14 days from booking time. For quick assistance call ".Config::get('app.contact_us_customer_number');
+                            $sms_data['message'] = "Congratulations on receiving your instant cashback of ".$cashback_amount." as Fitcash. Book multiple workout sessions using this cashback on Fitternity App for yourself as well as your friends & family without any restriction on spend value.\nValidity: 14 days\nHappy working out!";
                     
                             $customersms->custom($sms_data);
                         }
@@ -861,6 +878,13 @@ Class CustomerReward {
                             "membership_instant_cashback" => true,
                             'app_only'=>true
                         );
+
+                        if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644]) || in_array((int) $order['finder_id'], [9427,16646])){
+                            $walletData['finder_id'] = (int)$order['finder_id'];
+                            $walletData['valid_finder_id'] = (int)$order['finder_id'];
+                            $walletData['description'] = "100% Cashback on buying ".ucfirst($order['type'])." at ".ucwords($order['finder_name'])." Applicable at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*90));
+                            unset($walletData['app_only']);
+                        }
         
                         $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());
         
@@ -1707,13 +1731,13 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null){
+    public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null){
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
 
             $price = $ticket['price'] * $ticket_quantity;
         
-        }else{
+        }else if(!empty($ratecard)){
 
             //$offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
             
@@ -1724,6 +1748,10 @@ Class CustomerReward {
             }else{
                 $price = $ratecard["special_price"] == 0 ? $ratecard["price"] : $ratecard["special_price"];
             }
+
+        }
+        else if(!empty($pass) && empty($ratecard)) {
+            $price = $pass['price'];
         }
 
         $code = trim(strtoupper($couponCode));
@@ -1800,6 +1828,10 @@ Class CustomerReward {
             $query->whereIn('tickets', [$ticket->_id]);
         }
         
+        if(!empty($pass)){
+            $query->where('ratecard_type', 'pass');
+        }
+        
         $coupon = $query->first();
 
         if(!empty($ratecard)){
@@ -1809,7 +1841,7 @@ Class CustomerReward {
             $finder_city = $finder->city_id;
 
             
-            if(strtolower($couponCode) == 'cashback' && !empty($ratecard['type']) && $ratecard['type'] == 'workout session' && (!empty($finder['flags']['monsoon_campaign_pps']) || $price == 99)){
+            if(strtolower($couponCode) == 'cashback' && !empty($ratecard['type']) && $ratecard['type'] == 'workout session' && (!empty($finder['flags']['monsoon_campaign_pps']) || $price <= 600)){
                 $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Cashback is not applicable on this transaction");
                     return $resp;   
             }
@@ -2183,9 +2215,22 @@ Class CustomerReward {
                 }
             }
 
-            if(!empty($coupon['usage_per_user']) && is_integer($coupon['usage_per_user'])){
+            if(!empty($coupon['usage_per_user']) && is_integer($coupon['usage_per_user']) || is_double($coupon['usage_per_user'])){
 
                 \Order::$withoutAppends = true;
+
+                if(empty($customer_email)){
+        
+                    $jwt_token = Request::header('Authorization');
+
+                    if(!empty($jwt_token)){
+
+                        $decoded = $this->customerTokenDecode($jwt_token);
+                        $customer_email = $decoded->customer->email;
+                    }
+
+                }
+
 
                 $order_count = \Order::active()->where('customer_email',$customer_email)->where('coupon_code','like',strtolower($couponCode))->count();
 
@@ -2203,7 +2248,7 @@ Class CustomerReward {
                         
                     }
                 }
-                else if(empty($coupon['corporate_id']) && $order_count > $coupon['usage_per_user']){
+                else if(empty($coupon['corporate_id']) && $order_count >= $coupon['usage_per_user']){
 
                     $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"This coupon is applicable only ".$coupon['usage_per_user']." time per user","user_login_error"=>true);
 
