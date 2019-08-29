@@ -1697,13 +1697,13 @@ class TransactionController extends \BaseController {
             $resp['data']['payment_modes']= [];
 
             $onepass_details = array(
-                "icon" => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
+                "image" => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
                 "header1" => "ONEPASS",
                 "header1_color" => "#000000",
                 "header2" => "RED",
                 "header2_color" => "#d50000",
                 "subheader" => "UNLIMITED ACCESS",
-                "description" => "You are booking your 5th session using Onepass Red"
+                "desc_subheader" => "You are booking your 5th session using Onepass Red"
             );
 
             $easy_cancellation = array(
