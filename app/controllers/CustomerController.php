@@ -9880,7 +9880,7 @@ class CustomerController extends \BaseController {
 		$checkins= Checkin:://where('device_id', $device_id)//->orWhere('customer_id', $customer_id)
 		where(function($query) use($customer_id, $device_token){$query->where('customer_id',$customer_id)->orWhere('device_token',$device_token);})
 		->where('date', '=', new MongoDate(strtotime($date)))
-		->select('customer_id', 'created_at', 'status', 'device_token', 'checkout_status', 'finder_id')
+		->select('customer_id', 'created_at', 'status', 'device_token', 'checkout_status', 'finder_id', 'type', 'sub-type')
 		->first();
 
 		if(count($checkins) && !empty($get_qr_loyalty_screen)){
