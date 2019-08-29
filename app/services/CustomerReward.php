@@ -2399,7 +2399,7 @@ Class CustomerReward {
                 }
                 
             }
-            if($ratecard && (isset($coupon['and_conditions']) || isset($coupon['or_conditions']) )){
+            if(($ratecard || $pass) && (isset($coupon['and_conditions']) || isset($coupon['or_conditions']) )){
 
                 if(empty($finder)){
                     $finder = Finder::where('_id', $ratecard['finder_id'])->first();
@@ -2418,9 +2418,12 @@ Class CustomerReward {
                     
                 }
                 $utilities = new Utilities();
-                $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
+                if($ratecard){
+                    $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
+                }
+                
                 $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass];
-
+               
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
                     $and_condition = true;
