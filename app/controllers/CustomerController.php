@@ -9689,7 +9689,10 @@ class CustomerController extends \BaseController {
 			if($checkins['checkout_status'])
 			{
 				//allreday checkdout
-				$return = $this->checkinCheckoutSuccessMsg($finder);
+				//$this->checkinInitiate($finder_id, $finder, $customer_id);
+				//finders
+				$finder_title = Finder::where('_id', $checkins['finder_id'])->lists('title');
+				$return = $this->checkinCheckoutSuccessMsg(['title'=> $finder_title]);
 				$return['header'] = 'CHECK-OUT ALREADY MARKED FOR TODAY';
 				return $return;
 				//return $res = ["status"=>false, "message"=>"You have already checked-out for the day."];
