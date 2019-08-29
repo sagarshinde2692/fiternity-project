@@ -5307,6 +5307,7 @@ class FindersController extends \BaseController {
 
 						$ratecard['price'] = $ratecard['special_price'] = "0";
 						$ratecard['start_price_text'] = Config::get('app.onepass_free_string');
+						$ratecard['skip_share_detail'] = true;
 					}
 				}
 			}
@@ -5404,6 +5405,10 @@ class FindersController extends \BaseController {
 							if($ratecard_price > 0 && $ratecard['type'] == 'trial'){
 								$ratecard['cashback_on_trial'] = "100% Cashback";
 							}
+						}
+
+						if($ratecard['price'] == 0 && $ratecard['special_price'] == 0){
+							$ratecard['start_price_text'] = "Free Via Fitternity";
 						}
 					}
 					if(isset($ratecard['flags'])){

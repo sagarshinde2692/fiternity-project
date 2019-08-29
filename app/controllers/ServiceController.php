@@ -1027,6 +1027,12 @@ class ServiceController extends \BaseController {
                         array_set($slot, 'ratecard_id', $ratecard['_id']);
                         array_set($slot,'epoch_start_time',strtotime(strtoupper($date." ".$slot['start_time'])));
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
+
+						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $ratecard_price < 1001){
+							array_set($slot, 'skip_share_detail', true);
+						}
+
 						$total_slots_count +=1;
 						
 						// if(isset($_GET['source']) && $_GET['source'] == 'pps')
@@ -1841,6 +1847,7 @@ class ServiceController extends \BaseController {
 			$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 			if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $service_details['amount'] < 1001){
 				$service_details['price'] = Config::get('app.onepass_free_string');
+				$service_details['easy_cancel_text'] = "Easy cancellation available prior 1 hour";
 			}else if(empty($finder['flags']['monsoon_campaign_pps'])){
 				$service_details['price'].=" (100% Cashback)";
 			}
