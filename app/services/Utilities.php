@@ -9716,7 +9716,7 @@ Class Utilities {
                 'terms_text'=>'T & C applied.'
             ]
         ];
-        if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
+        if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session']) && empty($voucherAttached['flags']['workout_session'])){
             $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
             $resp['voucher_data']['header']= "REWARD UNLOCKED";
             
