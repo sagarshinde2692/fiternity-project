@@ -1353,9 +1353,9 @@ class ServiceController extends \BaseController {
 					if((isset($sc['free_trial_available']) && $sc['free_trial_available']) || !empty($finder['flags']['monsoon_campaign_pps'])){
 						$str = "";
 					}
-
+					
 					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $sc['cost'] < 1001){
-						$sc['cost'] = Config::get('app.onepass_free_string');
+						// $sc['cost'] = Config::get('app.onepass_free_string');
 					}else{
 						$sc['cost'] .= $str;
 					}
