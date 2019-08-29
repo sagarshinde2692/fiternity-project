@@ -9884,7 +9884,7 @@ class CustomerController extends \BaseController {
 			$d = strtotime($checkins['created_at']);	
 			$cd = strtotime(date("Y-m-d H:i:s"));
 			$difference = $cd -$d;
-			if(($difference > 45 * 60) && $checkins['status']){
+			if(($difference >= 45 * 60) && $checkins['status']){
 				return array(
 					"status" => false
 				);
