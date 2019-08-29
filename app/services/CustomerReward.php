@@ -2419,7 +2419,7 @@ Class CustomerReward {
                 }
                 $utilities = new Utilities();
                 $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass];
 
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
