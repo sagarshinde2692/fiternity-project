@@ -53,7 +53,8 @@ Class Utilities {
    public function __construct() {
     
     $this->device_type = Request::header('Device-Type');
-    $this->device_id = Request::header('Device-Id');
+    $this->device_id = !empty(Request::header('Device-Id'))? Request::header('Device-Id'): null;
+    $this->device_token = !empty(Request::header('Device-Token'))? Request::header('Device-Token'): null;
     $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
     $this->vendor_token = false;
         
@@ -6446,7 +6447,7 @@ Class Utilities {
 			$checkin->customer_id = $customer_id;
             $checkin->date = new \DateTime(date('d-m-Y', time()));
             $checkin->checkout_status = $data['checkout_status'];
-            $checkin->device_id = $data['device_id'];
+            $checkin->device_token = $data['device_token'];
 
             if(!empty($_GET['lat']) && !empty($_GET['lon'])){
                 $data['lat'] = floatval($_GET['lat']);
@@ -6603,9 +6604,9 @@ Class Utilities {
         }else if($type == 'booktrial' && !isset($data['third_party_details'])){
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
-            //Log::info('device_id at aftertransaction success:::::::::::::', [$this->device_id, Request::header('Device-Id')]);
+            //Log::info('device_id at aftertransaction success:::::::::::::', [$this->device_token, Request::header('Device-Id')]);
             if((!empty($data['qrcodepayment']) || !empty($data['checkin_booking'])) && empty($data['checkin'])){
-                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null, "checkout_status"=> false, 'device_id'=>$this->device_id ]);
+                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null, "checkout_status"=> false, 'device_token'=>$this->device_token ]);
             }
         }
 

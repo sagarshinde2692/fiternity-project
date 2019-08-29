@@ -8099,7 +8099,7 @@ class CustomerController extends \BaseController {
 						// $booking_details = $
 						Log::info("mobile_verfied");
 						Log::info($this->mobile_verified);
-						$session_not_completed = $this->checkInsList($customer['_id'], $this->device_id, true, $finderarr);
+						$session_not_completed = $this->checkInsList($customer['_id'], $this->device_token, true, $finderarr);
 						$this->getQRLoyaltyScreen($resp, $customer, $finderarr, $session_not_completed);
 						
 				}
@@ -8163,7 +8163,7 @@ class CustomerController extends \BaseController {
                     }
 
                     if(!empty($value['mark'])){
-						$this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'], "checkout_status"=> false, 'device_id' => $this->device_id]);
+						$this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'], "checkout_status"=> false, 'device_token' => $this->device_token]);
 					}
 
 					
@@ -8482,7 +8482,7 @@ class CustomerController extends \BaseController {
 					'type'=>'workout-session',
 					'unverified'=>false,
 					"checkout_status"=> false,
-					'device_id' => $this->device_id
+					'device_token' => $this->device_token
 				];
 
 				$addedCheckin = $this->utilities->addCheckin($checkin_data);
@@ -8710,9 +8710,9 @@ class CustomerController extends \BaseController {
 			'type'=>$type,
 			'unverified'=>!empty($_GET['type']) ? true : false,
 			'checkout_status' => false,
-			'device_id' => $this->device_id
+			'device_token' => $this->device_token
         ];
-		Log::info('before schedule_sessions::::::::::::: device id',[$this->device_id, $checkin_data]);
+		Log::info('before schedule_sessions::::::::::::: device id',[$this->device_token, $checkin_data]);
         if(!empty($_GET['receipt'])){
             $checkin_data['receipt'] = true;
         }
@@ -9780,7 +9780,7 @@ class CustomerController extends \BaseController {
 			$oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
 			if($oprtionalDays['status']){ // need to remove ! 
 				//Log::info('device ids:::::::::', [$this->device_id]);
-				return $this->checkForCheckinFromDevice($finder_id, $this->device_id, $finder, $customer_id);
+				return $this->checkForCheckinFromDevice($finder_id, $this->device_token, $finder, $customer_id);
 			}
 			else{
 				// return for now you are checking in for non operational day or time
