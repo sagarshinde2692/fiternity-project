@@ -564,7 +564,7 @@ class TransactionController extends \BaseController {
                 }
                 
             }
-
+    
             if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
     
                 $validateMyReward = $this->validateMyReward($data['myreward_id']);
