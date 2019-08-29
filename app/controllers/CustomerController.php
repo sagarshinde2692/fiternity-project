@@ -9796,7 +9796,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function checkoutInitiate($id, $finder, $finder_id, $customer_id){
-		Log::info('checing out::::::::');
+		Log::info('checkout initiate input::::::::::::::::', [Input::All()]);
 		$checkout = Checkin::where('_id', $id)->first();
 			$checkout->checkout_status=true;
 		try{
