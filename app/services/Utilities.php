@@ -6423,7 +6423,7 @@ Class Utilities {
             }
 
     		if(Config::get('app.vendor_communication')){
-		        $already_checkedin =  Checkin::where('customer_id', $data['customer_id'])->where('date', new DateTime(date('d-m-Y', time())))->first();
+		        $already_checkedin =  Checkin::where('customer_id', $data['customer_id'])->where('checkout_status', true)->where('date', new DateTime(date('d-m-Y', time())))->first();
             }
 
 			if(!empty($already_checkedin)){

@@ -9712,7 +9712,7 @@ class CustomerController extends \BaseController {
 				return $this->checkoutInitiate($checkins['_id'], $finder, $finder_id, $customer_id, $checkins);
 				//$res = ["status"=>true, "message"=>" checking- out for the day."];
 			}
-			else if($difference > 120 * 60)
+			else if(($difference > 120 * 60) && ($difference <= 180 * 60))
 			{
 				//times up not accaptable
 				$return  = $this->checkinCheckoutSuccessMsg($finder);
@@ -9720,6 +9720,9 @@ class CustomerController extends \BaseController {
 				$return['sub_header_2'] = "Sorry you have lapsed the check-out time window for the day. (45 minutes to 2 hours from your check-in time) . This check-in will not be marked into your profile.\n Continue with your workouts and achieve the milestones.";
 				return $return;
 				//return $res = ["status"=>false, "message"=>"Times Up to checkout for the day."];
+			}
+			else if($difference > 180 * 60){
+				return $this->checkinInitiate($finder_id, $finder, $customer_id);
 			}
 		}
 		else
@@ -9881,6 +9884,7 @@ class CustomerController extends \BaseController {
 		where(function($query) use($customer_id, $device_token){$query->where('customer_id',$customer_id)->orWhere('device_token',$device_token);})
 		->where('date', '=', new MongoDate(strtotime($date)))
 		->select('customer_id', 'created_at', 'status', 'device_token', 'checkout_status', 'finder_id', 'type', 'sub-type')
+		->orderby('_id', 'desc')
 		->first();
 
 		if(count($checkins) && !empty($get_qr_loyalty_screen)){
