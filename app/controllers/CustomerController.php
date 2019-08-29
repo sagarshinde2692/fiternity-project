@@ -9709,7 +9709,7 @@ class CustomerController extends \BaseController {
 			else if(($difference > 45 * 60) &&($difference <= 120 * 60))
 			{
 				//checking out ----
-				return $this->checkoutInitiate($checkins['_id'], $finder, $finder_id, $customer_id);
+				return $this->checkoutInitiate($checkins['_id'], $finder, $finder_id, $customer_id, $checkins);
 				//$res = ["status"=>true, "message"=>" checking- out for the day."];
 			}
 			else if($difference > 120 * 60)
@@ -9798,9 +9798,9 @@ class CustomerController extends \BaseController {
 		
 	}
 
-	public function checkoutInitiate($id, $finder, $finder_id, $customer_id){
+	public function checkoutInitiate($id, $finder, $finder_id, $customer_id, $checkout){
 		Log::info('checkout initiate input::::::::::::::::', [Input::All()]);
-		$checkout = Checkin::where('_id', $id)->first();
+		//$checkout = Checkin::where('_id', $id)->first();
 			$checkout->checkout_status=true;
 		try{
 			$checkout->update();
@@ -9810,7 +9810,7 @@ class CustomerController extends \BaseController {
 			$finder_id = intval($finder_id);
 
 			$customer = Customer::find($customer_id);
-			$type = !empty($_GET['type']) ? $_GET['type'] : null;
+			$type = !empty($checkout['type'])? $checkout['type']: null;//!empty($_GET['type']) ? $_GET['type'] : null;
 			$customer_update = \Customer::where('_id', $customer_id)->increment('loyalty.checkins');	
 			//Log::info('customer_updates',[$customer_update]);
 			if($customer_update)
