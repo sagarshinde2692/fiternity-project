@@ -813,9 +813,9 @@ class PassService {
             $success_template['pass']['usage_text'] = 'UNLIMITED VALIDITY';
         }
        
-        if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
+        // if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['web_message'] = $success['web_message'];
-        }
+        // }
 
         return $success_template;
 
