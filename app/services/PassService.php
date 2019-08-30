@@ -1081,8 +1081,8 @@ class PassService {
         }
         Order::$withoutAppends = true;
 
-        $pastBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->where('schedule_date_time', '<', new \MongoDate())->count();
-        $upcomingBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->where('schedule_date_time', '>=', new \MongoDate())->count();
+        $pastBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status_txt', '!=', 'cancel')->where('schedule_date_time', '<', new \MongoDate())->count();
+        $upcomingBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status_txt', '!=', 'cancel')->where('schedule_date_time', '>=', new \MongoDate())->count();
         $totalBookings = $pastBookings + $upcomingBookings;
 
         $passExpired = false;
