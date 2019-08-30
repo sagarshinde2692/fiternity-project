@@ -527,7 +527,7 @@ class PassService {
     }
 
     public function getPassOrder($customerId) {
-        $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->where('end_date', '>', new \MongoDate(time()))->first();
+        $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->first();
         return (!empty($passOrder))?$passOrder:null;
     }
 
@@ -580,16 +580,22 @@ class PassService {
             $passType = $passOrder['pass']['pass_type'];
             Log::info('pass orders:::::::::::::::::', [$passOrder]);
         }
-
-        if(!empty($passOrder)) {
-            // if ($amount>=600 && $amount<=1000 && $this->isPremiumSessionAvailable($amount, $passOrder)) {
-            //     // 600 - 1000
-            //     return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_premium_session' => true, 'pass_type'=>$passType];
-            // } else if ($amount>1000) {
-            //     // over 1000
-            //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType];
-            // }
-            if ($amount>1000) {
+        $canBook = false;
+        if(!empty($passOrder['pass'])) {
+            if($passOrder['pass']['pass_type']=='black'){
+                $sessionsUsed = $passOrder['onepass_sessions_used'];
+                $sessionsTotal = $passOrder['onepass_sessions_total'];
+                if($sessionsTotal>$sessionsUsed) {
+                    $canBook = true;
+                }
+            }
+            else if($passOrder['pass']['pass_type']=='red') {
+                $duration = $passOrder['pass']['duration'];
+                if(time()<strtotime('+'.$duration.' days')){
+                    $canBook = true;
+                }
+            }
+            if ($amount>1000 || !$canBook) {
                 // over 750
                 return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }

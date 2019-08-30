@@ -8471,7 +8471,7 @@ class FindersController extends \BaseController {
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['allow_session'] != 0 ){
+							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	
 							}
 						}
@@ -8483,7 +8483,7 @@ class FindersController extends \BaseController {
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['allow_session'] != 0 ){
+							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	
 							}
 						}
