@@ -9070,17 +9070,17 @@ Class Utilities {
 				//return $res = ["status"=>false, "message"=>"Times Up to checkout for the day."];
 			}
 			else if($difference >= 180 * 60){
-                if(!empty($source) && $source=='markcheckin'){
-                    return $this->checkinInitiate($finder_id, $finder, $customer_id);
-                }
-                return null;
+                //if(!empty($source) && $source=='markcheckin'){
+                    return $this->checkinInitiate($finder_id, $finder, $customer_id, $source);
+                // }
+                // return null;
 			}
 		}
 		else
 		{
             //just checkinss ->>>>>> start checkoins
             //if(!empty($source) && $source=='markcheckin'){
-                return $this->checkinInitiate($finder_id, $finder, $customer_id);
+                return $this->checkinInitiate($finder_id, $finder, $customer_id, $source);
             // }
             // return null;
 		}
@@ -9274,7 +9274,7 @@ Class Utilities {
 		}
     }
     
-    public function checkinInitiate($finder_id, $finder_data, $customer_id){
+    public function checkinInitiate($finder_id, $finder_data, $customer_id, $source){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -9309,7 +9309,7 @@ Class Utilities {
 			'unverified'=>!empty($_GET['type']) ? true : false,
 			'checkout_status' => false,
             'device_token' => $this->device_token,
-            'mark_checkin_utilities' => false
+            'mark_checkin_utilities' => (!empty($source)? false: true)
         ];
 		Log::info('before schedule_sessions::::::::::::: device id',[$this->device_token, $checkin_data]);
         if(!empty($_GET['receipt'])){
