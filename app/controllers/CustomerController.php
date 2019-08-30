@@ -8484,10 +8484,10 @@ class CustomerController extends \BaseController {
 		}
 
         $data['source'] = 'register';
-        // $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
-        // if(empty($resp['status']) || $resp['status'] != 200){
-		// 	return $resp;
-        // }
+        $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
+        if(empty($resp['status']) || $resp['status'] != 200){
+			return $resp;
+        }
 		
 		if(!empty($data['url'])){
 			
