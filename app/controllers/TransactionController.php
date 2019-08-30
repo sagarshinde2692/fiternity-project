@@ -6666,7 +6666,7 @@ class TransactionController extends \BaseController {
         if(!empty($data['pass_id'])) {
             $pass = Pass::where('pass_id', intval($data['pass_id']))->first();
         }
-        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, $amount_without_fitcash, $customer_email, $pass, $data); 
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, $amount_without_fitcash, $customer_email, $pass); 
         Log::info("REsponse from CustomerReward", $resp);
         if($resp["coupon_applied"]){
 

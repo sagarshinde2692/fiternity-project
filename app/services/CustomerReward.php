@@ -1731,7 +1731,7 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null, $input=null){
+    public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null){
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
 
@@ -2418,8 +2418,8 @@ Class CustomerReward {
                     
                 }
                 $booking_for_customer= [];
-                if(!empty($input['customer_email']) && ($logged_in_customer['email'] != $input['customer_email'])){
-                    $booking_for_customer = \Customer::active()->where('email',  $input['customer_email'])->first();
+                if(!empty($customer_email) && ($logged_in_customer['email'] != $customer_email)){
+                    $booking_for_customer = \Customer::active()->where('email',  $customer_email)->first();
                 }
                 $utilities = new Utilities();
                 $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
