@@ -1731,7 +1731,7 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null){
+    public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null, $input=null){
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
 
@@ -2417,9 +2417,13 @@ Class CustomerReward {
                     $logged_in_customer = (array)$decoded->customer;
                     
                 }
+                $booking_for_customer= [];
+                if(!empty($input['customer_email']) && ($logged_in_customer['email'] != $input['customer_email'])){
+                    $booking_for_customer = \Customer::active()->where('email',  $input['customer_email'])->first();
+                }
                 $utilities = new Utilities();
                 $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'customer'=>$booking_for_customer];
 
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
@@ -2955,7 +2959,7 @@ Class CustomerReward {
     
         $key = explode('.', $key);
     
-        Log::info('in getEmbadedValue:::::',[$data]);
+
         if(count($key) == 1){
     
             return isset($data[$key[0]]) ? $data[$key[0]] : null;
