@@ -58,6 +58,9 @@ class CustomerController extends \BaseController {
 	}
 
 	public function getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType='website', $type='lte', $orderId=null) {
+
+        array_push($selectfields, 'service_slug');
+
 		if($deviceType=='website'){
 
 			// returning cancelled trials as well, for website...
@@ -188,9 +191,12 @@ class CustomerController extends \BaseController {
 			}
             $trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
             
+            if(!empty($trial["pass_order_id"])){
+                $trial["overlay_image"] = "https://b.fitn.in/paypersession/onepass_booking.png";
+            }
             
             if(!empty($trial["going_status"]) && $trial["going_status"] == 2){
-                $trial["overlay_image"] = "https://b.fitn.in.s3.amazonaws.com/Cancel%20icon1.png";
+                $trial["overlay_image"] = "https://b.fitn.in/Cancel%20icon1.png";
             }
 
 			try{
@@ -200,7 +206,13 @@ class CustomerController extends \BaseController {
 			}
 			if(!empty($trial['studio_extended_validity_order_id']) || !empty($trial['pass_order_id'])){
 				$trial['fitcash_text'] = '';
-			}
+            }
+            
+            if($type == 'past'){
+                $trial['rebook'] = true;
+            }
+
+
 			array_push($bookings, $trial);
 		}
 		return $bookings;
@@ -213,7 +225,7 @@ class CustomerController extends \BaseController {
 		$limit 				=	intval($limit);
 		$deviceType = (isset($_GET['device_type']))?$_GET['device_type']:"website";
 
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order','customer_id', 'studio_extended_validity_order_id', 'pass_order_id');
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order','customer_id', 'studio_extended_validity_order_id', 'pass_order_id', 'service_slug');
 
 		// if(isset($_GET['device_type']) && $_GET['device_type'] == "website"){
 
