@@ -8449,7 +8449,7 @@ class CustomerController extends \BaseController {
 		
 		$data = Input::json()->all();
 
-		Log::info($data);
+		Log::info([$data, apache_request_headers()]);
         
         $rules = [
             'customer_name' => 'required|max:255',
