@@ -8482,6 +8482,8 @@ class CustomerController extends \BaseController {
 			$data['lat'] = null;
 			$data['lon'] = null;
 		}
+
+        $data['source'] = 'register';
         $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
         if(empty($resp['status']) || $resp['status'] != 200){
 			return $resp;
@@ -8491,6 +8493,11 @@ class CustomerController extends \BaseController {
 			
 			$parts = parse_url($data['url']);
 			parse_str($parts['query'], $query);
+			
+			if(!empty($parts['lat']) || !empty($parts['lon'])){
+				$data['lat'] = $parts['lat'];
+				$data['lon'] = $parts['lon'];
+			}
 			
 			if(!empty($query['finder_id'])){
 				$qr_finder_id = $query['finder_id'];
