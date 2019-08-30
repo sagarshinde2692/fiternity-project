@@ -1111,7 +1111,7 @@ class PassService {
                 $passExpired = true;
             }
             else {
-                $usageLeft = $totalBookings - $totalSessions;
+                $usageLeft =  $totalSessions - $totalBookings;
             }
             $homePassData['name'] = strtoupper(trim($passOrder['customer_name']));
             $homePassData['subheader'] = $totalSessions.' SESSIONS';
