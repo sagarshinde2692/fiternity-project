@@ -2418,7 +2418,7 @@ Class CustomerReward {
                     
                 }
                 $booking_for_customer= [];
-                if(!empty($customer_email) && ($logged_in_customer['email'] != $customer_email)){
+                if(!empty($customer_email)){
                     $booking_for_customer = \Customer::active()->where('email',  $customer_email)->first();
                 }
                 $utilities = new Utilities();
