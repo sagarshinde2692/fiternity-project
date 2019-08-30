@@ -3652,7 +3652,7 @@ class TransactionController extends \BaseController {
 
             $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
 
-            if($free_trial_ratecard || empty($data['pass_booking'])){
+            if($free_trial_ratecard){
                 if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
                     $data['coupon_code'] = 'FIRSTPPSFREE';
                     $data['coupon_description'] = 'First wourkout session free';
@@ -9627,6 +9627,7 @@ class TransactionController extends \BaseController {
     }
 
     public function getPassDetails($data){
+        Log::info("Pass data :::::", [$data]);
         $passBookingDetails = array();
         $totalPassBookings = 0;
         Order::$withoutAppends = true;
