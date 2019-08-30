@@ -8484,19 +8484,19 @@ class CustomerController extends \BaseController {
 		}
 
         $data['source'] = 'register';
-        $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
-        if(empty($resp['status']) || $resp['status'] != 200){
-			return $resp;
-        }
+        // $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
+        // if(empty($resp['status']) || $resp['status'] != 200){
+		// 	return $resp;
+        // }
 		
 		if(!empty($data['url'])){
 			
 			$parts = parse_url($data['url']);
 			parse_str($parts['query'], $query);
 			
-			if(!empty($parts['lat']) || !empty($parts['lon'])){
-				$data['lat'] = $parts['lat'];
-				$data['lon'] = $parts['lon'];
+			if(!empty($query['lat']) || !empty($query['lon'])){
+				$data['lat'] = $query['lat'];
+				$data['lon'] = $query['lon'];
 			}
 			
 			if(!empty($query['finder_id'])){
