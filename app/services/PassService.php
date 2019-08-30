@@ -1151,7 +1151,8 @@ class PassService {
         }
         else if($passOrder['pass']['pass_type']=='red') {
             $totalDuration = $passOrder['pass']['duration'];
-            $expiryDate = date("Y-m-d H:i:s", strtotime('+'.$totalDuration.' days', time()));
+            // $expiryDate = date("Y-m-d H:i:s", strtotime('+'.$totalDuration.' days', time()));
+            $expiryDate = date("Y-m-d H:i:s", strtotime($passOrder['expiry_date']));
             $usageLeft = $this->getDateDifference($expiryDate);
             if(empty($usageLeft) || $usageLeft<0) {
                 $passExpired = true;
