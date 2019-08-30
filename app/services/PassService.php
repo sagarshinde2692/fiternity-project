@@ -582,25 +582,27 @@ class PassService {
         }
         $canBook = false;
         if(!empty($passOrder['pass'])) {
-            if($passOrder['pass']['pass_type']=='black'){
-                $sessionsUsed = $passOrder['onepass_sessions_used'];
-                $sessionsTotal = $passOrder['onepass_sessions_total'];
-                if($sessionsTotal>$sessionsUsed) {
-                    $canBook = true;
+            if(time()>$passOrder['start_date']->sec){
+                if($passOrder['pass']['pass_type']=='black'){
+                    $sessionsUsed = $passOrder['onepass_sessions_used'];
+                    $sessionsTotal = $passOrder['onepass_sessions_total'];
+                    if($sessionsTotal>$sessionsUsed) {
+                        $canBook = true;
+                    }
                 }
-            }
-            else if($passOrder['pass']['pass_type']=='red') {
-                $duration = $passOrder['pass']['duration'];
-                if(time()<strtotime('+'.$duration.' days')){
-                    $canBook = true;
+                else if($passOrder['pass']['pass_type']=='red') {
+                    $duration = $passOrder['pass']['duration'];
+                    if(time()<strtotime('+'.$duration.' days')){
+                        $canBook = true;
+                    }
                 }
             }
             if ($amount>1000 || !$canBook) {
-                // over 750
+                // over 1000
                 return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
             else {
-                // below 751
+                // below 1001
                 return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
         }
