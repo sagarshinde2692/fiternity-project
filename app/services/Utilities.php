@@ -9111,7 +9111,7 @@ Class Utilities {
 		$finder_id = (int) $finder_id;
 		$jwt_token = Request::header('Authorization');	
 		$decoded = decode_customer_token($jwt_token);
-		$customer_id = !empty($data['customer_id'])? $data['customer_id']: $decoded->customer->_id;
+		$customer_id = !empty($data['customer_id'])? $data['customer_id']: !empty($decoded->customer->_id) ? $decoded->customer->_id: null ;
 		$customer_geo = [];
 		$finder_geo = [];
 
