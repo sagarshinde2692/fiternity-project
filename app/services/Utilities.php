@@ -6013,7 +6013,7 @@ Class Utilities {
     		$response = [
     				'status'=>200,
     				'header'=>'CHCEK-IN SUCCESSFUL',
-    				'image'=>'https://b.fitn.in/paypersession/cashback.png',
+                    'image'=>'https://b.fitn.in/paypersession/cashback.png',
     				// 'footer'=>$customer_level_data['current_level']['cashback'].'% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!',
     				// 'streak'=>[
     				// 		'header'=>'STREAK IT OUT',
@@ -6422,6 +6422,14 @@ Class Utilities {
 				return ['status'=>400, 'message'=>'Checkin not registered for booktrials'];
             }
 
+            if(!empty($data['mark_checkin_utilities'])){
+                $markCheckinUtilityResponse = $this->markCheckinUtilities($data);
+                Log::info('addmarkcheckin::::', [$markCheckinUtilityResponse]);
+                if(!empty($markCheckinUtilityResponse)){
+                    return ['status'=>200, 'checkin_response'=>$markCheckinUtilityResponse];
+                }
+            }
+
     		if(Config::get('app.vendor_communication')){
 		        $already_checkedin =  Checkin::where('customer_id', $data['customer_id'])->where('checkout_status', true)->where('date', new DateTime(date('d-m-Y', time())))->first();
             }
@@ -6467,7 +6475,7 @@ Class Utilities {
                 $checkin->app_version = Request::header('App-Version');
             }
             
-            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon','receipt'];
+            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon','receipt', 'booktrial_id'];
 
             foreach($fields as $field){
                 if(isset($data[$field])){
@@ -8932,4 +8940,424 @@ Class Utilities {
         return ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","finder_address","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","ratecard_id","customer_identity","customer_source","customer_location","customer_quantity","init_source","multifit","wallet"];
     }
       
+    public function distanceCalculationOfCheckinsCheckouts($coordinates, $vendorCoordinates){
+		$p = 0.017453292519943295;    // Math.PI / 180
+
+		$dLat = ($vendorCoordinates['lat'] - $coordinates['lat']) * $p;
+		$dLon = ($vendorCoordinates['lon'] - $coordinates['lon']) * $p;
+		$a = sin($dLat/2) * sin($dLat/2) + cos($coordinates['lat'] * $p) * cos($vendorCoordinates['lat'] * $p) * sin($dLon/2) * sin($dLon/2);
+		$c = 2 * atan2(sqrt($a), sqrt(1-$a)); 
+		$d = 6371 * $c; // Distance in km
+		
+		Log::info('distance in kmsss', [$d]); 
+  		return $d *1000;
+	}
+
+	public function checkForOperationalDayAndTime($finder_id){
+		//Log::info('finder Service', [$finder_id]);
+		Service::$withoutAppends = true;
+		$finder_service = Service::where('finder_id', $finder_id)->where('status', "1")->select('trialschedules')->get();
+		//Log::info('finder Service', [$finder_service['trialschedules']]);
+		$todayDate= strtotime("now");
+		$today = date('D', $todayDate);
+		$minutes = date('i', $todayDate);
+		$hour= date('H', $todayDate);
+		Log::info('today date', [$todayDate, $today, $minutes, $hour]);
+
+		$status= false;
+
+		if(count($finder_service)>0)
+		{	
+			foreach($finder_service as $key0=> $value0)
+			{
+				foreach($value0['trialschedules'] as $key=> $value)
+				{
+					if(strtolower($today) == strtolower(substr($value['weekday'], 0,3)))
+					{
+						foreach($value['slots'] as $key1=> $value1)
+						{
+							if($hour >=$value1['start_time_24_hour_format'] && $hour < $value1['end_time_24_hour_format'])
+							{	
+								$status= true;
+								break;
+							}
+						}
+					}
+					if($status)
+					{
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			return ['status'=> false, "message"=>"No Service Available."];
+		}
+
+		if($status)
+		{
+			return ["status"=> true];
+		}
+		else
+		{
+			return ["status"=> false, "message"=>"No Slots availabe right now. try later."];
+		}
+	}
+
+	public function checkForCheckinFromDevice($finder_id, $device_token, $finder, $customer_id, $source=null){
+
+		$checkins = $this->checkInsList($customer_id, $device_token);
+
+		$res = ["status"=> true];
+
+		Log::info('chekcins:::::::::::;', [$checkins, $customer_id]);
+
+		if(count($checkins)>0)
+		{
+			$d = strtotime($checkins['created_at']);	
+			$cd = strtotime(date("Y-m-d H:i:s"));
+			$difference = $cd -$d;
+			Log::info('differece:::::::::::', [$difference]);
+
+			if($checkins['device_token']!= $device_token){
+				$return = $this->checkinCheckoutSuccessMsg($finder);
+				$return['header'] = "Use Checkin device for Successfull Checkout.";
+				return $return;
+			}
+			else if($checkins['customer_id'] != $customer_id){
+				$return = $this->checkinCheckoutSuccessMsg($finder);
+				$return['header'] = "Allready checkin done by other user using this device.";
+				return $return;
+			}
+
+			if($checkins['checkout_status'])
+			{
+				//allreday checkdout
+				//$this->checkinInitiate($finder_id, $finder, $customer_id);
+				//finders
+				$finder_title = Finder::where('_id', $checkins['finder_id'])->lists('title');
+				$return = $this->checkinCheckoutSuccessMsg(['title'=> $finder_title[0]]);
+				$return['header'] = 'CHECK-OUT ALREADY MARKED FOR TODAY';
+				return $return;
+				//return $res = ["status"=>false, "message"=>"You have already checked-out for the day."];
+			}
+			else if($difference< 45 * 60)
+			{
+				//session is not complitated
+				$return = $this->checkinCheckoutSuccessMsg($finder);
+				$return['header'] = "Session is not completed.";
+				$return['sub_header_2'] = "Seems you have not completed your workout at ".$finder['title'].". The check-out time window is 45 minutes to 2 hours from your check-in time. Please make sure you check-out in the same window in order to get a successful check-in to level up on your workout milestone.";
+				return $return;
+				//return $res = ["status"=>false, "message"=>"session is not completed."];
+			}
+			else if(($difference > 45 * 60) &&($difference <= 120 * 60))
+			{
+                //checking out ----
+                if(!empty($source) && $source=='markcheckin'){
+                    return $this->checkoutInitiate($checkins['_id'], $finder, $finder_id, $customer_id, $checkins);
+                }
+                return null;
+				//$res = ["status"=>true, "message"=>" checking- out for the day."];
+			}
+			else if(($difference > 120 * 60) && ($difference < 180 * 60))
+			{
+				//times up not accaptable
+				$return  = $this->checkinCheckoutSuccessMsg($finder);
+				$return['header'] = "Times Up to checkout for the day.";
+				$return['sub_header_2'] = "Sorry you have lapsed the check-out time window for the day. (45 minutes to 2 hours from your check-in time) . This check-in will not be marked into your profile.\n Continue with your workouts and achieve the milestones.";
+				return $return;
+				//return $res = ["status"=>false, "message"=>"Times Up to checkout for the day."];
+			}
+			else if($difference >= 180 * 60){
+                if(!empty($source) && $source=='markcheckin'){
+                    return $this->checkinInitiate($finder_id, $finder, $customer_id);
+                }
+                return null;
+			}
+		}
+		else
+		{
+            //just checkinss ->>>>>> start checkoins
+            if(!empty($source) && $source=='markcheckin'){
+                return $this->checkinInitiate($finder_id, $finder, $customer_id);
+            }
+            return null;
+		}
+
+		return $res;
+	}
+
+	public function markCheckinUtilities($data=null){
+
+		//$input = Input::all();                     
+		$rules = [
+			'lat' => 'required',
+            'lon' => 'required'
+		];
+        $finder_id = $data['finder_id'];
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails())
+		{
+			return \Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'), 400);
+		}
+
+		if(empty($finder_id))
+		{
+			return \Response::json(array('status' => 400,'message' => 'Vendor is Empty.'),400);
+		}
+		Log::info('in mark checkin utilities');
+		$finder_id = (int) $finder_id;
+		$jwt_token = Request::header('Authorization');	
+		$decoded = decode_customer_token($jwt_token);
+		$customer_id = $decoded->customer->_id;
+		$customer_geo = [];
+		$finder_geo = [];
+
+		//Finder::$withoutAppends = true;
+		$finder = Finder::find($finder_id, ['title', 'lat', 'lon']);
+
+		//Log::info('finder ddetails::::::::', [$finder_id,$finder]);
+		
+        $customer_geo['lat'] = floatval($data['lat']);
+        $customer_geo['lon'] = floatval($data['lon']);
+		
+
+		if(isset($finder['lat']) && isset($finder['lon'])){
+			$finder_geo['lat'] = $finder['lat'];
+			$finder_geo['lon'] = $finder['lon'];
+		}
+
+		//Log::info('geo coordinates of :::::::::::;', [$customer_geo, $finder_geo]); // need to update distance limit by 500 metere
+		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 7000 ? true : false;
+		//Log::info('distance status', [$distanceStatus]);
+		if($distanceStatus){
+			$oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
+			if($oprtionalDays['status']){ // need to remove ! 
+                //Log::info('device ids:::::::::', [$this->device_id]);
+                $source = !empty($data['source'])? $data['source'] : null;
+				return $this->checkForCheckinFromDevice($finder_id, $this->device_token, $finder, $customer_id, $source);
+			}
+			else{
+				// return for now you are checking in for non operational day or time
+				$return = $this->checkinCheckoutFailureMsg('Sorry you are checking at non operational Time.');
+				return $return;
+				//return $oprtionalDays;
+			}
+		}
+		else{
+			// return for use high accurary
+			$return  = $this->checkinCheckoutFailureMsg("Please mark your check in by visiting ".$finder['title']);
+			return $return;
+			//return ["status"=> false, "message"=>"Put your device in high accuracy."];
+		}
+		
+	}
+
+	public function checkoutInitiate($id, $finder, $finder_id, $customer_id, $checkout){
+		//$checkout = Checkin::where('_id', $id)->first();
+			$checkout->checkout_status=true;
+		try{
+			$checkout->update();
+
+			$finder_id = intval($finder_id);
+			$session_pack = !empty($_GET['session_pack']) ? $_GET['session_pack'] : null;
+			$finder_id = intval($finder_id);
+
+			$customer = Customer::find($customer_id);
+			$type = !empty($checkout['type'])? $checkout['type']: null;//!empty($_GET['type']) ? $_GET['type'] : null;
+			$customer_update = \Customer::where('_id', $customer_id)->increment('loyalty.checkins');	
+			//Log::info('customer_updates',[$customer_update]);
+			if($customer_update)
+			{
+				if(!empty($type) && $type == 'workout-session'){
+					$loyalty = $customer->loyalty;
+					$finder_ws_sessions = !empty($loyalty['workout_sessions'][(string)$finder_id]) ? $loyalty['workout_sessions'][(string)$finder_id] : 0;
+					
+					if($finder_ws_sessions >= 5){
+						$type = 'membership';
+						$update_finder_membership = true;
+					}else{
+						$update_finder_ws_sessions = true;
+					}
+				}
+				if(!empty($update_finder_ws_sessions)){
+					// $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
+					// $customer->update(['loyalty'=>$loyalty]);
+					Customer::where('_id', $customer_id)->increment('loyalty.workout_sessions.'.$finder_id);
+				}elseif(!empty($update_finder_membership)){
+					if(empty($loyalty['memberships']) || !in_array($finder_id, $loyalty['memberships'])){
+						array_push($loyalty['memberships'], $finder_id);
+						$customer->update(['loyalty'=>$loyalty]);
+					}
+				}
+			}
+			$return =$this->checkinCheckoutSuccessMsg($finder);
+			$return['header'] = "CHECK-OUT SUCCESSFULL";
+			$return['sub_header_2'] = "Hope you had a great workout at ".$finder['title'].". This check-in is successfully marked into your workout journey. Continue with your workouts and achieve the milestones.";
+			// $return =  [
+			// 	'header'=>'CHECK-OUT SUCCESSFUL!',
+			// 	'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
+			// 	'milestones'=>$this->utilities->getMilestoneSection(),
+			// 	'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png'
+			// ];
+			return $return;
+		}catch(Exception $err){
+			Log::info("error occured::::::::::::", [$err]);
+			return ["status"=>false, "message"=>"Please Try again. Something went wrong."];
+		}
+		
+	}
+
+	public function checkinCheckoutSuccessMsg($finder){
+		$return =  [
+			'header'=>'CHECK-IN SUCCESSFUL!',
+			'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
+			'milestones'=>$this->getMilestoneSection(),
+			'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
+			// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
+		];
+		return $return;
+	}
+
+	public function checkinCheckoutFailureMsg($reason=null) {
+		$return =  [
+			'header'=>'CHECK-IN FAILED!',
+			'sub_header_2'=> (!empty($reason))?$reason.".":"Unable to mark your checkin.",
+			'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png'
+		];
+		return $return;
+	}
+
+	public function checkInsList($customer_id, $device_token, $get_qr_loyalty_screen=null, $finderarr=null){
+		$date = date('Y-m-d', time());//return $customer_id;
+
+		$checkins= Checkin:://where('device_id', $device_id)//->orWhere('customer_id', $customer_id)
+		where(function($query) use($customer_id, $device_token){$query->where('customer_id',$customer_id)->orWhere('device_token',$device_token);})
+		->where('date', '=', new MongoDate(strtotime($date)))
+		->orderby('_id', 'desc')
+		->first();
+
+		if(count($checkins) && !empty($get_qr_loyalty_screen)){
+			$d = strtotime($checkins['created_at']);	
+			$cd = strtotime(date("Y-m-d H:i:s"));
+			$difference = $cd -$d;
+			if(($difference >= 45 * 60) && $checkins['checkout_status']){
+				return array(
+					"status" => false
+				);
+			}
+			else if($difference < 180 * 60){
+				return  array(
+					'status' => true,
+					'logo' => Config::get('loyalty_constants.fitsquad_logo'),
+					'header1' => 'CHECK-OUT FOR YOUR WORKOUT',
+					'header3' => 'Hope you had a great workout today at '.$finderarr['title'].'. Hit the check-out button below to get the successful check-in and level up to reach your milestone.',
+					'button_text' => 'CHECK-OUT',
+					'url' => Config::get('app.url').'/markcheckin/'.$finderarr['_id'],
+					'type' => 'checkin',
+				);
+			}
+
+			return array(
+				"status" => false
+			);
+		}
+		else{
+			if( !empty($get_qr_loyalty_screen)){
+				return array(
+					"status" => false
+				);
+			}
+			return $checkins;
+		}
+    }
+    
+    public function checkinInitiate($finder_id, $finder_data, $customer_id){
+
+		Log::info($_SERVER['REQUEST_URI']);
+
+		$finder_id = intval($finder_id);
+		
+		// $jwt_token = Request::header('Authorization');
+		
+		// $decoded = decode_customer_token($jwt_token);
+		// $customer_id = $decoded->customer->_id;
+
+        $type = !empty($_GET['type']) ? $_GET['type'] : null;
+        $session_pack = !empty($_GET['session_pack']) ? $_GET['session_pack'] : null;
+        //$unverified = !empty($_GET['type']) ? true : false;
+        //$customer = Customer::find($customer_id);
+
+        // if(!empty($type) && $type == 'workout-session'){
+        //     $loyalty = $customer->loyalty;
+        //     $finder_ws_sessions = !empty($loyalty['workout_sessions'][(string)$finder_id]) ? $loyalty['workout_sessions'][(string)$finder_id] : 0;
+            
+        //     if($finder_ws_sessions >= 5){
+        //         $type = 'membership';
+        //         $update_finder_membership = true;
+        //     }else{
+        //         $update_finder_ws_sessions = true;
+        //     }
+        // }
+		
+		$checkin_data = [
+			'customer_id'=>$customer_id,
+			'finder_id'=>intval($finder_id),
+			'type'=>$type,
+			'unverified'=>!empty($_GET['type']) ? true : false,
+			'checkout_status' => false,
+            'device_token' => $this->device_token,
+            'mark_checkin_utilities' => false
+        ];
+		Log::info('before schedule_sessions::::::::::::: device id',[$this->device_token, $checkin_data]);
+        if(!empty($_GET['receipt'])){
+            $checkin_data['receipt'] = true;
+        }
+        if(!empty($session_pack)){
+
+            $order_id = intval($_GET['session_pack']);
+            
+            $schedule_session = $this->scheduleSessionFromOrder($order_id);
+			//Log::info('schedule_sessions:::::::::::::',[$schedule_session, $this->device_id]);
+		}
+        
+        if(empty($schedule_session['status']) || $schedule_session['status'] != 200){
+            
+			$addedCheckin = $this->addCheckin($checkin_data);
+			//Log::info('adedcheckins:::::::::::::',[$addedCheckin]);
+        
+		}
+		$finder = $finder_data;	
+		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200 || (!empty($schedule_session['status']) && $schedule_session['status'] == 200)){
+			// if(!empty($update_finder_ws_sessions)){
+			// 	// $loyalty['workout_sessions'][$finder_id] = $finder_ws_sessions + 1;
+			// 	// $customer->update(['loyalty'=>$loyalty]);
+			// 	Customer::where('_id', $customer_id)->increment('loyalty.workout_sessions.'.$finder_id);
+			// }elseif(!empty($update_finder_membership)){
+			// 	if(empty($loyalty['memberships']) || !in_array($finder_id, $loyalty['memberships'])){
+			// 		array_push($loyalty['memberships'], $finder_id);
+			// 		$customer->update(['loyalty'=>$loyalty]);
+			// 	}
+			// }
+			// $return =  [
+			// 	'header'=>'CHECK-IN SUCCESSFUL!',
+			// 	'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
+			// 	'milestones'=>$this->utilities->getMilestoneSection(),
+			// 	'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
+			// 	// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
+			// ];
+			$resp = $this->checkinCheckoutSuccessMsg($finder);
+			$resp['header'] = 'CHECK- IN SUCCESSFUL';
+			$resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']."\n Make sure you check-out post your workout by scanning the QR code again to get the successful check-in towards the goal of reaching your milestone. \n\n Please note - The check-in will not be provided if your check-out time is not mapped out. Don`t forget to scan the QR code again post your workout.";
+			return $resp;
+			// if(!empty($addedCheckin['already_checked_in'])){
+            //     $return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';
+            // }
+			// return $return;
+		}else{	
+			return $addedCheckin;
+		}
+	}
 }

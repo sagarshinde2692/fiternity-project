@@ -8163,7 +8163,8 @@ class CustomerController extends \BaseController {
                     }
 
                     if(!empty($value['mark'])){
-						$this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'], "checkout_status"=> true, 'device_token' => $this->device_token]);
+						$add_checkin_response = $this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'], "checkout_status"=> false, 'device_token' => $this->device_token, 'lat'=> $data['lat'], 'lon'=>$data['lon'],'booktrial_id'=> $booktrial['_id'], 'mark_checkin_utilities' => true]);
+						Log::info('add checkin response data:::', [$add_checkin_response]);
 					}
 
 					
@@ -8269,6 +8270,12 @@ class CustomerController extends \BaseController {
 											$add_chck = null;
 										}
 										$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
+										if(!empty($add_checkin_response['checkin_response']['sub_header_2'])){
+											$resp1['sub_header_2']  = (!empty($resp1['sub_header_2']) ? $resp1['sub_header_2'] : '').$add_checkin_response['checkin_response']['sub_header_2'];
+										}
+										if(!empty($add_checkin_response['checkin_response']['header'])){
+											$resp1['header']  = $add_checkin_response['checkin_response']['header'];
+										}
 										if(isset($booktrial['extended_validity_order_id'])) {
 											if(isset($resp1) && isset($resp1['sub_header_1'])){
 												$resp1['sub_header_1'] = '';
@@ -8289,6 +8296,12 @@ class CustomerController extends \BaseController {
 								}
 								if($booktrial_update&&!empty($value['mark'])){
 									$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+									if(!empty($add_checkin_response['checkin_response']['sub_header_2'])){
+										$resp1['sub_header_2']  = (!empty($resp1['sub_header_2']) ? $resp1['sub_header_2'] : '').$add_checkin_response['checkin_response']['sub_header_2'];
+									}
+									if(!empty($add_checkin_response['checkin_response']['header'])){
+										$resp1['header']  = $add_checkin_response['checkin_response']['header'];
+									}
 									if(isset($booktrial['extended_validity_order_id'])) {
 										if(isset($resp1) && isset($resp1['sub_header_1'])){
 											$resp1['sub_header_1'] = '';
@@ -8482,7 +8495,8 @@ class CustomerController extends \BaseController {
 					'type'=>'workout-session',
 					'unverified'=>false,
 					"checkout_status"=> false,
-					'device_token' => $this->device_token
+					'device_token' => $this->device_token,
+					'mark_checkin_utilities' => true
 				];
 
 				$addedCheckin = $this->utilities->addCheckin($checkin_data);
@@ -9761,7 +9775,13 @@ class CustomerController extends \BaseController {
 		$customer_id = $decoded->customer->_id;
 		$customer_geo = [];
 		$finder_geo = [];
-
+		$checkin_data= [
+			'finder_id' => $finder_id,
+			'lat' => floatval(\Input::get('lat')),
+			'lon' => floatval(\Input::get('lon')),
+			'source' => 'markcheckin'
+		];
+		return $markCheckinResponse = $this->utilities->markCheckinUtilities($checkin_data);
 		//Finder::$withoutAppends = true;
 		$finder = Finder::find($finder_id, ['title', 'lat', 'lon']);
 
