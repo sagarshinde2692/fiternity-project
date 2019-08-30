@@ -1695,6 +1695,7 @@ class TransactionController extends \BaseController {
             unset($resp['data']["quantity_details"]);
             $resp['data']['payment_modes']= [];
             unset($resp['data']["payment_details"]);
+            unset($resp['data']["coupon_details"]);
 
             $passBookingDetails = $this->getPassDetails($data);
 
