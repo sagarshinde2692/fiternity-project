@@ -5302,6 +5302,7 @@ class FindersController extends \BaseController {
 						unset($ratecard['pps_title']);
 						unset($ratecard['remarks']);
 						unset($ratecard['remarks_imp']);
+						unset($ratecard['price_text']);
 
 						unset($finderData['fit_ex']);
 
