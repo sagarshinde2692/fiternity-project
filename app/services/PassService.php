@@ -1073,7 +1073,7 @@ class PassService {
         return ($diffDays>=1)?intval($diffDays):0;
     }
 
-    public function homePostPassPurchaseData($customerId) {
+    public function homePostPassPurchaseData($customerId, $showTnC = true) {
         Order::$withoutAppends = true;
         $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->orderBy('_id', 'desc')->first();
         if(empty($passOrder)){
@@ -1177,6 +1177,9 @@ class PassService {
             }
         }
         $homePassData['pass_expired'] = $passExpired;
+        if(!$showTnC && !empty($homePassData['terms'])) {
+            unset($homePassData['terms']);
+        }
         return $homePassData;
     }
 
