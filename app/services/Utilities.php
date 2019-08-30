@@ -9012,7 +9012,7 @@ Class Utilities {
 		$res = ["status"=> true];
 
 		Log::info('chekcins:::::::::::;', [$checkins, $customer_id]);
-
+        $customer = Customer::active()->where('_id', (int)$customer_id)->first();
 		if(count($checkins)>0)
 		{
 			$d = strtotime($checkins['created_at']);	
@@ -9021,12 +9021,12 @@ Class Utilities {
 			Log::info('differece:::::::::::', [$difference]);
 
 			if($checkins['device_token']!= $device_token){
-				$return = $this->checkinCheckoutSuccessMsg($finder);
+				$return = $this->checkinCheckoutSuccessMsg($finder, $customer);
 				$return['header'] = "Use Checkin device for Successfull Checkout.";
 				return $return;
 			}
 			else if($checkins['customer_id'] != $customer_id){
-				$return = $this->checkinCheckoutSuccessMsg($finder);
+				$return = $this->checkinCheckoutSuccessMsg($finder, $customer);
 				$return['header'] = "Allready checkin done by other user using this device.";
 				return $return;
 			}
@@ -9037,7 +9037,7 @@ Class Utilities {
 				//$this->checkinInitiate($finder_id, $finder, $customer_id);
 				//finders
 				$finder_title = Finder::where('_id', $checkins['finder_id'])->lists('title');
-				$return = $this->checkinCheckoutSuccessMsg(['title'=> $finder_title[0]]);
+				$return = $this->checkinCheckoutSuccessMsg(['title'=> $finder_title[0]], $customer);
 				$return['header'] = 'CHECK-OUT ALREADY MARKED FOR TODAY';
 				return $return;
 				//return $res = ["status"=>false, "message"=>"You have already checked-out for the day."];
@@ -9045,7 +9045,7 @@ Class Utilities {
 			else if($difference< 45 * 60)
 			{
 				//session is not complitated
-				$return = $this->checkinCheckoutSuccessMsg($finder);
+				$return = $this->checkinCheckoutSuccessMsg($finder, $customer);
 				$return['header'] = "Session is not completed.";
 				$return['sub_header_2'] = "Seems you have not completed your workout at ".$finder['title'].". The check-out time window is 45 minutes to 2 hours from your check-in time. Please make sure you check-out in the same window in order to get a successful check-in to level up on your workout milestone.";
 				return $return;
@@ -9063,7 +9063,7 @@ Class Utilities {
 			else if(($difference > 120 * 60) && ($difference < 180 * 60))
 			{
 				//times up not accaptable
-				$return  = $this->checkinCheckoutSuccessMsg($finder);
+				$return  = $this->checkinCheckoutSuccessMsg($finder, $customer);
 				$return['header'] = "Times Up to checkout for the day.";
 				$return['sub_header_2'] = "Sorry you have lapsed the check-out time window for the day. (45 minutes to 2 hours from your check-in time) . This check-in will not be marked into your profile.\n Continue with your workouts and achieve the milestones.";
 				return $return;
@@ -9107,11 +9107,11 @@ Class Utilities {
 		{
 			return \Response::json(array('status' => 400,'message' => 'Vendor is Empty.'),400);
 		}
-		Log::info('in mark checkin utilities');
+		Log::info('in mark checkin utilities', [$data]);
 		$finder_id = (int) $finder_id;
 		$jwt_token = Request::header('Authorization');	
 		$decoded = decode_customer_token($jwt_token);
-		$customer_id = !empty($data['customer_id'])? $data['customer_id']: !empty($decoded->customer->_id) ? $decoded->customer->_id: null ;
+		$customer_id = !empty($data['customer_id'])? $data['customer_id']: (!empty($decoded->customer->_id) ? $decoded->customer->_id: null);
 		$customer_geo = [];
 		$finder_geo = [];
 
@@ -9210,11 +9210,11 @@ Class Utilities {
 		
 	}
 
-	public function checkinCheckoutSuccessMsg($finder){
+	public function checkinCheckoutSuccessMsg($finder, $customer){
 		$return =  [
 			'header'=>'CHECK-IN SUCCESSFUL!',
 			'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
-			'milestones'=>$this->getMilestoneSection(),
+			'milestones'=>$this->getMilestoneSection($customer),
 			'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
 			// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
 		];
