@@ -8163,7 +8163,7 @@ class CustomerController extends \BaseController {
                     }
 
                     if(!empty($value['mark'])){
-						$this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'], "checkout_status"=> false, 'device_token' => $this->device_token]);
+						$this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'], "checkout_status"=> true, 'device_token' => $this->device_token]);
 					}
 
 					
