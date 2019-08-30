@@ -8132,6 +8132,8 @@ class CustomerController extends \BaseController {
 		$customer_id = (int)$decoded->customer->_id;
 		$data =	Input::json()->all();
 		$rules = ['data' => 'required'];
+		$lat = !empty($_GET['lat']) ? $_GET['lat'] : null;
+		$lon = !empty($_GET['lon']) ? $_GET['lon']: null; 
 		Log::info($data);
 		$validator = Validator::make($data, $rules);
 		if ($validator->fails()) return ['status' => 400,'message' =>$this->errorMessage($validator->errors())];
@@ -8163,7 +8165,7 @@ class CustomerController extends \BaseController {
                     }
 
                     if(!empty($value['mark'])){
-						$add_checkin_response = $this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'], "checkout_status"=> false, 'device_token' => $this->device_token, 'lat'=> $data['lat'], 'lon'=>$data['lon'],'booktrial_id'=> $booktrial['_id'], 'mark_checkin_utilities' => true]);
+						$add_checkin_response = $this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'], "checkout_status"=> false, 'device_token' => $this->device_token, 'lat'=> $lat, 'lon'=>$lon,'booktrial_id'=> $booktrial['_id'], 'mark_checkin_utilities' => true]);
 						Log::info('add checkin response data:::', [$add_checkin_response]);
 					}
 
