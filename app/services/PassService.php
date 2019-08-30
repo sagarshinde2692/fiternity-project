@@ -699,7 +699,7 @@ class PassService {
         $success_template = $success['success'];
         // $success_template['header'] = strtr($success_template['header'], ['___type' => ucwords($order['pass']['type'])]);
         $success_template['header'] = '';
-        $success_template['customer_name'] = $order['name'];
+        $success_template['customer_name'] = $order['customer_name'];
         $success_template['customer_email'] = $order['customer_email'];
         $success_template['subline'] = strtr(
             $success_template['subline'], 
