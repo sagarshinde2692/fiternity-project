@@ -9071,7 +9071,7 @@ Class Utilities {
 			}
 			else if($difference >= 180 * 60){
                 //if(!empty($source) && $source=='markcheckin'){
-                    return $this->checkinInitiate($finder_id, $finder, $customer_id);
+                    return $this->checkinInitiate($finder_id, $finder, $customer_id, $customer);
                 // }
                 // return null;
 			}
@@ -9080,7 +9080,7 @@ Class Utilities {
 		{
             //just checkinss ->>>>>> start checkoins
             //if(!empty($source) && $source=='markcheckin'){
-                return $this->checkinInitiate($finder_id, $finder, $customer_id);
+                return $this->checkinInitiate($finder_id, $finder, $customer_id, $customer);
             // }
             // return null;
 		}
@@ -9274,7 +9274,7 @@ Class Utilities {
 		}
     }
     
-    public function checkinInitiate($finder_id, $finder_data, $customer_id){
+    public function checkinInitiate($finder_id, $finder_data, $customer_id, $customer){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -9348,7 +9348,7 @@ Class Utilities {
 			// 	'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
 			// 	// 'fitsquad'=>$this->utilities->getLoyaltyRegHeader($customer)
 			// ];
-			$resp = $this->checkinCheckoutSuccessMsg($finder);
+			$resp = $this->checkinCheckoutSuccessMsg($finder, $customer);
 			$resp['header'] = 'CHECK- IN SUCCESSFUL';
 			$resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']."\n Make sure you check-out post your workout by scanning the QR code again to get the successful check-in towards the goal of reaching your milestone. \n\n Please note - The check-in will not be provided if your check-out time is not mapped out. Don`t forget to scan the QR code again post your workout.";
 			return $resp;
