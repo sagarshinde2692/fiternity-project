@@ -528,7 +528,7 @@ class PassService {
 
     public function getPassOrder($customerId) {
         $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->where('end_date', '>', new \MongoDate(time()))->first();
-        return (!empty($passOrder['pass']))?$passOrder['pass']:null;
+        return (!empty($passOrder))?$passOrder:null;
     }
 
     public function getPremiumExpiryDates($bookingStartDate, $premiumBookingInterval, $duration) {
@@ -577,7 +577,7 @@ class PassService {
         }
 
         if(!empty($passOrder)) {
-            $passType = $passOrder['pass_type'];
+            $passType = $passOrder['pass']['pass_type'];
             Log::info('pass orders:::::::::::::::::', [$passOrder]);
         }
 
@@ -1081,8 +1081,8 @@ class PassService {
         }
         Order::$withoutAppends = true;
 
-        $pastBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->where('schedule_date_time', '<', new \MongoDate())->count();
-        $upcomingBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->where('schedule_date_time', '>=', new \MongoDate())->count();
+        $pastBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status_txt', '!=', 'cancel')->where('schedule_date_time', '<', new \MongoDate())->count();
+        $upcomingBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status_txt', '!=', 'cancel')->where('schedule_date_time', '>=', new \MongoDate())->count();
         $totalBookings = $pastBookings + $upcomingBookings;
 
         $passExpired = false;
