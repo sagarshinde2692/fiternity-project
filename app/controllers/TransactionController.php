@@ -3609,7 +3609,7 @@ class TransactionController extends \BaseController {
         if($data['type'] == 'workout-session') {
             Order::$withoutAppends = true;
             $passSession = $this->passService->allowSession($data['amount'], $data['customer_id']);
-            if($passSession['allow_session'] != 0) {
+            if($passSession['allow_session']) {
                 $data['pass_type'] = $passSession['pass_type'];
                 $data['pass_order_id'] = $passSession['order_id'];
                 $data['pass_booking'] = true;
@@ -7275,7 +7275,7 @@ class TransactionController extends \BaseController {
                 if(!empty($decoded->customer->_id)) {
                     $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id);
                     Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
-                    if($passSession['allow_session'] != 0) {
+                    if($passSession['allow_session']) {
                         $result['payment_details']['amount_summary'][] = [
                             'field' => ((!empty($passSession['pass_type']) && $passSession['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
                             'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'

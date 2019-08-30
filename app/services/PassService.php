@@ -582,7 +582,7 @@ class PassService {
         }
         $canBook = false;
         if(!empty($passOrder['pass'])) {
-            if(time()>$passOrder['start_date']->sec){
+            if(time()>strtotime($passOrder['start_date'])){
                 if($passOrder['pass']['pass_type']=='black'){
                     $sessionsUsed = $passOrder['onepass_sessions_used'];
                     $sessionsTotal = $passOrder['onepass_sessions_total'];
