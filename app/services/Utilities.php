@@ -7670,6 +7670,18 @@ Class Utilities {
                 ]
             );
         }
+        else {
+            array_push(
+                $coupon['and_conditions'],
+                [
+                    "key" =>"customer._id",
+                    "operator" =>"in",
+                    "values" =>[ 
+                        $data['customer']['_id']
+                    ]
+                ]
+            );
+        }
         
 
         $coupon['once_per_user'] = true;
