@@ -7667,6 +7667,14 @@ class TransactionController extends \BaseController {
                         'value' => '-Rs. '.(string)$data['coupon_discount']
                     ];
                 }
+
+                if(!empty($order["coupon_discount_amount"])){
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.(string)$order["coupon_discount_amount"]
+                    ];
+                    $data['you_save'] += $order["coupon_discount_amount"];
+                }
                 
                 $data['amount'] = $data['amount_payable'];
                 
