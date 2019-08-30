@@ -9155,7 +9155,7 @@ Class Utilities {
 		
 	}
 
-	public function checkoutInitiate($id, $finder, $finder_id, $customer_id, $checkout){
+	public function checkoutInitiate($id, $finder, $finder_id, $customer_id, $checkout, $customer){
 		//$checkout = Checkin::where('_id', $id)->first();
 			$checkout->checkout_status=true;
 		try{
@@ -9168,7 +9168,11 @@ Class Utilities {
 			$customer = Customer::find($customer_id);
 			$type = !empty($checkout['type'])? $checkout['type']: null;//!empty($_GET['type']) ? $_GET['type'] : null;
 			$customer_update = \Customer::where('_id', $customer_id)->increment('loyalty.checkins');	
-			//Log::info('customer_updates',[$customer_update]);
+            //Log::info('customer_updates',[$customer_update]);
+            if(!empty($checkout->booktrial_id)){
+                $resp1= $this->markCustomerAttendanceCheckout($checkout, $customer);
+            }
+
 			if($customer_update)
 			{
 				if(!empty($type) && $type == 'workout-session'){
@@ -9193,15 +9197,14 @@ Class Utilities {
 					}
 				}
 			}
-			$return =$this->checkinCheckoutSuccessMsg($finder);
+			$return =$this->checkinCheckoutSuccessMsg($finder, $customer);
 			$return['header'] = "CHECK-OUT SUCCESSFULL";
 			$return['sub_header_2'] = "Hope you had a great workout at ".$finder['title'].". This check-in is successfully marked into your workout journey. Continue with your workouts and achieve the milestones.";
-			// $return =  [
-			// 	'header'=>'CHECK-OUT SUCCESSFUL!',
-			// 	'sub_header_2'=> "Enjoy your workout at ".$finder['title'].".\n Make sure you continue with your workouts and achieve the milestones quicker",
-			// 	'milestones'=>$this->utilities->getMilestoneSection(),
-			// 	'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png'
-			// ];
+            
+            if(!empty($resp1)){
+                $return['sub_header_2'] = !empty($resp1['sub_header_2']) ? $resp1['sub_header_2']."\n". $return['sub_header_2']: $return['sub_header_2'];
+                !empty($resp1['sub_header_1']) ? $return['sub_header_1'] = $resp1['sub_header_1']: null;
+            }
 			return $return;
 		}catch(Exception $err){
 			Log::info("error occured::::::::::::", [$err]);
@@ -9360,4 +9363,108 @@ Class Utilities {
 			return $addedCheckin;
 		}
 	}
+
+    public function markCustomerAttendanceCheckout($checkout_data, $customer){
+        $booktrial_id = (int)$checkout_data['booktrial_id'];
+        $booktrial = Booktrial::where('_id', $booktrial_id)->first();
+        $post_trial_status_updated_by_qrcode = time();
+        $resp1 = [];
+        if($booktrial->type == "workout-session"&&!isset($booktrial->post_trial_status_updated_by_qrcode)&&!isset($booktrial->post_trial_status_updated_by_lostfitcode)&&!isset($booktrial->post_trial_status_updated_by_fitcode))
+        {
+            
+            if(empty($booktrial->post_trial_status)||$booktrial->post_trial_status=='no show')
+            {
+                $booktrial_update = Booktrial::where('_id', $booktrial_id)->update(['post_trial_status_updated_by_qrcode'=>$post_trial_status_updated_by_qrcode]);
+                $payment_done = !(isset($booktrial->payment_done) && !$booktrial->payment_done);
+                if(!empty($booktrial['order_id']))$pending_payment['order_id']=$booktrial['order_id'];
+                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);
+                
+                if($booktrial_update&& !(isset($booktrial->payment_done) && $booktrial->payment_done == false)){
+                    
+                    if(!isset($booktrial['extended_validity_order_id'])){
+                        $fitcash = $this->utilities->getFitcash($booktrial->toArray());
+                        $req = array(
+                                "customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
+                                "amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
+                                'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan","qrcodescan"=>true
+                        );
+                        
+                        $booktrial->pps_fitcash=$fitcash;
+                        $booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
+                        $add_chck=$this->utilities->walletTransaction($req);
+                    }
+                    else {
+                        $fitcash = 0;
+                    }
+                    
+                    if((!empty($add_chck)&&$add_chck['status']==200) || (isset($booktrial['extended_validity_order_id'])))
+                    {
+                        $total_fitcash=$total_fitcash+$fitcash;
+                        if(!isset($add_chck) && (isset($booktrial['extended_validity_order_id']))){
+                            $add_chck = null;
+                        }
+                        $resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
+                        
+                        if(isset($booktrial['extended_validity_order_id'])) {
+                            if(isset($resp1) && isset($resp1['sub_header_1'])){
+                                $resp1['sub_header_1'] = '';
+                            }
+                            if(isset($resp1) && isset($resp1['sub_header_2'])){
+                                $resp1['sub_header_2'] = '';
+                            }
+                            if(isset($resp1) && isset($resp1['description'])){
+                                $resp1['description'] = '';
+                            }
+                            if(isset($resp1) && isset($resp1['image'])){
+                                $resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
+                            }
+                        }
+                        //array_push($attended,$resp1);
+                    }
+                    //else array_push($un_updated,$booktrial_id);
+                }
+                if($booktrial_update){
+                    $resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+                    if(isset($booktrial['extended_validity_order_id'])) {
+                        if(isset($resp1) && isset($resp1['sub_header_1'])){
+                            $resp1['sub_header_1'] = '';
+                        }
+                        if(isset($resp1) && isset($resp1['sub_header_2'])){
+                            $resp1['sub_header_2'] = '';
+                        }
+                        if(isset($resp1) && isset($resp1['description'])){
+                            $resp1['description'] = '';
+                        }
+                        if(isset($resp1) && isset($resp1['image'])){
+                            $resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
+                        }
+                    }
+                    array_push($attended,$resp1);
+                }
+                else  {
+                    
+                    $resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+                    if(isset($booktrial['extended_validity_order_id'])) {
+                        if(isset($resp1) && isset($resp1['sub_header_1'])){
+                            $resp1['sub_header_1'] = '';
+                        }
+                        if(isset($resp1) && isset($resp1['sub_header_2'])){
+                            $resp1['sub_header_2'] = '';
+                        }
+                        if(isset($resp1) && isset($resp1['description'])){
+                            $resp1['description'] = '';
+                        }
+                    }
+                    
+                }
+            }
+            $booktrial->post_trial_status = 'attended';
+            $booktrial->post_trial_initail_status = 'interested';
+            $booktrial->post_trial_status_updated_by_qrcode= $post_trial_status_updated_by_qrcode;
+            $booktrial->post_trial_status_date = time();
+
+            return $resp1;
+        }
+
+    }
 }

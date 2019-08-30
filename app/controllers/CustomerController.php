@@ -8342,7 +8342,7 @@ class CustomerController extends \BaseController {
 					}
 					else array_push($already_attended,$value['_id']);
 					
-					if(!empty($value['mark']))
+					if(!empty($value['mark']) && $booktrial->type == "booktrials" )
 					{
 						$booktrial->post_trial_status = 'attended';
 						$booktrial->post_trial_initail_status = 'interested';
