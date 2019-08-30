@@ -1693,18 +1693,36 @@ class TransactionController extends \BaseController {
 
         $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
         if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
+            $totalPassBookings = 0;
+            Order::$withoutAppends = true;
+            if(!empty($data['pass_order_id']) && !empty($data['pass_type'])){
+                $totalPassBookings = Order::active()->where('pass_type', $data['pass_type'])
+                ->where('pass_order_id', $data['pass_order_id'])->where('customer_id', $data['customer_id'])->count();
+            }
+            
             unset($resp['data']["quantity_details"]);
             $resp['data']['payment_modes']= [];
 
-            $onepass_details = array(
-                "image" => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
-                "header1" => "ONEPASS",
-                "header1_color" => "#000000",
-                "header2" => "RED",
-                "header2_color" => "#d50000",
-                "subheader" => "UNLIMITED ACCESS",
-                "desc_subheader" => "You are booking your 5th session using Onepass Red"
-            );
+            // $onepass_details = array(
+            //     "image" => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
+            //     "header1" => "ONEPASS",
+            //     "header1_color" => "#000000",
+            //     "header2" => "RED",
+            //     "header2_color" => "#d50000",
+            //     "subheader" => "UNLIMITED ACCESS",
+            //     "desc_subheader" => "You are booking your 5th session using Onepass Red"
+            // );
+
+            $count_det = ['1' => '1st', '2' => '2nd', '3' => '3rd'];
+            $totalPassBookings += 1;
+            if($totalPassBookings > 3){
+                $totalPassBookingsStr = $totalPassBookings."th"; 
+            }else{
+                $totalPassBookingsStr = $count_det[$totalPassBookings];
+            }
+            
+            $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
+            $onepass_details['desc_subheader'] = "You are booking your ".$totalPassBookingsStr." session using Onepass ".ucfirst($data['pass_type']);
 
             $easy_cancellation = array(
                 "header" => "Easy Cancelletion",
