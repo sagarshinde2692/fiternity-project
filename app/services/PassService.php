@@ -1179,6 +1179,7 @@ class PassService {
         $homePassData['pass_expired'] = $passExpired;
         if(!$showTnC && !empty($homePassData['terms'])) {
             unset($homePassData['terms']);
+            unset($homePassData['tnc_text']);
         }
         return $homePassData;
     }
