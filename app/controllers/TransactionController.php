@@ -6033,6 +6033,13 @@ class TransactionController extends \BaseController {
 
     function getPaymentDetails($data,$payment_mode_type){
 
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
+
         $amount_summary = [];
         
         $you_save = 0;
@@ -6289,14 +6296,28 @@ class TransactionController extends \BaseController {
             ];
         }
 
-        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
-            $payment_details['amount_summary'] = [];
-            $payment_details['amount_payable'] = array(
-                'field' => 'Total Amount Payable',
-                'value' => Config::get('app.onepass_free_string')
-            );
-            unset($payment_details['payment_details']['savings']);
+        if(!empty($data['type']) && $data['type'] == 'workout-session') {
+            // $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+            $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+            $allowSession = false;
+            if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+                $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id);
+                if(!empty($allowSession['allow_session'])) {
+                    $allowSession = $allowSession['allow_session'];
+                }
+                else {
+                    $allowSession = false;
+                }
+            }
+            if($allowSession){
+            // if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
+                $payment_details['amount_summary'] = [];
+                $payment_details['amount_payable'] = array(
+                    'field' => 'Total Amount Payable',
+                    'value' => Config::get('app.onepass_free_string')
+                );
+                unset($payment_details['payment_details']['savings']);
+            }
         }
 
         return $payment_details;

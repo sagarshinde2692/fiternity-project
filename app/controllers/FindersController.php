@@ -5296,7 +5296,17 @@ class FindersController extends \BaseController {
 					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 					Log::info("Price onepass ::",[$price]);
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+					$allowSession = false;
+					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+						$allowSession = $this->passService->allowSession($price, $customer_id);
+						if(!empty($allowSession['allow_session'])) {
+							$allowSession = $allowSession['allow_session'];
+						}
+						else {
+							$allowSession = false;
+						}
+					}
+					if($allowSession){
 						unset($ratecard['button_color']);
 						unset($ratecard['pps_know_more']);
 						unset($ratecard['pps_title']);

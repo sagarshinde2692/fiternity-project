@@ -750,7 +750,24 @@ class ServiceController extends \BaseController {
 
 		// $all_trials_booked = true;
 
-		
+		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+		$allowSession = false;
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+			if(empty($customer_id)){
+				$jwt_token = Request::header('Authorization');
+				if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
+					$decoded = decode_customer_token();		
+					$customer_id = intval($decoded->customer->_id);
+				}
+			}
+			$allowSession = $this->passService->allowSession(1, $customer_id);
+			if(!empty($allowSession['allow_session'])) {
+				$allowSession = $allowSession['allow_session'];
+			}
+			else {
+				$allowSession = false;
+			}
+		}
 
         foreach ($items as $k => $item) {
 
@@ -918,8 +935,8 @@ class ServiceController extends \BaseController {
                         $nrsh['price_only']=(isset($p_np['non_peak']))?$p_np['non_peak']:"";
                         Log::info("rsh price",[$rsh['price_only']]);
                         Log::info("nrsh price",[$rsh['price_only']]);
-						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < 1001 || $nrsh['price_only'] < 1001)){
+						if($allowSession){
+						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < 1001 || $nrsh['price_only'] < 1001)){
 							if($rsh['price_only'] < 1001){
 								$rsh['price'] = Config::get('app.onepass_free_string');
 							}
@@ -1163,8 +1180,8 @@ class ServiceController extends \BaseController {
 
                 }
 
-				$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-				if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $service['non_peak']['price'] < 1001){
+				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+				if($allowSession && $service['non_peak']['price'] < 1001){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $service['non_peak']['price'] .= " (100% Cashback)";
@@ -1844,11 +1861,7 @@ class ServiceController extends \BaseController {
 			
             $service_details['price'] = "₹".$service_details['amount'];
 
-			$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-			if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $service_details['amount'] < 1001){
-				$service_details['price'] = Config::get('app.onepass_free_string');
-				$service_details['easy_cancel_text'] = "You can cancel session 1 hour prior to your session time. The paid amount will be refunded to you in form of Fitcash.";
-			}else if(empty($finder['flags']['monsoon_campaign_pps'])){
+			if(empty($finder['flags']['monsoon_campaign_pps'])){
 				$service_details['price'].=" (100% Cashback)";
 			}
 
@@ -2004,6 +2017,27 @@ class ServiceController extends \BaseController {
 		
 		$service_details = Cache::tags('service_detail')->get($cache_key);
 
+		$jwt_token = Request::header('Authorization');
+		if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
+			$decoded = decode_customer_token();
+			$customer_id = intval($decoded->customer->_id);
+		}
+
+		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+		$allowSession = false;
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+			$allowSession = $this->passService->allowSession($service_details['amount'], $customer_id);
+			if(!empty($allowSession['allow_session'])) {
+				$allowSession = $allowSession['allow_session'];
+			}
+			else {
+				$allowSession = false;
+			}
+		}
+		if($allowSession && $service_details['amount'] < 1001){
+			$service_details['price'] = Config::get('app.onepass_free_string');
+			$service_details['easy_cancel_text'] = "You can cancel session 1 hour prior to your session time. The paid amount will be refunded to you in form of Fitcash.";
+		}
 		$time = isset($_GET['time']) ? $_GET['time'] : null;
 		$time_interval = null;
 		$within_time = null;
