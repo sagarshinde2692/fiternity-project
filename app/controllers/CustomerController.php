@@ -8519,7 +8519,7 @@ class CustomerController extends \BaseController {
 		if(!empty($jwt_token)){
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
-		 	$checkins = Checkin::where('customer_id', $customer_id)
+		 	$checkins = Checkin::where('customer_id', $customer_id)->where('checkout_status', true)
 			->orderBy('_id', 'asc')
 			->get()
 			->toArray();
