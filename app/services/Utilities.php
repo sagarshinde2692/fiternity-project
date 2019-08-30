@@ -9071,7 +9071,7 @@ Class Utilities {
 			}
 			else if($difference >= 180 * 60){
                 //if(!empty($source) && $source=='markcheckin'){
-                    return $this->checkinInitiate($finder_id, $finder, $customer_id, $source);
+                    return $this->checkinInitiate($finder_id, $finder, $customer_id);
                 // }
                 // return null;
 			}
@@ -9080,7 +9080,7 @@ Class Utilities {
 		{
             //just checkinss ->>>>>> start checkoins
             //if(!empty($source) && $source=='markcheckin'){
-                return $this->checkinInitiate($finder_id, $finder, $customer_id, $source);
+                return $this->checkinInitiate($finder_id, $finder, $customer_id);
             // }
             // return null;
 		}
@@ -9274,7 +9274,7 @@ Class Utilities {
 		}
     }
     
-    public function checkinInitiate($finder_id, $finder_data, $customer_id, $source){
+    public function checkinInitiate($finder_id, $finder_data, $customer_id){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -9309,7 +9309,7 @@ Class Utilities {
 			'unverified'=>!empty($_GET['type']) ? true : false,
 			'checkout_status' => false,
             'device_token' => $this->device_token,
-            'mark_checkin_utilities' => (!empty($source)? false: true)
+            'mark_checkin_utilities' => false//(empty($source)? false: true)
         ];
 		Log::info('before schedule_sessions::::::::::::: device id',[$this->device_token, $checkin_data]);
         if(!empty($_GET['receipt'])){
@@ -9326,7 +9326,7 @@ Class Utilities {
         if(empty($schedule_session['status']) || $schedule_session['status'] != 200){
             
 			$addedCheckin = $this->addCheckin($checkin_data);
-			//Log::info('adedcheckins:::::::::::::',[$addedCheckin]);
+			Log::info('adedcheckins:::::::::::::',[$addedCheckin]);
         
 		}
 		$finder = $finder_data;	
