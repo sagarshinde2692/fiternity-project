@@ -1098,7 +1098,7 @@ class PassService {
         $homePassData['pass_order_id'] = $passOrder['_id'];
         if($passOrder['pass']['pass_type']=='black') {
             
-            $homePassData = $homePassData[$passOrder['pass']['pass_type']];
+            // $homePassData = $homePassData[$passOrder['pass']['pass_type']];
 
             $totalSessions = $passOrder['pass']['duration'];
             if($totalSessions <= $totalBookings) {
@@ -1130,8 +1130,8 @@ class PassService {
                     // }
                 }
                 else {
-                    $homePassData['footer'] = $homePassData['footer']['ending'];
-                    $homePassData['footer']['text'] = strtr($homePassData['footer']['text'], ['remaining_text' => $usageLeft.' sessions']);
+                    // $homePassData['footer'] = $homePassData['footer']['ending'];
+                    $homePassData['footer']['section2']['text'] = strtr($homePassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
                     unset($homePassData['footer']['section3']);
                 }
             }
@@ -1172,8 +1172,8 @@ class PassService {
                     // }
                 }
                 else {
-                    $homePassData['footer'] = $homePassData['footer']['ending'];
-                    $homePassData['footer']['text'] = strtr($homePassData['footer']['text'], ['remaining_text' => $usageLeft.' days']);
+                    // $homePassData['footer'] = $homePassData['footer']['ending'];
+                    $homePassData['footer']['section2']['text'] = strtr($homePassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
                     unset($homePassData['footer']['section3']);
                 }
             }
