@@ -1690,48 +1690,24 @@ class TransactionController extends \BaseController {
         // if(!empty($data['studio_extended_validity']) && $data['studio_extended_validity']) {
         //     $this->utilities->scheduleStudioBookings(null, $order_id);
         // }
-
-        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
-            $totalPassBookings = 0;
-            Order::$withoutAppends = true;
-            if(!empty($data['pass_order_id']) && !empty($data['pass_type'])){
-                $totalPassBookings = Order::active()->where('pass_type', $data['pass_type'])
-                ->where('pass_order_id', $data['pass_order_id'])->where('customer_id', $data['customer_id'])->count();
-            }
-            
+        
+        if(!empty($data['pass_booking']) && $data['pass_booking']){
             unset($resp['data']["quantity_details"]);
             $resp['data']['payment_modes']= [];
+            unset($resp['data']["payment_details"]);
 
-            // $onepass_details = array(
-            //     "image" => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
-            //     "header1" => "ONEPASS",
-            //     "header1_color" => "#000000",
-            //     "header2" => "RED",
-            //     "header2_color" => "#d50000",
-            //     "subheader" => "UNLIMITED ACCESS",
-            //     "desc_subheader" => "You are booking your 5th session using Onepass Red"
-            // );
+            $passBookingDetails = $this->getPassDetails($data);
 
-            $count_det = ['1' => '1st', '2' => '2nd', '3' => '3rd'];
-            $totalPassBookings += 1;
-            if($totalPassBookings > 3){
-                $totalPassBookingsStr = $totalPassBookings."th"; 
-            }else{
-                $totalPassBookingsStr = $count_det[$totalPassBookings];
+            if(!empty($passBookingDetails['onepass_details'])){
+                $resp['data']['onepass_details'] =  $passBookingDetails['onepass_details'];
             }
-            
-            $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
-            $onepass_details['desc_subheader'] = "You are booking your ".$totalPassBookingsStr." session using Onepass ".ucfirst($data['pass_type']);
 
-            $easy_cancellation = array(
-                "header" => "Easy Cancelletion",
-                "description" => "You can cancel this session 1 hour prior to your session time. The paid amount will be refunded to you in form of Fitcash."
-            );
-
-            $resp['data']['onepass_details'] = $onepass_details;
-            $resp['data']['easy_cancellation'] = $easy_cancellation;
+            if(!empty($passBookingDetails['easy_cancellation'])){
+                $resp['data']['easy_cancellation'] =  $passBookingDetails['easy_cancellation'];
+            }
         }
+
+        
         Log::info("capture response");
         Log::info($resp);
         return $resp;
@@ -3676,7 +3652,7 @@ class TransactionController extends \BaseController {
 
             $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
 
-            if($free_trial_ratecard){
+            if($free_trial_ratecard || empty($data['pass_booking'])){
                 if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
                     $data['coupon_code'] = 'FIRSTPPSFREE';
                     $data['coupon_description'] = 'First wourkout session free';
@@ -9648,6 +9624,37 @@ class TransactionController extends \BaseController {
         Log::info("plans dattata::::::::::", [$plans]);
 
         return $plans;
+    }
+
+    public function getPassDetails($data){
+        $passBookingDetails = array();
+        $totalPassBookings = 0;
+        Order::$withoutAppends = true;
+        if(!empty($data['pass_order_id']) && !empty($data['pass_type'])){
+            $totalPassBookings = Order::active()->where('pass_type', $data['pass_type'])
+                ->where('pass_order_id', $data['pass_order_id'])->where('customer_id', $data['customer_id'])->count();
+        }
+            
+        $count_det = ['1' => '1st', '2' => '2nd', '3' => '3rd'];
+        $totalPassBookings += 1;
+        if($totalPassBookings > 3){
+            $totalPassBookingsStr = $totalPassBookings."th"; 
+        }else{
+            $totalPassBookingsStr = $count_det[$totalPassBookings];
+        }
+            
+        $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
+        $onepass_details['desc_subheader'] = "You are booking your ".$totalPassBookingsStr." session using Onepass ".ucfirst($data['pass_type']);
+
+        $easy_cancellation = array(
+            "header" => "Easy Cancelletion",
+            "description" => "You can cancel this session 1 hour prior to your session time. The paid amount will be refunded to you in form of Fitcash."
+        );
+
+        $passBookingDetails['onepass_details'] = $onepass_details;
+        $passBookingDetails['easy_cancellation'] = $easy_cancellation;
+
+        return $passBookingDetails;
     }
 
 }
