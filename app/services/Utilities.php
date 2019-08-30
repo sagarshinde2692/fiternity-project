@@ -9079,10 +9079,10 @@ Class Utilities {
 		else
 		{
             //just checkinss ->>>>>> start checkoins
-            if(!empty($source) && $source=='markcheckin'){
+            //if(!empty($source) && $source=='markcheckin'){
                 return $this->checkinInitiate($finder_id, $finder, $customer_id);
-            }
-            return null;
+            // }
+            // return null;
 		}
 
 		return $res;
