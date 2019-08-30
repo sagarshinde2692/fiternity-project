@@ -820,8 +820,14 @@ class PassService {
             $success_template['pass']['usage_text'] = 'UNLIMITED VALIDITY';
         }
        
-        if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
+        // if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['web_message'] = $success['web_message'];
+        // }
+
+
+        if(in_array(Request::header('Device-Type'), ["android", "ios"])){
+            $success_template['pass']['image1'] = 'http://b.fitn.in/passes/onepass_booking.png';
+            $success_template['pass']['image2'] = 'https://b.fitn.in/global/onepass/pass%20line%20design.png';
         }
 
         return $success_template;
