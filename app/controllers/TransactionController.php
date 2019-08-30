@@ -7673,6 +7673,7 @@ class TransactionController extends \BaseController {
                         'field' => 'Coupon Discount',
                         'value' => '-Rs. '.(string)$order["coupon_discount_amount"]
                     ];
+                    $data['amount_payable'] = $data['amount_payable'] - $order["coupon_discount_amount"];
                     $data['you_save'] += $order["coupon_discount_amount"];
                 }
                 
