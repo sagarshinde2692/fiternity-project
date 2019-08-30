@@ -8477,7 +8477,11 @@ class CustomerController extends \BaseController {
         }
         if(!empty($data['finder_id'])){
 			$data['finder_id'] = intval($data['finder_id']);
-        }
+		}
+		if(empty($data['lat']) || empty($data['lon'])){
+			$data['lat'] = null;
+			$data['lon'] = null;
+		}
         $resp = $this->utilities->autoRegisterCustomerLoyalty($data);
         if(empty($resp['status']) || $resp['status'] != 200){
 			return $resp;
@@ -8498,7 +8502,9 @@ class CustomerController extends \BaseController {
 					'unverified'=>false,
 					"checkout_status"=> false,
 					'device_token' => $this->device_token,
-					'mark_checkin_utilities' => true
+					'mark_checkin_utilities' => true,
+					'lat'=> $data['lat'], 
+					'lon'=>$data['lon']
 				];
 
 				$addedCheckin = $this->utilities->addCheckin($checkin_data);
