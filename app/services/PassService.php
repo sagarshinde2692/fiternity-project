@@ -57,7 +57,7 @@ class PassService {
                 'text' => 'All Access',
                 'remarks' => ucwords($pass['type']),
                 'type' => $pass['type'],
-                'min_start_date' => strtotime('01-09-2019'),
+                'min_start_date' => time(),
                 'max_start_date' => strtotime('31-12-2019')
             ];
             if($pass['type']=='trial') {
@@ -1117,10 +1117,10 @@ class PassService {
                         unset($homePassData['footer']['section1']['button1_text']);
                         unset($homePassData['footer']['section1']['button2_text']);
                     }
-                    if(!Config::get('app.debug')) {
+                    // if(!Config::get('app.debug')) {
                         unset($homePassData['footer']['section2']);
                         unset($homePassData['footer']['section3']);
-                    }
+                    // }
                 }
                 else {
                     $homePassData['footer'] = $homePassData['footer']['ending'];
@@ -1159,10 +1159,10 @@ class PassService {
                         unset($homePassData['footer']['section1']['button1_text']);
                         unset($homePassData['footer']['section1']['button2_text']);
                     }
-                    if(!Config::get('app.debug')) {
+                    // if(!Config::get('app.debug')) {
                         unset($homePassData['footer']['section2']);
                         unset($homePassData['footer']['section3']);
-                    }
+                    // }
                 }
                 else {
                     $homePassData['footer'] = $homePassData['footer']['ending'];
