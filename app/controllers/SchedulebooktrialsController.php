@@ -2512,38 +2512,15 @@ class SchedulebooktrialsController extends \BaseController {
                     array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
                 }
 
-                if(!empty($order['pass_premium_session'])) {
+                if(!empty($order['pass_order_id'])) {
                     Order::$withoutAppends = true;
                     $passOrder = Order::where('_id', $order['pass_order_id'])->first();
-
                     if(!empty($passOrder)) {
-                        if(empty($passOrder->premium_sessions_used)) {
-                            $passOrder->premium_sessions_used = 0;
+                        if(empty($passOrder->onepass_sessions_used)) {
+                            $passOrder->onepass_sessions_used = 0;
                         }
-                        if($passOrder->total_credits_used<$passOrder->total_credits) {
-                            $passOrder->premium_sessions_used += 1;
-                            $passOrder->update();
-                        }
-                        else {
-                            return ['status'=>400, 'reason'=>'Used up premium sessions, please try again.'];
-                        }
-                    }
-                }
-                else if(!empty($order['pass_credits'])) {
-                    Order::$withoutAppends = true;
-                    $passOrder = Order::where('_id', $order['pass_order_id'])->first();
-
-                    if(!empty($passOrder)) {
-                        if(empty($passOrder->total_credits_used)) {
-                            $passOrder->total_credits_used = 0;
-                        }
-                        if((!empty($passOrder->pass['unlimited_access']) && $passOrder->pass['unlimited_access']) || ($passOrder->total_credits_used<$passOrder->total_credits)) {
-                            $passOrder->total_credits_used += $order['pass_credits'];
-                            $passOrder->update();
-                        }
-                        else {
-                            return ['status'=>400, 'reason'=>'Used up premium sessions, please try again.'];
-                        }
+                        $passOrder->onepass_sessions_used += 1;
+                        $passOrder->update();
                     }
                 }
             }
