@@ -3629,7 +3629,7 @@ class TransactionController extends \BaseController {
         }    
         
         //  commented on 9th Aug - Akhil
-        if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
+        if($data['type'] == 'workout-session') {
             Order::$withoutAppends = true;
             $passSession = $this->passService->allowSession($data['amount'], $data['customer_id']);
             if($passSession['allow_session'] != 0) {
