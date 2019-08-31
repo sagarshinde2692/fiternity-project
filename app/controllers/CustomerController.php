@@ -8249,75 +8249,76 @@ class CustomerController extends \BaseController {
 								
 								if($booktrial_update&&!empty($value['mark'])&& !(isset($booktrial->payment_done) && $booktrial->payment_done == false)){
 									
-									if(!isset($booktrial['extended_validity_order_id'])){
-										$fitcash = $this->utilities->getFitcash($booktrial->toArray());
-										$req = array(
-												"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
-												"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
-												'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan","qrcodescan"=>true
-										);
+									// if(!isset($booktrial['extended_validity_order_id'])){
+									// 	$fitcash = $this->utilities->getFitcash($booktrial->toArray());
+									// 	$req = array(
+									// 			"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
+									// 			"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
+									// 			'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan","qrcodescan"=>true
+									// 	);
 										
-										$booktrial->pps_fitcash=$fitcash;
-										$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
-										$add_chck=$this->utilities->walletTransaction($req);
-									}
-									else {
-										$fitcash = 0;
-									}
+									// 	$booktrial->pps_fitcash=$fitcash;
+									// 	$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
+									// 	$add_chck=$this->utilities->walletTransaction($req);
+									// }
+									// else {
+									// 	$fitcash = 0;
+									// }
 									
 									if((!empty($add_chck)&&$add_chck['status']==200) || (isset($booktrial['extended_validity_order_id'])))
 									{
-										$total_fitcash=$total_fitcash+$fitcash;
-										if(!isset($add_chck) && (isset($booktrial['extended_validity_order_id']))){
-											$add_chck = null;
-										}
-										$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
-										if(!empty($add_checkin_response['checkin_response']['sub_header_2'])){
-											$resp1['sub_header_2']  = (!empty($resp1['sub_header_2']) ? $resp1['sub_header_2'] : '').$add_checkin_response['checkin_response']['sub_header_2'];
-										}
-										if(!empty($add_checkin_response['checkin_response']['header'])){
-											$resp1['header']  = $add_checkin_response['checkin_response']['header'];
-										}
-										if(isset($booktrial['extended_validity_order_id'])) {
-											if(isset($resp1) && isset($resp1['sub_header_1'])){
-												$resp1['sub_header_1'] = '';
-											}
-											if(isset($resp1) && isset($resp1['sub_header_2'])){
-												$resp1['sub_header_2'] = '';
-											}
-											if(isset($resp1) && isset($resp1['description'])){
-												$resp1['description'] = '';
-											}
-											if(isset($resp1) && isset($resp1['image'])){
-												$resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
-											}
-										}
-										array_push($attended,$resp1);
+										// $total_fitcash=$total_fitcash+$fitcash;
+										// if(!isset($add_chck) && (isset($booktrial['extended_validity_order_id']))){
+										// 	$add_chck = null;
+										// }
+										// $resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
+										// if(!empty($add_checkin_response['checkin_response']['sub_header_2'])){
+										// 	$resp1['sub_header_2']  = (!empty($resp1['sub_header_2']) ? $resp1['sub_header_2'] : '').$add_checkin_response['checkin_response']['sub_header_2'];
+										// }
+										// if(!empty($add_checkin_response['checkin_response']['header'])){
+										// 	$resp1['header']  = $add_checkin_response['checkin_response']['header'];
+										// }
+										// if(isset($booktrial['extended_validity_order_id'])) {
+										// 	if(isset($resp1) && isset($resp1['sub_header_1'])){
+										// 		$resp1['sub_header_1'] = '';
+										// 	}
+										// 	if(isset($resp1) && isset($resp1['sub_header_2'])){
+										// 		$resp1['sub_header_2'] = '';
+										// 	}
+										// 	if(isset($resp1) && isset($resp1['description'])){
+										// 		$resp1['description'] = '';
+										// 	}
+										// 	if(isset($resp1) && isset($resp1['image'])){
+										// 		$resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
+										// 	}
+										// }
+										//array_push($attended,$resp1);
 									}
 									else array_push($un_updated,$value['_id']);
 								}
 								if($booktrial_update&&!empty($value['mark'])){
-									$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
-									if(!empty($add_checkin_response['checkin_response']['sub_header_2'])){
-										$resp1['sub_header_2']  = (!empty($resp1['sub_header_2']) ? $resp1['sub_header_2'] : '').$add_checkin_response['checkin_response']['sub_header_2'];
-									}
-									if(!empty($add_checkin_response['checkin_response']['header'])){
-										$resp1['header']  = $add_checkin_response['checkin_response']['header'];
-									}
-									if(isset($booktrial['extended_validity_order_id'])) {
-										if(isset($resp1) && isset($resp1['sub_header_1'])){
-											$resp1['sub_header_1'] = '';
-										}
-										if(isset($resp1) && isset($resp1['sub_header_2'])){
-											$resp1['sub_header_2'] = '';
-										}
-										if(isset($resp1) && isset($resp1['description'])){
-											$resp1['description'] = '';
-										}
-										if(isset($resp1) && isset($resp1['image'])){
-											$resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
-										}
-									}
+									$resp1= !empty($add_checkin_response['checkin_response']) ? $add_checkin_response['checkin_response'] :$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+									// $resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+									// if(!empty($add_checkin_response['checkin_response']['sub_header_2'])){
+									// 	$resp1['sub_header_2']  = (!empty($resp1['sub_header_2']) ? $resp1['sub_header_2'] : '').$add_checkin_response['checkin_response']['sub_header_2'];
+									// }
+									// if(!empty($add_checkin_response['checkin_response']['header'])){
+									// 	$resp1['header']  = $add_checkin_response['checkin_response']['header'];
+									// }
+									// if(isset($booktrial['extended_validity_order_id'])) {
+									// 	if(isset($resp1) && isset($resp1['sub_header_1'])){
+									// 		$resp1['sub_header_1'] = '';
+									// 	}
+									// 	if(isset($resp1) && isset($resp1['sub_header_2'])){
+									// 		$resp1['sub_header_2'] = '';
+									// 	}
+									// 	if(isset($resp1) && isset($resp1['description'])){
+									// 		$resp1['description'] = '';
+									// 	}
+									// 	if(isset($resp1) && isset($resp1['image'])){
+									// 		$resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
+									// 	}
+									// }
 									array_push($attended,$resp1);
 								}
 								else  {

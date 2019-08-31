@@ -9055,7 +9055,7 @@ Class Utilities {
 			{
                 //checking out ----
                 if(!empty($source) && $source=='markcheckin'){
-                    return $this->checkoutInitiate($checkins['_id'], $finder, $finder_id, $customer_id, $checkins);
+                    return $this->checkoutInitiate($checkins['_id'], $finder, $finder_id, $customer_id, $checkins, $customer);
                 }
                 return null;
 				//$res = ["status"=>true, "message"=>" checking- out for the day."];
@@ -9370,19 +9370,19 @@ Class Utilities {
         $post_trial_status_updated_by_qrcode = time();
         $resp1 = [];
         if($booktrial->type == "workout-session"&&!isset($booktrial->post_trial_status_updated_by_qrcode)&&!isset($booktrial->post_trial_status_updated_by_lostfitcode)&&!isset($booktrial->post_trial_status_updated_by_fitcode))
-        {
-            
+        {   
+            $total_fitcash=0;
             if(empty($booktrial->post_trial_status)||$booktrial->post_trial_status=='no show')
             {
                 $booktrial_update = Booktrial::where('_id', $booktrial_id)->update(['post_trial_status_updated_by_qrcode'=>$post_trial_status_updated_by_qrcode]);
                 $payment_done = !(isset($booktrial->payment_done) && !$booktrial->payment_done);
                 if(!empty($booktrial['order_id']))$pending_payment['order_id']=$booktrial['order_id'];
-                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);
+                $customer_level_data = $this->getWorkoutSessionLevel($booktrial['customer_id']);
                 
                 if($booktrial_update&& !(isset($booktrial->payment_done) && $booktrial->payment_done == false)){
                     
                     if(!isset($booktrial['extended_validity_order_id'])){
-                        $fitcash = $this->utilities->getFitcash($booktrial->toArray());
+                        $fitcash = $this->getFitcash($booktrial->toArray());
                         $req = array(
                                 "customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
                                 "amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
@@ -9390,8 +9390,8 @@ Class Utilities {
                         );
                         
                         $booktrial->pps_fitcash=$fitcash;
-                        $booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
-                        $add_chck=$this->utilities->walletTransaction($req);
+                        $booktrial->pps_cashback=$this->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
+                        $add_chck=$this->walletTransaction($req);
                     }
                     else {
                         $fitcash = 0;
@@ -9403,7 +9403,7 @@ Class Utilities {
                         if(!isset($add_chck) && (isset($booktrial['extended_validity_order_id']))){
                             $add_chck = null;
                         }
-                        $resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
+                        $resp1=$this->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
                         
                         if(isset($booktrial['extended_validity_order_id'])) {
                             if(isset($resp1) && isset($resp1['sub_header_1'])){
@@ -9424,7 +9424,7 @@ Class Utilities {
                     //else array_push($un_updated,$booktrial_id);
                 }
                 if($booktrial_update){
-                    $resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+                    $resp1=$this->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
                     if(isset($booktrial['extended_validity_order_id'])) {
                         if(isset($resp1) && isset($resp1['sub_header_1'])){
                             $resp1['sub_header_1'] = '';
@@ -9439,11 +9439,11 @@ Class Utilities {
                             $resp1['image'] = 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png';
                         }
                     }
-                    array_push($attended,$resp1);
+                    //array_push($attended,$resp1);
                 }
                 else  {
                     
-                    $resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+                    $resp1=$this->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
                     if(isset($booktrial['extended_validity_order_id'])) {
                         if(isset($resp1) && isset($resp1['sub_header_1'])){
                             $resp1['sub_header_1'] = '';
