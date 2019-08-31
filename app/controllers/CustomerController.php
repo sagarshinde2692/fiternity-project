@@ -4100,7 +4100,9 @@ class CustomerController extends \BaseController {
 
         $result['fitex'] = [
             'logo' => 'https://b.fitn.in/passes/app-home/pps-icon-new.png',
-            'header' => 'https://b.fitn.in/passes/app-home/pps_header.png',
+			'header' => 'https://b.fitn.in/passes/app-home/pps_header.png',
+			'header_text' => 'PAY-PER-SESSION',
+			'header_sub_text' => 'WORKOUT WHEN YOU CAN, PAY WHEN YOU WORKOUT',
 			'subheader' => "Choose your fitness form, book a workout, pay for that session and go workout, it's that simple.",
             // 'knowmorelink' => 'know more',
 			'footer' => "Get 100% Instant Cashback on Workout Sessions",
