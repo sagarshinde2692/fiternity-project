@@ -2559,7 +2559,9 @@ class SchedulebooktrialsController extends \BaseController {
             Log::info($after_booking_response);
 
             if(!empty($after_booking_response['checkin'])){
+                Log::ingo('123 jbkdfjkbjkbf');
                 if(!empty($after_booking_response['checkin']['status']) && $after_booking_response['checkin']['status'] == 200 && !empty($after_booking_response['checkin']['checkin']['_id'])){
+                    Log::info('checkin data in schedule:::::',[$after_booking_response['checkin']]);
                     $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
                     if(!empty($after_booking_response['checkin']['checkin_response'])){
                         unset($after_booking_response['checkin']['checkin']);
