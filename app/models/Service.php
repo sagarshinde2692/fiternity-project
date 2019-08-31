@@ -492,10 +492,10 @@ class Service extends \Basemodel{
 
                 if(isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
                     if(!empty($value['offers'][0]['remarks'])){
-                        $value['offers'][0]['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+                        $value['offers'][0]['remarks'] = "Use Magic Code: MODAK For Surprise Additional Discounts Upto 75% Off";
                         $value['remarks_imp'] =  true;
                     }else{
-                        $value['remarks'] =  "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+                        $value['remarks'] =  "Use Magic Code: MODAK For Surprise Additional Discounts Upto 75% Off";
                         $value['remarks_imp'] =  true;
                     }
                 }

@@ -1366,7 +1366,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "End Of Monsoon Sale <br> Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - EOMS25 || Get 100% Instant Cashback on Workout Sessions. Use Code - CB100",
+								'text1'=> "Festive Fitness Fiesta <br> Get Blessed With Surprise Additional Discount upto 75% off on ALL Fitternity Services <br> Use Magic Code: MODAK <br> Limited Period Offer",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1378,7 +1378,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "End Of Monsoon Sale <br> Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - EOMS25 || Get 100% Instant Cashback on Workout Sessions. Use Code - CB100",
+								'text1'=> "Festive Fitness Fiesta <br> Get Blessed With Surprise Additional Discount upto 75% off on ALL Fitternity Services <br> Use Magic Code: MODAK <br> Limited Period Offer",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1390,7 +1390,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "End Of Monsoon Sale <br> Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - EOMS25 || Get 100% Instant Cashback on Workout Sessions. Use Code - CB100",
+								'text1'=> "Festive Fitness Fiesta <br> Get Blessed With Surprise Additional Discount upto 75% off on ALL Fitternity Services <br> Use Magic Code: MODAK <br> Limited Period Offer",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3846,25 +3846,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "<u>Festive Fitness Fiesta</u><br><br>- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs<br><br>- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 75% Off On Pay-Per-Session ";
             }else{	
-				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "\nFestive Fitness Fiesta\n\n- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs\n\n- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 75% Off On Pay-Per-Session ";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "<u>Festive Fitness Fiesta</u><br><br>- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs<br><br>- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 75% Off On Pay-Per-Session ";
             }else{	
-				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "\nFestive Fitness Fiesta\n\n- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs\n\n- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 75% Off On Pay-Per-Session ";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "<u>Festive Fitness Fiesta</u><br><br>- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs<br><br>- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 75% Off On Pay-Per-Session ";
             }else{	
-				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "\nFestive Fitness Fiesta\n\n- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs\n\n- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 75% Off On Pay-Per-Session ";
             }
 			
         }
@@ -5335,9 +5335,9 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-                            $ratecard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+                            $ratecard['remarks'] = "Use Magic Code: MODAK For Surprise Additional Discounts Upto 75% Off";
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
-                            //     $ratecard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+                            //     $ratecard['remarks'] = "Use Magic Code: MODAK For Surprise Additional Discounts Upto 75% Off";
                             // }
                         }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
@@ -8303,11 +8303,11 @@ class FindersController extends \BaseController {
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				if(in_array($rc['type'], ['membership', 'extended validity']) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n End Of Monsoon Sale \n\n Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code -EOMS25");
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discount Upto 30% Off On Lowest Price Memberships & Session Packs");
                 }else{
-                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
+                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
-					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n End Of Monsoon Sale\n\n Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code -EOMS");
+					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // }
 
                 }
@@ -8558,9 +8558,9 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			$rateCard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+			$rateCard['remarks'] = "Use Magic Code: MODAK For Surprise Additional Discounts Upto 75% Off";
 			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
-			// 	$rateCard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+			// 	$rateCard['remarks'] = "Use Magic Code: MODAK For Surprise Additional Discounts Upto 75% Off";
 			// }
 			$rateCard['remarks_imp'] = true;
 		}

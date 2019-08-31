@@ -4053,7 +4053,7 @@ class CustomerController extends \BaseController {
             'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
             'subheader' => 'Book sessions and only pay for days you workout',
             // 'knowmorelink' => 'know more',
-            'footer' => "Get 100% Instant Cashback on Workout Sessions"
+            'footer' => "Use Magic Code: MODAK For Surprise Additional Discounts Upto 75% Off"
 		];
 
 		// if(!empty($workout_sessions_near_customer) ){
