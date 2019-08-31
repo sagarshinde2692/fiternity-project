@@ -72,6 +72,8 @@ return [
                 'pass_type' => 'red',
                 'text' => '',
                 'image' => $red_pass,
+                'image1' => 'http://b.fitn.in/passes/onepass-app.png',
+                'image2' => 'https://b.fitn.in/global/onepass/pass%20line%20design.png',
                 'why_pass' => [
                     'header' => 'WHY GO FOR A PASS',
                     'text' => 'LIMITLESS WORKOUTS, LIMITLESS CHOICES, LIMITLESS VALIDITY, LIMITLESS YOU',
@@ -99,6 +101,8 @@ return [
                 'pass_type' => 'black',
                 'text' => '',
                 'image' => $black_pass,
+                'image1' => 'http://b.fitn.in/passes/onepass-app.png',
+                'image2' => 'https://b.fitn.in/global/onepass/pass%20line%20design.png',
                 'why_pass' => [
                     'header' => 'WHY GO FOR A PASS',
                     'text' => 'LIMITLESS WORKOUTS, LIMITLESS CHOICES, LIMITLESS VALIDITY, LIMITLESS YOU',
