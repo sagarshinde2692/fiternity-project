@@ -267,8 +267,6 @@ return [
             "passes" => [
                 [
                     "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
-                    'image1' => 'http://b.fitn.in/passes/onepass_booking.png',
-                    'image2' => 'https://b.fitn.in/global/onepass/pass%20line%20design.png',
                     "header1" => "ONEPASS",
                     "header1_color" => "#000000",
                     "header2" => "RED",
@@ -279,8 +277,6 @@ return [
                 ],
                 [
                     "image" => "https://b.fitn.in/passes/app-home/op_black_thumb.png",
-                    'image1' => 'http://b.fitn.in/passes/onepass_booking.png',
-                    'image2' => 'https://b.fitn.in/global/onepass/pass%20line%20design.png',
                     "header1" => "ONEPASS",
                     "header1_color" => "#000000",
                     "header2" => "BLACK",
