@@ -400,7 +400,7 @@ return [
             "header1_color" => "#000000",
             "header2" => "RED",
             "header2_color" => "#d50000",
-            "subheader" => "UNLIMITED ACCESS",
+            "subheader" => "UNLIMITED USAGE",
             "desc_subheader" => "With Expiry" 
         ],
         "black" =>[
