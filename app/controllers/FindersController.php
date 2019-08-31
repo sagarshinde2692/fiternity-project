@@ -3846,25 +3846,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code - MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }else{	
-				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code - MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code - MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }else{	
-				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code - MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code - MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }else{	
-				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code - MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code - CB100 ";
+				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }
 			
         }
