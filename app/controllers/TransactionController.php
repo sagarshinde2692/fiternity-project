@@ -5998,7 +5998,7 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase. Use Code : CB100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase','position'=>$position++];
         }
         
         $booking_details_all = [];
@@ -7666,6 +7666,15 @@ class TransactionController extends \BaseController {
                         'field' => 'Coupon Discount',
                         'value' => '-Rs. '.(string)$data['coupon_discount']
                     ];
+                }
+
+                if(!empty($order["coupon_discount_amount"])){
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.(string)$order["coupon_discount_amount"]
+                    ];
+                    $data['amount_payable'] = $data['amount_payable'] - $order["coupon_discount_amount"];
+                    $data['you_save'] += $order["coupon_discount_amount"];
                 }
                 
                 $data['amount'] = $data['amount_payable'];
