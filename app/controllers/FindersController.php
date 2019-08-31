@@ -3876,9 +3876,9 @@ class FindersController extends \BaseController {
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
 						if($this->device_type == 'android'){
-							$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code : EOMS";
+							$line = "<u>Festive Fitness Fiesta</u><br><br>- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs";
 						}else{	
-							$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code : EOMS";
+							$line = "\nFestive Fitness Fiesta\n\n- Use Magic Code: MODAK To Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs";
 						}
 						
 						break;
