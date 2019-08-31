@@ -8302,8 +8302,12 @@ class FindersController extends \BaseController {
 			foreach($service['ratecard'] as &$rc){
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
-				if(in_array($rc['type'], ['membership', 'extended validity']) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discount Upto 30% Off On Lowest Price Memberships & Session Packs");
+				if(in_array($rc['type'], ['membership', 'extended validity'])){
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
+					
+					if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
+						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discount Upto 30% Off On Lowest Price Memberships & Session Packs");
+					}
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
