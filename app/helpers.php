@@ -4477,7 +4477,7 @@ if (!function_exists('createBucket')) {
 
 if (!function_exists('setNewToken')) {
 
-    function setNewToken($response, $pass = false, $rel_banner_shown = false){
+    function setNewToken($response, $pass = null, $rel_banner_shown = false){
         
         $decodedToken = decode_customer_token();
 
@@ -4485,12 +4485,17 @@ if (!function_exists('setNewToken')) {
         Log::info(gettype($customer_data));
         Log::info('gettype($customer_data)');
         $pass_data = [];
-        if($pass && empty($customer_data['pass'])){
-            $pass_data = ['pass'=>1];
+        if(!empty($pass) && empty($customer_data['pass'])){
+            $pass_data = ['pass'=>1, 'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 'pass_expiry_date' => (!empty($pass['expiry_date']))?strtotime($pass['expiry_date']):null, 'pass_type' => $pass['pass']['pass_type'], 'pass_sessions_total'=>$pass['onepass_sessions_total'], 'pass_sessions_used'=>$pass['onepass_sessions_used']];
             $customer_data = array_merge($customer_data, $pass_data);
             $update_header = true;
-        }else if(!$pass && !empty($customer_data['pass'])){
+        }else if(empty($pass) && !empty($customer_data['pass'])){
             unset($customer_data['pass']);
+            unset($customer_data['pass_start_date']);
+            unset($customer_data['pass_expiry_date']);
+            unset($customer_data['pass_type']);
+            unset($customer_data['pass_sessions_total']);
+            unset($customer_data['pass_sessions_used']);
             $update_header = true;
         }
         if(!empty($update_header) || $rel_banner_shown){
