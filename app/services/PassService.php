@@ -780,7 +780,6 @@ class PassService {
                 '__end_date'=> ($unlimited)?('Valid up to '. date_format($order['end_date'],'d-M-Y')):''
             ]
         );
-        
         if($unlimited){
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
@@ -792,11 +791,11 @@ class PassService {
             $success_template['pass']['subheader'] = $order['pass']['duration_text'].' Validity';
             $success_template['pass']['card_header'] = 'UNLIMITED USAGE';// $order['pass']['name'];
             $success_template['pass']['header'] = 'UNLIMITED USAGE';// $order['pass']['name'];
-            $success_template['pass']['image'] = $success['pass_image_gold'];
             $success_template['pass']['type'] = '';//strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
             $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
-            $success_template['pass_image'] = $success['pass_image_gold'];
+            $success_template['pass']['image'] = $success['pass_image_silver'];
+            $success_template['pass_image'] = $success['pass_image_silver'];
             $success_template['pass']['usage_text'] = 'UNLIMITED USAGE';
         }
         else{
@@ -819,8 +818,8 @@ class PassService {
                 ]
             );
             $success_template['pass']['subheader'] = 'Unlimited Validity';
-            $success_template['pass']['image'] = $success['pass_image_silver'];
-            $success_template['pass_image'] = $success['pass_image_silver'];
+            $success_template['pass']['image'] = $success['pass_image_gold'];
+            $success_template['pass_image'] = $success['pass_image_gold'];
             $success_template['pass']['usage_text'] = 'UNLIMITED VALIDITY';
         }
        
