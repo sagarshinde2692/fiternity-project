@@ -7,6 +7,7 @@ $red_pass = 'https://b.fitn.in/passes/cards/onepass-red.png';
 $black_pass = 'https://b.fitn.in/passes/cards/onepass-black.png';
 return [
     'list' => [
+        'title'=>'ONEPASS',
         'passes' => [
             [
                 'header' => 'UNLIMITED USAGE',
