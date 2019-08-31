@@ -2559,18 +2559,19 @@ class SchedulebooktrialsController extends \BaseController {
             Log::info($after_booking_response);
 
             if(!empty($after_booking_response['checkin'])){
-                Log::info('123 jbkdfjkbjkbf');
                 if(!empty($after_booking_response['checkin']['status']) && $after_booking_response['checkin']['status'] == 200 && !empty($after_booking_response['checkin']['checkin']['_id'])){
-                    Log::info('checkin data in schedule:::::',[$after_booking_response['checkin']]);
                     $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
-                    if(!empty($after_booking_response['checkin']['checkin_response'])){
-                        unset($after_booking_response['checkin']['checkin']);
-                        unset($after_booking_response['checkin']['checkin_response']['milestones']);
-                        unset($after_booking_response['checkin']['checkin_response']['image']);
-                        $booktrial->checkin_response = $after_booking_response['checkin']['checkin_response'];
-                    }
                 }
             }
+
+            if(!empty($after_booking_response['checkin']['checkin_response'])){
+                unset($after_booking_response['checkin']['checkin_response']['milestones']);
+                unset($after_booking_response['checkin']['checkin_response']['image']);
+                unset($after_booking_response['checkin']['checkin_response']['checkin']);
+                Log::info('checkin data in schedule:::::',[$after_booking_response['checkin']['checkin_response']]);
+                $booktrial->checkin_response = $after_booking_response['checkin']['checkin_response'];
+            }
+
             if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
                 $booktrial->loyalty_registration = true;
                 $orderData['loyalty_registration'] = true;
