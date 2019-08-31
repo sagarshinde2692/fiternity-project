@@ -9359,7 +9359,7 @@ Class Utilities {
 			$resp = $this->checkinCheckoutSuccessMsg($finder, $customer);
 			$resp['header'] = 'CHECK- IN SUCCESSFUL';
             $resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']."\n Make sure you check-out post your workout by scanning the QR code again to get the successful check-in towards the goal of reaching your milestone. \n\n Please note - The check-in will not be provided if your check-out time is not mapped out. Don`t forget to scan the QR code again post your workout.";
-            $resp['checkin'] = $addedCheckin;
+            $resp['checkin'] = (!empty($addedCheckin['checkin'])? $addedCheckin['checkin']: null);
 			return $resp;
 			// if(!empty($addedCheckin['already_checked_in'])){
             //     $return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';
