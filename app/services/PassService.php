@@ -591,8 +591,8 @@ class PassService {
                     }
                 }
                 else if($passOrder['pass']['pass_type']=='red') {
-                    $duration = $passOrder['pass']['duration'];
-                    if(time()<strtotime('+'.$duration.' days')){
+                    // $duration = $passOrder['pass']['duration'];
+                    if(time()<strtotime($passOrder['end_date'])){
                         $canBook = true;
                     }
                 }
@@ -1105,6 +1105,11 @@ class PassService {
 
         $homePassData = Config::get('pass.home.after_purchase.'.$passOrder['pass']['pass_type']);
         $homePassData['pass_order_id'] = $passOrder['_id'];
+        $startDateDiff = $this->getDateDifference($passOrder['start_date']);
+        $notStarted = false;
+        if(empty($startDateDiff) || $startDateDiff<0) {
+            $notStarted = true;
+        }
         if($passOrder['pass']['pass_type']=='black') {
             
             // $homePassData = $homePassData[$passOrder['pass']['pass_type']];
@@ -1132,6 +1137,9 @@ class PassService {
                     else {
                         unset($homePassData['footer']['section1']['button1_text']);
                         unset($homePassData['footer']['section1']['button2_text']);
+                        if($notStarted) {
+                            unset($homePassData['section1']['top_right_button_text']);
+                        }
                     }
                     // if(!Config::get('app.debug')) {
                         unset($homePassData['footer']['section2']);
@@ -1145,6 +1153,8 @@ class PassService {
                 }
             }
             else {
+                unset($homePassData['footer']['section1']['button1_subtext']);
+                unset($homePassData['footer']['section1']['no_last_order']);
                 unset($homePassData['footer']['section1']);
                 $homePassData['footer']['section2'] = $homePassData['footer']['section3'];
                 unset($homePassData['footer']['section3']);
@@ -1153,7 +1163,7 @@ class PassService {
         else if($passOrder['pass']['pass_type']=='red') {
             $totalDuration = $passOrder['pass']['duration'];
             // $expiryDate = date("Y-m-d H:i:s", strtotime('+'.$totalDuration.' days', time()));
-            $expiryDate = date("Y-m-d H:i:s", strtotime($passOrder['expiry_date']));
+            $expiryDate = date("Y-m-d H:i:s", strtotime($passOrder['end_date']));
             $usageLeft = $this->getDateDifference($expiryDate);
             if(empty($usageLeft) || $usageLeft<0) {
                 $passExpired = true;
@@ -1175,6 +1185,9 @@ class PassService {
                     else {
                         unset($homePassData['footer']['section1']['button1_text']);
                         unset($homePassData['footer']['section1']['button2_text']);
+                        if($notStarted) {
+                            unset($homePassData['section1']['top_right_button_text']);
+                        }
                     }
                     // if(!Config::get('app.debug')) {
                         unset($homePassData['footer']['section2']);
@@ -1188,7 +1201,8 @@ class PassService {
                 }
             }
             else {
-                unset($homePassData['footer']['section1']);
+                unset($homePassData['footer']['section1']['button1_subtext']);
+                unset($homePassData['footer']['section1']['no_last_order']);
                 $homePassData['footer']['section2'] = $homePassData['footer']['section3'];
                 unset($homePassData['footer']['section3']);
             }
