@@ -9792,10 +9792,16 @@ class CustomerController extends \BaseController {
 		$customer_geo = [];
 		$finder_geo = [];
 		$checkin_data= [
-			'finder_id' => $finder_id,
 			'lat' => floatval(\Input::get('lat')),
 			'lon' => floatval(\Input::get('lon')),
-			'source' => 'markcheckin'
+			'source' => 'markcheckin',
+			'customer_id'=>$customer_id,
+			'finder_id'=>intval($finder_id),
+			'type'=> !empty($_GET['type']) ? $_GET['type'] : null,
+			'unverified'=>!empty($_GET['type']) ? true : false,
+			'checkout_status' => false,
+            'device_token' => $this->device_token,
+            'mark_checkin_utilities' => false
 		];
 		return $markCheckinResponse = $this->utilities->markCheckinUtilities($checkin_data);
 		//Finder::$withoutAppends = true;
