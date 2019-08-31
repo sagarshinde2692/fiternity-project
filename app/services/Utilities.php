@@ -9467,7 +9467,7 @@ Class Utilities {
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_qrcode= $post_trial_status_updated_by_qrcode;
             $booktrial->post_trial_status_date = time();
-
+            $booktrial->update();
             return $resp1;
         }
 
