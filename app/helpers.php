@@ -2630,6 +2630,9 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer = Customer::find($customer_id);
                         $customer = array_except($customer->toArray(), array('password'));
                         
+                        $passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+
+
                         $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
                         $customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
                         $customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
@@ -2656,7 +2659,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                     "location"=>$customer['location'],
                                     'gender'=>$customer['gender'],
                                     'rx_user'=>$customer['rx_user'],
-        //                     			'rx_success_url'=>$customer['rx_success_url'],	
+                             		// 'rx_success_url'=>$customer['rx_success_url'],	
                                     'extra'=>array(
                                         'mob'=>$customer['extra']['mob'],
                                         'location'=>$customer['extra']['location']
@@ -2673,6 +2676,15 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                             $data['referral_code'] = $customer['referral_code'];	
                         if(!empty($customer['cart_id']))
                             $data['cart_id']=$customer['cart_id'];
+
+                        if(!empty($passOrder)){
+                            $data['pass']=1;
+                            $data['pass_start_date']=(!empty($passOrder['start_date']))?strtotime($passOrder['start_date']):null;
+                            $data['pass_expiry_date']=(!empty($passOrder['end_date']))?strtotime($passOrder['end_date']):null;
+                            $data['pass_type']=$passOrder['pass']['pass_type'];
+                            $data['pass_sessions_total']=$passOrder['onepass_sessions_total'];
+                            $data['pass_sessions_used']=(!!$passOrder['onepass_sessions_used'])?$passOrder['onepass_sessions_used']:0;
+                        }
                     }
 
                     		
