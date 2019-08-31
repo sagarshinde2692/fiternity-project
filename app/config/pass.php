@@ -168,7 +168,7 @@ return [
             'header' => 'pass_name',
             'subheader' => 'duration_text PASS FOR usage_text',
             'image' => $red_pass,
-            'name' => 'FLEXI PASS',
+            'name' => 'ONE PASS',
             'type' => 'pass_type',
             'price' => 'pass_price'
         ],
@@ -196,7 +196,7 @@ return [
             'subheader' => 'duration_text PASS FOR UNLIMITED USAGE',
             'text' => 'duration_text',
             'image' => $red_pass,
-            'name' => 'FLEXI PASS',
+            'name' => 'ONE PASS',
             'type' => 'pass_type',
             'price' => 'pass_price'
         ],
@@ -217,7 +217,7 @@ return [
             'subheader' => 'ALL ACCESS PASS UNLIMITED USAGE', // do have to mention pass duration time 
             'text' => 'duration_text', //need to confirm what have to show before purchase and after pass purchased
             'image' => $black_pass,
-            'name' => 'FLEXI PASS',
+            'name' => 'ONE PASS',
             'type' => 'pass_type',
             'price' => 'pass_price'
         ],
