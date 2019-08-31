@@ -1050,7 +1050,7 @@ class HomeController extends BaseController {
             
             $show_other_vendor = false;
             $why_buy = false;
-            $checkin_response = !empty($itemData['checkin_response']) ? $itemData['checkin_response'] : null;
+            $checkin_response = !empty($itemData['checkin_response']) ? $itemData['checkin_response'] : null;Log::info('checkin response:::', [$checkin_response]);
 
             if(isset($item['type']) && $item['type']=='workout-session' && $device_type && $app_version && in_array($device_type, ['android', 'ios']) && $app_version > '4.4.3'){
 
