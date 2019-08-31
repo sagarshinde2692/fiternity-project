@@ -8243,10 +8243,11 @@ class CustomerController extends \BaseController {
 						
 						if(empty($booktrial->post_trial_status)||$booktrial->post_trial_status=='no show')
 						{
-							$booktrial_update = null;
-							if(!empty($value['mark']));
+							if(!empty($value['mark'])){
 								//$booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status_updated_by_qrcode'=>$post_trial_status_updated_by_qrcode]);
-								else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status'=>'no show']);
+								$booktrial_update = $post_trial_status_updated_by_qrcode;
+							}
+							else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status'=>'no show']);
 								
 								
 								if($booktrial_update&&!empty($value['mark'])&& !(isset($booktrial->payment_done) && $booktrial->payment_done == false)){
