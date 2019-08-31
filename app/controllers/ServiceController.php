@@ -2036,7 +2036,10 @@ class ServiceController extends \BaseController {
 		}
 		if($allowSession && $service_details['amount'] < 1001){
 			$service_details['price'] = Config::get('app.onepass_free_string');
-			$service_details['easy_cancel_text'] = "You can cancel session 1 hour prior to your session time. The paid amount will be refunded to you in form of Fitcash.";
+			$service_details['easy_cancellation'] = array(
+				"header" => "Easy Cancelletion: ",
+				"description" => "You can cancel this session 1 hour prior to your session time."
+			);
 		}
 		$time = isset($_GET['time']) ? $_GET['time'] : null;
 		$time_interval = null;

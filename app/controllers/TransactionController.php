@@ -9670,8 +9670,8 @@ class TransactionController extends \BaseController {
         $onepass_details['desc_subheader'] = "You are booking your ".$totalPassBookingsStr." session using Onepass ".ucfirst($data['pass_type']);
 
         $easy_cancellation = array(
-            "header" => "Easy Cancelletion",
-            "description" => "You can cancel this session 1 hour prior to your session time. The paid amount will be refunded to you in form of Fitcash."
+            "header" => "Easy Cancelletion: ",
+            "description" => "You can cancel this session 1 hour prior to your session time."
         );
 
         $passBookingDetails['onepass_details'] = $onepass_details;
