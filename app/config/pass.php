@@ -66,7 +66,11 @@ return [
         ],
         'app_passes' => [
             [
-                'header' => 'RED PASS',
+                'header' => 'ONEPASS RED',
+                'header1' => 'ONEPASS ',
+                'header1_color' => '#000000',
+                'header2' => 'RED',
+                'header2_color' => '#d50000',
                 'card_header' => 'UNLIMITED USAGE',
                 'subheader' => 'ALL ACCESS PASS',
                 'pass_type' => 'red',
@@ -83,8 +87,8 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 10,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
-                    'button_text' => 'Checkout Studios',
+                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
+                    'button_text' => 'Checkout Gyms/Studios',
                     'ratecards' => []
                 ],
                 'remarks' => [
@@ -95,7 +99,11 @@ return [
                 ]
             ],
             [
-                'header' => 'BLACK PASS',
+                'header' => 'ONEPASS BLACK',
+                'header1' => 'ONEPASS ',
+                'header1_color' => '#000000',
+                'header2' => 'BLACK',
+                'header2_color' => '#000000',
                 'card_header' => 'UNLIMITED VALIDITY',
                 'subheader' => 'ALL ACCESS PASS',
                 'pass_type' => 'black',
@@ -113,7 +121,7 @@ return [
                 ],
                 'offerings' => [
                     'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 30 to 180 sessions with lifetime validity."),
-                    'button_text' => 'Checkout Studios',
+                    'button_text' => 'Checkout Gyms/Studios',
                     'ratecards' => []
                 ],
                 'remarks' => [

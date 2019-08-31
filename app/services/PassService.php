@@ -55,7 +55,7 @@ class PassService {
                 'subheader' => $passSubHeader,
                 // 'text' => (!empty($pass['pass_type']) && $pass['pass_type']=='red')?'All Access':'Limitless Validity',
                 'text' => 'All Access',
-                'remarks' => ucwords($pass['type']),
+                'remarks' => (!empty($pass['type']) && $pass['type'] == 'subscription') ? "" : ucwords($pass['type']),
                 'type' => $pass['type'],
                 'min_start_date' => time(),
                 'max_start_date' => strtotime('31-12-2019')
