@@ -2962,7 +2962,7 @@ Class CustomerReward {
     
         $key = explode('.', $key);
     
-
+        
         if(count($key) == 1){
     
             return isset($data[$key[0]]) ? $data[$key[0]] : null;
