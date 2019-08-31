@@ -248,10 +248,12 @@ class CustomerController extends \BaseController {
 				$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'gt');
 				$pastTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'lte');
 
+				$stampImage = ((!empty($passOrder['pass']['pass_type'])) && $passOrder['pass']['pass_type']=='black')?'https://b.fitn.in/passes/onepass-black-stamp.png':'https://b.fitn.in/passes/onepass-red-stamp.png';
+
 				if(!empty($upcomingTrialsQuery[0])) {
 					foreach($upcomingTrialsQuery as &$trial){
 						if(!empty($trial['pass_order_id'])) {
-							$trial['pass_stamp'] = 'https://b.fitn.in/passes/pass_stamp.png';
+							$trial['pass_stamp'] = $stampImage;
 						}
 					}
 				}
@@ -259,7 +261,7 @@ class CustomerController extends \BaseController {
 				if(!empty($pastTrialsQuery[0])) {
 					foreach($pastTrialsQuery as &$trial){
 						if(!empty($trial['pass_order_id'])) {
-							$trial['pass_stamp'] = 'https://b.fitn.in/passes/pass_stamp.png';
+							$trial['pass_stamp'] = $stampImage;
 						}
 					}
 				}
