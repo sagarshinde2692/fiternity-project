@@ -6426,7 +6426,7 @@ Class Utilities {
                 $markCheckinUtilityResponse = $this->markCheckinUtilities($data);
                 Log::info('addmarkcheckin::::', [$markCheckinUtilityResponse]);
                 if(!empty($markCheckinUtilityResponse)){
-                    return ['status'=>200, 'checkin_response'=>$markCheckinUtilityResponse];
+                    return ['status'=>200, 'checkin_response'=>$markCheckinUtilityResponse, "checkin"=> (!empty($markCheckinUtilityResponse['checkin']) ? $markCheckinUtilityResponse['checkin'] : null)];
                 }
             }
 
@@ -6614,7 +6614,7 @@ Class Utilities {
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
             //Log::info('device_id at aftertransaction success:::::::::::::', [$this->device_token, Request::header('Device-Id')]);
             if((!empty($data['qrcodepayment']) || !empty($data['checkin_booking'])) && empty($data['checkin'])){
-                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null, "checkout_status"=> false, 'device_token'=>$this->device_token ]);
+                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null, "checkout_status"=> false, 'device_token'=>$data['reg_id'],'mark_checkin_utilities' => true]);
             }
         }
 
@@ -9358,7 +9358,8 @@ Class Utilities {
 			// ];
 			$resp = $this->checkinCheckoutSuccessMsg($finder, $customer);
 			$resp['header'] = 'CHECK- IN SUCCESSFUL';
-			$resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']."\n Make sure you check-out post your workout by scanning the QR code again to get the successful check-in towards the goal of reaching your milestone. \n\n Please note - The check-in will not be provided if your check-out time is not mapped out. Don`t forget to scan the QR code again post your workout.";
+            $resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']."\n Make sure you check-out post your workout by scanning the QR code again to get the successful check-in towards the goal of reaching your milestone. \n\n Please note - The check-in will not be provided if your check-out time is not mapped out. Don`t forget to scan the QR code again post your workout.";
+            $resp['checkin'] = $addedCheckin;
 			return $resp;
 			// if(!empty($addedCheckin['already_checked_in'])){
             //     $return['header'] = 'CHECK-IN ALREADY MARKED FOR TODAY';

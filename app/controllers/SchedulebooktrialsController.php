@@ -2561,6 +2561,12 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($after_booking_response['checkin'])){
                 if(!empty($after_booking_response['checkin']['status']) && $after_booking_response['checkin']['status'] == 200 && !empty($after_booking_response['checkin']['checkin']['_id'])){
                     $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
+                    if(!empty($after_booking_response['checkin']['checkin_response'])){
+                        unset($after_booking_response['checkin']['checkin']);
+                        unset($after_booking_response['checkin']['checkin_response']['milestones']);
+                        unset($after_booking_response['checkin']['checkin_response']['image']);
+                        $booktrial->checkin_response = $after_booking_response['checkin']['checkin_response'];
+                    }
                 }
             }
             if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){

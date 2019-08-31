@@ -1050,6 +1050,7 @@ class HomeController extends BaseController {
             
             $show_other_vendor = false;
             $why_buy = false;
+            $checkin_response = !empty($itemData['checkin_response']) ? $itemData['checkin_response'] : null;
 
             if(isset($item['type']) && $item['type']=='workout-session' && $device_type && $app_version && in_array($device_type, ['android', 'ios']) && $app_version > '4.4.3'){
 
@@ -1119,7 +1120,12 @@ class HomeController extends BaseController {
                 }
                 
                 if(!empty($item['qrcodepayment'])){
+                    Log::info('inside qrcode payment');
                     unset($response['subline']);
+                    if(!empty($checkin_response)){
+                        $response['header'] .= "\n &".$checkin_response['header'];
+                        $response['subline'] ='<p>'.$checkin_response['sub_header_2'].'</p>';
+                    } 
                 }
                 
                 if(isset($item['pay_later']) && $item['pay_later'] && $item['status'] == '1'){
