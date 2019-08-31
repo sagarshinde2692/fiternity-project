@@ -8302,7 +8302,7 @@ class FindersController extends \BaseController {
 			foreach($service['ratecard'] as &$rc){
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
-				if(in_array($rc['type'], ['membership', 'extended validity'])){
+				if(in_array($rc['type'], ['membership', 'extended validity', 'studio_extended_validity'])){
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
 					
 					if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
