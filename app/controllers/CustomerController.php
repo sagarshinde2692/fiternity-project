@@ -192,7 +192,8 @@ class CustomerController extends \BaseController {
             $trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
             
             if(!empty($trial["pass_order_id"])){
-                $trial["overlay_image"] = "https://b.fitn.in/paypersession/onepass_booking.png";
+				$stampImage = ((!empty($passOrder['pass']['pass_type'])) && $passOrder['pass']['pass_type']=='black')?'https://b.fitn.in/passes/onepass-black-stamp.png':'https://b.fitn.in/passes/onepass-red-stamp.png';
+                $trial["overlay_image"] = $stampImage;
             }
             
             if(!empty($trial["going_status"]) && $trial["going_status"] == 2){
