@@ -9005,7 +9005,7 @@ Class Utilities {
 		}
 	}
 
-	public function checkForCheckinFromDevice($finder_id, $device_token, $finder, $customer_id, $source=null){
+	public function checkForCheckinFromDevice($finder_id, $device_token, $finder, $customer_id, $source=null, $data=null){
 
 		$checkins = $this->checkInsList($customer_id, $device_token);
 
@@ -9071,7 +9071,7 @@ Class Utilities {
 			}
 			else if($difference >= 180 * 60){
                 //if(!empty($source) && $source=='markcheckin'){
-                    return $this->checkinInitiate($finder_id, $finder, $customer_id, $customer);
+                    return $this->checkinInitiate($finder_id, $finder, $customer_id, $customer, $data);
                 // }
                 // return null;
 			}
@@ -9080,7 +9080,7 @@ Class Utilities {
 		{
             //just checkinss ->>>>>> start checkoins
             //if(!empty($source) && $source=='markcheckin'){
-                return $this->checkinInitiate($finder_id, $finder, $customer_id, $customer);
+                return $this->checkinInitiate($finder_id, $finder, $customer_id, $customer, $data);
             // }
             // return null;
 		}
@@ -9137,7 +9137,7 @@ Class Utilities {
 			if($oprtionalDays['status']){ // need to remove ! 
                 //Log::info('device ids:::::::::', [$this->device_id]);
                 $source = !empty($data['source'])? $data['source'] : null;
-				return $this->checkForCheckinFromDevice($finder_id, $this->device_token, $finder, $customer_id, $source);
+				return $this->checkForCheckinFromDevice($finder_id, $this->device_token, $finder, $customer_id, $source, $data);
 			}
 			else{
 				// return for now you are checking in for non operational day or time
@@ -9171,6 +9171,7 @@ Class Utilities {
             //Log::info('customer_updates',[$customer_update]);
             if(!empty($checkout->booktrial_id)){
                 $resp1= $this->markCustomerAttendanceCheckout($checkout, $customer);
+                //Log::info('response::',[$resp1]);
             }
 
 			if($customer_update)
@@ -9277,7 +9278,7 @@ Class Utilities {
 		}
     }
     
-    public function checkinInitiate($finder_id, $finder_data, $customer_id, $customer){
+    public function checkinInitiate($finder_id, $finder_data, $customer_id, $customer, $data=null){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -9312,8 +9313,12 @@ Class Utilities {
 			'unverified'=>!empty($_GET['type']) ? true : false,
 			'checkout_status' => false,
             'device_token' => $this->device_token,
-            'mark_checkin_utilities' => false//(empty($source)? false: true)
+            'mark_checkin_utilities' => false
         ];
+        if(!empty($data)){
+            $data['mark_checkin_utilities'] = false;
+            $checkin_data = $data;
+        }
 		Log::info('before schedule_sessions::::::::::::: device id',[$this->device_token, $checkin_data]);
         if(!empty($_GET['receipt'])){
             $checkin_data['receipt'] = true;
