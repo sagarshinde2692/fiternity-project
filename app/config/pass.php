@@ -31,7 +31,7 @@ return [
                 ],
                 'remarks' => [
                     'header' => 'In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! Limited Period Offer, Only Few Passes Up For Grabs.',
-                    'text' => 'view all terms and conditions',
+                    'text' => 'Terms & Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
                 ]
@@ -58,7 +58,7 @@ return [
                 ],
                 'remarks' => [
                     'header' => 'Limitless validity',
-                    'text' => 'view all terms and conditions',
+                    'text' => 'Terms & Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
 
@@ -147,7 +147,7 @@ return [
         "<h2>Terms and Conditions</h2>
         <ul>
             <li>OnePass bookings will start from 5th September 2019</li>
-            <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facili</li>
+            <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facility</li>
             <li>Incase you're not enjoying OnePass - You can take a refund (No Questions asked). You pro-rata based un-utilized amount will be converted to Fitcash on Fitternity(1 Rupee = 1 Fitcash) and can be used to buy any other service/membership on Fitternity. 5% of your initial payment for OnePass upto a maximum of Rs 500 will be deducted to process this transition from OnePass to Fitcash</li>
             <li>The cashback received via any OnePass transaction can be only be redeemed to upgrade your OnePass</li>
         </ul>"
@@ -343,8 +343,8 @@ return [
                 "terms" => "<h2>Terms and Conditions</h2>
                             <ul>
                                 <li>OnePass bookings will start from 5th September 2019</li>
-                                <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facili</li>
-                                <li>Incase you're not enjoying OnePass - You can take a refund (No Questions asked). You pro-rata based un-utilized amount will be converted to Fitcash on Fitternity(1 Rupee = 1 Fitcash) and can be used to buy any other service/membership on Fitternity. 5% of your initial payment for OnePass upto a maximum of Rs 500 will be deducted to process this transition from OnePass to Fitcash</li>
+                                <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facility</li>
+                                <li></li>
                                 <li>The cashback received via any OnePass transaction can be only be redeemed to upgrade your OnePass</li>
                             </ul>"
             ],
@@ -386,7 +386,7 @@ return [
                 "terms" => "<h2>Terms and Conditions</h2>
                             <ul>
                                 <li>OnePass bookings will start from 5th September 2019</li>
-                                <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facili</li>
+                                <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facility</li>
                                 <li>Incase you're not enjoying OnePass - You can take a refund (No Questions asked). You pro-rata based un-utilized amount will be converted to Fitcash on Fitternity(1 Rupee = 1 Fitcash) and can be used to buy any other service/membership on Fitternity. 5% of your initial payment for OnePass upto a maximum of Rs 500 will be deducted to process this transition from OnePass to Fitcash</li>
                                 <li>The cashback received via any OnePass transaction can be only be redeemed to upgrade your OnePass</li>
                             </ul>"
