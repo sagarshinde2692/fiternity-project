@@ -9676,9 +9676,11 @@ Class Utilities {
                 $pass = true;
             }
             
-            Log::info("customer_email 1",[$customer_email]);
-            if($customer_email == "ankitamamnia@fitternity.com"){
-                $pass = true;
+            if(Config::get('app.env') == 'stage'){
+                Log::info("customer_email 1",[$customer_email]);
+                if($customer_email == "ankitamamnia@fitternity.com"){
+                    $pass = true;
+                }
             }
         }
         return $pass;
