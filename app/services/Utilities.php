@@ -9204,7 +9204,7 @@ Class Utilities {
             
             if(!empty($resp1)){
                 $return['sub_header_2'] = !empty($resp1['sub_header_2']) ? $resp1['sub_header_2']."\n". $return['sub_header_2']: $return['sub_header_2'];
-                !empty($resp1['sub_header_1']) ? $return['sub_header_1'] = $resp1['sub_header_1']: null;
+                !empty($resp1['sub_header_1']) ? $return['sub_header_2'] = $resp1['sub_header_1'].$return['sub_header_2']  : null;
             }
 			return $return;
 		}catch(Exception $err){
