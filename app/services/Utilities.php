@@ -9648,6 +9648,9 @@ Class Utilities {
 		}
 		if(empty($near_by_workout_request['lat']) && empty($near_by_workout_request['lon'])){
 			$result['header'] = "Workouts in ".ucwords($near_by_workout_request['city']);
+        }
+        if(!empty($_REQUEST['selected_region'])){
+			$result['header'] = "Workouts in ".ucwords($_REQUEST['selected_region']);
 		}
 		return $result;
 	}

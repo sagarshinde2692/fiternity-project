@@ -4124,7 +4124,7 @@ class CustomerController extends \BaseController {
 			// if(empty($order)) {
 			// 	$result['buy_pass'] = [
 			// 		'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
-			// 		'header' => 'Flexi Pass!',
+			// 		'header' => 'ONE PASS!',
 			// 		'subheader' => 'Buy pass and book workouts',
 			// 		'footer' => 'Buy pass!!'
 			// 	];
