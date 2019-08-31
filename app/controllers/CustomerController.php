@@ -7894,6 +7894,7 @@ class CustomerController extends \BaseController {
 				->whereIn('post_trial_status',[null, ''])
 				->where('schedule_date_time', '<=',$cur)
 				->where('schedule_date_time', '>=',$twoHours)
+				->where(function($query){$query->whereOr('type','workout-session')->whereIn('checkin',[null,'']);})
 				->orderBy('schedule_date_time','desc');
                 
                 if(in_array($data['vendor_id'], Config::get('app.sucheta_pal_finder_ids', []))){
