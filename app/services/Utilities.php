@@ -9242,7 +9242,7 @@ Class Utilities {
 		->orderby('_id', 'desc')
 		->first();
 
-		if(count($checkins) && !empty($get_qr_loyalty_screen)){
+		if(count($checkins)>0 && !empty($get_qr_loyalty_screen)){
 			$d = strtotime($checkins['created_at']);	
 			$cd = strtotime(date("Y-m-d H:i:s"));
 			$difference = $cd -$d;
