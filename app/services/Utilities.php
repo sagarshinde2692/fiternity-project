@@ -9089,8 +9089,7 @@ Class Utilities {
 	}
 
 	public function markCheckinUtilities($data=null){
-
-		//$input = Input::all();                     
+                     
 		$rules = [
 			'lat' => 'required',
             'lon' => 'required'
