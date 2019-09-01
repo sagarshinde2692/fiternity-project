@@ -6612,7 +6612,7 @@ Class Utilities {
         }else if($type == 'booktrial' && !isset($data['third_party_details'])){
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
-            //Log::info('device_id at aftertransaction success:::::::::::::', [$this->device_token, Request::header('Device-Id')]);
+            Log::info('device_id at aftertransaction success:::::::::::::', [$this->device_token, Request::header('Device-Id'), $data]);
             if((!empty($data['qrcodepayment']) || !empty($data['checkin_booking'])) && empty($data['checkin'])){
                 $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null, "checkout_status"=> false, 'device_token'=>$data['reg_id'],'mark_checkin_utilities' => true]);
             }

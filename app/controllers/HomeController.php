@@ -1123,7 +1123,7 @@ class HomeController extends BaseController {
                     Log::info('inside qrcode payment');
                     unset($response['subline']);
                     if(!empty($checkin_response)){
-                        $response['header'] .= "\n &".$checkin_response['header'];
+                        $response['header'] .= "\n ".$checkin_response['header'];
                         $response['subline'] ='<p>'.$checkin_response['sub_header_2'].'</p>';
                     } 
                 }
