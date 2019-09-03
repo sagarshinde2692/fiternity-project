@@ -9122,7 +9122,7 @@ Class Utilities {
 			if($oprtionalDays['status']){ // need to remove ! 
                 //Log::info('device ids:::::::::', [$this->device_id]);
                 $source = !empty($data['source'])? $data['source'] : null;
-                $this->device_token= !empty($data['device_type']) ? $data['device_type']: $this->device_token;
+                $this->device_token= !empty($data['device_token']) ? $data['device_token']: $this->device_token;
 				return $this->checkForCheckinFromDevice($finder_id, $this->device_token, $finder, $customer_id, $source, $data);
 			}
 			else{
