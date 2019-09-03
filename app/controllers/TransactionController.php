@@ -6526,7 +6526,8 @@ class TransactionController extends \BaseController {
     public function checkCouponCode(){
         
         $data = Input::json()->all();
-
+        $device = Request::header('Device-Type');
+        $version = Request::header('App-Version');
         Log::info("checkCouponCode");
         Log::info($data);
 
@@ -6549,9 +6550,24 @@ class TransactionController extends \BaseController {
         //     }
         // }
         
-        if(!isset($data['ratecard_id']) && !isset($data['ticket_id']) && !isset($data['pass_id'])){
-            $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
-            return Response::json($resp,400);
+        if(empty($data['ratecard_id']) && empty($data['ticket_id']) && empty($data['pass_id'])){
+            if(isset($data['order_id'])){
+                $data['order_id'] = intval($data['order_id']);
+                $orderDetails = Order::where('_id', $data['order_id'])->first();
+                $data['pass_id'] = (!empty($orderDetails['pass_id']))?$orderDetails['pass_id']:null;
+                $data['customer_name'] = (!empty($orderDetails['customer_name']))?$orderDetails['customer_name']:null;
+                $data['customer_email'] = (!empty($orderDetails['customer_email']))?$orderDetails['customer_email']:null;
+                $data['customer_phone'] = (!empty($orderDetails['customer_phone']))?$orderDetails['customer_phone']:null;
+                $data['device_type'] = (!empty($device))?$device:null;
+                $data['app_version'] = (!empty($version))?$version:null;
+                if(!empty($data['pass_id'])) {
+                    unset($data['ratecard_id']);
+                }
+            }
+            if(empty($data['pass_id'])) {
+                $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
+                return Response::json($resp,400);
+            }
         }
         if($this->utilities->isGroupId($data['coupon'])){
             $ratecard = Ratecard::find($data['ratecard_id']);
