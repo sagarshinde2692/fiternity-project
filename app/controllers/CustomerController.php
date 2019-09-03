@@ -8514,7 +8514,7 @@ class CustomerController extends \BaseController {
 					'type'=>'workout-session',
 					'unverified'=>false,
 					"checkout_status"=> false,
-					'device_token' => $this->device_token,
+					'device_token' => !empty($query['Device-Token']) ? $query['Device-Token']: null,
 					'mark_checkin_utilities' => true,
 					'lat'=> $data['lat'], 
 					'lon'=>$data['lon']
