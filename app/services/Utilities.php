@@ -9684,8 +9684,11 @@ Class Utilities {
         }
         return $pass;
     }
-    public function bullet() {
-		return json_decode('"'."\u2022".'"');
-	}
+    public function bullet($isChar = false) {
+        if($isChar) {
+            return •;
+        }
+        return json_decode('"'."\u2022".'"');
+    }
 }
 
