@@ -9685,9 +9685,6 @@ Class Utilities {
         return $pass;
     }
     public function bullet($isChar = false) {
-        if($isChar) {
-            return "•";
-        }
         return json_decode('"'."\u25cf".'"');
     }
 }
