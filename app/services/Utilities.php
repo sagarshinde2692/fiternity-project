@@ -9688,7 +9688,7 @@ Class Utilities {
         if($isChar) {
             return "•";
         }
-        return json_decode('"'."\u2022".'"');
+        return json_decode('"'."\u25cf".'"');
     }
 }
 
