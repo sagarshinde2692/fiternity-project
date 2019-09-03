@@ -8165,8 +8165,10 @@ class CustomerController extends \BaseController {
 					    $this->utilities->autoRegisterCustomerLoyalty($booktrial);
                     }
 
-                    if(!empty($value['mark'])){
+					$checkin_marked = false;
+					if(!empty($value['mark']) && empty($checkin_marked)){
 						$add_checkin_response = $this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'], "checkout_status"=> false, 'device_token' => $this->device_token, 'lat'=> $lat, 'lon'=>$lon,'booktrial_id'=> $booktrial['_id'], 'mark_checkin_utilities' => true]);
+						$checkin_marked = true;
 						Log::info('add checkin response data:::', [$add_checkin_response]);
 					}
 

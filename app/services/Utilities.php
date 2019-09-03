@@ -9011,7 +9011,7 @@ Class Utilities {
 
 		$res = ["status"=> true];
 
-		Log::info('chekcins:::::::::::;', [$checkins, $customer_id]);
+		Log::info('chekcins:::::::::::;', [$device_token, $checkins, $customer_id]);
         $customer = Customer::active()->where('_id', (int)$customer_id)->first();
 		if(count($checkins)>0)
 		{
