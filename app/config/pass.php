@@ -99,7 +99,7 @@ return [
         'image' => 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
         "header" => "Your ___type pass is active",
         'subline'=>'Hi __customer_name, your __pass_name for __pass_duration is now confirmed. We have also sent you a confirmation Email and SMS.',
-        'subline_1'=>'Booking starts from 5st of September 2019.',
+        'subline_1'=>'Booking starts from 5th of September 2019.',
         "pass" => [
             // "text" => "(__usage_remark) __end_date",
             "text" => "__end_date",

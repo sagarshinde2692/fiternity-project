@@ -60,7 +60,7 @@ class PassService {
             ];
             if($pass['type']=='trial') {
                 $passDetails['header'] .= ' Trial';
-                $passDetails['cashback'] = '(100% cashback)';
+                $passDetails['cashback'] = '(50% cashback)';
             }
             if($pass['unlimited_access']) {
                 $passDetails['price'] = 'Rs. '.$pass['price'];
@@ -632,6 +632,7 @@ class PassService {
 
         if(!empty($order['amount']) && !empty($order['pass']['cashback']) && empty($order['coupon_code'])){
             $validity = time()+(86400*30);
+            $amount = ceil($order['amount']/2);
             $walletData = array(
                 "order_id"=>$order['_id'],
                 "customer_id"=> intval($order['customer_id']),
@@ -641,7 +642,7 @@ class PassService {
                 "type"=>'CASHBACK',
                 'entry'=>'credit',
                 'order_type'=>['pass'],
-                "description"=> "100% Cashback on buying trial pass, Expires On : ".date('d-m-Y',$validity),
+                "description"=> "50% Cashback on buying trial pass, Expires On : ".date('d-m-Y',$validity),
                 "validity"=>$validity,
             );
     
