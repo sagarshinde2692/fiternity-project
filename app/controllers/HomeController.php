@@ -1125,9 +1125,9 @@ class HomeController extends BaseController {
                     
                     $customer = Customer::find($customer_id, ['loyalty']);
                     
-                    if(!empty($customer['loyalty'])){
+                    // if(!empty($customer['loyalty'])){
                         // $response['milestones'] = $this->utilities->getMilestoneSection();
-                    }
+                    // }
                     
                 }
                 
