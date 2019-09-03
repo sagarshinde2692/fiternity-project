@@ -9686,7 +9686,7 @@ Class Utilities {
     }
     public function bullet($isChar = false) {
         if($isChar) {
-            return •;
+            return "•";
         }
         return json_decode('"'."\u2022".'"');
     }
