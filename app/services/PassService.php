@@ -1145,7 +1145,7 @@ class PassService {
                         unset($homePassData['footer']['section1']['button1_text']);
                         unset($homePassData['footer']['section1']['button2_text']);
                         if($notStarted) {
-                            unset($homePassData['section1']['top_right_button_text']);
+                            unset($homePassData['top_right_button_text']);
                         }
                     }
                     // if(!Config::get('app.debug')) {
@@ -1193,7 +1193,7 @@ class PassService {
                         unset($homePassData['footer']['section1']['button1_text']);
                         unset($homePassData['footer']['section1']['button2_text']);
                         if($notStarted) {
-                            unset($homePassData['section1']['top_right_button_text']);
+                            unset($homePassData['top_right_button_text']);
                         }
                     }
                     // if(!Config::get('app.debug')) {
