@@ -3324,10 +3324,15 @@ class SchedulebooktrialsController extends \BaseController {
             // $show_location_flag              =   (count($finder['locationtags']) > 1) ? false : true;
 
             $description =  $what_i_should_carry = $what_i_should_expect = $service_category = '';
+            $service_slug = null;
             if ($service_id != '') {
                 $serviceArr = Service::with(array('location' => function ($query) {
                     $query->select('_id', 'name', 'slug');
                 }))->with('category')->with('subcategory')->where('_id', '=', intval($service_id))->first()->toArray();
+
+                if(!empty($serviceArr['slug'])) {
+                    $service_slug = $serviceArr['slug'];
+                }
 
                 if((isset($serviceArr['category']['description']) && $serviceArr['category']['description'] != '')){
                     $description = $serviceArr['category']['description'];
@@ -3513,6 +3518,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 'service_id'          =>      $service_id,
                 'service_name'        =>      $service_name,
+                'service_slug'                  =>      $service_slug,
                 'schedule_slot_start_time'      =>      $schedule_slot_start_time,
                 'schedule_slot_end_time'        =>      $schedule_slot_end_time,
                 'schedule_date'       =>      $schedule_date,

@@ -927,10 +927,6 @@ class PassService {
 
         $data = [];
 
-        if(empty($activeOrders)) {
-            $activeOrders = array();
-        }
-
         $orderList = [];
         // if(!empty($activeOrders)) {
         //     foreach($activeOrders as $active) {
