@@ -6552,6 +6552,7 @@ class TransactionController extends \BaseController {
         
         if(empty($data['ratecard_id']) && empty($data['ticket_id']) && empty($data['pass_id'])){
             if(isset($data['order_id']) && $device=='ios'){
+                $data['order_id'] = intval($data['order_id']);
                 $orderDetails = Order::where('_id', $data['order_id'])->first();
                 $data['pass_id'] = (!empty($orderDetails['pass_id']))?$orderDetails['pass_id']:null;
                 $data['customer_name'] = (!empty($orderDetails['customer_name']))?$orderDetails['customer_name']:null;
