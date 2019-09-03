@@ -636,9 +636,9 @@ class PassService {
             $walletData = array(
                 "order_id"=>$order['_id'],
                 "customer_id"=> intval($order['customer_id']),
-                "amount"=> $order['amount'],
+                "amount"=> $amount,
                 "amount_fitcash" => 0,
-                "amount_fitcash_plus" => $order['amount'],
+                "amount_fitcash_plus" => $amount,
                 "type"=>'CASHBACK',
                 'entry'=>'credit',
                 'order_type'=>['pass'],
