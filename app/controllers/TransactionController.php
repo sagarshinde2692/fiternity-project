@@ -6526,7 +6526,7 @@ class TransactionController extends \BaseController {
     public function checkCouponCode(){
         
         $data = Input::json()->all();
-
+        $device = Request::header('Device-Type');
         Log::info("checkCouponCode");
         Log::info($data);
 
@@ -6550,8 +6550,14 @@ class TransactionController extends \BaseController {
         // }
         
         if(!isset($data['ratecard_id']) && !isset($data['ticket_id']) && !isset($data['pass_id'])){
-            $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
-            return Response::json($resp,400);
+            if(isset($data['order_id']) && $device=='ios'){
+                $orderDetails = Order::active()->where('_id', $data['order_id'])->first();
+                $data['pass_id'] = (!empty($orderDetails['pass_id']))?$orderDetails['pass_id']:null;
+            }
+            if(empty($data['pass_id'])) {
+                $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
+                return Response::json($resp,400);
+            }
         }
         if($this->utilities->isGroupId($data['coupon'])){
             $ratecard = Ratecard::find($data['ratecard_id']);
