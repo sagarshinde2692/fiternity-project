@@ -66,10 +66,10 @@ class PassService {
                 $passDetails['cashback'] = '(100% cashback)';
                 $passDetails['extra_info'] = [
                     'title'=>'100% Instant Cashback',
-                    'description'=> $utilities->bullet(true)." The cashback will be added in the form of FitCash in the Fitternity Wallet (1 Fitcash point = INR 1).<br>".
-                                    $utilities->bullet(true)." FitCash received can only be used to upgrade ONEPASS subscription.<br>".
-                                    $utilities->bullet(true)." The instant cashback received is valid for 30 days starting from the date of pass activation.<br>".
-                                    $utilities->bullet(true)." The offer cannot be clubbed with any other offer.<br>"
+                    'description'=> "<ul><li>The cashback will be added in the form of FitCash in the Fitternity Wallet (1 Fitcash point = INR 1).</li>".
+                                    "<li>FitCash received can only be used to upgrade ONEPASS subscription.</li>".
+                                    "<li>The instant cashback received is valid for 30 days starting from the date of pass activation.</li>".
+                                    "<li>The offer cannot be clubbed with any other offer.</li></ul>"
                 ];
             }
             if($pass['unlimited_access']) {
