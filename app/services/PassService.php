@@ -583,6 +583,10 @@ class PassService {
             return;
         }
 
+        if(empty($date)){
+            return;
+        }
+        $schedule_time = strtotime($date);
         if(!empty($customerId)) {
             $passOrder = $this->getPassOrder($customerId);
         }
@@ -593,7 +597,7 @@ class PassService {
         }
         $canBook = false;
         if(!empty($passOrder['pass'])) {
-            if(time()>strtotime($passOrder['start_date'])){
+            if($schedule_time>strtotime($passOrder['start_date'])){
                 if($passOrder['pass']['pass_type']=='black'){
                     $sessionsUsed = $passOrder['onepass_sessions_used'];
                     $sessionsTotal = $passOrder['onepass_sessions_total'];
@@ -603,7 +607,7 @@ class PassService {
                 }
                 else if($passOrder['pass']['pass_type']=='red') {
                     // $duration = $passOrder['pass']['duration'];
-                    if(time()<strtotime($passOrder['end_date'])){
+                    if($schedule_time<strtotime($passOrder['end_date'])){
                         $canBook = true;
                     }
                 }

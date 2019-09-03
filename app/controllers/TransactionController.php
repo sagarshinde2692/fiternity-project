@@ -3608,7 +3608,7 @@ class TransactionController extends \BaseController {
         //  commented on 9th Aug - Akhil
         if($data['type'] == 'workout-session') {
             Order::$withoutAppends = true;
-            $passSession = $this->passService->allowSession($data['amount'], $data['customer_id']);
+            $passSession = $this->passService->allowSession($data['amount'], $data['customer_id'], $data['schedule_date']);
             if($passSession['allow_session']) {
                 $data['pass_type'] = $passSession['pass_type'];
                 $data['pass_order_id'] = $passSession['order_id'];
