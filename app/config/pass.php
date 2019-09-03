@@ -94,7 +94,7 @@ return [
                 ],
                 'remarks' => [
                     'header' => 'In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! Limited Period Offer, Only Few Passes Up For Grabs', // need content
-                    'text' => 'view all terms and conditions',
+                    'text' => 'view all Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
                 ]
@@ -126,8 +126,8 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => 'Limitless validity', // need content
-                    'text' => 'view all terms and conditions',
+                    'header' => 'In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! Limited Period Offer, Only Few Passes Up For Grabs', // need content
+                    'text' => 'view all Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
 
