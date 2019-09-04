@@ -1286,7 +1286,7 @@ class PassService {
             unset($homePassData['tnc_text']);
         }
         else {
-            $homePassData['terms'] = $tnc;
+            $homePassData['terms'] = "<h2>Terms and Conditions</h2>".$tnc;
         }
         return $homePassData;
     }

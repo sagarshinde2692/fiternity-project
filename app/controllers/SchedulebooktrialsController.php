@@ -4767,7 +4767,7 @@ class SchedulebooktrialsController extends \BaseController {
                 ($order['pass']['pass_type'] == 'black') &&
                 (strtotime($order['start_date']) <= time()) && 
                 ($order['onepass_sessions_used'] < $order['onepass_sessions_total']) &&
-                ($order['onepass_sessions_used']>1)
+                ($order['onepass_sessions_used']>0)
             ){
                 $order->onepass_sessions_used -= 1;
                 $order->update();
