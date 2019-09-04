@@ -538,9 +538,37 @@ class PassService {
         return;
     }
 
-    public function getPassOrder($customerId) {
-        $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->first();
-        return (!empty($passOrder))?$passOrder:null;
+    public function getPassOrder($customerId, $scheduleDate = null) {
+        // $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->first();
+        $scheduleDate = (!empty($scheduleDate))?(new \MongoDate($scheduleDate)):(new \MongoDate());
+        $passOrder = Order::raw(function ($collection) use ($customerId, $scheduleDate) {
+            $aggregate = [
+                [
+                    '$project' => [
+                        '_id'=> 1, 'customer_id'=> 1, 'status'=> 1, 'type'=> 1, 'pass'=> 1, 'start_date'=> 1, 'end_date'=> 1, 'onepass_sessions_used'=> 1, 'onepass_sessions_total'=> 1, 'diff_sessions'=> ['$cmp'=> ['$onepass_sessions_total','$onepass_sessions_used']], 'pass_type'=> '$pass.pass_type'
+                    ]
+                ],
+                [
+                    '$match' => [
+                        'customer_id' => $customerId, 'status' => '1', 'type' => 'pass',
+                        'start_date' => ['$lte' => $scheduleDate],
+                        '$or' => [
+                            ['$and' => [['pass.pass_type' => 'red'], ['end_date' => ['$gt' => $scheduleDate]]]],
+                            ['$and' => [['pass.pass_type' => 'black'], ['diff_sessions' => ['$gt' => 0]]]]
+                        ]
+                    ]
+                ],
+                ['$sort' => ['_id' => 1]],
+                ['$limit' => 1]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+        
+        if(!empty($passOrder['result'][0]['_id'])) {
+            return $passOrder = Order::where('_id', $passOrder['result'][0]['_id'])->first();
+        }
+        return ;
+        // return (!empty($passOrder))?$passOrder:null;
     }
 
     public function getPremiumExpiryDates($bookingStartDate, $premiumBookingInterval, $duration) {
@@ -589,7 +617,7 @@ class PassService {
         }
         $schedule_time = strtotime($date);
         if(!empty($customerId)) {
-            $passOrder = $this->getPassOrder($customerId);
+            $passOrder = $this->getPassOrder($customerId, $schedule_time);
         }
 
         if(!empty($passOrder)) {
@@ -1120,7 +1148,8 @@ class PassService {
 
     public function homePostPassPurchaseData($customerId, $showTnC = true) {
         Order::$withoutAppends = true;
-        $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->orderBy('_id', 'desc')->first();
+        // $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->orderBy('_id', 'desc')->first();
+        $passOrder = $this->getPassOrder($customerId);
         if(empty($passOrder)){
             return null;
         }
