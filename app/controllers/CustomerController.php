@@ -4195,7 +4195,7 @@ class CustomerController extends \BaseController {
                 (
                     in_array($_REQUEST['device_type'],['android']) 
                     && 
-                    $_REQUEST['app_version'] < '5.30'
+                    $_REQUEST['app_version'] < '5.29'
                 )
             )
         ){
