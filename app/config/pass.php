@@ -131,7 +131,7 @@ return [
                     'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more ! \nLimited Period Offer, Only Few Passes For Grabs.", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
-                    'url' => $apiUrl.'/passtermscondition?type=subscripe'
+                    'url' => $apiUrl.'/passtermscondition?type=subscribe'
 
                 ]
             ]

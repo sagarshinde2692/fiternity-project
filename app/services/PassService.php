@@ -18,8 +18,7 @@ use Wallet;
 use Customer;
 use Coupon;
 use stdClass;
-use Illuminate\Support\Facades\Input;
-
+use Input;
 class PassService {
 
     public function __construct() {
@@ -1520,7 +1519,7 @@ class PassService {
         if(!empty($input['type']) && $input['type']=='unlimited'){
             $passTerms = $passTerms['red'];
         }
-        else if(!empty($input['type']) && $input['type']=='subscripe'){
+        else if(!empty($input['type']) && $input['type']=='subscribe'){
             $passTerms = $passTerms['black'];
         }
         else{
