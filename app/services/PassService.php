@@ -18,6 +18,7 @@ use Wallet;
 use Customer;
 use Coupon;
 use stdClass;
+use Illuminate\Support\Facades\Input;
 
 class PassService {
 
@@ -1514,7 +1515,17 @@ class PassService {
     }
 
     public function passTermsAndCondition(){
+        $input = Input::all();
         $passTerms = \Config::get('pass.terms');
+        if(!empty($input['type']) && $input['type']=='unlimited'){
+            $passTerms = $passTerms['red'];
+        }
+        else if(!empty($input['type']) && $input['type']=='subscripe'){
+            $passTerms = $passTerms['black'];
+        }
+        else{
+            $passTerms = [null];
+        }
         return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
     }
 }

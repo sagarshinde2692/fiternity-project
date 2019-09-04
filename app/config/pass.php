@@ -152,7 +152,62 @@ return [
             <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facility</li>
             <li>Incase you're not enjoying OnePass - You can take a refund (No Questions asked). You pro-rata based un-utilized amount will be converted to Fitcash on Fitternity(1 Rupee = 1 Fitcash) and can be used to buy any other service/membership on Fitternity. 5% of your initial payment for OnePass upto a maximum of Rs 500 will be deducted to process this transition from OnePass to Fitcash</li>
             <li>The cashback received via any OnePass transaction can be only be redeemed to upgrade your OnePass</li>
-        </ul>"
+        </ul>",
+        "red"=>[
+            "<h2>Terms and Conditions</h2>
+            <ul>
+                <li>OnePass bookings will start from 5th September 2019.</li>
+                <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
+                <li>All OnePass bookings can only be done through the Fitternity App.</li>
+                <li>OnePass Red user will have access to book 1 session a day.</li>
+                <li>Cashback receivable on the trial subscription of OnePass Red will be added in the Fitternity wallet in the form of FitCash after deducting GST fees.</li>
+                <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
+                <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
+                <li>No cashback streaks would be applicable for OnePass users on attendance of workout sessions.</li>
+                <li>In case of session cancellation or unfulfillment from the service provider’s end, OnePass Red user will get an additional day.</li>
+                <li>Slot availability are subject to change as per availability at the fitness center.</li>
+                <li>On occasions of Festivals, National holidays, Maintenance Days at the fitness center, session booking are subject to availability.</li>
+                <li>OnePass is an arrangement /agreement /membership of Fitternity. All issues, doubts or clarification concerning OnePass should be communicated with Fitternity.</li>
+                <li>Fitternity holds the right to cancel the OnePass subscription at any point of time without any prior notice. Upon cancellation the refund amount would be calculated on pro-rata basis and the same would be reverted back to the bank account.</li>
+                <li>In case of cancellation of OnePass subscription the refund would be transferred in the Fitternity wallet in the form of FitCash. The FitCash can be redeemed on all services available on Fitternity.</li>
+                <li>In case of misbehaviour by the user at the Vendor location, Fitness center or the staff, Fitternity holds the right to cancel the user's  subscription without any prior notice. No refund amount would be processed in this scenario.</li>
+                <li>Refund Policy is only applicable on subscriptions above 3 months.</li>
+                <li>The user will be charged a 3% convenience fee on cancellation of his/her OnePass subscription (over and above usage of subscription on pro rata basis).</li>
+                <li>If the user opts for  “Cash Pick Up” option for payment of dues,on any amount of subscription of OnePass, a flat pickup fee of INR 200 will be charged additionally, over and above the subscription amount.</li>
+                <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facility</li>
+                <li>In case the user is found misusing any of the OnePass services, he/she will be penalized at the discretion of Fitternity.</li>
+                <li>In case of any injury or accident at the Fitness Center, any claims on Fitternity would not be applicable whatsoever.</li>
+                <li>In case of any dispute the final decision made by Fitternity would be final.</li>
+                <li>In case of any assistance concerning OnePass write us at onepass@fitternity.com  or call your personal concierge at +918879886083</li>
+            </ul>"
+        ],
+        "black" =>[
+            "<h2>Terms and Conditions</h2>
+            <ul>
+                <li>OnePass bookings will start from 5th September 2019.</li>
+                <li>Onepass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
+                <li>All OnePass bookings can only be done through the Fitternity App.</li>
+                <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
+                <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
+                <li>No cashback streaks would be applicable for OnePass users on attendance of workout sessions.</li>
+                <li>In case of session cancellation or unfulfillment from the service provider’s end, the OnePass Black user will get the session back as well as an additional session.</li>
+                <li>The session booked will be credited back to the user in his Fitternity profile, if he/she cancels the session 2 hours prior to the session time.</li>
+                <li>Slot availability are subject to change as per availability slot availability at the fitness center.</li>
+                <li>On occasions of Festivals, National holidays, Maintenance Days at the fitness center, session booking are subject to availability.</li>
+                <li>OnePass is an arrangement /agreement /membership of Fitternity. All issues, doubts or clarification concerning OnePass should be communicated with Fitternity.</li>
+                <li>Fitternity holds the right to cancel the OnePass subscription at any point of time without any prior notice. Upon cancellation the refund amount would be calculated on pro-rata basis and the same would be reverted back to the bank account.</li>
+                <li>In case of cancellation of OnePass subscription the refund would be transferred in the Fitternity wallet in the form of FitCash. The FitCash can be redeemed on all services available on Fitternity.</li>
+                <li>In case of misbehaviour by the user at the Vendor location, Fitness center or the staff, Fitternity holds the right to cancel the user's  subscription without any prior notice. No refund amount would be processed in this scenario. </li>
+                <li>Refund Policy is only applicable on subscriptions above 3 months.</li>
+                <li>The user will be charged a 3% convenience fee on cancellation of his/her OnePass subscription (over and above usage of subscription on pro rata basis).</li>
+                <li>If the user opts for  “Cash Pick Up” option for payment of dues,on any amount of subscription of OnePass, a flat pickup fee of INR 200 will be charged additionally, over and above the subscription amount.</li>
+                <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facility</li>
+                <li>In case the user is found misusing any of the OnePass services, he/she will be penalized at the discretion of Fitternity.</li>
+                <li>In case of any injury or accident at the Fitness Center, any claims on Fitternity would not be applicable whatsoever.</li>
+                <li>In case of any dispute the final decision made by Fitternity would be final.</li>
+                <li>In case of any assistance concerning OnePass write us at onepass@fitternity.com  or call your personal concierge at +918879886083.</li>
+            </ul>"
+        ]
     ],
     'question_list' => [
         [
