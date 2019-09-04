@@ -856,10 +856,10 @@ class PassService {
             $success_template['pass']['image2'] = 'https://b.fitn.in/global/onepass/pass%20line%20design.png';
             // $success_template['info']['data'][0] = 'Book your sessions through the App';
             $success_template['info']['data'] = $success_template['info']['app_data'];
-            $utilities = new Utilities();
-            foreach($success_template['info']['data'] as &$item) {
-                $item = $utilities->bullet()." ".$item;
-            }
+            // $utilities = new Utilities();
+            // foreach($success_template['info']['data'] as &$item) {
+            //     $item = $utilities->bullet()." ".$item;
+            // }
             unset($success_template['info']['app_data']);
         }
 
