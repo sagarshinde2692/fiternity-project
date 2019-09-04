@@ -118,9 +118,23 @@ class PassService {
         return $response;
     }
 
-    public function passCapture($data){
+    public function passCapture($data, $existing_order = null){
 
+        if(!empty($data['order_id'])){
+            $order_exists = true;
+            if(empty($existing_order)){
+                $order = Order::find($data['order_id']);
+            }else{
+                $order = $existing_order;
+            }
+            $keys = ['customer_email', 'customer_name', 'customer_phone', 'pass_id', 'coupon_code'];
+            foreach($keys as $key){
+                if(empty($data[$key]) & !empty($order[$key])){
+                    $data[$key] = $order[$key];
+                }
+            }
 
+        }
         $data['customer_source'] = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
         
         $data['type'] = "pass";
@@ -171,9 +185,12 @@ class PassService {
         
         }
         
-        
-        $id = Order::maxId()+1;
-        $data['_id'] = $id;
+        if(empty($order_exists)){
+            $id = Order::maxId()+1;
+            $data['_id'] = $id;
+        }else{
+            $data['_id'] = $data['order_id'];
+        }
         
         $data['order_id'] = $data['_id'];
         $data['orderid'] = $data['_id'];
@@ -273,9 +290,13 @@ class PassService {
             // $data['amount'] = 0;
             $data['preferred_starting_date'] = (!empty($data['preferred_starting_date']))?date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date'])):null;
             $data['code'] = (string) random_numbers(5);
-            $order = new Order($data);
-            $order['_id'] = $data['_id'];
-            $order->save();
+            if(empty($order_exists)){
+                $order = new Order($data);
+                $order['_id'] = $data['_id'];
+                $order->save();
+            }else{
+                $order->update($data);
+            }
             
             if(in_array($order['customer_source'],['android','ios','kiosk'])){
                 $mobilehash = $order['payment_related_details_for_mobile_sdk_hash'];
