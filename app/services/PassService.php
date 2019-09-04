@@ -1211,7 +1211,7 @@ class PassService {
                         if($notStarted) {
                             unset($homePassData['top_right_button_text']);
                             $homePassData['left_text'] = "Booking starts";
-                            $homePassData['left_value'] = "from: ";
+                            $homePassData['left_value'] = " from: ";
                             $homePassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
                             unset($homePassData['right_value']);
                         }
