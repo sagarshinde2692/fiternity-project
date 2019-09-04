@@ -1526,9 +1526,9 @@ class FindersController extends \BaseController {
 		// }
 
 		// commented on 9th Augus - Akhil
-		// if(!empty($customer_id)){
-		// 	$this->addCreditPoints($response['finder']['services'], $customer_id);
-		// }
+		if(!empty($customer_id)){
+			$this->addCreditPoints($response['finder']['services'], $customer_id);
+		}
 
 		$this->multifitGymWebsiteVendorUpdate($response);
 
@@ -3867,7 +3867,25 @@ class FindersController extends \BaseController {
 				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }
 			
-        }
+		}
+		
+		foreach($data['finder']['services'] as &$service){
+			foreach($service['ratecard'] as &$ratecard){
+				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+						if($this->device_type == 'android'){
+							$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK";
+						}else{	
+							$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK";
+						}
+						
+						break;
+					}
+				}
+			}
+		}
 
         return $line;
 		
@@ -5264,14 +5282,49 @@ class FindersController extends \BaseController {
 		// }
 
 		// commented on 9th August - Akhil
-		// if(!empty($customer_id)){
-		// 	$this->addCreditPoints($finderData['finder']['services'], $customer_id);
-		// }
+		if(!empty($customer_id)){
+			$this->addCreditPoints($finderData['finder']['services'], $customer_id);
+		}
 		//adding static data for hanman fitness
 		// if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
 		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
 		// }
 		//Log::info('finder',[$finderData['finder']]);
+
+		foreach($finderData['finder']['services'] as &$service){
+			foreach($service['ratecard'] as &$ratecard){
+				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+					Log::info("Price onepass ::",[$price]);
+					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+					$allowSession = false;
+					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+						$allowSession = $this->passService->allowSession($price, $customer_id);
+						if(!empty($allowSession['allow_session'])) {
+							$allowSession = $allowSession['allow_session'];
+						}
+						else {
+							$allowSession = false;
+						}
+					}
+					if($allowSession){
+						unset($ratecard['button_color']);
+						unset($ratecard['pps_know_more']);
+						unset($ratecard['pps_title']);
+						unset($ratecard['remarks']);
+						unset($ratecard['remarks_imp']);
+						unset($ratecard['price_text']);
+
+						unset($finderData['fit_ex']);
+
+						$ratecard['price'] = $ratecard['special_price'] = "0";
+						$ratecard['start_price_text'] = Config::get('app.onepass_free_string');
+						$ratecard['skip_share_detail'] = true;
+					}
+				}
+			}
+		}
+
 		return Response::json($finderData,$finderData['status']);
 
 	}
@@ -5365,6 +5418,10 @@ class FindersController extends \BaseController {
 								$ratecard['cashback_on_trial'] = "100% Cashback";
 							}
 						}
+
+						if($ratecard['price'] == 0 && $ratecard['special_price'] == 0){
+							$ratecard['start_price_text'] = "Free Via Fitternity";
+						}
 					}
 					if(isset($ratecard['flags'])){
 
@@ -5384,7 +5441,6 @@ class FindersController extends \BaseController {
 							$ratecard['direct_payment_enable'] = "0";
 						}
 					}
-
 
 					array_push($ratecardArr, $ratecard);
 				}
@@ -6490,6 +6546,9 @@ class FindersController extends \BaseController {
 			"message"=>"Success"
 		];
 
+        if(empty($finder_id)){
+            $response['tnc']['description'] = $this->passService->passTermsAndCondition()['data'];
+        }
 		return $response;
 
 	}
@@ -8434,7 +8493,7 @@ class FindersController extends \BaseController {
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['allow_session'] != 0 ){
+							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	
 							}
 						}
@@ -8446,7 +8505,7 @@ class FindersController extends \BaseController {
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['allow_session'] != 0 ){
+							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	
 							}
 						}
@@ -8567,6 +8626,7 @@ class FindersController extends \BaseController {
 			// 	$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: CB100";
 			// }
 			$rateCard['remarks_imp'] = true;
+		
 		}
 	}
 

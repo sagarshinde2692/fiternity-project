@@ -4380,7 +4380,7 @@ Class Utilities {
 					"entry"=>"credit",
 					"type"=>"FITCASHPLUS"
 				];
-				$this->utilities->walletTransaction($addWalletData);
+				$this->walletTransaction($addWalletData);
 				$resp["show_popup"] = true;
 				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
 				$resp["popup"]["header_text"] = "Congratulations";
@@ -7482,7 +7482,7 @@ Class Utilities {
             $regData['reg_id'] = $gcm_reg_id;
             $regData['type'] = $device_type;
 
-            $this->utilities->addRegId($regData);
+            $this->addRegId($regData);
         }
 
         return array('status' => 200,'data' => $data);
@@ -9674,6 +9674,9 @@ Class Utilities {
 		}
 		if(empty($near_by_workout_request['lat']) && empty($near_by_workout_request['lon'])){
 			$result['header'] = "Workouts in ".ucwords($near_by_workout_request['city']);
+        }
+        if(!empty($_REQUEST['selected_region'])){
+			$result['header'] = "Workouts in ".ucwords($_REQUEST['selected_region']);
 		}
 		return $result;
 	}
@@ -9686,6 +9689,30 @@ Class Utilities {
         $city_array = array_values(array_filter($cities,function ($e) use ($slug){return $e['slug'] == $slug;}));
         
         return !empty($city_array) ? $city_array[0] : null;
+    }
+
+    public function onepassHoldCustomer(){
+        $jwt_token = Request::header('Authorization');
+        $pass = false;
+        $customer_email = "";
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_email = $decoded->customer->email;
+            if(!empty($decoded->customer->pass)){
+                $pass = true;
+            }
+            
+            if(Config::get('app.env') == 'stage'){
+                if($customer_email == "ankitamamnia@fitternity.com"){
+                    $pass = true;
+                }
+            }
+        }
+        Log::info("pass header",[$pass]);
+        return $pass;
+    }
+    public function bullet($isChar = false) {
+        return json_decode('"'."\u25cf".'"');
     }
 
     public function rollbackVouchers($customer, $combo_vouchers_list){

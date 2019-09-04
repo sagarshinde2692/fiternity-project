@@ -13,12 +13,14 @@ class PassController extends \BaseController {
     public function listPasses($pass_type=null){
 
         $jwt_token = Request::header('Authorization');
+        $device = Request::header('Device-Type');
+        $version = Request::header('App-Version');
         $customer_id = null;
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
         }
-        $passes = $this->passService->listPasses($customer_id, $pass_type);
+        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version);
         if(empty($passes)) {
             return [
                 "status" => 400,
@@ -106,8 +108,7 @@ class PassController extends \BaseController {
     }
 
     public function passTermsAndCondition(){
-        $passTerms = \Config::get('pass.terms');
-        return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
+        return $this->passService->passTermsAndCondition();
     }
 
     public function passFrequentAskedQuestion(){
@@ -126,4 +127,13 @@ class PassController extends \BaseController {
         return $this->passService->orderPassHistory($customer_id);
     }
 
+    public function homePostPassPurchaseData() {
+        $jwt_token = Request::header('Authorization');
+        $customer_id = null;
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
+        return [ 'status' => 200, 'data' => $this->passService->homePostPassPurchaseData($customer_id), 'message' => 'Success' ];
+    }
 }
