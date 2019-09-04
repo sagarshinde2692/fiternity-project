@@ -121,7 +121,7 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 30 to 180 sessions with lifetime validity."),
+                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 15 to 150 sessions with lifetime validity."),
                     'button_text' => 'Checkout Gyms/Studios',
                     'ratecards' => []
                 ],
