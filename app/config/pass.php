@@ -171,7 +171,8 @@ return [
                 <li>In case of any injury or accident at the Fitness Center, any claims on Fitternity would not be applicable whatsoever.</li>
                 <li>In case of any dispute the final decision made by Fitternity would be final.</li>
                 <li>In case of any assistance concerning OnePass write us at onepass@fitternity.com  or call your personal concierge at +918879886083</li>
-            </ul>"
+            </ul>
+            <br/><br/>"
         ],
         "black" =>[
             "<ul>
@@ -197,7 +198,8 @@ return [
                 <li>In case of any injury or accident at the Fitness Center, any claims on Fitternity would not be applicable whatsoever.</li>
                 <li>In case of any dispute the final decision made by Fitternity would be final.</li>
                 <li>In case of any assistance concerning OnePass write us at onepass@fitternity.com  or call your personal concierge at +918879886083.</li>
-            </ul>"
+            </ul>
+            <br/><br/>"
         ]
     ],
     'question_list' => [
