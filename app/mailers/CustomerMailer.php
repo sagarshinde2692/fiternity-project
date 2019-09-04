@@ -245,6 +245,12 @@ Class CustomerMailer extends Mailer {
 			return;
 		}
 
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			return;
+		}
+
 		return $this->common($label,$data,$message_data);
 	}
 
@@ -719,6 +725,12 @@ Class CustomerMailer extends Mailer {
 			return;
 		}
 
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			return;
+		}
+
 		return $this->common($label,$data,$message_data);
 	}
 
@@ -743,6 +755,12 @@ Class CustomerMailer extends Mailer {
 
 		$header = $this->multifitUserHeader();
 		if($multifitFlag == true || $header == true){
+			return;
+		}
+
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
 			return;
 		}
 
