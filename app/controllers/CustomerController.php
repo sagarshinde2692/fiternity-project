@@ -4177,8 +4177,12 @@ class CustomerController extends \BaseController {
 				'message' => 'Sorry, We are currently not operational in your city. We will be launching here soon.'
 			];
 		}
-
-		$response = Response::make($result);
+        
+        if(!empty($result['fitex'])){
+            unset($result['fitex']);
+        }
+        
+        $response = Response::make($result);
 		if(!empty($customeremail)){
 			$response = setNewToken($response, !empty($passOrder)?$passOrder:null, $rel_banner_shown);
 		}
