@@ -614,7 +614,8 @@ class PassService {
         if(empty($date)){
             $date = date('d-m-Y', time());
         }
-        $schedule_time = strtotime($date);
+        // $schedule_time = strtotime($date);
+        $schedule_time = strtotime('midnight', strtotime($date));
         if(!empty($customerId)) {
             $passOrder = $this->getPassOrder($customerId, $schedule_time);
         }
@@ -636,7 +637,10 @@ class PassService {
                 else if($passOrder['pass']['pass_type']=='red') {
                     // $duration = $passOrder['pass']['duration'];
                     if($schedule_time<strtotime($passOrder['end_date'])){
-                        $canBook = true;
+                        $todaysBooking = Booktrial::where('pass_order_id', $passOrder['_id'])->where('schedule_date', $schedule_time)->where('going_status_txt', '!=', 'cancel')->first();
+                        if(empty($todaysBooking)) {
+                            $canBook = true;
+                        }
                     }
                 }
             }
