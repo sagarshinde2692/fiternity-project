@@ -1118,7 +1118,7 @@ class PassService {
         $homePassData['pass_order_id'] = $passOrder['_id'];
         $startDateDiff = $this->getDateDifference($passOrder['start_date']);
         $notStarted = false;
-        if(empty($startDateDiff) || $startDateDiff<0) {
+        if(!empty($startDateDiff) && $startDateDiff>0) {
             $notStarted = true;
         }
         if($passOrder['pass']['pass_type']=='black') {
