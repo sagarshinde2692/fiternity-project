@@ -1096,7 +1096,7 @@ class PassService {
 
     public function getDateDifference($expiryDate) {
         $expiryDate = strtotime($expiryDate);
-        $diff = ($expiryDate)-time();
+        $diff = ($expiryDate)-(strtotime('midnight', time()));
         $diffDays = ($diff/(60*60*24));
         return ($diffDays>=1)?intval($diffDays):0;
     }
