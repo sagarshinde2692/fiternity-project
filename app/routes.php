@@ -1399,3 +1399,4 @@ Route::get('nearbyvendors', 'CustomerController@getNearbyVendors');
 Route::get('migrateStepsToFirestore', 'DebugController@migrateStepsToFirestore');
 Route::get('testOnePassUser', 'DebugController@testOnePassUser');
 Route::get('homepostpasspurchase', 'PassController@homePostPassPurchaseData');
+Route::get('dynamicOnepassEMailSms', 'DebugController@dynamicOnepassEMailSms');

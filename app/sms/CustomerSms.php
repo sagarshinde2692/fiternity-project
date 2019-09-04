@@ -41,6 +41,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	protected function onepassDynamic ($data){
+
+		$label = 'Onepass-Dynamic-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+	}
+
 	protected function rescheduledBookTrial ($data){
 
 		$label = 'RescheduleTrial-Instant-Customer';

@@ -11469,4 +11469,37 @@ public function yes($msg){
 		
 		return $onepassHoldCustomer;		
 	}
+
+	public dynamicOnepassEMailSms(){
+		$destinationPath = public_path();
+		$fileName = "onepass_customers-test.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+		
+		$finArr = array();
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if( !empty($value['customer_name']) && !empty($value['customer_email']) && !empty($value['contact_number'])  && !empty($value['type'])){
+					
+					$data = array();
+					$data['customer_name'] = $value['customer_name'];
+					$data['customer_email'] = $value['customer_email'];
+					$data['customer_phone'] = $value['contact_number'];
+					$data['pass_type'] = $value['type'];
+					
+					$customermailer = new CustomerMailer();
+					$customermailer->onepassDynamic($data);
+
+					array_push($finarr, $data);
+					// $customersms = new CustomerSms();
+					// $customersms->onepassDynamic($value);
+				}
+			}
+		}
+		return $finArr;
+	}
 }
