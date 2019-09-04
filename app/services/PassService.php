@@ -295,6 +295,7 @@ class PassService {
             $result['finder_name'] = strtolower($order['finder_name']);
             $result['complementary_pass'] = $order['complementary_pass'];
             $result['type'] = 'pass';
+            $result['full_payment_wallet'] = empty($result['amount']);
             $resp = [
                 'status' => 200,
                 'data' => $result,
@@ -1210,8 +1211,8 @@ class PassService {
                         unset($homePassData['footer']['section1']['button2_text']);
                         if($notStarted) {
                             unset($homePassData['top_right_button_text']);
-                            $homePassData['left_text'] = "Booking starts";
-                            $homePassData['left_value'] = " from: ";
+                            $homePassData['left_text'] = "Booking starts from:";
+                            unset($homePassData['left_value']);
                             $homePassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
                             unset($homePassData['right_value']);
                         }
