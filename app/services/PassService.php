@@ -322,7 +322,6 @@ class PassService {
                 'data' => $result,
                 'message' => "Tmp Order Generated Sucessfully"
             ];
-            $result['payment_modes'] = $this->getPaymentModes($resp);
             
         }else{
             
@@ -391,8 +390,9 @@ class PassService {
         }
         
         $resp['data']['payment_details'] = $payment_details;
-        
-        $resp['data']['payment_modes'] = $this->getPaymentModes($resp, $order->toArray());
+        if(!empty($result['amount'])){
+            $resp['data']['payment_modes'] = $this->getPaymentModes($resp, $order->toArray());
+        }
 
         return $resp;
 
