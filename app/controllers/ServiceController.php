@@ -760,7 +760,7 @@ class ServiceController extends \BaseController {
 					$customer_id = intval($decoded->customer->_id);
 				}
 			}
-			$allowSession = $this->passService->allowSession(1, $customer_id);
+			$allowSession = $this->passService->allowSession(1, $customer_id, $date);
 			if(!empty($allowSession['allow_session'])) {
 				$allowSession = $allowSession['allow_session'];
 			}
@@ -980,7 +980,7 @@ class ServiceController extends \BaseController {
 		    		}
 		    		
 				}
-				$price_text = $this->addCreditPointsNew($ratecard_price);
+				// $price_text = $this->addCreditPointsNew($ratecard_price);
 				foreach ($weekdayslots['slots'] as $slot) {
 
 					if(!empty($finder)&&!empty($finder['flags'])&&!empty($finder['flags']['newly_launched_date']))
@@ -1738,7 +1738,7 @@ class ServiceController extends \BaseController {
 	public function serviceDetailv1($finder_slug, $service_slug, $cache=true){
 
 		// return date('Y-m-d', strtotime('day after tomorrow'));
-
+        $date = !empty($_GET['date']) ? $_GET['date'] : null;
 		Log::info($_SERVER['REQUEST_URI']);
 		$cache_key = "$finder_slug-$service_slug";
 
@@ -2026,7 +2026,7 @@ class ServiceController extends \BaseController {
 		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 		$allowSession = false;
 		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-			$allowSession = $this->passService->allowSession($service_details['amount'], $customer_id);
+			$allowSession = $this->passService->allowSession($service_details['amount'], $customer_id, $date);
 			if(!empty($allowSession['allow_session'])) {
 				$allowSession = $allowSession['allow_session'];
 			}

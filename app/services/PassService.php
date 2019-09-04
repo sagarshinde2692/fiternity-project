@@ -584,7 +584,7 @@ class PassService {
         }
 
         if(empty($date)){
-            return;
+            $date = date('d-m-y', time());
         }
         $schedule_time = strtotime($date);
         if(!empty($customerId)) {
