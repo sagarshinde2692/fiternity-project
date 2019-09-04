@@ -813,7 +813,7 @@ Class CustomerMailer extends Mailer {
 		
 	}
 
-	protected function onepassDynamic($data,$delay){
+	protected function onepassDynamic($data){
 		
 		$label = 'Onepass-Dynamic-Customer';
 		
