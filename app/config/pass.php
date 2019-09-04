@@ -309,7 +309,7 @@ return [
                 "name"  => "",
                 "header" => "UNLIMITED USAGE",
                 "subheader" => "", // duration or sessions
-                "top_right_button_text" => "BOOK",
+                "top_right_button_text" => "BOOK >",
                 "left_text"  => "UPCOMING: ",
                 "left_value"  => 0,
                 "right_text"  => "COMPLETED: ",
@@ -353,7 +353,7 @@ return [
                 "name"  => "",
                 "header" => "UNLIMITED VALIDITY",
                 "subheader" => "", // duration or sessions
-                "top_right_button_text" => "BOOK",
+                "top_right_button_text" => "BOOK >",
                 "left_text"  => "UPCOMING: ",
                 "left_value"  => "0",
                 "right_text"  => "COMPLETED: ",
