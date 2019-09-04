@@ -1049,16 +1049,18 @@ class RewardofferController extends BaseController {
         }
 
         // if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
+        // || (in_array($finder['brand_id'], [135,166,88]) && in_array($duration_day, [180, 360])) 
         
         if((in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360) 
-        || (in_array($finder['brand_id'], [135,166,88]) && in_array($duration_day, [180, 360])) 
+        || (in_array($finder['brand_id'], [135,166]) && in_array($duration_day, [180, 360])) 
         || ((in_array($finder['_id'], Config::get('app.upgrade_session_finder_id'))) && $ratecard['type'] == 'extended validity')
         || ((in_array($finder['_id'], Config::get('app.extended_mixed_finder_id'))) && $ratecard['type'] == 'membership')
         ){
             
             $rewardObj = $this->getMixedReward();
 
-			if(in_array($finder['brand_id'], [135, 166, 88]) && $ratecard['type'] != 'extended validity'){
+			// if(in_array($finder['brand_id'], [135, 166, 88]) && $ratecard['type'] != 'extended validity'){
+            if(in_array($finder['brand_id'], [135, 166]) && $ratecard['type'] != 'extended validity'){
                 if($finder['brand_id']==135){
                     $mixedreward_content = MixedRewardContent::where('brand_id', $finder['brand_id'])->where('finder_id',$finder['_id'])->where("duration",$duration_day)->first();
                 }

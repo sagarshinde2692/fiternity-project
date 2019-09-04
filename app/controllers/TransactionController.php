@@ -531,7 +531,14 @@ class TransactionController extends \BaseController {
                 }
             
             }
-    
+            if(!empty($data['event_extra_customer'])){
+                if(!empty($data['event_customers'])){
+                    $data['event_customers'] = array_merge($data['event_customers'] ,$data['event_extra_customer']);
+                }
+                else{
+                    $data['event_customers']  = $data['event_extra_customer'];
+                }
+            }
             if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
     
                 $event_customers = $data['event_customers'];
@@ -545,7 +552,7 @@ class TransactionController extends \BaseController {
     
                         return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),$this->error_status);
     
-                    }else{
+                    }else if(!empty($customer_data["customer_email"])){
     
                         $event_customer_email[] = strtolower($customer_data["customer_email"]);
                     }
@@ -554,7 +561,7 @@ class TransactionController extends \BaseController {
     
                         return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),$this->error_status);
     
-                    }else{
+                    }else if(!empty($customer_data["customer_phone"])){
     
                         $event_customer_phone[] = $customer_data["customer_phone"];
                     }
@@ -851,15 +858,17 @@ class TransactionController extends \BaseController {
                         return Response::json($resp,$this->error_status);
                     }
 
+                    !empty($ticket['minimum_no_of_ticket']) ? $data['ticket_quantity'] = $ticket['minimum_no_of_ticket']: null;
+
                     $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
 
-                    if($data['ticket_quantity'] == 4){
-                        $data['combo_discount'] = 400;
-                        $data['combo_discount_remark'] = "Buy 4 tickets, get 400 off";
-                        $data['amount'] = $data['amount'] - $data['combo_discount'];
-                        $data['amount_customer'] = $data['amount_customer'] - $data['combo_discount'];
-                        $data['amount_finder'] = $data['amount_finder'] - $data['combo_discount'];
-                    }
+                    // if($data['ticket_quantity'] == 4){
+                    //     $data['combo_discount'] = 400;
+                    //     $data['combo_discount_remark'] = "Buy 4 tickets, get 400 off";
+                    //     $data['amount'] = $data['amount'] - $data['combo_discount'];
+                    //     $data['amount_customer'] = $data['amount_customer'] - $data['combo_discount'];
+                    //     $data['amount_finder'] = $data['amount_finder'] - $data['combo_discount'];
+                    // }
 
                 }else{
 
@@ -882,12 +891,14 @@ class TransactionController extends \BaseController {
                 $data['finder_name'] = $finder->title;
             }
 
-            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug','mfp','contact','venue']);
+            $event = DbEvent::where('_id', (int)$data['event_id'])->first(['name', 'slug','mfp','contact','venue', 'start_date', 'end_date']);
 
             if($event){
                 $data['event_name'] = $event->name;
 				$data['event_address'] = $event["contact"]["address"];
-				$data['event_venue'] = $event["venue"];
+                $data['event_venue'] = $event["venue"];
+                $data['event_start_date'] = $event['start_date'];
+                $data['event_end_date'] = $event['end_date'];
                 if(in_array($event['slug'],Config::get('app.my_fitness_party_slug')) || !empty($event['mfp'])){
                     $data['event_type'] = "TOI";
                     $data['qr_code'] = $this->utilities->encryptQr(['owner'=>'fitternity','order_id'=>$data['_id']]);
@@ -1395,8 +1406,12 @@ class TransactionController extends \BaseController {
 
 
         if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
+            $auto_register_input = array('event_customers'=>$data['event_customers']);
+            if(!empty($data['event_type']) && $data['event_type']=='TOI'){
+                $auto_register_input['event_type'] =  $data['event_type'];
+            }
 
-            Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', array('event_customers'=>$data['event_customers']),Config::get('app.queue'));
+            Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', $auto_register_input, Config::get('app.queue'));
         }
 
         if(in_array($data['type'],$this->membership_array)){
@@ -5764,7 +5779,9 @@ class TransactionController extends \BaseController {
             $event_customers = $data["event_customers"];
 
             foreach ($event_customers as $customer_data) {
-
+                if(!empty($data['event_type']) && $data['event_type']== 'TOI'){
+                    $customer_data['event_type'] = 'TOI';
+                }
                 autoRegisterCustomer($customer_data);
             }
 
@@ -6011,7 +6028,7 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase. Use Code : CB100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase','position'=>$position++];
             
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
@@ -7145,6 +7162,9 @@ class TransactionController extends \BaseController {
             }
         
         }elseif(isset($data['ticket_id'])){
+            if(empty($data['customer_quantity'])){
+                return Response::json(array('status'=>400, 'message'=>'Customer quantity is required'), $this->error_status);
+            }
 			$ticket_id = intval($data['ticket_id']);
 		}elseif(isset($data['ratecard_id'])){
 
@@ -7591,6 +7611,9 @@ class TransactionController extends \BaseController {
 
         }elseif(isset($ticket_id)){
 			if(isset($order)){
+                if(!empty($data['coupon'])){
+                    $order["coupon_code"] = $data['coupon'];
+                }
 				$data = $order;
 				$data["customer_quantity"] = $order["ticket_quantity"];
 				$data["ticket_id"] = $order["ticket_id"];
@@ -7622,6 +7645,7 @@ class TransactionController extends \BaseController {
                 // ]
             ];
             !empty($data['customer_quantity']) ? $data['customer_quantity'] = intval($data['customer_quantity']) : null;
+            !empty($ticket['minimum_no_of_ticket']) ? $data['customer_quantity']= intval(($ticket['minimum_no_of_ticket'])):null;
 			
             $total_amount = $ticket['price'] * intval($data['customer_quantity']);
 			$result['payment_details']['amount_summary'][] = [
@@ -7724,6 +7748,15 @@ class TransactionController extends \BaseController {
                         'field' => 'Coupon Discount',
                         'value' => '-Rs. '.(string)$data['coupon_discount']
                     ];
+                }
+
+                if(!empty($order["coupon_discount_amount"])){
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.(string)$order["coupon_discount_amount"]
+                    ];
+                    $data['amount_payable'] = $data['amount_payable'] - $order["coupon_discount_amount"];
+                    $data['you_save'] += $order["coupon_discount_amount"];
                 }
                 
                 $data['amount'] = $data['amount_payable'];
