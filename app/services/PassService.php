@@ -992,7 +992,10 @@ class PassService {
         //     }
         // }
         // $data['active_pass'] = $orderList;
-        $data['active_pass'] = [$activeOrders];
+        $data['active_pass'] = [];
+        if(!empty($activeOrders)) {
+            $data['active_pass'] = [$activeOrders];
+        }
 
         if(empty($inactiveOrders)) {
             $inactiveOrders = array();
