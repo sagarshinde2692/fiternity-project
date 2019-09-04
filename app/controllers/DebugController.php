@@ -11460,5 +11460,13 @@ public function yes($msg){
             }
 
         }    
-    }
+	}
+	
+	public function testOnePassUser(){
+		$utilities = new Utilities();
+
+		$onepassHoldCustomer  = $utilities->onepassHoldCustomer('Hello Fitternity');
+		
+		return $onepassHoldCustomer;		
+	}
 }
