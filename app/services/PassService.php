@@ -1512,4 +1512,9 @@ class PassService {
         return $payment_details;
 
     }
+
+    public function passTermsAndCondition(){
+        $passTerms = \Config::get('pass.terms');
+        return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
+    }
 }
