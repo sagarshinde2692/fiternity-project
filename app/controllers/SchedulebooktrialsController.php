@@ -4761,6 +4761,19 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'cancel_by', $source_flag);
         $trialbooked        = 	$booktrial->update($bookdata);
         
+        if(!empty($booktrial['pass_order_id'])){
+            $order = Order::find($booktrial['pass_order_id']);
+            if(
+                ($order['pass']['pass_type'] == 'black') &&
+                (strtotime($order['start_date']) <= time()) && 
+                ($order['onepass_sessions_used'] < $order['onepass_sessions_total']) &&
+                ($order['onepass_sessions_used']>1)
+            ){
+                $order->onepass_sessions_used -= 1;
+                $order->update();
+            }
+        }
+
         if(!empty($booktrial['extended_validity_order_id'])){
             $order = Order::find($booktrial['extended_validity_order_id']);
             if(
