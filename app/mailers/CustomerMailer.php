@@ -813,6 +813,12 @@ Class CustomerMailer extends Mailer {
 			return;
 		}
 		
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			return;
+		}
+		
 		$message_data 	= array(
 				'user_email' => array($data['customer_email']),
 				'user_name' => $data['customer_name']
