@@ -11494,7 +11494,7 @@ public function yes($msg){
 					$customermailer = new CustomerMailer();
 					$customermailer->onepassDynamic($data);
 
-					array_push($finarr, $data);
+					array_push($finArr, $data);
 					// $customersms = new CustomerSms();
 					// $customersms->onepassDynamic($value);
 				}
