@@ -11465,7 +11465,7 @@ public function yes($msg){
 	public function testOnePassUser(){
 		$utilities = new Utilities();
 
-		return $utilities->onepassHoldCustomer('Hello Fitternity');
+		return $utilities->onepassHoldCustomer();
 		
 		return $onepassHoldCustomer;		
 	}
