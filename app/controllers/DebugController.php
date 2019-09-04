@@ -11470,7 +11470,7 @@ public function yes($msg){
 		return $onepassHoldCustomer;		
 	}
 
-	public dynamicOnepassEMailSms(){
+	public function dynamicOnepassEMailSms(){
 		$destinationPath = public_path();
 		$fileName = "onepass_customers-test.csv";
 		$filePath = $destinationPath.'/'.$fileName;
