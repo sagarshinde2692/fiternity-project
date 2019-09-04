@@ -8531,7 +8531,7 @@ public function yes($msg){
             
         $pt_collection = $mongoclient->selectDB ( Config::get ( "database.connections.$db.database" ) )->selectCollection ( $collection );
         // return $update_service_data;
-        $batch_update = new \MongoUpdateBatch($pt_collection);
+        $batch_update = new MongoUpdateBatch($pt_collection);
 
         foreach($update_data as $item){
             $batch_update->add($item); 
@@ -11501,5 +11501,52 @@ public function yes($msg){
 			}
 		}
 		return $finArr;
+    }
+    
+    public function addFlagClasspassAvalible(){
+		ini_set('max_execution_time', 0);
+		Ratecard::$withoutAppends = true;
+
+		$integratedFinder = Finder::integrated()->lists('_id');
+
+		$integratedService = Service::integrated()->whereIn('finder_id', $integratedFinder)->lists('_id');
+
+		$ratecards = Ratecard::whereIn('service_id', $integratedService)
+			->whereIn('type', ['workout session'])
+			// ->take(1)
+			->get(['service_id', 'price', 'special_price']);
+		$updates = array();
+		foreach($ratecards as $ratecard){
+
+			$price = $ratecard['price'];
+			if(!empty($ratecard['special_price']) && $ratecard['special_price'] > 0){
+				$price = $ratecard['special_price'];
+			}
+
+			Log::info("ratecard_id", [$ratecard['_id']]);
+			Log::info("service_id", [$ratecard['service_id']]);
+			Log::info("price", [$price]);
+
+			if($price < 1001){
+				array_push($updates, [
+					"q"=>['_id'=> $ratecard['service_id']],
+					"u"=>[
+						'$set'=>[
+							'flags.classpass_available'=>true
+						]
+					],
+					'multi' => false
+	
+                ]);
+                break;
+			}
+
+			
+		}
+        // return $updates;
+		$this->batchUpdate('mongodb2', 'vendorservices', $updates);
+		$this->batchUpdate('mongodb', 'services', $updates);
+        // return count($ratecard);
+        return "Done";
 	}
 }
