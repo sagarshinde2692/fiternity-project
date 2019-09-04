@@ -44,7 +44,7 @@ class PassService {
             $passList = $passList->where('pass_type', $pass_type);
         }
 
-        $passList = $passList->orderBy('pass_id')->get();
+        $passList = $passList->orderBy('duration')->get();
         
         $response = Config::get('pass.list');
         foreach($passList as &$pass) {
