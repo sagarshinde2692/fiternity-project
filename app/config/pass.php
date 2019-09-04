@@ -94,7 +94,7 @@ return [
                 ],
                 'remarks' => [
                     'header' => 'In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! Limited Period Offer, Only Few Passes Up For Grabs', // need content
-                    'text' => 'view all Terms and Conditions',
+                    'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
                 ]
@@ -127,7 +127,7 @@ return [
                 ],
                 'remarks' => [
                     'header' => 'In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! Limited Period Offer, Only Few Passes Up For Grabs', // need content
-                    'text' => 'view all Terms and Conditions',
+                    'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
 
@@ -309,7 +309,7 @@ return [
                 "name"  => "",
                 "header" => "UNLIMITED USAGE",
                 "subheader" => "", // duration or sessions
-                "top_right_button_text" => "BOOK",
+                "top_right_button_text" => "BOOK >",
                 "left_text"  => "UPCOMING: ",
                 "left_value"  => 0,
                 "right_text"  => "COMPLETED: ",
@@ -353,7 +353,7 @@ return [
                 "name"  => "",
                 "header" => "UNLIMITED VALIDITY",
                 "subheader" => "", // duration or sessions
-                "top_right_button_text" => "BOOK",
+                "top_right_button_text" => "BOOK >",
                 "left_text"  => "UPCOMING: ",
                 "left_value"  => "0",
                 "right_text"  => "COMPLETED: ",

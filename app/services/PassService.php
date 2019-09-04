@@ -44,7 +44,7 @@ class PassService {
             $passList = $passList->where('pass_type', $pass_type);
         }
 
-        $passList = $passList->orderBy('pass_id')->get();
+        $passList = $passList->orderBy('duration')->get();
         
         $response = Config::get('pass.list');
         foreach($passList as &$pass) {
@@ -597,7 +597,7 @@ class PassService {
         }
         $canBook = false;
         if(!empty($passOrder['pass'])) {
-            if($schedule_time>strtotime($passOrder['start_date'])){
+            if($schedule_time>=strtotime($passOrder['start_date'])){
                 if($passOrder['pass']['pass_type']=='black'){
                     $sessionsUsed = $passOrder['onepass_sessions_used'];
                     $sessionsTotal = $passOrder['onepass_sessions_total'];
@@ -846,6 +846,7 @@ class PassService {
         if(in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['pass']['image1'] = 'http://b.fitn.in/passes/onepass-app.png';
             $success_template['pass']['image2'] = 'https://b.fitn.in/global/onepass/pass%20line%20design.png';
+            unset($success_template['info']['data'][0]);
         }
 
         return $success_template;
@@ -1118,7 +1119,7 @@ class PassService {
         $homePassData['pass_order_id'] = $passOrder['_id'];
         $startDateDiff = $this->getDateDifference($passOrder['start_date']);
         $notStarted = false;
-        if(empty($startDateDiff) || $startDateDiff<0) {
+        if(!empty($startDateDiff) && $startDateDiff>0) {
             $notStarted = true;
         }
         if($passOrder['pass']['pass_type']=='black') {

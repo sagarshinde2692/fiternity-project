@@ -7310,7 +7310,8 @@ class TransactionController extends \BaseController {
             //  commented on 9th Aug - Akhil
             if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
                 if(!empty($decoded->customer->_id)) {
-                    $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id);
+                    $scheduleDate = (!empty($data['slot']['date']))?$data['slot']['date']:null;
+                    $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id, $scheduleDate);
                     Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
                     if($passSession['allow_session']) {
                         $result['payment_details']['amount_summary'][] = [
