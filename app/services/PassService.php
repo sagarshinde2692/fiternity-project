@@ -565,8 +565,10 @@ class PassService {
         });
         
         if(!empty($passOrder['result'][0]['_id'])) {
+            Order::$withoutAppends = true;
             return $passOrder = Order::where('_id', $passOrder['result'][0]['_id'])->first();
         }
+        Order::$withoutAppends = true;
         return $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->first();
     }
 
@@ -637,6 +639,7 @@ class PassService {
                 else if($passOrder['pass']['pass_type']=='red') {
                     // $duration = $passOrder['pass']['duration'];
                     if($schedule_time<strtotime($passOrder['end_date'])){
+                        Booktrial::$withoutAppends = true;
                         $todaysBooking = Booktrial::where('pass_order_id', $passOrder['_id'])->where('schedule_date', $schedule_time)->where('going_status_txt', '!=', 'cancel')->first();
                         if(empty($todaysBooking)) {
                             $canBook = true;
