@@ -1738,7 +1738,7 @@ class ServiceController extends \BaseController {
 	public function serviceDetailv1($finder_slug, $service_slug, $cache=true){
 
 		// return date('Y-m-d', strtotime('day after tomorrow'));
-        $date = !empty($_GET['date']) ? $_GET['date'] : null;
+        $date = !empty($_GET['date']) ? $_GET['date'] : date('d-m-y', time());
 		Log::info($_SERVER['REQUEST_URI']);
 		$cache_key = "$finder_slug-$service_slug";
 
