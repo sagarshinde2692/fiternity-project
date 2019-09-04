@@ -6404,7 +6404,7 @@ Class Utilities {
             }
         }
         catch(\Exception $err){
-            return Response::json(array('status' => 400,'message' => 'Cannot Claim Fitcash. Please contact customer support (5).'));
+            return;
         }
 
         if(!empty($voucher_category['flags']['manual_redemption'])){
@@ -9687,5 +9687,64 @@ Class Utilities {
     public function bullet($isChar = false) {
         return json_decode('"'."\u25cf".'"');
     }
-}
 
+    public function rollbackVouchers($customer, $combo_vouchers_list){
+        foreach($combo_vouchers_list as $key=>$value){
+            if(!empty($value)){
+                $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags', 'diet_plan_order_id'];
+                
+                try{
+                    if($value['diet_plan_order_id']){
+                        $diet_order = Order::active()->where('_id', $value['diet_plan_order_id'])->first();
+                        $diet_order_array = $diet_order->toArray();
+                        $diet_order_array['status'] = '0';
+                        $diet_order->update($diet_order_array);
+
+                    }
+                    $value->unset($keys);
+                }catch(\Exception $e){
+                    Log::info('exception occured while rollback::::::::::::', [$e]);
+                }
+            }
+        }
+        return true;
+    }
+
+    public function voucherClaimedResponseReward($voucherAttached, $voucher_category){
+        if(in_array($voucherAttached['name'], ['Jio Saavn second', 'Jio Saavn first', 'Jio Saavn 2'])){
+            $voucherAttached['name'] = "Jio Saavn";
+        }
+        
+        $resp =  [
+            'voucher_data'=>[
+                'header'=>"VOUCHER UNLOCKED",
+                'sub_header'=>"You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : ""),
+                'coupon_title'=>(!empty($voucherAttached['description']) ? $voucherAttached['description'] : ""),
+                'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
+                'coupon_image'=>(!empty($voucherAttached['image']) ? $voucherAttached['image'] : ""),
+                'coupon_code'=>strtoupper($voucherAttached['code']),
+                'coupon_subtext'=>'(also sent via email/sms)',
+                'unlock'=>'UNLOCK VOUCHER',
+                'terms_text'=>'T & C applied.'
+            ]
+        ];
+        if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
+            $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
+            $resp['voucher_data']['header']= "REWARD UNLOCKED";
+            
+            if(isset($voucherAttached['link'])){
+                $resp['voucher_data']['sub_header']= "You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name'])."<br> Share your details & get your insurance policy activated. " : "");
+                $resp['voucher_data']['coupon_text']= $voucherAttached['link'];
+            }
+            
+        }
+
+        if(!empty($voucher_category['email_text'])){
+            $resp['voucher_data']['email_text']= $voucher_category['email_text'];
+        }
+        $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
+
+        return $resp;
+    }
+
+}

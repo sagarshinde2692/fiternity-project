@@ -811,7 +811,7 @@ Class CustomerReward {
                     $amount_paid = 2000;
                 }
 
-                if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644])){
+                if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644]) || in_array((int) $order['finder_id'], [9427,16646])){
                     if($amount_paid > 2000){
                         $amount_paid = 2000;
                     }
@@ -841,7 +841,7 @@ Class CustomerReward {
                             'app_only'=>true
                         );
 
-                        if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644])){
+                        if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644]) || in_array((int) $order['finder_id'], [9427,16646])){
                             $walletData['finder_id'] = (int)$order['finder_id'];
                             $walletData['valid_finder_id'] = (int)$order['finder_id'];
                             $walletData['description'] = "100% Cashback on workout-session booking at ".ucwords($order['finder_name'])." Applicable for buying a workout-session at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*14));
@@ -879,7 +879,7 @@ Class CustomerReward {
                             'app_only'=>true
                         );
 
-                        if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644])){
+                        if(in_array((int) $order['finder_id'], [1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644]) || in_array((int) $order['finder_id'], [9427,16646])){
                             $walletData['finder_id'] = (int)$order['finder_id'];
                             $walletData['valid_finder_id'] = (int)$order['finder_id'];
                             $walletData['description'] = "100% Cashback on buying ".ucfirst($order['type'])." at ".ucwords($order['finder_name'])." Applicable at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*90));
@@ -1828,6 +1828,10 @@ Class CustomerReward {
             $query->whereIn('tickets', [$ticket->_id]);
         }
         
+        if(!empty($pass)){
+            $query->where('ratecard_type', 'pass');
+        }
+        
         $coupon = $query->first();
 
         if(!empty($ratecard)){
@@ -2395,7 +2399,7 @@ Class CustomerReward {
                 }
                 
             }
-            if($ratecard && (isset($coupon['and_conditions']) || isset($coupon['or_conditions']) )){
+            if(($ratecard || $pass) && (isset($coupon['and_conditions']) || isset($coupon['or_conditions']) )){
 
                 if(empty($finder)){
                     $finder = Finder::where('_id', $ratecard['finder_id'])->first();
@@ -2414,9 +2418,12 @@ Class CustomerReward {
                     
                 }
                 $utilities = new Utilities();
-                $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email];
-
+                if($ratecard){
+                    $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
+                }
+                
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass];
+               
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
                     $and_condition = true;

@@ -2611,10 +2611,10 @@ class ServiceController extends \BaseController {
 		Log::info('credit appplicable"::::::', [$creditApplicable]);
 		if($creditApplicable['credits'] != 0 ){
 			if($key=='data'){
-				$data['price_text'] = 'Book Using Pass';
+				$data['price_text'] = 'Free for you';
 			}
 			else if($key=='slots'){
-				$data['price_text'] = 'Book Using Pass';
+				$data['price_text'] = 'Free for you';
 			}
 		}
 
@@ -2640,7 +2640,7 @@ class ServiceController extends \BaseController {
 		try{
 			$creditApplicable = $this->passService->getCreditsApplicable($ratecard_price, $customer_id);
 			if(!empty($creditApplicable['credits'])){
-				$price_text = 'Book Using Pass';
+				$price_text = 'Free for you';
 			}
 			Log::info('ratecard and customer id and credits::::::::::', [$creditApplicable, $ratecard_price, !empty($creditApplicable['credits'])]);
 		}catch(\Exception $e){

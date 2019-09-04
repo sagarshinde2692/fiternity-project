@@ -2543,7 +2543,12 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 						if(!empty($data["thirdparty_register"]) && $data["thirdparty_register"] != false){
 							$customer->thirdparty_register=$data["thirdparty_register"];
                         	$customer->update();
-						}else{
+                        }else if((!empty($data['event_type']) && $data['event_type']=='TOI') || !empty($data['mfp_register'])){
+                            if(empty($data['mfp_register'])){
+                                $customer->mfp_register = true;
+                                $customer->update();
+                            }
+                        }else{
 							registerMail($customer->_id);
 						}
 
@@ -3225,7 +3230,7 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null){
 
-        $inoperational_dates = ['2019-08-15'];
+        $inoperational_dates = ['2019-09-02'];
 
         if( in_array($date, $inoperational_dates)){
             return false;
