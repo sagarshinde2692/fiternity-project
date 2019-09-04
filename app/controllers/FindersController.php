@@ -6545,6 +6545,9 @@ class FindersController extends \BaseController {
 			"message"=>"Success"
 		];
 
+        if(empty($finder_id)){
+            $response['tnc']['description'] = $this->passService->passTermsAndCondition()['data'];
+        }
 		return $response;
 
 	}

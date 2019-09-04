@@ -838,9 +838,9 @@ class PassService {
             $success_template['pass']['usage_text'] = 'UNLIMITED VALIDITY';
         }
        
-        // if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
+        if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['web_message'] = $success['web_message'];
-        // }
+        }
 
 
         if(in_array(Request::header('Device-Type'), ["android", "ios"])){
@@ -1511,5 +1511,10 @@ class PassService {
 
         return $payment_details;
 
+    }
+
+    public function passTermsAndCondition(){
+        $passTerms = \Config::get('pass.terms');
+        return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
     }
 }
