@@ -147,8 +147,7 @@ return [
     "total_available" => 300,
     "terms"=>[
         "red"=>[
-            "<h2>Terms and Conditions</h2>
-            <ul>
+            "<ul>
                 <li>OnePass bookings will start from 5th September 2019.</li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -175,8 +174,7 @@ return [
             </ul>"
         ],
         "black" =>[
-            "<h2>Terms and Conditions</h2>
-            <ul>
+            "<ul>
                 <li>OnePass bookings will start from 5th September 2019.</li>
                 <li>Onepass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
