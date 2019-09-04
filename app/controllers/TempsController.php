@@ -257,6 +257,9 @@ class TempsController extends \BaseController {
                     $temp->source = "kiosk";
                 }
                 
+                if(!empty($data['type']) && $data['type'] == 'mfp'){
+                    $temp->mfp_register= true;
+                }
                 
                 if(!empty($data['action'])&&$data['action']=='starter_pack')
                 {
@@ -451,6 +454,9 @@ class TempsController extends \BaseController {
                     $data['customer_name'] = $temp['customer_name'];
                     $data['customer_email'] = $temp['customer_email'];
                     $data['customer_phone'] = $temp['customer_phone'];
+                    if(!empty($temp['mfp_register'])){
+                        $data['mfp_register']= true;
+                    }
                     $data['customer_id'] = autoRegisterCustomer($data);
 
                     setVerifiedContact($data['customer_id'], $data['customer_phone']);

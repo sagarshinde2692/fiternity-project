@@ -63,25 +63,25 @@ class PassService {
             if($pass['type']=='trial') {
                 $utilities = new Utilities();
                 $passDetails['header'] .= ' Trial';
-                $passDetails['cashback'] = '(100% cashback)';
+                $passDetails['cashback'] = '(50% cashback)';
                 if(!empty($device) && in_array($device, ['android'])) {
                     $passDetails['extra_info'] = [
-                        'title'=>'100% Instant Cashback',
+                        'title'=>'50% Instant Cashback',
                         'description'=> $utilities->bullet()." The cashback will be added in the form of FitCash in the Fitternity Wallet (1 Fitcash point = INR 1).<br/>".
                                         $utilities->bullet()." FitCash received can only be used to upgrade ONEPASS subscription.<br/>".
                                         $utilities->bullet()." The instant cashback received is valid for 30 days starting from the date of pass activation.<br/>".
                                         $utilities->bullet()." The offer cannot be clubbed with any other offer.<br/>"
                     ];
                 }
-                else {
-                    $passDetails['extra_info'] = [
-                        'title'=>'100% Instant Cashback',
-                        'description'=> "<ul><li>The cashback will be added in the form of FitCash in the Fitternity Wallet (1 Fitcash point = INR 1).</li>".
-                                        "<li>FitCash received can only be used to upgrade ONEPASS subscription.</li>".
-                                        "<li>The instant cashback received is valid for 30 days starting from the date of pass activation.</li>".
-                                        "<li>The offer cannot be clubbed with any other offer.</li></ul>"
-                    ];
-                }
+                // else {
+                //     $passDetails['extra_info'] = [
+                //         'title'=>'100% Instant Cashback',
+                //         'description'=> "<ul><li>The cashback will be added in the form of FitCash in the Fitternity Wallet (1 Fitcash point = INR 1).</li>".
+                //                         "<li>FitCash received can only be used to upgrade ONEPASS subscription.</li>".
+                //                         "<li>The instant cashback received is valid for 30 days starting from the date of pass activation.</li>".
+                //                         "<li>The offer cannot be clubbed with any other offer.</li></ul>"
+                //     ];
+                // }
             }
             if($pass['unlimited_access']) {
                 $passDetails['price'] = 'Rs. '.$pass['price'];
@@ -213,7 +213,7 @@ class PassService {
                 $customerCoupon = Coupon::where('status', '1')->where('code', strtolower($data['coupon_code']))->where('type', 'pass')->where('start_date', '<=', new \MongoDate())->where('end_date', '>=', new \MongoDate())->first();
                 if(!empty($customerCoupon)) {
                     $customerreward = new CustomerReward();
-                    $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],null, null, null, null, null, null, null, $pass);
+                    $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],null, null, null, null, null, null, $pass);
 
                     Log::info("couponCheck");
                     Log::info($couponCheck);
@@ -398,6 +398,12 @@ class PassService {
             $block_communication = true;
         }
 
+        $wallet_update = $this->updateWallet($order);
+
+        if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
+            return $wallet_update;
+        }
+
         Log::info('pass success:: ', [$data]);
 
         if(empty($order['amount']) && empty($order['status'])){
@@ -407,12 +413,6 @@ class PassService {
         
         $utilities = new Utilities();
         $utilities->updateCoupon($order);
-
-        $wallet_update = $this->updateWallet($order);
-
-        if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
-            return $wallet_update;
-        }
         
         $order = $this->passSuccessRazorpay($order, $data);
         
@@ -714,22 +714,28 @@ class PassService {
 
         if(!empty($order['amount']) && !empty($order['pass']['cashback']) && empty($order['coupon_code'])){
             $validity = time()+(86400*30);
+            $amount = ceil($order['amount']/2);
             $walletData = array(
                 "order_id"=>$order['_id'],
                 "customer_id"=> intval($order['customer_id']),
-                "amount"=> $order['amount'],
+                "amount"=> $amount,
                 "amount_fitcash" => 0,
-                "amount_fitcash_plus" => $order['amount'],
+                "amount_fitcash_plus" => $amount,
                 "type"=>'CASHBACK',
                 'entry'=>'credit',
                 'order_type'=>['pass'],
-                "description"=> "100% Cashback on buying trial pass, Expires On : ".date('d-m-Y',$validity),
+                "description"=> "50% Cashback on buying trial pass, Expires On : ".date('d-m-Y',$validity),
                 "validity"=>$validity,
             );
     
             $utilities->walletTransaction($walletData);
         }
 
+        $wallet_update = $this->updateWallet($order);
+
+        if(empty($wallet_update['status']) || $wallet_update['status'] != 200){
+            return $wallet_update;
+        }
 
         $order->status = '1';
         $order->onepass_sessions_total = (!empty($order->pass['classes']))?$order->pass['classes']:-1;
@@ -777,7 +783,8 @@ class PassService {
         $success_template = $success['success'];
         // $success_template['header'] = strtr($success_template['header'], ['___type' => ucwords($order['pass']['type'])]);
         $success_template['header'] = 'Purchase Successful';
-        $success_template['customer_name'] = $order['pass']['name'];
+        $success_template['customer_name'] = $order['customer_name'];
+        $success_template['customer_email'] = $order['customer_email'];
         $success_template['subline'] = strtr(
             $success_template['subline'], 
             [
@@ -1096,7 +1103,7 @@ class PassService {
 
     public function getDateDifference($expiryDate) {
         $expiryDate = strtotime($expiryDate);
-        $diff = ($expiryDate)-time();
+        $diff = ($expiryDate)-(strtotime('midnight', time()));
         $diffDays = ($diff/(60*60*24));
         return ($diffDays>=1)?intval($diffDays):0;
     }
@@ -1151,6 +1158,10 @@ class PassService {
                         unset($homePassData['footer']['section1']['button2_text']);
                         if($notStarted) {
                             unset($homePassData['top_right_button_text']);
+                            $homePassData['left_text'] = "Booking starts";
+                            $homePassData['left_value'] = "from: ";
+                            $homePassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
+                            unset($homePassData['right_value']);
                         }
                     }
                     // if(!Config::get('app.debug')) {
@@ -1199,6 +1210,10 @@ class PassService {
                         unset($homePassData['footer']['section1']['button2_text']);
                         if($notStarted) {
                             unset($homePassData['top_right_button_text']);
+                            $homePassData['left_text'] = "Booking starts";
+                            $homePassData['left_value'] = " from: ";
+                            $homePassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
+                            unset($homePassData['right_value']);
                         }
                     }
                     // if(!Config::get('app.debug')) {

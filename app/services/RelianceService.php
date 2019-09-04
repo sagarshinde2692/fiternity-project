@@ -100,7 +100,7 @@ Class RelianceService {
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
                         'corporate_rewards.milestones.milestone' => $milestone,
-                        'corporate_rewards.milestones.claimed' => true
+                        'corporate_rewards.milestones.vouchers' => ['$exists' => true]
                     ]],
                     ['$group' => [
                         '_id' => null,
@@ -126,7 +126,7 @@ Class RelianceService {
                 $aggregate = [
                     ['$unwind' => '$corporate_rewards.milestones'],
                     ['$match' => [
-                        'corporate_rewards.milestones.claimed' => true
+                        'corporate_rewards.milestones.voucher' => ['$exists' => true]
                     ]],
                     ['$group' => [
                         '_id' => '$corporate_rewards.milestones.milestone',
@@ -435,7 +435,7 @@ Class RelianceService {
                 'intro'=> [
                     'image' => Config::get('health_config.reliance.reliance_logo'),
                     'header' => "#WalkpeChal",
-                    'text' => "MissionMoon | 30 Days | 100 Cr steps"
+                    'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
                 ],
                 'personal_activity' => [
                     'name' => $custInfo['name'],
@@ -955,7 +955,7 @@ Class RelianceService {
             'intro'=> [
                 'image' => Config::get('health_config.reliance.reliance_logo'),
                 'header' => "#WalkpeChal",
-                'text' => "MissionMoon | 30 Days | 100 Cr steps"
+                'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
             ],
             'personal_activity' => [
                 'name' => $customer['name'],
@@ -1828,7 +1828,7 @@ Class RelianceService {
             'intro'=> [
                 'image' => Config::get('health_config.reliance.reliance_logo'),
                 'header' => "#WalkpeChal",
-                'text' => "MissionMoon | 30 Days | 100 Cr steps"
+                'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
             ],
             'personal_activity' => [
                 'name' => $customer['name'],

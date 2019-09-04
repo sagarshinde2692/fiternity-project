@@ -186,7 +186,8 @@ Class CustomerMailer extends Mailer {
 		}
 		
 		if(!empty($data['type']) && ($data['type']=='pass')){
-            $label = "Pass-Purchase-Customer";
+			$label = "Pass-Purchase-Customer";
+			$this->passPurchaseAlert($data);
 		}
 
 		$message_data 	= array(
@@ -250,6 +251,16 @@ Class CustomerMailer extends Mailer {
 		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
 			return;
 		}
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	protected function passPurchaseAlert($data){
+		$label = 'Pass-Purchase-Alert';
+		$message_data 	= array(
+			'user_email' =>['sailismart@fitternity.com','neha@fitternity.com','jayamvora@fitternity.com', 'vinichellani@fitternity.com', 'pranjalisalvi@fitternity.com', 'dharatanna@fitternity.com'],
+			'user_name' => $data['customer_name']
+		);
 
 		return $this->common($label,$data,$message_data);
 	}
@@ -810,6 +821,12 @@ Class CustomerMailer extends Mailer {
 
 		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			return;
+		}
+		
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
 			return;
 		}
 		
