@@ -9682,6 +9682,7 @@ Class Utilities {
                 }
             }
         }
+        Log::info("pass header",[$pass]);
         return $pass;
     }
     public function bullet($isChar = false) {
