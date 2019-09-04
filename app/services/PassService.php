@@ -567,8 +567,7 @@ class PassService {
         if(!empty($passOrder['result'][0]['_id'])) {
             return $passOrder = Order::where('_id', $passOrder['result'][0]['_id'])->first();
         }
-        return ;
-        // return (!empty($passOrder))?$passOrder:null;
+        return $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->first();
     }
 
     public function getPremiumExpiryDates($bookingStartDate, $premiumBookingInterval, $duration) {
