@@ -138,7 +138,7 @@ return [
         ],
         'faq' => [
             'header' => 'FAQs',
-            'text' => 'sdfdfdsf sdfsd fsdf sdfs sf sf sdfs d',
+            'text' => 'Click here to view all FAQ`s ',
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
         ],

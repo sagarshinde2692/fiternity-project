@@ -295,6 +295,7 @@ class PassService {
             $result['finder_name'] = strtolower($order['finder_name']);
             $result['complementary_pass'] = $order['complementary_pass'];
             $result['type'] = 'pass';
+            $result['full_payment_wallet'] = empty($result['amount']);
             $resp = [
                 'status' => 200,
                 'data' => $result,
