@@ -1045,7 +1045,7 @@ class ServiceController extends \BaseController {
                         array_set($slot,'epoch_start_time',strtotime(strtoupper($date." ".$slot['start_time'])));
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
 
-						// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 						if(!empty($allowSession) && $ratecard_price < 1001){
 							array_set($slot, 'skip_share_detail', true);
 						}
