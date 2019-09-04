@@ -6322,7 +6322,7 @@ class TransactionController extends \BaseController {
             $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
             $allowSession = false;
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-                $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id);
+                $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id, $data['schedule_date']);
                 if(!empty($allowSession['allow_session'])) {
                     $allowSession = $allowSession['allow_session'];
                 }
