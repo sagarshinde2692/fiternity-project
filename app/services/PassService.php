@@ -1151,6 +1151,10 @@ class PassService {
                         unset($homePassData['footer']['section1']['button2_text']);
                         if($notStarted) {
                             unset($homePassData['top_right_button_text']);
+                            $homePassData['left_text'] = "Booking starts";
+                            $homePassData['left_value'] = "from: ";
+                            $homePassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
+                            unset($homePassData['right_value']);
                         }
                     }
                     // if(!Config::get('app.debug')) {
