@@ -203,6 +203,10 @@ class TransactionController extends \BaseController {
         }
         Log::info('------------transactionCapture---------------',$data);
 
+        if(!empty($data['pass_id'])){
+            return $this->passService->passCapture($data);
+        }
+
         if(!empty($data['customer_quantity']) && is_string($data['customer_quantity'])){
             $data['customer_quantity'] = intval($data['customer_quantity']);
         }
