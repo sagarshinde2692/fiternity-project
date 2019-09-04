@@ -154,16 +154,61 @@ return [
     ],
     'question_list' => [
         [
-            'question' => 'asdhjkdfhb adfjkvsfb?',
-            'answer' => 'asfbdgf  sfduhsflkv sdfhbsfbh pdfshipubshf pbhfsdbhsb sfbgfb'
+            'question' => 'How many sessions can I book in a day?',
+            'answer' => 'Onepass Red users can book a single session a day. Onepass Black users can book multiple sessions in a day.'
         ],
         [
-            'question' => 'asdhjkdfhb adfjkvsfb?',
-            'answer' => 'asfbdgf  sfduhsflkv sdfhbsfbh pdfshipubshf pbhfsdbhsb sfbgfb'
+            'question' => 'Can I book multiple sessions at the same fitness center?',
+            'answer' => 'Yes, Onepass gives you the flexibility to explore sessions at any fitness center. You can book sessions at any one particular fitness center or can explore fitness options/services at different centers.'
         ],
         [
-            'question' => 'asdhjkdfhb adfjkvsfb?',
-            'answer' => 'asfbdgf  sfduhsflkv sdfhbsfbh pdfshipubshf pbhfsdbhsb sfbgfb'
+            'question' => 'Do I have access to Swimming Sessions / Luxury Hotel?',
+            'answer' => 'Onepass enables you to workout across 17 categories with swimming being 1 of them. Onepass includes Swimming & Gym sessions at Luxury Hotels. Select hotels are not on Onepass and we will be on-boarding them/new luxury hotels soon. The list of partners can be viewed here'
+        ],
+
+        [
+            'question' => 'Can I change the date of my activation?',
+            'answer' => 'Yes the date of activation can be changed/extended upto 31st December 2019.'
+        ],
+        [
+            'question' => 'When is the program starting?',
+            'answer' => 'Booking process will be available starting 5th september 2019. The booking facility will be available only on the Fitternity App.'
+        ],
+        [
+            'question' => 'What is the Validity of my trial cash-back on OnePass Red?',
+            'answer' => 'OnePass Red trial cashback has a validity of 30 days from the activation date of OnePass subscription. This cashback can only be redeemed to renew/purchase your OnePass subscription.'
+        ],
+        [
+            'question' => 'Do I get a physical copy of the pass to show at the gym?',
+            'answer' => 'OnePass is an online entity which can only be used on the Fitternity App to book your workout sessions. Once the booking is successful on the Fitternity App, all you have to do is share your booking confirmation details at the fitness center to activate your session.'
+        ],
+        [
+            'question' => 'Which services are available to book on the OnePass?',
+            'answer' => 'All fitness forms of activities are available on the OnePass program across 12000+ fitness centers on the Fitternity network. The outlets on Onepass can be checked here'
+        ],
+        [
+            'question' => 'Can the customer request to onboard a fitness center on the OnePass Program?',
+            'answer' => 'Yes, Fitternity will work to on-board the fitness center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facility.'
+        ],
+        [
+            'question' => 'Is FitSquad available on OnePass?',
+            'answer' => 'The Fitsquad Loyalty Program is currently not available on Onepass Program.'
+        ],
+        [
+            'question' => 'What is the timeline to book sessions prior to session time?',
+            'answer' => 'You can book sessions for all facilities on Onepass basis availability. For certain facilities the sessions can be booked real time , while for certain facilities the sessions have to be booked 2 hours in advance.'
+        ],
+        [
+            'question' => 'Will the prices change after the OnePass Trial subscription expires?',
+            'answer' => 'All prices are subject to change without any prior notice.'
+        ],
+        [
+            'question' => 'What is the refund policy?',
+            'answer' => 'The customer can take a refund (No Questions asked). The calculation will be based on pro-rata based on un-utilized amount which will be converted to Fitcash in Fitternity wallet (1 Rupee = 1 Fitcash) and can be used to buy any other service/membership on Fitternity. 3% convenience fee will be charged over & above the usage of subscription to process this transition from OnePass to Fitcash.'
+        ],
+        [
+            'question' => 'Can give my OnePass to my friends and family Will the prices change after the OnePass Trial subscription expires?',
+            'answer' => 'All prices are subject to change without any prior notice.'
         ]
     ],
     'success'=>[
