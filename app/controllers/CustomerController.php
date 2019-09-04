@@ -4178,8 +4178,33 @@ class CustomerController extends \BaseController {
 			];
 		}
         
-        if(!empty($result['fitex'])){
-            unset($result['fitex']);
+        if(
+            !empty($result['fitex']) 
+            && 
+            isset($_REQUEST['device_type']) 
+            && 
+            isset($_REQUEST['app_version'])
+            && 
+            (
+                (
+                    in_array($_REQUEST['device_type'],['ios']) 
+                    && 
+                    $_REQUEST['app_version'] < '5.2.2'
+                ) 
+                || 
+                (
+                    in_array($_REQUEST['device_type'],['android']) 
+                    && 
+                    $_REQUEST['app_version'] < '5.30'
+                )
+            )
+        ){
+            $result['fitex'] = [
+                "logo"=>"https://b.fitn.in/global/pps/fexclusive1.png",
+                "header"=>"EXPERIENCE FITNESS LIKE NEVER BEFORE!",
+                "subheader"=>"Book sessions and only pay for days you workout",
+                "footer"=>"Get 100% Instant Cashback on Workout Sessions"
+            ];
         }
         
         $response = Response::make($result);
