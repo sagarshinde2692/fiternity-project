@@ -2417,12 +2417,16 @@ Class CustomerReward {
                     $logged_in_customer = (array)$decoded->customer;
                     
                 }
+                $booking_for_customer= [];
+                if(!empty($customer_email)){
+                    $booking_for_customer = \Customer::active()->where('email',  $customer_email)->first();
+                }
                 $utilities = new Utilities();
                 if($ratecard){
                     $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
                 }
                 
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer];
                
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
