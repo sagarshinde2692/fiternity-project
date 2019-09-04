@@ -1025,9 +1025,9 @@ Class CustomerMailer extends Mailer {
 			$message_data['fromemail'] = 'info@multifit.co.in';
 		}
 
-		// if(!empty($data['pass_type'])){
-		// 	$message_data['fromemail'] = 'onepass@fitternity.com';
-		// }
+		if(!empty($data['pass_type'])){
+			$message_data['fromemail'] = 'onepass@fitternity.com';
+		}
 
 		$template = \Template::where('label',$label)->first();
 
