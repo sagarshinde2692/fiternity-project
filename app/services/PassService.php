@@ -18,7 +18,7 @@ use Wallet;
 use Customer;
 use Coupon;
 use stdClass;
-
+use Input;
 class PassService {
 
     public function __construct() {
@@ -838,9 +838,9 @@ class PassService {
             $success_template['pass']['usage_text'] = 'UNLIMITED VALIDITY';
         }
        
-        // if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
+        if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['web_message'] = $success['web_message'];
-        // }
+        }
 
 
         if(in_array(Request::header('Device-Type'), ["android", "ios"])){
@@ -1511,5 +1511,20 @@ class PassService {
 
         return $payment_details;
 
+    }
+
+    public function passTermsAndCondition(){
+        $input = Input::all();
+        $passTerms = \Config::get('pass.terms');
+        if(!empty($input['type']) && $input['type']=='unlimited'){
+            $passTerms = $passTerms['red'];
+        }
+        else if(!empty($input['type']) && $input['type']=='subscribe'){
+            $passTerms = $passTerms['black'];
+        }
+        else{
+            $passTerms = [null];
+        }
+        return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
     }
 }
