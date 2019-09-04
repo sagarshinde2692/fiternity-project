@@ -1124,7 +1124,7 @@ class PassService {
         $passExpired = false;
 
         $homePassData = Config::get('pass.home.after_purchase.'.$passOrder['pass']['pass_type']);
-        $tnc = Config::get('pass.terms.'.$passOrder['pass']['pass_type']);
+        $tnc = Config::get('pass.terms.'.$passOrder['pass']['pass_type'])[0];
         $homePassData['pass_order_id'] = $passOrder['_id'];
         $startDateDiff = $this->getDateDifference($passOrder['start_date']);
         $notStarted = false;
