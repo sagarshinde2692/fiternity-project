@@ -203,10 +203,6 @@ class TransactionController extends \BaseController {
         }
         Log::info('------------transactionCapture---------------',$data);
 
-        if(!empty($data['pass_id'])){
-            return $this->passService->passCapture($data);
-        }
-
         if(!empty($data['customer_quantity']) && is_string($data['customer_quantity'])){
             $data['customer_quantity'] = intval($data['customer_quantity']);
         }
@@ -238,13 +234,20 @@ class TransactionController extends \BaseController {
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
             $data['order_id'] = intval($data['order_id']);
-            $pay_later_order = Order::where('_id', $data['order_id'])->where('pay_later', true)->first();
-            if($pay_later_order){
-                $pay_later_data = $this->getPayLaterData($pay_later_order);
+            $existing_order = Order::where('_id', $data['order_id'])->first();
+
+            if(!empty($existing_order['pass_id'])){
+                return $this->passService->passCapture($data, $existing_order);
+            }
+            if(!empty($existing_order['pay_later'])){
+
+                $pay_later_data = $this->getPayLaterData($existing_order);
                 $data = array_merge($data, $pay_later_data);
             }
             Log::info('------------transactionCapture---------------',$data);
         }
+
+        
 
         if(!empty($data['qrcodepayment']) && empty($data['customer_phone']) && !empty($data['customer_email'])){
             
