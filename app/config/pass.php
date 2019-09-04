@@ -418,7 +418,7 @@ return [
                         'no_last_order' => true,
                         'contact_text' => 'Need Help? Contact your Personal Concierge',
                         'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-                        'contact_no' => '+919876543210'
+                        'contact_no' => '+917400062849'
                     ],
                     'section2' => [
                         'text' => 'Your Onepass Red will expire after remaining_text',
@@ -461,7 +461,7 @@ return [
                         'no_last_order' => true,
                         'contact_text' => 'Need Help? Contact your Personal Concierge',
                         'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-                        'contact_no' => '+919876543210'
+                        'contact_no' => '+917400062849'
                     ],
                     'section2' => [
                         'text' => 'Your Onepass Black will expire after remaining_text',
