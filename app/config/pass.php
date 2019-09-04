@@ -30,7 +30,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => 'In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! Limited Period Offer, Only Few Passes Up For Grabs.',
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more ! \nLimited Period Offer, Only Few Passes Up For Grabs.",
                     'text' => 'Terms & Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -93,7 +93,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => 'In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! Limited Period Offer, Only Few Passes Up For Grabs', // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more ! \nLimited Period Offer, Only few passes for Grabs.", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -126,7 +126,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => 'In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! Limited Period Offer, Only Few Passes Up For Grabs', // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more ! \nLimited Period Offer, Only few passes for Grabs.", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
