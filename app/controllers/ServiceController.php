@@ -1371,8 +1371,8 @@ class ServiceController extends \BaseController {
 						$str = "";
 					}
 					
-					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $sc['cost'] < 1001){
-						// $sc['cost'] = Config::get('app.onepass_free_string');
+					if($allowSession && $sc['cost'] < 1001){
+						$sc['cost'] = Config::get('app.onepass_free_string');
 					}else{
 						$sc['cost'] .= $str;
 					}
