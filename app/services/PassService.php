@@ -1587,7 +1587,7 @@ class PassService {
             $passTerms = $passTerms['black'];
         }
         else{
-            $passTerms = [null];
+            $passTerms = $passTerms['default'];
         }
         return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
     }
