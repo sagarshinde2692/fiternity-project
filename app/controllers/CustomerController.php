@@ -2494,8 +2494,29 @@ class CustomerController extends \BaseController {
             if(!empty($customer[0]['address']) && is_string($customer[0]['address'])){
 				unset($customer[0]['address']);
 			}
-			
-			$customer[0]['show_pass'] = true; // uncomment this for pass, commented for android during android release 
+			if(
+                !empty(Request::header('Device-Type')) 
+                && 
+                !empty(Request::header('App-Version'))
+                && 
+                (
+                    (
+                        in_array(Request::header('Device-Type'),['ios']) 
+                        && 
+                        Request::header('App-Version') >= '5.2.2'
+                    ) 
+                    || 
+                    (
+                        in_array(Request::header('Device-Type'),['android']) 
+                        && 
+                        Request::header('App-Version') >= '5.30'
+                    )
+                )
+            ){
+            
+                $customer[0]['show_pass'] = true; 
+            
+            }// uncomment this for pass, commented for android during android release 
             $reliance_customer = $this->relianceService->getCorporateId(null, $customer_id);
 			$corporate_id  = $reliance_customer['corporate_id'];
             if(!empty($corporate_id) && !empty($customer[0])){
@@ -4195,7 +4216,7 @@ class CustomerController extends \BaseController {
                 (
                     in_array($_REQUEST['device_type'],['android']) 
                     && 
-                    $_REQUEST['app_version'] < '5.29'
+                    $_REQUEST['app_version'] < '5.30'
                 )
             )
         ){
