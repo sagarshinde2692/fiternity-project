@@ -30,7 +30,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => 'In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! Limited Period Offer, Only Few Passes Up For Grabs.',
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more ! \nLimited Period Offer, Only Few Passes For Grabs.",
                     'text' => 'Terms & Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -93,7 +93,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => 'In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! Limited Period Offer, Only Few Passes Up For Grabs', // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more ! \nLimited Period Offer, Only Few Passes For Grabs.", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -126,7 +126,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => 'In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! Limited Period Offer, Only Few Passes Up For Grabs', // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more ! \nLimited Period Offer, Only Few Passes For Grabs.", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
@@ -327,9 +327,9 @@ return [
                     "header1_color" => "#000000",
                     "header2" => "RED",
                     "header2_color" => "#d50000",
-                    "subheader" => "UNLIMITED ACCESS",
-                    "desc_header" => "Limitless Workouts",
-                    "desc_subheader" => "With Expiry" 
+                    //"subheader" => "UNLIMITED ACCESS",
+                    "desc_header" => "Limitless Access",//"Limitless Workouts",
+                    //"desc_subheader" => "With Expiry" 
                 ],
                 [
                     "image" => "https://b.fitn.in/passes/app-home/op_black_thumb.png",
@@ -337,9 +337,9 @@ return [
                     "header1_color" => "#000000",
                     "header2" => "BLACK",
                     "header2_color" => "#000000",
-                    "subheader" => "UNLIMITED VALIDITY",
-                    "desc_header" => "No Expiry",
-                    "desc_subheader" => "Limited Workouts"
+                    //"subheader" => "UNLIMITED VALIDITY",
+                    "desc_header" => "Limitless Validity",//"No Expiry",
+                    //"desc_subheader" => "Limited Workouts"
                 ]
             ],
             "footer" => [
