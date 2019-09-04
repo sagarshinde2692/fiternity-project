@@ -282,6 +282,11 @@ return [
                 'Download the app & get started.',
                 'Book classes at any gym/studio near you of your choice.',
                 'Not loving it? easy cancellation available.',
+            ],
+            'app_data'=>[
+                'Book your sessions through the App.',
+                'Book classes at any gym/studio near you of your choice.',
+                'Not loving it? easy cancellation available.',
             ]
         ],
         "conclusion" => $success_page_template['conclusion'],
