@@ -846,6 +846,7 @@ class PassService {
         if(in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['pass']['image1'] = 'http://b.fitn.in/passes/onepass-app.png';
             $success_template['pass']['image2'] = 'https://b.fitn.in/global/onepass/pass%20line%20design.png';
+            unset($success_template['info']['data'][0]);
         }
 
         return $success_template;
