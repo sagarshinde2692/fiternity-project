@@ -83,8 +83,9 @@ return [
                     'header' => 'WHY GO FOR A PASS',
                     'text' => 'LIMITLESS WORKOUTS, LIMITLESS CHOICES, LIMITLESS VALIDITY, LIMITLESS YOU',
                     'data' => [
-                        'ONEPass Fits In Your (Busy) Life',
-                        'ONEPass Gives You Membership Privileges'
+                        'OnePass Red give you Unlimited Access',
+                        'OnePass Red gives you Membership Privileges',
+                        'Onepass Red gives you the option to workout Anytime, Anywhere'
                     ]
                 ],
                 'offerings' => [
@@ -116,12 +117,13 @@ return [
                     'header' => 'WHY GO FOR A PASS',
                     'text' => 'LIMITLESS WORKOUTS, LIMITLESS CHOICES, LIMITLESS VALIDITY, LIMITLESS YOU',
                     'data' => [
-                        'ONEPass Fits In Your (Busy) Life',
-                        'ONEPass Gives You Membership Privileges'
+                        'OnePass Black give you Unlimited Validity',
+                        'OnePass Black gives you Membership Privileges',
+                        'Onepass Black gives you the option to workout Anytime, Anywhere'
                     ]
                 ],
                 'offerings' => [
-                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 30 to 180 sessions with lifetime validity."),
+                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 15 to 150 sessions with lifetime validity."),
                     'button_text' => 'Checkout Gyms/Studios',
                     'ratecards' => []
                 ],
