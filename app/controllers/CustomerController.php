@@ -2495,7 +2495,7 @@ class CustomerController extends \BaseController {
 				unset($customer[0]['address']);
 			}
 			
-			$customer[0]['show_pass'] = false; // uncomment this for pass, commented for android during android release 
+			$customer[0]['show_pass'] = true; // uncomment this for pass, commented for android during android release 
             $reliance_customer = $this->relianceService->getCorporateId(null, $customer_id);
 			$corporate_id  = $reliance_customer['corporate_id'];
             if(!empty($corporate_id) && !empty($customer[0])){
