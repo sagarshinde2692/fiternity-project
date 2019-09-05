@@ -7463,13 +7463,13 @@ Class Utilities {
 
     public function getLoyaltyRegisterUrl($finder_id=null){
         
-        Log::info("getLoyaltyRegisterUrl", [$this->device_token]);
+        Log::info("getLoyaltyRegisterUrl", [Request::header('Device-Token')]);
         Log::info(Request::header('Mobile-Verified'));
         
         
-        $url = Config::get('loyalty_constants.register_url').'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false').'&Device-Token='.$this->device_token;
+        $url = Config::get('loyalty_constants.register_url').'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false').'&Device-Token='.Request::header('Device-Token');
         if(!empty($finder_id)){
-            $url = Config::get('loyalty_constants.register_url').'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false').'&finder_id='.$finder_id.'&Device-Token='.$this->device_token;
+            $url = Config::get('loyalty_constants.register_url').'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false').'&finder_id='.$finder_id.'&Device-Token='.Request::header('Device-Token');
         }
         Log::info($url);
         return $url;
