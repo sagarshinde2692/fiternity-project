@@ -7467,7 +7467,7 @@ Class Utilities {
         Log::info(Request::header('Mobile-Verified'));
         
         
-        $url = Config::get('loyalty_constants.register_url').'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false');
+        $url = Config::get('loyalty_constants.register_url').'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false').'&Device-Token='.$this->device_token;
         if(!empty($finder_id)){
             $url = Config::get('loyalty_constants.register_url').'?app=true&token='.Request::header('Authorization').'&otp_verified='.(!empty(Request::header('Mobile-Verified')) ? Request::header('Mobile-Verified'):'false').'&finder_id='.$finder_id.'&Device-Token='.$this->device_token;
         }
