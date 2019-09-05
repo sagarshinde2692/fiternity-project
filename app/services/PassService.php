@@ -150,16 +150,16 @@ class PassService {
         
         $pass = Pass::where('pass_id', $data['pass_id'])->first()->toArray();
 
-        if($pass['type']=='trial' && !Config::get('app.debug')) {
-            $trialExists = $this->checkTrialPassUsedByCustomer($customer_detail['data']['customer_id']);
-            if(!empty($trialExists['status']) && $trialExists['status']) {
-                return [
-                    'status' =>400,
-                    'data' => null,
-                    'msg' => 'Not eligible to book a trial pass.'
-                ];
-            }
-        }
+        // if($pass['type']=='trial' && !Config::get('app.debug')) {
+        //     $trialExists = $this->checkTrialPassUsedByCustomer($customer_detail['data']['customer_id']);
+        //     if(!empty($trialExists['status']) && $trialExists['status']) {
+        //         return [
+        //             'status' =>400,
+        //             'data' => null,
+        //             'msg' => 'Not eligible to book a trial pass.'
+        //         ];
+        //     }
+        // }
 
         $data['pass'] = $pass;
         if(empty($data['rp_subscription_id'])){
@@ -359,7 +359,8 @@ class PassService {
             'message' => "Tmp Order Generated Sucessfully"
         ];
 
-        if(!empty($order['amount'])){
+        // if(!empty($order['amount'])){
+        if(!empty($order['amount']) && Request::header('Device-Type') != 'ios'){
             $resp['data']["coupon_details"] = [
                 "title" => "Apply Coupon Code",
                 "description" => "",
@@ -368,8 +369,8 @@ class PassService {
                 "remove_msg" => ""
             ];
         }
-
-        if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']))){
+        // if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']))){
+        if(Request::header('Device-Type') != 'ios' && (!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per'])))){
             $resp['data']["coupon_details"] = [];
             $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
             $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
