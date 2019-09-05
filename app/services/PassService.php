@@ -150,16 +150,16 @@ class PassService {
         
         $pass = Pass::where('pass_id', $data['pass_id'])->first()->toArray();
 
-        // if($pass['type']=='trial' && !Config::get('app.debug')) {
-        //     $trialExists = $this->checkTrialPassUsedByCustomer($customer_detail['data']['customer_id']);
-        //     if(!empty($trialExists['status']) && $trialExists['status']) {
-        //         return [
-        //             'status' =>400,
-        //             'data' => null,
-        //             'msg' => 'Not eligible to book a trial pass.'
-        //         ];
-        //     }
-        // }
+        if($pass['type']=='trial' && !Config::get('app.debug')) {
+            $trialExists = $this->checkTrialPassUsedByCustomer($customer_detail['data']['customer_id']);
+            if(!empty($trialExists['status']) && $trialExists['status']) {
+                return [
+                    'status' =>400,
+                    'data' => null,
+                    'msg' => 'Not eligible to book a trial pass.'
+                ];
+            }
+        }
 
         $data['pass'] = $pass;
         if(empty($data['rp_subscription_id'])){
