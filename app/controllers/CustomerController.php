@@ -4523,10 +4523,10 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
 		}
 
-		$current_version_android = 5.0;
+		$current_version_android = 5.30;
 		$current_version_ios = '5.2.2';
 
-		$last_stable_version_android = 5.28;
+		$last_stable_version_android = 5.30;
 
 		Log::info('forceupdate::: ', [$data["app_version"]]);
 		if($data["device_type"] == "android"){
