@@ -7463,7 +7463,7 @@ Class Utilities {
 
     public function getLoyaltyRegisterUrl($finder_id=null){
         
-        Log::info("getLoyaltyRegisterUrl");
+        Log::info("getLoyaltyRegisterUrl", [$this->device_token]);
         Log::info(Request::header('Mobile-Verified'));
         
         
