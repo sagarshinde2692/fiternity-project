@@ -1825,11 +1825,11 @@ Class RelianceService {
         }
 
         $res = [
-            'intro'=> [
-                'image' => Config::get('health_config.reliance.reliance_logo'),
-                'header' => "#WalkpeChal",
-                'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
-            ],
+            // 'intro'=> [
+            //     'image' => Config::get('health_config.reliance.reliance_logo'),
+            //     'header' => "#WalkpeChal",
+            //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
+            // ],
             'personal_activity' => [
                 'name' => $customer['name'],
                 'header' => " Your Activity Today",
