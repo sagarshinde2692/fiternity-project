@@ -194,7 +194,7 @@ return [
                 <li>In case the user is found misusing any of the OnePass services, he/she will be penalized at the discretion of Fitternity.</li>
                 <li>In case of any injury or accident at the Fitness Center, any claims on Fitternity would not be applicable whatsoever.</li>
                 <li>In case of any dispute the final decision made by Fitternity would be final.</li>
-                <li>In case of any assistance concerning OnePass write to us at onepass@fitternity.com  or call your personal concierge at +918879886083.</li>
+                <li>In case of any assistance concerning OnePass write to us at onepass@fitternity.com  or call your personal concierge at +917400062849.</li>
             </ul><br/><br/>"
         ],
         "default"=>[
@@ -222,7 +222,7 @@ return [
                 <li>In case the user is found misusing any of the OnePass services, he/she will be penalized at the discretion of Fitternity.</li>
                 <li>In case of any injury or accident at the Fitness Center, any claims on Fitternity would not be applicable whatsoever.</li>
                 <li>In case of any dispute the final decision made by Fitternity would be final.</li>
-                <li>In case of any assistance concerning OnePass write to us at onepass@fitternity.com  or call your personal concierge at +918879886083</li>
+                <li>In case of any assistance concerning OnePass write to us at onepass@fitternity.com  or call your personal concierge at +917400062849</li>
             </ul><br/><br/>"
         ]
     ],
@@ -423,7 +423,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "Try the complementary pass @1799 & get 50% instant cashback",
+                "text" => "Try the complementary pass @2500 & get 50% instant cashback",
                 "button_text" => "Know More"
             ]
         ],
