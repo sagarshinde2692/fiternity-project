@@ -107,26 +107,6 @@ return array(
 
 	'pass_payment_options' => [
 		[
-				'title' => 'Paypal',
-				'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
-				'value' => 'paypal'
-		],
-		[
-				'title' => 'Paytm',
-				// 'subtitle' => 'Paytm',
-				'value' => 'paytm'
-		],
-		[
-				'title' => 'AmazonPay',
-				// 'subtitle' => 'AmazonPay',
-				'value' => 'amazonpay'
-		],
-		[
-				'title' => 'Mobikwik',
-				// 'subtitle' => 'Mobikwik',
-				'value' => 'mobikwik'
-		],
-		[
 				'title' => 'PayU',
 				// 'subtitle' => 'PayU',
 				'value' => 'payu'
