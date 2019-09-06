@@ -1830,6 +1830,11 @@ Class RelianceService {
             //     'header' => "#WalkpeChal",
             //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
             // ],
+            'intro'=> [
+                'image' => Config::get('health_config.reliance.reliance_logo'),
+                'header' => "",
+                'text' => ""
+            ],
             'personal_activity' => [
                 'name' => $customer['name'],
                 'header' => " Your Activity Today",
