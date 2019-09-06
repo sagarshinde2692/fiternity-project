@@ -426,7 +426,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "Try the complementary pass @1799 & get 50% instant cashback",
+                "text" => "Try the complementary pass @2500 & get 50% instant cashback",
                 "button_text" => "Know More"
             ]
         ],
