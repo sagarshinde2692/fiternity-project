@@ -4062,6 +4062,9 @@ class CustomerController extends \BaseController {
 			}
 			unset($result['non_reliance']);
 			unset($result['dob_popup']);
+			if(!empty($result['health_popup'])) {
+				unset($result['health_popup']);
+			}
             //disable reliance section 05-sept-2019 above
 		}
         
