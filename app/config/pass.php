@@ -165,7 +165,7 @@ return [
                 <li>In case of misbehavior by the user at the Vendor location, Fitness center or the staff, Fitternity holds the right to cancel the user's  subscription without any prior notice. No refund amount would be processed in this scenario.</li>
                 <li>Refund Policy is only applicable on subscriptions above 3 months.</li>
                 <li>The user will be charged a 3% convenience fee on cancellation of his/her OnePass subscription (over and above usage of subscription on pro rata basis).</li>
-                <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given the alignment of standard terms between Fitternity & the facility</li>
+                <li>In case you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given the alignment of standard terms between Fitternity & the facility</li>
                 <li>In case the user is found misusing any of the OnePass services, he/she will be penalized at the discretion of Fitternity.</li>
                 <li>In case of any injury or accident at the Fitness Center, any claims on Fitternity would not be applicable whatsoever.</li>
                 <li>In case of any dispute the final decision made by Fitternity would be final.</li>
