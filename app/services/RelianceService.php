@@ -439,7 +439,8 @@ Class RelianceService {
                 // ],
                 'intro'=> [
                     // 'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
-                    'image' => "http://b.fitn.in/global/fexbutton.png",
+                    // 'image' => "http://b.fitn.in/global/fexbutton.png",
+                    'image' => "https://a.fitn.in/fitimages/logo.png",
                     'header' => "Steps Counter",
                     'text' => ""
                 ],
@@ -965,7 +966,8 @@ Class RelianceService {
             // ],
             'intro'=> [
                 // 'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
-                'image' => "http://b.fitn.in/global/fexbutton.png",
+                // 'image' => "http://b.fitn.in/global/fexbutton.png",
+                'image' => "https://a.fitn.in/fitimages/logo.png",
                 'header' => "Steps Counter",
                 'text' => ""
             ],
@@ -1844,7 +1846,8 @@ Class RelianceService {
             // ],
             'intro'=> [
                 // 'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
-                'image' => "http://b.fitn.in/global/fexbutton.png",
+                // 'image' => "http://b.fitn.in/global/fexbutton.png",
+                'image' => "https://a.fitn.in/fitimages/logo.png",
                 'header' => "Steps Counter",
                 'text' => ""
             ],
