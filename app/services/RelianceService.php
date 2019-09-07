@@ -438,7 +438,8 @@ Class RelianceService {
                 //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
                 // ],
                 'intro'=> [
-                    'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
+                    // 'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
+                    'image' => "http://b.fitn.in/global/fexbutton.png",
                     'header' => "Steps Counter",
                     'text' => ""
                 ],
@@ -963,7 +964,8 @@ Class RelianceService {
             //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
             // ],
             'intro'=> [
-                'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
+                // 'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
+                'image' => "http://b.fitn.in/global/fexbutton.png",
                 'header' => "Steps Counter",
                 'text' => ""
             ],
@@ -1841,7 +1843,8 @@ Class RelianceService {
             //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
             // ],
             'intro'=> [
-                'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
+                // 'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
+                'image' => "http://b.fitn.in/global/fexbutton.png",
                 'header' => "Steps Counter",
                 'text' => ""
             ],
