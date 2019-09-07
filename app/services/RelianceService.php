@@ -432,17 +432,10 @@ Class RelianceService {
             }
             $center_number = $firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today'];
             $res = [
-                // 'intro'=> [
-                //     'image' => Config::get('health_config.reliance.reliance_logo'),
-                //     'header' => "#WalkpeChal",
-                //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
-                // ],
                 'intro'=> [
-                    // 'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
-                    // 'image' => "http://b.fitn.in/global/fexbutton.png",
-                    'image' => "https://a.fitn.in/fitimages/logo.png",
-                    'header' => "Steps Counter",
-                    'text' => ""
+                    'image' => Config::get('health_config.reliance.reliance_logo'),
+                    'header' => "#WalkpeChal",
+                    'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
                 ],
                 'personal_activity' => [
                     'name' => $custInfo['name'],
@@ -959,17 +952,10 @@ Class RelianceService {
             $selfRank = $ranks['selfRank'];
         }
         $res = [
-            // 'intro'=> [
-            //     'image' => Config::get('health_config.reliance.reliance_logo'),
-            //     'header' => "#WalkpeChal",
-            //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
-            // ],
             'intro'=> [
-                // 'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
-                // 'image' => "http://b.fitn.in/global/fexbutton.png",
-                'image' => "https://a.fitn.in/fitimages/logo.png",
-                'header' => "Steps Counter",
-                'text' => ""
+                'image' => Config::get('health_config.reliance.reliance_logo'),
+                'header' => "#WalkpeChal",
+                'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
             ],
             'personal_activity' => [
                 'name' => $customer['name'],
@@ -1839,17 +1825,10 @@ Class RelianceService {
         }
 
         $res = [
-            // 'intro'=> [
-            //     'image' => Config::get('health_config.reliance.reliance_logo'),
-            //     'header' => "#WalkpeChal",
-            //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
-            // ],
             'intro'=> [
-                // 'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
-                // 'image' => "http://b.fitn.in/global/fexbutton.png",
-                'image' => "https://a.fitn.in/fitimages/logo.png",
-                'header' => "Steps Counter",
-                'text' => ""
+                'image' => Config::get('health_config.reliance.reliance_logo'),
+                'header' => "#WalkpeChal",
+                'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
             ],
             'personal_activity' => [
                 'name' => $customer['name'],
