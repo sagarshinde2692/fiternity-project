@@ -432,10 +432,15 @@ Class RelianceService {
             }
             $center_number = $firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today'];
             $res = [
+                // 'intro'=> [
+                //     'image' => Config::get('health_config.reliance.reliance_logo'),
+                //     'header' => "#WalkpeChal",
+                //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
+                // ],
                 'intro'=> [
-                    'image' => Config::get('health_config.reliance.reliance_logo'),
-                    'header' => "#WalkpeChal",
-                    'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
+                    'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
+                    'header' => "Steps Counter",
+                    'text' => ""
                 ],
                 'personal_activity' => [
                     'name' => $custInfo['name'],
@@ -952,10 +957,15 @@ Class RelianceService {
             $selfRank = $ranks['selfRank'];
         }
         $res = [
+            // 'intro'=> [
+            //     'image' => Config::get('health_config.reliance.reliance_logo'),
+            //     'header' => "#WalkpeChal",
+            //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
+            // ],
             'intro'=> [
-                'image' => Config::get('health_config.reliance.reliance_logo'),
-                'header' => "#WalkpeChal",
-                'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
+                'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
+                'header' => "Steps Counter",
+                'text' => ""
             ],
             'personal_activity' => [
                 'name' => $customer['name'],
@@ -1831,8 +1841,8 @@ Class RelianceService {
             //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
             // ],
             'intro'=> [
-                'image' => Config::get('health_config.reliance.reliance_logo'),
-                'header' => "",
+                'image' => "https://b.fitn.in/global/pps/f%20-%20exclusive%20sinal.png",
+                'header' => "Steps Counter",
                 'text' => ""
             ],
             'personal_activity' => [
