@@ -4060,8 +4060,9 @@ class CustomerController extends \BaseController {
 				unset($result['health']);
 				unset($result['is_health_rewad_shown']);
 			}
-			unset($result['non_reliance']);
-			unset($result['dob_popup']);
+			if(!empty($result['non_reliance'])) {
+				unset($result['non_reliance']);
+			}
 			if(!empty($result['health_popup'])) {
 				unset($result['health_popup']);
 			}
