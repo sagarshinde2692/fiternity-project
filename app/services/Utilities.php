@@ -9439,7 +9439,8 @@ Class Utilities {
       
     public function getRewardGridImages($rewardType=2, $cashbackType=1) {
         if($rewardType == 2) {
-            return 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final%20(1)%20(1).jpg';
+            //return 'https://b.fitn.in/global/Homepage-branding-2018/srp/fitternity-new-grid-final%20(1)%20(1).jpg'; //not matching with current grid
+            return 'https://b.fitn.in/global/fitsquad-225.jpg';
         }
         else if($rewardType == 3) {
             $cashbackImageMap = [
