@@ -432,10 +432,15 @@ Class RelianceService {
             }
             $center_number = $firebaseResponse['personal_activity']['steps_today'] + $firebaseResponse['personal_activity']['workout_steps_today'];
             $res = [
+                // 'intro'=> [
+                //     'image' => Config::get('health_config.reliance.reliance_logo'),
+                //     'header' => "#WalkpeChal",
+                //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
+                // ],
                 'intro'=> [
-                    'image' => Config::get('health_config.reliance.reliance_logo'),
-                    'header' => "#WalkpeChal",
-                    'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
+                    'image' => Config::get('health_config.health_images.foot_image'),
+                    'header' => "Fitternity Step Counter",
+                    'text' => "Fitness with each step"
                 ],
                 'personal_activity' => [
                     'name' => $custInfo['name'],
@@ -952,10 +957,15 @@ Class RelianceService {
             $selfRank = $ranks['selfRank'];
         }
         $res = [
+            // 'intro'=> [
+            //     'image' => Config::get('health_config.reliance.reliance_logo'),
+            //     'header' => "#WalkpeChal",
+            //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
+            // ],
             'intro'=> [
-                'image' => Config::get('health_config.reliance.reliance_logo'),
-                'header' => "#WalkpeChal",
-                'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
+                'image' => Config::get('health_config.health_images.foot_image'),
+                'header' => "Fitternity Step Counter",
+                'text' => "Fitness with each step"
             ],
             'personal_activity' => [
                 'name' => $customer['name'],
@@ -1825,10 +1835,15 @@ Class RelianceService {
         }
 
         $res = [
+            // 'intro'=> [
+            //     'image' => Config::get('health_config.reliance.reliance_logo'),
+            //     'header' => "#WalkpeChal",
+            //     'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
+            // ],
             'intro'=> [
-                'image' => Config::get('health_config.reliance.reliance_logo'),
-                'header' => "#WalkpeChal",
-                'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
+                'image' => Config::get('health_config.health_images.foot_image'),
+                'header' => "Fitternity Step Counter",
+                'text' => "Fitness with each step"
             ],
             'personal_activity' => [
                 'name' => $customer['name'],
