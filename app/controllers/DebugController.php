@@ -8531,7 +8531,7 @@ public function yes($msg){
             
         $pt_collection = $mongoclient->selectDB ( Config::get ( "database.connections.$db.database" ) )->selectCollection ( $collection );
         // return $update_service_data;
-        $batch_update = new \MongoUpdateBatch($pt_collection);
+        $batch_update = new MongoUpdateBatch($pt_collection);
 
         foreach($update_data as $item){
             $batch_update->add($item); 
@@ -11460,5 +11460,93 @@ public function yes($msg){
             }
 
         }    
+	}
+	
+	public function testOnePassUser(){
+		$utilities = new Utilities();
+
+		return $utilities->onepassHoldCustomer();
+		
+		return $onepassHoldCustomer;		
+	}
+
+	public function dynamicOnepassEMailSms(){
+		$destinationPath = public_path();
+		$fileName = "onepass_customers-test.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+		
+		$finArr = array();
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if( !empty($value['customer_name']) && !empty($value['customer_email']) && !empty($value['contact_number'])  && !empty($value['type'])){
+					
+					$data = array();
+					$data['customer_name'] = $value['customer_name'];
+					$data['customer_email'] = $value['customer_email'];
+					$data['customer_phone'] = $value['contact_number'];
+					$data['pass_type'] = $value['type'];
+					
+					$customermailer = new CustomerMailer();
+					$customermailer->onepassDynamic($data);
+
+					array_push($finArr, $data);
+					// $customersms = new CustomerSms();
+					// $customersms->onepassDynamic($value);
+				}
+			}
+		}
+		return $finArr;
     }
+    
+    public function addFlagClasspassAvalible(){
+		ini_set('max_execution_time', 0);
+		Ratecard::$withoutAppends = true;
+
+		$integratedFinder = Finder::integrated()->lists('_id');
+
+		$integratedService = Service::integrated()->whereIn('finder_id', $integratedFinder)->lists('_id');
+
+		$ratecards = Ratecard::whereIn('service_id', $integratedService)
+			->whereIn('type', ['workout session'])
+			// ->take(1)
+			->get(['service_id', 'price', 'special_price']);
+		$updates = array();
+		foreach($ratecards as $ratecard){
+
+			$price = $ratecard['price'];
+			if(!empty($ratecard['special_price']) && $ratecard['special_price'] > 0){
+				$price = $ratecard['special_price'];
+			}
+
+			Log::info("ratecard_id", [$ratecard['_id']]);
+			Log::info("service_id", [$ratecard['service_id']]);
+			Log::info("price", [$price]);
+
+			if($price < 1001){
+				array_push($updates, [
+					"q"=>['_id'=> $ratecard['service_id']],
+					"u"=>[
+						'$set'=>[
+							'flags.classpass_available'=>true
+						]
+					],
+					'multi' => false
+	
+                ]);
+                break;
+			}
+
+			
+		}
+        // return $updates;
+		$this->batchUpdate('mongodb2', 'vendorservices', $updates);
+		$this->batchUpdate('mongodb', 'services', $updates);
+        // return count($ratecard);
+        return "Done";
+	}
 }

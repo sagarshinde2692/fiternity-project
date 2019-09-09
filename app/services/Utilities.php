@@ -4380,7 +4380,7 @@ Class Utilities {
 					"entry"=>"credit",
 					"type"=>"FITCASHPLUS"
 				];
-				$this->utilities->walletTransaction($addWalletData);
+				$this->walletTransaction($addWalletData);
 				$resp["show_popup"] = true;
 				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
 				$resp["popup"]["header_text"] = "Congratulations";
@@ -7482,7 +7482,7 @@ Class Utilities {
             $regData['reg_id'] = $gcm_reg_id;
             $regData['type'] = $device_type;
 
-            $this->utilities->addRegId($regData);
+            $this->addRegId($regData);
         }
 
         return array('status' => 200,'data' => $data);
@@ -7627,9 +7627,9 @@ Class Utilities {
             $voucher_data['diet_plan_order_id'] = $diet_plan['order_id'];
         }
 
-        if(!empty($voucher_category['flags']['swimming_session'])){
-            
-            $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months'))]);
+        if(!empty($voucher_category['flags']['swimming_session']) || !empty($voucher_category['flags']['workout_session'])){
+            $workout_session_flag = !empty($voucher_category['flags']['workout_session']) ? true: null;
+            $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months'))], $workout_session_flag);
             Log::info("asdsad");
         }
         
@@ -7637,7 +7637,7 @@ Class Utilities {
 
     }
 
-    public function generateSwimmingCouponCode($data){
+    public function generateSwimmingCouponCode($data, $workout_session_flag=null){
 
         $coupon = [
             "name" =>$data['description'],
@@ -7650,13 +7650,6 @@ Class Utilities {
 
         $coupon['and_conditions'] = [
             [
-                "key" =>"service.servicecategory_id",
-                "operator" =>"in",
-                "values" =>[ 
-                    123
-                ]
-            ],
-            [
                 "key" =>"logged_in_customer._id",
                 "operator" =>"in",
                 "values" =>[ 
@@ -7664,6 +7657,31 @@ Class Utilities {
                 ]
             ]   
         ];
+
+        if(empty($workout_session_flag)){
+            array_push(
+                $coupon['and_conditions'],
+                [
+                    "key" =>"service.servicecategory_id",
+                    "operator" =>"in",
+                    "values" =>[ 
+                        123
+                    ]
+                ]
+            );
+        }
+        else {
+            array_push(
+                $coupon['and_conditions'],
+                [
+                    "key" =>"customer._id",
+                    "operator" =>"in",
+                    "values" =>[ 
+                        $data['customer']['_id']
+                    ]
+                ]
+            );
+        }
         
 
         $coupon['once_per_user'] = true;
@@ -7671,7 +7689,7 @@ Class Utilities {
         $coupon["ratecard_type"] = [ "workout session"];
         $coupon["loyalty_reward"] = true;
 
-        $coupon['code'] = $this->getSwimmingSessionCode();
+        $coupon['code'] = $this->getSwimmingSessionCode($data['customer'], $workout_session_flag);
         // print_r($coupon);
         // exit();
         
@@ -7682,13 +7700,21 @@ Class Utilities {
 
     }
 
-    public function getSwimmingSessionCode(){
-        $code = 'sw'.strtolower($this->generateRandomString());
+    public function getSwimmingSessionCode($customer, $workout_session_flag){
+        $random_string = $this->generateRandomString();
+        $code = 'sw'.$random_string;
+        if(!empty($customer['name']) && !empty($workout_session_flag)){
+            $code = $customer['name'].$random_string;
+            if(strlen($customer['name']) >3 ){
+                $code = substr($customer['name'],0,3).$random_string;
+            }
+        }
+        $code = strtolower($code);
         // print_r($code);
         // exit();
         $alreadyExists = Coupon::where('code', $code)->first();
         if($alreadyExists){
-            return $this->getSwimmingSessionCode();
+            return $this->getSwimmingSessionCode($customer, $workout_session_flag);
         }
         return $code;
     }
@@ -9648,6 +9674,9 @@ Class Utilities {
 		}
 		if(empty($near_by_workout_request['lat']) && empty($near_by_workout_request['lon'])){
 			$result['header'] = "Workouts in ".ucwords($near_by_workout_request['city']);
+        }
+        if(!empty($_REQUEST['selected_region'])){
+			$result['header'] = "Workouts in ".ucwords($_REQUEST['selected_region']);
 		}
 		return $result;
 	}
@@ -9660,6 +9689,30 @@ Class Utilities {
         $city_array = array_values(array_filter($cities,function ($e) use ($slug){return $e['slug'] == $slug;}));
         
         return !empty($city_array) ? $city_array[0] : null;
+    }
+
+    public function onepassHoldCustomer(){
+        $jwt_token = Request::header('Authorization');
+        $pass = false;
+        $customer_email = "";
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_email = $decoded->customer->email;
+            if(!empty($decoded->customer->pass)){
+                $pass = true;
+            }
+            
+            if(Config::get('app.env') == 'stage'){
+                if($customer_email == "ankitamamnia@fitternity.com"){
+                    $pass = true;
+                }
+            }
+        }
+        Log::info("pass header",[$pass]);
+        return $pass;
+    }
+    public function bullet($isChar = false) {
+        return json_decode('"'."\u25cf".'"');
     }
 
     public function rollbackVouchers($customer, $combo_vouchers_list){
@@ -9702,7 +9755,7 @@ Class Utilities {
                 'terms_text'=>'T & C applied.'
             ]
         ];
-        if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
+        if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session']) && empty($voucherAttached['flags']['workout_session'])){
             $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
             $resp['voucher_data']['header']= "REWARD UNLOCKED";
             

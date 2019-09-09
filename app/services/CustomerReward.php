@@ -1828,6 +1828,10 @@ Class CustomerReward {
             $query->whereIn('tickets', [$ticket->_id]);
         }
         
+        if(!empty($pass)){
+            $query->where('ratecard_type', 'pass');
+        }
+        
         $coupon = $query->first();
 
         if(!empty($ratecard)){
@@ -2395,7 +2399,7 @@ Class CustomerReward {
                 }
                 
             }
-            if($ratecard && (isset($coupon['and_conditions']) || isset($coupon['or_conditions']) )){
+            if(($ratecard || $pass) && (isset($coupon['and_conditions']) || isset($coupon['or_conditions']) )){
 
                 if(empty($finder)){
                     $finder = Finder::where('_id', $ratecard['finder_id'])->first();
@@ -2413,10 +2417,17 @@ Class CustomerReward {
                     $logged_in_customer = (array)$decoded->customer;
                     
                 }
+                $booking_for_customer= [];
+                if(!empty($customer_email)){
+                    $booking_for_customer = \Customer::active()->where('email',  $customer_email)->first();
+                }
                 $utilities = new Utilities();
-                $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email];
-
+                if($ratecard){
+                    $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
+                }
+                
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer];
+               
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
                     $and_condition = true;

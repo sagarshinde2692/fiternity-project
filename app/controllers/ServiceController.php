@@ -750,7 +750,24 @@ class ServiceController extends \BaseController {
 
 		// $all_trials_booked = true;
 
-		
+		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+		$allowSession = false;
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+			if(empty($customer_id)){
+				$jwt_token = Request::header('Authorization');
+				if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
+					$decoded = decode_customer_token();		
+					$customer_id = intval($decoded->customer->_id);
+				}
+			}
+			$allowSession = $this->passService->allowSession(1, $customer_id, $date);
+			if(!empty($allowSession['allow_session'])) {
+				$allowSession = $allowSession['allow_session'];
+			}
+			else {
+				$allowSession = false;
+			}
+		}
 
         foreach ($items as $k => $item) {
 
@@ -912,9 +929,23 @@ class ServiceController extends \BaseController {
 		    		if(!empty($p_np))
 		    		{	
 		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $this->utilities->getRupeeForm($p_np['non_peak'] + $p_np['non_peak_discount']):"");
-                        $nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
-                        
-                        if(empty($finder['flags']['monsoon_campaign_pps'])){
+						$nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
+						
+						$rsh['price_only']=(isset($p_np['peak']))?$p_np['peak']:((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $p_np['non_peak'] + $p_np['non_peak_discount']:"");
+                        $nrsh['price_only']=(isset($p_np['non_peak']))?$p_np['non_peak']:"";
+                        Log::info("rsh price",[$rsh['price_only']]);
+                        Log::info("nrsh price",[$rsh['price_only']]);
+						if($allowSession){
+						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < 1001 || $nrsh['price_only'] < 1001)){
+							if($rsh['price_only'] < 1001){
+								$rsh['price'] = Config::get('app.onepass_free_string');
+							}
+							
+							if($nrsh['price_only'] < 1001){
+								$nrsh['price'] = Config::get('app.onepass_free_string');
+							}
+							
+						}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                             if(!empty($rsh['price'])){
                                 $rsh['price'].=" (100% Cashback)";
                             }
@@ -922,7 +953,7 @@ class ServiceController extends \BaseController {
                                 $nrsh['price'].=" (100% Cashback)";
                             }
                             
-                        }
+						}
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
 				}
@@ -949,7 +980,7 @@ class ServiceController extends \BaseController {
 		    		}
 		    		
 				}
-				$price_text = $this->addCreditPointsNew($ratecard_price);
+				// $price_text = $this->addCreditPointsNew($ratecard_price);
 				foreach ($weekdayslots['slots'] as $slot) {
 
 					if(!empty($finder)&&!empty($finder['flags'])&&!empty($finder['flags']['newly_launched_date']))
@@ -1013,6 +1044,12 @@ class ServiceController extends \BaseController {
                         array_set($slot, 'ratecard_id', $ratecard['_id']);
                         array_set($slot,'epoch_start_time',strtotime(strtoupper($date." ".$slot['start_time'])));
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
+
+						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+						if(!empty($allowSession) && $ratecard_price < 1001){
+							array_set($slot, 'skip_share_detail', true);
+						}
+
 						$total_slots_count +=1;
 						
 						// if(isset($_GET['source']) && $_GET['source'] == 'pps')
@@ -1143,9 +1180,12 @@ class ServiceController extends \BaseController {
 
                 }
 
-                if(empty($finder['flags']['monsoon_campaign_pps'])){
+				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+				if($allowSession && $service['non_peak']['price'] < 1001){
+					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
+				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $service['non_peak']['price'] .= " (100% Cashback)";
-                }
+				}
             }
 			
 			$peak_exists = false;
@@ -1296,8 +1336,8 @@ class ServiceController extends \BaseController {
 			}else{
 				
 				foreach($data['schedules'] as &$sc){
-
-                    if(!empty($_GET['init_source']) && $_GET['init_source'] == 'pps'){
+					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+                    if((!empty($_GET['init_source']) && $_GET['init_source'] == 'pps') || (!empty($onepassHoldCustomer) && $onepassHoldCustomer && $sc['cost'] < 1001)){
                         $sc['free_trial_available'] = false;
                     }
 					
@@ -1330,8 +1370,13 @@ class ServiceController extends \BaseController {
 					if((isset($sc['free_trial_available']) && $sc['free_trial_available']) || !empty($finder['flags']['monsoon_campaign_pps'])){
 						$str = "";
 					}
-
-					$sc['cost'] .= $str;
+					
+					if($allowSession && $sc['cost'] < 1001){
+						$sc['cost'] = Config::get('app.onepass_free_string');
+					}else{
+						$sc['cost'] .= $str;
+					}
+					
 					if(!empty($service['extended_validity'])){
 
                     }
@@ -1693,7 +1738,7 @@ class ServiceController extends \BaseController {
 	public function serviceDetailv1($finder_slug, $service_slug, $cache=true){
 
 		// return date('Y-m-d', strtotime('day after tomorrow'));
-
+        $date = !empty($_GET['date']) ? $_GET['date'] : null;
 		Log::info($_SERVER['REQUEST_URI']);
 		$cache_key = "$finder_slug-$service_slug";
 
@@ -1816,9 +1861,10 @@ class ServiceController extends \BaseController {
 			
             $service_details['price'] = "₹".$service_details['amount'];
 
-            if(empty($finder['flags']['monsoon_campaign_pps'])){
-                $service_details['price'].=" (100% Cashback)";
-            }
+			if(empty($finder['flags']['monsoon_campaign_pps'])){
+				$service_details['price'].=" (100% Cashback)";
+			}
+
             if($service_details['amount'] != 73){
                 $service_details['finder_flags']['monsoon_campaign_pps'] = false;
             }
@@ -1971,6 +2017,30 @@ class ServiceController extends \BaseController {
 		
 		$service_details = Cache::tags('service_detail')->get($cache_key);
 
+		$jwt_token = Request::header('Authorization');
+		if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
+			$decoded = decode_customer_token();
+			$customer_id = intval($decoded->customer->_id);
+		}
+
+		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+		$allowSession = false;
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+			$allowSession = $this->passService->allowSession($service_details['amount'], $customer_id, $date);
+			if(!empty($allowSession['allow_session'])) {
+				$allowSession = $allowSession['allow_session'];
+			}
+			else {
+				$allowSession = false;
+			}
+		}
+		if($allowSession && $service_details['amount'] < 1001){
+			$service_details['price'] = Config::get('app.onepass_free_string');
+			$service_details['easy_cancellation'] = array(
+				"header" => "Easy Cancelletion: ",
+				"description" => "You can cancel this session 1 hour prior to your session time."
+			);
+		}
 		$time = isset($_GET['time']) ? $_GET['time'] : null;
 		$time_interval = null;
 		$within_time = null;

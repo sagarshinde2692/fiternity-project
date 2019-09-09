@@ -58,6 +58,9 @@ class CustomerController extends \BaseController {
 	}
 
 	public function getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType='website', $type='lte', $orderId=null) {
+
+        array_push($selectfields, 'service_slug');
+
 		if($deviceType=='website'){
 
 			// returning cancelled trials as well, for website...
@@ -188,9 +191,13 @@ class CustomerController extends \BaseController {
 			}
             $trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
             
+            if(!empty($trial["pass_order_id"])){
+				$stampImage = ((!empty($passOrder['pass']['pass_type'])) && $passOrder['pass']['pass_type']=='black')?'https://b.fitn.in/passes/onepass-black%20-%20stamp.png':'https://b.fitn.in/passes/onepass-Red%20-%20stamp.png';
+                $trial["overlay_image"] = $stampImage;
+            }
             
             if(!empty($trial["going_status"]) && $trial["going_status"] == 2){
-                $trial["overlay_image"] = "https://b.fitn.in.s3.amazonaws.com/Cancel%20icon1.png";
+                $trial["overlay_image"] = "https://b.fitn.in/Cancel%20icon1.png";
             }
 
 			try{
@@ -200,7 +207,13 @@ class CustomerController extends \BaseController {
 			}
 			if(!empty($trial['studio_extended_validity_order_id']) || !empty($trial['pass_order_id'])){
 				$trial['fitcash_text'] = '';
-			}
+            }
+            
+            if($type == 'past'){
+                $trial['rebook'] = true;
+            }
+
+
 			array_push($bookings, $trial);
 		}
 		return $bookings;
@@ -213,7 +226,7 @@ class CustomerController extends \BaseController {
 		$limit 				=	intval($limit);
 		$deviceType = (isset($_GET['device_type']))?$_GET['device_type']:"website";
 
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order','customer_id', 'studio_extended_validity_order_id', 'pass_order_id');
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order','customer_id', 'studio_extended_validity_order_id', 'pass_order_id', 'service_slug');
 
 		// if(isset($_GET['device_type']) && $_GET['device_type'] == "website"){
 
@@ -236,10 +249,12 @@ class CustomerController extends \BaseController {
 				$upcomingTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'gt');
 				$pastTrialsQuery = $this->getBooktrialsListingQueryRes($customeremail, $selectfields, $offset, $limit, $deviceType, 'lte');
 
+				$stampImage = ((!empty($passOrder['pass']['pass_type'])) && $passOrder['pass']['pass_type']=='black')?'https://b.fitn.in/passes/onepass-black-stamp.png':'https://b.fitn.in/passes/onepass-red-stamp.png';
+
 				if(!empty($upcomingTrialsQuery[0])) {
 					foreach($upcomingTrialsQuery as &$trial){
 						if(!empty($trial['pass_order_id'])) {
-							$trial['pass_stamp'] = 'https://b.fitn.in/passes/pass_stamp.png';
+							$trial['pass_stamp'] = $stampImage;
 						}
 					}
 				}
@@ -247,7 +262,7 @@ class CustomerController extends \BaseController {
 				if(!empty($pastTrialsQuery[0])) {
 					foreach($pastTrialsQuery as &$trial){
 						if(!empty($trial['pass_order_id'])) {
-							$trial['pass_stamp'] = 'https://b.fitn.in/passes/pass_stamp.png';
+							$trial['pass_stamp'] = $stampImage;
 						}
 					}
 				}
@@ -2418,7 +2433,7 @@ class CustomerController extends \BaseController {
 
 	}
 
-	public function customerDetail($customer_id){
+	public function customerDetail($customer_id, $onepassRequired = false){
 
 		$array = array('name'=>NULL,
 			'email'=>NULL,
@@ -2479,8 +2494,29 @@ class CustomerController extends \BaseController {
             if(!empty($customer[0]['address']) && is_string($customer[0]['address'])){
 				unset($customer[0]['address']);
 			}
-			
-			$customer[0]['show_pass'] = false; // uncomment this for pass, commented for android during android release 
+			if(
+                !empty(Request::header('Device-Type')) 
+                && 
+                !empty(Request::header('App-Version'))
+                && 
+                (
+                    (
+                        in_array(Request::header('Device-Type'),['ios']) 
+                        && 
+                        Request::header('App-Version') >= '5.2.2'
+                    ) 
+                    || 
+                    (
+                        in_array(Request::header('Device-Type'),['android']) 
+                        && 
+                        Request::header('App-Version') >= '5.30'
+                    )
+                )
+            ){
+            
+                $customer[0]['show_pass'] = true; 
+            
+            }// uncomment this for pass, commented for android during android release 
             $reliance_customer = $this->relianceService->getCorporateId(null, $customer_id);
 			$corporate_id  = $reliance_customer['corporate_id'];
             if(!empty($corporate_id) && !empty($customer[0])){
@@ -2497,6 +2533,11 @@ class CustomerController extends \BaseController {
 			if(!empty($customer[0]['dob']) && !empty($customer[0]['dob']->sec)){
 				$customer[0]['dob'] = date('d-M-Y', $customer[0]['dob']->sec);
 			}
+
+			if($onepassRequired) {
+				$customer[0]['onepass'] = $this->passService->homePostPassPurchaseData($customer_id);
+			}
+
 			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
 
 		}else{
@@ -2511,6 +2552,8 @@ class CustomerController extends \BaseController {
 	public function getCustomerDetail(){
 
 		$jwt_token = Request::header('Authorization');
+		$data = Input::all();
+		$onePassRequired = (!empty($data['onepass_required']))?in_array(strtoupper($data['onepass_required']), ['TRUE']):false;
 		Log::info($jwt_token);
 		$decoded = $this->customerTokenDecode($jwt_token);
 
@@ -2521,7 +2564,7 @@ class CustomerController extends \BaseController {
 			$af_instance_idData = ['af_instance_id' => $af_instance_id];
 			$customer->update($af_instance_idData);
 		}
-		$customer_detail = $this->customerDetail($customer_id);
+		$customer_detail = $this->customerDetail($customer_id, $onePassRequired);
 
 
 		return $customer_detail;
@@ -4011,18 +4054,58 @@ class CustomerController extends \BaseController {
             if(!empty($result['health']['steps'])){
                 unset($result['health']['steps']);
 			}
-            
+
+			//disable reliance section 05-sept-2019 below
+			if(empty($customerRec['external_reliance']) || !$customerRec['external_reliance']) {
+				unset($result['health']);
+				unset($result['is_health_rewad_shown']);
+			}
+			if(!empty($result['non_reliance'])) {
+				unset($result['non_reliance']);
+			}
+			if(!empty($result['health_popup'])) {
+				unset($result['health_popup']);
+			}
+            //disable reliance section 05-sept-2019 above
 		}
         
         if(!isExternalCity($city)){
-            // $workout_sessions_near_customer = $this->getWorkoutSessions($near_by_vendor_request);
+        
+            $lat = isset($_GET['lat']) && $_GET['lat'] != "" ? $_GET['lat'] : "";
+            $lon = isset($_GET['lon']) && $_GET['lon'] != "" ? $_GET['lon'] : "";
+            // $trending = getFromCache(['tag'=>'trending', 'key'=>$city]);
+
+            // if(empty($trending)){
+            $near_by_vendor_request = [
+                "offset" => 0,
+                "limit" => 9,
+                "radius" => "2km",
+                "category"=>"",
+                "lat"=>$lat,
+                "lon"=>$lon,
+                "city"=>strtolower($city),
+                "keys"=>[
+                    "average_rating",
+                    "contact",
+                    "coverimage",
+                    "location",
+                    "multiaddress",
+                    "slug",
+                    "name",
+                    "id",
+                    "categorytags",
+                    "category"
+                ]
+            ];
+            
+            $workout_sessions_near_customer = $this->getWorkoutSessions($near_by_vendor_request);
             // $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
             // $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
 
-            if(!($this->device_type=='android' && !empty($this->app_version) && (float)$this->app_version>5.27)){
-                $result['near_by_vendor'] = $this->getNearbyVendors($city, true);
-                $this->nearVendorRemoveExtraFields($result['near_by_vendor']);
-            }
+            // if(!($this->device_type=='android' && !empty($this->app_version) && (float)$this->app_version>5.27)){
+            //     $result['near_by_vendor'] = $this->getNearbyVendors($city, true);
+            //     $this->nearVendorRemoveExtraFields($result['near_by_vendor']);
+            // }
         }
         
         $result['categoryheader'] = "Discover | Try | Buy";
@@ -4049,54 +4132,67 @@ class CustomerController extends \BaseController {
 		}
 
         $result['fitex'] = [
-            'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
-            'header' => 'EXPERIENCE FITNESS LIKE NEVER BEFORE!',
-            'subheader' => 'Book sessions and only pay for days you workout',
+            'logo' => 'https://b.fitn.in/passes/app-home/pps-icon-new.png',
+			'header' => 'https://b.fitn.in/passes/app-home/pps_header.png',
+			'header_text' => 'PAY-PER-SESSION',
+			'header_sub_text' => 'WORKOUT WHEN YOU CAN, PAY WHEN YOU WORKOUT',
+			'subheader' => "Choose your fitness form, book a workout, pay for that session and go workout, it's that simple.",
             // 'knowmorelink' => 'know more',
-            'footer' => "Get 100% Instant Cashback on Workout Sessions"
+			'footer' => "Get 100% Instant Cashback on Workout Sessions",
+			'button_text' => 'EXPLORE'
 		];
 
-		// if(!empty($workout_sessions_near_customer) ){
-		// 	$result['fitex']['near_by_workouts']= $workout_sessions_near_customer;
-		// }
-
+		if(!empty($workout_sessions_near_customer) ){
+			$result['fitex']['near_by_workouts']= $workout_sessions_near_customer;
+		}
+		$passPurchased = false;
+		$passOrder = null;
 		//  commented on 9th Aug - Akhil
-		// if(!empty($customeremail))
-		// {
-		// 	$order = Order::where('status', '1')->where('type', 'pass')->where('customer_email', '=', $customeremail)->where('end_date','>',new MongoDate())->orderBy('_id', 'desc')->first();
-		// 	$this->flexipassHome($order, $result);
-		// 	// if(empty($order)) {
-		// 	// 	$result['buy_pass'] = [
-		// 	// 		'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
-		// 	// 		'header' => 'Flexi Pass!',
-		// 	// 		'subheader' => 'Buy pass and book workouts',
-		// 	// 		'footer' => 'Buy pass!!'
-		// 	// 	];
-		// 	// }
-		// 	if(!empty($order)) {
+		if(!empty($customeremail)) {
+			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+			if(!empty($passOrder)) {
+				$passPurchased = true;
+			}
+			// $this->flexipassHome($order, $result);
+			// if(empty($order)) {
+			// 	$result['buy_pass'] = [
+			// 		'logo' => 'https://b.fitn.in/global/pps/fexclusive1.png',
+			// 		'header' => 'ONE PASS!',
+			// 		'subheader' => 'Buy pass and book workouts',
+			// 		'footer' => 'Buy pass!!'
+			// 	];
+			// }
+			// if(!empty($order)) {
 				
-		// 		$pass = true;
-		// 		$pass_bookings = [];
-		// 		try{
-		// 			$active_passes = [];
-		// 			if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
-		// 				$pass_bookings = $this->passService->getPassBookings($order['_id']);
-		// 			}
-		// 		}catch(Exception $e){
-		// 			$pass_bookings = [];
-		// 		}
+			// 	$pass = true;
+			// 	$pass_bookings = [];
+			// 	try{
+			// 		$active_passes = [];
+			// 		if((!empty($_GET['device_type']) && !empty($_GET['app_version'])) && ((in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5'))){
+			// 			$pass_bookings = $this->passService->getPassBookings($order['_id']);
+			// 		}
+			// 	}catch(Exception $e){
+			// 		$pass_bookings = [];
+			// 	}
 				
-		// 		$result['pass_bookings'] = $pass_bookings;
-		// 	}
-		// }
+			// 	$result['pass_bookings'] = $pass_bookings;
+			// }
+		}
 
 		// if(!empty($result['session_packs'])){
 		// 	$this->sessionPackRemoveExtraFields($result['session_packs']);
 		// }
 
 		
-
-            
+		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
+			// $result['onepass_post'] = Config::get('pass.home.after_purchase'.$passOrder['pass']['pass_type']);
+			$result['onepass_post'] = $this->passService->homePostPassPurchaseData($passOrder['customer_id'], false);
+			unset($result['campaigns']);
+		}
+		else {
+			$result['onepass_pre'] = Config::get('pass.home.before_purchase');
+		}
+        $result['load_trending_vendors'] = false;
 
 		if(!empty($result['city_id']) && $result['city_id']==10000) {
 			unset($result['banner']);
@@ -4114,18 +4210,41 @@ class CustomerController extends \BaseController {
 				'message' => 'Sorry, We are currently not operational in your city. We will be launching here soon.'
 			];
 		}
-
-        // return $result;
-
-		$response = Response::make($result);
-		$response->headers->set('token', $updatedToken);
+        
+        if(
+            !empty($result['fitex']) 
+            && 
+            isset($_REQUEST['device_type']) 
+            && 
+            isset($_REQUEST['app_version'])
+            && 
+            (
+                (
+                    in_array($_REQUEST['device_type'],['ios']) 
+                    && 
+                    $_REQUEST['app_version'] < '5.2.2'
+                ) 
+                || 
+                (
+                    in_array($_REQUEST['device_type'],['android']) 
+                    && 
+                    $_REQUEST['app_version'] < '5.30'
+                )
+            )
+        ){
+            $result['fitex'] = [
+                "logo"=>"https://b.fitn.in/global/pps/fexclusive1.png",
+                "header"=>"EXPERIENCE FITNESS LIKE NEVER BEFORE!",
+                "subheader"=>"Book sessions and only pay for days you workout",
+                "footer"=>"Get 100% Instant Cashback on Workout Sessions"
+            ];
+        }
+        
+        $response = Response::make($result);
+		if(!empty($customeremail)){
+			$response = setNewToken($response, !empty($passOrder)?$passOrder:null, $rel_banner_shown);
+		}
 		return $response;
-
-		// $response = Response::make($result);
-		// if(!empty($customeremail)){
-		// 	$response = setNewToken($response, !empty($pass));
-		// }
-		// return $response;
 		
 	}
 
@@ -4416,10 +4535,10 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
 		}
 
-		$current_version_android = 5.0;
-		$current_version_ios = '5.2.1';
+		$current_version_android = 5.30;
+		$current_version_ios = '5.2.2';
 
-		$last_stable_version_android = 5.28;
+		$last_stable_version_android = 5.30;
 
 		Log::info('forceupdate::: ', [$data["app_version"]]);
 		if($data["device_type"] == "android"){

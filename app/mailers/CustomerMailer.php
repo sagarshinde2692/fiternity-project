@@ -246,6 +246,12 @@ Class CustomerMailer extends Mailer {
 			return;
 		}
 
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			return;
+		}
+
 		return $this->common($label,$data,$message_data);
 	}
 
@@ -730,6 +736,12 @@ Class CustomerMailer extends Mailer {
 			return;
 		}
 
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			return;
+		}
+
 		return $this->common($label,$data,$message_data);
 	}
 
@@ -754,6 +766,12 @@ Class CustomerMailer extends Mailer {
 
 		$header = $this->multifitUserHeader();
 		if($multifitFlag == true || $header == true){
+			return;
+		}
+
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
 			return;
 		}
 
@@ -794,6 +812,19 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 		
 	}
+
+	protected function onepassDynamic($data){
+		
+		$label = 'Onepass-Dynamic-Customer';
+		
+		$message_data 	= array(
+				'user_email' => array($data['customer_email']),
+				'user_name' => $data['customer_name']
+		);
+		
+		return $this->common($label,$data,$message_data);
+		
+	}
 	
 	protected function workoutSessionInstantWorkoutLevelStart($data){
 		
@@ -803,6 +834,12 @@ Class CustomerMailer extends Mailer {
 
 		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			return;
+		}
+		
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
 			return;
 		}
 		
@@ -987,6 +1024,10 @@ Class CustomerMailer extends Mailer {
 		if(!empty($data['multifit'])){
 			$message_data['fromemail'] = 'info@multifit.co.in';
 		}
+
+		// if(!empty($data['pass_type'])){
+		// 	$message_data['fromemail'] = 'onepass@fitternity.com';
+		// }
 
 		$template = \Template::where('label',$label)->first();
 

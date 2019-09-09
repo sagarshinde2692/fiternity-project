@@ -18,14 +18,14 @@ use Wallet;
 use Customer;
 use Coupon;
 use stdClass;
-
+use Input;
 class PassService {
 
     public function __construct() {
 
     }
 
-    public function listPasses($customerId, $pass_type=null){
+    public function listPasses($customerId, $pass_type=null, $device=null, $version=null){
         
         $passList = Pass::where('status', '1');
 
@@ -44,7 +44,7 @@ class PassService {
             $passList = $passList->where('pass_type', $pass_type);
         }
 
-        $passList = $passList->orderBy('pass_id')->get();
+        $passList = $passList->orderBy('duration')->get();
         
         $response = Config::get('pass.list');
         foreach($passList as &$pass) {
@@ -55,25 +55,57 @@ class PassService {
                 'subheader' => $passSubHeader,
                 // 'text' => (!empty($pass['pass_type']) && $pass['pass_type']=='red')?'All Access':'Limitless Validity',
                 'text' => 'All Access',
-                'remarks' => ucwords($pass['type']),
-                'type' => $pass['type']
+                'remarks' => (!empty($pass['type']) && $pass['type'] == 'subscription') ? "" : ucwords($pass['type']),
+                'type' => $pass['type'],
+                'min_start_date' => time(),
+                'max_start_date' => strtotime('31-12-2019')
             ];
             if($pass['type']=='trial') {
+                $utilities = new Utilities();
                 $passDetails['header'] .= ' Trial';
-                $passDetails['cashback'] = '(100% cashback)';
+                $passDetails['cashback'] = '(50% cashback)';
+                if(!empty($device) && in_array($device, ['android'])) {
+                    $passDetails['extra_info'] = [
+                        'title'=>'50% Instant Cashback',
+                        'description'=> $utilities->bullet()." The cashback will be added in the form of FitCash in the Fitternity Wallet (1 Fitcash point = INR 1).<br/>".
+                                        $utilities->bullet()." FitCash received can only be used to upgrade ONEPASS subscription.<br/>".
+                                        $utilities->bullet()." The instant cashback received is valid for 30 days starting from the date of pass activation.<br/>".
+                                        $utilities->bullet()." The offer cannot be clubbed with any other offer.<br/>"
+                    ];
+                }
+                // else {
+                //     $passDetails['extra_info'] = [
+                //         'title'=>'100% Instant Cashback',
+                //         'description'=> "<ul><li>The cashback will be added in the form of FitCash in the Fitternity Wallet (1 Fitcash point = INR 1).</li>".
+                //                         "<li>FitCash received can only be used to upgrade ONEPASS subscription.</li>".
+                //                         "<li>The instant cashback received is valid for 30 days starting from the date of pass activation.</li>".
+                //                         "<li>The offer cannot be clubbed with any other offer.</li></ul>"
+                //     ];
+                // }
             }
             if($pass['unlimited_access']) {
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
-                $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
+                if(!empty($device) && in_array($device, ['android', 'ios'])) {
+                    $response['app_passes'][0]['offerings']['ratecards'][] = $passDetails;
+                }
+                else {
+                    $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
+                }
             } else{
-            //     $passDetails['header'] = $pass['credits'].' Sweat Points';
-            //     $passDetails['text'] = 'for 1 month';
-            //     $passDetails['offer'] = 'Get 100% instant cash back';
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
-                $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
+                if(!empty($device) && in_array($device, ['android', 'ios'])) {
+                    $response['app_passes'][1]['offerings']['ratecards'][] = $passDetails;
+                }
+                else {
+                    $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
+                }
             }
+        }
+        if(!empty($device) && in_array($device, ['android', 'ios'])) {
+            $response['passes'] = $response['app_passes'];
+            unset($response['app_passes']);
         }
         // $passConfig = Config::get('pass');
         // $passCount = Order::active()->where('type', 'pass')->count();
@@ -86,9 +118,23 @@ class PassService {
         return $response;
     }
 
-    public function passCapture($data){
+    public function passCapture($data, $existing_order = null){
 
+        if(!empty($data['order_id'])){
+            $order_exists = true;
+            if(empty($existing_order)){
+                $order = Order::find($data['order_id']);
+            }else{
+                $order = $existing_order;
+            }
+            $keys = ['customer_email', 'customer_name', 'customer_phone', 'pass_id', 'coupon_code'];
+            foreach($keys as $key){
+                if(empty($data[$key]) & !empty($order[$key])){
+                    $data[$key] = $order[$key];
+                }
+            }
 
+        }
         $data['customer_source'] = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
         
         $data['type'] = "pass";
@@ -139,9 +185,12 @@ class PassService {
         
         }
         
-        
-        $id = Order::maxId()+1;
-        $data['_id'] = $id;
+        if(empty($order_exists)){
+            $id = Order::maxId()+1;
+            $data['_id'] = $id;
+        }else{
+            $data['_id'] = $data['order_id'];
+        }
         
         $data['order_id'] = $data['_id'];
         $data['orderid'] = $data['_id'];
@@ -172,8 +221,7 @@ class PassService {
                 $data['env'] = 1;
             }
             
-            $hash = getHash($data);
-            $data = array_merge($data,$hash);
+            
             $data['amount_customer'] = $data['amount'];
 
             $this->applyFitcash($data);
@@ -236,12 +284,19 @@ class PassService {
                     }
                 }
             }
+
+            $hash = getHash($data);
+            $data = array_merge($data,$hash);
             // $data['amount'] = 0;
             $data['preferred_starting_date'] = (!empty($data['preferred_starting_date']))?date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date'])):null;
             $data['code'] = (string) random_numbers(5);
-            $order = new Order($data);
-            $order['_id'] = $data['_id'];
-            $order->save();
+            if(empty($order_exists)){
+                $order = new Order($data);
+                $order['_id'] = $data['_id'];
+                $order->save();
+            }else{
+                $order->update($data);
+            }
             
             if(in_array($order['customer_source'],['android','ios','kiosk'])){
                 $mobilehash = $order['payment_related_details_for_mobile_sdk_hash'];
@@ -261,12 +316,12 @@ class PassService {
             $result['finder_name'] = strtolower($order['finder_name']);
             $result['complementary_pass'] = $order['complementary_pass'];
             $result['type'] = 'pass';
+            $result['full_payment_wallet'] = empty($result['amount']);
             $resp = [
                 'status' => 200,
                 'data' => $result,
                 'message' => "Tmp Order Generated Sucessfully"
             ];
-            $result['payment_modes'] = $this->getPaymentModes($resp);
             
         }else{
             
@@ -298,11 +353,49 @@ class PassService {
 
         }
 
-        return  [
+        $resp = [
             'status' => 200,
             'data' => !empty($result) ? $result : $order,
             'message' => "Tmp Order Generated Sucessfully"
         ];
+
+        // if(!empty($order['amount'])){
+        if(!empty($order['amount']) && Request::header('Device-Type') != 'ios'){
+            $resp['data']["coupon_details"] = [
+                "title" => "Apply Coupon Code",
+                "description" => "",
+                "applied" => false,
+                "remove_title" => "",
+                "remove_msg" => ""
+            ];
+        }
+        // if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']))){
+        if(Request::header('Device-Type') != 'ios' && (!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per'])))){
+            $resp['data']["coupon_details"] = [];
+            $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
+            $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
+            $resp['data']['coupon_details']['applied'] =  true;
+            if(isset($data['coupon_description'])){
+                $resp['data']['coupon_details']['description'] = $data['coupon_description'];
+            }
+        }
+
+        $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
+        
+        $payment_mode_type_array = ['paymentgateway'];
+
+        foreach ($payment_mode_type_array as $payment_mode_type) {
+
+            $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+
+        }
+        
+        $resp['data']['payment_details'] = $payment_details;
+        if(!empty($result['amount'])){
+            $resp['data']['payment_modes'] = $this->getPaymentModes($resp, $order->toArray());
+        }
+
+        return $resp;
 
     }
 
@@ -467,9 +560,38 @@ class PassService {
         return;
     }
 
-    public function getPassOrder($customerId) {
-        $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->where('end_date', '>', new \MongoDate(time()))->first();
-        return (!empty($passOrder['pass']))?$passOrder['pass']:null;
+    public function getPassOrder($customerId, $scheduleDate = null) {
+        // $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->first();
+        $scheduleDate = (!empty($scheduleDate))?(new \MongoDate($scheduleDate)):(new \MongoDate());
+        $passOrder = Order::raw(function ($collection) use ($customerId, $scheduleDate) {
+            $aggregate = [
+                [
+                    '$project' => [
+                        '_id'=> 1, 'customer_id'=> 1, 'status'=> 1, 'type'=> 1, 'pass'=> 1, 'start_date'=> 1, 'end_date'=> 1, 'onepass_sessions_used'=> 1, 'onepass_sessions_total'=> 1, 'diff_sessions'=> ['$cmp'=> ['$onepass_sessions_total','$onepass_sessions_used']], 'pass_type'=> '$pass.pass_type'
+                    ]
+                ],
+                [
+                    '$match' => [
+                        'customer_id' => $customerId, 'status' => '1', 'type' => 'pass',
+                        'start_date' => ['$lte' => $scheduleDate],
+                        '$or' => [
+                            ['$and' => [['pass.pass_type' => 'red'], ['end_date' => ['$gt' => $scheduleDate]]]],
+                            ['$and' => [['pass.pass_type' => 'black'], ['diff_sessions' => ['$gt' => 0]]]]
+                        ]
+                    ]
+                ],
+                ['$sort' => ['_id' => 1]],
+                ['$limit' => 1]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+        
+        if(!empty($passOrder['result'][0]['_id'])) {
+            Order::$withoutAppends = true;
+            return $passOrder = Order::where('_id', $passOrder['result'][0]['_id'])->first();
+        }
+        Order::$withoutAppends = true;
+        return $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->first();
     }
 
     public function getPremiumExpiryDates($bookingStartDate, $premiumBookingInterval, $duration) {
@@ -508,34 +630,51 @@ class PassService {
         return (isset($bookingCount))?$bookingCount<1:false;
     }
 
-    public function allowSession($amount, $customerId) {
+    public function allowSession($amount, $customerId, $date = null) {
         if(empty($amount) && empty(!$customerId)) {
             return;
         }
 
+        if(empty($date)){
+            $date = date('d-m-Y', time());
+        }
+        // $schedule_time = strtotime($date);
+        $schedule_time = strtotime('midnight', strtotime($date));
         if(!empty($customerId)) {
-            $passOrder = $this->getPassOrder($customerId);
+            $passOrder = $this->getPassOrder($customerId, $schedule_time);
         }
 
         if(!empty($passOrder)) {
-            $passType = $passOrder['pass_type'];
+            $passType = $passOrder['pass']['pass_type'];
             Log::info('pass orders:::::::::::::::::', [$passOrder]);
         }
-
-        if(!empty($passOrder)) {
-            // if ($amount>=600 && $amount<=1000 && $this->isPremiumSessionAvailable($amount, $passOrder)) {
-            //     // 600 - 1000
-            //     return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_premium_session' => true, 'pass_type'=>$passType];
-            // } else if ($amount>1000) {
-            //     // over 1000
-            //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType];
-            // }
-            if ($amount>750) {
-                // over 750
+        $canBook = false;
+        if(!empty($passOrder['pass'])) {
+            if($schedule_time>=strtotime($passOrder['start_date'])){
+                if($passOrder['pass']['pass_type']=='black'){
+                    $sessionsUsed = $passOrder['onepass_sessions_used'];
+                    $sessionsTotal = $passOrder['onepass_sessions_total'];
+                    if($sessionsTotal>$sessionsUsed) {
+                        $canBook = true;
+                    }
+                }
+                else if($passOrder['pass']['pass_type']=='red') {
+                    // $duration = $passOrder['pass']['duration'];
+                    if($schedule_time<strtotime($passOrder['end_date'])){
+                        Booktrial::$withoutAppends = true;
+                        $todaysBooking = Booktrial::where('pass_order_id', $passOrder['_id'])->where('schedule_date', new \MongoDate($schedule_time))->where('going_status_txt', '!=', 'cancel')->first();
+                        if(empty($todaysBooking)) {
+                            $canBook = true;
+                        }
+                    }
+                }
+            }
+            if ($amount>1000 || !$canBook) {
+                // over 1000
                 return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
             else {
-                // below 751
+                // below 1001
                 return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
         }
@@ -632,16 +771,17 @@ class PassService {
 
         if(!empty($order['amount']) && !empty($order['pass']['cashback']) && empty($order['coupon_code'])){
             $validity = time()+(86400*30);
+            $amount = ceil($order['amount']/2);
             $walletData = array(
                 "order_id"=>$order['_id'],
                 "customer_id"=> intval($order['customer_id']),
-                "amount"=> $order['amount'],
+                "amount"=> $amount,
                 "amount_fitcash" => 0,
-                "amount_fitcash_plus" => $order['amount'],
+                "amount_fitcash_plus" => $amount,
                 "type"=>'CASHBACK',
                 'entry'=>'credit',
                 'order_type'=>['pass'],
-                "description"=> "100% Cashback on buying trial pass, Expires On : ".date('d-m-Y',$validity),
+                "description"=> "50% Cashback on buying trial pass, Expires On : ".date('d-m-Y',$validity),
                 "validity"=>$validity,
             );
     
@@ -655,6 +795,7 @@ class PassService {
         }
 
         $order->status = '1';
+        $order->onepass_sessions_total = (!empty($order->pass['classes']))?$order->pass['classes']:-1;
         $communication = $this->passPurchaseCommunication($order);
         $order->communication = $communication;
         $order->update();
@@ -698,8 +839,9 @@ class PassService {
         $success = Config::get('pass');
         $success_template = $success['success'];
         // $success_template['header'] = strtr($success_template['header'], ['___type' => ucwords($order['pass']['type'])]);
-        $success_template['header'] = '';
-        $success_template['customer_name'] = $order['pass']['name'];
+        $success_template['header'] = 'Purchase Successful';
+        $success_template['customer_name'] = $order['customer_name'];
+        $success_template['customer_email'] = $order['customer_email'];
         $success_template['subline'] = strtr(
             $success_template['subline'], 
             [
@@ -717,7 +859,6 @@ class PassService {
                 '__end_date'=> ($unlimited)?('Valid up to '. date_format($order['end_date'],'d-M-Y')):''
             ]
         );
-        
         if($unlimited){
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
@@ -727,15 +868,17 @@ class PassService {
                 ]
             );
             $success_template['pass']['subheader'] = $order['pass']['duration_text'].' Validity';
+            $success_template['pass']['card_header'] = 'UNLIMITED USAGE';// $order['pass']['name'];
             $success_template['pass']['header'] = 'UNLIMITED USAGE';// $order['pass']['name'];
-            $success_template['pass']['image'] = $success['pass_image_gold'];
             $success_template['pass']['type'] = '';//strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
             $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
-            $success_template['pass_image'] = $success['pass_image_gold'];
+            $success_template['pass']['image'] = $success['pass_image_silver'];
+            $success_template['pass_image'] = $success['pass_image_silver'];
             $success_template['pass']['usage_text'] = 'UNLIMITED USAGE';
         }
         else{
+            $success_template['pass']['card_header'] = strtoupper($order['pass']['duration_text']);// $order['pass']['name'];
             $success_template['pass']['header'] = strtoupper($order['pass']['duration_text']);// $order['pass']['name'];
             // strtr(
             //     $success_template['pass']['header'],
@@ -754,13 +897,26 @@ class PassService {
                 ]
             );
             $success_template['pass']['subheader'] = 'Unlimited Validity';
-            $success_template['pass']['image'] = $success['pass_image_silver'];
-            $success_template['pass_image'] = $success['pass_image_silver'];
+            $success_template['pass']['image'] = $success['pass_image_gold'];
+            $success_template['pass_image'] = $success['pass_image_gold'];
             $success_template['pass']['usage_text'] = 'UNLIMITED VALIDITY';
         }
        
         if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['web_message'] = $success['web_message'];
+        }
+
+
+        if(in_array(Request::header('Device-Type'), ["android", "ios"])){
+            $success_template['pass']['image1'] = 'http://b.fitn.in/passes/onepass-app.png';
+            $success_template['pass']['image2'] = 'https://b.fitn.in/global/onepass/pass%20line%20design.png';
+            // $success_template['info']['data'][0] = 'Book your sessions through the App';
+            $success_template['info']['data'] = $success_template['info']['app_data'];
+            // $utilities = new Utilities();
+            // foreach($success_template['info']['data'] as &$item) {
+            //     $item = $utilities->bullet()." ".$item;
+            // }
+            unset($success_template['info']['app_data']);
         }
 
         return $success_template;
@@ -851,50 +1007,51 @@ class PassService {
 
         $endDate = new \MongoDate(strtotime('midnight', time()));
 
-        $activeOrders = $this->getPassOrderList($endDate, $customer_id, $offset, $limit, 'active');
+        // $activeOrders = $this->getPassOrderList($endDate, $customer_id, $offset, $limit, 'active');
+        $activeOrders = $this->homePostPassPurchaseData($customer_id);
         $inactiveOrders = $this->getPassOrderList($endDate, $customer_id, $offset, $limit, 'inactive');
 
         $data = [];
 
-        if(empty($activeOrders)) {
-            $activeOrders = array();
-        }
-
         $orderList = [];
+        // if(!empty($activeOrders)) {
+        //     foreach($activeOrders as $active) {
+        //         $_order = [
+        //             'image' => 'https://b.fitn.in/passes/monthly_card.png',
+        //             'header' => ucwords($active['duration_text']),
+        //             'subheader' => (!empty($active['classes']))?strtoupper($active['classes']).' classes':null,
+        //             'name' => (!empty($active['pass_name']))?strtoupper($active['pass_name']):null,
+        //             'type' => (!empty($active['pass_type']))?strtoupper($active['pass_type']):null,
+        //             'text' => 'Valid up to '.date('d M Y', $active['end_date']->sec),
+        //             'remarks' => [
+        //                 'header' => 'Things to keep in mind',
+        //                 'data' => [
+        //                     'You get sweatpoint credits to book whatever classes you want.',
+        //                     'Download the app & get started',
+        //                     'Book classes at any gym/studio near you',
+        //                     'Sweatpoints vary by class',
+        //                     'Not loving it? easy cancellation available'
+        //                 ]
+        //             ],
+        //             'terms' => [
+        //                 '_id' => strval($active['order_id']),
+        //                 'header' => 'View all terms & condition',
+        //                 'title' => 'Terms & Condition',
+        //                 'url' => 'http://apistage.fitn.in/passtermscondition?type=subscribe',
+        //                 'button_title' => 'Past Bookings'
+        //             ]
+        //         ];
+        //         if(empty($active['unlimited_access']) || !$active['unlimited_access']) {
+        //             $_order['header'] = (!empty($active['total_credits']))?strtoupper($active['total_credits']).' Sweat Points':null;
+        //         }
+        //         array_push($orderList, $_order);
+        //     }
+        // }
+        // $data['active_pass'] = $orderList;
+        $data['active_pass'] = [];
         if(!empty($activeOrders)) {
-            foreach($activeOrders as $active) {
-                $_order = [
-                    'image' => 'https://b.fitn.in/passes/monthly_card.png',
-                    'header' => ucwords($active['duration_text']),
-                    'subheader' => (!empty($active['classes']))?strtoupper($active['classes']).' classes':null,
-                    'name' => (!empty($active['pass_name']))?strtoupper($active['pass_name']):null,
-                    'type' => (!empty($active['pass_type']))?strtoupper($active['pass_type']):null,
-                    'text' => 'Valid up to '.date('d M Y', $active['end_date']->sec),
-                    'remarks' => [
-                        'header' => 'Things to keep in mind',
-                        'data' => [
-                            'You get sweatpoint credits to book whatever classes you want.',
-                            'Download the app & get started',
-                            'Book classes at any gym/studio near you',
-                            'Sweatpoints vary by class',
-                            'Not loving it? easy cancellation available'
-                        ]
-                    ],
-                    'terms' => [
-                        '_id' => strval($active['order_id']),
-                        'header' => 'View all terms & condition',
-                        'title' => 'Terms & Condition',
-                        'url' => 'http://apistage.fitn.in/passtermscondition?type=subscribe',
-                        'button_title' => 'Past Bookings'
-                    ]
-                ];
-                if(empty($active['unlimited_access']) || !$active['unlimited_access']) {
-                    $_order['header'] = (!empty($active['total_credits']))?strtoupper($active['total_credits']).' Sweat Points':null;
-                }
-                array_push($orderList, $_order);
-            }
+            $data['active_pass'] = [$activeOrders];
         }
-        $data['active_pass'] = $orderList;
 
         if(empty($inactiveOrders)) {
             $inactiveOrders = array();
@@ -906,9 +1063,10 @@ class PassService {
                 $_order = [
                     '_id' => strval($inactive['order_id']),
                     'header' => ucwords($inactive['duration_text']),
-                    'subheader' => (!empty($inactive['classes']))?strtoupper($inactive['classes']).' classes':null,
+                    // 'subheader' => (!empty($inactive['classes']))?strtoupper($inactive['classes']).' classes':null,
                     'name' => (!empty($inactive['pass_name']))?strtoupper($inactive['pass_name']):null,
-                    'type' => (!empty($inactive['pass_type']))?strtoupper($inactive['pass_type']):null,
+                    'pass_type' => (!empty($inactive['pass_type']))?$inactive['pass_type']:null,
+                    'type' => (!empty($inactive['pass_type']) && strtolower($inactive['pass_type'])=='red')?'UNLIMITED USAGE':((strtolower($inactive['pass_type'])=='black')?'UNLIMITED VALIDITY':null),
                     'color' => '#f7a81e',
                     'tdate_label' => 'Transaction Date',
                     'tdate_value' => date('d M Y',  $inactive['created_at']->sec),
@@ -916,10 +1074,10 @@ class PassService {
                     'expired_value' => date('d M Y',  $inactive['end_date']->sec),
                     'price' => '₹'.$inactive['amount']
                 ];
-                if(empty($active['unlimited_access']) || !$active['unlimited_access']) {
-                    $_order['header'] = (!empty($inactive['total_credits']))?strtoupper($inactive['total_credits']).' Sweat Points':null;
-                    $_order['subheader'] = (!empty($inactive['total_credits_used']))?strtoupper($inactive['total_credits_used']).' Sweat Points used':'0 Sweat Points used';
-                }
+                // if(empty($active['unlimited_access']) || !$active['unlimited_access']) {
+                //     $_order['header'] = (!empty($inactive['total_credits']))?strtoupper($inactive['total_credits']).' Sweat Points':null;
+                //     $_order['subheader'] = (!empty($inactive['total_credits_used']))?strtoupper($inactive['total_credits_used']).' Sweat Points used':'0 Sweat Points used';
+                // }
                 array_push($orderList, $_order);
             }
         }
@@ -1000,11 +1158,459 @@ class PassService {
         }
         $wallet = Wallet::active()->where('customer_id', $data['customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
         if(!empty($wallet)){
-            $data['fitcash'] = $wallet['balance'];
+            $data['fitcash'] = !empty($data['amount'] - $wallet['balance']) ? $wallet['balance'] : $data['amount']; 
             $data['amount'] = !empty($data['amount'] - $data['fitcash']) ? ($data['amount'] - $data['fitcash']) : 0;
             $data['wallet_id'] = $wallet['_id'];
+            $data['cashback_detail']['amount_deducted_from_wallet'] = $data['fitcash'];
             // $data['rp_description'] = $data['fitcash'].' Rs Fitcash Applied.';
         }
     
+    }
+
+    public function getDateDifference($expiryDate) {
+        $expiryDate = strtotime($expiryDate);
+        $diff = ($expiryDate)-(strtotime('midnight', time()));
+        $diffDays = ($diff/(60*60*24));
+        return ($diffDays>=1)?intval($diffDays):0;
+    }
+
+    public function homePostPassPurchaseData($customerId, $showTnC = true) {
+        Order::$withoutAppends = true;
+        // $passOrder = Order::active()->where('customer_id', $customerId)->where('type', 'pass')->orderBy('_id', 'desc')->first();
+        $passOrder = $this->getPassOrder($customerId);
+        if(empty($passOrder)){
+            return null;
+        }
+        Order::$withoutAppends = true;
+
+        $pastBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status_txt', '!=', 'cancel')->where('schedule_date_time', '<', new \MongoDate())->count();
+        $upcomingBookings = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status_txt', '!=', 'cancel')->where('schedule_date_time', '>=', new \MongoDate())->count();
+        $totalBookings = $pastBookings + $upcomingBookings;
+
+        $passExpired = false;
+
+        $homePassData = Config::get('pass.home.after_purchase.'.$passOrder['pass']['pass_type']);
+        $tnc = Config::get('pass.terms.'.$passOrder['pass']['pass_type'])[0];
+        $homePassData['pass_order_id'] = $passOrder['_id'];
+        $startDateDiff = $this->getDateDifference($passOrder['start_date']);
+        $notStarted = false;
+        if(!empty($startDateDiff) && $startDateDiff>0) {
+            $notStarted = true;
+        }
+        if($passOrder['pass']['pass_type']=='black') {
+            
+            // $homePassData = $homePassData[$passOrder['pass']['pass_type']];
+
+            $totalSessions = $passOrder['pass']['duration'];
+            if($totalSessions <= $totalBookings) {
+                $passExpired = true;
+            }
+            else {
+                $usageLeft =  $totalSessions - $totalBookings;
+            }
+            $homePassData['name'] = strtoupper(trim($passOrder['customer_name']));
+            $homePassData['subheader'] = $totalSessions.' SESSIONS';
+            $homePassData['left_value'] = strval($upcomingBookings);
+            $homePassData['right_value'] = strval($pastBookings);
+            if(!$passExpired) {
+                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('schedule_date_time', 'desc')->first();
+                if(!empty($lastOrder)) {
+                    $homePassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
+                    $homePassData['footer']['section1']['no_last_order'] = false;
+                    $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
+                    $homePassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
+                }
+                else {
+                    unset($homePassData['footer']['section1']['button1_text']);
+                    unset($homePassData['footer']['section1']['button2_text']);
+                    if($notStarted) {
+                        unset($homePassData['top_right_button_text']);
+                        $homePassData['left_text'] = "Booking starts from:";
+                        unset($homePassData['left_value']);
+                        $homePassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
+                        unset($homePassData['right_value']);
+                    }
+                }
+                if(!empty($usageLeft) && $usageLeft>5) {
+                    // if(!Config::get('app.debug')) {
+                        unset($homePassData['footer']['section2']);
+                        unset($homePassData['footer']['section3']);
+                    // }
+                }
+                else {
+                    // $homePassData['footer'] = $homePassData['footer']['ending'];
+                    $homePassData['footer']['section2']['text'] = strtr($homePassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
+                    unset($homePassData['footer']['section3']);
+                }
+            }
+            else {
+                unset($homePassData['footer']['section1']['button1_subtext']);
+                unset($homePassData['footer']['section1']['no_last_order']);
+                unset($homePassData['footer']['section1']);
+                $homePassData['footer']['section2'] = $homePassData['footer']['section3'];
+                unset($homePassData['footer']['section3']);
+            }
+        }
+        else if($passOrder['pass']['pass_type']=='red') {
+            $totalDuration = $passOrder['pass']['duration'];
+            // $expiryDate = date("Y-m-d H:i:s", strtotime('+'.$totalDuration.' days', time()));
+            $expiryDate = date("Y-m-d H:i:s", strtotime($passOrder['end_date']));
+            $usageLeft = $this->getDateDifference($expiryDate);
+            if(empty($usageLeft) || $usageLeft<0) {
+                $passExpired = true;
+            }
+            $homePassData['name'] = strtoupper(trim($passOrder['customer_name']));
+            $homePassData['subheader'] = strtoupper(trim($passOrder['pass']['duration_text']));
+            $homePassData['left_value'] = strval($upcomingBookings);
+            $homePassData['right_value'] = strval($pastBookings);
+
+            if(!$passExpired) {
+                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('schedule_date_time', 'desc')->first();
+                if(!empty($lastOrder)) {
+                    $homePassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
+                    $homePassData['footer']['section1']['no_last_order'] = false;
+                    $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
+                    $homePassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
+                }
+                else {
+                    unset($homePassData['footer']['section1']['button1_text']);
+                    unset($homePassData['footer']['section1']['button2_text']);
+                    if($notStarted) {
+                        unset($homePassData['top_right_button_text']);
+                        $homePassData['left_text'] = "Booking starts from:";
+                        unset($homePassData['left_value']);
+                        $homePassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
+                        unset($homePassData['right_value']);
+                    }
+                }
+                if(!empty($usageLeft) && $usageLeft>5) {
+                    // if(!Config::get('app.debug')) {
+                        unset($homePassData['footer']['section2']);
+                        unset($homePassData['footer']['section3']);
+                    // }
+                }
+                else {
+                    // $homePassData['footer'] = $homePassData['footer']['ending'];
+                    $homePassData['footer']['section2']['text'] = strtr($homePassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
+                    unset($homePassData['footer']['section3']);
+                }
+            }
+            else {
+                unset($homePassData['footer']['section1']['button1_subtext']);
+                unset($homePassData['footer']['section1']['no_last_order']);
+                $homePassData['footer']['section2'] = $homePassData['footer']['section3'];
+                unset($homePassData['footer']['section3']);
+            }
+        }
+        $homePassData['pass_expired'] = $passExpired;
+        if(!$showTnC && !empty($homePassData['terms'])) {
+            unset($homePassData['terms']);
+            unset($homePassData['tnc_text']);
+        }
+        else {
+            $homePassData['terms'] = "<h2>Terms and Conditions</h2>".$tnc;
+        }
+        return $homePassData;
+    }
+
+    function getBookingDetails($data){
+
+        $pass_type = ucwords($data['pass']['pass_type']);
+        $duration_field = $data['pass']['pass_type'] == 'red' ? 'Duration' : 'No of Sessions';
+        
+
+        $resp = [
+            [
+               'field' => 'PASS TYPE',
+               'value' => ucwords($data['pass']['pass_type']),
+            ],
+            [
+               'field' => $duration_field,
+               'value' => $data['pass']['duration_text'],
+            ],
+            [
+               'field' => 'START DATE',
+               'value' => date('l, j M Y',strtotime($data['start_date'])),
+            ]
+        ];
+
+        return $resp;
+    }
+
+    function getPaymentDetails($data,$payment_mode_type){
+
+        $amount_summary = [];
+        
+        $you_save = 0;
+        
+        $amount_summary[0] = array(
+            'field' => 'Total Amount',
+            'value' => 'Rs. '.(isset($data['original_amount_finder']) ? $data['original_amount_finder'] : $data['amount_customer'])
+        );
+        
+        if(isset($data['session_payment']) && $data['session_payment']){
+            $amount_summary[0]['value'] = 'Rs. '.$data['amount_customer'];
+        }
+
+        if(!empty($data['ratecard_amount'])){
+            $amount_summary[0] = array(
+                'field' => 'Session Amount',
+                'value' => 'Rs. '.$data['ratecard_amount']
+            );
+
+            if(!empty($data['type']) && in_array($data['type'], ['memberships', 'membership'])){
+                $amount_summary[0] = array(
+                    'field' => 'Membership Amount',
+                    'value' => 'Rs. '.(!empty($data['amount_customer']) ? $data['amount_customer'] - (!empty($data['convinience_fee']) ? $data['convinience_fee'] : 0) : $data['ratecard_amount'])
+                );  
+                if(!empty($data['extended_validity'])){
+                    $amount_summary[0] = array(
+                        'field' => 'Session Pack Amount',
+                        'value' => 'Rs. '.$data['ratecard_amount']
+                    ); 
+                }
+            }
+            // $amount_summary[] = array(
+            //     'field' => 'Quantity',
+            //     'value' => !empty($data['customer_quantity']) ? (string)$data['customer_quantity'] : '1'
+            // );
+            if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1){
+
+                $amount_summary[] = array(
+                    'field' => 'Total Amount',
+                    'value' => 'Rs. '.$data['amount_customer']
+                );
+            }
+        }
+
+        if(!empty($data['session_pack_discount'])){
+             $amount_summary[] = array(
+                    'field' => 'Session pack discount',
+                    'value' => '-Rs. '.$data['session_pack_discount']
+            );
+        }
+
+        $amount_payable = [];
+
+        $amount_payable= array(
+            'field' => 'Total Amount Payable',
+            'value' => 'Rs. '.$data['amount']
+        );
+
+        $amount_final = $data['amount'];
+
+        // if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
+
+        //     $remaining_amount = $data['amount_customer'];
+
+        //     if(isset($data["part_payment_calculation"]["part_payment_amount"]) && $data["part_payment_calculation"]["part_payment_amount"] > 0){
+
+        //         $remaining_amount -= $data["part_payment_calculation"]["part_payment_amount"];
+        //     }
+
+        //     if(isset($data["part_payment_calculation"]["convinience_fee"]) && $data["part_payment_calculation"]["convinience_fee"] > 0){
+
+        //         $remaining_amount -= $data["part_payment_calculation"]["convinience_fee"];
+        //     }
+
+        //     if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+
+        //         $remaining_amount -= $data['coupon_discount_amount'];
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Coupon Discount',
+        //             'value' => '-Rs. '.$data['coupon_discount_amount']
+        //         );
+
+        //         $you_save += intval($data['coupon_discount_amount']);
+                
+        //     }
+
+        //     if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
+
+        //         $remaining_amount -= $data['customer_discount_amount'];
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Corporate Discount',
+        //             'value' => '-Rs. '.$data['customer_discount_amount']
+        //         );
+
+        //         $you_save += intval($data['customer_discount_amount']);
+        //     }
+
+        //     if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+
+        //         $remaining_amount -= $data['app_discount_amount'];
+
+        //         $amount_summary[] = array(
+        //             'field' => 'App Discount',
+        //             'value' => '-Rs. '.$data['app_discount_amount']
+        //         );
+
+        //         $you_save += intval($data['app_discount_amount']);
+                
+        //     }
+
+        //     $amount_summary[] = array(
+        //         'field' => 'Remaining Amount Payable',
+        //         'value' => 'Rs. '.$remaining_amount
+        //     );
+
+        //     $amount_summary[] = array(
+        //         'field' => 'Booking Amount (20%)',
+        //         'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']
+        //     );
+
+        //     if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Convenience Fee',
+        //             'value' => '+Rs. '.$data['convinience_fee']
+        //         );
+
+        //     }
+
+        //     $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$data['type']);
+
+        //     // Log::info("asdasdasdasasd============adadasdasdas=");
+        //     // Log::info($cashback_detail);
+
+        //     if($cashback_detail['amount_deducted_from_wallet'] > 0){
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Fitcash Applied',
+        //             'value' => '-Rs. '.$cashback_detail['amount_deducted_from_wallet']
+        //         );
+
+        //     }
+
+        //     $amount_payable = array(
+        //         'field' => 'Total Amount Payable (20%)',
+        //         'value' => 'Rs. '.$data['part_payment_calculation']['amount']
+        //     );
+
+        // }else{
+
+            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+
+                $amount_summary[] = array(
+                    'field' => 'Convenience Fee',
+                    'value' => '+Rs. '.$data['convinience_fee']
+                );
+            }
+
+            if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0 ){
+                if($payment_mode_type != 'pay_later'){
+
+                    $amount_summary[] = array(
+                        'field' => 'Fitcash Applied',
+                        'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
+                    );
+                    $you_save += $data['cashback_detail']['amount_deducted_from_wallet'];
+                }else{
+                    $amount_final = $amount_final + $data['cashback_detail']['amount_deducted_from_wallet'];
+                    $amount_payable['value'] = "Rs. ".$amount_final;   
+                }
+                
+            }
+
+            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per']))){
+
+                if($payment_mode_type != 'pay_later'){
+
+                    $amount_summary[] = array(
+                        'field' => 'Coupon Discount',
+                        'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "100% Cashback"
+                    );
+                    $you_save += (!empty($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0);
+                }else{
+                    $amount_final = $amount_final + $data['coupon_discount_amount'];
+                    $amount_payable['value'] = "Rs. ".$amount_final;   
+                }
+                
+            }
+
+            if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
+
+                $amount_summary[] = array(
+                    'field' => 'Corporate Discount',
+                    'value' => '-Rs. '.$data['customer_discount_amount']
+                );
+                $you_save += $data['coupon_discount_amount'];
+                
+                
+            }
+
+            if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+
+                $amount_summary[] = array(
+                    'field' => 'App Discount',
+                    'value' => '-Rs. '.$data['app_discount_amount']
+                );
+
+                $you_save += $data['app_discount_amount'];
+                
+            }
+            
+            if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+
+                if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type != 'pay_later' && !(isset($data['session_payment']) && $data['session_payment']) && !empty($data['instant_payment_discount'])){
+                    
+                    $amount_summary[] = array(
+                        'field' => 'Instant Pay discount',
+                        'value' => '-Rs. '.$data['instant_payment_discount']
+                    );
+    
+                    $you_save += $data['instant_payment_discount'];
+                    
+                    if(isset($data['pay_later']) && $data['pay_later'] && !(isset($data['session_payment']) && $data['session_payment'])){
+                        
+                        $amount_payable['value'] = "Rs. ".($data['amount_final'] - $data['instant_payment_discount']);
+    
+                    }
+    
+                }
+            }
+
+            // if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later'){
+                
+            //     $amount_payable['value'] = "Rs. ".($data['amount_finder']+$data['convinience_fee']);
+            // }
+        // }
+
+        if(!empty($reward)){
+            $amount_summary[] = $reward;
+        }
+
+        
+        $payment_details  = [];
+        
+        $payment_details['amount_summary'] = $amount_summary;
+        $payment_details['amount_payable'] = $amount_payable;
+        
+        if($you_save > 0){
+            $result['payment_details']['savings'] = [
+                'field' => 'Your total savings',
+                'value' => "Rs.".$you_save
+            ];
+        }
+
+        return $payment_details;
+
+    }
+
+    public function passTermsAndCondition(){
+        $input = Input::all();
+        $passTerms = \Config::get('pass.terms');
+        if(!empty($input['type']) && $input['type']=='unlimited'){
+            $passTerms = $passTerms['red'];
+        }
+        else if(!empty($input['type']) && $input['type']=='subscribe'){
+            $passTerms = $passTerms['black'];
+        }
+        else{
+            $passTerms = $passTerms['default'];
+        }
+        return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
     }
 }

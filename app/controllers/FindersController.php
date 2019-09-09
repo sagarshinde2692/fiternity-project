@@ -1366,7 +1366,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "End Of Monsoon Sale <br> Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - EOMS25 || Get 100% Instant Cashback on Workout Sessions. Use Code - CB100",
+								'text1'=> "Surprise Additional 30% off On Lowest Price Memberships. Limited Period Offer. TCA",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1378,7 +1378,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "End Of Monsoon Sale <br> Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - EOMS25 || Get 100% Instant Cashback on Workout Sessions. Use Code - CB100",
+								'text1'=> "Surprise Additional 30% off On Lowest Price Memberships. Limited Period Offer. TCA",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1390,7 +1390,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "End Of Monsoon Sale <br> Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code - EOMS25 || Get 100% Instant Cashback on Workout Sessions. Use Code - CB100",
+								'text1'=> "Surprise Additional 30% off On Lowest Price Memberships. Limited Period Offer. TCA",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1526,9 +1526,9 @@ class FindersController extends \BaseController {
 		// }
 
 		// commented on 9th Augus - Akhil
-		// if(!empty($customer_id)){
-		// 	$this->addCreditPoints($response['finder']['services'], $customer_id);
-		// }
+		if(!empty($customer_id)){
+			$this->addCreditPoints($response['finder']['services'], $customer_id);
+		}
 
 		$this->multifitGymWebsiteVendorUpdate($response);
 
@@ -3846,28 +3846,46 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }else{	
-				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }else{	
-				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>End Of Monsoon Sale</u><br><br>- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }else{	
-				$line = "\nEnd Of Monsoon Sale\n\n- Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code : EOMS25\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
             }
 			
-        }
+		}
+		
+		foreach($data['finder']['services'] as &$service){
+			foreach($service['ratecard'] as &$ratecard){
+				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+						if($this->device_type == 'android'){
+							$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK";
+						}else{	
+							$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK";
+						}
+						
+						break;
+					}
+				}
+			}
+		}
 
         return $line;
 		
@@ -3877,7 +3895,8 @@ class FindersController extends \BaseController {
 			166 => 'Buy a membership & get exclusive access to Fitsquad to Earn ₹35,000 worth of rewards'
 		];
 
-		$brandsList = [135, 88, 166];
+		// $brandsList = [135, 88, 166];
+		$brandsList = [135, 166];
 
 		if (!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], $brandsList) && !in_array($data['finder']['_id'], Config::get('app.brand_finder_without_loyalty'))) {
 			if(!empty($brandMap[$data['finder']['brand_id']])){
@@ -5263,14 +5282,49 @@ class FindersController extends \BaseController {
 		// }
 
 		// commented on 9th August - Akhil
-		// if(!empty($customer_id)){
-		// 	$this->addCreditPoints($finderData['finder']['services'], $customer_id);
-		// }
+		if(!empty($customer_id)){
+			$this->addCreditPoints($finderData['finder']['services'], $customer_id);
+		}
 		//adding static data for hanman fitness
 		// if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
 		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
 		// }
 		//Log::info('finder',[$finderData['finder']]);
+
+		foreach($finderData['finder']['services'] as &$service){
+			foreach($service['ratecard'] as &$ratecard){
+				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+					Log::info("Price onepass ::",[$price]);
+					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+					$allowSession = false;
+					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+						$allowSession = $this->passService->allowSession($price, $customer_id);
+						if(!empty($allowSession['allow_session'])) {
+							$allowSession = $allowSession['allow_session'];
+						}
+						else {
+							$allowSession = false;
+						}
+					}
+					if($allowSession){
+						unset($ratecard['button_color']);
+						unset($ratecard['pps_know_more']);
+						unset($ratecard['pps_title']);
+						unset($ratecard['remarks']);
+						unset($ratecard['remarks_imp']);
+						unset($ratecard['price_text']);
+
+						unset($finderData['fit_ex']);
+
+						$ratecard['price'] = $ratecard['special_price'] = "0";
+						$ratecard['start_price_text'] = Config::get('app.onepass_free_string');
+						$ratecard['skip_share_detail'] = true;
+					}
+				}
+			}
+		}
+
 		return Response::json($finderData,$finderData['status']);
 
 	}
@@ -5334,9 +5388,9 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-                            $ratecard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+                            $ratecard['remarks'] = "Get 100% Instant Cashback, Use Code: CB100";
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
-                            //     $ratecard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+                            //     $ratecard['remarks'] = "Get 100% Instant Cashback, Use Code: CB100";
                             // }
                         }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
@@ -5364,6 +5418,10 @@ class FindersController extends \BaseController {
 								$ratecard['cashback_on_trial'] = "100% Cashback";
 							}
 						}
+
+						if($ratecard['price'] == 0 && $ratecard['special_price'] == 0){
+							$ratecard['start_price_text'] = "Free Via Fitternity";
+						}
 					}
 					if(isset($ratecard['flags'])){
 
@@ -5383,7 +5441,6 @@ class FindersController extends \BaseController {
 							$ratecard['direct_payment_enable'] = "0";
 						}
 					}
-
 
 					array_push($ratecardArr, $ratecard);
 				}
@@ -6489,6 +6546,9 @@ class FindersController extends \BaseController {
 			"message"=>"Success"
 		];
 
+        if(empty($finder_id)){
+            $response['tnc']['description'] = $this->passService->passTermsAndCondition()['data'];
+        }
 		return $response;
 
 	}
@@ -7530,9 +7590,12 @@ class FindersController extends \BaseController {
 			'checkout_button' => null
 		];
 		
-		$brandsList = [135,88,166,56,40];
-		$nonHanmanBrandsList = [135,88,166,40];
-		$brandsMap = ['golds' => 135, 'multifit' => 88, 'shivfit' => 166, 'hanman' => 56, 'hype' => 40];
+		// $brandsList = [135,88,166,56,40];
+		$brandsList = [135,166,56,40];
+		// $nonHanmanBrandsList = [135,88,166,40];
+		$nonHanmanBrandsList = [135,166,40];
+		// $brandsMap = ['golds' => 135, 'multifit' => 88, 'shivfit' => 166, 'hanman' => 56, 'hype' => 40];
+		$brandsMap = ['golds' => 135, 'shivfit' => 166, 'hanman' => 56, 'hype' => 40];
 		$finderDetails = $data['finder'];
 		$finderRewardType = (!empty($data['finder']['flags']['reward_type']))?$data['finder']['flags']['reward_type']:2;
 		$finderCashbackType =(!empty($data['finder']['flags']['cashback_type']))?$data['finder']['flags']['cashback_type']:null;
@@ -7588,14 +7651,14 @@ class FindersController extends \BaseController {
 				$data['fitsquad']['checkout_button']['image'] = $this->utilities->openrewardlist('1', $finderDetails['brand_id'], $finderDetails['city_name']);
 				$data['fitsquad']['checkout_summary']['line1'] = 'On buying this, you get exclusive access into FitSquad Gold';
 			}
-			else if($brandsMap['multifit']==$finderDetails['brand_id']) {
-				$data['fitsquad']['image'] = "https://b.fitn.in/global/MULTIFIT-LOGO-VENDOR-PAGE.png";
-				$data['fitsquad']['title'] = "GET 120% CASHBACK + REWARDS";
-				$data['fitsquad']['subtitle'] = 'Buy/Renew a membership at '.$finderDetails['title'].' & earn ₹35,000 worth of rewards.';
-				//$data['fitsquad']['description'] = "<span>Just Workout for <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> Days & Earn Rewards Worth of ₹35,000";
-				// $data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
-				$data['fitsquad']['checkout_button']['image'] = $this->utilities->openrewardlist('1', $finderDetails['brand_id'], $finderDetails['city_name']);
-			}
+			// else if($brandsMap['multifit']==$finderDetails['brand_id']) {
+			// 	$data['fitsquad']['image'] = "https://b.fitn.in/global/MULTIFIT-LOGO-VENDOR-PAGE.png";
+			// 	$data['fitsquad']['title'] = "GET 120% CASHBACK + REWARDS";
+			// 	$data['fitsquad']['subtitle'] = 'Buy/Renew a membership at '.$finderDetails['title'].' & earn ₹35,000 worth of rewards.';
+			// 	//$data['fitsquad']['description'] = "<span>Just Workout for <span style='color: #f7a81e'>10, 45, 75, 150, 225</span> Days & Earn Rewards Worth of ₹35,000";
+			// 	// $data['fitsquad']['checkout_button']['image'] = 'https://b.fitn.in/global/multifit---grid---final%20%282%29.jpg';
+			// 	$data['fitsquad']['checkout_button']['image'] = $this->utilities->openrewardlist('1', $finderDetails['brand_id'], $finderDetails['city_name']);
+			// }
 			else if($brandsMap['shivfit']==$finderDetails['brand_id']) {
 				$data['fitsquad']['image'] = "https://b.fitn.in/global/SHIVFIT-LOGO---VENDOR-PAGE.png";
 				$data['fitsquad']['title'] = "TO GET EXCLUSIVE ACCESS TO FITSQUAD SHIVFIT BUY / RENEW YOUR MEMBERSHIP AT ".strtoupper($finderDetails['title']);
@@ -8298,12 +8361,16 @@ class FindersController extends \BaseController {
 			foreach($service['ratecard'] as &$rc){
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
-				if(in_array($rc['type'], ['membership', 'extended validity']) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n End Of Monsoon Sale \n\n Get Upto 50% Off + Additional 25% Off On Memberships & Session Packs. Use Code -EOMS25");
+				if(in_array($rc['type'], ['membership', 'extended validity', 'studio_extended_validity'])){
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
+					
+					if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
+						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discount Upto 30% Off On Lowest Price Memberships & Session Packs");
+					}
                 }else{
-                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
+                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Festive Fitness Fiesta \n\n Book Workout Sessions And Get 100% Instant Cashback. Use Code: CB100");
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
-					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n End Of Monsoon Sale\n\n Get Upto 50% Off + Additional 20% Off On Memberships & Session Packs. Use Code -EOMS");
+					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // }
 
                 }
@@ -8426,7 +8493,7 @@ class FindersController extends \BaseController {
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['allow_session'] != 0 ){
+							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	
 							}
 						}
@@ -8438,7 +8505,7 @@ class FindersController extends \BaseController {
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['allow_session'] != 0 ){
+							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	
 							}
 						}
@@ -8554,11 +8621,12 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			$rateCard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+			$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: CB100";
 			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
-			// 	$rateCard['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+			// 	$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: CB100";
 			// }
 			$rateCard['remarks_imp'] = true;
+		
 		}
 	}
 

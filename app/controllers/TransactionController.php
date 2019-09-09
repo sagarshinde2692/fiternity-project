@@ -234,13 +234,20 @@ class TransactionController extends \BaseController {
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
             $data['order_id'] = intval($data['order_id']);
-            $pay_later_order = Order::where('_id', $data['order_id'])->where('pay_later', true)->first();
-            if($pay_later_order){
-                $pay_later_data = $this->getPayLaterData($pay_later_order);
+            $existing_order = Order::where('_id', $data['order_id'])->first();
+
+            if(!empty($existing_order['pass_id'])){
+                return $this->passService->passCapture($data, $existing_order);
+            }
+            if(!empty($existing_order['pay_later'])){
+
+                $pay_later_data = $this->getPayLaterData($existing_order);
                 $data = array_merge($data, $pay_later_data);
             }
             Log::info('------------transactionCapture---------------',$data);
         }
+
+        
 
         if(!empty($data['qrcodepayment']) && empty($data['customer_phone']) && !empty($data['customer_email'])){
             
@@ -527,7 +534,14 @@ class TransactionController extends \BaseController {
                 }
             
             }
-    
+            if(!empty($data['event_extra_customer'])){
+                if(!empty($data['event_customers'])){
+                    $data['event_customers'] = array_merge($data['event_customers'] ,$data['event_extra_customer']);
+                }
+                else{
+                    $data['event_customers']  = $data['event_extra_customer'];
+                }
+            }
             if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
     
                 $event_customers = $data['event_customers'];
@@ -541,7 +555,7 @@ class TransactionController extends \BaseController {
     
                         return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),$this->error_status);
     
-                    }else{
+                    }else if(!empty($customer_data["customer_email"])){
     
                         $event_customer_email[] = strtolower($customer_data["customer_email"]);
                     }
@@ -550,7 +564,7 @@ class TransactionController extends \BaseController {
     
                         return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),$this->error_status);
     
-                    }else{
+                    }else if(!empty($customer_data["customer_phone"])){
     
                         $event_customer_phone[] = $customer_data["customer_phone"];
                     }
@@ -847,15 +861,17 @@ class TransactionController extends \BaseController {
                         return Response::json($resp,$this->error_status);
                     }
 
+                    !empty($ticket['minimum_no_of_ticket']) ? $data['ticket_quantity'] = $ticket['minimum_no_of_ticket']: null;
+
                     $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
 
-                    if($data['ticket_quantity'] == 4){
-                        $data['combo_discount'] = 400;
-                        $data['combo_discount_remark'] = "Buy 4 tickets, get 400 off";
-                        $data['amount'] = $data['amount'] - $data['combo_discount'];
-                        $data['amount_customer'] = $data['amount_customer'] - $data['combo_discount'];
-                        $data['amount_finder'] = $data['amount_finder'] - $data['combo_discount'];
-                    }
+                    // if($data['ticket_quantity'] == 4){
+                    //     $data['combo_discount'] = 400;
+                    //     $data['combo_discount_remark'] = "Buy 4 tickets, get 400 off";
+                    //     $data['amount'] = $data['amount'] - $data['combo_discount'];
+                    //     $data['amount_customer'] = $data['amount_customer'] - $data['combo_discount'];
+                    //     $data['amount_finder'] = $data['amount_finder'] - $data['combo_discount'];
+                    // }
 
                 }else{
 
@@ -878,12 +894,14 @@ class TransactionController extends \BaseController {
                 $data['finder_name'] = $finder->title;
             }
 
-            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug','mfp','contact','venue']);
+            $event = DbEvent::where('_id', (int)$data['event_id'])->first(['name', 'slug','mfp','contact','venue', 'start_date', 'end_date']);
 
             if($event){
                 $data['event_name'] = $event->name;
 				$data['event_address'] = $event["contact"]["address"];
-				$data['event_venue'] = $event["venue"];
+                $data['event_venue'] = $event["venue"];
+                $data['event_start_date'] = $event['start_date'];
+                $data['event_end_date'] = $event['end_date'];
                 if(in_array($event['slug'],Config::get('app.my_fitness_party_slug')) || !empty($event['mfp'])){
                     $data['event_type'] = "TOI";
                     $data['qr_code'] = $this->utilities->encryptQr(['owner'=>'fitternity','order_id'=>$data['_id']]);
@@ -1391,8 +1409,12 @@ class TransactionController extends \BaseController {
 
 
         if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
+            $auto_register_input = array('event_customers'=>$data['event_customers']);
+            if(!empty($data['event_type']) && $data['event_type']=='TOI'){
+                $auto_register_input['event_type'] =  $data['event_type'];
+            }
 
-            Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', array('event_customers'=>$data['event_customers']),Config::get('app.queue'));
+            Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', $auto_register_input, Config::get('app.queue'));
         }
 
         if(in_array($data['type'],$this->membership_array)){
@@ -1533,7 +1555,7 @@ class TransactionController extends \BaseController {
             foreach ($payment_mode_type_array as $payment_mode_type) {
 
                 $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
-
+    
             }
             
             $resp['data']['payment_details'] = $payment_details;
@@ -1690,6 +1712,25 @@ class TransactionController extends \BaseController {
         // if(!empty($data['studio_extended_validity']) && $data['studio_extended_validity']) {
         //     $this->utilities->scheduleStudioBookings(null, $order_id);
         // }
+        
+        if(!empty($data['pass_booking']) && $data['pass_booking']){
+            unset($resp['data']["quantity_details"]);
+            $resp['data']['payment_modes']= [];
+            unset($resp['data']["payment_details"]);
+            unset($resp['data']["coupon_details"]);
+
+            $passBookingDetails = $this->getPassDetails($data);
+
+            if(!empty($passBookingDetails['onepass_details'])){
+                $resp['data']['onepass_details'] =  $passBookingDetails['onepass_details'];
+            }
+
+            if(!empty($passBookingDetails['easy_cancellation'])){
+                $resp['data']['easy_cancellation'] =  $passBookingDetails['easy_cancellation'];
+            }
+        }
+
+        
         Log::info("capture response");
         Log::info($resp);
         return $resp;
@@ -3587,20 +3628,20 @@ class TransactionController extends \BaseController {
         }    
         
         //  commented on 9th Aug - Akhil
-        // if(!empty($data['amount'] ) && $data['type'] == 'workout-session') {
-        //     Order::$withoutAppends = true;
-        //     $passSession = $this->passService->allowSession($data['amount'], $data['customer_id']);
-        //     if($passSession['allow_session'] != 0) {
-        //         $data['pass_type'] = $passSession['pass_type'];
-        //         $data['pass_order_id'] = $passSession['order_id'];
-        //         $data['pass_booking'] = true;
+        if($data['type'] == 'workout-session') {
+            Order::$withoutAppends = true;
+            $passSession = $this->passService->allowSession($data['amount'], $data['customer_id'], $data['schedule_date']);
+            if($passSession['allow_session']) {
+                $data['pass_type'] = $passSession['pass_type'];
+                $data['pass_order_id'] = $passSession['order_id'];
+                $data['pass_booking'] = true;
 
-        //         if(!empty($passSession['pass_premium_session'])) {
-        //             $data['pass_premium_session'] = true;
-        //         }
-        //         $amount = 0;
-        //     }
-        // }
+                if(!empty($passSession['pass_premium_session'])) {
+                    $data['pass_premium_session'] = true;
+                }
+                $amount = 0;
+            }
+        }
         
         if(!empty($data['amount'] ) && $data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
             Order::$withoutAppends = true;
@@ -5741,7 +5782,9 @@ class TransactionController extends \BaseController {
             $event_customers = $data["event_customers"];
 
             foreach ($event_customers as $customer_data) {
-
+                if(!empty($data['event_type']) && $data['event_type']== 'TOI'){
+                    $customer_data['event_type'] = 'TOI';
+                }
                 autoRegisterCustomer($customer_data);
             }
 
@@ -5761,6 +5804,13 @@ class TransactionController extends \BaseController {
         $booking_details = [];
 
         $position = 0;
+
+        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
+            $booking_details_data["customer_name"] = ['field'=>'NAME','value'=>$data['customer_name'],'position'=>$position++];
+			$booking_details_data["customer_email"] = ['field'=>'EMAIL','value'=>$data['customer_email'],'position'=>$position++];
+			$booking_details_data["customer_contact_no"] = ['field'=>'CONTACT NO','value'=>$data['customer_phone'],'position'=>$position++];
+        }
 
         $booking_details_data["finder_name_location"] = ['field'=>'STUDIO NAME','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
 
@@ -5981,7 +6031,11 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase. Use Code : CB100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase','position'=>$position++];
+            
+            if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001){
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
+            }
         }
         
         $booking_details_all = [];
@@ -6002,6 +6056,13 @@ class TransactionController extends \BaseController {
     }
 
     function getPaymentDetails($data,$payment_mode_type){
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
 
         $amount_summary = [];
         
@@ -6259,6 +6320,30 @@ class TransactionController extends \BaseController {
             ];
         }
 
+        if(!empty($data['type']) && $data['type'] == 'workout-session') {
+            // $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+            $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+            $allowSession = false;
+            if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+                $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id, $data['schedule_date']);
+                if(!empty($allowSession['allow_session'])) {
+                    $allowSession = $allowSession['allow_session'];
+                }
+                else {
+                    $allowSession = false;
+                }
+            }
+            if($allowSession){
+            // if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < 1001 && !empty($data['type']) && $data['type'] == 'workout-session'){
+                $payment_details['amount_summary'] = [];
+                $payment_details['amount_payable'] = array(
+                    'field' => 'Total Amount Payable',
+                    'value' => Config::get('app.onepass_free_string')
+                );
+                unset($payment_details['payment_details']['savings']);
+            }
+        }
+
         return $payment_details;
 
     }
@@ -6465,7 +6550,8 @@ class TransactionController extends \BaseController {
     public function checkCouponCode(){
         
         $data = Input::json()->all();
-
+        $device = Request::header('Device-Type');
+        $version = Request::header('App-Version');
         Log::info("checkCouponCode");
         Log::info($data);
 
@@ -6488,9 +6574,24 @@ class TransactionController extends \BaseController {
         //     }
         // }
         
-        if(!isset($data['ratecard_id']) && !isset($data['ticket_id']) && !isset($data['pass_id'])){
-            $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
-            return Response::json($resp,400);
+        if(empty($data['ratecard_id']) && empty($data['ticket_id']) && empty($data['pass_id'])){
+            if(isset($data['order_id'])){
+                $data['order_id'] = intval($data['order_id']);
+                $orderDetails = Order::where('_id', $data['order_id'])->first();
+                $data['pass_id'] = (!empty($orderDetails['pass_id']))?$orderDetails['pass_id']:null;
+                $data['customer_name'] = (!empty($orderDetails['customer_name']))?$orderDetails['customer_name']:null;
+                $data['customer_email'] = (!empty($orderDetails['customer_email']))?$orderDetails['customer_email']:null;
+                $data['customer_phone'] = (!empty($orderDetails['customer_phone']))?$orderDetails['customer_phone']:null;
+                $data['device_type'] = (!empty($device))?$device:null;
+                $data['app_version'] = (!empty($version))?$version:null;
+                if(!empty($data['pass_id'])) {
+                    unset($data['ratecard_id']);
+                }
+            }
+            if(empty($data['pass_id'])) {
+                $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
+                return Response::json($resp,400);
+            }
         }
         if($this->utilities->isGroupId($data['coupon'])){
             $ratecard = Ratecard::find($data['ratecard_id']);
@@ -7064,6 +7165,9 @@ class TransactionController extends \BaseController {
             }
         
         }elseif(isset($data['ticket_id'])){
+            if(empty($data['customer_quantity'])){
+                return Response::json(array('status'=>400, 'message'=>'Customer quantity is required'), $this->error_status);
+            }
 			$ticket_id = intval($data['ticket_id']);
 		}elseif(isset($data['ratecard_id'])){
 
@@ -7231,19 +7335,20 @@ class TransactionController extends \BaseController {
             }
 
             //  commented on 9th Aug - Akhil
-            // if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
-            //     if(!empty($decoded->customer->_id)) {
-            //         $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id);
-            //         Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
-            //         if($passSession['allow_session'] != 0) {
-            //             $result['payment_details']['amount_summary'][] = [
-            //                 'field' => ((!empty($passSession['pass_type']) && $passSession['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
-            //                 'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'
-            //             ];
-            //             $data['amount_payable'] = 0;
-            //         }
-            //     }
-            // }
+            if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
+                if(!empty($decoded->customer->_id)) {
+                    $scheduleDate = (!empty($data['slot']['date']))?$data['slot']['date']:null;
+                    $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id, $scheduleDate);
+                    Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
+                    if($passSession['allow_session']) {
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => ((!empty($passSession['pass_type']) && $passSession['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
+                            'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'
+                        ];
+                        $data['amount_payable'] = 0;
+                    }
+                }
+            }
 
             if((empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
@@ -7509,6 +7614,9 @@ class TransactionController extends \BaseController {
 
         }elseif(isset($ticket_id)){
 			if(isset($order)){
+                if(!empty($data['coupon'])){
+                    $order["coupon_code"] = $data['coupon'];
+                }
 				$data = $order;
 				$data["customer_quantity"] = $order["ticket_quantity"];
 				$data["ticket_id"] = $order["ticket_id"];
@@ -7540,6 +7648,7 @@ class TransactionController extends \BaseController {
                 // ]
             ];
             !empty($data['customer_quantity']) ? $data['customer_quantity'] = intval($data['customer_quantity']) : null;
+            !empty($ticket['minimum_no_of_ticket']) ? $data['customer_quantity']= intval(($ticket['minimum_no_of_ticket'])):null;
 			
             $total_amount = $ticket['price'] * intval($data['customer_quantity']);
 			$result['payment_details']['amount_summary'][] = [
@@ -7642,6 +7751,15 @@ class TransactionController extends \BaseController {
                         'field' => 'Coupon Discount',
                         'value' => '-Rs. '.(string)$data['coupon_discount']
                     ];
+                }
+
+                if(!empty($order["coupon_discount_amount"])){
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.(string)$order["coupon_discount_amount"]
+                    ];
+                    $data['amount_payable'] = $data['amount_payable'] - $order["coupon_discount_amount"];
+                    $data['you_save'] += $order["coupon_discount_amount"];
                 }
                 
                 $data['amount'] = $data['amount_payable'];
@@ -9585,6 +9703,38 @@ class TransactionController extends \BaseController {
         Log::info("plans dattata::::::::::", [$plans]);
 
         return $plans;
+    }
+
+    public function getPassDetails($data){
+        Log::info("Pass data :::::", [$data]);
+        $passBookingDetails = array();
+        $totalPassBookings = 0;
+        Order::$withoutAppends = true;
+        if(!empty($data['pass_order_id']) && !empty($data['pass_type'])){
+            $totalPassBookings = Order::active()->where('pass_type', $data['pass_type'])
+                ->where('pass_order_id', $data['pass_order_id'])->where('customer_id', $data['customer_id'])->count();
+        }
+            
+        $count_det = ['1' => '1st', '2' => '2nd', '3' => '3rd'];
+        $totalPassBookings += 1;
+        if($totalPassBookings > 3){
+            $totalPassBookingsStr = $totalPassBookings."th"; 
+        }else{
+            $totalPassBookingsStr = $count_det[$totalPassBookings];
+        }
+            
+        $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
+        $onepass_details['desc_subheader'] = "You are booking your ".$totalPassBookingsStr." session using Onepass ".ucfirst($data['pass_type']);
+
+        $easy_cancellation = array(
+            "header" => "Easy Cancelletion: ",
+            "description" => "You can cancel this session 1 hour prior to your session time."
+        );
+
+        $passBookingDetails['onepass_details'] = $onepass_details;
+        $passBookingDetails['easy_cancellation'] = $easy_cancellation;
+
+        return $passBookingDetails;
     }
 
 }

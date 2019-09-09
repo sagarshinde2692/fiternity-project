@@ -435,7 +435,7 @@ Class RelianceService {
                 'intro'=> [
                     'image' => Config::get('health_config.reliance.reliance_logo'),
                     'header' => "#WalkpeChal",
-                    'text' => "MissionMoon | 30 Days | 100 Cr steps"
+                    'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
                 ],
                 'personal_activity' => [
                     'name' => $custInfo['name'],
@@ -955,7 +955,7 @@ Class RelianceService {
             'intro'=> [
                 'image' => Config::get('health_config.reliance.reliance_logo'),
                 'header' => "#WalkpeChal",
-                'text' => "MissionMoon | 30 Days | 100 Cr steps"
+                'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
             ],
             'personal_activity' => [
                 'name' => $customer['name'],
@@ -1828,7 +1828,7 @@ Class RelianceService {
             'intro'=> [
                 'image' => Config::get('health_config.reliance.reliance_logo'),
                 'header' => "#WalkpeChal",
-                'text' => "MissionMoon | 30 Days | 100 Cr steps"
+                'text' => "MissionMoon | 30 + 5 Days | 100 Cr steps"
             ],
             'personal_activity' => [
                 'name' => $customer['name'],
