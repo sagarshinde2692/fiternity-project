@@ -9874,7 +9874,7 @@ Class Utilities {
                 
                 if($booktrial_update&& !(isset($booktrial->payment_done) && $booktrial->payment_done == false)){
                     
-                    if(!isset($booktrial['extended_validity_order_id'])){
+                    if(!isset($booktrial['extended_validity_order_id']) && !empty($booktrial['pass_order_id'])){
                         $fitcash = $this->getFitcash($booktrial->toArray());
                         $req = array(
                                 "customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
