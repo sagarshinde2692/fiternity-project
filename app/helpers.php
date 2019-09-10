@@ -2470,7 +2470,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                 function autoRegisterCustomer($data)
                 {   
                     Log::info("autoRegisterCustomer");
-					//Log::info(print_r($data,true));
+					Log::info(print_r($data,true));
 
                 	$customer= Customer::active()->where('email', $data['customer_email'])->first();
                     
@@ -2970,7 +2970,7 @@ if (!function_exists(('getHash'))){
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
         Log::info("getHash===================");
-        //Log::info($data);
+        Log::info($data);
         $data['service_name'] = trim($data['service_name']);
         $data['finder_name'] = trim($data['finder_name']);
 
