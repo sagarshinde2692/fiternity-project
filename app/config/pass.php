@@ -94,7 +94,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \nEarly bird offer ends on 15th September. Buy your OnePass before prices go up!", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \nGet 30% off on OnePass. Buy your OnePass before prices go up!", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -128,7 +128,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \nEarly bird offer ends on 15th September. Buy your OnePass before prices go up!", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \nGet 30% off on OnePass. Buy your OnePass before prices go up!", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -426,7 +426,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "Upto 30% off on OnePass. Buy your OnePass before prices go up!",
+                "text" => "Get 30% off on OnePass. Buy your OnePass before prices go up!",
                 "button_text" => "Know More"
             ]
         ],
