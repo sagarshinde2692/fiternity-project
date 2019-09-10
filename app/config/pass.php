@@ -426,7 +426,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "Early bird offer ends on 15th September. Buy your OnePass before prices go up!",
+                "text" => "Upto 30% off on OnePass. Buy your OnePass before prices go up!",
                 "button_text" => "Know More"
             ]
         ],
