@@ -9631,7 +9631,7 @@ Class Utilities {
 		}
 
 		//Log::info('geo coordinates of :::::::::::;', [$customer_geo, $finder_geo]); // need to update distance limit by 500 metere
-		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 2000 ? true : false;
+		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 500 ? true : false;
 		//Log::info('distance status', [$distanceStatus]);
 		if($distanceStatus){
 			$oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);

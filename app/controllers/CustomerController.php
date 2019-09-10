@@ -8448,13 +8448,13 @@ class CustomerController extends \BaseController {
 								
 								if($booktrial_update&&!empty($value['mark'])&& !(isset($booktrial->payment_done) && $booktrial->payment_done == false)){
 									
-									if(!isset($booktrial['extended_validity_order_id']) && !isset($booktrial['pass_order_id'])){
-										$fitcash = $this->utilities->getFitcash($booktrial->toArray());
-										$req = array(
-												"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
-												"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
-												'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan","qrcodescan"=>true
-										);
+									// if(!isset($booktrial['extended_validity_order_id']) && !isset($booktrial['pass_order_id'])){
+									// 	$fitcash = $this->utilities->getFitcash($booktrial->toArray());
+									// 	$req = array(
+									// 			"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
+									// 			"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
+									// 			'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan","qrcodescan"=>true
+									// 	);
 										
 									// 	$booktrial->pps_fitcash=$fitcash;
 									// 	$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
