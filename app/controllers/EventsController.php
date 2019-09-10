@@ -69,7 +69,7 @@ class EventsController extends \BaseController {
 			if(!empty($eventInfo['end_date'])){
 				$eventInfo['end_day'] = date('jS F', strtotime($eventInfo['end_date']));
 			}
-			if(!empty($eventInfo['images']['cover_image'])){
+			if(!empty($eventInfo['images']['cover_image']) && !empty($eventInfo['mfp'])){
 				$eventInfo['coverimage'] = $eventInfo['images']['cover_image'];
 			}
 			unset($eventInfo['images']);
