@@ -1145,7 +1145,6 @@ class HomeController extends BaseController {
                 }
                 
                 if(!empty($item['qrcodepayment'])){
-                    Log::info('inside qrcode payment');
                     unset($response['subline']);
                     if(!empty($checkin_response)){
                         $response['header'] .= "\n ".$checkin_response['header'];

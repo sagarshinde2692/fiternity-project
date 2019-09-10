@@ -2631,7 +2631,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $this->utilities->addAmountToReferrer($order);
         
-        //Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
+        Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
         if(isset($data['temp_id'])){
             $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();

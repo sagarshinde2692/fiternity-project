@@ -1056,7 +1056,7 @@ class TransactionController extends \BaseController {
 
         $data['txnid'] = $txnid;
 
-        //Log::info($finderDetail["data"]);
+        Log::info($finderDetail["data"]);
         $tmp_finder_flags = (array) $finderDetail['data']['finder_flags'];
         $part_payment = (!empty($tmp_finder_flags) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
         $cash_pickup = (!empty($tmp_finder_flags) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
@@ -1157,7 +1157,7 @@ class TransactionController extends \BaseController {
 
         $data['base_amount'] = $order['amount_customer'] - $data['convinience_fee'] ;
         Log::info("data before hash");
-        //Log::info($data);
+        Log::info($data);
         $hash = getHash($data);
         $data = array_merge($data,$hash);
 
