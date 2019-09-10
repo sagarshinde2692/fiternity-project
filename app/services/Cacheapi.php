@@ -52,7 +52,7 @@ Class Cacheapi {
         
             // print_r($_SERVER['REQUEST_URI']);
 
-            $api_instance_urls = ['r1.fitternity.com/', 'r2.fitternity.com/', 'r5.fitternity.com/'];
+            $api_instance_urls = ['r1.fitternity.com/', 'r2.fitternity.com/'];
     
             if($tag && $key){
 
