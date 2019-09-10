@@ -9184,7 +9184,7 @@ Class Utilities {
 			}
 			$return =$this->checkinCheckoutSuccessMsg($finder, $customer);
 			$return['header'] = "CHECK-OUT SUCCESSFULL";
-			$return['sub_header_2'] = "Hope you had a great workout at ".$finder['title'].". This check-in is successfully marked into your workout journey. Continue with your workouts and achieve the milestones.";
+			$return['sub_header_2'] = "Hope you had a great workout at ".$finder['title'].". This check-in is successfully marked into your workout journey. \nContinue with your workouts and achieve the milestones.";
             
             if(!empty($resp1)){
                 $return['sub_header_2'] = !empty($resp1['sub_header_2']) ? $resp1['sub_header_2']."\n". $return['sub_header_2']: $return['sub_header_2'];
