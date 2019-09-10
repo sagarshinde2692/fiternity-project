@@ -1366,7 +1366,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "Surprise Additional 30% off On Lowest Price Memberships. Limited Period Offer. TCA",
+								'text1'=> "50% Off + Extra 25% Off On Memberships | Use Code - INDIAFIT | Limited Period Offer",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1378,7 +1378,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "Surprise Additional 30% off On Lowest Price Memberships. Limited Period Offer. TCA",
+								'text1'=> "50% Off + Extra 25% Off On Memberships | Use Code - INDIAFIT | Limited Period Offer",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1390,7 +1390,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "Surprise Additional 30% off On Lowest Price Memberships. Limited Period Offer. TCA",
+								'text1'=> "50% Off + Extra 25% Off On Memberships | Use Code - INDIAFIT | Limited Period Offer",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3846,46 +3846,49 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "<u>The Fit India Grand Sale</u><br><br>- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : FIT100 ";
             }else{	
-				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "\nThe Fit India Grand Sale\n\n- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : FIT100 ";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "<u>The Fit India Grand Sale</u><br><br>- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : FIT100 ";
             }else{	
-				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "\nThe Fit India Grand Sale\n\n- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : FIT100 ";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "<u>The Fit India Grand Sale</u><br><br>- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : FIT100 ";
             }else{	
-				$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : CB100 ";
+				$line = "\nThe Fit India Grand Sale\n\n- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : FIT100 ";
             }
 			
 		}
 		
-		foreach($data['finder']['services'] as &$service){
-			foreach($service['ratecard'] as &$ratecard){
-				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
-					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
-						if($this->device_type == 'android'){
-							$line = "<u>Festive Fitness Fiesta</u><br><br>- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK";
-						}else{	
-							$line = "\nFestive Fitness Fiesta\n\n- Get Surprise Additional Discounts Upto 30% Off on Lowest Price Memberships & Session Packs. Use Magic Code : MODAK";
+		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			foreach($data['finder']['services'] as &$service){
+				foreach($service['ratecard'] as &$ratecard){
+					if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+							if($this->device_type == 'android'){
+								$line = "<u>The Fit India Grand Sale</u><br><br>- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT";
+							}else{	
+								$line = "\nThe Fit India Grand Sale\n\n- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT";
+							}
+							
+							break;
 						}
-						
-						break;
 					}
 				}
 			}
 		}
+		
 
         return $line;
 		
@@ -5388,9 +5391,9 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-                            $ratecard['remarks'] = "Get 100% Instant Cashback, Use Code: CB100";
+                            $ratecard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
-                            //     $ratecard['remarks'] = "Get 100% Instant Cashback, Use Code: CB100";
+                            //     $ratecard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
                             // }
                         }
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
@@ -8367,10 +8370,10 @@ class FindersController extends \BaseController {
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
 					
 					if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
-						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discount Upto 30% Off On Lowest Price Memberships & Session Packs");
+						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n The Fit India Grand Sale \n\n Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code - INDIAFIT");
 					}
                 }else{
-                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Festive Fitness Fiesta \n\n Book Workout Sessions And Get 100% Instant Cashback. Use Code: CB100");
+                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n The Fit India Grand Sale \n\n Book Workout Sessions And Get 100% Instant Cashback. Use Code: FIT100");
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
 					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // }
@@ -8623,9 +8626,9 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: CB100";
+			$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
 			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
-			// 	$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: CB100";
+			// 	$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
 			// }
 			$rateCard['remarks_imp'] = true;
 		
