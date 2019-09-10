@@ -14,7 +14,7 @@ class EventsController extends \BaseController {
 
 	public function getEventInfo($slug) {
 
-		$eventInfo = DbEvent::where('slug', $slug)->first();
+		$eventInfo = DbEvent::where('slug', $slug)->with('images')->first();
 
 		if($eventInfo){
 
@@ -32,6 +32,12 @@ class EventsController extends \BaseController {
 				foreach ($tickets as $key => &$value) {
 
 					$value['sold_out'] = false;
+					if(!empty($value['minimum_no_of_ticket'])){
+						$value['price'] = $value['minimum_no_of_ticket'] * $value['price'];
+					}
+					else if(isset($value['minimum_no_of_ticket'])){
+						unset($value['minimum_no_of_ticket']);
+					}
 
 					if($value['sold'] >= $value['quantity']){
 						$value['sold_out'] = true;
@@ -54,6 +60,28 @@ class EventsController extends \BaseController {
 			}else{
 
 				$vendors = [];
+			}
+
+			if(!empty($eventInfo['start_date'])){
+				$eventInfo['start_day'] = date('jS F', strtotime($eventInfo['start_date']));
+			}
+			
+			if(!empty($eventInfo['end_date'])){
+				$eventInfo['end_day'] = date('jS F', strtotime($eventInfo['end_date']));
+			}
+			if(!empty($eventInfo['images']['cover_image']) && !empty($eventInfo['mfp'])){
+				$eventInfo['coverimage'] = $eventInfo['images']['cover_image'];
+			}
+			unset($eventInfo['images']);
+
+			$mfp_success_data = Config::get('mfp_success');
+			$base_url= $mfp_success_data['base_url'];
+			$extention = $mfp_success_data['extension'];
+			if(!empty($eventInfo['schedule'])){
+				foreach($eventInfo['schedule'] as &$value){
+					$tmp_lower = str_replace(' ', '-',strtolower($value['title']));
+					$value['image'] = $base_url.$tmp_lower.$extention;
+				}
 			}
 
 			$response = array(

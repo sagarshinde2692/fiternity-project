@@ -12,22 +12,37 @@
 */
 
 App::before(function($request)
-{
-    Log::info($_SERVER['REQUEST_URI']);
-    if(!empty(Input::all())){
-        Log::info("API Hit" , Input::all());
+{   
+    try{
+        Log::info($_SERVER['REQUEST_URI']);
+        Log::info("Before filter");
+        if(!empty(Input::all())){
+            Log::info("API Hit" , Input::all());
+        }else if(!empty(Input::json()->all())){
+            Log::info("API Hit" , Input::json()->all());
+        }
+        Log::info(apache_request_headers());
+    }catch(Exception $e){
+        Log::info("Error in before filter");
+        Log::info($e);
     }
-    Log::info(apache_request_headers());
 });
 
 
 App::after(function($request, $response)
-{
-    $reqClient = Request::all();
-    // Log::info('$reqClient: ', [$reqClient]);
-    if(!(isset($reqClient) && isset($reqClient['third_party']) && $reqClient['third_party'])) {
-        refreshToken($response);
+{   
+    try{
+        Log::info("after filter");
+        $reqClient = Request::all();
+    
+        if(!(isset($reqClient) && isset($reqClient['third_party']) && $reqClient['third_party'])) {
+            refreshToken($response);
+        }
+    }catch(Exception $e){
+        Log::info($e);
+        Log::info("Error in after filter");
     }
+    
 });
 
 /*
@@ -111,6 +126,9 @@ Route::filter('validatetoken',function(){
                 return Response::json(array('status' => 400,'message' => 'User logged out'),400);
             }
             $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            if(!empty($decoded)){
+                $GLOBALS['decoded_token'] = $decoded;
+            }
         }catch(DomainException $e){
             return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
         }catch(ExpiredException $e){
@@ -191,24 +209,16 @@ Route::filter('validatevendor',function(){
 
 Route::filter('device',function(){
 
-    $header_array = [
-        "Device-Type"=>"",
-        "Device-Model"=>"",
-        "App-Version"=>"",
-        "Os-Version"=>"",
-        "Device-Token"=>"",
-        "Device-Id"=>""
-    ];
-
+    $header_array = array_only(apache_request_headers(), [ "Device-Type", "Device-Model", "App-Version", "Os-Version", "Device-Token", "Device-Id"]);
+    
     $flag = false;
-
-    foreach ($header_array as $header_key => $header_value) {
-
-        $value = Request::header($header_key);
+    
+    foreach ($header_array as $key => $value) {
 
         if($value != "" && $value != null && $value != 'null'){
-           $header_array[$header_key] =  $value;
            $flag = true;
+        }else{
+            $header_array[$key] = "";
         }
         
     }
@@ -230,12 +240,12 @@ Route::filter('device',function(){
     $data = [];
 
     $data['customer_id'] = $customer_id;
-    $data['device_id'] = $header_array['Device-Id'];
-    $data['os_version'] = $header_array['Os-Version'];
-    $data['app_version'] = $header_array['App-Version'];
-    $data['device_model'] = $header_array['Device-Model'];
-    $data['device_type'] = $header_array['Device-Type'];
-    $data['reg_id'] = $header_array['Device-Token'];
+    $data['device_id'] = !empty($header_array['Device-Id']) ? $header_array['Device-Id'] : "";
+    $data['os_version'] = !empty($header_array['Os-Version']) ? $header_array['Os-Version'] : "";
+    $data['app_version'] = !empty($header_array['App-Version']) ? $header_array['App-Version'] : "";
+    $data['device_model'] = !empty($header_array['Device-Model']) ? $header_array['Device-Model'] : "";
+    $data['device_type'] = !empty($header_array['Device-Type']) ? $header_array['Device-Type'] : "";
+    $data['reg_id'] = !empty($header_array['Device-Token']) ? $header_array['Device-Token'] : "";
 
     if($flag){
 
@@ -283,7 +293,7 @@ Route::filter('device',function(){
 
         } else {
 
-            $device_id = Device::max('_id') + 1;
+            $device_id = Device::maxId() + 1;
             $device = new Device();
             $device->_id = $device_id;
 

@@ -816,6 +816,10 @@ class MigrationReverseController extends \BaseController {
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
             $insertData['finder_type']                    = (isset($insertData['commercial_type']) && !empty(($insertData['commercial_type'])) ) ? (( $insertData['commercial_type'] == 1  || $insertData['commercial_type'] == 3 ) ? 1: 0) :0;
 
+            if(!empty($Finder->website_membership)){
+                $insertData['website_membership'] = $Finder->website_membership;
+            }
+
 //            dd($Finder->flags['membership']);
 //            var_dump($insertData);exit();
             $Finder_exists_cnt	=	DB::connection($this->fitadmin)->table('finders')->where('_id', intval($id) )->count();
@@ -1046,6 +1050,9 @@ class MigrationReverseController extends \BaseController {
             $insertData['vip_trial'] = (isset($data['vip_trial'])  && $data['vip_trial'] == true) ? '1' : '0';
             $insertData['ordering'] = (int)$data['order'];
             $insertData['short_description'] = $data['info']['short_description'];
+            if(!empty($data['info']['pps_description'])){
+                $insertData['pps_description'] = $data['info']['pps_description'];
+            }
             $insertData['body'] = $data['info']['long_description'];
             $insertData['address'] = ($data['address']['line1'] == '' && $data['address']['line1'] == '' && $data['address']['line1'] == '' && $data['address']['pincode'] == '' && $data['address']['landmark'] == '') ? '' : $data['address']['line1'].', '.$data['address']['line2'].', '.$data['address']['line3'].', '.$data['address']['landmark'].', '.$data['address']['pincode'];
             $insertData['what_i_should_carry'] = $data['what_i_should_carry'];
@@ -1065,6 +1072,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['showOnFront']   =   isset($data['showOnFront']) ? $data['showOnFront'] : ['web', 'kiosk'];
             // $insertData['showOnFront']   =   isset($data['showOnFront']) ? $data['showOnFront'] : true;
             $insertData['custom_location']   =   isset($data['custom_location']) ? $data['custom_location'] : "";
+            $insertData['inoperational_dates']   =   isset($data['inoperational_dates']) ? $data['inoperational_dates'] : [];
             
             if(isset($data['flags'])){
                 $insertData['flags'] = $data['flags'];
@@ -1089,7 +1097,10 @@ class MigrationReverseController extends \BaseController {
             if(isset($data['membership_end_date'])){
                 $insertData['membership_end_date'] = $data['membership_end_date'];
             }
-
+            
+            if(isset($data['pps_non_peak_hours_time_range'])){
+                $insertData['pps_non_peak_hours_time_range'] = $data['pps_non_peak_hours_time_range'];
+            }
 //            return $insertData;
 
             $service_exists = Service::on($this->fitadmin)->find(intval($id));
@@ -1996,6 +2007,10 @@ class MigrationReverseController extends \BaseController {
             	'vendor_stripe' => isset($brand->vendor_stripe)? $brand->vendor_stripe:null,
                 'logo' => isset($brand->media) && isset($brand->media['images']) && isset($brand->media['images']['logo']) ? $brand->media['images']['logo'] : "",
             ];
+            
+            if(!empty($brand->brand_website)){
+                $insertData['brand_website'] = $brand->brand_website; //storing data of vendor for brand website
+            }
 
             $_exists_cnt =   DB::connection($this->fitadmin)->table('brands')->where('_id', intval($id) )->count();
 

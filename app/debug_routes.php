@@ -30,6 +30,7 @@ Route::get('migrations/commercial', 'MigrationsController@commercial');
 Route::get('migrations/onboard', 'MigrationsController@onboard');
 Route::get('migrations/feedback', 'MigrationsController@feedback');
 Route::get('newordermigration', 'DebugController@newOrderMigration');
+Route::get('ppsRepeat', 'DebugController@ppsRepeat');
 
 
 
@@ -2738,3 +2739,10 @@ Route::get('salesRangeFindersStudio','DebugController@salesRangeFindersStudio');
 Route::get('salesFinderDetails','DebugController@salesFinderDetails');
 Route::get('fitcashCouponMigration','DebugController@fitcashCouponMigration');
 Route::get('couponsValidMigration','DebugController@couponsValidMigration');
+Route::get('testcodesnippet','DebugController@testcodesnippet');
+Route::get('corporateCoupons','DebugController@corporateCoupons');
+Route::get('rewardDistributionAndClaim', 'DebugController@rewardDistributionAndClaim');
+Route::get('addAmountTransferToVendorBreakup', 'DebugController@addAmountTransferToVendorBreakup');
+Route::get('manualToSession', 'DebugController@manualToSession');
+Route::get('hyperLocal', 'DebugController@hyperLocal');
+Route::get('fitnessForce','TransactionController@fitnessForce');

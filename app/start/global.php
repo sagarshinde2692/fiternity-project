@@ -48,7 +48,25 @@ Log::useFiles(storage_path().'/logs/laravel.log');
 
 App::error(function(Exception $exception, $code)
 {
-	Log::error($exception);
+    Log::error($exception);
+    if(empty(Config::get('app.debug'))){
+        $message = json_encode(["text"=>json_encode([
+            'type'    => get_class($exception),
+            'message' => $exception->getMessage(),
+            'file'    => $exception->getFile(),
+            'line'    => $exception->getLine(),
+        ])]);
+        
+        $c = curl_init();
+        curl_setopt($c, CURLOPT_URL, "https://hooks.slack.com/services/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");
+        curl_setopt($c, CURLOPT_POST, 1);
+        curl_setopt($c, CURLOPT_POSTFIELDS, $message);
+        curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
+        Log::info(curl_exec($c));
+    }
 });
 
 /*

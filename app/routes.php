@@ -171,7 +171,7 @@ Route::get('getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfi
 Route::get('getlocations/{city?}', 'HomeController@getCityLocation');
 Route::get('getcategories/{city?}', 'HomeController@getCityCategorys');
 Route::get('getcities', 'HomeController@getCities');
-Route::get('ifcity/{city}', 'HomeController@ifCity');
+Route::get('ifcity/{city?}', 'HomeController@ifCity');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
@@ -237,8 +237,9 @@ Route::post('customer/update/webnotification', array('as' => 'customer.updateweb
 Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','uses' => 'CustomerController@addHealthInfo'));
 Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
 Route::group(array('before' => 'device'), function() {
-	Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
+    Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
 });
+
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
 Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
 Route::get('app/forceupdate', array('as' => 'customer.forceupdate','uses' => 'CustomerController@forceUpdate'));
@@ -294,6 +295,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('getwalletdetails/{limit?}/{offset?}',  array('as' => 'customer.getWalletDetails','uses' => 'CustomerController@getWalletDetails'));
 
 	Route::post('reportareview', array('as' => 'finderdetails.reportareview','uses' => 'FindersController@reportReview'));
+    
+    Route::post('passcapture', 'PassController@passCapture');
 
 });
 
@@ -1299,6 +1302,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('listcheckins', 'CustomerController@listCheckins');
 
 	Route::get('claimexternalcoupon/{_id}', 'CustomerController@claimExternalCoupon');
+	Route::get('claimexternalcouponrewards/{_id}', 'CustomerController@claimExternalCouponRewards');
 
 	Route::get('markcheckin/{finder_id}', 'CustomerController@markCheckin');
 
@@ -1338,6 +1342,9 @@ Route::post('addServiceMultipleSessionPack','DebugController@addServiceMultipleS
 
 Route::get('orderOldSuccessDateToNew', 'DebugController@orderOldSuccessDateToNew');
 
+Route::get('test', 'CustomerController@test');
+Route::get('addTypeOfPpsVendor', 'DebugController@addTypeOfPpsVendor');
+
 Route::post('generatefreesp', 'TransactionController@generateFreeSP');
 Route::get('paidAndFreeFItcash', 'DebugController@paidAndFreeFItcash');
 
@@ -1350,11 +1357,47 @@ Route::get('testoffers', 'FindersController@testOffer');
 // Route::get('testmultifit', 'FindersController@testMultifit');
 // Route::get('testmm', 'DebugController@testmailMsg');
 // Route::post('loyaltyAppropriation', 'CustomerController@loyaltyAppropriation');
-Route::post('customer/loyaltyAppropriation', 'CustomerController@loyaltyAppropriation');
+Route::match(array('PUT', 'POST'), 'customer/loyaltyAppropriation', 'CustomerController@loyaltyAppropriation');
 Route::get('home/getLoyaltyAppropriationConsentMsg/{customer_id}/{order_id}','HomeController@getLoyaltyAppropriationConsentMsg');
 Route::get('testSpinResult/{number}','EmailSmsApiController@testSpinResult');
 Route::post('spinthewheelreg','EmailSmsApiController@spinTheWheelReg');
+Route::match(array('PUT', 'POST'), 'customer/remaincurrentloyalty', 'CustomerController@fitSquadUpgradeRemainLoyalty');
 Route::get('fitpassComparison', 'DebugController@fitpassComparison');
 Route::get('fixCustomerQuantity', 'DebugController@fixCustomerQuantity');
 Route::get('fixFinanceCustomerQuantity', 'DebugController@fixFinanceCustomerQuantity');
 Route::get('fixAmountCustomer', 'DebugController@fixAmountCustomer');
+Route::get('goldsFitcashMessage', 'DebugController@goldsFitcashMessage');
+Route::get('getBrandFinderList', 'DebugController@getBrandFinderList');
+Route::post('fitnessforce/orderdetails', 'DebugController@getFFOrderDetails');
+
+// Route::post('passcapture', 'TransactionController@classPassCapture');
+Route::get('listpass/{pass_type?}', 'PassController@listPasses');
+Route::post('razorpay/subscribe', 'RazorpayController@createSubscription');
+Route::post('razorpay/storepaymentdetails', 'RazorpayController@storePaymentDetails');
+Route::post('passsuccess', 'PassController@passSuccess');
+Route::get('orderpasshistory',  array('as' => 'customer.orderpasshistory','uses' => 'PassController@orderPassHistory'));
+Route::get('passtermscondition', 'PassController@passTermsAndCondition');
+Route::get('passfaq', 'PassController@passFrequentAskedQuestion');
+Route::post('razorpaywebhooks', 'RazorpayController@razorpayWebhooks');
+
+Route::get('brandwebsite/home/{brand_id}', 'BrandsController@getBrandWebsiteHome');
+Route::get('brandwebsite/aboutus/{brand_id}', 'BrandsController@getBrandWebsiteAboutUs');
+Route::get('brandwebsite/programs/{brand_id}', 'BrandsController@getBrandWebsitePrograms');
+Route::get('brandwebsite/hiit/{brand_id}', 'BrandsController@getBrandWebsiteHiit');
+Route::get('brandwebsite/contactus/{brand_id}', 'BrandsController@getBrandWebsiteContactUs');
+Route::get('brandwebsite/ownfranchise/{brand_id}', 'BrandsController@getBrandWebsiteOwnFranchise');
+Route::get('multifitDataMigration', 'DebugController@multifitDataMigration');
+
+Route::post('reliance/updateAppStepCount', 'RelianceController@updateAppStepCount');
+Route::post('reliance/updateservicestepcount', 'RelianceController@updateServiceStepCount');
+Route::get('reliance/getLeaderboard', 'RelianceController@getLeaderboard');
+Route::post('reliance/leaderboard', 'RelianceController@getLeaderboard');
+Route::post('customer/storedob', 'RelianceController@storeDob');
+Route::post('customer/enablereliancecampaign', 'CustomerController@enableRelianceCampaign');
+
+Route::get('nearbyvendors', 'CustomerController@getNearbyVendors');
+Route::get('migrateStepsToFirestore', 'DebugController@migrateStepsToFirestore');
+Route::get('testOnePassUser', 'DebugController@testOnePassUser');
+Route::get('homepostpasspurchase', 'PassController@homePostPassPurchaseData');
+Route::get('dynamicOnepassEMailSms', 'DebugController@dynamicOnepassEMailSms');
+Route::get('addFlagClasspassAvalible', 'DebugController@addFlagClasspassAvalible');

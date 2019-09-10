@@ -54,7 +54,5 @@ class Ratecard extends \Basemodel {
 						->where(function($query){$query->orWhere('expiry_date', 'exists', false)->orWhere('expiry_date', '>', new DateTime(date("d-m-Y",strtotime('-1 days', time()))));})
 						;
 	}
-	
-	
 
 }

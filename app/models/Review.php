@@ -42,14 +42,34 @@ class Review extends  \Basemodel {
 		return parent::getArrayableAppends();
 	}
 
-	protected $appends = array('customer');
+	protected $appends = array('customer', 'verified_tag');
 
 	public function getCustomerAttribute(){
 		$customer = Customer::where('_id',$this->customer_id)->first(array('name','picture'));
 		return $customer;
 	}
+    
+    public function getVerifiedTagAttribute(){
 
-	public function finder(){
+        if(empty($this->tag) || !is_string($this->tag)){
+            return (object)[];
+        }
+        $tag = strtolower($this->tag);
+
+        $verified_tag = (object)[];
+        
+        if(str_contains($tag, "_verified")){
+            $verified_tag->text2 = "Verified Fitternity booking";
+            $verified_tag->image = "https://b.fitn.in/verifieduser_review.png";
+        }
+
+        $verified_tag->text1 = ucwords(str_replace("_verified", "", $tag));
+
+        return $verified_tag;
+		
+	}
+
+    public function finder(){
 		return $this->belongsTo('Finder');
 	}
 

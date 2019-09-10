@@ -9,6 +9,10 @@ class Myreward extends \Basemodel {
 	public function setCustomerIdAttribute($value){
 		
 		$this->attributes['customer_id'] = intval($value);
-	}
+    }
+
+    public function rewardcategory(){
+		return $this->belongsTo('Rewardcategory', 'rewardcategory_id');
+    }
 	
 }

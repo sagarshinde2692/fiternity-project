@@ -72,7 +72,7 @@ class CommunicationsController extends \BaseController {
 												->where("communication_keys.$sender_class-$label", intval($key))
 												->first();
 
-				if(empty($transaction_data['surprise_fit_cash']) && !(isset($transaction_data['third_party_details']))){
+				if(!empty($transaction_data) && empty($transaction_data['surprise_fit_cash']) && !(isset($transaction_data['third_party_details']))){
 					
 					$transaction_data->surprise_fit_cash = $this->utilities->getFitcash($transaction_data->toArray());
 				}
@@ -318,6 +318,16 @@ class CommunicationsController extends \BaseController {
         $data['workout_article_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
         $data['download_app_link'] = Config::get('app.download_app_link');
         $data['diet_plan_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
+
+		$data['service_steps'] = 300;
+		if(isset($data['servicecategory_id']) && $data['servicecategory_id'] != ''){
+			Log::info("============================servicecategory_id");
+			$service_cat_steps_map = Config::get('health_config.service_cat_steps_map');
+			if(in_array($data['servicecategory_id'], array_keys($service_cat_steps_map))){
+				Log::info("============================steps yes");
+				$data['service_steps'] = $service_cat_steps_map[$data['servicecategory_id']];
+			}
+		}
 
 		return $data;
     }

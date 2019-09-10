@@ -693,7 +693,9 @@ class EmailSmsApiController extends \BaseController {
             if(!empty($decoded->customer)&&!empty($decoded->customer->referral_code))
             	$data['referral_code'] = $decoded->customer->referral_code;
             $data['customer_email'] = $decoded->customer->email;
-            $data['customer_phone'] = $decoded->customer->contact_no;
+            if(!empty($decoded->customer->contact_no)){
+                $data['customer_phone'] = $decoded->customer->contact_no;
+            }
         }
 
         if(isset($data['studio_name'])){
@@ -714,6 +716,14 @@ class EmailSmsApiController extends \BaseController {
 
             if(isset($order->city_id)){
                 $data['city_id'] = $order->city_id;
+            }
+            
+            if(isset($order->city_id)){
+                $data['phone'] = $order->customer_phone;
+            }
+            
+            if(isset($order->customer_name)){
+                $data['name'] = $order->customer_name;
             }
 
             if($data["capture_type"] == "renew-membership"){
@@ -758,6 +768,10 @@ class EmailSmsApiController extends \BaseController {
 
         if(isset($data['name']) && $data['name'] != ""){
             $data['customer_name'] = $data['name'];
+        }
+        
+        if(isset($data['fullname']) && $data['fullname'] != ""){
+            $data['customer_name'] = $data['fullname'];
         }
 
         if(isset($data['email']) && $data['email'] != ""){
@@ -953,7 +967,7 @@ class EmailSmsApiController extends \BaseController {
             'send_bcc_status'   => 1
         );
 
-        $capture_type = array('fitness_canvas','renew-membership','claim_listing','add_business', 'sale_pre_register_2018','walkthrough');
+        $capture_type = array('fitness_canvas','renew-membership','claim_listing','add_business', 'sale_pre_register_2018','walkthrough', 'multifit-franchisepage', 'multifit-contactuspage');
 
         if(in_array($data['capture_type'],$capture_type)){
 
@@ -963,6 +977,10 @@ class EmailSmsApiController extends \BaseController {
                     break;
                 case 'add_business':
                     $this->findermailer->addBusiness($data);
+                    break;
+                case 'multifit-franchisepage':
+                case 'multifit-contactuspage':
+                    $this->findermailer->multifitRequest($data);
                     break;
                 case 'sale_pre_register_2018':
                     $this->customersms->salePreregister($data);
@@ -1035,6 +1053,30 @@ class EmailSmsApiController extends \BaseController {
         }
 
         $resp  = array('status' => 200,'message'=>$message,'capture'=>$storecapture);
+
+        if(!empty($data['customer_name']) && !empty($data['customer_phone']) && !empty($data['customer_email']) && !empty($data['capture_type'])){
+
+            $captureData = [
+                'customer_name' => $data['customer_name'],
+                'customer_phone' => $data['customer_phone'],
+                'customer_email' => $data['customer_email'],
+                'capture_type' => $data['capture_type'],
+                'capture_id' => $storecapture['_id'],
+                'customer_id' => $storecapture['customer_id']
+            ];
+            if(!empty($data['gender'])) {
+                $capture['gender'] = $data['gender'];
+            }
+            Log::info('before checking decodeKioskVendorToken');
+            if(!empty($decodeKioskVendorToken->vendor) && !empty($decodeKioskVendorToken->vendor->location)) {
+                Log::info('decodeKioskVendorToken vendor and location exists');
+                $this->utilities->sendEnquiryToFitnessForce($captureData, $decodeKioskVendorToken->vendor, $decodeKioskVendorToken->vendor->location);
+            }
+            else {
+                $this->utilities->sendEnquiryToFitnessForce($captureData);
+            }
+            
+        }
 
         return Response::json($resp);
     }

@@ -1,3 +1,29 @@
+SetEnvIfNoCase Origin dev-api-hk.shoppoapp.com bad_bot
+
+order allow,deny
+deny from 43.250.165.159
+deny from 173.193.200.124
+deny from 43.241.144.166
+deny from 103.251.215.186
+deny from 110.164.157.24
+deny from 185.234.219.239
+deny from 79.101.41.129
+deny from 134.175.11.60
+deny from 61.238.241.166
+deny from 151.100.107.195
+deny from 194.36.173.3
+deny from 194.187.249.34
+deny from 52.77.62.162
+Deny from env=bad_bot
+deny from 118.24.48.113
+deny from 220.197.219.214
+deny from 199.116.118.191
+deny from 118.167.49.148
+deny from 118.89.44.26
+deny from 89.248.168.79
+deny from 118.25.71.229
+deny from 193.112.123.4
+allow from all
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews
@@ -18,12 +44,15 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
+    #RewriteCond %{HTTP_REFERER} shoppoapp.com [NC,OR]
+    #RewriteRule .* - [F]
 </IfModule>
 
 <IfModule mod_rewrite.c>
   Header set Access-Control-Allow-Origin "*"
   Header set Access-Control-Allow-Methods: "GET,POST,OPTIONS,DELETE,PUT"
-  Header set Access-Control-Allow-Headers: "Content-Type,Authorization,Client,Dev-Certificate,Device-Type,Device-Model,App-Version,Os-Version,Device-Token,Device-Id,Authorization-Vendor,Device-Serial,Mac-Address"
+  Header set Access-Control-Allow-Headers: "Content-Type,Authorization,Client,Dev-Certificate,Device-Type,Device-Model,App-Version,Os-Version,Device-Token,Device-Id,Authorization-Vendor,Device-Serial,Mac-Address,Source"
  
   RewriteEngine on
   RewriteBase /

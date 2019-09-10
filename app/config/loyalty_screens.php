@@ -142,6 +142,15 @@ return array(
     ],
     'receipt_message'=>'Please upload the membership receipt to claim your reward',
     'receipt_verification_message'=>'Your membership receipt is under verification. We will notify you post verification.',
-    'bookings_block_message'=>'To claim this reward, you need to have transactions on Fitternity app / website worth at least Rs. booking_amount'
+    'bookings_block_message'=>'To claim this reward, you need to have transactions on Fitternity app / website worth at least Rs. booking_amount',
+    'loyalty_reawrd_images'=>[
+        "https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
+        "https://b.fitn.in/loyalty/vouchers3/ZOMATO.png",
+        "https://b.fitn.in/external-vouchers1/JCB.png",
+        "https://b.fitn.in/external-vouchers1/epigamia.png",
+        "https://b.fitn.in/external-vouchers1/cleartrip.png",
+        "https://b.fitn.in/external-vouchers1/o2.png",
+        "https://b.fitn.in/external-vouchers1/book%20my%20show.png",
+    ]
 );
 ?>

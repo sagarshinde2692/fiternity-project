@@ -31,25 +31,25 @@ class DebugController extends \BaseController {
 
 	}
 
-    public function __call($method, $arguments){
+    // public function __call($method, $arguments){
 
-        $file = fopen("$method.txt","w+");
-        Log::info("Checking lock");
-        if(flock($file,LOCK_EX)){
-            Log::info("Lock aquired");
-            $return = $this->$method();
-            Log::info("releasing lock");
-            return $return;
+    //     $file = fopen("$method.txt","w+");
+    //     Log::info("Checking lock");
+    //     if(flock($file,LOCK_EX)){
+    //         Log::info("Lock aquired");
+    //         $return = $this->$method();
+    //         Log::info("releasing lock");
+    //         return $return;
             
-        }else{
+    //     }else{
 
-            return  "Error locking file!";
+    //         return  "Error locking file!";
         
-        }
+    //     }
 
-        fclose($file);
+    //     fclose($file);
         
-    }
+    // }
 
 
 	public function invalidFinderStats(){
@@ -8531,7 +8531,7 @@ public function yes($msg){
             
         $pt_collection = $mongoclient->selectDB ( Config::get ( "database.connections.$db.database" ) )->selectCollection ( $collection );
         // return $update_service_data;
-        $batch_update = new \MongoUpdateBatch($pt_collection);
+        $batch_update = new MongoUpdateBatch($pt_collection);
 
         foreach($update_data as $item){
             $batch_update->add($item); 
@@ -10547,6 +10547,64 @@ public function yes($msg){
         return "Done";
     }
 
+	function getFFOrderDetails() {
+		$reqBody = Input::all();
+		Log::info('inside getFFOrderDetails');
+		Log::info('getFFOrderDetails reqBody:: ', [$reqBody]);
+		return ['status' => 200, 'msg' => 'done'];
+	}
+    
+    public function addTypeOfPpsVendor(){
+
+		$destinationPath = public_path();
+		$fileName = "add_vendor_pps_type.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+
+		// return $csv_to_array;
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if(!empty($value['finder_id']) && !empty($value['type'])){
+					
+					$type_of_vendor = '';
+					if($value['type'] == 'Fitternity'){
+						$type_of_vendor  = 'fitternity_pps';
+					}else if($value['type'] == 'ABW PFC'){
+						$type_of_vendor  = 'abw_pps';
+					}else if($value['type'] == 'Capitation'){
+						$type_of_vendor  = 'capitation_pps';
+					}
+
+					Log::info($key);
+
+					$finder = Finder::find((int) $value['finder_id']);
+					if($finder){
+						$flags = $finder->flags;
+                        $flags['type_of_vendor'] = $type_of_vendor;
+                        $finder->flags = $flags; 
+						$finder->type_of_vendor_updated = new MongoDate();
+						$finder->update();
+					}
+
+					$vendor = Vendor::find((int) $value['finder_id']);
+					if($vendor){
+						$flags = $vendor->flags;
+                        $flags['type_of_vendor'] = $type_of_vendor;
+                        $vendor->flags = $flags; 
+						$vendor->type_of_vendor_updated = new MongoDate();
+						$vendor->update();
+					}
+				}
+
+			}
+		}
+
+		echo "done";	
+    }
 
     public function fixCustomerQuantity(){
 
@@ -10722,6 +10780,773 @@ public function yes($msg){
         
     }
 
+    public function createBulkCoupons(){
+        // Customer::$withoutAppends = true;
+        // $self_coupons = Customer::where('contact_no', "9819142148")->lists('referral_code');
+        // // return DB::table('orders')->where('status', '1')->where('customer_phone', "9819142148")->groupBy('coupon_code')->get();
+        // $customer_phone = "9819142148";
+        // return $orders_phone_number = Order::raw(function($query) use ($self_coupons, $customer_phone){
 
+        //     $aggregate = [
+        //         [
+        //             '$match'=>[
+        //                 'status'=>'1',
+        //                 'customer_phone'=>$customer_phone,
+        //                 // 'coupon_code'=>['$regex'=>new \MongoDB\BSON\Regex("/^[a-zA-Z0-9*]{*}$/")]
+        //                 // 'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{*}$"]
+        //                 // 'coupon_code'=>['$regex'=>"/^[a-zA-Z0-9*]{8}[rR]{1}$/"]
+        //                 'coupon_code'=>['$regex'=>"^[a-zA-Z0-9*]{8}[rR]$"]
+        //                 // 'coupon_code'=>['$exists'=>true]
+        //             ],
+        //         ],
+        //         [
+        //             '$project'=>[
+        //                 'coupon_uppercase'=>['$toUpper'=>'$coupon_code']
+        //             ]
+        //         ],
+        //         [
+        //             '$addFields'=>[
+        //                 'referral_type'=>[
+        //                     '$cond'=>[
+        //                         ['$in'=>['$coupon_uppercase', $self_coupons]],
+        //                         'self',
+        //                         'other'
+        //                     ]
+        //                 ]
+        //             ]
+        //         ],
+        //         [
+        //             '$group'=>[
+        //                 '_id'=>['referral_type'=>'$referral_type'],
+        //                 'count'=>['$sum'=>1]
+        //             ]
+        //         ]
+        //     ];
+
+        //     return $query->aggregate($aggregate);
+
+        // });
+
+        // $a=[];
+        // $utilities = new Utilities();
+        // for($i=1;$i<=200;$i++){
+        //     array_push($a, $utilities->generateRandomString(4));
+        // }
+        // return $a;
+
+        $codes = ["brpqcc8fit","brpvnpbfit","brp63zbfit","brp7t8sfit","brpquo5fit","brpmzjofit","brpm7c5fit","brp14hsfit","brpgt0bfit","brpgqnnfit","brptmy1fit","brpf7u5fit","brp2iapfit","brpiud4fit","brp2pa3fit","brpurwafit","brpkwm1fit","brpm9pgfit","brpvoibfit","brpvchyfit","brpvsndfit","brpm0iofit","brpqsskfit","brpkpv5fit","brpmi69fit","brpswpnfit","brpk8zgfit","brpkgegfit","brp91tvfit","brp2cksfit","brp4ddofit","brp28tpfit","brpq0yifit","brpxn6hfit","brpw6ygfit","brpncxwfit","brpeqrgfit","brp2c87fit","brpqlwtfit","brpuqilfit","brprg3ofit","brp4a60fit","brpg4h3fit","brpgezufit","brp5ra7fit","brp4jfvfit","brp5bo0fit","brp27ltfit","brpoohsfit","brpzntgfit","brprak8fit","brpok2tfit","brpcd1gfit","brpxhb3fit","brpt03vfit","brp8oowfit","brpd6pcfit","brpuitmfit","brpsduhfit","brpxxb9fit","brpbdq9fit","brpu2cnfit","brp3fjbfit","brp488hfit","brpfxu9fit","brpfnw8fit","brp1rqzfit","brpo180fit","brpfza9fit","brp1mx4fit","brp2hg6fit","brppoo4fit","brpmie1fit","brp6aa7fit","brp106qfit","brp2fqhfit","brpe0rgfit","brpnplqfit","brp61wwfit","brpql0cfit","brp3ee9fit","brpoohqfit","brppogsfit","brp37aifit","brp82yvfit","brprklyfit","brpmiucfit","brp3vp7fit","brp93hyfit","brpszoifit","brpn5aqfit","brpck9kfit","brpm8fefit","brps1cefit","brpk7rofit","brp2hwcfit","brpldbdfit","brpc0v0fit","brp56qhfit","brpqz1dfit","brp8hs0fit","brpj4f4fit","brpc7sefit","brpoor9fit","brp22nffit","brp2jf8fit","brpp6qgfit","brp6suefit","brpametfit","brprux3fit","brp1qiqfit","brpf9zhfit","brpcnwffit","brp6bnwfit","brphednfit","brp682gfit","brpugamfit","brpa7pcfit","brpy82dfit","brpi2uufit","brpprawfit","brp3ytlfit","brpc79jfit","brpfbz9fit","brpr9w2fit","brphmeffit","brpuhtdfit","brpjo88fit","brpfi5jfit","brphy4tfit","brp5dclfit","brpocugfit","brplri3fit","brpdxj7fit","brpeckyfit","brp0s7gfit","brpbczsfit","brpb3mhfit","brpgy25fit","brpaxlwfit","brpo4z1fit","brp2i9hfit","brpvtfvfit","brpmmcyfit","brpybqafit","brpfcrwfit","brpbt1mfit","brpqnjefit","brprifufit","brp1obwfit","brpiqs5fit","brpd43bfit","brpgulvfit","brp6drifit","brp6s4wfit","brpfnb7fit","brp6r18fit","brpgd4zfit","brp4x4hfit","brp28sifit","brp2ed9fit","brpr4ryfit","brpxwvdfit","brpk7lqfit","brpynyffit","brp30000fit","brp1jm3fit","brprflufit","brptz3lfit","brp3vk1fit","brpsffcfit","brpm03lfit","brpo20ofit","brp5et6fit","brpxfapfit","brpuvkofit","brpuoayfit","brpjuzcfit","brpafoxfit","brpfri3fit","brptiszfit","brpxm6vfit","brp2glwfit","brpb5l6fit","brptw4dfit","brpq4p1fit","brpjeyzfit","brp5h3zfit","brpzvyxfit","brpi4skfit","brpldhwfit","brpj22cfit","brpz7qqfit","brpbgrvfit","brpuqu0fit","brp7yz6fit","brpty3bfit","brp3wwofit","brpadltfit","brpgo6ffit"];
+
+        $coupons = [];
+        $id = Coupon::max('_id')+1;
+        foreach($codes as $code){
+            $coupon = [
+                "name" => "Burrp World Cup Campaign",
+                "code" => "burrpfit",
+                "description" => "Get Rs. 500 to use on 2 sessions using PPS. ",
+                "discount_percent" => 0,
+                "discount_max" => 250,
+                "discount_amount" => 500,
+                "burp" =>true,
+                "city_id" => "6",
+                "total_available" => 200,
+                "validity" => 0,
+                "success_message" => "",
+                "failure_message" => "",
+                "campaign_success_message" => "",
+                "campaign_discount_percent" => "",
+                "campaign_discount_max" => "",
+                "campaign_discount_amount" => "",
+                "ratecard_type" => [ 
+                    "workout session"
+                ],
+                "status" => "1",
+                "total_used" => 0,
+                "campaign_only" => "0",
+            ];
+            
+            $coupon['_id'] = $id++;
+            $coupon['code'] = $code;
+            array_push($coupons, $coupon);
+        }
+        Coupon::insert($coupons);
+        return $coupons;
+        
+    }
+
+	public function corporateCoupons(){
+
+		try{
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$corporateCoupons = ['gofit', 'hulfit', 'cokefit', 'olafit', 'acgfit', 'novafit', 'airtelfit', 'skfit', 'cokepps', 'bshfit', 'infineon', 'mckinsey', 'syncron', 'fitact'];
+			
+			$flags = array("flags" => array("corporate_coupon" => true));
+
+			Coupon::whereIn('code', $corporateCoupons)->update($flags);
+			Fitcashcoupon::whereIn('code', $corporateCoupons)->update($flags);
+			Wallet::whereIn('coupon', $corporateCoupons)->update($flags);
+
+			// $wallet = Wallet::where('flags.corporate_coupon',true)->lists('_id');
+			$wallet = Wallet::where('flags.corporate_coupon',true)->get()->toArray();
+
+			$walletIds = array();
+			$wallets = array();
+			foreach($wallet as $kw => $vw){
+				array_push($walletIds, $vw['_id']);
+				$wallets[$vw['_id']] = $vw;
+			}
+
+			$coupon = Coupon::where('flags.corporate_coupon',true)->get()->toArray();
+			$coupons = array();
+			foreach($coupon as $kc => $vc){
+				$coupons[$vc['code']] = $vc;
+			}
+
+			// return $walletIds;
+			// return $wallets;
+
+			Log::info("walletIds ::: ", [$walletIds]);
+			$totalOrder = Order::whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $walletIds)->count();
+			// return $totalOrder;
+			$limit = 50;
+			$offset = ceil($totalOrder / $limit);
+			Log::info("totalOrder :: ",[$totalOrder]);
+			Log::info("limit :: ",[$limit]);
+			Log::info("offset :: ",[$offset]);
+			// return;
+			for($i = 0;$i < $offset;$i++){
+				$skip = $i*$limit;
+				Log::info("skip :: ",[$skip]);
+				$order = Order::whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $walletIds)->skip($skip)->take($limit)->get();
+				
+				foreach($order as $k => $v){
+					$one_order = array();
+					$one_order = $v;
+					Log::info("order_id",[$one_order['_id']]);
+					$wallet_transaction_debit = $one_order['wallet_transaction_debit'];
+					
+					$flag_arr = array();
+					foreach($wallet_transaction_debit['wallet_transaction'] as $k1 => $v1){
+						if(in_array($v1['wallet_id'], $walletIds)){
+							$v1['coupon'] = $wallets[$v1['wallet_id']]['coupon'];
+							$v1['fitcashcoupon_flags'] = $wallets[$v1['wallet_id']]['flags'];
+							
+							array_push($flag_arr, 1);
+						}
+						$wallet_transaction_debit['wallet_transaction'][$k1] = $v1;
+					}
+					
+					$one_order['wallet_transaction_debit'] = $wallet_transaction_debit;
+					
+					if(!empty($flag_arr) && in_array(1, $flag_arr)){
+						$one_order['corporate_coupon'] = true;
+					}
+				
+					$one_order->update();
+				}
+			}
+
+			$totalOrder1 = Order::whereIn('coupon_code', $corporateCoupons)->count();
+			// return $totalOrder1;
+			$limit1 = 50;
+			$offset1 = ceil($totalOrder1 / $limit1);
+			Log::info("totalOrder1 :: ",[$totalOrder1]);
+			Log::info("limit1 :: ",[$limit1]);
+			Log::info("offset1 :: ",[$offset1]);
+			// return;
+			for($i1 = 0;$i1 < $offset1;$i1++){
+				$skip1 = $i1*$limit1;
+				Log::info("skip1 :: ",[$skip1]);
+				$order1 = Order::whereIn('coupon_code', $corporateCoupons)->skip($skip1)->take($limit1)->get();
+				
+				foreach($order1 as $k11 => $v11){
+					$one_order11 = array();
+					$one_order11 = $v11;
+					Log::info("order_id11",[$one_order11['_id']]);
+					// Log::info("coupon11 :: ",[$coupons[$v11['coupon_code']]]);
+					$one_order11['coupon_flags'] = $coupons[$v11['coupon_code']]['flags'];
+					$one_order11['corporate_coupon'] = true;
+					$one_order11->update();
+					// exit();
+				}
+			}
+
+			$totalOrder2 = Order::where('corporate_coupon', 'exists', true)->where('corporate_coupon', true)->whereIn('type', ['booktrials', 'workout-session'])->lists('_id');
+			Log::info("totalOrder2 :: ",[$totalOrder2]);
+			$return = array();
+			$return['corporate_coupon'] = true;
+			Booktrial::whereIn('order_id',$totalOrder2)->update($return);
+
+			$return = array('status'=>'done');
+		}catch(Exception $exception){
+			$message = array(
+				'type'    => get_class($exception),
+				'message' => $exception->getMessage(),
+				'file'    => $exception->getFile(),
+				'line'    => $exception->getLine(),
+			);
+			Log::error($exception);
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+		print_r($return);
+    } 
+    
+    public function rewardDistributionAndClaim(){
+        
+        Order::$withoutAppends = true;
+        
+        $cashback_orders = Order::active()->where('reward_type', 'cashback')->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->where('success_date', '<', new DateTime('2019-06-11'))->lists('_id');
+
+        // Wallet::$withoutappends = true;
+
+        $wallet_ids = Wallet::whereIn('order_id', $cashback_orders)->where('type', 'CASHBACK')->lists('_id');
+
+        // return Order::active()->whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)->lists('amount_customer');
+        return Order::active()->whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)->sum('amount_customer');
+
+        // $cashback_wallet_orders = Order::whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)
+
+        return $mixed_rewards_orders = Order::active()->where('reward_type', 'mixed')->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->where('success_date', '<', new DateTime('2019-06-11'))->count();
+        
+        return $total_orders = Order::active()->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->count();
+
+        $total_rewards = Order::active()->whereNotIn('reward_ids', [[], null])->where('type', 'memberships')->where('routed_order', '!=', '1')->where('success_date', '>', new DateTime('2018-12-10'))->with(['customerreward'=>function($query){
+            $query->with(['rewardcategory'=>function($query){
+                $query->select('title');
+            }])->select('rewardcategory_id', 'claimed');
+        }])->remember(600)->get(['customer_reward_id','customerreward']);
+
+        $dist = [];
+
+        foreach($total_rewards as $order){
+
+            if(empty($dist[$order['customerreward']['rewardcategory_id']])){
+                $dist[$order['customerreward']['rewardcategory_id']] = [
+                    "total"=>0,
+                    "claimed"=>0,
+                    "title"=>$order['customerreward']['rewardcategory']['title'],
+                ];
+            }
+
+            $dist[$order['customerreward']['rewardcategory_id']]['total']++;
+
+            if(!empty($order['customerreward']['claimed'])){
+                $dist[$order['customerreward']['rewardcategory_id']]['claimed']++;
+            }
+
+
+        }
+
+        
+        // return $dist = array_values($dist);
+        $dist['generic']  = [
+            "total"=> 0,
+            "claimed"=> 0,
+            "title"=> "Fitness generic"
+        ];
+        // array_push($dist, [
+            // return $dist;
+        //     "total"=> 0,
+        //     "claimed"=> 0,
+        //     "title"=> "Fitness generic"
+        // ]);
+        // return $dist['1000'];
+        foreach($dist as $key => $value){
+
+            if(preg_match('/Fitness/', $value['title']) && $key != 'generic'){
+                // return "Ads";
+                $dist['generic']['total']+= $value['total'];
+                $dist['generic']['claimed']+= $value['claimed'];
+                unset($dist[$key]);
+            }
+        }
+
+        return $dist;
+    
+	}
+	
+	public function goldsFitcashMessage(){
+
+		$destinationPath = public_path();
+		$fileName = "gold_fitcash.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$customersms = new CustomerSms();
+
+		$csv_to_array = $this->csv_to_array($filePath);
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if(!empty($value['customer_phone']) && !empty($value['customer_name'])  && !empty($value['amount'])){
+					Log::info('Key :: '.$key);
+					$customersms->goldFitcash($value);
+				}
+			}
+		}
+
+		echo "done";	
+	}
+
+	public function addAmountTransferToVendorBreakup(){
+
+		try{
+			ini_set('max_execution_time', 0);
+			
+			Order::$withoutAppends=true;
+			
+			$totalOrder = Order::whereNotIn('type', ['product', 'wallet'])
+			->where(function($query){ 
+				return $query->orWhere('status', '1')
+				->orWhere(function($query){
+					$query->where('pay_later', true)
+					->where('qrcodepayment', true);
+				});
+			})
+			->whereIn('payment_mode', ['paymentgateway', 'cod'])
+			->where('amount_transferred_to_vendor_breakup', 'exists', false)
+			->where('status', '1')->count();
+			Log::info("totalOrder ::", [$totalOrder]);
+
+			$limit = 10000;
+			$offset = ceil($totalOrder / $limit);
+			Log::info("totalOrder :: ",[$totalOrder]);
+			Log::info("limit :: ",[$limit]);
+			Log::info("offset :: ",[$offset]);
+			// return;
+			for($i = 0;$i < $offset;$i++){
+				$skip = $i*$limit;
+				Log::info("skip :: ",[$skip]);
+
+                $orders = Order::whereNotIn('type', ['product', 'wallet'])
+                ->where('amount_transferred_to_vendor', 'exists', true)
+                ->where('amount_transferred_to_vendor', '!=', 0)
+				->where(function($query){ 
+					return $query->orWhere('status', '1')
+					->orWhere(function($query){
+						$query->where('pay_later', true)
+						->where('qrcodepayment', true);
+					});
+				})
+				->whereIn('payment_mode', ['paymentgateway', 'cod'])
+				->where('amount_transferred_to_vendor_breakup', 'exists', false)
+				->where('status', '1')->skip($skip)->take($limit)->orderBy('_id', 'desc')->get(['amount_transferred_to_vendor']);
+				// return $orders;
+				$updates = [];
+				foreach($orders as $k => $x){
+					
+					if(!empty($x['amount_transferred_to_vendor'])){
+
+						Log::info("order_id :: ",[$x['_id']]);
+
+						$amount_transferred_to_vendor = $x['amount_transferred_to_vendor'];
+						$base_amount = ($amount_transferred_to_vendor * 100) / 118;
+						$gst_amount = $base_amount * 0.18;
+
+						$arr = array();
+						$arr['base_amount'] = intval(round($base_amount));
+						$arr['gst_amount'] = intval(round($gst_amount));
+						// return $arr;
+
+						array_push($updates, [
+							"q"=>['_id'=> $x['_id']],
+							"u"=>[
+								'$set'=>[
+									'amount_transferred_to_vendor_breakup' => $arr
+								]
+							],
+							'multi' => false
+						]);
+					}
+
+				}
+					
+				$update = $this->batchUpdate('mongodb', 'orders', $updates);
+
+			}
+		
+			$return = array('status'=>'done');
+		}catch(Exception $exception){
+			$message = array(
+				'type'    => get_class($exception),
+				'message' => $exception->getMessage(),
+				'file'    => $exception->getFile(),
+				'line'    => $exception->getLine(),
+			);
+			Log::error($exception);
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+		
+		print_r($return);
+	}
+	
+	public function manualToSession(){
+		$ratecardIds = [81914,123404,29808,2164,40655,82774,82777,82778,104504,113859,113863,143698,143699,16890,96927,17367,17634,18526,18528,406,1728,31155,56275,126283,31385,31386,31390,31391,36667,36678,95715,95720,95725,43047,95729,44662,44666,44670,145379,53758,54291,54390,83307,83309,58968,83310,102815,102816,102817,119063,114689,137448,137449,137450,137451,130861,62953,143587,64026,64029,64032,69920,69921,69922,71824,71825,3229,3239,100833,100842,101469,101486,79528,79531,79534,79537,45798,81595,45800,45801,45811,45812,45813,98137,98158,83981,18638,86001,86009,86014,86018,86024,87698,18641,134981,94344,89920,103509,103512,103515,104494,104496,92495,92496,92937,92938,92941,104498,104500,145072,145074,145075,117542,144212,96332,96337,96342,96347,96354,96358,96362,96366,96416,96420,96424,96430,96439,96443,96447,96451,96458,96462,96466,96470,96476,96480,96484,96488,96494,96498,96502,96506,10441,110431,110434,110435,110437,110438,110458,110459,108815,145198,140588,140600,105434,105435,115035,141020,141025,141033,142807,142813,109015,132443,125442,125453,132006,132132,136421,140668,140675,134657,107368,104588,104594,106248,106250,106581,106582,106583,108106,89506,109727,109728,90079,127059,127061,121442,134826,137108,115937,117259,117260,89226,89239,122231,122236,122239,122242,122245,122408,102280,144277,126807,59234,95236,95238,136569,136647,144599,95340,95341,132817,98554,98559,98560,114828,113570,113575,127266,127269,127272,73828,6739,6740,6741,6742,74648,74649,74650,74651,144219,141289,141841,141842,142624,88901,88907,143160,143082,143626,104492,143973,143996,144010];
+		
+		$return = array();
+        $return['type'] = "extended validity";
+        $return['manually_mem_to_sp'] = true;
+
+		$update1 = Ratecard::whereIn('_id',$ratecardIds)->update($return);
+		$update2 = RatecardAPI::whereIn('_id',$ratecardIds)->update($return);
+
+		return [$update1, $update2];
+    }
+    
+    public function multifitDataMigration(){
+         $stageVendors = StageVendor::where('brand_id', 88)->where("website_membership", 'exists', true)->get(['website_membership']);
+
+         foreach($stageVendors as $vendor){
+            //  return $vendor;
+             Finder::where('_id', $vendor['_id'])->update(['website_membership'=>$vendor['website_membership']]);
+             Vendor::where('_id', $vendor['_id'])->update(['website_membership'=>$vendor['website_membership']]);
+            //  return;
+         }
+	}
+	
+	public function hyperLocal(){
+		$destinationPath = public_path();
+		$fileName = "vendor.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+		
+		$cat_ali = ["ft" => 'Cross functional'];
+
+		$finArr = array();
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if( !empty($value['_id']) && !empty($value['category']) && !empty($value['location']) ){
+					
+					$location = Location::where('name', $value['location'])->first(['_id']);
+					$value['location_id'] = $location['_id'];
+
+					// return $value;
+
+					$cat = explode(",",$value['category']);
+					if(!empty($cat)){
+						foreach($cat as $ck => $cv){
+							
+							$cv = trim(strtolower($cv));
+							if($cv == 'ft'){
+								$cv = $cat_ali[$cv];
+							}
+							
+							if($cv == 'gym' || $cv == 'gyms'){
+								$id['_id'] = 5;
+							}else{
+								$id = Findercategory::where('name', 'LIKE', '%'.$cv.'%')->first(['_id']);
+							}
+							$cat_id = $id['_id'];
+							$loc_cat = $value['location_id']."-".$cat_id; 
+														
+							if (array_key_exists($loc_cat,$finArr)){
+								if(!in_array($value['_id'], $finArr[$loc_cat])){
+									$finArr[$loc_cat][] = (int)$value['_id'];
+								}
+							}else{
+								$finArr[$loc_cat][] = (int)$value['_id'];
+							}
+							
+
+						}
+					}
+				}
+			}
+		}
+		return $finArr;
+	}
+
+	public function ppsRepeat(){
+		try{
+			ini_set('max_execution_time', 0);
+			
+			Order::$withoutAppends=true;
+			
+			$totalOrder = Order::where('type', 'workout-session')
+			->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
+			->where('pps_repeat', 'exists', false)
+			->where('status', '1')->count();
+			
+			$limit = 500;
+			$offset = ceil($totalOrder / $limit);
+			Log::info("totalOrder :: ",[$totalOrder]);
+			Log::info("limit :: ",[$limit]);
+			Log::info("offset :: ",[$offset]);
+			// return;
+			for($i = 0;$i < $offset;$i++){
+				$skip = $i*$limit;
+				Log::info("skip :: ",[$skip]);
+
+                $orders = Order::where('type', 'workout-session')
+				->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
+				->where('pps_repeat', 'exists', false)
+				->where('status', '1')->skip($skip)->take($limit)->orderBy('_id', 'desc')->get(['_id','customer_phone', 'created_at']);
+				// return $orders;
+				$updates = [];
+				foreach($orders as $k => $x){
+					
+					$count = Order::where('customer_phone', $x['customer_phone'])
+						->where('coupon_code', '!=', 'FIRSTPPSFREE')
+						->where('type', 'workout-session')
+						->where('created_at', '>', new DateTime( date("d-m-Y 00:00:00", strtotime( '20-04-2018' )) ))
+						->where('status', '1')
+						->where('created_at', '<', new DateTime( date("d-m-Y H:i:s", strtotime( $x['created_at'] )) ))
+						->where('_id', '!=', $x['_id'])
+						->count();
+
+					Log::info("order_id :: ",[$x['_id']]);
+					Log::info("customer_phone :: ",[$x['customer_phone']]);
+					Log::info("created_at :: ",[$x['created_at']]);
+
+					if($count > 0){
+						array_push($updates, [
+							"q"=>['_id'=> $x['_id']],
+							"u"=>[
+								'$set'=>[
+                            		'pps_repeat'=>true 
+                                ]
+							],
+							'multi' => false
+						]);
+					}
+					
+					// return $updates;
+
+				}
+
+				if(count($updates) > 0){
+					$update = $this->batchUpdate('mongodb', 'orders', $updates);
+				}	
+				
+
+			}
+		
+			$return = array('status'=>'done');
+		}catch(Exception $exception){
+			$message = array(
+				'type'    => get_class($exception),
+				'message' => $exception->getMessage(),
+				'file'    => $exception->getFile(),
+				'line'    => $exception->getLine(),
+			);
+			Log::error($exception);
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+		
+		print_r($return);
+    }
+
+
+    public function migrateStepsToFirestore(){
+        // return "asd";
+        $i = 0;
+        while(true){
+            
+            $steps_aggregate = FitnessDeviceData::raw(function($query) use ($i){
+                $limit = 100000;
+                $aggreagte = [
+                    [
+                        '$match'=>[
+                            // 'customer_id'=>87977,
+                            'status'=>'1'
+                        ]
+                        ],
+                    [
+                        '$addFields'=>[
+                           'foot_steps'=>[
+                               '$cond'=>[
+                                    [
+                                       '$eq'=>['$type', 'steps']
+                                    ] 
+                                    ,'$value', 
+                                    0
+                                ]
+                            ],
+                           'service_steps'=>[
+                               '$cond'=>[
+                                   [
+                                       '$eq'=>['$type', 'service_steps']
+                                    ],
+                                   '$value', 
+                                   0
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        '$group'=>[
+                            '_id'=>'$customer_id',
+                            'total_steps'=>['$sum'=>'$value'],
+                            'steps'=>['$sum'=>'$foot_steps'],
+                            'service_steps'=>['$sum'=>'$service_steps']
+                        ]
+                    ],
+                    [
+                        '$skip'=>$i*$limit
+                    ],
+                    [
+                        '$limit'=>$limit
+                    ],
+                    [
+                        '$lookup' => [
+                            'from' => 'customers',
+                            'localField' => '_id',
+                            'foreignField' => '_id',
+                            'as' => 'customer'
+                        ]
+                    ],
+                    [
+                        '$addFields'=>[
+                            'city' => ['$arrayElemAt' => ['$customer.reliance_city',0]],
+                            'name' => ['$arrayElemAt' => ['$customer.name',0]],
+                            'location' => ['$arrayElemAt' => ['$customer.reliance_location',0]],
+                            'external_reliance' => ['$arrayElemAt' => ['$customer.external_reliance',0]],
+                            'customer_id' => '$_id',
+                            'steps_today' => 0,
+                            'service_steps_today' => 0,
+                        ]
+                    ],
+                    // [
+                    //     '$match'=>[
+                    //         'external_reliance'=>['$ne'=>true]
+                    //     ]
+                    // ],
+                    [
+                        '$addFields'=>[
+                            'external_reliance'=>['$ifNull'=>['$external_reliance', false]]
+                        ]
+                        ],
+                    [
+                        '$project'=>[
+                            'customer'=>0
+                        ]
+                    ],
+                    [
+                        '$group'=>[
+                            '_id'=>'$external_reliance',
+                            'customers'=>['$push'=>'$$ROOT']
+                        ]
+                    ]
+
+
+                ];
+
+                return $query->aggregate($aggreagte);
+    
+            });
+
+            $steps_aggregate = $steps_aggregate['result'];
+
+            $result = [];
+
+            foreach($steps_aggregate as $x){
+                if($x['_id']){
+                    $result['non_reliance'] = $x['customers'];
+                }else{
+                    $result['reliance'] = $x['customers'];
+                }
+            }
+
+            return $result;
+
+            if(empty($steps_aggregate)){
+                break;
+            }
+
+        }    
+	}
+	
+	public function testOnePassUser(){
+		$utilities = new Utilities();
+
+		return $utilities->onepassHoldCustomer();
+		
+		return $onepassHoldCustomer;		
+	}
+
+	public function dynamicOnepassEMailSms(){
+		$destinationPath = public_path();
+		$fileName = "onepass_customers-test.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+		
+		$finArr = array();
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if( !empty($value['customer_name']) && !empty($value['customer_email']) && !empty($value['contact_number'])  && !empty($value['type'])){
+					
+					$data = array();
+					$data['customer_name'] = $value['customer_name'];
+					$data['customer_email'] = $value['customer_email'];
+					$data['customer_phone'] = $value['contact_number'];
+					$data['pass_type'] = $value['type'];
+					
+					$customermailer = new CustomerMailer();
+					$customermailer->onepassDynamic($data);
+
+					array_push($finArr, $data);
+					// $customersms = new CustomerSms();
+					// $customersms->onepassDynamic($value);
+				}
+			}
+		}
+		return $finArr;
+    }
+    
+    public function addFlagClasspassAvalible(){
+		ini_set('max_execution_time', 0);
+		Ratecard::$withoutAppends = true;
+
+		$integratedFinder = Finder::integrated()->lists('_id');
+
+		$integratedService = Service::integrated()->whereIn('finder_id', $integratedFinder)->lists('_id');
+
+		$ratecards = Ratecard::whereIn('service_id', $integratedService)
+			->whereIn('type', ['workout session'])
+			// ->take(1)
+			->get(['service_id', 'price', 'special_price']);
+		$updates = array();
+		foreach($ratecards as $ratecard){
+
+			$price = $ratecard['price'];
+			if(!empty($ratecard['special_price']) && $ratecard['special_price'] > 0){
+				$price = $ratecard['special_price'];
+			}
+
+			Log::info("ratecard_id", [$ratecard['_id']]);
+			Log::info("service_id", [$ratecard['service_id']]);
+			Log::info("price", [$price]);
+
+			if($price < 1001){
+				array_push($updates, [
+					"q"=>['_id'=> $ratecard['service_id']],
+					"u"=>[
+						'$set'=>[
+							'flags.classpass_available'=>true
+						]
+					],
+					'multi' => false
+	
+                ]);
+                break;
+			}
+
+			
+		}
+        // return $updates;
+		$this->batchUpdate('mongodb2', 'vendorservices', $updates);
+		$this->batchUpdate('mongodb', 'services', $updates);
+        // return count($ratecard);
+        return "Done";
+	}
 }
-

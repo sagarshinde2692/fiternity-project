@@ -623,7 +623,7 @@ class OrderController extends \BaseController {
             $data['service_duration'] = (isset($data['service_duration']) && $data['service_duration'] != "") ? $data['service_duration'] : "";
         }
 
-        $orderid 			=	Order::max('_id') + 1;
+        $orderid 			=	Order::maxId() + 1;
         $data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
         if(trim(Input::json()->get('preferred_starting_date')) != '' && trim(Input::json()->get('preferred_starting_date')) != '-'){
             $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
@@ -1496,7 +1496,7 @@ class OrderController extends \BaseController {
             array_set($data, 'reward_ids', $rewardoffers);
         }
 
-        $orderid = Order::max('_id') + 1;
+        $orderid = Order::maxId() + 1;
 
         $code = $orderid.str_random(8);
 
@@ -1776,106 +1776,6 @@ class OrderController extends \BaseController {
         return Response::json($resp);
     }
 
-
-    public function autoRegisterCustomer($data){
-
-        $customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
-
-        if(!$customer) {
-
-            $inserted_id = Customer::max('_id') + 1;
-            $customer = new Customer();
-            $customer->_id = $inserted_id;
-            $customer->name = ucwords($data['customer_name']) ;
-            $customer->email = $data['customer_email'];
-            $customer->dob =  isset($data['dob']) ? $data['dob'] : "";
-            $customer->gender =  isset($data['gender']) ? $data['gender'] : "";
-            $customer->fitness_goal = isset($data['fitness_goal']) ? $data['fitness_goal'] : "";
-            $customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-            $customer->password = md5(time());
-
-            if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
-                $customer->contact_no = $data['customer_phone'];
-            }
-
-            /*if(isset($data['customer_address'])){
-
-                if(is_array($data['customer_address']) && !empty($data['customer_address'])){
-
-                    $customer->address = implode(",", array_values($data['customer_address']));
-                    $customer->address_array = $data['customer_address'];
-
-                }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
-
-                    $customer->address = $data['customer_address'];
-                }
-
-            }*/
-
-            $customer->identity = 'email';
-            $customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
-            $customer->status = "1";
-            $customer->ishulluser = 1;
-            $customer->save();
-
-            return $inserted_id;
-
-        }else{
-
-            $customerData = [];
-
-            try{
-
-                if(isset($data['dob']) && $data['dob'] != ""){
-                    $customerData['dob'] = trim($data['dob']);
-                }
-
-                if(isset($data['fitness_goal']) && $data['fitness_goal'] != ""){
-                    $customerData['fitness_goal'] = trim($data['fitness_goal']);
-                }
-
-                if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
-                    $customerData['contact_no'] = trim($data['customer_phone']);
-                }
-
-                if(isset($data['otp']) &&  $data['otp'] != ""){
-                    $customerData['contact_no_verify_status'] = "yes";
-                }
-
-                if(isset($data['gender']) && $data['gender'] != ""){
-                    $customerData['gender'] = $data['gender'];
-                }
-
-                /*if(isset($data['customer_address'])){
-
-                    if(is_array($data['customer_address']) && !empty($data['customer_address'])){
-
-                        $customerData['address'] = implode(",", array_values($data['customer_address']));
-                        $customerData['address_array'] = $data['customer_address'];
-
-                    }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
-
-                        $customerData['address'] = $data['customer_address'];
-                    }
-
-                }*/
-
-                if(count($customerData) > 0){
-                    $customer->update($customerData);
-                }
-
-            } catch(ValidationException $e){
-
-                Log::error($e);
-
-            }
-
-            return $customer->_id;
-        }
-
-    }
-
-
     public function buyArsenalMembership(){
 
         $data			=	Input::json()->all();
@@ -1976,6 +1876,24 @@ class OrderController extends \BaseController {
             unset($orderdata->preferred_starting_date);
         }
 
+        if(!empty($orderdata->type) && $orderdata->type=='events' && !empty($orderdata->event_start_date)){
+            $event_start_date = $orderdata->event_start_date['date'];
+            $event_end_date = $orderdata->event_end_date['date'];
+            $data_time = [];
+            $data_time['start']['date'] = date('d M, Y', strtotime($event_start_date));
+            $data_time['start']['time'] = date('h:i A', strtotime($event_start_date));
+        
+            $data_time['end']['date'] = date('d M, Y',strtotime($event_end_date));
+            $data_time['end']['time'] = date('h:i A', strtotime($event_end_date));
+            
+            $orderdata->data_time = $data_time;
+            $orderdata->subscription_code = $orderdata['_id'];
+
+            $event_success = EventSuccess::where('city_id', (string)$orderdata['city_id'])->first();
+            $orderdata->top_text = $event_success['top_text'];
+            $orderdata->footer_text = $event_success['footer_text'];
+            $orderdata->cover_image = $event_success['cover_image'];
+        }
         if(!$orderdata){
             return $this->responseNotFound('Order does not exist');
         }

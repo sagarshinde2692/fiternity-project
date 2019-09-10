@@ -1,6 +1,5 @@
 <?php
 use Illuminate\Support\Facades\Config;
-
 /** 
  * ModelName : Service.
  * Maintains a list of functions used for Service.
@@ -143,7 +142,9 @@ class Service extends \Basemodel{
                 $offers  = [];
 
 
-
+				if(isset($value['type']) && $value['type'] == 'workout session'){
+					$value['remarks'] = $$value['remarks']." (100% Cashback)";
+				}
 
 				$ratecard = [
 				'order'=> (isset($value['order'])) ? $value['order'] : '0',
@@ -217,6 +218,16 @@ class Service extends \Basemodel{
 			// 						->toArray();
 
 			$serviceoffers = Offer::getActiveV1('vendorservice_id', intval($this->_id), $finder)->toArray();
+			$workoutSession = [];
+			$extendedRatecards = [];
+			foreach ($ratecardsarr as $key => $value) {
+				if($value['type']=='workout session'){
+					array_push($workoutSession, $value['_id']);
+				}
+				if($value['type']=='extended validity'){
+					array_push($extendedRatecards, $value['_id']);
+				}
+			}
 			foreach ($ratecardsarr as $key => $value) {
                 
                 $days = getDurationDay($value);
@@ -233,11 +244,12 @@ class Service extends \Basemodel{
 				// }
 				
             	$ratecardoffers 	= 	[];
-									// Log::info($serviceoffers);
+				// Log::info($serviceoffers);
+				//&& !empty($workoutSession) && empty($extendedRatecards)
+				//Log::info('workout sessions and extended ratecardsL:::::::::', [$ratecardsarr, $workoutSession, $extendedRatecards]);
                 if(!empty($value['_id']) && isset($value['_id'])){
 					
 					$studioExtValidity = (!in_array($this->servicecategory_id, Config::get('app.non_flexi_service_cat', [111, 65, 5]))) && (!empty($this->batches) && count($this->batches)>0) && in_array($days, [30, 90]) && (!empty($value['duration_type']) && $value['duration_type']=='session' && !empty($value['duration']));
-
 
 					if(!empty($studioExtValidity) && $studioExtValidity && ($value['type']!='extended validity')){
 						$numOfDays = (in_array($value['validity_type'], ['month', 'months']))?$value['validity']*30:$value['validity'];
@@ -299,12 +311,10 @@ class Service extends \Basemodel{
 						}
                         
                         Log::info('setting  slots for 13901');
-						if(in_array($finder->_id, [13901])){
-                            
-                            $ratecardoffer['offer_text']    =  "";
                         
-                        }else{
-							$orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
+                        if(!in_array($finder->_id, [13901])){
+                            
+                            $orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
 							if(isset($orderVariable["available_slots_end_date"]) && time() >= $orderVariable["available_slots_end_date"]){
 								$futureExpiry = (date('d',$orderVariable["end_time"])-intval(date('d', time())));
 								$ratecardoffer['offer_text']    =  ($difference->days == 1 || $futureExpiry == 0) ? "Expires Today" : (($difference->days > 7 || $difference->days == 0) ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
@@ -313,7 +323,8 @@ class Service extends \Basemodel{
 									$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
 								}
 							}
-						}
+                        
+                        }
 
 						if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
 
@@ -365,7 +376,7 @@ class Service extends \Basemodel{
 
                 // if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  ){
                 if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  && isFinderIntegrated($finder) && isServiceIntegrated($this)){
-                	
+					
                     $value['special_price'] = $ratecardoffers[0]['price'];
 
                     ($value['price'] == $ratecardoffers[0]['price']) ? $value['special_price'] = 0 : null;
@@ -394,6 +405,9 @@ class Service extends \Basemodel{
                 if($value["type"] == "workout session"){
                    $value[ "button_color"] = Config::get('app.ratecard_button_color');
 				   $value[ "pps_know_more"] = true;
+				   $value['pps_title'] = "Pay Per Session";
+				   $value['title'] = '1 Workout';
+				   //unset($value['remarks']);
 				}
 
                 if($value['type'] == 'membership' && !empty($GLOBALS['finder_commission'])){
@@ -430,12 +444,16 @@ class Service extends \Basemodel{
 					}
 				}
 
+				if(intval($value['validity']) == 1 && $value['validity_type'] == 'months') {
+					$value['validity_type'] = "month";
+				}
+
 				$offer_price = (!empty($value['special_price'])) ? $value['special_price'] : 0 ;
 				$cost_price = (!empty($value['price'])) ? $value['price'] : 0 ;
 
                 if($offer_price !== 0 && $offer_price < $cost_price && !in_array($value['type'], ['workout session', 'trial']) && !(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable')){
 
-                	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
+                	$offf_percentage = floor((($cost_price - $offer_price)/$cost_price)*100);
 
                     // if($offf_percentage < 50){
                     //     $value['price'] = 2*$value['special_price'];
@@ -472,14 +490,32 @@ class Service extends \Basemodel{
                     $value['duration_type'] = 'sessions';
                 }
 
-                if(!empty($value['type']) && $value['type'] == "workout session"){
+                if(isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
                     if(!empty($value['offers'][0]['remarks'])){
-                        $value['offers'][0]['remarks'] = "Book multiple sessions at this price".(!empty($value['offers'][0]['remarks']) ? $value['offers'][0]['remarks'] : "");;
+                        $value['offers'][0]['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
+                        $value['remarks_imp'] =  true;
                     }else{
-                        $value['remarks'] =  "Book multiple sessions at this price. ".(!empty($value['remarks']) ? $value['remarks'] : "");
+                        $value['remarks'] =  "Get 100% Instant Cashback, Use Code: FIT100";
+                        $value['remarks_imp'] =  true;
                     }
                 }
 
+                if($this->servicecategory_id == 1 && $value['special_price'] == 99 && $value['type'] == "workout session" && isFinderIntegrated($finder) && isServiceIntegrated($this)){
+                    $value['remarks'] =  '';
+                    $value['remarks_imp'] =  true;
+				}else if(($offer_price == 99 || $value['price'] == 99 || $value['special_price'] == 99) && $value['type'] == "workout session" && !empty($finder['flags']['monsoon_campaign_pps']) && isFinderIntegrated($finder) && isServiceIntegrated($this)){
+                    $value['remarks'] =  '';
+                    $value['remarks_imp'] =  true;
+                }
+                
+                if(in_array($value['type'], ["membership", "extended validity"])&& isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios']) ){
+                    $value['campaign_offer'] =  "";
+                    $value['campaign_color'] = "";
+				}else{
+					$value['campaign_offer'] =  "";
+                    $value['campaign_color'] = "";
+				}
+				
 				unset($value['flags']['convinience_fee_applicable']);
 				array_push($ratecards, $value);
 			}
@@ -605,6 +641,18 @@ class Service extends \Basemodel{
 
 	public function scopeIntegratedTrial ($query){
 		return $query->where('status','=','1')->whereNotIn('showOnFront', [[], ['kiosk']])->where('trial', '!=', 'disable');
+	}
+
+	public function getServiceInoperationalDatesArrayAttribute(){
+		
+		$inopertaional_dates = isset($this->inoperational_dates) ? $this->inoperational_dates : [];
+
+		$inopertaional_dates = array_map(function($value){
+			return $value->sec; 
+		}, $inopertaional_dates);
+
+		return $inopertaional_dates;
+		
 	}
 
 }

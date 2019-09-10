@@ -22,13 +22,17 @@ Class CustomerMailer extends Mailer {
 			$label = 'AutoTrial-Instant-Multifit-Customer';
 		}
 
+		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
+			$label = 'AutoTrial-Instant-Customer-Reliance';
+		}
+
 		// return $data;
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
 		);
-
+		// Log::info('instant bbooktrial data of customer mailer:::::::::::', [$data]);
 		return $this->common($label,$data,$message_data);
 
 	}
@@ -66,6 +70,10 @@ Class CustomerMailer extends Mailer {
 		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'AutoTrial-ReminderBefore12Hour-Multifit-Customer';
+		}
+
+		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
+			$label = 'AutoTrial-ReminderBefore12Hour-Customer-Reliance';
 		}
 
 		$message_data 	= array(
@@ -133,11 +141,11 @@ Class CustomerMailer extends Mailer {
 		\Log::info('CustomerMailer Order-PG-Customer');
 
 		$label = 'Order-PG-Customer';
-
-		$utilities = new Utilities();
-		$data['loyalty_success_msg'] = $utilities->getLoyaltyAppropriationConsentMsg($data['customer_id'], $data['order_id'], true);
-
-		\Log::info('loyalty_success_msg :: ', [$data['loyalty_success_msg']]);
+		if(!empty($data['type']) && !in_array($data['type'], ['pass'])){
+			$utilities = new Utilities();
+			$data['loyalty_success_msg'] = $utilities->getLoyaltyAppropriationConsentMsg($data['customer_id'], $data['order_id'], true);	
+			\Log::info('loyalty_success_msg :: ', [$data['loyalty_success_msg']]);
+		}
 
 		switch ($data['payment_mode']) {
 			case 'cod': $label = 'Order-COD-Customer'; break;
@@ -165,15 +173,21 @@ Class CustomerMailer extends Mailer {
         if(!empty($data['ratecard_flags']['free_sp'])){
             $label = "Free-SP-Customer";
 		}
-		
-		$header = $this->multifitKioskOrder($data);
-		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
-			switch ($data['payment_mode']) {
-				case 'cod': $label = 'Order-COD-Multifit-Customer'; break;
-				case 'paymentgateway': $label = 'Order-PG-Multifit-Customer'; break;
-				case 'at the studio': $label = 'Order-At-Finder-Multifit-Customer'; break;
-				default: break;
+		if(!empty($data['type']) && !in_array($data['type'], ['pass'])){
+			$header = $this->multifitKioskOrder($data);
+			if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+				switch ($data['payment_mode']) {
+					case 'cod': $label = 'Order-COD-Multifit-Customer'; break;
+					case 'paymentgateway': $label = 'Order-PG-Multifit-Customer'; break;
+					case 'at the studio': $label = 'Order-At-Finder-Multifit-Customer'; break;
+					default: break;
+				}
 			}
+		}
+		
+		if(!empty($data['type']) && ($data['type']=='pass')){
+			$label = "Pass-Purchase-Customer";
+			$this->passPurchaseAlert($data);
 		}
 
 		$message_data 	= array(
@@ -232,6 +246,22 @@ Class CustomerMailer extends Mailer {
 			return;
 		}
 
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			return;
+		}
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	protected function passPurchaseAlert($data){
+		$label = 'Pass-Purchase-Alert';
+		$message_data 	= array(
+			'user_email' =>['sailismart@fitternity.com','neha@fitternity.com','jayamvora@fitternity.com', 'vinichellani@fitternity.com', 'pranjalisalvi@fitternity.com', 'dharatanna@fitternity.com'],
+			'user_name' => $data['customer_name']
+		);
+
 		return $this->common($label,$data,$message_data);
 	}
 
@@ -284,6 +314,10 @@ Class CustomerMailer extends Mailer {
 		$header = $this->multifitUserHeader();
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'Cancel-Trial-Multifit-Customer';
+		}
+
+		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
+			$label = 'Cancel-Trial-Customer-Reliance';
 		}
 
 		$message_data 	= array(
@@ -702,6 +736,12 @@ Class CustomerMailer extends Mailer {
 			return;
 		}
 
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			return;
+		}
+
 		return $this->common($label,$data,$message_data);
 	}
 
@@ -729,6 +769,12 @@ Class CustomerMailer extends Mailer {
 			return;
 		}
 
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			return;
+		}
+
 		return $this->common($label,$data,$message_data);
 	}
 
@@ -753,6 +799,23 @@ Class CustomerMailer extends Mailer {
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
 			$label = 'BookTrialReminderBefore10Min-Multifit-Customer';
 		}
+
+		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
+			$label = 'BookTrialReminderBefore10Min-Customer-Reliance';
+		}
+		
+		$message_data 	= array(
+				'user_email' => array($data['customer_email']),
+				'user_name' => $data['customer_name']
+		);
+		
+		return $this->common($label,$data,$message_data);
+		
+	}
+
+	protected function onepassDynamic($data){
+		
+		$label = 'Onepass-Dynamic-Customer';
 		
 		$message_data 	= array(
 				'user_email' => array($data['customer_email']),
@@ -771,6 +834,12 @@ Class CustomerMailer extends Mailer {
 
 		$header = $this->multifitKioskOrder($data);
 		if((!empty($data['multifit']) && $data['multifit'] == true) || $header == true){
+			return;
+		}
+		
+		$utilities = new Utilities();
+		$onepassHoldCustomer = $utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
 			return;
 		}
 		
@@ -887,7 +956,20 @@ Class CustomerMailer extends Mailer {
 		);
 		return $this->common($label,$data,$message_data);
 	}
-    public function spinTheWheel($data, $delay=0){
+
+	public function remainingVoucher($data){
+
+		$label = 'RemainingVoucherNotificationMail-Fitternity';
+
+		$message_data = array(
+			'user_email' => array("vinichellani@fitternity.com", 'dhruvsarawagi@fitternity.com', 'kananigopi@fitternity.com', 'ankitamamnia@fitternity.com'),
+			'user_name' => 'Fitternity',
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+	
+	public function spinTheWheel($data, $delay=0){
 
 		$label = 'SpinTheWheel-Customer';
 		
@@ -942,6 +1024,10 @@ Class CustomerMailer extends Mailer {
 		if(!empty($data['multifit'])){
 			$message_data['fromemail'] = 'info@multifit.co.in';
 		}
+
+		// if(!empty($data['pass_type'])){
+		// 	$message_data['fromemail'] = 'onepass@fitternity.com';
+		// }
 
 		$template = \Template::where('label',$label)->first();
 
