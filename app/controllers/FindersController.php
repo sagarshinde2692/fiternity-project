@@ -3869,23 +3869,26 @@ class FindersController extends \BaseController {
 			
 		}
 		
-		foreach($data['finder']['services'] as &$service){
-			foreach($service['ratecard'] as &$ratecard){
-				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
-					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
-						if($this->device_type == 'android'){
-							$line = "<u>The Fit India Grand Sale</u><br><br>- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT";
-						}else{	
-							$line = "\nThe Fit India Grand Sale\n\n- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT";
+		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			foreach($data['finder']['services'] as &$service){
+				foreach($service['ratecard'] as &$ratecard){
+					if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+							if($this->device_type == 'android'){
+								$line = "<u>The Fit India Grand Sale</u><br><br>- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT";
+							}else{	
+								$line = "\nThe Fit India Grand Sale\n\n- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT";
+							}
+							
+							break;
 						}
-						
-						break;
 					}
 				}
 			}
 		}
+		
 
         return $line;
 		
