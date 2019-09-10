@@ -9044,7 +9044,7 @@ Class Utilities {
 				//session is not complitated
 				$return = $this->checkinCheckoutSuccessMsg($finder, $customer);
 				$return['header'] = "Session is not completed.";
-				$return['sub_header_2'] = "Seems you have not completed your workout at ".$finder['title'].". The check-out time window is 45 minutes to 2 hours from your check-in time. Please make sure you check-out in the same window in order to get a successful check-in to level up on your workout milestone.";
+				$return['sub_header_2'] = "Seems you have not completed your workout at ".$finder['title'].". The check-out time window is 45 minutes to 2 hours from your check-in time.\n Please make sure you check-out in the same window in order to get a successful check-in to level up on your workout milestone.";
 				return $return;
 			}
 			else if(($difference > 45 * 60) &&($difference <= 120 * 60))
@@ -9060,7 +9060,7 @@ Class Utilities {
 				//times up not accaptable
 				$return  = $this->checkinCheckoutSuccessMsg($finder, $customer);
 				$return['header'] = "Times Up to checkout for the day.";
-				$return['sub_header_2'] = "Sorry you have lapsed the check-out time window for the day. (45 minutes to 2 hours from your check-in time) . This check-in will not be marked into your profile.\n Continue with your workouts and achieve the milestones.";
+				$return['sub_header_2'] = "Sorry you have lapsed the check-out time window for the day. (45 minutes to 2 hours from your check-in time) . \nThis check-in will not be marked into your profile.\n Continue with your workouts and achieve the milestones.";
 				return $return;
 			}
 			else if($difference >= 180 * 60){
