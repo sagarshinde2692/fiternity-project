@@ -218,7 +218,7 @@ return [
                 <li>Fitternity holds the right to cancel the OnePass subscription at any point of time without any prior notice. Upon cancellation, the refund amount would be calculated on a pro-rata basis and the same would be reverted back to the user's bank account.</li>
                 <li>In case of cancellation of OnePass subscription, the refund would be transferred in the Fitternity wallet in the form of FitCash. The FitCash can be redeemed on all services available on Fitternity.</li>
                 <li>In case of misbehavior by the user at the Vendor location, Fitness center or the staff, Fitternity holds the right to cancel the user's subscription without any prior notice. No refund amount would be processed in this scenario.</li>
-                <li>Refund Policy is only applicable on subscriptions above 3 months.</li>
+                <li>Refund Policy is only applicable on subscriptions above 3 months(OnePass Red), subscriptions on 45 sessions & above(OnePass Black).</li>
                 <li>The user will be charged a 3% convenience fee on cancellation of his/her OnePass subscription (over and above usage of subscription on pro rata basis)</li>
                 <li>If the user opts for  “Cash Pick Up” option for payment of dues,on any amount of subscription of OnePass, a flat pickup fee of INR 200 will be charged additionally, over and above the subscription amount.</li>	
                 <li>In case you find a fitness/sports facility which is not yet part of the OnePass network - We will work to onboard the center within 1-15 working days of your request, given the alignment of standard terms between Fitternity & the facility</li>
