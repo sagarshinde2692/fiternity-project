@@ -6527,7 +6527,7 @@ Class Utilities {
     }
 
     public function addCheckin($data){
-        Log::info('$data', [$data]);
+
 		try{
 
             if(!empty($data['sub_type']) && $data['sub_type'] == 'booktrials'){
