@@ -9642,19 +9642,19 @@ Class Utilities {
 		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 5500 ? true : false;
 		//Log::info('distance status', [$distanceStatus]);
 		if($distanceStatus){
-			$oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
-			if($oprtionalDays['status']){ // need to remove ! 
+			// $oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
+			// if($oprtionalDays['status']){ // need to remove ! 
                 //Log::info('device ids:::::::::', [$this->device_id]);
                 $source = !empty($data['source'])? $data['source'] : null;
                 $this->device_token= !empty($data['device_token']) ? $data['device_token']: $this->device_token;
 				return $this->checkForCheckinFromDevice($finder_id, $this->device_token, $finder, $customer_id, $source, $data);
-			}
-			else{
-				// return for now you are checking in for non operational day or time
-				$return = $this->checkinCheckoutFailureMsg('Sorry you are checking at non operational Time.');
-				return $return;
-				//return $oprtionalDays;
-			}
+			// }
+			// else{
+			// 	// return for now you are checking in for non operational day or time
+			// 	$return = $this->checkinCheckoutFailureMsg('Sorry you are checking at non operational Time.');
+			// 	return $return;
+			// 	//return $oprtionalDays;
+			// }
 		}
 		else{
 			// return for use high accurary
