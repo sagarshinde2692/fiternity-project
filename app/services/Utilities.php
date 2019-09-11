@@ -9538,12 +9538,12 @@ Class Utilities {
 
 			if($checkins['device_token']!= $device_token){
 				$return = $this->checkinCheckoutSuccessMsg($finder, $customer);
-				$return['header'] = "Use Checkin device for Successfull Checkout.";
+				$return['header'] = "Use the device used for Checking-in for successfully Checking-out.";
 				return $return;
 			}
 			else if($checkins['customer_id'] != $customer_id){
 				$return = $this->checkinCheckoutSuccessMsg($finder, $customer);
-				$return['header'] = "Allready checkin done by other user using this device.";
+				$return['header'] = "Check-in already done by another user using this device.";
 				return $return;
 			}
 
