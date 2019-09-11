@@ -41,10 +41,10 @@ Class Sidekiq {
         $route = $this->route_type[$type];
 
         try {
-            if(!empty($payload['to']) && $payload['to']=='mfp'){
-                \Log::info("Sendinf from stage");
-                $this->client = new Client( ['debug' => false, 'base_uri' => 'http://kick.fitn.in/'] );
-            }
+            // if(!empty($payload['to']) && $payload['to']=='mfp'){
+            //     \Log::info("Sendinf from stage");
+            //     $this->client = new Client( ['debug' => false, 'base_uri' => 'http://kick.fitn.in/'] );
+            // }
             $response = json_decode($this->client->post($route,['json'=>$payload])->getBody()->getContents());
             $return  = ['status'=>200,
                         'task_id'=>$response->jid
