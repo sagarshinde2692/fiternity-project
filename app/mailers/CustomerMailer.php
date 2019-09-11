@@ -165,10 +165,6 @@ Class CustomerMailer extends Mailer {
 			default: break;
 		}
 
-		if(isset($data['event_type']) && $data['event_type']=='TOI'){
-			$label = 'Order-PG-Event-TOI';
-            $data['via'] = 'mfp';
-        }
         
         if(!empty($data['ratecard_flags']['free_sp'])){
             $label = "Free-SP-Customer";
@@ -194,6 +190,12 @@ Class CustomerMailer extends Mailer {
 			'user_email' =>explode(",",$data['customer_email']),
 			'user_name' => $data['customer_name']
 		);
+
+		if(isset($data['event_type']) && $data['event_type']=='TOI'){
+			$label = 'Order-PG-Event-TOI';
+			$data['via'] = 'mfp';
+			$message_data['fromemail'] = 'getfit@timesmfp.com';
+        }
 
 		return $this->common($label,$data,$message_data);
 	}
