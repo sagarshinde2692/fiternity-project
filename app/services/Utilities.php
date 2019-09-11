@@ -6527,7 +6527,7 @@ Class Utilities {
     }
 
     public function addCheckin($data){
-
+        Log::info('$data', [$data]);
 		try{
 
             if(!empty($data['sub_type']) && $data['sub_type'] == 'booktrials'){
@@ -6729,9 +6729,14 @@ Class Utilities {
         }else if($type == 'booktrial' && !isset($data['third_party_details'])){
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
+
+            $mark_checkin_utilities = false;
+            if(!empty($data['extended_validity_order_id'])){
+                $mark_checkin_utilities = false;
+            }
  
             if((!empty($data['qrcodepayment']) || !empty($data['checkin_booking'])) && empty($data['checkin'])){
-                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null, "checkout_status"=> false, 'device_token'=>$data['reg_id'],'mark_checkin_utilities' => true]);
+                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null, "checkout_status"=> false, 'device_token'=>$data['reg_id'],'mark_checkin_utilities' => $mark_checkin_utilities]);
             }
         }
 
@@ -9631,7 +9636,7 @@ Class Utilities {
 		}
 
 		//Log::info('geo coordinates of :::::::::::;', [$customer_geo, $finder_geo]); // need to update distance limit by 500 metere
-		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 500 ? true : false;
+		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 5500 ? true : false;
 		//Log::info('distance status', [$distanceStatus]);
 		if($distanceStatus){
 			$oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
