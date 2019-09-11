@@ -9537,6 +9537,11 @@ Class Utilities {
 
 		Log::info('chekcins:::::::::::;', [$device_token, $checkins, $customer_id]);
         $customer = Customer::active()->where('_id', (int)$customer_id)->first();
+
+        if(!empty($customer['loyalty']['end_date']) && (strtotime($customer['loyalty']['end_date']) <= strtotime('today'))){
+            return $this->checkinCheckoutFailureMsg("Your Fitsquad program has been expired.");
+        }
+
 		if(count($checkins)>0)
 		{
 			$d = strtotime($checkins['created_at']);	
@@ -9639,7 +9644,7 @@ Class Utilities {
 		}
 
 		//Log::info('geo coordinates of :::::::::::;', [$customer_geo, $finder_geo]); // need to update distance limit by 500 metere
-		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 5500 ? true : false;
+		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 500 ? true : false;
 		//Log::info('distance status', [$distanceStatus]);
 		if($distanceStatus){
 			// $oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
