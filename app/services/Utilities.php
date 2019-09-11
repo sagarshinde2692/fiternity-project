@@ -6735,7 +6735,7 @@ Class Utilities {
             if((!empty($data['qrcodepayment']) || !empty($data['checkin_booking'])) && empty($data['checkin'])){
                 
                 $mark_checkin_utilities = true;
-                if(!empty($data['extended_validity_order_id'])){
+                if(!empty($data['extended_validity_order_id']) && empty($data['checkin_booking'])){
                     $mark_checkin_utilities = false;
                 }
 
@@ -9830,19 +9830,19 @@ Class Utilities {
         if(!empty($_GET['receipt'])){
             $checkin_data['receipt'] = true;
         }
-        // if(!empty($session_pack)){
+        if(!empty($session_pack)){
 
-        //     $order_id = intval($_GET['session_pack']);
+            $order_id = intval($_GET['session_pack']);
             
-        //     $schedule_session = $this->scheduleSessionFromOrder($order_id);
-		// }
+            $schedule_session = $this->scheduleSessionFromOrder($order_id);
+		}
         
-        // if(empty($schedule_session['status']) || $schedule_session['status'] != 200){
+        if(empty($schedule_session['status']) || $schedule_session['status'] != 200){
             
 			$addedCheckin = $this->addCheckin($checkin_data);
 			Log::info('adedcheckins:::::::::::::',[$addedCheckin]);
         
-		// }
+		}
 		$finder = $finder_data;	
 		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200 || (!empty($schedule_session['status']) && $schedule_session['status'] == 200)){
 			// if(!empty($update_finder_ws_sessions)){
