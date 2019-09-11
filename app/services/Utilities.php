@@ -6735,7 +6735,7 @@ Class Utilities {
             if((!empty($data['qrcodepayment']) || !empty($data['checkin_booking'])) && empty($data['checkin'])){
                 
                 $mark_checkin_utilities = true;
-                if(!empty($data['extended_validity_order_id']) && empty($data['checkin_booking'])){
+                if(!empty($data['extended_validity_order_id']) && !empty($data['checkin_booking'])){
                     $mark_checkin_utilities = false;
                 }
 
