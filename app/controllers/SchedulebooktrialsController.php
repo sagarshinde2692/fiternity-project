@@ -2531,7 +2531,7 @@ class SchedulebooktrialsController extends \BaseController {
             try{
                 $after_booking_response = $this->utilities->afterTranSuccess($booktrial->toArray(), 'booktrial');
             }catch(Exception $e){
-                Log::info("afterTranSuccess error");
+                Log::info("afterTranSuccess error", [$e]);
             }    
                 
             Log::info("after_booking_response");
@@ -2542,6 +2542,14 @@ class SchedulebooktrialsController extends \BaseController {
                     $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
                 }
             }
+
+            if(!empty($after_booking_response['checkin']['checkin_response'])){
+                unset($after_booking_response['checkin']['checkin_response']['milestones']);
+                unset($after_booking_response['checkin']['checkin_response']['image']);
+                unset($after_booking_response['checkin']['checkin_response']['checkin']);
+                $orderData['checkin_response'] = $after_booking_response['checkin']['checkin_response'];
+            }
+
             if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
                 $booktrial->loyalty_registration = true;
                 $orderData['loyalty_registration'] = true;
@@ -7535,7 +7543,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'fitcash'=>$fitcash
             ];
 
-            $this->utilities->addCheckin(['customer_id'=>$booktrial['customer_id'], 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id']]);
+            $this->utilities->addCheckin(['customer_id'=>$booktrial['customer_id'], 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'],"checkout_status"=> true, 'device_token' => $this->device_token]);
             if(!empty($booktrial->corporate_id)) {
                 // $this->relianceService->updateServiceStepCount();
                 $orderId = null;

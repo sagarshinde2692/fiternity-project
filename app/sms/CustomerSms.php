@@ -279,6 +279,7 @@ Class CustomerSms extends VersionNextSms{
 
 		if(isset($data['event_type']) && $data['event_type']=='TOI'){
 			$label = 'Order-PG-Event-TOI';
+			$data['sender'] = 'TOIMFP';
 		}
 		
 		if($data['type'] == "diet_plan"){
@@ -1402,6 +1403,11 @@ Class CustomerSms extends VersionNextSms{
 		if(!empty($data['multifit']) && $label != 'Generic-Otp-Customer'){
 			$sender = 'MULTIF';
 		}
+
+		if(!empty($data['event_type']) && $data['event_type']=='TOI' && !empty($data['sender'])){
+			$sender = $data['sender'];
+		}
+
 		$message = $this->bladeCompile($template->sms_text,$data);
 
 		$otp = false;
