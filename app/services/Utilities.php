@@ -6730,7 +6730,7 @@ Class Utilities {
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
 
-            $mark_checkin_utilities = false;
+            $mark_checkin_utilities = true;
             if(!empty($data['extended_validity_order_id'])){
                 $mark_checkin_utilities = false;
             }
