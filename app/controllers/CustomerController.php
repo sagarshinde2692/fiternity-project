@@ -10604,4 +10604,55 @@ class CustomerController extends \BaseController {
         return $redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
     }
 	
+	public function onePassCustomerUpdate(){
+		$data = Input::all();
+
+		$input_fields_count  = $this->check_array($data);
+		if(empty($input_fields_count)){
+			return array('status'=>400, 'message'=>'Invalid Request.');
+		}
+
+	    $jwt_token = Request::header('Authorization');
+
+		$decoded = decode_customer_token($jwt_token);
+		$customer_id = $decoded->customer->_id;
+		$image = Input::file('image');
+
+		$customer = Customer::find($customer_id);
+
+		$photo = !empty($image) ? $this->utilities->onePassCustomerUpdateService($image, $customer_id, $customer): null;
+
+		$customer = $this->utilities->updateAddressAndIntereste($customer, $data);
+
+		if((!empty($photo['status']) && $photo['status']==200)){
+
+			if(!empty($photo['customer_photo'])){
+				$customer->photo = $photo['customer_photo'];
+			}
+
+			try{
+
+				$customer->save();
+
+			}catch(\Exception $e){
+				Log::info('error occured while saving customer:::::', [$e]);
+
+				return array('status'=>400, 'message'=>'Error');
+
+			}
+
+			return Response::json(['status'=> 200, "message"=> "Success"]);
+		}
+
+		return Response::json($photo, 200);
+	}
+
+	function check_array($data){
+		return count(
+				array_filter($data, function ($var)  {
+					Log::info('var', [$var]);
+					return $var;
+				})
+			);
+	}
 }

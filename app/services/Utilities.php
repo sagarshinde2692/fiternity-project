@@ -10295,4 +10295,48 @@ Class Utilities {
         return $resp;
     }
 
+    public function onePassCustomerUpdateService($image, $customer_id, $customer){
+
+        if ($image->getError()) {
+
+            return array('status' => 400, 'message' => 'Please upload jpg/jpeg/png image formats with max. size of 10 MB');
+
+        }
+
+        $data = [
+            "input"=>$image,
+            "upload_path"=>Config::get('app.aws.customer_photo.path'),
+            "local_directory"=>public_path().'/customer_photo',
+            "file_name"=>$customer_id.'-'.time().'.'.$image->getClientOriginalExtension()
+            // "resize"=>["height" => 200,"strategy" => "portrait"],
+        ];
+
+        $upload_resp = $this->uploadFileToS3Kraken($data);
+
+        Log::info($upload_resp);
+
+        if(!$upload_resp || empty($upload_resp['success'])){
+            return array('status'=>400, 'message'=>'Error');
+        }
+
+        $customer_photo = ['url'=>str_replace("s3.ap-southeast-1.amazonaws.com/", "", $upload_resp['kraked_url']), 'date'=> new \MongoDate()];
+
+        return array('status'=>200, 'customer_photo'=>$customer_photo);
+    }
+
+    public function updateAddressAndIntereste($customer, $data){
+        
+
+        if(!empty($data['address'])){
+            $customer->address = json_decode($data['address']);
+        }
+
+        if(!empty($data['intereste'])){
+            $intereste = explode(",",$data['intereste']);
+            $intereste[0] = substr($intereste[0], 1, strlen($intereste[0])-1);
+            $intereste[count($intereste)-1] = substr($intereste[count($intereste)-1], 0, strlen($intereste[count($intereste)-1])-1);
+            $customer->intereste = $intereste;
+        }
+        return $customer;
+    }
 }
