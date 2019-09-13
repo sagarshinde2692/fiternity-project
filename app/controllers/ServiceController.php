@@ -911,7 +911,12 @@ class ServiceController extends \BaseController {
 							"available" => true,
 							"amount" => $ratecard_price
 					];
-				}
+                }
+                $service['price_int'] = 0;                
+                if(!empty($ratecard_price)){
+                    $service['price_int'] = $ratecard_price;
+                }
+
 				if($ratecard_price > 0){
 					$service['cost'] = "₹ ".$ratecard_price;
 				}
