@@ -1377,9 +1377,9 @@ class ServiceController extends \BaseController {
 					}
 					
 					if($allowSession && (!empty($sc['price_int']) && $sc['price_int'] < Config::get('pass.price_upper_limit'))){
-						$sc['price_int'] = Config::get('app.onepass_free_string');
+						$sc['cost'] = Config::get('app.onepass_free_string');
 					}else{
-						$sc['price_int'] .= $str;
+						$sc['cost'] .= $str;
 					}
 					
 					if(!empty($service['extended_validity'])){
