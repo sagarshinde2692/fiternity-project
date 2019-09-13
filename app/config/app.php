@@ -462,6 +462,7 @@ return array(
 	'contact_us_customer_email' => 'support@fitternity.com',
 	'contact_us_vendor_number' => '+919699998838',
 	'contact_us_customer_number' => '+912261094444',
+	'contact_us_customer_number_onepass' => '+917400062849',
 	'followup_fitness_concierge' => 'Rachel',
 	'followup_customer_number' => '+917400062843',
 	'renewal_fitness_concierge' => 'David',
