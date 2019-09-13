@@ -9709,22 +9709,24 @@ class TransactionController extends \BaseController {
         Log::info("Pass data :::::", [$data]);
         $passBookingDetails = array();
         $totalPassBookings = 0;
-        Order::$withoutAppends = true;
-        if(!empty($data['pass_order_id']) && !empty($data['pass_type'])){
-            $totalPassBookings = Order::active()->where('pass_type', $data['pass_type'])
-                ->where('pass_order_id', $data['pass_order_id'])->where('customer_id', $data['customer_id'])->count();
+        Booktrials::$withoutAppends = true;
+        // Order::$withoutAppends = true;
+        if(!empty($data['pass_order_id'])){
+            $totalPassBookings = Booktrials::where('pass_order_id', $data['pass_order_id'])->where('customer_id', $data['customer_id'])->where('going_status_txt', '!=', 'cancel')->count();
         }
             
-        $count_det = ['1' => '1st', '2' => '2nd', '3' => '3rd'];
-        $totalPassBookings += 1;
-        if($totalPassBookings > 3){
-            $totalPassBookingsStr = $totalPassBookings."th"; 
-        }else{
-            $totalPassBookingsStr = $count_det[$totalPassBookings];
-        }
+        // $count_det = ['1' => '1st', '2' => '2nd', '3' => '3rd'];
+        // $totalPassBookings += 1;
+        // if($totalPassBookings > 3){
+        //     $totalPassBookingsStr = $totalPassBookings."th"; 
+        // }else{
+        //     $totalPassBookingsStr = $count_det[$totalPassBookings];
+        // }
             
+        $ordinalBookingCount = $this->utilities->getOrdinalNumber($totalPassBookings);
+
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
-        $onepass_details['desc_subheader'] = "You are booking your ".$totalPassBookingsStr." session using Onepass ".ucfirst($data['pass_type']);
+        $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using Onepass ".ucfirst($data['pass_type']);
 
         $easy_cancellation = array(
             "header" => "Easy Cancelletion: ",
