@@ -10605,6 +10605,7 @@ class CustomerController extends \BaseController {
     }
 	
 	public function onePassCustomerUpdate(){
+		
 		$data = Input::all();
 
 		$input_fields_count  = $this->check_array($data);
@@ -10629,6 +10630,10 @@ class CustomerController extends \BaseController {
 			if(!empty($photo['customer_photo'])){
 				$customer->photo = $photo['customer_photo'];
 			}
+
+		} else if(!empty($image)){
+
+			return Response::json($photo, 200);
 		}
 
 		try{
@@ -10641,9 +10646,9 @@ class CustomerController extends \BaseController {
 			return array('status'=>400, 'message'=>'Error');
 
 		}
+
 		return Response::json(['status'=> 200, "message"=> "Success"]);
-		
-		return Response::json($photo, 200);
+	
 	}
 
 	function check_array($data){

@@ -10326,17 +10326,30 @@ Class Utilities {
 
     public function updateAddressAndIntereste($customer, $data){
         
-
-        if(!empty($data['address'])){
-            $customer->address = json_decode($data['address']);
-        }
-
         if(!empty($data['intereste'])){
-            $intereste = explode(",",$data['intereste']);
-            $intereste[0] = substr($intereste[0], 1, strlen($intereste[0])-1);
-            $intereste[count($intereste)-1] = substr($intereste[count($intereste)-1], 0, strlen($intereste[count($intereste)-1])-1);
-            $customer->intereste = $intereste;
+            $customer->intereste = $data['intereste'];
         }
+
+        if(!empty($data['gender']) && in_array($data['gender'], ['male', 'female'])){
+            $customer->gender = $data['gender'];
+        }
+
+        // if(!empty($data['customer_details']['dob'])){
+        //     $customer->gender = new MongoDate(strtotime($data['dob']));
+        // }
+
+        // if(!empty($data['customer_details']['name'])){
+        //     $customer->name = $data['name'];
+        // }
+
+        if(!empty($data['address_details']['home_address'])){
+            $customer->address =  $data['home_address'];
+        }
+
+        if(!empty($data['address_details']['work_address'])){
+            $customer->work_address =  $data['work_address'];
+        }
+
         return $customer;
     }
 }
