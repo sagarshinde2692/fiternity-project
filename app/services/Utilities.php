@@ -10364,7 +10364,7 @@ Class Utilities {
 
     }
 
-    public function getParentServicesList(){
+    public function getParentServicesCategoryList(){
 
         return \Servicecategory::active()->where('parent_id', 0)->get(['_id', 'name', 'slug', 'description']);
     }
