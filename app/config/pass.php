@@ -6,6 +6,7 @@ $success_page_template = Config::get('successPage');
 $red_pass = 'https://b.fitn.in/passes/cards/onepass-red.png';
 $black_pass = 'https://b.fitn.in/passes/cards/onepass-black.png';
 return [
+    'price_upper_limit' => 1001,
     'list' => [
         'title'=>'ONEPASS',
         'passes' => [

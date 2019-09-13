@@ -6702,7 +6702,7 @@ Class Utilities {
                 $customer_update = \Customer::where('_id', $data['customer_id'])->increment('loyalty.checkins');
             }
 
-            Log::info($customer_update);
+            //Log::info($customer_update);
 
             if(!empty($data['tansaction_id']) && !empty($data['type']) && $data['type'] == 'workout-session'){
                 $booktrial_update = \Booktrial::where('_id', $data['tansaction_id'])->update(['checkin'=>$checkin->_id, 'from_add'=>true]);
@@ -6710,7 +6710,7 @@ Class Utilities {
 
             Log::info('checkins updated in customer');
 
-            Log::info($customer_update);
+            //Log::info($customer_update);
 
 
 			return ['status'=>200, 'checkin'=>$checkin];
@@ -9822,19 +9822,19 @@ Class Utilities {
         if(!empty($_GET['receipt'])){
             $checkin_data['receipt'] = true;
         }
-        if(!empty($session_pack)){
+        // if(!empty($session_pack)){
 
-            $order_id = intval($_GET['session_pack']);
+        //     $order_id = intval($_GET['session_pack']);
             
-            $schedule_session = $this->scheduleSessionFromOrder($order_id);
-		}
+        //     $schedule_session = $this->scheduleSessionFromOrder($order_id);
+		// }
         
-        if(empty($schedule_session['status']) || $schedule_session['status'] != 200){
+        // if(empty($schedule_session['status']) || $schedule_session['status'] != 200){
             
 			$addedCheckin = $this->addCheckin($checkin_data);
 			Log::info('adedcheckins:::::::::::::',[$addedCheckin]);
         
-		}
+		// }
 		$finder = $finder_data;	
 		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200 || (!empty($schedule_session['status']) && $schedule_session['status'] == 200)){
 			// if(!empty($update_finder_ws_sessions)){
@@ -10293,6 +10293,14 @@ Class Utilities {
         $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
 
         return $resp;
+    }
+
+    function getOrdinalNumber($number) {
+        $ends = array('th','st','nd','rd','th','th','th','th','th','th');
+        if ((($number % 100) >= 11) && (($number%100) <= 13))
+            return $number. 'th';
+        else
+            return $number. $ends[$number % 10];
     }
 
 }

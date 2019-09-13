@@ -3875,7 +3875,7 @@ class FindersController extends \BaseController {
 				foreach($service['ratecard'] as &$ratecard){
 					if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < Config::get('pass.price_upper_limit')){
 							if($this->device_type == 'android'){
 								$line = "<u>The Fit India Grand Sale</u><br><br>- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT";
 							}else{	
@@ -5293,24 +5293,22 @@ class FindersController extends \BaseController {
 		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
 		// }
 		//Log::info('finder',[$finderData['finder']]);
-
+		$allowSession = false;
+		$allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
 		foreach($finderData['finder']['services'] as &$service){
 			foreach($service['ratecard'] as &$ratecard){
 				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
 					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 					Log::info("Price onepass ::",[$price]);
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					$allowSession = false;
+					
+					$_allowSession = false;
 					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-						$allowSession = $this->passService->allowSession($price, $customer_id);
-						if(!empty($allowSession['allow_session'])) {
-							$allowSession = $allowSession['allow_session'];
-						}
-						else {
-							$allowSession = false;
+						if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && $price<Config::get('pass.price_upper_limit')) {
+							$_allowSession = $allowSession['allow_session'];
 						}
 					}
-					if($allowSession){
+					if($_allowSession){
 						unset($ratecard['button_color']);
 						unset($ratecard['pps_know_more']);
 						unset($ratecard['pps_title']);
@@ -8498,7 +8496,7 @@ class FindersController extends \BaseController {
 					foreach($service['serviceratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
+							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	
@@ -8510,7 +8508,7 @@ class FindersController extends \BaseController {
 					foreach($service['ratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
+							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	
