@@ -17,6 +17,7 @@ use Request;
 use Wallet;
 use Customer;
 use Coupon;
+use Finder;
 use stdClass;
 use Input;
 class PassService {
