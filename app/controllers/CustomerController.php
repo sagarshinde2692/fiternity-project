@@ -10629,21 +10629,20 @@ class CustomerController extends \BaseController {
 			if(!empty($photo['customer_photo'])){
 				$customer->photo = $photo['customer_photo'];
 			}
-
-			try{
-
-				$customer->save();
-
-			}catch(\Exception $e){
-				Log::info('error occured while saving customer:::::', [$e]);
-
-				return array('status'=>400, 'message'=>'Error');
-
-			}
-
-			return Response::json(['status'=> 200, "message"=> "Success"]);
 		}
 
+		try{
+
+			$customer->save();
+
+		}catch(\Exception $e){
+			Log::info('error occured while saving customer:::::', [$e]);
+
+			return array('status'=>400, 'message'=>'Error');
+
+		}
+		return Response::json(['status'=> 200, "message"=> "Success"]);
+		
 		return Response::json($photo, 200);
 	}
 
