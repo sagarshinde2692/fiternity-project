@@ -1381,6 +1381,10 @@ class ServiceController extends \BaseController {
 					}else{
 						$sc['cost'] .= $str;
 					}
+
+					if(!empty($sc['free_trial_available']) && $sc['free_trial_available']){
+						$sc['free_session_coupon'] = 'FREE';
+					}
 					
 					if(!empty($service['extended_validity'])){
 
