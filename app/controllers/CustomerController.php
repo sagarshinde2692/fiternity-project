@@ -10638,7 +10638,7 @@ class CustomerController extends \BaseController {
 
 		try{
 
-			//$customer->save();
+			$customer->save();
 
 		}catch(\Exception $e){
 			Log::info('error occured while saving customer:::::', [$e]);
