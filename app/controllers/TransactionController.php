@@ -7515,9 +7515,9 @@ class TransactionController extends \BaseController {
                 'value' => 'Rs. '.(string)number_format($data['amount_payable'])
             ];
 
-            if(!empty($first_session_free) && $data['amount_payable'] == 0){
-                $result['payment_details']['amount_payable']['value'] = "Free via Fitternity";
-            }
+            // if(!empty($first_session_free) && $data['amount_payable'] == 0){
+            //     $result['payment_details']['amount_payable']['value'] = "Free via Fitternity";
+            // }
 
             if(!empty($headerSource) && $headerSource=='multifit' && !empty($first_session_free) && $data['amount_payable'] == 0) {
                 $result['payment_details']['amount_payable']['value'] = "Free via Multifit";
