@@ -10613,6 +10613,8 @@ class CustomerController extends \BaseController {
 			return array('status'=>400, 'message'=>'Invalid Request.');
 		}
 
+		$resp = [];
+
 	    $jwt_token = Request::header('Authorization');
 
 		$decoded = decode_customer_token($jwt_token);
@@ -10627,6 +10629,8 @@ class CustomerController extends \BaseController {
 
 			if(!empty($photo['customer_photo'])){
 				$data['customer_photo'] = $photo['customer_photo'];
+				$resp['url'] = $photo['customer_photo']['url'];
+				$resp['service_categories'] = $this->utilities->getParentServicesList();
 			}
 
 		} else if(!empty($image)){
@@ -10647,7 +10651,7 @@ class CustomerController extends \BaseController {
 
 		}
 
-		return Response::json(['status'=> 200, "message"=> "Success", "data"=> $customer]);
+		return Response::json(['status'=> 200, "message"=> "Success", "data"=> $resp]);
 	
 	}
 
