@@ -3630,7 +3630,7 @@ class TransactionController extends \BaseController {
         //  commented on 9th Aug - Akhil
         if($data['type'] == 'workout-session') {
             Order::$withoutAppends = true;
-            $passSession = $this->passService->allowSession($data['amount'], $data['customer_id'], $data['schedule_date']);
+            $passSession = $this->passService->allowSession($data['amount'], $data['customer_id'], $data['schedule_date'], $data['finder_id']);
             if($passSession['allow_session']) {
                 $data['pass_type'] = $passSession['pass_type'];
                 $data['pass_order_id'] = $passSession['order_id'];
@@ -6325,7 +6325,7 @@ class TransactionController extends \BaseController {
             $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
             $allowSession = false;
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-                $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id, $data['schedule_date']);
+                $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id, $data['schedule_date'], $data['finder_id']);
                 if(!empty($allowSession['allow_session'])) {
                     $allowSession = $allowSession['allow_session'];
                 }
@@ -7338,7 +7338,7 @@ class TransactionController extends \BaseController {
             if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
                 if(!empty($decoded->customer->_id)) {
                     $scheduleDate = (!empty($data['slot']['date']))?$data['slot']['date']:null;
-                    $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id, $scheduleDate);
+                    $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id, $scheduleDate, $data['finder_id']);
                     Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
                     if($passSession['allow_session']) {
                         $result['payment_details']['amount_summary'][] = [

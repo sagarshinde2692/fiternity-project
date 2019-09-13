@@ -5302,7 +5302,7 @@ class FindersController extends \BaseController {
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 					$allowSession = false;
 					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-						$allowSession = $this->passService->allowSession($price, $customer_id);
+						$allowSession = $this->passService->allowSession($price, $customer_id, null, $finderData['finder']['_id']);
 						if(!empty($allowSession['allow_session'])) {
 							$allowSession = $allowSession['allow_session'];
 						}
@@ -8496,7 +8496,7 @@ class FindersController extends \BaseController {
 					foreach($service['serviceratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
+							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	
@@ -8508,7 +8508,7 @@ class FindersController extends \BaseController {
 					foreach($service['ratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
+							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	

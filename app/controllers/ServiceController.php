@@ -760,7 +760,7 @@ class ServiceController extends \BaseController {
 					$customer_id = intval($decoded->customer->_id);
 				}
 			}
-			$allowSession = $this->passService->allowSession(1, $customer_id, $date);
+			$allowSession = $this->passService->allowSession(1, $customer_id, $date, $finder_id);
 			if(!empty($allowSession['allow_session'])) {
 				$allowSession = $allowSession['allow_session'];
 			}
@@ -2026,7 +2026,7 @@ class ServiceController extends \BaseController {
 		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 		$allowSession = false;
 		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-			$allowSession = $this->passService->allowSession($service_details['amount'], $customer_id, $date);
+			$allowSession = $this->passService->allowSession($service_details['amount'], $customer_id, $date, $service_details['finder_id']);
 			if(!empty($allowSession['allow_session'])) {
 				$allowSession = $allowSession['allow_session'];
 			}

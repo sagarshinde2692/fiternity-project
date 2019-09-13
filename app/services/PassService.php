@@ -630,7 +630,7 @@ class PassService {
         return (isset($bookingCount))?$bookingCount<1:false;
     }
 
-    public function allowSession($amount, $customerId, $date = null) {
+    public function allowSession($amount, $customerId, $date = null, $finderId = null) {
         if(empty($amount) && empty(!$customerId)) {
             return;
         }
@@ -644,10 +644,20 @@ class PassService {
             $passOrder = $this->getPassOrder($customerId, $schedule_time);
         }
 
+        $passType = null;
         if(!empty($passOrder)) {
             $passType = $passOrder['pass']['pass_type'];
             Log::info('pass orders:::::::::::::::::', [$passOrder]);
         }
+
+        if(!empty($finderId)) {
+            Finder::$withoutAppends = true;
+            $finder = Finder::active()->where('_id', $finderId)->where('flags.not_available_on_onepass', '!=', true)->first();
+            if(empty($finder)) {
+                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
+            }
+        }
+
         $canBook = false;
         if(!empty($passOrder['pass'])) {
             if($schedule_time>=strtotime($passOrder['start_date'])){
