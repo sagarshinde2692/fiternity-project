@@ -6662,6 +6662,8 @@ class TransactionController extends \BaseController {
 
             $ratecard = Ratecard::find($data['ratecard_id']);
 
+            $data['type'] = $ratecard['type'];
+
             if(!$ratecard){
                 $resp = array("status"=> 400, "message" => "Ratecard not found", "error_message" => "Coupon cannot be applied on this transaction");
                 return Response::json($resp,400);   
