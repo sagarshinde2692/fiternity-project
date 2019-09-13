@@ -3875,7 +3875,7 @@ class FindersController extends \BaseController {
 				foreach($service['ratecard'] as &$ratecard){
 					if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < 1001){
+						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < Config::get('pass.price_upper_limit')){
 							if($this->device_type == 'android'){
 								$line = "<u>The Fit India Grand Sale</u><br><br>- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT";
 							}else{	
@@ -5293,17 +5293,17 @@ class FindersController extends \BaseController {
 		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
 		// }
 		//Log::info('finder',[$finderData['finder']]);
-
+		$allowSession = false;
+		$allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
 		foreach($finderData['finder']['services'] as &$service){
 			foreach($service['ratecard'] as &$ratecard){
 				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
 					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 					Log::info("Price onepass ::",[$price]);
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					$allowSession = false;
+					
 					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-						$allowSession = $this->passService->allowSession($price, $customer_id, null, $finderData['finder']['_id']);
-						if(!empty($allowSession['allow_session'])) {
+						if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && $price<Config::get('pass.price_upper_limit')) {
 							$allowSession = $allowSession['allow_session'];
 						}
 						else {
