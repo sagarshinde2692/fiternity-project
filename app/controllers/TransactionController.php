@@ -6768,11 +6768,10 @@ class TransactionController extends \BaseController {
             Log::info("Order   ::::::::", [$data['order_id']]);
             $orderData = Order::where('_id', $data['order_id'])->first()->toArray();
             $first_session_free = $this->firstSessionFree($orderData);
-
-            Log::info("first_session_free   ::::::::", [$first_session_free]);
+        }else{
+            $first_session_free = $this->firstSessionFree($data);
         }
 
-        Log::info("first_session_free   ::::::::", [$first_session_free]);
         $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, $amount_without_fitcash, $customer_email, $pass, $first_session_free); 
         Log::info("REsponse from CustomerReward", $resp);
         if($resp["coupon_applied"]){
