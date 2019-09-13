@@ -911,7 +911,12 @@ class ServiceController extends \BaseController {
 							"available" => true,
 							"amount" => $ratecard_price
 					];
-				}
+                }
+                $service['price_int'] = 0;                
+                if(!empty($ratecard_price)){
+                    $service['price_int'] = $ratecard_price;
+                }
+
 				if($ratecard_price > 0){
 					$service['cost'] = "₹ ".$ratecard_price;
 				}
@@ -1337,7 +1342,7 @@ class ServiceController extends \BaseController {
 				
 				foreach($data['schedules'] as &$sc){
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-                    if((!empty($_GET['init_source']) && $_GET['init_source'] == 'pps') || (!empty($onepassHoldCustomer) && $onepassHoldCustomer && $sc['cost'] < 1001)){
+                    if((!empty($_GET['init_source']) && $_GET['init_source'] == 'pps') || (!empty($onepassHoldCustomer) && $onepassHoldCustomer && (!empty($sc['price_int']) && $sc['price_int'] < 1001))){
                         $sc['free_trial_available'] = false;
                     }
 					
@@ -1371,7 +1376,7 @@ class ServiceController extends \BaseController {
 						$str = "";
 					}
 					
-					if($allowSession && $sc['cost'] < 1001){
+					if($allowSession && (!empty($sc['price_int']) && $sc['price_int'] < 1001)){
 						$sc['cost'] = Config::get('app.onepass_free_string');
 					}else{
 						$sc['cost'] .= $str;
