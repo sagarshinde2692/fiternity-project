@@ -6633,6 +6633,10 @@ class TransactionController extends \BaseController {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
+            
+            if(!empty($decoded->customer->contact_no)){
+                $data['customer_phone'] = $decoded->customer->contact_no;
+            }
         }
 
         $service_id = isset($data['service_id']) ? $data['service_id']: null;
@@ -6661,9 +6665,14 @@ class TransactionController extends \BaseController {
         if(isset($data['ratecard_id'])){
 
             $ratecard = Ratecard::find($data['ratecard_id']);
-
+            
             $data['type'] = $ratecard['type'];
+            if(!empty($ratecard['type']) && $ratecard['type'] == 'workout session'){
+                $data['type'] = 'workout-session';
+            }
 
+            $data['finder_id'] = $ratecard['finder_id'];
+            
             if(!$ratecard){
                 $resp = array("status"=> 400, "message" => "Ratecard not found", "error_message" => "Coupon cannot be applied on this transaction");
                 return Response::json($resp,400);   
@@ -9766,7 +9775,7 @@ class TransactionController extends \BaseController {
     }
 
     public function firstSessionFree($data = null,$order = null){
-        
+        Log::info("data   :::::", [$data]);
         $first_session_free = false;
         
         if(empty($data['session_pack_discount']) && empty($order['session_pack_discount']) && ((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
