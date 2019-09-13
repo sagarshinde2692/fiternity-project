@@ -1213,7 +1213,7 @@ class PassService {
             $homePassData['left_value'] = strval($upcomingBookings);
             $homePassData['right_value'] = strval($pastBookings);
             if(!$passExpired) {
-                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('schedule_date_time', 'desc')->first();
+                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('_id', 'desc')->first();
                 if(!empty($lastOrder)) {
                     $homePassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
                     $homePassData['footer']['section1']['no_last_order'] = false;
@@ -1265,7 +1265,7 @@ class PassService {
             $homePassData['right_value'] = strval($pastBookings);
 
             if(!$passExpired) {
-                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('schedule_date_time', 'desc')->first();
+                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('_id', 'desc')->first();
                 if(!empty($lastOrder)) {
                     $homePassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
                     $homePassData['footer']['section1']['no_last_order'] = false;
