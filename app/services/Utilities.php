@@ -10338,15 +10338,10 @@ Class Utilities {
             $customer->gender = $data['gender'];
         }
 
-        // if(!empty($data['customer_details']['dob'])){
-        //     $customer->gender = new MongoDate(strtotime($data['dob']));
-        // }
-
-        // if(!empty($data['customer_details']['name'])){
-        //     $customer->name = $data['name'];
-        // }
-
         if(!empty($data['address_details'])){
+            Log::info('address details :::::', [$data['address_details']]);
+
+            //$validation_result = $this->addressValidation($data);
 
             if(!empty($data['address_details']['home_address'])){
                 $customer->address =  $data['address_details']['home_address'];
@@ -10361,7 +10356,22 @@ Class Utilities {
     }
 
     public function addressValidation($data){
+        $rules = [
+            'line1' => 'required',
+            'line2' => 'required',
+            'landmark' => 'required',
+            'pincode' => 'required'
+        ];
 
+        $validator = Validator::make($data,$rules);
+
+		if ($validator->fails()) {
+
+            return array('status' => 400,'message' => $this->errorMessage($validator->errors()));
+        }
+        else{
+            return array('status'=> 200);
+        }
     }
 
     public function getParentServicesCategoryList(){
