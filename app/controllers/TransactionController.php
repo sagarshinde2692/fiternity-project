@@ -6040,7 +6040,8 @@ class TransactionController extends \BaseController {
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
             $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase','position'=>$position++];
 
-            if(!empty($data['first_session_free']) && $data['first_session_free']){
+            $first_session_free = $this->firstSessionFree($data);
+            if(!empty($first_session_free) && $first_session_free){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'Apply code FREE to get this session for free','position'=>$position++];
             }
             
@@ -6761,7 +6762,18 @@ class TransactionController extends \BaseController {
         if(!empty($data['pass_id'])) {
             $pass = Pass::where('pass_id', intval($data['pass_id']))->first();
         }
-        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, $amount_without_fitcash, $customer_email, $pass); 
+
+        $first_session_free = false;
+        if(!empty($data['order_id'])){
+            Log::info("Order   ::::::::", [$data['order_id']]);
+            $orderData = Order::where('_id', $data['order_id'])->first()->toArray();
+            $first_session_free = $this->firstSessionFree($orderData);
+
+            Log::info("first_session_free   ::::::::", [$first_session_free]);
+        }
+
+        Log::info("first_session_free   ::::::::", [$first_session_free]);
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, $amount_without_fitcash, $customer_email, $pass, $first_session_free); 
         Log::info("REsponse from CustomerReward", $resp);
         if($resp["coupon_applied"]){
 
@@ -7415,7 +7427,7 @@ class TransactionController extends \BaseController {
             if(isset($data['coupon'])){
                 $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
                 $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
-
+                
                 $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email, $first_session_free);
                 if($resp["coupon_applied"]){
                     
@@ -9750,6 +9762,23 @@ class TransactionController extends \BaseController {
         $passBookingDetails['easy_cancellation'] = $easy_cancellation;
 
         return $passBookingDetails;
+    }
+
+    public function firstSessionFree($data = null,$order = null){
+        
+        $first_session_free = false;
+        
+        if(empty($data['session_pack_discount']) && empty($order['session_pack_discount']) && ((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
+            $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
+
+            if($free_trial_ratecard){
+                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
+                    $first_session_free = true;
+                }
+            }
+        }
+
+        return $first_session_free;
     }
 
 }
