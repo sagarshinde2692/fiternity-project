@@ -10605,7 +10605,7 @@ class CustomerController extends \BaseController {
     }
 	
 	public function onePassCustomerUpdate(){
-		
+
 		$data = Input::all();
 
 		$input_fields_count  = $this->check_array($data);
@@ -10623,12 +10623,10 @@ class CustomerController extends \BaseController {
 
 		$photo = !empty($image) ? $this->utilities->onePassCustomerUpdateService($image, $customer_id, $customer): null;
 
-		$customer = $this->utilities->updateAddressAndIntereste($customer, $data);
-
 		if((!empty($photo['status']) && $photo['status']==200)){
 
 			if(!empty($photo['customer_photo'])){
-				$customer->photo = $photo['customer_photo'];
+				$data['customer_photo'] = $photo['customer_photo'];
 			}
 
 		} else if(!empty($image)){
@@ -10636,9 +10634,11 @@ class CustomerController extends \BaseController {
 			return Response::json($photo, 200);
 		}
 
+		$customer = $this->utilities->updateAddressAndIntereste($customer, $data);
+
 		try{
 
-			$customer->save();
+			//$customer->save();
 
 		}catch(\Exception $e){
 			Log::info('error occured while saving customer:::::', [$e]);
@@ -10647,7 +10647,7 @@ class CustomerController extends \BaseController {
 
 		}
 
-		return Response::json(['status'=> 200, "message"=> "Success"]);
+		return Response::json(['status'=> 200, "message"=> "Success", "data"=> $customer]);
 	
 	}
 

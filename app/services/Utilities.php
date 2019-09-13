@@ -10326,6 +10326,10 @@ Class Utilities {
 
     public function updateAddressAndIntereste($customer, $data){
         
+        if(!empty($data['customer_photo'])){
+            $customer->photo = $data['customer_photo'];
+        }
+
         if(!empty($data['intereste'])){
             $customer->intereste = $data['intereste'];
         }
@@ -10342,14 +10346,21 @@ Class Utilities {
         //     $customer->name = $data['name'];
         // }
 
-        if(!empty($data['address_details']['home_address'])){
-            $customer->address =  $data['home_address'];
-        }
+        if(!empty($data['address_details'])){
 
-        if(!empty($data['address_details']['work_address'])){
-            $customer->work_address =  $data['work_address'];
+            if(!empty($data['address_details']['home_address'])){
+                $customer->address =  $data['address_details']['home_address'];
+            }
+            
+            if(!empty($data['address_details']['work_address'])){
+                $customer->work_address =  $data['address_details']['work_address'];
+            }
         }
 
         return $customer;
+    }
+
+    public function addressValidation($data){
+
     }
 }
