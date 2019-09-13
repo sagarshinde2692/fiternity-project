@@ -8638,7 +8638,7 @@ class FindersController extends \BaseController {
 	public function photosOrderFloor(&$finder){
 		if(!empty($finder['photos']) && is_array($finder['photos'])){
 			foreach($finder['photos'] as &$data){
-				if(!emppty($data['order'])){
+				if(!empty($data['order'])){
 					$data['order'] = round($data['order']);
 				}
 			}
