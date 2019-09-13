@@ -9723,7 +9723,7 @@ class TransactionController extends \BaseController {
         //     $totalPassBookingsStr = $count_det[$totalPassBookings];
         // }
             
-        $ordinalBookingCount = $this->utilities->getOrdinalNumber($totalPassBookings);
+        $ordinalBookingCount = $this->utilities->getOrdinalNumber($totalPassBookings + 1);
 
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
         $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using Onepass ".ucfirst($data['pass_type']);
