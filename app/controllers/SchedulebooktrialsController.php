@@ -4732,11 +4732,20 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json($resp,200);
         }
 
-        if(
-            // (!empty($booktrial['third_party_details'])) &&
-            ((isset($booktrial['post_trial_status_updated_by_lostfitcode'])) || (isset($booktrial['post_trial_status_updated_by_fitcode'])) || (isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600) && !$isBackendReq))){
-                $resp = array('status' => 400, 'message' => "This session cannot be cancelled");
-                return Response::json($resp,200);
+       if(!empty($booktrial['finder_category_id']) && $booktrial['finder_category_id'] == 5){
+            if(
+                // (!empty($booktrial['third_party_details'])) &&
+                ((isset($booktrial['post_trial_status_updated_by_lostfitcode'])) || (isset($booktrial['post_trial_status_updated_by_fitcode'])) || (isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-900) && !$isBackendReq))){
+                    $resp = array('status' => 400, 'message' => "This session cannot be cancelled");
+                    return Response::json($resp,200);
+            }
+        }else{
+            if(
+                // (!empty($booktrial['third_party_details'])) &&
+                ((isset($booktrial['post_trial_status_updated_by_lostfitcode'])) || (isset($booktrial['post_trial_status_updated_by_fitcode'])) || (isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600) && !$isBackendReq))){
+                    $resp = array('status' => 400, 'message' => "This session cannot be cancelled");
+                    return Response::json($resp,200);
+            }
         }
 
         array_set($bookdata, 'going_status', 2);
@@ -4766,6 +4775,18 @@ class SchedulebooktrialsController extends \BaseController {
 
         }
 
+        if(!empty($booktrial['pass_order_id'])){
+            $order = Order::find($booktrial['pass_order_id']);
+            if($order['pass']['pass_type'] == 'red'){
+                $pass_end_date = array(
+                    "old" => new Mongodate(strtotime($order['end_date'])),
+                    "new" => new MongoDate(strtotime('+1 days',strtotime($order['end_date'])))
+                );
+
+                array_set($bookdata, 'pass_end_date', $pass_end_date);
+            }
+        }
+
         array_set($bookdata, 'cancel_by', $source_flag);
         $trialbooked        = 	$booktrial->update($bookdata);
         
@@ -4778,6 +4799,12 @@ class SchedulebooktrialsController extends \BaseController {
                 ($order['onepass_sessions_used']>0)
             ){
                 $order->onepass_sessions_used -= 1;
+                $order->update();
+            }
+
+            if($order['pass']['pass_type'] == 'red'){
+                $order->end_date_original = new Mongodate(strtotime($order['end_date']));
+                $order->end_date = new MongoDate(strtotime('+1 days',strtotime($order['end_date'])));
                 $order->update();
             }
         }
