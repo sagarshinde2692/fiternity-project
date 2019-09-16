@@ -161,6 +161,16 @@ class PassService {
             }
         }
 
+        if(!empty($pass['pass_category']) && $pass['pass_category'] =='local'){
+            if(empty($data['pass_city_id']) || in_array($data['pass_city_id'], array_column($pass['local_cities'], 'city_id'))){
+                return [
+                    'status' =>400,
+                    'data' => null,
+                    'msg' => 'Not availabe a local pass in your selected city.'
+                ];
+            }
+        }
+
         $data['pass'] = $pass;
         if(empty($data['rp_subscription_id'])){
             $data['amount'] = $pass['price'];
@@ -630,7 +640,7 @@ class PassService {
         return (isset($bookingCount))?$bookingCount<1:false;
     }
 
-    public function allowSession($amount, $customerId, $date = null) {
+    public function allowSession($amount, $customerId, $date = null, $city_id=null) {
         if(empty($amount) && empty(!$customerId)) {
             return;
         }
@@ -1621,7 +1631,6 @@ class PassService {
         ->where('pass_type', $type)
         ->get(
             [
-                '_id',
                 'pass_id',
                 'duration_type',
                 'type',
