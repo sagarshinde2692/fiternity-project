@@ -10623,6 +10623,10 @@ class CustomerController extends \BaseController {
 
 		$customer = Customer::find($customer_id);
 
+		$destination_img = 'destination.jpeg';
+		Log::info('images size before compresss:::::::', [getimagesize($image), filesize($image)]);
+		$d = $this->utilities->compress($image, $destination_img, 75);
+		Log::info('images size before compresss:::::::', [getimagesize($d), filesize($d)]);
 		$photo = !empty($image) ? $this->utilities->onePassCustomerUpdateService($image, $customer_id, $customer): null;
 
 		if((!empty($photo['status']) && $photo['status']==200)){
