@@ -1613,4 +1613,8 @@ class PassService {
         }
         return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
     }
+
+    public function localPassRatecards($type, $city_name){
+        return $passList = Pass::active()->where('pass_category', 'local')->where('local_cities.city_name', $city_name)->where('pass_type', $type)->get();
+    }
 }
