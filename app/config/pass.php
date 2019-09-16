@@ -34,6 +34,11 @@ return [
                     'text' => 'Terms & Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
+                ],
+                'local_pass' => [
+                    'header' => 'This is local red pass',
+                    'description' => 'description of red pass',
+                    'button_text' => 'buy'
                 ]
             ],
             [
@@ -62,6 +67,11 @@ return [
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
 
+                ],
+                'local_pass' => [
+                    'header' => 'This is local red pass',
+                    'description' => 'description of red pass',
+                    'button_text' => 'buy'
                 ]
             ]
         ],
@@ -98,6 +108,11 @@ return [
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
+                ],
+                'local_pass' => [
+                    'header' => 'This is local red pass',
+                    'description' => 'description of red pass',
+                    'button_text' => 'buy'
                 ]
             ],
             [
@@ -133,6 +148,11 @@ return [
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
 
+                ],
+                'local_pass' => [
+                    'header' => 'This is local black pass',
+                    'description' => 'description of black pass',
+                    'button_text' => 'buy'
                 ]
             ]
         ],
@@ -142,7 +162,7 @@ return [
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
         ],
-        'subheader' => 'duration_text PASS FOR usage_text',
+        'subheader' => 'duration_text PASS FOR usage_text'
     ],
     "total_available" => 300,
     "terms"=>[

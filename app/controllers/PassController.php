@@ -136,4 +136,34 @@ class PassController extends \BaseController {
         }
         return [ 'status' => 200, 'data' => $this->passService->homePostPassPurchaseData($customer_id), 'message' => 'Success' ];
     }
+
+    public function localPassRatecards(){
+        $data = Input::all();
+
+        $rules= [
+            'city'=>'required'
+        ];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())), 400);
+        }
+
+        $type = 'red';
+        if(!empty($data['type'])){
+            $type= $data['type'];
+        }
+
+        $ratecards = $this->passService->localPassRatecards($type, $data['city']);
+
+        $resp = [ 'status' => 200, 'data' => $ratecards, 'message' => 'Success'];
+
+        if(empty(count($ratecards))){
+            $resp['message'] = "wo dont serve in ".$data['city']." as of now. ".$type. " pass";
+            $resp['status'] = 400;
+        }
+
+        return $resp;
+    }
 }

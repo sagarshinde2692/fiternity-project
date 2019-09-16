@@ -10378,4 +10378,5 @@ Class Utilities {
 
         return \Servicecategory::active()->where('parent_id', 0)->get(['_id', 'name', 'slug', 'description']);
     }
+
 }
