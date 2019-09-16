@@ -2039,7 +2039,7 @@ class ServiceController extends \BaseController {
 				$allowSession = false;
 			}
 		}
-		if($allowSession && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))){
+		if($allowSession && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($service_details['finder']))){
 			$service_details['price'] = Config::get('app.onepass_free_string');
 			$service_details['easy_cancellation'] = array(
 				"header" => "Easy Cancelletion: ",
