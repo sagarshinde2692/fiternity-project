@@ -5304,7 +5304,7 @@ class FindersController extends \BaseController {
 					
 					$_allowSession = false;
 					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-						if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price<Config::get('pass.price_upper_limit' || $this->utilities->forcedOnOnepass($finderData['finder'])) || $this->utilities->forcedOnOnepass($finder))) {
+						if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price<Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finderData['finder']))) {
 							$_allowSession = $allowSession['allow_session'];
 						}
 					}
