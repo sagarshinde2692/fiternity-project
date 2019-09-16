@@ -10623,7 +10623,7 @@ class CustomerController extends \BaseController {
 
 		$customer = Customer::find($customer_id);
 
-		$photo = !empty($image) ? $this->utilities->onePassCustomerUpdateService($image, $customer_id, $customer): null;
+		$photo = !empty($image) ? $this->utilities->onePassCustomerAddImage($image, $customer_id, $customer): null;
 
 		if((!empty($photo['status']) && $photo['status']==200)){
 

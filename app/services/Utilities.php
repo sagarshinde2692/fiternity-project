@@ -10295,7 +10295,7 @@ Class Utilities {
         return $resp;
     }
 
-    public function onePassCustomerUpdateService($image, $customer_id, $customer){
+    public function onePassCustomerAddImage($image, $customer_id, $customer){
 
         if ($image->getError()) {
 
