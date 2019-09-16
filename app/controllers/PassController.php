@@ -156,12 +156,14 @@ class PassController extends \BaseController {
         }
 
         $ratecards = $this->passService->localPassRatecards($type, $data['city']);
-        $message = 'Success' ;
-        
+
+        $resp = [ 'status' => 200, 'data' => $ratecards, 'message' => 'Success'];
+
         if(empty(count($ratecards))){
-            $message = "wo dont serve in ".$data['city']." as of now";
+            $resp['message'] = "wo dont serve in ".$data['city']." as of now";
+            $resp['status'] = 400;
         }
 
-        return [ 'status' => 200, 'data' => $ratecards, 'message' => $message];
+        return $resp;
     }
 }
