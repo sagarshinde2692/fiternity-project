@@ -10304,7 +10304,7 @@ Class Utilities {
     }
 
     public function forcedOnOnepass($finder) {
-        return (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']));
+        return (!empty($finder['flags']['forced_on_onepass']) && ($finder['flags']['forced_on_onepass']));
     }
 
 }
