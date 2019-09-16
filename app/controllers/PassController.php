@@ -160,7 +160,7 @@ class PassController extends \BaseController {
         $resp = [ 'status' => 200, 'data' => $ratecards, 'message' => 'Success'];
 
         if(empty(count($ratecards))){
-            $resp['message'] = "wo dont serve in ".$data['city']." as of now";
+            $resp['message'] = "wo dont serve in ".$data['city']." as of now. ".$type. " pass";
             $resp['status'] = 400;
         }
 
