@@ -1050,6 +1050,19 @@ class ServiceController extends \BaseController {
 							array_set($slot, 'skip_share_detail', true);
 						}
 
+						$des = 'You can cancel this session 1 hour prior to your session time. The paid amount will be refunded to you in form of Fitcash.';
+						
+						if(!empty($findercategory_id) && $findercategory_id == 5){
+							$des = 'You can cancel this session 15 min prior to your session time. The paid amount will be refunded to you in form of Fitcash.';
+						}
+
+						$easy_cancellation = array(
+							"header" => "Easy Cancelletion: ",
+							"description" => $des
+						);
+
+						array_set($slot, 'easy_cancellation', $easy_cancellation);
+
 						$total_slots_count +=1;
 						
 						// if(isset($_GET['source']) && $_GET['source'] == 'pps')
@@ -1807,6 +1820,7 @@ class ServiceController extends \BaseController {
 			};
 			$service_details['finder_slug'] = $finder['slug'];
 			$service_details['finder_flags'] = $finder['flags'];
+			$service_details['finder_category_id'] = (int)$finder['category_id'];
 			$service_details['lat'] = (string)$service_details['lat'];
 			$service_details['lon'] = (string)$service_details['lon'];
 
@@ -2035,10 +2049,16 @@ class ServiceController extends \BaseController {
 			}
 		}
 		if($allowSession && $service_details['amount'] < 1001){
+
+			$des = 'You can cancel this session 1 hour prior to your session time.';
+			if($service_details['finder_category_id'] == 5){
+				$des = 'You can cancel this session 15 min prior to your session time.';
+			}
+
 			$service_details['price'] = Config::get('app.onepass_free_string');
 			$service_details['easy_cancellation'] = array(
 				"header" => "Easy Cancelletion: ",
-				"description" => "You can cancel this session 1 hour prior to your session time."
+				"description" => $des
 			);
 		}
 		$time = isset($_GET['time']) ? $_GET['time'] : null;
