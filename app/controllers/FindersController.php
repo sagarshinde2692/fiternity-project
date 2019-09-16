@@ -3875,7 +3875,7 @@ class FindersController extends \BaseController {
 				foreach($service['ratecard'] as &$ratecard){
 					if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $price < Config::get('pass.price_upper_limit')){
+						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 							if($this->device_type == 'android'){
 								$line = "<u>The Fit India Grand Sale</u><br><br>- Get 50% Off + Extra 25% Off On Memberships & Session Packs. Use Code : INDIAFIT";
 							}else{	
@@ -5304,7 +5304,7 @@ class FindersController extends \BaseController {
 					
 					$_allowSession = false;
 					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-						if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && $price<Config::get('pass.price_upper_limit')) {
+						if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price<Config::get('pass.price_upper_limit' || $this->utilities->forcedOnOnepass($finderData['finder'])) || $this->utilities->forcedOnOnepass($finder))) {
 							$_allowSession = $allowSession['allow_session'];
 						}
 					}

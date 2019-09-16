@@ -5806,7 +5806,7 @@ class TransactionController extends \BaseController {
         $position = 0;
 
         $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < Config::get('pass.price_upper_limit') && !empty($data['type']) && $data['type'] == 'workout-session'){
+        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']])) && !empty($data['type']) && $data['type'] == 'workout-session'){
             $booking_details_data["customer_name"] = ['field'=>'NAME','value'=>$data['customer_name'],'position'=>$position++];
 			$booking_details_data["customer_email"] = ['field'=>'EMAIL','value'=>$data['customer_email'],'position'=>$position++];
 			$booking_details_data["customer_contact_no"] = ['field'=>'CONTACT NO','value'=>$data['customer_phone'],'position'=>$position++];
@@ -6033,7 +6033,7 @@ class TransactionController extends \BaseController {
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
             $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase','position'=>$position++];
             
-            if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < Config::get('pass.price_upper_limit')){
+            if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']]))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
         }

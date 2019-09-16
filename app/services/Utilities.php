@@ -10303,4 +10303,8 @@ Class Utilities {
             return $number. $ends[$number % 10];
     }
 
+    public function forcedOnOnepass($finder) {
+        return (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']));
+    }
+
 }

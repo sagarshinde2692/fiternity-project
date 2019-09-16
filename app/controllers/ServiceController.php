@@ -942,11 +942,11 @@ class ServiceController extends \BaseController {
                         Log::info("nrsh price",[$rsh['price_only']]);
 						if($allowSession){
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
-							if($rsh['price_only'] < Config::get('pass.price_upper_limit')){
+							if($rsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder['finder'])){
 								$rsh['price'] = Config::get('app.onepass_free_string');
 							}
 							
-							if($nrsh['price_only'] < Config::get('pass.price_upper_limit')){
+							if($nrsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder['finder'])){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
 							}
 							
@@ -1051,7 +1051,7 @@ class ServiceController extends \BaseController {
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
 
 						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-						if(!empty($allowSession) && $ratecard_price < Config::get('pass.price_upper_limit')){
+						if(!empty($allowSession) && ($ratecard_price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))){
 							array_set($slot, 'skip_share_detail', true);
 						}
 
@@ -1186,7 +1186,7 @@ class ServiceController extends \BaseController {
                 }
 
 				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-				if($allowSession && $service['non_peak']['price'] < Config::get('pass.price_upper_limit')){
+				if($allowSession && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $service['non_peak']['price'] .= " (100% Cashback)";
@@ -1342,7 +1342,7 @@ class ServiceController extends \BaseController {
 				
 				foreach($data['schedules'] as &$sc){
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-                    if((!empty($_GET['init_source']) && $_GET['init_source'] == 'pps') || (!empty($onepassHoldCustomer) && $onepassHoldCustomer && (!empty($sc['price_int']) && $sc['price_int'] < Config::get('pass.price_upper_limit')))){
+                    if((!empty($_GET['init_source']) && $_GET['init_source'] == 'pps') || (!empty($onepassHoldCustomer) && $onepassHoldCustomer && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))))){
                         $sc['free_trial_available'] = false;
                     }
 					
@@ -1376,7 +1376,7 @@ class ServiceController extends \BaseController {
 						$str = "";
 					}
 					
-					if($allowSession && (!empty($sc['price_int']) && $sc['price_int'] < Config::get('pass.price_upper_limit'))){
+					if($allowSession && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)))){
 						$sc['cost'] = Config::get('app.onepass_free_string');
 					}else{
 						$sc['cost'] .= $str;
@@ -2039,7 +2039,7 @@ class ServiceController extends \BaseController {
 				$allowSession = false;
 			}
 		}
-		if($allowSession && $service_details['amount'] < Config::get('pass.price_upper_limit')){
+		if($allowSession && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))){
 			$service_details['price'] = Config::get('app.onepass_free_string');
 			$service_details['easy_cancellation'] = array(
 				"header" => "Easy Cancelletion: ",
