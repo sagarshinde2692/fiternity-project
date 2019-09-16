@@ -577,7 +577,7 @@ class PassService {
             $aggregate = [
                 [
                     '$project' => [
-                        '_id'=> 1, 'customer_id'=> 1, 'status'=> 1, 'type'=> 1, 'pass'=> 1, 'start_date'=> 1, 'end_date'=> 1, 'onepass_sessions_used'=> 1, 'onepass_sessions_total'=> 1, 'diff_sessions'=> ['$cmp'=> ['$onepass_sessions_total','$onepass_sessions_used']], 'pass_type'=> '$pass.pass_type'
+                        '_id'=> 1, 'customer_id'=> 1, 'status'=> 1, 'type'=> 1, 'pass'=> 1, 'start_date'=> 1, 'end_date'=> 1, 'onepass_sessions_used'=> 1, 'onepass_sessions_total'=> 1, 'diff_sessions'=> ['$cmp'=> ['$onepass_sessions_total','$onepass_sessions_used']], 'pass_type'=> '$pass.pass_type', 'pass_city_id'
                     ]
                 ],
                 [
@@ -652,6 +652,13 @@ class PassService {
         $schedule_time = strtotime('midnight', strtotime($date));
         if(!empty($customerId)) {
             $passOrder = $this->getPassOrder($customerId, $schedule_time);
+
+            if(!empty($city_id) && !empty($passOrder)){
+                if((int) $passOrder['pass_city_id'] != (int) $city_id ){
+                    return [ 'allow_session' => false, 'order_id' => $passOrder['_id']];
+                }
+            }
+            
         }
 
         if(!empty($passOrder)) {
