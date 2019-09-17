@@ -10379,22 +10379,6 @@ Class Utilities {
         return \Servicecategory::active()->where('parent_id', 0)->get(['_id', 'name', 'slug', 'description']);
     }
 
-    public function localPassHoldCustomer(){
-        $jwt_token = Request::header('Authorization');
-        $pass_city_id = null;
-        $customer_email = "";
-        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-            $decoded = customerTokenDecode($jwt_token);
-            $customer_email = $decoded->customer->email;
-            if(!empty($decoded->customer->pass_city_id)){
-                $pass_city_id = $decoded->customer->pass_city_id;
-            }
-        }
-
-        Log::info("local pass city id",[$pass_city_id]);
-        return $pass_city_id;
-    }
-    
     function getOrdinalNumber($number) {
         $ends = array('th','st','nd','rd','th','th','th','th','th','th');
         if ((($number % 100) >= 11) && (($number%100) <= 13))
