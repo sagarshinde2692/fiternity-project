@@ -10305,7 +10305,7 @@ Class Utilities {
 
         $data = [
             "input"=>$image,
-            "upload_path"=>Config::get('app.aws.customer_photo.path'),
+            "upload_path"=>Config::get('app.aws.customer_photo.path').$customer_id.'/',
             "local_directory"=>public_path().'/customer_photo/'.$customer_id,
             "file_name"=>$customer_id.'-'.time().'.'.$image->getClientOriginalExtension()
             // "resize"=>["height" => 200,"strategy" => "portrait"],
