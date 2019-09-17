@@ -2767,7 +2767,7 @@ Class CustomerReward {
                 
                 $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer];
 
-                $discount_max_overridable = true;
+                $discount_max_overridable = false;
 
                 foreach($coupon['discount_max_overridable'] as $y){
                     if(!empty($y['key']) && !empty($y['operator']) && !empty($y['values'])){
@@ -2790,17 +2790,17 @@ Class CustomerReward {
                                 
                             }else{
                                 
-                                if(!in_array($embedded_value, $y['values'])){
-                                    $discount_max_overridable = false;
-                                    break;
+                                if(in_array($embedded_value, $y['values'])){
+                                    $discount_max_overridable = true;
+                                    // break;
                                 }
                             
                             }
-                        
+                            
                         }else if($y['operator'] == 'nin'){
-                            if(!empty($embedded_value) && in_array($embedded_value, $y['values'])){
-                                $discount_max_overridable = false;
-                                break;
+                            if(!empty($embedded_value) && !in_array($embedded_value, $y['values'])){
+                                $discount_max_overridable = true;
+                                // break;
 
                             }
                         }else if($y['operator'] == 'regex'){
@@ -2812,14 +2812,14 @@ Class CustomerReward {
                                 break;
                             }
                             
-                            if(!preg_match($y['values'], $embedded_value)){
-                                $discount_max_overridable = false;
-                                break;
+                            if(preg_match($y['values'], $embedded_value)){
+                                $discount_max_overridable = true;
+                                // break;
 
                             }
                         }
                     }
-
+                        
                     if($discount_max_overridable){
                         $coupon_selected = $y;
                         break;
