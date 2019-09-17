@@ -5300,10 +5300,9 @@ class FindersController extends \BaseController {
 					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 					Log::info("Price onepass ::",[$price]);
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					$localPassCityId = $this->utilities->localPassHoldCustomer();
 					$allowSession = false;
 					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-						$allowSession = $this->passService->allowSession($price, $customer_id, $localPassCityId);
+						$allowSession = $this->passService->allowSession($price, $customer_id);
 						if(!empty($allowSession['allow_session'])) {
 							$allowSession = $allowSession['allow_session'];
 						}
@@ -8491,14 +8490,13 @@ class FindersController extends \BaseController {
 
 	public function addCreditPoints(&$value, $customer_id){
 		
-		$localPassCityId = $this->utilities->localPassHoldCustomer();
 		if(!empty($customer_id)){
 			foreach($value as &$service){
 				if(!empty($service['serviceratecard'])){
 					foreach($service['serviceratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, $localPassCityId);
+							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	
@@ -8510,7 +8508,7 @@ class FindersController extends \BaseController {
 					foreach($service['ratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, $localPassCityId);
+							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session']){
 								$ratecards['price_text'] = 'Free for you';	

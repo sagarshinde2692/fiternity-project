@@ -641,7 +641,7 @@ class PassService {
         return (isset($bookingCount))?$bookingCount<1:false;
     }
 
-    public function allowSession($amount, $customerId, $date = null, $city_id=null) {
+    public function allowSession($amount, $customerId, $date = null) {
         if(empty($amount) && empty(!$customerId)) {
             return;
         }
@@ -652,14 +652,7 @@ class PassService {
         // $schedule_time = strtotime($date);
         $schedule_time = strtotime('midnight', strtotime($date));
         if(!empty($customerId)) {
-            $passOrder = $this->getPassOrder($customerId, $schedule_time);
-
-            if(!empty($city_id) && !empty($passOrder)){
-                if((int) $passOrder['pass_city_id'] != (int) $city_id ){
-                    return [ 'allow_session' => false, 'order_id' => $passOrder['_id']];
-                }
-            }
-            
+            $passOrder = $this->getPassOrder($customerId, $schedule_time);            
         }
 
         if(!empty($passOrder)) {
