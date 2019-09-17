@@ -162,7 +162,8 @@ class PassService {
         }
 
         if(!empty($pass['pass_category']) && $pass['pass_category'] =='local'){
-            if(empty($data['pass_city_id']) || in_array($data['pass_city_id'], array_column($pass['local_cities'], 'city_id'))){
+            
+            if(empty($data['pass_city_id']) || !in_array($data['pass_city_id'], array_column($pass['local_cities'], 'city_id'))){
                 return [
                     'status' =>400,
                     'data' => null,
