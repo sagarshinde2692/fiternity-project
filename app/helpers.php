@@ -3232,9 +3232,9 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null){
 
-        $inoperational_dates = ['2019-09-02'];
+        $inoperational_dates = ['2019-09-12'];
 
-        if( in_array($date, $inoperational_dates)){
+        if( in_array($date, $inoperational_dates) && in_array($city_id, [1, 2])){
             return false;
         }
 
