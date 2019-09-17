@@ -10609,9 +10609,6 @@ class CustomerController extends \BaseController {
 		$data = Input::all();
 
 		$input_fields_count  = $this->check_array($data);
-		if(empty($input_fields_count)){
-			return array('status'=>400, 'message'=>'Invalid Request.');
-		}
 
 		$resp = [];
 
@@ -10641,8 +10638,9 @@ class CustomerController extends \BaseController {
 		$customer = $this->utilities->updateAddressAndIntereste($customer, $data);
 
 		try{
-
-			$customer->save();
+			if(!empty($input_fields_count)){
+				$customer->save();
+			}
 
 		}catch(\Exception $e){
 			Log::info('error occured while saving customer:::::', [$e]);
@@ -10651,6 +10649,23 @@ class CustomerController extends \BaseController {
 
 		}
 
+		$resp['customer_data'] = $customer->onepass;
+		if(!empty($resp['customer_data']['photo'])){
+			$resp['customer_data']['url'] = $resp['customer_data']['photo']['url'];
+			unset($resp['customer_data']['photo']);
+		}
+
+		if(!empty($resp['service_categories']) && !empty($resp['customer_data']['intereste'])){
+			foreach($resp['service_categories'] as &$value){
+				if(in_array($value['slug'], $resp['customer_data']['intereste'])){
+					$value['selected'] = true;
+				}
+				else{
+					$value['selected'] = false;
+				}
+			}
+		}
+		
 		return Response::json(['status'=> 200, "message"=> "Success", "data"=> $resp]);
 	
 	}

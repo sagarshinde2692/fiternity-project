@@ -10325,17 +10325,17 @@ Class Utilities {
     }
 
     public function updateAddressAndIntereste($customer, $data){
-        
+        $onepass = !empty($customer->onepass) ?  $customer->onepass: [];
         if(!empty($data['customer_photo'])){
-            $customer->photo = $data['customer_photo'];
+            $onepass['photo'] = $data['customer_photo'];
         }
 
         if(!empty($data['intereste'])){
-            $customer->intereste = $data['intereste'];
+            $onepass['intereste'] = $data['intereste'];
         }
 
         if(!empty($data['gender']) && in_array($data['gender'], ['male', 'female'])){
-            $customer->gender = $data['gender'];
+            $onepass['gender'] = $data['gender'];
         }
 
         if(!empty($data['address_details'])){
@@ -10345,13 +10345,14 @@ Class Utilities {
 
             if(!empty($data['address_details']['home_address'])){
                 $customer->address =  $data['address_details']['home_address'];
+                $onepass['home_address'] = $data['address_details']['home_address'];
             }
             
             if(!empty($data['address_details']['work_address'])){
-                $customer->work_address =  $data['address_details']['work_address'];
+                $onepass['work_address'] =  $data['address_details']['work_address'];
             }
         }
-
+        $customer->onepass = $onepass;
         return $customer;
     }
 
@@ -10376,7 +10377,7 @@ Class Utilities {
 
     public function getParentServicesCategoryList(){
 
-        return \Servicecategory::active()->where('parent_id', 0)->get(['_id', 'name', 'slug', 'description']);
+        return \Servicecategory::active()->where('parent_id', 0)->get(['slug', 'name']);
     }
 
     function getOrdinalNumber($number) {
