@@ -745,15 +745,15 @@ class TransactionController extends \BaseController {
             $finder_id = (int) $data['finder_id'];
     
             $finderDetail = $this->getFinderDetail($finder_id);
-    
+
             if($finderDetail['status'] != 200){
                 return Response::json($finderDetail,$this->error_status);
             }
-    
-            
-    
+
+
+
             // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
-    
+            
             $orderfinderdetail = $finderDetail;
             $data = array_merge($data,$orderfinderdetail['data']);
             unset($orderfinderdetail["data"]["finder_flags"]);
@@ -775,6 +775,10 @@ class TransactionController extends \BaseController {
 
         }else{
             $finderDetail['data']['finder_flags'] = [];
+        }
+
+        if(!empty($data['type']) && $data['type'] == 'workout-session' && !empty($data['trial']) && $data['trial'] == 'disable'){
+            return Response::json(['status' => 404,'message' =>'Transaction not allowed'],$this->error_status);
         }
         
         if($data['type'] == 'workout-session'){
@@ -4862,6 +4866,7 @@ class TransactionController extends \BaseController {
         $data['category_slug'] = $finder_category_slug;
         $data['finder_flags'] = $finder_flags;
         $data['finder_notes'] = $finder_notes;
+        $data['trial'] = !empty($finder['trial']) ? $finder['trial'] : 'auto';
 
         return array('status' => 200,'data' =>$data);
     }
