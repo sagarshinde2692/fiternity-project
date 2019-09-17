@@ -2736,6 +2736,115 @@ Class CustomerReward {
 
 
             }
+
+
+            if(($ratecard || $pass) && !empty($coupon['discount_max_overridable']) && is_array($coupon['discount_max_overridable'])){
+
+                if(empty($finder)){
+                    $finder = Finder::where('_id', $ratecard['finder_id'])->first();
+                }
+                if(empty($service)){
+                    $service = Service::where('_id', $ratecard['service_id'])->first();
+                }
+                
+                $jwt_token = Request::header('Authorization');
+                // $logged_in_customer = null;
+                $logged_in_customer = [];
+                if(!empty($jwt_token)){
+
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    $logged_in_customer = (array)$decoded->customer;
+                    
+                }
+                $booking_for_customer= [];
+                if(!empty($customer_email)){
+                    $booking_for_customer = \Customer::active()->where('email',  $customer_email)->first();
+                }
+                $utilities = new Utilities();
+                if($ratecard){
+                    $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
+                }
+                
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer];
+
+                $discount_max_overridable = false;
+
+                foreach($coupon['discount_max_overridable'] as $y){
+                    if(!empty($y['key']) && !empty($y['operator']) && !empty($y['values'])){
+                        // print_r($condition['key']);
+                        $embedded_value = $this->getEmbeddedValue($data , $y['key']);
+                        if($y['operator'] == 'in'){
+                            if(empty($embedded_value)){
+                                $discount_max_overridable = false;
+                                break;
+                            }
+                            if(!empty($y['values'][0]['valid_till'])){
+                    
+                                $values = array_column($y['values'], 'value');
+                                $dates = array_column($y['values'], 'valid_till');
+                                
+                                if(!in_array($embedded_value, $values) || time() > $dates[array_search($embedded_value, $values)]->sec){
+                                    $discount_max_overridable = false;
+                                    break;
+                                }
+                                
+                            }else{
+                                
+                                if(in_array($embedded_value, $y['values'])){
+                                    $discount_max_overridable = true;
+                                    // break;
+                                }
+                            
+                            }
+                            
+                        }else if($y['operator'] == 'nin'){
+                            if(!empty($embedded_value) && !in_array($embedded_value, $y['values'])){
+                                $discount_max_overridable = true;
+                                // break;
+
+                            }
+                        }else if($y['operator'] == 'regex'){
+                            // print_r ($embedded_value);
+                            // exit();
+                            
+                            if(empty($embedded_value)){
+                                $discount_max_overridable = false;
+                                break;
+                            }
+                            
+                            if(preg_match($y['values'], $embedded_value)){
+                                $discount_max_overridable = true;
+                                // break;
+
+                            }
+                        }
+                    }
+                        
+                    if($discount_max_overridable){
+                        $coupon_selected = $y;
+                        break;
+                    }
+                }
+
+                if(!empty($coupon_selected) ){
+
+                    if(!empty($coupon_selected['discount_percent'])){
+                        $coupon['discount_percent'] = $coupon_selected['discount_percent'];
+                    }
+                    
+                    if(!empty($coupon_selected['discount_max'])){
+                        $coupon['discount_max'] = $coupon_selected['discount_max'];
+                    }
+                    
+                    if(!empty($coupon_selected['description'])){
+                        $coupon['description'] = $coupon_selected['description'];
+                    }
+
+                    if(!empty($coupon_selected['final_amount'])){
+                        $coupon['final_amount'] = $coupon_selected['final_amount'];
+                    }
+                }
+            }
             
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
@@ -2745,6 +2854,12 @@ Class CustomerReward {
             $discount_price = $price - $discount_amount;
             $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
             $vendor_routed_coupon = isset($coupon["vendor_routed_coupon"]) ? $coupon["vendor_routed_coupon"] : false;
+
+            if(!empty($coupon['final_amount'])){
+                $final_amount = $coupon['final_amount'];
+                $discount_amount = $price - $final_amount;
+            }
+
             $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true, 'otp'=>$fitternity_only_coupon, "vendor_coupon"=>$vendor_coupon, "vendor_routed_coupon" => $vendor_routed_coupon);
             if(isset($coupon['success_message']) && trim($coupon['success_message']) != ""){
                 $resp['custom_message'] = str_replace("<amt>",$discount_amount,$coupon['success_message']);

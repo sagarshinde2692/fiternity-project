@@ -8,6 +8,8 @@ class BaseController extends Controller {
     
     public $device_type;
     public $app_version;
+    public $device_id;
+    public $device_token;
 
     /**
      * @constructor
@@ -18,9 +20,11 @@ class BaseController extends Controller {
         $this->app_version = Request::header('App-Version');
         $this->authorization = Request::header('Authorization');
         $this->mobile_verified = Request::header('Mobile-Verified');
+        $this->device_id = !empty(Request::header('Device-Id'))? Request::header('Device-Id'): null;
 
         $this->get_device_type = !empty($_GET['device_type']) ? $_GET['device_type'] : '' ;
         $this->get_app_version = !empty($_GET['app_version']) ? $_GET['app_version'] : '' ;
+        $this->device_token = !empty(Request::header('Device-Token')) ? Request::header('Device-Token'): null;
 		// Log::info($_SERVER['REQUEST_URI']);
      	//echo "call in base";
      	//$this->perpage =  Config::get('app.perpage');

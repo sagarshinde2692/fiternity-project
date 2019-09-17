@@ -11527,7 +11527,7 @@ public function yes($msg){
 			Log::info("service_id", [$ratecard['service_id']]);
 			Log::info("price", [$price]);
 
-			if($price < 1001){
+			if($price < Config::get('pass.price_upper_limit')){
 				array_push($updates, [
 					"q"=>['_id'=> $ratecard['service_id']],
 					"u"=>[
