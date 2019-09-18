@@ -10634,7 +10634,9 @@ class CustomerController extends \BaseController {
 
 			return Response::json($photo, 200);
 		}
+		
 		$data['profile_completed'] = $this->utilities->checkOnepassProfileCompleted($customer);
+		
 		$customer = $this->utilities->updateAddressAndIntereste($customer, $data);
 
 		try{

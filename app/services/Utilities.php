@@ -10425,16 +10425,23 @@ Class Utilities {
 
     public function checkOnepassProfileCompleted($customer=null){
 
-        $keys = sort(['photo', 'gender', 'home_address', 'work_address', 'interest']);
-        $profileKeys = [];
-        if(!empty($customer->onepass)){
-            $profileKeys = array_map(function($e) {
-                return is_object($e) ? $e->Title : $e['Title'];
-            }, $customer->onepass);
-            $profileKeys = sort($profileKeys);
+        if(empty($customer->onepass)){
+            return false; 
+        }
+        $required_keys = ['photo', 'gender', 'home_address', 'work_address', 'interests'];
+
+        $profileKeys = array_keys($customer->onepass);
+        $status = false;
+
+        foreach($required_keys as $key=>$value){
+            Log::info('values', [$value]);
+            if(!in_array($value, $profileKeys)){
+                $status = false;
+                break;
+            }
+            $status = true;
         }
 
-        $status = ($keys == $profileKeys) ? true : false;
         return $status;
     }
 }

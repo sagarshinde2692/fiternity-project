@@ -21,9 +21,10 @@ use Finder;
 use stdClass;
 use Input;
 class PassService {
-
-    public function __construct() {
-
+    protected $utilities;
+    
+    public function __construct(Utilities $utilities) {
+        $this->utilities	=	$utilities;
     }
 
     public function listPasses($customerId, $pass_type=null, $device=null, $version=null){
@@ -646,7 +647,8 @@ class PassService {
         if(empty($amount) && empty(!$customerId)) {
             return;
         }
-
+        $customer = Customer::find($customerId);
+        
         if(empty($date)){
             $date = date('d-m-Y', time());
         }
@@ -660,6 +662,12 @@ class PassService {
         if(!empty($passOrder)) {
             $passType = $passOrder['pass']['pass_type'];
             Log::info('pass orders:::::::::::::::::', [$passOrder]);
+
+            //$utilities = new Utilities();
+            $profile_completed = $this->utilities->checkOnepassProfileCompleted($customer);
+            if(empty($profile_completed)){
+                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'msg'=>"onepass profile not complete" ];
+            }
         }
 
         if(!empty($finderId)) {
