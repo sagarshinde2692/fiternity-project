@@ -75,8 +75,8 @@ class EventsController extends \BaseController {
 			unset($eventInfo['images']);
 
 			$mfp_success_data = Config::get('mfp_success');
-			$base_url= $mfp_success_data['base_url'];
-			$extention = $mfp_success_data['extension'];
+			// $base_url= $mfp_success_data['base_url'];
+			// $extention = $mfp_success_data['extension'];
 			
 			// if(!empty($eventInfo['schedule'])){
 			// 	foreach($eventInfo['schedule'] as &$value){
