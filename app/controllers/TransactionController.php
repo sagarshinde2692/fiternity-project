@@ -3682,7 +3682,7 @@ class TransactionController extends \BaseController {
                     // $data['coupon_description'] = 'First wourkout session free';
                     // $data['coupon_discount_amount'] = $data['ratecard_amount'];
                     // $amount = $data['amount'] - $data['coupon_discount_amount'];
-                    // $data['first_session_free'] = true;
+                    $data['first_session_free'] = true;
                     // $data['amount_finder'] = 0;
                     // $data['vendor_price'] = 0;
                     $first_session_free = true;
