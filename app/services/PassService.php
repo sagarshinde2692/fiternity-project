@@ -632,6 +632,11 @@ class PassService {
     }
 
     public function allowSession($amount, $customerId, $date = null, $finderId = null) {
+        
+        if(!checkAppVersionFromHeader(['ios'=>'5.1.1', 'android'=>5])){
+            return;
+        }
+        
         if(empty($amount) && empty(!$customerId)) {
             return;
         }
