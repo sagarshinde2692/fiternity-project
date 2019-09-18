@@ -842,7 +842,7 @@ class ServiceController extends \BaseController {
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
 				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : "",
 				'free_trial_available'=>!empty($item['freeTrialRatecards']),
-				'flags' => ['classpass_available' => !empty($item['flags']['classpass_available'])?$item['flags']['classpass_available']:false]
+				'flags' => ['classpass_available' => ((!empty($item['flags']['classpass_available']))?$item['flags']['classpass_available']:false)]
 			);
 
 			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
@@ -924,7 +924,9 @@ class ServiceController extends \BaseController {
 		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
 		    		$service['cost'] = "₹ ".$ratecard_price;
 				}
-				
+				if($allowSession && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+					$service['cost'] = Config::get('app.onepass_free_string');
+				}
 
 
                 if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
