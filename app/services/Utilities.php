@@ -10389,20 +10389,24 @@ Class Utilities {
 			unset($resp['service_categories']);
 		}
 		
-		if(!empty($resp['address_details']['home_address'])){
+		if(!empty($resp['home_address'])){
 
-			$resp['address_details']['home_address'] = $resp['address_details']['home_address'];
-			if(!empty($resp['address_details']['home_address_landmark'])){
-				$resp['address_details']['home_address_landmark'] = $resp['address_details']['home_address_landmark'];
-			}
+			$resp['address_details']['home_address'] = $resp['home_address'];
+			if(!empty($resp['home_address_landmark'])){
+				$resp['address_details']['home_address_landmark'] = $resp['home_address_landmark'];
+                unset($resp['home_address_landmark']);
+            }
+            unset($resp['home_address']);
 		}
 
-		if(!empty($resp['address_details']['work_address'])){
+		if(!empty($resp['work_address'])){
 
-			$resp['address_details']['work_address'] = $resp['address_details']['work_address'];
-			if(!empty($resp['address_details']['work_address_landmark'])){
-				$resp['address_details']['work_address_landmark'] = $resp['address_details']['work_address_landmark'];
+			$resp['address_details']['work_address'] = $resp['work_address'];
+			if(!empty($resp['work_address_landmark'])){
+				$resp['address_details']['work_address_landmark'] = $resp['work_address_landmark'];
+                unset($resp['work_address_landmark']);
 			}
+            unset($resp['work_address']);
         }
         
         return $resp;
