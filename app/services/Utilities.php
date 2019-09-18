@@ -10385,7 +10385,7 @@ Class Utilities {
 
 		if(!empty($resp['service_categories'])){
 			foreach($resp['service_categories'] as &$value){
-				if((!empty($resp['interests'])) && (in_array($value['slug'], $resp['interests']))){
+				if((!empty($resp['interests'])) && (in_array($value['_id'], $resp['interests']))){
 					$value['selected'] = true;
 				}
 				else{
