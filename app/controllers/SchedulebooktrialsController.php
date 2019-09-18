@@ -2856,7 +2856,9 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 
                 if(!isset($booktrialdata['third_party_details'])){
-                    $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);     
+                    if(empty($booktrialdata['pass_order_id'])){
+                        $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
+                    } 
                     
                     $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
                     
