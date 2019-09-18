@@ -6729,9 +6729,17 @@ Class Utilities {
         }else if($type == 'booktrial' && !isset($data['third_party_details'])){
             $data['booktrial_id']=$data['_id'];
             $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
+
+            
  
             if((!empty($data['qrcodepayment']) || !empty($data['checkin_booking'])) && empty($data['checkin'])){
-                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null, "checkout_status"=> false, 'device_token'=>$data['reg_id'],'mark_checkin_utilities' => true]);
+                
+                $mark_checkin_utilities = true;
+                if(!empty($data['extended_validity_order_id']) && !empty($data['checkin_booking'])){
+                    $mark_checkin_utilities = false;
+                }
+
+                $checkin = $this->addCheckin(['customer_id'=>$data['customer_id'], 'finder_id'=>$data['finder_id'], 'type'=>'workout-session', 'sub_type'=>$data['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$data['_id'], 'lat'=>!empty($data['lat']) ? $data['lat'] : null, 'lon'=>!empty($data['lon']) ? $data['lon'] : null, "checkout_status"=> false, 'device_token'=>$data['reg_id'],'mark_checkin_utilities' => $mark_checkin_utilities]);
             }
         }
 
@@ -9529,6 +9537,11 @@ Class Utilities {
 
 		Log::info('chekcins:::::::::::;', [$device_token, $checkins, $customer_id]);
         $customer = Customer::active()->where('_id', (int)$customer_id)->first();
+
+        if(!empty($customer['loyalty']['end_date']) && (strtotime($customer['loyalty']['end_date']) < strtotime('today'))){
+            return $this->checkinCheckoutFailureMsg("Your Fitsquad program has been expired.");
+        }
+
 		if(count($checkins)>0)
 		{
 			$d = strtotime($checkins['created_at']);	
@@ -9634,19 +9647,19 @@ Class Utilities {
 		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 500 ? true : false;
 		//Log::info('distance status', [$distanceStatus]);
 		if($distanceStatus){
-			$oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
-			if($oprtionalDays['status']){ // need to remove ! 
+			// $oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
+			// if($oprtionalDays['status']){ // need to remove ! 
                 //Log::info('device ids:::::::::', [$this->device_id]);
                 $source = !empty($data['source'])? $data['source'] : null;
                 $this->device_token= !empty($data['device_token']) ? $data['device_token']: $this->device_token;
 				return $this->checkForCheckinFromDevice($finder_id, $this->device_token, $finder, $customer_id, $source, $data);
-			}
-			else{
-				// return for now you are checking in for non operational day or time
-				$return = $this->checkinCheckoutFailureMsg('Sorry you are checking at non operational Time.');
-				return $return;
-				//return $oprtionalDays;
-			}
+			// }
+			// else{
+			// 	// return for now you are checking in for non operational day or time
+			// 	$return = $this->checkinCheckoutFailureMsg('Sorry you are checking at non operational Time.');
+			// 	return $return;
+			// 	//return $oprtionalDays;
+			// }
 		}
 		else{
 			// return for use high accurary
@@ -9823,19 +9836,19 @@ Class Utilities {
         if(!empty($_GET['receipt'])){
             $checkin_data['receipt'] = true;
         }
-        // if(!empty($session_pack)){
+        if(!empty($session_pack)){
 
-        //     $order_id = intval($_GET['session_pack']);
+            $order_id = intval($_GET['session_pack']);
             
-        //     $schedule_session = $this->scheduleSessionFromOrder($order_id);
-		// }
+            $schedule_session = $this->scheduleSessionFromOrder($order_id);
+		}
         
-        // if(empty($schedule_session['status']) || $schedule_session['status'] != 200){
+        if(empty($schedule_session['status']) || $schedule_session['status'] != 200){
             
 			$addedCheckin = $this->addCheckin($checkin_data);
 			Log::info('adedcheckins:::::::::::::',[$addedCheckin]);
         
-		// }
+		}
 		$finder = $finder_data;	
 		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200 || (!empty($schedule_session['status']) && $schedule_session['status'] == 200)){
 			// if(!empty($update_finder_ws_sessions)){
