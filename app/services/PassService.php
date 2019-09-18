@@ -361,7 +361,7 @@ class PassService {
         ];
 
         // if(!empty($order['amount'])){
-        if(!empty($order['amount']) && Request::header('Device-Type') != 'ios'){
+        if(!empty($order['amount']) && checkAppVersionFromHeader(['ios'=>'5.2.3', 'android'=>5])){
             $resp['data']["coupon_details"] = [
                 "title" => "Apply Coupon Code",
                 "description" => "",
