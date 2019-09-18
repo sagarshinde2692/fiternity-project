@@ -924,9 +924,6 @@ class ServiceController extends \BaseController {
 		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
 		    		$service['cost'] = "₹ ".$ratecard_price;
 				}
-				if($allowSession && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
-					$service['cost'] = Config::get('app.onepass_free_string');
-				}
 
 
                 if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
@@ -1379,7 +1376,7 @@ class ServiceController extends \BaseController {
 						$str = "";
 					}
 					
-					if($allowSession && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+					if($allowSession && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))) && (!empty($sc['flags']['classpass_available']) && $sc['flags']['classpass_available'])){
 						$sc['cost'] = Config::get('app.onepass_free_string');
 					}else{
 						$sc['cost'] .= $str;
