@@ -1401,3 +1401,4 @@ Route::get('testOnePassUser', 'DebugController@testOnePassUser');
 Route::get('homepostpasspurchase', 'PassController@homePostPassPurchaseData');
 Route::get('dynamicOnepassEMailSms', 'DebugController@dynamicOnepassEMailSms');
 Route::get('addFlagClasspassAvalible', 'DebugController@addFlagClasspassAvalible');
+Route::get('unlocksession/{trial_id}','SchedulebooktrialsController@unlockSession');
