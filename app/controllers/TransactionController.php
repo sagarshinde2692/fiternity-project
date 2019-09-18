@@ -7447,7 +7447,7 @@ class TransactionController extends \BaseController {
                 $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
                 $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
                 
-                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email, $first_session_free);
+                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email, null, $first_session_free);
                 if($resp["coupon_applied"]){
                     
                     $data['coupon_discount'] = $data['amount_payable'] > $resp['data']['discount'] ? $resp['data']['discount'] : $data['amount_payable'];
