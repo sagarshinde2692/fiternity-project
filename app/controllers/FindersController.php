@@ -4940,11 +4940,11 @@ class FindersController extends \BaseController {
                         if(empty($customer_trials_with_vendors->toArray())){
 
                             if(!empty($finderData['finder']['facilities']) && in_array( "Free Trial" , $finderData['finder']['facilities'])){
-                                $finderData['call_for_action_button']      =      "Book Free Session";
-                                $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session';    
+                                $finderData['call_for_action_button']      =      "Book A Session";
+                                $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first session';    
                             }else{
                                 $finderData['call_for_action_button']      =      "Book A Session";
-								$finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first trial session'; 
+								$finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first session'; 
 								// if(!empty($finderData['finder']['flags']['monsoon_campaign_pps'])){
                                 //     $finderData['call_for_action_button']      =      "Book a Session @ 73";
                                 // }   

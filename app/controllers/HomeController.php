@@ -1896,6 +1896,10 @@ class HomeController extends BaseController {
                         $header = "WORKOUT SESSION CONFIRMED";
                         $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying Rs ".$item['amount'].". We have also sent you a confirmation Email & SMS.";
 
+                        if(!empty($item['coupon_code']) && in_array($item['coupon_code'], ['FREE', 'free'])){
+                            $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed. We have also sent you a confirmation Email & SMS.";
+                        }
+
                         if(!empty($item['pass_order_id'])){
                             $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by using unlimited access pass. We have also sent you a confirmation Email & SMS."; 
                         };
