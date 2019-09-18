@@ -296,7 +296,9 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::post('reportareview', array('as' => 'finderdetails.reportareview','uses' => 'FindersController@reportReview'));
     
-    Route::post('passcapture', 'PassController@passCapture');
+	Route::post('passcapture', 'PassController@passCapture');
+	
+	Route::get('customer/getstepprofile/{city?}',  array('as' => 'customer.getstepprofile','uses' => 'CustomerController@getStepProfile'));
 
 });
 

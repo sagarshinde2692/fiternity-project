@@ -10667,4 +10667,100 @@ class CustomerController extends \BaseController {
 				})
 			);
 	}
+
+	public function getStepProfile($city = 'mumbai'){
+		
+		if(strtolower($city) == 'new'){
+            $city = 'delhi';
+		}
+		
+		$decoded = null;
+        $jwt_token = Request::header('Authorization');
+		$rel_banner_shown = false;
+		$updatedToken = $jwt_token;
+        if(!empty($jwt_token)){
+            $decoded = $this->customerTokenDecode($jwt_token);
+            if(!empty($decoded)){
+                $customeremail = $decoded->customer->email;
+                $customer_id = $decoded->customer->_id;
+                $rel_banner_shown = (!empty($decoded->customer->rel_banner_shown))?$decoded->customer->rel_banner_shown:null;
+            }
+
+		}
+		
+		if(!empty($decoded) && !empty($this->app_version) && !empty($this->device_type)){
+            
+            $reliance_customer = $this->relianceService->getCorporateId($decoded, $customer_id);
+            $corporate_id  = $reliance_customer['corporate_id'];
+            $external_reliance = $reliance_customer['external_reliance'];
+            
+            Customer::$withoutAppends = true;
+            if(!empty($customer_id) && !empty($corporate_id) && empty($external_reliance) && $corporate_id == 1) {
+				if(empty($customerRec)) {
+					$customerRec = Customer::active()->where('email', $customeremail)->first();
+				}
+				try{
+					if(empty($customerRec->reliance_city) && empty($customerRec->reliance_city_home) && (!empty($city))) {
+						Customer::where('_id', $customerRec->_id)->update(['reliance_city_home'=> $city]);
+					}
+				} catch(Exception $e) {
+					Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+				}
+				$result['health_popup'] = Config::get('health_config.health_popup');
+				if(!empty($customerRec) && empty($customerRec->dob_updated_by_reliance)) {
+					$result['dob_popup'] = Config::get('health_config.dob_popup');
+				}
+
+				// if(!empty($this->device_type) && !empty($this->app_version) && $this->device_type=='ios' && $this->app_version>= '5.2.1'){
+					$result['health'] = $this->relianceService->buildHealthObjectStructure($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);	
+				// }
+				// else{
+				// 	$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], null, $jwt_token );
+				// }
+				$result['is_health_rewad_shown'] = true;
+			}
+			else if(!empty($customer_id)){
+				$customerRec = Customer::active()->where('email', $customeremail)->first();
+				try{
+					if(empty($customerRec->reliance_city) && empty($customerRec->reliance_city_home) && (!empty($city))) {
+						Customer::where('_id', $customerRec->_id)->update(['reliance_city_home'=> $city]);
+					}
+				} catch(Exception $e) {
+					Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+				}
+				$result['non_reliance'] = ($this->device_type=='android' && ((float)$_GET['app_version'])>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
+				// if(!empty($this->device_type) && !empty($this->app_version) && $this->device_type=='ios' && $this->app_version>= '5.2.1'){
+					$result['health'] = $this->relianceService->buildHealthObjectStructure($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], $customerRec);	
+				// }
+				// else{
+				// 	$result['health'] = $this->relianceService->buildHealthObject($customer_id, $corporate_id, $this->device_type, $city, (float)$_GET['app_version'], null, $jwt_token);
+				// }
+				
+				if(!empty($customerRec) && empty($customerRec->dob_updated_by_reliance)) {
+					$result['dob_popup'] = Config::get('health_config.dob_popup');
+				}
+				if($this->device_type== 'android' && !empty($corporate_id)){
+					unset($result['non_reliance']);
+				}
+			}
+            //removing fields from search
+            
+            if(!empty($result['health']['steps'])){
+                unset($result['health']['steps']);
+			}
+
+			//disable reliance section 05-sept-2019 below
+			if(empty($customerRec['external_reliance']) || !$customerRec['external_reliance']) {
+				unset($result['health']);
+				unset($result['is_health_rewad_shown']);
+			}
+			if(!empty($result['non_reliance'])) {
+				unset($result['non_reliance']);
+			}
+			if(!empty($result['health_popup'])) {
+				unset($result['health_popup']);
+			}
+            //disable reliance section 05-sept-2019 above
+		}
+	}
 }
