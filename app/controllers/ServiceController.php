@@ -842,7 +842,7 @@ class ServiceController extends \BaseController {
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
 				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : "",
 				'free_trial_available'=>!empty($item['freeTrialRatecards']),
-				'flags' => ['classpass_available' => $item['flags']['classpass_available']]
+				'flags' => ['classpass_available' => !empty($item['flags']['classpass_available'])?$item['flags']['classpass_available']:false]
 			);
 
 			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
