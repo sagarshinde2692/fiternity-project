@@ -10330,8 +10330,8 @@ Class Utilities {
             $onepass['photo'] = $data['customer_photo'];
         }
 
-        if(!empty($data['intereste'])){
-            $onepass['intereste'] = $data['intereste'];
+        if(!empty($data['interest'])){
+            $onepass['interest'] = $data['interest'];
         }
 
         if(!empty($data['gender']) && in_array($data['gender'], ['male', 'female'])){
@@ -10340,8 +10340,6 @@ Class Utilities {
 
         if(!empty($data['address_details'])){
             Log::info('address details :::::', [$data['address_details']]);
-
-            //$validation_result = $this->addressValidation($data);
 
             if(!empty($data['address_details']['home_address'])){
                 $customer->address =  $data['address_details']['home_address'];
@@ -10354,25 +10352,6 @@ Class Utilities {
         }
         $customer->onepass = $onepass;
         return $customer;
-    }
-
-    public function addressValidation($data){
-        $rules = [
-            'line1' => 'required',
-            'line2' => 'required',
-            'landmark' => 'required',
-            'pincode' => 'required'
-        ];
-
-        $validator = Validator::make($data,$rules);
-
-		if ($validator->fails()) {
-
-            return array('status' => 400,'message' => $this->errorMessage($validator->errors()));
-        }
-        else{
-            return array('status'=> 200);
-        }
     }
 
     public function getParentServicesCategoryList(){
@@ -10388,4 +10367,44 @@ Class Utilities {
             return $number. $ends[$number % 10];
     }
 
+    public function formatOnepassCustomerDataResponse($resp){
+        if(!empty($resp['photo'])){
+			$resp['url'] = $resp['photo']['url'];
+			unset($resp['photo']);
+		}
+
+		if(!empty($resp['service_categories'])){
+			foreach($resp['service_categories'] as &$value){
+				if((!empty($resp['interest'])) && (in_array($value['slug'], $resp['interest']))){
+					$value['selected'] = true;
+				}
+				else{
+					$value['selected'] = false;
+				}
+			}
+		}
+		
+		if(!empty($resp['service_categories'])){
+			$resp['interest']['data'] = $resp['service_categories'];
+			unset($resp['service_categories']);
+		}
+		
+		if(!empty($resp['address_details']['home_address'])){
+
+			$resp['address_details']['home_address'] = $resp['address_details']['home_address'];
+			if(!empty($resp['address_details']['home_address_landmark'])){
+				$resp['address_details']['home_address_landmark'] = $resp['address_details']['home_address_landmark'];
+			}
+		}
+
+		if(!empty($resp['address_details']['work_address'])){
+
+			$resp['address_details']['work_address'] = $resp['address_details']['work_address'];
+			if(!empty($resp['address_details']['work_address_landmark'])){
+				$resp['address_details']['work_address_landmark'] = $resp['address_details']['work_address_landmark'];
+			}
+        }
+        
+        return $resp;
+    }
 }

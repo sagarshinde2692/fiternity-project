@@ -10649,23 +10649,10 @@ class CustomerController extends \BaseController {
 
 		}
 
-		$resp['customer_data'] = $customer->onepass;
-		if(!empty($resp['customer_data']['photo'])){
-			$resp['customer_data']['url'] = $resp['customer_data']['photo']['url'];
-			unset($resp['customer_data']['photo']);
-		}
+		$resp = array_merge($resp, $customer->onepass);
 
-		if(!empty($resp['service_categories']) && !empty($resp['customer_data']['intereste'])){
-			foreach($resp['service_categories'] as &$value){
-				if(in_array($value['slug'], $resp['customer_data']['intereste'])){
-					$value['selected'] = true;
-				}
-				else{
-					$value['selected'] = false;
-				}
-			}
-		}
-		
+		$resp = $this->utilities->formatOnepassCustomerDataResponse($resp);
+
 		return Response::json(['status'=> 200, "message"=> "Success", "data"=> $resp]);
 	
 	}
