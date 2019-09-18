@@ -10743,24 +10743,12 @@ class CustomerController extends \BaseController {
 					unset($result['non_reliance']);
 				}
 			}
-            //removing fields from search
-            
+			//removing fields from search
+			
             if(!empty($result['health']['steps'])){
                 unset($result['health']['steps']);
 			}
 
-			//disable reliance section 05-sept-2019 below
-			if(empty($customerRec['external_reliance']) || !$customerRec['external_reliance']) {
-				unset($result['health']);
-				unset($result['is_health_rewad_shown']);
-			}
-			if(!empty($result['non_reliance'])) {
-				unset($result['non_reliance']);
-			}
-			if(!empty($result['health_popup'])) {
-				unset($result['health_popup']);
-			}
-			//disable reliance section 05-sept-2019 above
 			return $result;
 		}
 	}
