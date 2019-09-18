@@ -5326,6 +5326,8 @@ class FindersController extends \BaseController {
 			}
 		}
 
+		$this->photosOrderFloor($finderData['finder']);
+
 		return Response::json($finderData,$finderData['status']);
 
 	}
@@ -8630,6 +8632,16 @@ class FindersController extends \BaseController {
 			// }
 			$rateCard['remarks_imp'] = true;
 		
+		}
+	}
+
+	public function photosOrderFloor(&$finder){
+		if(!empty($finder['photos']) && is_array($finder['photos'])){
+			foreach($finder['photos'] as &$data){
+				if(!empty($data['order'])){
+					$data['order'] = round($data['order']);
+				}
+			}
 		}
 	}
 
