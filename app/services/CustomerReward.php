@@ -2776,7 +2776,7 @@ Class CustomerReward {
                         if($y['operator'] == 'in'){
                             if(empty($embedded_value)){
                                 $discount_max_overridable = false;
-                                break;
+                                // break;
                             }
                             if(!empty($y['values'][0]['valid_till'])){
                     
@@ -2785,7 +2785,7 @@ Class CustomerReward {
                                 
                                 if(!in_array($embedded_value, $values) || time() > $dates[array_search($embedded_value, $values)]->sec){
                                     $discount_max_overridable = false;
-                                    break;
+                                    // break;
                                 }
                                 
                             }else{
@@ -2809,7 +2809,7 @@ Class CustomerReward {
                             
                             if(empty($embedded_value)){
                                 $discount_max_overridable = false;
-                                break;
+                                // break;
                             }
                             
                             if(preg_match($y['values'], $embedded_value)){
