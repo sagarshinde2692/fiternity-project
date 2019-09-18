@@ -10326,6 +10326,9 @@ Class Utilities {
 
     public function updateAddressAndIntereste($customer, $data){
         $onepass = !empty($customer->onepass) ?  $customer->onepass: [];
+        
+        $onepass['profile_completed'] = $data['profile_completed'];
+
         if(!empty($data['customer_photo'])){
             $onepass['photo'] = $data['customer_photo'];
         }
@@ -10418,5 +10421,20 @@ Class Utilities {
         }
         
         return $resp;
+    }
+
+    public function checkOnepassProfileCompleted($customer=null){
+
+        $keys = sort(['photo', 'gender', 'home_address', 'work_address', 'interest']);
+        $profileKeys = [];
+        if(!empty($customer->onepass)){
+            $profileKeys = array_map(function($e) {
+                return is_object($e) ? $e->Title : $e['Title'];
+            }, $customer->onepass);
+            $profileKeys = sort($profileKeys);
+        }
+
+        $status = ($keys == $profileKeys) ? true : false;
+        return $status;
     }
 }
