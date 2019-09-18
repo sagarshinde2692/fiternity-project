@@ -10627,7 +10627,6 @@ class CustomerController extends \BaseController {
 			if(!empty($photo['customer_photo'])){
 				$data['customer_photo'] = $photo['customer_photo'];
 				$resp['url'] = $photo['customer_photo']['url'];
-				$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
 			}
 
 		} else if(!empty($image)){
@@ -10648,6 +10647,8 @@ class CustomerController extends \BaseController {
 			return array('status'=>400, 'message'=>'Error');
 
 		}
+		
+		$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
 
 		$resp = array_merge($resp, $customer->onepass);
 

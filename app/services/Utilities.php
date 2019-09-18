@@ -10381,11 +10381,8 @@ Class Utilities {
 				else{
 					$value['selected'] = false;
 				}
-			}
-		}
-		
-		if(!empty($resp['service_categories'])){
-			$resp['interest']['data'] = $resp['service_categories'];
+            }
+            $resp['interest']['data'] = $resp['service_categories'];
 			unset($resp['service_categories']);
 		}
 		
