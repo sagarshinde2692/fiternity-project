@@ -683,7 +683,7 @@ class ServiceController extends \BaseController {
         // $type                   =   'workout-session';
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
-		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id','flags', 'inoperational_dates');
+		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id','flags', 'inoperational_dates', 'flags');
 		Service::$withoutAppends=true;
         Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays','freeTrialRatecards', 'service_inoperational_dates_array'];
 		
@@ -841,7 +841,8 @@ class ServiceController extends \BaseController {
 				'cost'=>'Free Via Fitternity',
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
 				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : "",
-				'free_trial_available'=>!empty($item['freeTrialRatecards'])
+				'free_trial_available'=>!empty($item['freeTrialRatecards']),
+				'flags' => ['classpass_available' => $item['flags']['classpass_available']]
 			);
 
 			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
@@ -940,7 +941,7 @@ class ServiceController extends \BaseController {
                         $nrsh['price_only']=(isset($p_np['non_peak']))?$p_np['non_peak']:"";
                         Log::info("rsh price",[$rsh['price_only']]);
                         Log::info("nrsh price",[$rsh['price_only']]);
-						if($allowSession){
+						if($allowSession && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
 							if($rsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
 								$rsh['price'] = Config::get('app.onepass_free_string');
@@ -1051,7 +1052,7 @@ class ServiceController extends \BaseController {
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
 
 						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-						if(!empty($allowSession) && ($ratecard_price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))){
+						if(!empty($allowSession) && ($ratecard_price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 							array_set($slot, 'skip_share_detail', true);
 						}
 
@@ -1186,7 +1187,7 @@ class ServiceController extends \BaseController {
                 }
 
 				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-				if($allowSession && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))){
+				if($allowSession && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $service['non_peak']['price'] .= " (100% Cashback)";
@@ -1376,7 +1377,7 @@ class ServiceController extends \BaseController {
 						$str = "";
 					}
 					
-					if($allowSession && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)))){
+					if($allowSession && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 						$sc['cost'] = Config::get('app.onepass_free_string');
 					}else{
 						$sc['cost'] .= $str;
@@ -2039,7 +2040,7 @@ class ServiceController extends \BaseController {
 				$allowSession = false;
 			}
 		}
-		if($allowSession && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $service_details['finder_flags']]))){
+		if($allowSession && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $service_details['finder_flags']])) && (!empty($service_details['flags']['classpass_available']) && $service_details['flags']['classpass_available'])){
 			$service_details['price'] = Config::get('app.onepass_free_string');
 			$service_details['easy_cancellation'] = array(
 				"header" => "Easy Cancelletion: ",

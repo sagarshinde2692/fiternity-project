@@ -5304,7 +5304,7 @@ class FindersController extends \BaseController {
 					
 					$_allowSession = false;
 					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-						if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price<Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finderData['finder']))) {
+						if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price<Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finderData['finder'])) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])) {
 							$_allowSession = $allowSession['allow_session'];
 						}
 					}
@@ -8496,7 +8496,7 @@ class FindersController extends \BaseController {
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['allow_session']){
+							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 								$ratecards['price_text'] = 'Free for you';	
 							}
 						}
@@ -8508,7 +8508,7 @@ class FindersController extends \BaseController {
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['allow_session']){
+							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 								$ratecards['price_text'] = 'Free for you';	
 							}
 						}
