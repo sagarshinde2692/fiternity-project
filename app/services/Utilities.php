@@ -10330,8 +10330,8 @@ Class Utilities {
             $onepass['photo'] = $data['customer_photo'];
         }
 
-        if(!empty($data['interest'])){
-            $onepass['interest'] = $data['interest'];
+        if(!empty($data['interests'])){
+            $onepass['interests'] = $data['interests'];
         }
 
         if(!empty($data['gender']) && in_array($data['gender'], ['male', 'female'])){
@@ -10348,6 +10348,15 @@ Class Utilities {
             
             if(!empty($data['address_details']['work_address'])){
                 $onepass['work_address'] =  $data['address_details']['work_address'];
+            }
+
+            if(!empty($data['address_details']['home_landmark'])){
+                $customer->address_landmark =  $data['address_details']['home_landmark'];
+                $onepass['home_landmark'] = $data['address_details']['home_landmark'];
+            }
+            
+            if(!empty($data['address_details']['work_landmark'])){
+                $onepass['work_landmark'] =  $data['address_details']['work_landmark'];
             }
         }
         $customer->onepass = $onepass;
@@ -10375,23 +10384,25 @@ Class Utilities {
 
 		if(!empty($resp['service_categories'])){
 			foreach($resp['service_categories'] as &$value){
-				if((!empty($resp['interest'])) && (in_array($value['slug'], $resp['interest']))){
+				if((!empty($resp['interests'])) && (in_array($value['slug'], $resp['interests']))){
 					$value['selected'] = true;
 				}
 				else{
 					$value['selected'] = false;
 				}
             }
-            $resp['interest']['data'] = $resp['service_categories'];
+            $resp['interests']['data'] = $resp['service_categories'];
+            $resp['interests']['header'] = "this is header of interset";
+            $resp['interests']['subheader'] = "this is sub header of interset";
 			unset($resp['service_categories']);
 		}
 		
 		if(!empty($resp['home_address'])){
 
 			$resp['address_details']['home_address'] = $resp['home_address'];
-			if(!empty($resp['home_address_landmark'])){
-				$resp['address_details']['home_address_landmark'] = $resp['home_address_landmark'];
-                unset($resp['home_address_landmark']);
+			if(!empty($resp['home_landmark'])){
+				$resp['address_details']['home_landmark'] = $resp['home_landmark'];
+                unset($resp['home_landmark']);
             }
             unset($resp['home_address']);
 		}
@@ -10399,11 +10410,14 @@ Class Utilities {
 		if(!empty($resp['work_address'])){
 
 			$resp['address_details']['work_address'] = $resp['work_address'];
-			if(!empty($resp['work_address_landmark'])){
-				$resp['address_details']['work_address_landmark'] = $resp['work_address_landmark'];
-                unset($resp['work_address_landmark']);
+			if(!empty($resp['work_landmark'])){
+				$resp['address_details']['work_landmark'] = $resp['work_landmark'];
+                unset($resp['work_landmark']);
 			}
             unset($resp['work_address']);
+
+            $resp['address_details']['header'] = "this is header of address";
+            $resp['address_details']['subheader'] = "this is sub header of address";
         }
         
         return $resp;
