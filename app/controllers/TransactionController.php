@@ -6825,7 +6825,7 @@ class TransactionController extends \BaseController {
 
             $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" =>$errorMessage, "data"=>$resp["data"]);
 
-            return Response::json($resp,400);    
+            return Response::json($resp,200);    
         }
 
         return Response::json($resp,200);
