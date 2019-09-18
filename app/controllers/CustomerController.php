@@ -3844,7 +3844,7 @@ class CustomerController extends \BaseController {
 								'footer2' => 'Need Help? Contact your Personal Concierge',
 								'contact_no' => '',
 								'unlock_button_text' => 'UNLOCK SESSION',
-								'unlock_button_link' => ''
+								'unlock_button_url' => Config::get('app.url').'/unlocksession/'.$data['trial_id']
 							);
 							
 							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
