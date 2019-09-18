@@ -74,17 +74,6 @@ class EventsController extends \BaseController {
 			}
 			unset($eventInfo['images']);
 
-			$mfp_success_data = Config::get('mfp_success');
-			// $base_url= $mfp_success_data['base_url'];
-			// $extention = $mfp_success_data['extension'];
-			
-			// if(!empty($eventInfo['schedule'])){
-			// 	foreach($eventInfo['schedule'] as &$value){
-			// 		$tmp_lower = str_replace(' ', '-',strtolower($value['title']));
-			// 		$value['image'] = $base_url.$tmp_lower.$extention;
-			// 	}
-			// }
-
 			$response = array(
 				'event_info' => $eventInfo,
 				'ticket_info' => $tickets,
