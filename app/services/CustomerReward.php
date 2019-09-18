@@ -2010,6 +2010,13 @@ Class CustomerReward {
             }
 
             if(!empty($coupon['flags']['first_pps_free']) && $coupon['flags']['first_pps_free']){
+                
+                $jwt_token = Request::header('Authorization');
+                if(empty($jwt_token)){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+                    return $resp;
+                }
+
                 if(empty($first_session_free) || (!empty($first_session_free) && $first_session_free == false) ){
                     $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon valid only on First Session");
                     return $resp;
