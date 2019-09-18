@@ -9658,7 +9658,8 @@ Class Utilities {
 
 	public function checkoutInitiate($id, $finder, $finder_id, $customer_id, $checkout, $customer){
 		//$checkout = Checkin::where('_id', $id)->first();
-		$checkout->checkout_status=true;
+        $checkout->checkout_status=true;
+        $checkout->checkout_date_time = new MongoDate(strtotime('now'));
 		try{
 			$checkout->update();
 
