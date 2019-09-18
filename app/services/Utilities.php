@@ -10377,6 +10377,7 @@ Class Utilities {
     }
 
     public function formatOnepassCustomerDataResponse($resp){
+        $onepassProfileConfig = Config::get('onepass_profile');
         if(!empty($resp['photo'])){
 			$resp['url'] = $resp['photo']['url'];
 			unset($resp['photo']);
@@ -10391,14 +10392,13 @@ Class Utilities {
 					$value['selected'] = false;
 				}
             }
+            $resp['interests'] = $onepassProfileConfig['interests'];
             $resp['interests']['data'] = $resp['service_categories'];
-            $resp['interests']['header'] = "this is header of interset";
-            $resp['interests']['subheader'] = "this is sub header of interset";
 			unset($resp['service_categories']);
 		}
 		
 		if(!empty($resp['home_address'])){
-
+            $resp['address_details'] = $onepassProfileConfig['address_details'];
 			$resp['address_details']['home_address'] = $resp['home_address'];
 			if(!empty($resp['home_landmark'])){
 				$resp['address_details']['home_landmark'] = $resp['home_landmark'];
@@ -10415,9 +10415,6 @@ Class Utilities {
                 unset($resp['work_landmark']);
 			}
             unset($resp['work_address']);
-
-            $resp['address_details']['header'] = "this is header of address";
-            $resp['address_details']['subheader'] = "this is sub header of address";
         }
         
         return $resp;
