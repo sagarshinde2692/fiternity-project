@@ -10610,8 +10610,6 @@ class CustomerController extends \BaseController {
 
 		$input_fields_count  = $this->check_array($data);
 
-		$resp = [];
-
 	    $jwt_token = Request::header('Authorization');
 
 		$decoded = decode_customer_token($jwt_token);
@@ -10620,6 +10618,9 @@ class CustomerController extends \BaseController {
 
 		$customer = Customer::find($customer_id);
 
+		$resp = [
+			'name' => $customer->name
+		];
 		$photo = !empty($image) ? $this->utilities->onePassCustomerAddImage($image, $customer_id, $customer): null;
 
 		if((!empty($photo['status']) && $photo['status']==200)){
@@ -10647,7 +10648,7 @@ class CustomerController extends \BaseController {
 			return array('status'=>400, 'message'=>'Error');
 
 		}
-		
+
 		$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
 
 		$resp = array_merge($resp, $customer->onepass);
