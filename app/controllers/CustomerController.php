@@ -10607,6 +10607,17 @@ class CustomerController extends \BaseController {
 	public function onePassCustomerUpdate(){
 
 		$data = Input::all();
+		$rules = [
+			'interests' => 'array|min:3',
+			'address_details.home_address' => 'required_if:address_details, string',
+			'address_details.work_address' => 'required_if:address_details, string'
+
+		];
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
+		}
 
 		$input_fields_count  = $this->check_array($data);
 

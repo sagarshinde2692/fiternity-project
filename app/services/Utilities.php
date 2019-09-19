@@ -10342,7 +10342,6 @@ Class Utilities {
         }
 
         if(!empty($data['address_details'])){
-            Log::info('address details :::::', [$data['address_details']]);
 
             if(!empty($data['address_details']['home_address'])){
                 $customer->address =  $data['address_details']['home_address'];
@@ -10428,13 +10427,14 @@ Class Utilities {
         if(empty($customer->onepass)){
             return false; 
         }
+
         $required_keys = ['photo', 'gender', 'home_address', 'work_address', 'interests'];
 
         $profileKeys = array_keys($customer->onepass);
         $status = false;
 
         foreach($required_keys as $key=>$value){
-            Log::info('values', [$value]);
+
             if(!in_array($value, $profileKeys)){
                 $status = false;
                 break;
