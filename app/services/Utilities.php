@@ -10327,7 +10327,7 @@ Class Utilities {
     public function updateAddressAndIntereste($customer, $data){
         $onepass = !empty($customer->onepass) ?  $customer->onepass: [];
         
-        $onepass['profile_completed'] = $data['profile_completed'];
+        //$onepass['profile_completed'] = $data['profile_completed'];
 
         if(!empty($data['customer_photo'])){
             $onepass['photo'] = $data['customer_photo'];
