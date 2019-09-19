@@ -1405,7 +1405,7 @@ class ServiceController extends \BaseController {
 					
 					if($allowSession['allow_session'] && (!empty($sc['price_int']) && $sc['price_int'] < Config::get('pass.price_upper_limit'))){
 						$sc['cost'] = Config::get('app.onepass_free_string');
-						$service['non_peak']['onepass_booking_block'] = false;
+						$sc['onepass_booking_block'] = false;
 						if(!empty($allowSession['profile_incomplete'])){
 							$sc['onepass_booking_block'] = true;
 						}
@@ -2084,7 +2084,7 @@ class ServiceController extends \BaseController {
 				"description" => $des
 			);
 
-			$service['non_peak']['onepass_booking_block'] = false;
+			$service_details['onepass_booking_block'] = false;
 			if(!empty($allowSession['profile_incomplete'])){
 				$service_details['onepass_booking_block'] = true;
 			}
