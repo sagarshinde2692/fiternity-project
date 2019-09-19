@@ -10327,7 +10327,7 @@ Class Utilities {
     public function updateAddressAndIntereste($customer, $data){
         $onepass = !empty($customer->onepass) ?  $customer->onepass: [];
         
-        $onepass['profile_completed'] = $data['profile_completed'];
+        //$onepass['profile_completed'] = $data['profile_completed'];
 
         if(!empty($data['customer_photo'])){
             $onepass['photo'] = $data['customer_photo'];
@@ -10339,18 +10339,26 @@ Class Utilities {
 
         if(!empty($data['gender']) && in_array($data['gender'], ['male', 'female'])){
             $onepass['gender'] = $data['gender'];
+            $customer->gender = $data['gender'];
         }
 
         if(!empty($data['address_details'])){
-            Log::info('address details :::::', [$data['address_details']]);
 
             if(!empty($data['address_details']['home_address'])){
                 $customer->address =  $data['address_details']['home_address'];
                 $onepass['home_address'] = $data['address_details']['home_address'];
+                if(!empty($data['address_details']['home_lat']) && !empty($data['address_details']['home_lon'])){
+                    $onepass['home_lat'] = $data['address_details']['home_lat'];
+                    $onepass['home_lon'] = $data['address_details']['home_lon'];
+                }
             }
             
             if(!empty($data['address_details']['work_address'])){
                 $onepass['work_address'] =  $data['address_details']['work_address'];
+                if(!empty($data['address_details']['work_lat']) && !empty($data['address_details']['work_lon'])){
+                    $onepass['work_lat'] = $data['address_details']['work_lat'];
+                    $onepass['work_lon'] = $data['address_details']['work_lon'];
+                }
             }
 
             if(!empty($data['address_details']['home_landmark'])){
@@ -10367,8 +10375,8 @@ Class Utilities {
     }
 
     public function getParentServicesCategoryList(){
-
-        return \Servicecategory::active()->where('parent_id', 0)->get(['slug', 'name']);
+        $category_ids = [65, 5, 19, 1, 123, 3, 4, 2, 114, 86];
+        return \Servicecategory::active()->where('parent_id', 0)->whereIn('_id', $category_ids)->get(['slug', 'name']);
     }
 
     function getOrdinalNumber($number) {
@@ -10380,25 +10388,30 @@ Class Utilities {
     }
 
     public function formatOnepassCustomerDataResponse($resp){
+        
         $onepassProfileConfig = Config::get('onepass_profile');
+
         if(!empty($resp['photo'])){
 			$resp['url'] = $resp['photo']['url'];
 			unset($resp['photo']);
-		}
+        }
+        
+        if(empty($resp['service_categories'])){
+            $resp['service_categories'] = $this->getParentServicesCategoryList();
+        }
 
-		if(!empty($resp['service_categories'])){
-			foreach($resp['service_categories'] as &$value){
-				if((!empty($resp['interests'])) && (in_array($value['_id'], $resp['interests']))){
-					$value['selected'] = true;
-				}
-				else{
-					$value['selected'] = false;
-				}
+        foreach($resp['service_categories'] as &$value){
+            if((!empty($resp['interests'])) && (in_array($value['_id'], $resp['interests']))){
+                $value['selected'] = true;
             }
-            $resp['interests'] = $onepassProfileConfig['interests'];
-            $resp['interests']['data'] = $resp['service_categories'];
-			unset($resp['service_categories']);
-		}
+            else{
+                $value['selected'] = false;
+            }
+        }
+        $resp['interests'] = $onepassProfileConfig['interests'];
+        $resp['interests']['data'] = $resp['service_categories'];
+        unset($resp['service_categories']);
+		
 		
 		if(!empty($resp['home_address'])){
             $resp['address_details'] = $onepassProfileConfig['address_details'];
@@ -10428,20 +10441,57 @@ Class Utilities {
         if(empty($customer->onepass)){
             return false; 
         }
+
         $required_keys = ['photo', 'gender', 'home_address', 'work_address', 'interests'];
 
         $profileKeys = array_keys($customer->onepass);
-        $status = false;
+        $status = true;
 
         foreach($required_keys as $key=>$value){
-            Log::info('values', [$value]);
+
             if(!in_array($value, $profileKeys)){
                 $status = false;
                 break;
             }
-            $status = true;
+            //$status = true;
         }
 
         return $status;
+    }
+
+    public function personlizedProfileData($data){
+        
+        $resp = Config::get('onepass_profile.personlized_profile');
+
+        $resp['url'] = $data['photo']['url'];
+
+        $resp['interests']['data'] = $this->personlizedServiceCategoryList($data['interests']);
+
+        return $resp;
+    }
+
+    public function personlizedServiceCategoryList($service_categegory_ids){
+
+        $servicecategories	 = 	\Servicecategory::active()->whereIn('_id', $service_categegory_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->orderBy('name')->get(array('_id','name','slug'));
+
+		if(count($servicecategories) > 0){
+            $base_url  = Config::get('app.service_icon_base_url');
+            $base_url_extention  = Config::get('app.service_icon_base_url_extention');
+			foreach($servicecategories as &$category){
+				$category['image'] = $base_url.$category['slug'].$base_url_extention;
+				if($category['slug'] == 'martial-arts'){
+					$category['name'] = 'MMA & Kick-boxing';
+				}
+			}
+
+			// foreach($order as $_id){
+			// 	foreach($servicecategories as $x){
+			// 		if($x['_id'] == $_id){
+			// 			array_push($ordered_categories, $x);
+			// 		}
+			// 	}
+			// }
+        }
+		return $servicecategories->toArray();
     }
 }

@@ -10670,6 +10670,29 @@ class CustomerController extends \BaseController {
 	public function onePassCustomerUpdate(){
 
 		$data = Input::all();
+		$rules = [
+			'interests' => 'array|min:3',
+			'gender' => 'string|in:male,female'
+
+		];
+
+		$rules1 = [
+			'home_address' => "required",
+			'work_address' => "required"
+		];
+
+		$validator = Validator::make($data,$rules);
+		
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),200);
+		}
+
+		if(!empty($data['address_details'])){
+			$validator1 = Validator::make($data['address_details'], $rules1);
+			if ($validator1->fails()) {
+				return Response::json(array('status' => 400,'message' => $this->errorMessage($validator1->errors())),200);
+			}
+		}
 
 		$input_fields_count  = $this->check_array($data);
 
@@ -10698,9 +10721,9 @@ class CustomerController extends \BaseController {
 			return Response::json($photo, 200);
 		}
 		
-		$data['profile_completed'] = $this->utilities->checkOnepassProfileCompleted($customer);
-		
 		$customer = $this->utilities->updateAddressAndIntereste($customer, $data);
+		
+		$data['profile_completed'] = $this->utilities->checkOnepassProfileCompleted($customer);
 
 		try{
 			if(!empty($input_fields_count)){
@@ -10714,11 +10737,18 @@ class CustomerController extends \BaseController {
 
 		}
 
-		$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
+		//$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
 
 		$resp = array_merge($resp, $customer->onepass);
 
-		$resp = $this->utilities->formatOnepassCustomerDataResponse($resp);
+		if(!empty($data['submit']) && !empty($data['profile_completed'])){
+			//here interests is array of ids
+			$resp =['profile_data' => $this->utilities->personlizedProfileData($resp)];
+		}
+		else{
+			//interests is array of object alog with slug and id;
+			$resp = $this->utilities->formatOnepassCustomerDataResponse($resp);
+		}
 
 		return Response::json(['status'=> 200, "message"=> "Success", "data"=> $resp]);
 	
