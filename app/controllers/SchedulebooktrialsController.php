@@ -8569,4 +8569,73 @@ class SchedulebooktrialsController extends \BaseController {
         }
     }
 
+
+    public function unlockSession($booktrial_id){
+        Log::info($_SERVER['REQUEST_URI']);
+        $booktrial_id = (int) $booktrial_id;
+
+        $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
+
+        $jwt_token = Request::header('Authorization');
+        $decoded = customerTokenDecode($jwt_token);
+
+        $customer_id = (int)$decoded->customer->_id;
+        
+        $booktrial = Booktrial::where('_id',$booktrial_id)
+           ->where('customer_id',$customer_id)
+           ->whereIn('type',['booktrials','3daystrial','workout-session'])
+           // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
+           // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+           // ->orderBy('_id','desc')
+           ->first();
+
+        if(isset($booktrial)){
+
+            $booktrial->post_trial_status = 'attended';
+            $booktrial->post_trial_initail_status = 'interested';
+            $booktrial->post_trial_status_updated_by_unlocksession = time();
+            $booktrial->post_trial_status_date = time();
+
+            $booktrial->update();
+
+            $data = $booktrial;
+				
+			$data_new['header'] = "Session Activated";
+							
+			$data_new['workout'] = array(
+                'image' => '',
+				'name' => ucwords($data['customer_name']),
+				'icon' => '',
+				'header' => ucwords($data['service_name']),
+				'datetime' => date('D, d M - h:i A', strtotime($data['schedule_date_time']))
+			);
+							
+			$data_new['finder'] = array(
+				'title' => $data['finder_name'],
+				'location' => $data['finder_location'],
+				'address'=> $data['finder_address'],
+				'direction_text' => "Get Direction",
+				'lat' => $data['finder_lat'],
+				'lon' => $data['finder_lon']
+			);
+
+			$data_new['footer'] = array(
+				'footer1' => 'You can only unlock this session within 200 meters of the gym',
+				'footer2' => 'Need Help? Contact your Personal Concierge',
+				'contact_no' => '',
+				'unlock_button_text' => 'Session ID:'
+			);
+							
+			$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer']);
+            
+            $response = [
+                'status' => 200,
+                'data' => $data_new,
+                'booktrial_id'=> (int)$booktrial['_id'],
+            ];
+        }
+
+        return Response::json($response,200);
+    }
+
 }

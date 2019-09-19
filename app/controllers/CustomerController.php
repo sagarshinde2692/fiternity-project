@@ -3556,6 +3556,7 @@ class CustomerController extends \BaseController {
         }
 
         $upcoming = array();
+        $upcoming_new = array();
         
         $decoded = null;
         $jwt_token = Request::header('Authorization');
@@ -3620,18 +3621,18 @@ class CustomerController extends \BaseController {
                                 });
                             })
                             ->orderBy('schedule_date_time', 'asc')
-                            ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id')
+                            ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id','finder_location')
                             ->get();
                     
                     }else if($this->app_version > '4.4.3'){
                         
                         Log::info("4.4.3");
-                        $trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount','studio_extended_validity_order_id','studio_block_shown')->get();
+                        $trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount','studio_extended_validity_order_id','studio_block_shown','finder_location')->get();
     
     
                     }else{
                         
-                        $trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id','amount','third_party_details')->get();
+                        $trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id','amount','third_party_details','finder_location')->get();
                     }
                 }
 				
@@ -3640,6 +3641,12 @@ class CustomerController extends \BaseController {
 				$no_block = [];
 				$future = [];
 				$review = [];
+
+				$activate_new = [];
+				$let_us_know_new = [];
+				$no_block_new = [];
+				$future_new = [];
+				$review_new = [];
 				//Log::info('trails count',[count($trials), $trials]);
 				if(count($trials) > 0){
 					$workout_session_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);
@@ -3676,7 +3683,7 @@ class CustomerController extends \BaseController {
 						}
 						
 						if(in_array($this->device_type, ['android', 'ios']) && $this->app_version > '4.4.3'){
-
+							
 
 							if($data['type'] == 'Workout-session'){
 								if(!isset($data['extended_validity_order_id']) && empty($data['pass_order_id'])) {
@@ -3811,14 +3818,44 @@ class CustomerController extends \BaseController {
 								$data['amount'] = "₹".$data['amount_finder'];
 							}
 							
+							$data_new = $data;
+							$data_new['icon'] = "abccc";
+							$data_new['time_diff_text'] = "Starts In - ";
+							
+							$data_new['header'] = "Session Starts In";
+							
+							$data_new['workout'] = array(
+								'icon' => '',
+								'header' => ucwords($data['service_name']),
+								'datetime' => date('D, d M - h:i A', strtotime($data['schedule_date_time']))
+							);
+							
+							$data_new['finder'] = array(
+								'title' => $data['finder_name'],
+								'location' => $data['finder_location'],
+								'address'=> $data['finder_address'],
+								'direction' => "Get Direction",
+								'lat' => $data['finder_lat'],
+								'lon' => $data['finder_lon']
+							);
+
+							$data_new['footer'] = array(
+								'footer1' => 'You can only unlock this session within 200 meters of the gym',
+								'footer2' => 'Need Help? Contact your Personal Concierge',
+								'contact_no' => '',
+								'unlock_button_text' => 'UNLOCK SESSION',
+								'unlock_button_url' => Config::get('app.url').'/unlocksession/'.$data['trial_id']
+							);
 							
 							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
 
-						
+							$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer']);
+
 							
 						}
 						
 						$upcoming[] = $data;
+						$upcoming_new[] = $data_new;
 
                     }
 
@@ -3843,6 +3880,26 @@ class CustomerController extends \BaseController {
 						}
 
 						$upcoming = array_merge($activate, $let_us_know, $review, $future, $no_block);
+
+						foreach($upcoming_new as $x_new){
+
+							if(isset($x_new['block_screen'])){
+
+								if( (isset($x_new['block_screen']) && $x_new['block_screen']['type'] == 'activate_session')){
+									array_push($activate_new, $x_new);
+								}else if(isset($x_new['block_screen']) && $x_new['block_screen']['type'] == 'review'){
+									array_push($review_new, $x_new);
+								}else{
+									array_push($let_us_know_new, $x_new);
+								}
+							}else if(isset($x_new['activation_url'])){
+								array_push($future_new, $x_new);
+							}else{
+								array_push($no_block_new, $x_new);
+							}
+						}
+
+						$upcoming_new = array_merge($activate_new, $let_us_know_new, $review_new, $future_new, $no_block_new);
 					}
 
 				}
@@ -3924,6 +3981,7 @@ class CustomerController extends \BaseController {
 		}
 		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
+		$result['upcoming_new'] = $upcoming_new;
         
         
         $result['collections'] = [];
