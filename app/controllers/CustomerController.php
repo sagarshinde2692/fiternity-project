@@ -3841,10 +3841,15 @@ class CustomerController extends \BaseController {
 
 							$data_new['footer'] = array(
 								'footer1' => 'You can only unlock this session within 200 meters of the gym',
-								'footer2' => 'Need Help? Contact your Personal Concierge',
-								'contact_no' => '',
-								'unlock_button_text' => 'UNLOCK SESSION',
-								'unlock_button_url' => Config::get('app.url').'/unlocksession/'.$data['trial_id']
+								'footer2' => array(
+									'contact_text' => 'Need Help? Contact your Personal Concierge',
+									'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+									'contact_no' => '',
+								),
+								'footer3' => array(
+									'unlock_button_text' => 'UNLOCK SESSION',
+									'unlock_button_url' => Config::get('app.url').'/unlocksession/'.$data['trial_id'],
+								),
 							);
 							
 							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
@@ -10811,5 +10816,37 @@ class CustomerController extends \BaseController {
 
 			return $result;
 		}
+	}
+
+	public function passTab(){
+
+		$decoded = null;
+        $jwt_token = Request::header('Authorization');
+		if(!empty($jwt_token)){
+            $decoded = $this->customerTokenDecode($jwt_token);
+            if(!empty($decoded)){
+                $customeremail = $decoded->customer->email;
+                $customer_id = $decoded->customer->_id;
+            }
+		}
+		
+		$passPurchased = false;
+		$passOrder = null;
+
+		if(!empty($customeremail)) {
+			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+			if(!empty($passOrder)) {
+				$passPurchased = true;
+			}
+		}
+		
+		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
+			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], false);
+		}else {
+			$result['onepass_pre'] = Config::get('pass.home.before_purchase');
+		}
+
+		$response = Response::make($result);
+		return $response;
 	}
 }

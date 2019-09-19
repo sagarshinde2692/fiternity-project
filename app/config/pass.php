@@ -562,5 +562,131 @@ return [
             "desc_subheader" => "Limited Workouts"
         ]
             
-    ]
+    ],
+
+    "passtab" => [
+        "before_purchase" => [
+            "logo"  => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
+            "header_img"  => "https://b.fitn.in/passes/app-home/onepass_header.png",
+            "header_new_img" => "http://b.fitn.in/passes/onepass-app.png",
+            "header_sub_text" => "FOR EVERYTHING HEALTH AND FITNESS",
+            "text"  => "Enjoy limitless access across Fitternity's 12,000+ fitness classes, gyms and sports facilities across India",
+            "passes" => [
+                [
+                    "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
+                    "header1" => "ONEPASS",
+                    "header1_color" => "#000000",
+                    "header2" => "RED",
+                    "header2_color" => "#d50000",
+                    "subheader" => "UNLIMITED ACCESS",
+                    "desc_header" => "Limitless Workouts",
+                    //"desc_subheader" => "With Expiry" 
+                ],
+                [
+                    "image" => "https://b.fitn.in/passes/app-home/op_black_thumb.png",
+                    "header1" => "ONEPASS",
+                    "header1_color" => "#000000",
+                    "header2" => "BLACK",
+                    "header2_color" => "#000000",
+                    "subheader" => "UNLIMITED VALIDITY",
+                    "desc_header" => "No Expiry",
+                    //"desc_subheader" => "Limited Workouts"
+                ]
+            ],
+            "footer" => [
+                "index" => 0,
+                "text" => "Get 30% off on OnePass. Buy your OnePass before prices go up!",
+                "button_text" => "Know More"
+            ]
+        ],
+        "after_purchase" => [
+            "red" => [
+                "pass_image"  => "https://b.fitn.in/passes/cards/onepass-red.png",
+                "name"  => "",
+                "header" => "UNLIMITED USAGE",
+                "subheader" => "", // duration or sessions
+                "top_right_button_text" => "BOOK >",
+                "left_text"  => "UPCOMING: ",
+                "left_value"  => 0,
+                "right_text"  => "COMPLETED: ",
+                "right_value"  => 0,
+
+                'footer' => [
+                    'section1' => [
+                        'button1_text' => 'REPEAT LAST BOOKING',
+                        // 'button1_subtext' => '',
+                        'button2_text' => 'VIEW ALL BOOKINGS',
+                        'no_last_order' => true,
+                        'contact_text' => 'Need Help? Contact your Personal Concierge',
+                        'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+                        'contact_no' => '+917400062849'
+                    ],
+                    'section2' => [
+                        'text' => 'Your Onepass Red will expire after remaining_text',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW NOW',
+                        'index' => 0
+                    ],
+                    'section3' => [
+                        'text' => 'Your Onepass Red has expired',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW',
+                        'index' => 0
+                    ]
+                ],
+                'pass_expired' => false,
+                'tnc_text' => 'View T&C',
+                "terms" => "<h2>Terms and Conditions</h2>
+                            <ul>
+                                <li>OnePass bookings will start from 5th September 2019</li>
+                                <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facility</li>
+                                <li></li>
+                                <li>The cashback received via any OnePass transaction can be only be redeemed to upgrade your OnePass</li>
+                            </ul>"
+            ],
+            "black" => [
+                "pass_image"  => "https://b.fitn.in/passes/cards/onepass-black.png",
+                "name"  => "",
+                "header" => "UNLIMITED VALIDITY",
+                "subheader" => "", // duration or sessions
+                "top_right_button_text" => "BOOK >",
+                "left_text"  => "UPCOMING: ",
+                "left_value"  => "0",
+                "right_text"  => "COMPLETED: ",
+                "right_value"  => "0",
+                'footer' => [
+                    'section1' => [
+                        'button1_text' => 'REPEAT LAST BOOKING',
+                        // 'button1_subtext' => '',
+                        'button2_text' => 'VIEW ALL BOOKINGS',
+                        'no_last_order' => true,
+                        'contact_text' => 'Need Help? Contact your Personal Concierge',
+                        'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+                        'contact_no' => '+917400062849'
+                    ],
+                    'section2' => [
+                        'text' => 'Your Onepass Black will expire after remaining_text',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW NOW',
+                        'index' => 1
+                    ],
+                    'section3' => [
+                        'text' => 'Your Onepass Black has expired',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW',
+                        'index' => 1
+                    ]
+                ],
+                'pass_expired' => false,
+                'tnc_text' => 'View T&C',
+                "terms" => "<h2>Terms and Conditions</h2>
+                            <ul>
+                                <li>OnePass bookings will start from 5th September 2019</li>
+                                <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facility</li>
+                                <li>Incase you're not enjoying OnePass - You can take a refund (No Questions asked). You pro-rata based un-utilized amount will be converted to Fitcash on Fitternity(1 Rupee = 1 Fitcash) and can be used to buy any other service/membership on Fitternity. 5% of your initial payment for OnePass upto a maximum of Rs 500 will be deducted to process this transition from OnePass to Fitcash</li>
+                                <li>The cashback received via any OnePass transaction can be only be redeemed to upgrade your OnePass</li>
+                            </ul>"
+            ]
+        ]
+    ],
 ];

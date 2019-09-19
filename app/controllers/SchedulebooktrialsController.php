@@ -8619,11 +8619,17 @@ class SchedulebooktrialsController extends \BaseController {
 				'lon' => $data['finder_lon']
 			);
 
-			$data_new['footer'] = array(
+			
+            $data_new['footer'] = array(
 				'footer1' => 'You can only unlock this session within 200 meters of the gym',
-				'footer2' => 'Need Help? Contact your Personal Concierge',
-				'contact_no' => '',
-				'unlock_button_text' => 'Session ID:'
+				'footer2' => array(
+					'contact_text' => 'Need Help? Contact your Personal Concierge',
+					'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+					'contact_no' => '',
+				),
+				'footer3' => array(
+					'unlock_button_text' => 'Session ID:',
+				),
 			);
 							
 			$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer']);
