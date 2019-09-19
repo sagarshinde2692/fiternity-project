@@ -1670,6 +1670,8 @@ class PassService {
             if($cashback_amount != 0){
                 $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
             }
+
+            $utilities = new Utilities();
             
             if($cashback_amount > 0){
 
