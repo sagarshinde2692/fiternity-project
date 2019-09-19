@@ -10379,9 +10379,7 @@ Class Utilities {
     }
 
     public function formatOnepassCustomerDataResponse($resp){
-        if(empty($resp)){
-            return [];
-        }
+        
         $onepassProfileConfig = Config::get('onepass_profile');
 
         if(!empty($resp['photo'])){
