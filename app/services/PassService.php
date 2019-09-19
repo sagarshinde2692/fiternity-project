@@ -74,15 +74,15 @@ class PassService {
                                         $utilities->bullet()." The offer cannot be clubbed with any other offer.<br/>"
                     ];
                 }
-                // else {
-                //     $passDetails['extra_info'] = [
-                //         'title'=>'100% Instant Cashback',
-                //         'description'=> "<ul><li>The cashback will be added in the form of FitCash in the Fitternity Wallet (1 Fitcash point = INR 1).</li>".
-                //                         "<li>FitCash received can only be used to upgrade ONEPASS subscription.</li>".
-                //                         "<li>The instant cashback received is valid for 30 days starting from the date of pass activation.</li>".
-                //                         "<li>The offer cannot be clubbed with any other offer.</li></ul>"
-                //     ];
-                // }
+                else if(checkAppVersionFromHeader(['ios'=>'5.2.3', 'android'=>5])){
+                    $passDetails['extra_info'] = [
+                        'title'=>'100% Instant Cashback',
+                        'description'=> "<ul><li>The cashback will be added in the form of FitCash in the Fitternity Wallet (1 Fitcash point = INR 1).</li>".
+                                        "<li>FitCash received can only be used to upgrade ONEPASS subscription.</li>".
+                                        "<li>The instant cashback received is valid for 30 days starting from the date of pass activation.</li>".
+                                        "<li>The offer cannot be clubbed with any other offer.</li></ul>"
+                    ];
+                }
             }
             if($pass['unlimited_access']) {
                 $passDetails['price'] = 'Rs. '.$pass['price'];
@@ -361,7 +361,7 @@ class PassService {
         ];
 
         // if(!empty($order['amount'])){
-        if(!empty($order['amount']) && Request::header('Device-Type') != 'ios'){
+        if(!empty($order['amount']) && checkAppVersionFromHeader(['ios'=>'5.2.3', 'android'=>5])){
             $resp['data']["coupon_details"] = [
                 "title" => "Apply Coupon Code",
                 "description" => "",
@@ -371,7 +371,7 @@ class PassService {
             ];
         }
         // if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']))){
-        if(Request::header('Device-Type') != 'ios' && (!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per'])))){
+        if(checkAppVersionFromHeader(['ios'=>'5.2.3', 'android'=>5]) && (!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per'])))){
             $resp['data']["coupon_details"] = [];
             $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
             $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
