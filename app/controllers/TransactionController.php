@@ -995,7 +995,7 @@ class TransactionController extends \BaseController {
 
             if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
             }else{
-                $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order, $corporateCustomer);
+                $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
             
                 // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
                 
@@ -3503,7 +3503,7 @@ class TransactionController extends \BaseController {
     	
     }
 
-    public function getCashbackRewardWallet($data,$order, $customer){
+    public function getCashbackRewardWallet($data,$order){
 
         $customer_id = (int)$data['customer_id'];
 
@@ -3523,7 +3523,7 @@ class TransactionController extends \BaseController {
         
         if(isset($customer->demonetisation)){
 			
-            return $this->getCashbackRewardWalletNew($data,$order, $customer);
+            return $this->getCashbackRewardWalletNew($data,$order);
 
         }
 
@@ -3531,7 +3531,7 @@ class TransactionController extends \BaseController {
 
     }
 
-    public function getCashbackRewardWalletNew($data,$order, $customer){
+    public function getCashbackRewardWalletNew($data,$order){
 
         
         addAToGlobals('ratecard_id_for_wallet', (!empty($order['ratecard_id']) ? $order['ratecard_id'] : 0));
@@ -3630,7 +3630,7 @@ class TransactionController extends \BaseController {
         //  commented on 9th Aug - Akhil
         if($data['type'] == 'workout-session') {
             Order::$withoutAppends = true;
-            $passSession = $this->passService->allowSession($data['amount'], $data['customer_id'], $data['schedule_date'], $data['finder_id'], true);
+            $passSession = $this->passService->allowSession($data['amount'], $data['customer_id'], $data['schedule_date'], $data['finder_id']);
             if($passSession['allow_session']) {
                 $data['pass_type'] = $passSession['pass_type'];
                 $data['pass_order_id'] = $passSession['order_id'];
