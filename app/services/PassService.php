@@ -946,7 +946,12 @@ class PassService {
             unset($success_template['info']['app_data']);
 
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
-                $success_template['subline'] .= '\n\n Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
+                if(in_array(Request::header('Device-Type'), ["android"])){
+                    $success_template['subline'] .= '<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
+                }else if(in_array(Request::header('Device-Type'), ["ios"])){
+                    $success_template['subline'] .= '\n\n Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
+                }
+                
             }
 
         }
