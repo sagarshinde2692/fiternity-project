@@ -10727,8 +10727,10 @@ class CustomerController extends \BaseController {
 			//here interests is array of ids
 			$resp['profile_data'] = $this->utilities->personlizedProfileData($resp);
 		}
-		//interests is array of object alog with slug and id;
-		$resp = $this->utilities->formatOnepassCustomerDataResponse($resp);
+		else{
+			//interests is array of object alog with slug and id;
+			$resp = $this->utilities->formatOnepassCustomerDataResponse($resp);
+		}
 
 		return Response::json(['status'=> 200, "message"=> "Success", "data"=> $resp]);
 	

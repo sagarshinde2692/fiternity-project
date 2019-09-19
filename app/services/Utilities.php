@@ -10457,8 +10457,6 @@ Class Utilities {
 
         $resp['url'] = $data['photo']['url'];
 
-        $resp['gender'] = $data['gender'];
-
         $resp['interests']['data'] = $this->personlizedServiceCategoryList($data['interests']);
 
         return $resp;
