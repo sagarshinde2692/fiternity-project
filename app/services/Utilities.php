@@ -9644,7 +9644,7 @@ Class Utilities {
 		}
 
 		//Log::info('geo coordinates of :::::::::::;', [$customer_geo, $finder_geo]); // need to update distance limit by 500 metere
-		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 500 ? true : false;
+		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 1000 ? true : false;
 		//Log::info('distance status', [$distanceStatus]);
 		if($distanceStatus){
 			// $oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
@@ -9663,7 +9663,7 @@ Class Utilities {
 		}
 		else{
 			// return for use high accurary
-			$return  = $this->checkinCheckoutFailureMsg("Please mark your check in by visiting ".$finder['title']);
+			$return  = $this->checkinCheckoutFailureMsg("Please turn on location services and mark your check-in by visiting ".$finder['title']);
 			return $return;
 		}
 		
