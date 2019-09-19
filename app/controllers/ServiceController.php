@@ -751,7 +751,7 @@ class ServiceController extends \BaseController {
 		// $all_trials_booked = true;
 
 		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-		$allowSession = false;
+		$allowSession['status'] = false;
 		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
 			if(empty($customer_id)){
 				$jwt_token = Request::header('Authorization');
@@ -761,12 +761,12 @@ class ServiceController extends \BaseController {
 				}
 			}
 			$allowSession = $this->passService->allowSession(1, $customer_id, $date, $finder_id, true);
-			if(!empty($allowSession['allow_session'])) {
-				$allowSession = $allowSession['allow_session'];
-			}
-			else {
-				$allowSession = false;
-			}
+			// if(empty($allowSession['allow_session'])) {
+			// 	$allowSession = $allowSession['allow_session'];
+			// }
+			// else {
+			// 	$allowSession = false;
+			// }
 		}
 
         foreach ($items as $k => $item) {
@@ -940,14 +940,22 @@ class ServiceController extends \BaseController {
                         $nrsh['price_only']=(isset($p_np['non_peak']))?$p_np['non_peak']:"";
                         Log::info("rsh price",[$rsh['price_only']]);
                         Log::info("nrsh price",[$rsh['price_only']]);
-						if($allowSession){
+						if($allowSession['status']){
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
 							if($rsh['price_only'] < Config::get('pass.price_upper_limit')){
 								$rsh['price'] = Config::get('app.onepass_free_string');
+
+								if(!empty($allowSession['profile_incomplete'])){
+									$rsh['onepass_booking_block'] = true;
+								}
 							}
 							
 							if($nrsh['price_only'] < Config::get('pass.price_upper_limit')){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
+
+								if(!empty($allowSession['profile_incomplete'])){
+									$nrsh['onepass_booking_block'] = true;
+								}
 							}
 							
 						}else if(empty($finder['flags']['monsoon_campaign_pps'])){
@@ -1051,7 +1059,7 @@ class ServiceController extends \BaseController {
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
 
 						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-						if(!empty($allowSession) && $ratecard_price < Config::get('pass.price_upper_limit')){
+						if(!empty($allowSession['status']) && $ratecard_price < Config::get('pass.price_upper_limit')){
 							array_set($slot, 'skip_share_detail', true);
 						}
 
@@ -1199,8 +1207,12 @@ class ServiceController extends \BaseController {
                 }
 
 				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-				if($allowSession && $service['non_peak']['price'] < Config::get('pass.price_upper_limit')){
+				if($allowSession['status'] && $service['non_peak']['price'] < Config::get('pass.price_upper_limit')){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
+
+					if(!empty($allowSession['profile_incomplete'])){
+						$service['non_peak']['onepass_booking_block'] = true;
+					}
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $service['non_peak']['price'] .= " (100% Cashback)";
 				}
@@ -1389,8 +1401,11 @@ class ServiceController extends \BaseController {
 						$str = "";
 					}
 					
-					if($allowSession && (!empty($sc['price_int']) && $sc['price_int'] < Config::get('pass.price_upper_limit'))){
+					if($allowSession['status'] && (!empty($sc['price_int']) && $sc['price_int'] < Config::get('pass.price_upper_limit'))){
 						$sc['cost'] = Config::get('app.onepass_free_string');
+						if(!empty($allowSession['profile_incomplete'])){
+							$sc['onepass_booking_block'] = true;
+						}
 					}else{
 						$sc['cost'] .= $str;
 					}
@@ -2043,17 +2058,17 @@ class ServiceController extends \BaseController {
 		}
 
 		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-		$allowSession = false;
+		$allowSession['status'] = false;
 		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
 			$allowSession = $this->passService->allowSession($service_details['amount'], $customer_id, $date, $service_details['finder_id'], true);
-			if(!empty($allowSession['allow_session'])) {
-				$allowSession = $allowSession['allow_session'];
-			}
-			else {
-				$allowSession = false;
-			}
+			// if(!empty($allowSession['allow_session'])) {
+			// 	$allowSession = $allowSession['allow_session'];
+			// }
+			// else {
+			// 	$allowSession = false;
+			// }
 		}
-		if($allowSession && $service_details['amount'] < Config::get('pass.price_upper_limit')){
+		if($allowSession['status'] && $service_details['amount'] < Config::get('pass.price_upper_limit')){
 
 			$des = 'You can cancel this session 1 hour prior to your session time.';
 			if($service_details['finder_category_id'] == 5){
@@ -2065,6 +2080,10 @@ class ServiceController extends \BaseController {
 				"header" => "Easy Cancelletion: ",
 				"description" => $des
 			);
+
+			if(!empty($allowSession['profile_incomplete'])){
+				$service_details['onepass_booking_block'] = true;
+			}
 		}
 		$time = isset($_GET['time']) ? $_GET['time'] : null;
 		$time_interval = null;
