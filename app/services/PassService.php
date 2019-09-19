@@ -1686,7 +1686,7 @@ class PassService {
                         "type"=>"CASHBACK",
                         "entry"=>"credit",
                         "order_type"=>["pass"],
-                        "description"=> "100% Cashback on buying OnePass , Expires On : ".date('d-m-Y',time()+(86400*30)),
+                        "description"=> $discount_per."% Cashback on buying OnePass , Expires On : ".date('d-m-Y',time()+(86400*30)),
                         "validity"=>time()+(86400*30),
                         "duplicate_allowed" => true,
                     );
