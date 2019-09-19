@@ -1658,14 +1658,14 @@ class PassService {
                 $discount_per = $order['coupon_flags']['cashback_100_per'];
 
                 $amount_paid = $order['amount'];
-                
-                if($amount_paid > 2000){
-                    $amount_paid = 2000;
-                }
 
                 $cashback_amount = 0;
                 if($amount_paid != 0){
                     $cashback_amount = round(($amount_paid * $discount_per) / 100);
+                }
+
+                if($cashback_amount > 2000){
+                    $cashback_amount = 2000;
                 }
 
                 $cashback_amount_after_gst = 0;
