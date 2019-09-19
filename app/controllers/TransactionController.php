@@ -3640,7 +3640,6 @@ class TransactionController extends \BaseController {
                     $data['pass_premium_session'] = true;
                 }
                 $amount = 0;
-                $data['profile_completed']= true;
             }
         }
         
