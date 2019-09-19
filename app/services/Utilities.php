@@ -10367,8 +10367,8 @@ Class Utilities {
     }
 
     public function getParentServicesCategoryList(){
-
-        return \Servicecategory::active()->where('parent_id', 0)->get(['slug', 'name']);
+        $category_ids = [65, 5, 19, 1, 123, 3, 4, 2, 114, 86];
+        return \Servicecategory::active()->where('parent_id', 0)->whereIn('_id', $category_ids)->get(['slug', 'name']);
     }
 
     function getOrdinalNumber($number) {

@@ -10670,10 +10670,23 @@ class CustomerController extends \BaseController {
 			'gender' => 'string|in:male,female'
 
 		];
-		$validator = Validator::make($data,$rules);
 
+		$rules1 = [
+			'home_address' => "required",
+			'work_address' => "required"
+		];
+
+		$validator = Validator::make($data,$rules);
+		
 		if ($validator->fails()) {
-			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),200);
+		}
+
+		if(!empty($data['address_details'])){
+			$validator1 = Validator::make($data['address_details'], $rules1);
+			if ($validator1->fails()) {
+				return Response::json(array('status' => 400,'message' => $this->errorMessage($validator1->errors())),200);
+			}
 		}
 
 		$input_fields_count  = $this->check_array($data);
