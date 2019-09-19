@@ -3642,17 +3642,6 @@ class TransactionController extends \BaseController {
                 $amount = 0;
                 $data['profile_completed']= true;
             }
-            else if(!empty($passSession['profile_incomplete'])){
-                $data['profile_completed']= false;
-                $data['status'] = 400;
-                $customer_onepass_data = !empty($customer['onepass'])? $customer['onepass']: null;
-                $data['pass_profile'] = [
-                    'title' => 'Complete Pass Profile first',
-        			'subtitle' => 'Complete Pass Profile first',
-        			'data' => $this->utilities->formatOnepassCustomerDataResponse($customer_onepass_data),
-                ];
-                return $data;
-            }
         }
         
         if(!empty($data['amount'] ) && $data['type'] == 'workout-session' && (empty($data['customer_quantity']) || $data['customer_quantity'] ==1)){
