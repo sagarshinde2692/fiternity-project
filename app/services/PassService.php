@@ -1863,11 +1863,11 @@ class PassService {
                             ->whereIn('post_trial_status', [null, '', 'unavailable']);	
             })
             ->orWhere(function($query){
-                $query	->where('ask_review', true)
-                        ->where('schedule_date_time', '<', new \DateTime(date('Y-m-d H:i:s', strtotime('-1 hour'))))
-                        ->whereIn('post_trial_status', ['attended'])
-                        ->where('has_reviewed', '!=', '1')
-                        ->where('skip_review', '!=', true);	
+                // $query	->where('ask_review', true)
+                //         ->where('schedule_date_time', '<', new \DateTime(date('Y-m-d H:i:s', strtotime('-1 hour'))))
+                //         ->whereIn('post_trial_status', ['attended'])
+                //         ->where('has_reviewed', '!=', '1')
+                //         ->where('skip_review', '!=', true);	
             });
         })
         ->orderBy('schedule_date_time', 'asc')
