@@ -712,7 +712,7 @@ class PassService {
             }
             else {
                 // below 1001
-                $profile_completed = !empty($fromCapture) ? $this->utilities->checkOnepassProfileCompleted($customer): true;
+                $profile_completed = !empty($fromService) ? $this->utilities->checkOnepassProfileCompleted($customer): true;
                 if(empty($profile_completed)){
                     return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'msg'=>"onepass profile not complete", 'profile_incomplete' => true ];
                 }

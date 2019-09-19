@@ -10437,7 +10437,7 @@ Class Utilities {
         $required_keys = ['photo', 'gender', 'home_address', 'work_address', 'interests'];
 
         $profileKeys = array_keys($customer->onepass);
-        $status = false;
+        $status = true;
 
         foreach($required_keys as $key=>$value){
 
@@ -10445,7 +10445,7 @@ Class Utilities {
                 $status = false;
                 break;
             }
-            $status = true;
+            //$status = true;
         }
 
         return $status;

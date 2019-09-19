@@ -2064,6 +2064,7 @@ class ServiceController extends \BaseController {
 		$allowSession['allow_session'] = false;
 		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
 			$allowSession = $this->passService->allowSession($service_details['amount'], $customer_id, $date, $service_details['finder_id'], true);
+			Log::info('profile completed data:::::', [$allowSession]);
 			// if(!empty($allowSession['allow_session'])) {
 			// 	$allowSession = $allowSession['allow_session'];
 			// }
