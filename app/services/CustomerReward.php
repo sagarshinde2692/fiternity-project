@@ -2746,6 +2746,13 @@ Class CustomerReward {
                     if(!empty($selected_coupon['description'])){
                         $coupon['description'] = $selected_coupon['description'];
                     }
+
+                    if(!empty(Request::header('Device-Type')) && in_array(Request::header('Device-Type'), ['android', 'ios'])) {
+
+                        if(!empty($selected_coupon['app_discount_percent']) ){
+                            $coupon["discount_percent"] = $selected_coupon['app_discount_percent'];
+                        }
+                    }
                 }
 
 

@@ -95,7 +95,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \nGet 30% off on OnePass. Buy your OnePass before prices go up!", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFirst Time Ever: Get 30% off + 20% Instant Cashback on OnePass | Offer Expires Soon", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -129,7 +129,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \nGet 30% off on OnePass. Buy your OnePass before prices go up!", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFirst Time Ever: Get 30% off + 20% Instant Cashback on OnePass | Offer Expires Soon", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -149,6 +149,13 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
+                <li>Discount of upto 30% off is pre-applied on MRP</li>
+                <li>20% instant cashback is upto INR 2000 and is only applicable on the amount paid by customer</li> 
+                <li>The cashback will be credited to the user on applying code: OP20</li>
+                <li>Cashback can only be used to upgrade the OnePass</li>
+                <li>Cashback received will be valid for 30 days from date of activation</li>
+                <li>The Fitcash will be added deducting GST fees</li>
+                <li>The cashback is applicable on bookings for 1 person</li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -179,6 +186,13 @@ return [
         ],
         "black" =>[
             "<ul>
+                <li>Discount of upto 30% off is pre-applied on MRP</li>
+                <li>20% instant cashback is upto INR 2000 and is only applicable on the amount paid by customer</li> 
+                <li>The cashback will be credited to the user on applying code: OP20</li>
+                <li>Cashback can only be used to upgrade the OnePass</li>
+                <li>Cashback received will be valid for 30 days from date of activation</li>
+                <li>The Fitcash will be added deducting GST fees</li>
+                <li>The cashback is applicable on bookings for 1 person</li>
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
@@ -208,6 +222,13 @@ return [
         ],
         "default"=>[
             "<ul>
+                <li>Discount of upto 30% off is pre-applied on MRP</li>
+                <li>20% instant cashback is upto INR 2000 and is only applicable on the amount paid by customer</li> 
+                <li>The cashback will be credited to the user on applying code: OP20</li>
+                <li>Cashback can only be used to upgrade the OnePass</li>
+                <li>Cashback received will be valid for 30 days from date of activation</li>
+                <li>The Fitcash will be added deducting GST fees</li>
+                <li>The cashback is applicable on bookings for 1 person</li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -436,7 +457,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "Get 30% off on OnePass. Buy your OnePass before prices go up!",
+                "text" => "First Time Ever: Get 30% off + 20% Instant Cashback on OnePass | Offer Expires Soon",
                 "button_text" => "Know More"
             ]
         ],
