@@ -10660,7 +10660,7 @@ class CustomerController extends \BaseController {
 
 		}
 
-		$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
+		//$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
 
 		$resp = array_merge($resp, $customer->onepass);
 
