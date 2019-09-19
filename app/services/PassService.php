@@ -643,7 +643,7 @@ class PassService {
         return (isset($bookingCount))?$bookingCount<1:false;
     }
 
-    public function allowSession($amount, $customerId, $date = null, $finderId = null) {
+    public function allowSession($amount, $customerId, $date = null, $finderId = null, $fromCapture=null) {
         if(empty($amount) && empty(!$customerId)) {
             return;
         }
@@ -663,7 +663,7 @@ class PassService {
             $passType = $passOrder['pass']['pass_type'];
             Log::info('pass orders:::::::::::::::::', [$passOrder]);
 
-            $profile_completed = $this->utilities->checkOnepassProfileCompleted($customer);
+            $profile_completed = !empty($fromCapture) ? $this->utilities->checkOnepassProfileCompleted($customer): true;
             if(empty($profile_completed)){
                 return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'msg'=>"onepass profile not complete", 'profile_incomplete' => true ];
             }
