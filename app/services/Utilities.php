@@ -10347,10 +10347,18 @@ Class Utilities {
             if(!empty($data['address_details']['home_address'])){
                 $customer->address =  $data['address_details']['home_address'];
                 $onepass['home_address'] = $data['address_details']['home_address'];
+                if(!empty($data['address_details']['home_lat']) && !empty($data['address_details']['home_lon'])){
+                    $onepass['home_lat'] = $data['address_details']['home_lat'];
+                    $onepass['home_lon'] = $data['address_details']['home_lon'];
+                }
             }
             
             if(!empty($data['address_details']['work_address'])){
                 $onepass['work_address'] =  $data['address_details']['work_address'];
+                if(!empty($data['address_details']['work_lat']) && !empty($data['address_details']['work_lon'])){
+                    $onepass['work_lat'] = $data['address_details']['work_lat'];
+                    $onepass['work_lon'] = $data['address_details']['work_lon'];
+                }
             }
 
             if(!empty($data['address_details']['home_landmark'])){
