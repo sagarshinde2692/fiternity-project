@@ -9538,9 +9538,9 @@ Class Utilities {
 		Log::info('chekcins:::::::::::;', [$device_token, $checkins, $customer_id]);
         $customer = Customer::active()->where('_id', (int)$customer_id)->first();
 
-        if(!empty($customer['loyalty']['end_date']) && (strtotime($customer['loyalty']['end_date']) < strtotime('today'))){
-            return $this->checkinCheckoutFailureMsg("Your Fitsquad program has been expired.");
-        }
+        // if(!empty($customer['loyalty']['end_date']) && (strtotime($customer['loyalty']['end_date']) < strtotime('today'))){
+        //     return $this->checkinCheckoutFailureMsg("Your Fitsquad program has been expired.");
+        // }
 
 		if(count($checkins)>0)
 		{
