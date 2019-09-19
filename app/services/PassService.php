@@ -84,6 +84,10 @@ class PassService {
                 //     ];
                 // }
             }
+
+            $passDetails['cashback'] = '(20% Instant Cashback)';
+            unset($passDetails['extra_info']);
+
             if($pass['unlimited_access']) {
                 $passDetails['price'] = 'Rs. '.$pass['price'];
                 $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
@@ -448,6 +452,8 @@ class PassService {
             $communication = $this->passPurchaseCommunication($order);
             $order->update(['communication'=> $communication]);
         }
+
+        $this->giveCashbackOnOrderSuccess($order);
 
         $success_data = $this->getSuccessData($order);
 
@@ -921,6 +927,10 @@ class PassService {
        
         if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['web_message'] = $success['web_message'];
+
+            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
+                $success_template['offer_success_msg'] = "Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass";
+            }
         }
 
 
@@ -934,6 +944,11 @@ class PassService {
             //     $item = $utilities->bullet()." ".$item;
             // }
             unset($success_template['info']['app_data']);
+
+            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
+                $success_template['subline'] .= '\n\n Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
+            }
+
         }
 
         return $success_template;
@@ -1348,6 +1363,10 @@ class PassService {
             [
                'field' => 'START DATE',
                'value' => date('l, j M Y',strtotime($data['start_date'])),
+            ],
+            [
+               'field' => '',
+               'value' => 'Use code: OP20 to get 20% Instant Cashback',
             ]
         ];
 
@@ -1629,5 +1648,58 @@ class PassService {
             $passTerms = $passTerms['default'];
         }
         return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
+    }
+
+    public function giveCashbackOnOrderSuccess($order){
+        if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
+
+            $discount_per = $order['coupon_flags']['cashback_100_per'];
+
+            $amount_paid = $order['amount'];
+
+            if($amount_paid > 2000){
+                $amount_paid = 2000;
+            }
+
+            $cashback_amount = 0;
+            if($amount_paid != 0){
+                $cashback_amount = round(($amount_paid * $discount_per) / 100);
+            }
+
+            $cashback_amount_after_gst = 0;
+            if($cashback_amount != 0){
+                $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
+            }
+            
+            if($cashback_amount > 0){
+
+                $walletData = array(
+                    "order_id"=>$order['_id'],
+                    "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
+                    "amount"=> intval($cashback_amount_after_gst),
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => intval($cashback_amount_after_gst),
+                    "type"=>"CASHBACK",
+                    "entry"=>"credit",
+                    "order_type"=>["pass"],
+                    "description"=> "100% Cashback on buying OnePass , Expires On : ".date('d-m-Y',time()+(86400*30)),
+                    "validity"=>time()+(86400*30)
+                );
+
+                $walletTransaction = $utilities->walletTransaction($walletData);
+
+                if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
+        
+                    $customersms = new CustomerSms();
+
+                    $sms_data = [];
+
+                    $sms_data['customer_phone'] = $order['customer_phone'];
+                    $sms_data['amount'] = $cashback_amount_after_gst;
+
+                    $customersms->onePass100PerCashback($sms_data);
+                }
+            }
+        }
     }
 }
