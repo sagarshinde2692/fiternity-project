@@ -10725,7 +10725,7 @@ class CustomerController extends \BaseController {
 
 		if(!empty($data['submit']) && !empty($data['profile_completed'])){
 			//here interests is array of ids
-			$resp['profile_data'] = $this->utilities->personlizedProfileData($resp);
+			$resp =['profile_data' => $this->utilities->personlizedProfileData($resp)];
 		}
 		else{
 			//interests is array of object alog with slug and id;

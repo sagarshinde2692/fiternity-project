@@ -10467,9 +10467,10 @@ Class Utilities {
         $servicecategories	 = 	\Servicecategory::active()->whereIn('_id', $service_categegory_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->orderBy('name')->get(array('_id','name','slug'));
 
 		if(count($servicecategories) > 0){
-
+            $base_url  = Config::get('app.service_icon_base_url');
+            $base_url_extention  = Config::get('app.service_icon_base_url_extention');
 			foreach($servicecategories as &$category){
-				$category['image'] = $category['slug'];
+				$category['image'] = $base_url.$category['slug'].$base_url_extention;
 				if($category['slug'] == 'martial-arts'){
 					$category['name'] = 'MMA & Kick-boxing';
 				}

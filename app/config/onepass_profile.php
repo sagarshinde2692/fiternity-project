@@ -11,7 +11,7 @@ return [
         "url" => "",
         "success_image" => "https://b.fitn.in/passes/check_circle.png",
         "text" => "personalization Completed",
-        "skip" => "Skip for now",
+        "skip_text" => "Skip for now",
         "interests" => [
             "header" => "Explore our fitness options",
             "data" => [
