@@ -10339,6 +10339,7 @@ Class Utilities {
 
         if(!empty($data['gender']) && in_array($data['gender'], ['male', 'female'])){
             $onepass['gender'] = $data['gender'];
+            $customer->gender = $data['gender'];
         }
 
         if(!empty($data['address_details'])){
@@ -10448,5 +10449,42 @@ Class Utilities {
         }
 
         return $status;
+    }
+
+    public function personlizedProfileData($data){
+        
+        $resp = Config::get('onepass_profile.personlized_profile');
+
+        $resp['url'] = $data['photo']['url'];
+
+        $resp['gender'] = $data['gender'];
+
+        $resp['interests']['data'] = $this->personlizedServiceCategoryList($data['interests']);
+
+        return $resp;
+    }
+
+    public function personlizedServiceCategoryList($service_categegory_ids){
+
+        $servicecategories	 = 	\Servicecategory::active()->whereIn('_id', $service_categegory_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->orderBy('name')->get(array('_id','name','slug'));
+
+		if(count($servicecategories) > 0){
+
+			foreach($servicecategories as &$category){
+				$category['image'] = $category['slug'];
+				if($category['slug'] == 'martial-arts'){
+					$category['name'] = 'MMA & Kick-boxing';
+				}
+			}
+
+			// foreach($order as $_id){
+			// 	foreach($servicecategories as $x){
+			// 		if($x['_id'] == $_id){
+			// 			array_push($ordered_categories, $x);
+			// 		}
+			// 	}
+			// }
+        }
+		return $servicecategories->toArray();
     }
 }

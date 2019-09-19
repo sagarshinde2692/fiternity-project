@@ -10666,7 +10666,8 @@ class CustomerController extends \BaseController {
 
 		$data = Input::all();
 		$rules = [
-			'interests' => 'array|min:3'
+			'interests' => 'array|min:3',
+			'gender' => 'string|in:male,female'
 
 		];
 		$validator = Validator::make($data,$rules);
@@ -10722,6 +10723,11 @@ class CustomerController extends \BaseController {
 
 		$resp = array_merge($resp, $customer->onepass);
 
+		if(!empty($data['submit']) && !empty($data['profile_completed'])){
+			//here interests is array of ids
+			$resp['profile_data'] = $this->utilities->personlizedProfileData($resp);
+		}
+		//interests is array of object alog with slug and id;
 		$resp = $this->utilities->formatOnepassCustomerDataResponse($resp);
 
 		return Response::json(['status'=> 200, "message"=> "Success", "data"=> $resp]);
