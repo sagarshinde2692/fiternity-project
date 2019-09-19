@@ -944,7 +944,7 @@ class ServiceController extends \BaseController {
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
 							if($rsh['price_only'] < Config::get('pass.price_upper_limit')){
 								$rsh['price'] = Config::get('app.onepass_free_string');
-
+								$rsh['onepass_booking_block'] = false;
 								if(!empty($allowSession['profile_incomplete'])){
 									$rsh['onepass_booking_block'] = true;
 								}
@@ -953,6 +953,7 @@ class ServiceController extends \BaseController {
 							if($nrsh['price_only'] < Config::get('pass.price_upper_limit')){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
 
+								$nrsh['onepass_booking_block'] = false;
 								if(!empty($allowSession['profile_incomplete'])){
 									$nrsh['onepass_booking_block'] = true;
 								}
@@ -1210,6 +1211,7 @@ class ServiceController extends \BaseController {
 				if($allowSession['allow_session'] && $service['non_peak']['price'] < Config::get('pass.price_upper_limit')){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
 
+					$service['non_peak']['onepass_booking_block'] = false;
 					if(!empty($allowSession['profile_incomplete'])){
 						$service['non_peak']['onepass_booking_block'] = true;
 					}
@@ -1403,6 +1405,7 @@ class ServiceController extends \BaseController {
 					
 					if($allowSession['allow_session'] && (!empty($sc['price_int']) && $sc['price_int'] < Config::get('pass.price_upper_limit'))){
 						$sc['cost'] = Config::get('app.onepass_free_string');
+						$service['non_peak']['onepass_booking_block'] = false;
 						if(!empty($allowSession['profile_incomplete'])){
 							$sc['onepass_booking_block'] = true;
 						}
@@ -2081,6 +2084,7 @@ class ServiceController extends \BaseController {
 				"description" => $des
 			);
 
+			$service['non_peak']['onepass_booking_block'] = false;
 			if(!empty($allowSession['profile_incomplete'])){
 				$service_details['onepass_booking_block'] = true;
 			}
