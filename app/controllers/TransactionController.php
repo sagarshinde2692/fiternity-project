@@ -3640,6 +3640,11 @@ class TransactionController extends \BaseController {
                     $data['pass_premium_session'] = true;
                 }
                 $amount = 0;
+            }else if(!empty($passSession['profile_incomplete'])){
+                $data['profile_completed']= false;
+                $data['status'] = 400;
+                $data['msg'] = "First complete you profile";
+                return $data;
             }
         }
         

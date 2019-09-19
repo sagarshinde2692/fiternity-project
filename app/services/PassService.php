@@ -665,7 +665,7 @@ class PassService {
 
             $profile_completed = $this->utilities->checkOnepassProfileCompleted($customer);
             if(empty($profile_completed)){
-                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'msg'=>"onepass profile not complete" ];
+                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'msg'=>"onepass profile not complete", 'profile_incomplete' => true ];
             }
         }
 

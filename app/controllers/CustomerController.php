@@ -10608,9 +10608,7 @@ class CustomerController extends \BaseController {
 
 		$data = Input::all();
 		$rules = [
-			'interests' => 'array|min:3',
-			'address_details.home_address' => 'required_if:address_details, string',
-			'address_details.work_address' => 'required_if:address_details, string'
+			'interests' => 'array|min:3'
 
 		];
 		$validator = Validator::make($data,$rules);
