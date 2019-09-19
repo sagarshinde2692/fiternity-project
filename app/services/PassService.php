@@ -1832,11 +1832,12 @@ class PassService {
         );
 
         $upcomig = $this->upcomingPassBooking($customerData);
+        $recommended= $this->workoutSessionNearMe('mumbai');
         $res = array();
         $res['profile'] = $profile;
         $res['pass'] = $tabPassData;
         $res['upcoming'] = $upcomig;
-        $res['recommended'] = "";
+        $res['recommended'] = $recommended;
         $res['footer'] = $footer;
 
         return $res;
@@ -1915,5 +1916,34 @@ class PassService {
         $data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer']);
 
         return $data_new;
+    }
+
+    public function workoutSessionNearMe($city){
+
+        $lat = isset($_GET['lat']) && $_GET['lat'] != "" ? $_GET['lat'] : "";
+        $lon = isset($_GET['lon']) && $_GET['lon'] != "" ? $_GET['lon'] : "";
+        $near_by_workout_request = [
+            "offset" => 0,
+            "limit" => 9,
+            "radius" => "2km",
+            "category"=>"",
+            "lat"=>$lat,
+            "lon"=>$lon,
+            "city"=>strtolower($city),
+            "keys"=>[
+                "average_rating",
+                "contact",
+                "coverimage",
+                "location",
+                "multiaddress",
+                "slug",
+                "name",
+                "id",
+                "categorytags",
+                "category"
+            ]
+        ];
+
+        return $this->utilities->getWorkoutSessions($near_by_workout_request, 'customerHome');
     }
 }
