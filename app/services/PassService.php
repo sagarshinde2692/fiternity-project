@@ -1882,7 +1882,7 @@ class PassService {
         
         $data_new['workout'] = array(
             'icon' => '',
-            //'header' => ucwords($data['service_name']),
+            'header' => ucwords($data['service_name']),
             'datetime' => date('D, d M - h:i A', strtotime($data['schedule_date_time']))
         );
         
