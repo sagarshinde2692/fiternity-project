@@ -10672,7 +10672,7 @@ class CustomerController extends \BaseController {
 		$data = Input::all();
 		$rules = [
 			'interests' => 'array|min:3',
-			'gender' => 'string|in:male,female'
+			'gender' => 'string|in:male,female,Male,Female, MALE, FEMALE'
 
 		];
 

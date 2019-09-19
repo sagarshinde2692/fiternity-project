@@ -10337,9 +10337,9 @@ Class Utilities {
             $onepass['interests'] = $data['interests'];
         }
 
-        if(!empty($data['gender']) && in_array($data['gender'], ['male', 'female'])){
-            $onepass['gender'] = $data['gender'];
-            $customer->gender = $data['gender'];
+        if(!empty($data['gender'])){
+            $onepass['gender'] = strtolower($data['gender']);
+            $customer->gender = strtolower($data['gender']);
         }
 
         if(!empty($data['address_details'])){
