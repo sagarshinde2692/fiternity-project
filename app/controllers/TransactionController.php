@@ -995,7 +995,7 @@ class TransactionController extends \BaseController {
 
             if(!empty($data['customer_source']) && $data['customer_source'] == 'admin'){
             }else{
-                $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+                $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order, $corporateCustomer);
             
                 // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
                 
@@ -3503,7 +3503,7 @@ class TransactionController extends \BaseController {
     	
     }
 
-    public function getCashbackRewardWallet($data,$order){
+    public function getCashbackRewardWallet($data,$order, $customer){
 
         $customer_id = (int)$data['customer_id'];
 
@@ -3523,7 +3523,7 @@ class TransactionController extends \BaseController {
         
         if(isset($customer->demonetisation)){
 			
-            return $this->getCashbackRewardWalletNew($data,$order);
+            return $this->getCashbackRewardWalletNew($data,$order, $customer);
 
         }
 
@@ -3531,7 +3531,7 @@ class TransactionController extends \BaseController {
 
     }
 
-    public function getCashbackRewardWalletNew($data,$order){
+    public function getCashbackRewardWalletNew($data,$order, $customer){
 
         
         addAToGlobals('ratecard_id_for_wallet', (!empty($order['ratecard_id']) ? $order['ratecard_id'] : 0));
@@ -3640,10 +3640,17 @@ class TransactionController extends \BaseController {
                     $data['pass_premium_session'] = true;
                 }
                 $amount = 0;
-            }else if(!empty($passSession['profile_incomplete'])){
+                $data['profile_completed']= true;
+            }
+            else if(!empty($passSession['profile_incomplete'])){
                 $data['profile_completed']= false;
                 $data['status'] = 400;
-                $data['msg'] = "First complete you profile";
+                $customer_onepass_data = !empty($customer['onepass'])? $customer['onepass']: null;
+                $data['pass_profile'] = [
+                    'title' => 'Complete Pass Profile first',
+        			'subtitle' => 'Complete Pass Profile first',
+        			'data' => $this->utilities->formatOnepassCustomerDataResponse($customer_onepass_data),
+                ];
                 return $data;
             }
         }

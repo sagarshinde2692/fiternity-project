@@ -10379,25 +10379,32 @@ Class Utilities {
     }
 
     public function formatOnepassCustomerDataResponse($resp){
+        if(empty($resp)){
+            return [];
+        }
         $onepassProfileConfig = Config::get('onepass_profile');
+
         if(!empty($resp['photo'])){
 			$resp['url'] = $resp['photo']['url'];
 			unset($resp['photo']);
-		}
+        }
+        
+        if(empty($resp['service_categories'])){
+            $resp['service_categories'] = $this->getParentServicesCategoryList();
+        }
 
-		if(!empty($resp['service_categories'])){
-			foreach($resp['service_categories'] as &$value){
-				if((!empty($resp['interests'])) && (in_array($value['_id'], $resp['interests']))){
-					$value['selected'] = true;
-				}
-				else{
-					$value['selected'] = false;
-				}
+        foreach($resp['service_categories'] as &$value){
+            if((!empty($resp['interests'])) && (in_array($value['_id'], $resp['interests']))){
+                $value['selected'] = true;
             }
-            $resp['interests'] = $onepassProfileConfig['interests'];
-            $resp['interests']['data'] = $resp['service_categories'];
-			unset($resp['service_categories']);
-		}
+            else{
+                $value['selected'] = false;
+            }
+        }
+        $resp['interests'] = $onepassProfileConfig['interests'];
+        $resp['interests']['data'] = $resp['service_categories'];
+        unset($resp['service_categories']);
+		
 		
 		if(!empty($resp['home_address'])){
             $resp['address_details'] = $onepassProfileConfig['address_details'];
