@@ -10490,7 +10490,7 @@ Class Utilities {
 
         $servicecategories	 = 	\Servicecategory::active()->whereIn('_id', $service_categegory_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->orderBy('name')->get(array('_id','name','slug'));
         
-        $icons = $this->utilities->getServiceCategoriesIcon()[0];
+        $icons = $this->getServiceCategoriesIcon()[0];
 
 		if(count($servicecategories) > 0){
             $base_url  = Config::get('app.service_icon_base_url');
