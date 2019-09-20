@@ -2648,21 +2648,6 @@ Class CustomerReward {
             }
             $discount_amount = $coupon["discount_amount"] <= $price ? $coupon["discount_amount"] : $price;
 
-            if(!empty(Request::header('Device-Type')) && in_array(Request::header('Device-Type'), ['android', 'ios'])) {
-
-                if(!empty($coupon['app_discount_percent']) ){
-                    $coupon["discount_percent"] = $coupon['app_discount_percent'];
-                }
-                
-                if(!empty($coupon['app_discount_max']) ){
-                    $coupon["discount_max"] = $coupon["app_discount_max"];
-                }
-                if(!empty($coupon['app_description']) ){
-                    $coupon["description"] = $coupon["app_description"];
-                }
-                
-            }
-
             if(!empty($coupon['flags']['discount_max_overridable']['amount']) && !empty($coupon['flags']['discount_max_overridable']['finder_flags_key']) && !empty($coupon['flags']['discount_max_overridable']['value']) && !empty($finder['flags']['monsoon_flash_discount']) && $finder['flags'][$coupon['flags']['discount_max_overridable']['finder_flags_key']] == $coupon['flags']['discount_max_overridable']['value']){
                 $coupon["discount_max"] = $coupon['flags']['discount_max_overridable']['amount'];
             }
@@ -2735,22 +2720,11 @@ Class CustomerReward {
 
                 if(!empty($selected_coupon) ){
 
-                    if(!empty($selected_coupon['discount_percent'])){
-                        $coupon['discount_percent'] = $selected_coupon['discount_percent'];
-                    }
+                    $keys = ['discount_percent','discount_max','description','final_amount','app_discount_percent','app_discount_max','app_description'];
                     
-                    if(!empty($selected_coupon['discount_max'])){
-                        $coupon['discount_max'] = $selected_coupon['discount_max'];
-                    }
-                    
-                    if(!empty($selected_coupon['description'])){
-                        $coupon['description'] = $selected_coupon['description'];
-                    }
-
-                    if(!empty(Request::header('Device-Type')) && in_array(Request::header('Device-Type'), ['android', 'ios'])) {
-
-                        if(!empty($selected_coupon['app_discount_percent']) ){
-                            $coupon["discount_percent"] = $selected_coupon['app_discount_percent'];
+                    foreach($keys as $key){
+                        if(isset($selected_coupon[$key])){
+                            $coupon[$key] = $selected_coupon[$key];
                         }
                     }
                 }
@@ -2865,6 +2839,21 @@ Class CustomerReward {
                         $coupon['final_amount'] = $coupon_selected['final_amount'];
                     }
                 }
+            }
+
+            if(!empty(Request::header('Device-Type')) && in_array(Request::header('Device-Type'), ['android', 'ios'])) {
+
+                if(!empty($coupon['app_discount_percent']) ){
+                    $coupon["discount_percent"] = $coupon['app_discount_percent'];
+                }
+                
+                if(!empty($coupon['app_discount_max']) ){
+                    $coupon["discount_max"] = $coupon["app_discount_max"];
+                }
+                if(!empty($coupon['app_description']) ){
+                    $coupon["description"] = $coupon["app_description"];
+                }
+                
             }
             
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
