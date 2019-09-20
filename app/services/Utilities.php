@@ -9865,7 +9865,7 @@ Class Utilities {
 			$resp = $this->checkinCheckoutSuccessMsg($finder, $customer);
 			$resp['header'] = 'CHECK- IN SUCCESSFUL';
             // $resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']."\n Make sure you check-out post your workout by scanning the QR code again to get the successful check-in towards the goal of reaching your milestone. \n\n Please note - The check-in will not be provided if your check-out time is not mapped out. Don`t forget to scan the QR code again post your workout.";
-            $resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']." ".$finder['location_id']['name'].". Workout for at-least 45 minutes before check-out.\nMake sure you check-out by scanning the QR code again to get the successful check-in.";
+            $resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']." ".$finder['location_id']['name'].". Workout for at-least 45 minutes before check-out.\nMake sure you check-out by scanning the QR code again to get the successful check-in.\n Please note - The checkout window is 45 minutes to 3 hours from the time of your check-in.";
             $resp['checkin'] = (!empty($addedCheckin['checkin'])? $addedCheckin['checkin']: null);
 			return $resp;
 		}else{	
