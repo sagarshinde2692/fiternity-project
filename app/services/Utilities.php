@@ -10389,7 +10389,7 @@ Class Utilities {
 
     public function formatOnepassCustomerDataResponse($resp){
         
-        $onepassProfileConfig = Config::get('onepass_profile');
+        $onepassProfileConfig = Config::get('pass.pass_profile');
 
         if(!empty($resp['photo'])){
 			$resp['url'] = $resp['photo']['url'];
@@ -10461,7 +10461,7 @@ Class Utilities {
 
     public function personlizedProfileData($data){
         
-        $resp = Config::get('onepass_profile.personlized_profile');
+        $resp = Config::get('pass.pass_profile.personlized_profile');
 
         $resp['url'] = $data['photo']['url'];
 

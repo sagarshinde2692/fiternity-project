@@ -10848,7 +10848,7 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function passTab(){
+	public function passTab($city='mumbai'){
 
 		$decoded = null;
         $jwt_token = Request::header('Authorization');
@@ -10870,10 +10870,10 @@ class CustomerController extends \BaseController {
 			}
 		}
 		
-		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
-			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], false);
+		if(!$passPurchased && !empty($passOrder['pass']['pass_type'])) {
+			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false);
 		}else {
-			$result['onepass_pre'] = Config::get('pass.home.before_purchase');
+			$result['onepass_pre'] = Config::get('pass.before_purchase_tab');
 		}
 
 		$response = Response::make($result);

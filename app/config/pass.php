@@ -5,6 +5,7 @@ $success_page_template = Config::get('successPage');
 // $black_pass = 'https://b.fitn.in/global/classpass/mobile/back%20card%20-%20website.png';
 $red_pass = 'https://b.fitn.in/passes/cards/onepass-red.png';
 $black_pass = 'https://b.fitn.in/passes/cards/onepass-black.png';
+
 return [
     'price_upper_limit' => 1001,
     'list' => [
@@ -449,7 +450,7 @@ return [
                 "index" => 0,
                 "text" => "Get 30% off on OnePass. Buy your OnePass before prices go up!",
                 "button_text" => "Know More"
-            ]
+            ],
         ],
         "after_purchase" => [
             "red" => [
@@ -689,4 +690,81 @@ return [
             ]
         ]
     ],
+
+    "pass_profile" =>[
+        "address_details" => [
+            "header" => "Let us know where you are"
+        ],
+        "interests" => [
+            "header" => "Tell us about your interests",
+            "subheader" => "Select at least 3"
+        ],
+        "personlized_profile" => [
+            "url" => "",
+            "success_image" => "https://b.fitn.in/passes/check_circle.png",
+            "text" => "personalization Completed",
+            "skip_text" => "Skip for now",
+            "interests" => [
+                "header" => "Explore our fitness options",
+                "data" => [
+    
+                ]
+            ]
+        ]
+    ],
+    
+    "before_purchase_tab" => [
+        "logo"  => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
+        "header_img"  => "https://b.fitn.in/passes/app-home/onepass_header.png",
+        "header_new_img" => "http://b.fitn.in/passes/onepass-app.png",
+        "header_sub_text" => "FOR EVERYTHING HEALTH AND FITNESS",
+        "text"  => "Enjoy limitless access across Fitternity's 12,000+ fitness classes, gyms and sports facilities across India",
+        "passes" => [
+            [
+                "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
+                "header1" => "ONEPASS",
+                "header1_color" => "#000000",
+                "header2" => "RED",
+                "header2_color" => "#d50000",
+                "subheader" => "UNLIMITED ACCESS",
+                "desc_header" => "Limitless Workouts",
+                //"desc_subheader" => "With Expiry" 
+            ],
+            [
+                "image" => "https://b.fitn.in/passes/app-home/op_black_thumb.png",
+                "header1" => "ONEPASS",
+                "header1_color" => "#000000",
+                "header2" => "BLACK",
+                "header2_color" => "#000000",
+                "subheader" => "UNLIMITED VALIDITY",
+                "desc_header" => "No Expiry",
+                //"desc_subheader" => "Limited Workouts"
+            ]
+        ],
+
+        'why_pass' => [
+            'header' => 'WHY GO FOR OnePass?',
+            'data' => [
+                [
+                    'header' => 'Select a fitness Centre & slot',
+                    'text' => 'select a fitness centre and slot'
+                ],
+                [
+                    'header' => 'Book & Go Workout',
+                    'text' => 'Reach the fitness centre & flash your booking to unlock your session'
+                ],
+                [
+                    'header' => 'Make The best workout regime',
+                    'text' => 'Go to your favourite place multiple times or mix it up'
+                ]
+            ]
+        ],
+
+        "vendors" =>[
+            "icon" => "http://b.fitn.in/iconsv1/gyms.png",
+            "header" => "Over 12,000+ fitness classes,\n gyms & sports venues",
+            "workout_sessions_near_me" => []
+        ]
+    ]
+
 ];
