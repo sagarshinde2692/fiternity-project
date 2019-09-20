@@ -10416,33 +10416,37 @@ Class Utilities {
 		if(!empty($resp['home_address'])){
             $resp['address_details'] = $onepassProfileConfig['address_details'];
 			$resp['address_details']['home_address'] = $resp['home_address'];
-			if(!empty($resp['home_landmark'])){
-				$resp['address_details']['home_landmark'] = $resp['home_landmark'];
-                unset($resp['home_landmark']);
-            }
-            if(!empty($resp['home_lat']) && !empty($resp['home_lon'])){
-				$resp['address_details']['home_lat'] = $resp['home_lat'];
-				$resp['address_details']['home_lon'] = $resp['home_lon'];
-                unset($resp['home_lat']);
-                unset($resp['home_lon']);
-            }
             unset($resp['home_address']);
 		}
+
+        if(!empty($resp['home_landmark'])){
+            $resp['address_details']['home_landmark'] = $resp['home_landmark'];
+            unset($resp['home_landmark']);
+        }
+
+        if(!empty($resp['home_lat']) && !empty($resp['home_lon'])){
+            $resp['address_details']['home_lat'] = $resp['home_lat'];
+            $resp['address_details']['home_lon'] = $resp['home_lon'];
+            unset($resp['home_lat']);
+            unset($resp['home_lon']);
+        }
 
 		if(!empty($resp['work_address'])){
 
 			$resp['address_details']['work_address'] = $resp['work_address'];
-			if(!empty($resp['work_landmark'])){
-				$resp['address_details']['work_landmark'] = $resp['work_landmark'];
-                unset($resp['work_landmark']);
-            }
-            if(!empty($resp['work_lat']) && !empty($resp['work_lon'])){
-				$resp['address_details']['work_lat'] = $resp['work_lat'];
-				$resp['address_details']['work_lon'] = $resp['work_lon'];
-                unset($resp['work_lat']);
-                unset($resp['work_lon']);
-            }
             unset($resp['work_address']);
+        }
+
+        if(!empty($resp['work_landmark'])){
+            $resp['address_details']['work_landmark'] = $resp['work_landmark'];
+            unset($resp['work_landmark']);
+        }
+        
+        if(!empty($resp['work_lat']) && !empty($resp['work_lon'])){
+            $resp['address_details']['work_lat'] = $resp['work_lat'];
+            $resp['address_details']['work_lon'] = $resp['work_lon'];
+            unset($resp['work_lat']);
+            unset($resp['work_lon']);
         }
         
         return $resp;
