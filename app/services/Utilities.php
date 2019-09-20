@@ -10420,6 +10420,12 @@ Class Utilities {
 				$resp['address_details']['home_landmark'] = $resp['home_landmark'];
                 unset($resp['home_landmark']);
             }
+            if(!empty($resp['home_lat']) && !empty($resp['home_lon'])){
+				$resp['address_details']['home_lat'] = $resp['home_lat'];
+				$resp['address_details']['home_lon'] = $resp['home_lon'];
+                unset($resp['home_lat']);
+                unset($resp['home_lon']);
+            }
             unset($resp['home_address']);
 		}
 
@@ -10429,7 +10435,13 @@ Class Utilities {
 			if(!empty($resp['work_landmark'])){
 				$resp['address_details']['work_landmark'] = $resp['work_landmark'];
                 unset($resp['work_landmark']);
-			}
+            }
+            if(!empty($resp['work_lat']) && !empty($resp['work_lon'])){
+				$resp['address_details']['work_lat'] = $resp['work_lat'];
+				$resp['address_details']['work_lon'] = $resp['work_lon'];
+                unset($resp['work_lat']);
+                unset($resp['work_lon']);
+            }
             unset($resp['work_address']);
         }
         
@@ -10442,7 +10454,7 @@ Class Utilities {
             return false; 
         }
 
-        $required_keys = ['photo', 'gender', 'home_address', 'work_address', 'interests'];
+        $required_keys = ['photo', 'gender', 'home_address', 'interests'];
 
         $profileKeys = array_keys($customer->onepass);
         $status = true;

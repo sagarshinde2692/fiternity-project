@@ -764,6 +764,31 @@ return [
             "icon" => "http://b.fitn.in/iconsv1/gyms.png",
             "header" => "Over 12,000+ fitness classes,\n gyms & sports venues",
             "workout_sessions_near_me" => []
+        ],
+
+        "offers" => [
+            "icon" => "",
+            "header" => "Exciting OnePass Offers",
+            "logo" => "",
+            "text" => "Get 30% off on OnePass. Buy your OnePass before prices go up!",
+        ],
+
+        'faq' => [
+            'header' => 'Frequently Asked Questions',
+            'title' => 'FAQ Title',
+            'url' => $apiUrl.'/passfaq'
+        ],
+
+        'tnc' => [
+            'header' => 'Terms and Conditions',
+            'title' => '',
+            'url' => $apiUrl.'/passtermscondition'
+        ],
+
+        'footer' => [
+            'contact_text' => 'Need Help? Contact your Personal Concierge',
+            'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+            'contact_no' => '+917400062849'
         ]
     ]
 
