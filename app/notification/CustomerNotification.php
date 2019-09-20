@@ -344,6 +344,8 @@ Class CustomerNotification extends Notification{
 
 	}
 
+	
+
 	public function common($label,$data,$notif_type,$notif_object,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();
