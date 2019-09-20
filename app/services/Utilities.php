@@ -2496,7 +2496,7 @@ Class Utilities {
         $data['deeplink'] = !empty($data['deeplink']) ? $data['deeplink'] : "";
         $data['title'] = !empty($data['title']) ? $data['title'] : "";
         $data['text'] = !empty($data['text']) ? $data['text'] : "";
-        $data['text'] = !empty($data['body']) ? $data['body'] : "";
+        //$data['text'] = !empty($data['body']) ? $data['body'] : "";
         $data['unique_id'] = !empty($data['unique_id']) ? $data['unique_id'] : '593a9380820095bf3e8b4568';
         $data['label'] = !empty($data['label']) ? $data['label'] : "label";
 
