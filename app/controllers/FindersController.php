@@ -1366,7 +1366,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "50% Off + Exta 20% Off On Memberships | Get Addnl 5% Off on App. Use Code - S3FIT",
+								'text1'=> "50% Off + Extra 20% Off On Memberships | Get Addnl 5% Off on App | Use Code - S3FIT",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1378,7 +1378,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% Off + Exta 20% Off On Memberships | Get Addnl 5% Off on App. Use Code - S3FIT",
+								'text1'=> "50% Off + Extra 20% Off On Memberships | Get Addnl 5% Off on App | Use Code - S3FIT",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1390,7 +1390,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% Off + Exta 20% Off On Memberships | Get Addnl 5% Off on App. Use Code - S3FIT",
+								'text1'=> "50% Off + Extra 20% Off On Memberships | Get Addnl 5% Off on App | Use Code - S3FIT",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3847,25 +3847,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Super September Sale</u><br><br>- 50% Off + Exta 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App. Use Code : S3FIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "<u>Super September Sale</u><br><br>- 50% Off + Extra 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App | Use Code : S3FIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }else{	
-				$line = "\nSuper September Sale\n\n- 50% Off + Exta 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App. Use Code : S3FIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "\nSuper September Sale\n\n- 50% Off + Extra 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App | Use Code : S3FIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Super September Sale</u><br><br>- 50% Off + Exta 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App. Use Code : S3FIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "<u>Super September Sale</u><br><br>- 50% Off + Extra 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App | Use Code : S3FIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }else{	
-				$line = "\nSuper September Sale\n\n- 50% Off + Exta 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App. Use Code : S3FIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "\nSuper September Sale\n\n- 50% Off + Extra 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App | Use Code : S3FIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Super September Sale</u><br><br>- 50% Off + Exta 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App. Use Code : S3FIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "<u>Super September Sale</u><br><br>- 50% Off + Extra 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App | Use Code : S3FIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }else{	
-				$line = "\nSuper September Sale\n\n- 50% Off + Exta 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App. Use Code : S3FIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "\nSuper September Sale\n\n- 50% Off + Extra 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App | Use Code : S3FIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }
 			
 		}
@@ -3878,9 +3878,9 @@ class FindersController extends \BaseController {
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 							if($this->device_type == 'android'){
-								$line = "<u>Super September Sale</u><br><br>- 50% Off + Exta 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App. Use Code : S3FIT";
+								$line = "<u>Super September Sale</u><br><br>- 50% Off + Extra 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App | Use Code : S3FIT";
 							}else{	
-								$line = "\nSuper September Sale\n\n- 50% Off + Exta 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App. Use Code : S3FIT";
+								$line = "\nSuper September Sale\n\n- 50% Off + Extra 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App | Use Code : S3FIT";
 							}
 							
 							break;
