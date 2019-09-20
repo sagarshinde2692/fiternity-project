@@ -2720,22 +2720,11 @@ Class CustomerReward {
 
                 if(!empty($selected_coupon) ){
 
-                    if(!empty($selected_coupon['discount_percent'])){
-                        $coupon['discount_percent'] = $selected_coupon['discount_percent'];
-                    }
+                    $keys = ['discount_percent','discount_max','description','final_amount','app_discount_percent','app_discount_max','app_description'];
                     
-                    if(!empty($selected_coupon['discount_max'])){
-                        $coupon['discount_max'] = $selected_coupon['discount_max'];
-                    }
-                    
-                    if(!empty($selected_coupon['description'])){
-                        $coupon['description'] = $selected_coupon['description'];
-                    }
-
-                    if(!empty(Request::header('Device-Type')) && in_array(Request::header('Device-Type'), ['android', 'ios'])) {
-
-                        if(!empty($selected_coupon['app_discount_percent']) ){
-                            $coupon["discount_percent"] = $selected_coupon['app_discount_percent'];
+                    foreach($keys as $key){
+                        if(isset($selected_coupon[$key])){
+                            $coupon[$key] = $selected_coupon[$key];
                         }
                     }
                 }
@@ -2833,13 +2822,22 @@ Class CustomerReward {
                 }
 
                 if(!empty($coupon_selected) ){
-                    
-                    $keys = ['discount_percent','discount_max','description','final_amount','app_discount_percent','app_discount_max','app_description'];
 
-                    $coupon_selected = array_only($coupon_selected, $keys);
+                    if(!empty($coupon_selected['discount_percent'])){
+                        $coupon['discount_percent'] = $coupon_selected['discount_percent'];
+                    }
                     
-                    $coupon = array_merge($coupon, $coupon_selected);
+                    if(!empty($coupon_selected['discount_max'])){
+                        $coupon['discount_max'] = $coupon_selected['discount_max'];
+                    }
+                    
+                    if(!empty($coupon_selected['description'])){
+                        $coupon['description'] = $coupon_selected['description'];
+                    }
 
+                    if(!empty($coupon_selected['final_amount'])){
+                        $coupon['final_amount'] = $coupon_selected['final_amount'];
+                    }
                 }
             }
 
