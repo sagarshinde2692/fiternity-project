@@ -10873,7 +10873,7 @@ class CustomerController extends \BaseController {
 			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false);
 		}else {
 			$result['onepass_pre'] = Config::get('pass.before_purchase_tab');
-			$result['onepass_pre']['vendors']['workout_sessions_near_me'] = $this->passService->workoutSessionNearMe($city)['data'];
+			$result['onepass_pre']['near_by']['workout_sessions_near_me'] = $this->passService->workoutSessionNearMe($city)['data'];
 		}
 
 		$response = Response::make($result);

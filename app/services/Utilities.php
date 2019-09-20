@@ -10489,25 +10489,23 @@ Class Utilities {
     public function personlizedServiceCategoryList($service_categegory_ids){
 
         $servicecategories	 = 	\Servicecategory::active()->whereIn('_id', $service_categegory_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->orderBy('name')->get(array('_id','name','slug'));
+        
+        $icons = $this->utilities->getServiceCategoriesIcon()[0];
 
 		if(count($servicecategories) > 0){
             $base_url  = Config::get('app.service_icon_base_url');
             $base_url_extention  = Config::get('app.service_icon_base_url_extention');
 			foreach($servicecategories as &$category){
-				$category['image'] = $base_url.$category['slug'].$base_url_extention;
+				$category['image'] = !empty($icons[$category['name']]) ? $icons[$category['name']]['icon']: $base_url.$category['slug'].$base_url_extention;
 				if($category['slug'] == 'martial-arts'){
 					$category['name'] = 'MMA & Kick-boxing';
 				}
 			}
-
-			// foreach($order as $_id){
-			// 	foreach($servicecategories as $x){
-			// 		if($x['_id'] == $_id){
-			// 			array_push($ordered_categories, $x);
-			// 		}
-			// 	}
-			// }
         }
 		return $servicecategories->toArray();
+    }
+
+    public function getServiceCategoriesIcon(){
+        return \Ordervariables::where('name', 'service_categories')->lists('service_categories');
     }
 }

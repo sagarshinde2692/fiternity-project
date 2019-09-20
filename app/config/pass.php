@@ -743,7 +743,7 @@ return [
         ],
 
         'why_pass' => [
-            'header' => 'WHY GO FOR OnePass?',
+            'header' => 'Why Go For OnePass?',
             'data' => [
                 [
                     'header' => 'Select a fitness Centre & slot',
@@ -760,7 +760,7 @@ return [
             ]
         ],
 
-        "vendors" =>[
+        "near_by" =>[
             "icon" => "http://b.fitn.in/iconsv1/gyms.png",
             "header" => "Over 12,000+ fitness classes,\n gyms & sports venues",
             "workout_sessions_near_me" => []
@@ -789,6 +789,80 @@ return [
             'contact_text' => 'Need Help? Contact your Personal Concierge',
             'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
             'contact_no' => '+917400062849'
+        ]
+    ],
+
+    "after_purchase_tab" => [
+        "red" => [
+            "pass_image"  => "https://b.fitn.in/passes/cards/onepass-red.png",
+            "name"  => "",
+            "header" => "UNLIMITED USAGE",
+            "subheader" => "", // duration or sessions
+            "top_right_button_text" => "BOOK >",
+            "left_text"  => "UPCOMING: ",
+            "left_value"  => 0,
+            "right_text"  => "COMPLETED: ",
+            "right_value"  => 0,
+
+            'footer' => [
+                'section1' => [
+                    'button1_text' => 'REPEAT LAST BOOKING',
+                    // 'button1_subtext' => '',
+                    'button2_text' => 'VIEW ALL BOOKINGS',
+                    'no_last_order' => true,
+                    'contact_text' => 'Need Help? Contact your Personal Concierge',
+                    'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+                    'contact_no' => '+917400062849'
+                ],
+                'section2' => [
+                    'text' => 'Your Onepass Red will expire after remaining_text',
+                    'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                    'button_text' => 'RENEW NOW',
+                    'index' => 0
+                ],
+                'section3' => [
+                    'text' => 'Your Onepass Red has expired',
+                    'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                    'button_text' => 'RENEW',
+                    'index' => 0
+                ]
+            ],
+            'pass_expired' => false,
+        ],
+        "black" => [
+            "pass_image"  => "https://b.fitn.in/passes/cards/onepass-black.png",
+            "name"  => "",
+            "header" => "UNLIMITED VALIDITY",
+            "subheader" => "", // duration or sessions
+            "top_right_button_text" => "BOOK >",
+            "left_text"  => "UPCOMING: ",
+            "left_value"  => "0",
+            "right_text"  => "COMPLETED: ",
+            "right_value"  => "0",
+            'footer' => [
+                'section1' => [
+                    'button1_text' => 'REPEAT LAST BOOKING',
+                    // 'button1_subtext' => '',
+                    'button2_text' => 'VIEW ALL BOOKINGS',
+                    'no_last_order' => true,
+                    'contact_text' => 'Need Help? Contact your Personal Concierge',
+                    'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+                    'contact_no' => '+917400062849'
+                ],
+                'section2' => [
+                    'text' => 'Your Onepass Black will expire after remaining_text',
+                    'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                    'button_text' => 'RENEW NOW',
+                    'index' => 1
+                ],
+                'section3' => [
+                    'text' => 'Your Onepass Black has expired',
+                    'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                    'button_text' => 'RENEW',
+                    'index' => 1
+                ]
+            ],
+            'pass_expired' => false
         ]
     ]
 

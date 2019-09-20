@@ -1712,7 +1712,7 @@ class PassService {
 
         $passExpired = false;
 
-        $tabPassData = Config::get('pass.home.after_purchase.'.$passOrder['pass']['pass_type']);
+        $tabPassData = Config::get('pass.after_purchase_tab.'.$passOrder['pass']['pass_type']);
         $tnc = Config::get('pass.terms.'.$passOrder['pass']['pass_type'])[0];
         $tabPassData['pass_order_id'] = $passOrder['_id'];
         $startDateDiff = $this->getDateDifference($passOrder['start_date']);
@@ -1817,13 +1817,14 @@ class PassService {
             }
         }
         $tabPassData['pass_expired'] = $passExpired;
-        if(!$showTnC && !empty($tabPassData['terms'])) {
-            unset($tabPassData['terms']);
-            unset($tabPassData['tnc_text']);
-        }
-        else {
-            $tabPassData['terms'] = "<h2>Terms and Conditions</h2>".$tnc;
-        }
+
+        // if(!$showTnC && !empty($tabPassData['terms'])) {
+        //     unset($tabPassData['terms']);
+        //     unset($tabPassData['tnc_text']);
+        // }
+        // else {
+        //     $tabPassData['terms'] = "<h2>Terms and Conditions</h2>".$tnc;
+        // }
 
         $footer = array();
         $footer = array(
@@ -1871,7 +1872,7 @@ class PassService {
             });
         })
         ->orderBy('schedule_date_time', 'asc')
-        ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id','finder_location')
+        ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id','finder_location', 'service_category')
         ->first();
 
         //$data_new['session_data'] = $data;
@@ -1880,9 +1881,12 @@ class PassService {
         //$data_new['time_diff_text'] = "Starts In - ";
         
         $data_new['header'] = "Upcoming Session";
-        
+
+        $icons = $this->utilities->getServiceCategoriesIcon()[0];
+        $icon = !empty($icons[$data['service_category']]) ? $icons[$data['service_category']]['icon']: '';
+
         $data_new['workout'] = array(
-            'icon' => strtolower($data['service_category']),
+            'icon' => $icon,
             'header' => ucwords($data['service_name']),
             'datetime' => date('D, d M - h:i A', strtotime($data['schedule_date_time'])),
         ); 
