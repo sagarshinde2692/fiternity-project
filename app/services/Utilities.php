@@ -9860,7 +9860,8 @@ Class Utilities {
 			// 		array_push($loyalty['memberships'], $finder_id);
 			// 		$customer->update(['loyalty'=>$loyalty]);
 			// 	}
-			// }
+            // }
+            $this->scheduleCheckoutRemainderNotification($customer['_id'], 45);
 			$resp = $this->checkinCheckoutSuccessMsg($finder, $customer);
 			$resp['header'] = 'CHECK- IN SUCCESSFUL';
             // $resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']."\n Make sure you check-out post your workout by scanning the QR code again to get the successful check-in towards the goal of reaching your milestone. \n\n Please note - The check-in will not be provided if your check-out time is not mapped out. Don`t forget to scan the QR code again post your workout.";
@@ -10322,4 +10323,15 @@ Class Utilities {
         return (!empty($finder['flags']['forced_on_onepass']) && ($finder['flags']['forced_on_onepass']));
     }
 
+    public function scheduleCheckoutRemainderNotification($customerId, $delayMinutes){
+        $delay= \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addMinutes($delayMinutes);
+        $promoData = [
+            'customer_id'=>$customerId,
+            'delay'=>$delay,
+            'text'=>'Done with your workout? Check-out by scanning the QR code to get the successful check-in ',
+            'title'=>'Don`t forget to check-out.'
+        ];
+
+        $send_communication = $this->sendPromotionalNotification($promoData);
+    }
 }

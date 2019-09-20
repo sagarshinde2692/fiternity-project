@@ -343,16 +343,6 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 
 	}
-	
-	public function fitsquadCheckoutReminder($data,$delay){
-
-        $label = '';
-
-		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+45m","max_time"=>time()+(30*45));
-		//return $this->common($label,$data,$notif_type,$notif_object,$delay);
-
-	}
 
 	public function common($label,$data,$notif_type,$notif_object,$delay = 0){
 
