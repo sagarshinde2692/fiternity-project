@@ -2648,21 +2648,6 @@ Class CustomerReward {
             }
             $discount_amount = $coupon["discount_amount"] <= $price ? $coupon["discount_amount"] : $price;
 
-            if(!empty(Request::header('Device-Type')) && in_array(Request::header('Device-Type'), ['android', 'ios'])) {
-
-                if(!empty($coupon['app_discount_percent']) ){
-                    $coupon["discount_percent"] = $coupon['app_discount_percent'];
-                }
-                
-                if(!empty($coupon['app_discount_max']) ){
-                    $coupon["discount_max"] = $coupon["app_discount_max"];
-                }
-                if(!empty($coupon['app_description']) ){
-                    $coupon["description"] = $coupon["app_description"];
-                }
-                
-            }
-
             if(!empty($coupon['flags']['discount_max_overridable']['amount']) && !empty($coupon['flags']['discount_max_overridable']['finder_flags_key']) && !empty($coupon['flags']['discount_max_overridable']['value']) && !empty($finder['flags']['monsoon_flash_discount']) && $finder['flags'][$coupon['flags']['discount_max_overridable']['finder_flags_key']] == $coupon['flags']['discount_max_overridable']['value']){
                 $coupon["discount_max"] = $coupon['flags']['discount_max_overridable']['amount'];
             }
@@ -2848,23 +2833,29 @@ Class CustomerReward {
                 }
 
                 if(!empty($coupon_selected) ){
-
-                    if(!empty($coupon_selected['discount_percent'])){
-                        $coupon['discount_percent'] = $coupon_selected['discount_percent'];
-                    }
                     
-                    if(!empty($coupon_selected['discount_max'])){
-                        $coupon['discount_max'] = $coupon_selected['discount_max'];
-                    }
-                    
-                    if(!empty($coupon_selected['description'])){
-                        $coupon['description'] = $coupon_selected['description'];
-                    }
+                    $keys = ['discount_percent','discount_max','description','final_amount','app_discount_percent','app_discount_max','app_description'];
 
-                    if(!empty($coupon_selected['final_amount'])){
-                        $coupon['final_amount'] = $coupon_selected['final_amount'];
-                    }
+                    $coupon_selected = array_only($coupon_selected, $keys);
+                    
+                    $coupon = array_merge($coupon, $coupon_selected);
+
                 }
+            }
+
+            if(!empty(Request::header('Device-Type')) && in_array(Request::header('Device-Type'), ['android', 'ios'])) {
+
+                if(!empty($coupon['app_discount_percent']) ){
+                    $coupon["discount_percent"] = $coupon['app_discount_percent'];
+                }
+                
+                if(!empty($coupon['app_discount_max']) ){
+                    $coupon["discount_max"] = $coupon["app_discount_max"];
+                }
+                if(!empty($coupon['app_description']) ){
+                    $coupon["description"] = $coupon["app_description"];
+                }
+                
             }
             
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
