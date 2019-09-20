@@ -10677,8 +10677,7 @@ class CustomerController extends \BaseController {
 		];
 
 		$rules1 = [
-			'home_address' => "required",
-			'work_address' => "required"
+			'home_address' => "required"
 		];
 
 		$validator = Validator::make($data,$rules);
@@ -10870,7 +10869,7 @@ class CustomerController extends \BaseController {
 			}
 		}
 		
-		if(!$passPurchased && !empty($passOrder['pass']['pass_type'])) {
+		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
 			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false);
 		}else {
 			$result['onepass_pre'] = Config::get('pass.before_purchase_tab');
