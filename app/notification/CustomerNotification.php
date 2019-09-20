@@ -343,8 +343,8 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 
 	}
-
 	
+
 
 	public function common($label,$data,$notif_type,$notif_object,$delay = 0){
 
