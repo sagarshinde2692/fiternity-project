@@ -209,11 +209,13 @@ class PassController extends \BaseController {
 			}
 		}
 		
-		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
+		if(!$passPurchased && !empty($passOrder['pass']['pass_type'])) {
 			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate);
 		}else {
-			$result['onepass_pre'] = Config::get('pass.before_purchase_tab');
-			$result['onepass_pre']['near_by']['workout_sessions_near_me'] = $this->passService->workoutSessionNearMe($city, $coordinate);
+            $result['onepass_pre'] = Config::get('pass.before_purchase_tab');
+            $pps_near_by = $this->passService->workoutSessionNearMe($city, $coordinate);
+			$result['onepass_pre']['near_by']['subheader'] = $pps_near_by['header'];
+			$result['onepass_pre']['near_by']['data'] = $pps_near_by['data'];
 		}
 
 		$response = Response::make($result);

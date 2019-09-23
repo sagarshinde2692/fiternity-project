@@ -765,7 +765,6 @@ return [
         "near_by" =>[
             "icon" => "https://b.fitn.in/onepass/Dumbell_3x.png",
             "header" => "Over 12,000+ fitness classes,\n gyms & sports venues",
-            "workout_sessions_near_me" => []
         ],
 
         "offers" => [
