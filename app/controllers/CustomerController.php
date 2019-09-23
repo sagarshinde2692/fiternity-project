@@ -10846,37 +10846,4 @@ class CustomerController extends \BaseController {
 			return $result;
 		}
 	}
-
-	public function passTab($city='mumbai'){
-
-		$decoded = null;
-        $jwt_token = Request::header('Authorization');
-		if(!empty($jwt_token)){
-            $decoded = $this->customerTokenDecode($jwt_token);
-            if(!empty($decoded)){
-                $customeremail = $decoded->customer->email;
-                $customer_id = $decoded->customer->_id;
-            }
-		}
-		
-		$passPurchased = false;
-		$passOrder = null;
-
-		if(!empty($customeremail)) {
-			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
-			if(!empty($passOrder)) {
-				$passPurchased = true;
-			}
-		}
-		
-		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
-			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false);
-		}else {
-			$result['onepass_pre'] = Config::get('pass.before_purchase_tab');
-			$result['onepass_pre']['near_by']['workout_sessions_near_me'] = $this->passService->workoutSessionNearMe($city)['data'];
-		}
-
-		$response = Response::make($result);
-		return $response;
-	}
 }

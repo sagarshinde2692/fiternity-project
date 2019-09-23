@@ -239,7 +239,6 @@ Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward'
 Route::group(array('before' => 'device'), function() {
     Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
 });
-Route::get('customer/passtab/{city?}', array('as' => 'customer.passtab','uses' => 'CustomerController@passTab'));
 
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
 Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
@@ -1407,3 +1406,4 @@ Route::get('dynamicOnepassEMailSms', 'DebugController@dynamicOnepassEMailSms');
 Route::get('addFlagClasspassAvalible', 'DebugController@addFlagClasspassAvalible');
 Route::get('localpassratecard', 'PassController@localPassRatecards');
 Route::get('unlocksession/{trial_id}','SchedulebooktrialsController@unlockSession');
+Route::get('passtab/{city?}', 'PassController@passTab');
