@@ -1679,7 +1679,7 @@ class PassService {
         );
     }
 
-    public function passTabPostPassPurchaseData($customerId, $city, $showTnC = true) {
+    public function passTabPostPassPurchaseData($customerId, $city, $showTnC = true, $coordinate) {
         Log::info('passTabPostPassPurchaseData');
         $customerData = Customer::where('_id', $customerId)->first();
         // return $customerData;
@@ -1837,7 +1837,7 @@ class PassService {
         );
 
         $upcomig = $this->upcomingPassBooking($customerData);
-        $recommended= $this->workoutSessionNearMe($city);
+        $recommended= $this->workoutSessionNearMe($city, $coordinate);
         $res = array();
         $res['profile'] = $profile;
         $res['pass'] = $tabPassData;
@@ -1927,10 +1927,10 @@ class PassService {
         return $data_new;
     }
 
-    public function workoutSessionNearMe($city){
+    public function workoutSessionNearMe($city, $coordinate){
 
-        $lat = isset($_GET['lat']) && $_GET['lat'] != "" ? $_GET['lat'] : "";
-        $lon = isset($_GET['lon']) && $_GET['lon'] != "" ? $_GET['lon'] : "";
+        $lat = $coordinate['lat'];
+        $lon = $coordinate['lon'];
         $near_by_workout_request = [
             "offset" => 0,
             "limit" => 9,

@@ -171,7 +171,23 @@ class PassController extends \BaseController {
     
         $input= Input::all();
 
-        $city = !empty($input['city']) ? $input['city']: 'mumbai';
+        $rules= [
+            'city' => 'required',
+            'lat' => 'required',
+            'lon' => 'required'
+        ];
+
+        $validator = Validator::make($input,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 400,'message' => error_message($validator->errors())), 400);
+        }
+        $city =  $input['city'];
+
+        $coordinate = [
+            'lat' => $input['lat'],
+            'lon' => $input['lon']
+        ];
         
 		$decoded = null;
         $jwt_token = Request::header('Authorization');
@@ -194,10 +210,10 @@ class PassController extends \BaseController {
 		}
 		
 		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
-			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false);
+			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate);
 		}else {
 			$result['onepass_pre'] = Config::get('pass.before_purchase_tab');
-			$result['onepass_pre']['near_by']['workout_sessions_near_me'] = $this->passService->workoutSessionNearMe($city)['data'];
+			$result['onepass_pre']['near_by']['workout_sessions_near_me'] = $this->passService->workoutSessionNearMe($city, $coordinate)['data'];
 		}
 
 		$response = Response::make($result);
