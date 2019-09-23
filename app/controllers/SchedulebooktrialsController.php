@@ -8572,6 +8572,20 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function unlockSession($booktrial_id){
         Log::info($_SERVER['REQUEST_URI']);
+
+        $rules = [
+            'lat' => 'required',
+            'lon' => 'required'
+        ];
+
+        $data = Input::json()->all();
+
+        $validator = Validator::make($data,$rules);
+
+        if($validator->fails()) {
+            $resp = array('status' => 400,'message' =>'Not able to find your location');
+            return  Response::json($resp, 400);
+        }
         $booktrial_id = (int) $booktrial_id;
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
@@ -8580,14 +8594,32 @@ class SchedulebooktrialsController extends \BaseController {
         $decoded = customerTokenDecode($jwt_token);
 
         $customer_id = (int)$decoded->customer->_id;
-        
+
+        $customer_cordinates = [
+            'lat' => $data['lat'],
+            'lon' => $data['lon']
+        ];
         $booktrial = Booktrial::where('_id',$booktrial_id)
            ->where('customer_id',$customer_id)
+           ->where('post_trial_status', 'ne', 'attended')
            ->whereIn('type',['booktrials','3daystrial','workout-session'])
-           // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
-           // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+           ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
+           ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            // ->orderBy('_id','desc')
            ->first();
+
+        if(!empty($booktrial)){
+            $finder_cordinates = [
+                'lat' => $booktrial['finder_lat'],
+                'lon' => $booktrial['finder_lon']
+            ];
+            
+            $distance_in_meters = $this->utilities->distanceCalculationOfCheckinsCheckouts($customer_cordinates, $finder_cordinates);
+
+            if($distance_in_meters > Config::get('app.checkin_checkout_max_distance_in_meters')){
+                return ["status"=>400, "message"=> "Please mark your check in by visiting ".$booktrial['finder_name']];
+            }
+        }
 
         if(isset($booktrial)){
 
