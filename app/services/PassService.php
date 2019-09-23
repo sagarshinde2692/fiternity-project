@@ -1687,7 +1687,7 @@ class PassService {
         if(!empty($customerData)){
 
             $interest = array();
-            if(!empty($customerData['onepass']['interests'])){
+            if(!empty($customerData['onepass']['interests']) && is_array($customerData['onepass']['interests'])){
                 $interests_name = array_column(
                     $this->utilities->personlizedServiceCategoryList($customerData['onepass']['interests']), 
                     'name'
