@@ -4775,17 +4775,17 @@ class SchedulebooktrialsController extends \BaseController {
 
         }
 
-        if(!empty($booktrial['pass_order_id'])){
-            $order = Order::find($booktrial['pass_order_id']);
-            if($order['pass']['pass_type'] == 'red'){
-                $pass_end_date = array(
-                    "old" => new Mongodate(strtotime($order['end_date'])),
-                    "new" => new MongoDate(strtotime('+1 days',strtotime($order['end_date'])))
-                );
+        // if(!empty($booktrial['pass_order_id'])){
+        //     $order = Order::find($booktrial['pass_order_id']);
+        //     if($order['pass']['pass_type'] == 'red'){
+        //         $pass_end_date = array(
+        //             "old" => new Mongodate(strtotime($order['end_date'])),
+        //             "new" => new MongoDate(strtotime('+1 days',strtotime($order['end_date'])))
+        //         );
 
-                array_set($bookdata, 'pass_end_date', $pass_end_date);
-            }
-        }
+        //         array_set($bookdata, 'pass_end_date', $pass_end_date);
+        //     }
+        // }
 
         array_set($bookdata, 'cancel_by', $source_flag);
         $trialbooked        = 	$booktrial->update($bookdata);
@@ -4802,11 +4802,11 @@ class SchedulebooktrialsController extends \BaseController {
                 $order->update();
             }
 
-            if($order['pass']['pass_type'] == 'red'){
-                $order->end_date_original = new Mongodate(strtotime($order['end_date']));
-                $order->end_date = new MongoDate(strtotime('+1 days',strtotime($order['end_date'])));
-                $order->update();
-            }
+            // if($order['pass']['pass_type'] == 'red'){
+            //     $order->end_date_original = new Mongodate(strtotime($order['end_date']));
+            //     $order->end_date = new MongoDate(strtotime('+1 days',strtotime($order['end_date'])));
+            //     $order->update();
+            // }
         }
 
         if(!empty($booktrial['extended_validity_order_id'])){
