@@ -6858,7 +6858,11 @@ class TransactionController extends \BaseController {
 
             $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" =>$errorMessage, "data"=>$resp["data"]);
 
-            return Response::json($resp,200);    
+            if(checkAppVersionFromHeader(['ios'=>'4.9.0', 'android'=>0])){
+                return Response::json($resp,200);    
+            }else{
+                return Response::json($resp,400);    
+            }
         }
 
         return Response::json($resp,200);
