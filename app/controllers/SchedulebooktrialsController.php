@@ -8653,7 +8653,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			
             $data_new['footer'] = array(
-				'footer1' => 'You can only unlock this session within 200 meters of the gym',
+				'footer1' => 'You can only unlock this session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym',
 				'footer2' => array(
 					'contact_text' => 'Need Help? Contact your Personal Concierge',
 					'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
