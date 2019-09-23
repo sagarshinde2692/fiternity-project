@@ -714,11 +714,10 @@ return [
     ],
     
     "before_purchase_tab" => [
-        "logo"  => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
-        "header_img"  => "https://b.fitn.in/passes/app-home/onepass_header.png",
-        "header_new_img" => "http://b.fitn.in/passes/onepass-app.png",
-        "header_sub_text" => "FOR EVERYTHING HEALTH AND FITNESS",
-        "text"  => "Enjoy limitless access across Fitternity's 12,000+ fitness classes, gyms and sports facilities across India",
+        "header_img" => "http://b.fitn.in/passes/onepass-app.png",
+        "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
+        "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
+        "header_sub_text"  => "Enjoy limitless access across Fitternity's 12,000+ fitness classes, gyms and sports facilities across India",
         "passes" => [
             [
                 "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
@@ -747,39 +746,44 @@ return [
             'data' => [
                 [
                     'header' => 'Select a fitness Centre & slot',
-                    'text' => 'select a fitness centre and slot'
+                    'text' => 'select a fitness centre and slot',
+                    'image' => 'https://b.fitn.in/global/onepass/icon-1.png'
                 ],
                 [
                     'header' => 'Book & Go Workout',
-                    'text' => 'Reach the fitness centre & flash your booking to unlock your session'
+                    'text' => 'Reach the fitness centre & flash your booking to unlock your session',
+                    'image' => 'https://b.fitn.in/global/onepass/icon-2.png'
                 ],
                 [
                     'header' => 'Make The best workout regime',
-                    'text' => 'Go to your favourite place multiple times or mix it up'
+                    'text' => 'Go to your favourite place multiple times or mix it up',
+                    'image' => 'https://b.fitn.in/global/onepass/icon-3.png'
                 ]
             ]
         ],
 
         "near_by" =>[
-            "icon" => "http://b.fitn.in/iconsv1/gyms.png",
+            "icon" => "https://b.fitn.in/onepass/Dumbell_3x.png",
             "header" => "Over 12,000+ fitness classes,\n gyms & sports venues",
             "workout_sessions_near_me" => []
         ],
 
         "offers" => [
-            "icon" => "",
+            "icon" => "https://b.fitn.in/onepass/discount_3x.png",
             "header" => "Exciting OnePass Offers",
-            "logo" => "",
+            "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
             "text" => "Get 30% off on OnePass. Buy your OnePass before prices go up!",
         ],
 
         'faq' => [
+            "logo" => "https://b.fitn.in/onepass/FAQ_3x.png",
             'header' => 'Frequently Asked Questions',
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
         ],
 
         'tnc' => [
+            'logo' => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
             'header' => 'Terms and Conditions',
             'title' => '',
             'url' => $apiUrl.'/passtermscondition'
