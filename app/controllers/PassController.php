@@ -167,8 +167,12 @@ class PassController extends \BaseController {
         return $resp;
     }
 
-    public function passTab($city='mumbai'){
+    public function passTab(){
+    
+        $input= Input::all();
 
+        $city = !empty($input['city']) ? $input['city']: 'mumbai';
+        
 		$decoded = null;
         $jwt_token = Request::header('Authorization');
 		if(!empty($jwt_token)){

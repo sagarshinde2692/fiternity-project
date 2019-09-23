@@ -1406,4 +1406,4 @@ Route::get('dynamicOnepassEMailSms', 'DebugController@dynamicOnepassEMailSms');
 Route::get('addFlagClasspassAvalible', 'DebugController@addFlagClasspassAvalible');
 Route::get('localpassratecard', 'PassController@localPassRatecards');
 Route::get('unlocksession/{trial_id}','SchedulebooktrialsController@unlockSession');
-Route::get('passtab/{city?}', 'PassController@passTab');
+Route::post('passtab', 'PassController@passTab');
