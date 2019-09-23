@@ -1687,17 +1687,21 @@ class PassService {
         if(!empty($customerData)){
 
             $interest = array();
-            if(!empty($customerData['category_interested']) && is_array($customerData['category_interested'])){
+            if(!empty($customerData['onepass']['interests'])){
+                $interests_name = array_column(
+                    $this->utilities->personlizedServiceCategoryList($customerData['onepass']['interests']), 
+                    'name'
+                );
                 $interest = array(
                     'header' => "Interests",
-                    'values' => implode(', ', $customerData['category_interested'])
+                    'values' => implode(', ', $interests_name)
                 );
             }
 
             $profile = array(
-                'image' => $customerData['picture'],
+                'image' => $customerData['onepass']['photo']['url'],
                 'name' => ucwords($customerData['name']),
-                'interest' => $interest,
+                'interests' => $interest,
             );
         }
 

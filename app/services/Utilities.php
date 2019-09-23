@@ -10487,8 +10487,12 @@ Class Utilities {
     }
 
     public function personlizedServiceCategoryList($service_categegory_ids){
-
-        $servicecategories	 = 	\Servicecategory::active()->whereIn('_id', $service_categegory_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->orderBy('name')->get(array('_id','name','slug'));
+        try{
+            $servicecategories	 = 	\Servicecategory::active()->whereIn('_id', $service_categegory_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->orderBy('name')->get(array('_id','name','slug'));
+        } catch(\Exception $e){
+            $servicecategories= [];
+            Log::info('error occured while fatching service categories::::::::::', [$e]);
+        }
         
         $icons = $this->getServiceCategoriesIcon()[0];
 
@@ -10502,7 +10506,7 @@ Class Utilities {
 				}
 			}
         }
-		return $servicecategories->toArray();
+		return is_array($servicecategories) ? $servicecategories : $servicecategories->toArray();
     }
 
     public function getServiceCategoriesIcon(){
