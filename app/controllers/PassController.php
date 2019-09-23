@@ -171,22 +171,20 @@ class PassController extends \BaseController {
     
         $input= Input::all();
 
-        $rules= [
-            'city' => 'required',
-            'lat' => 'required',
-            'lon' => 'required'
-        ];
+        // $rules= [
+        //     'city' => 'required',
+        // ];
 
-        $validator = Validator::make($input,$rules);
+        // $validator = Validator::make($input,$rules);
 
-        if ($validator->fails()) {
-            return Response::json(array('status' => 400,'message' => error_message($validator->errors())), 400);
-        }
-        $city =  $input['city'];
+        // if ($validator->fails()) {
+        //     return Response::json(array('status' => 400,'message' => error_message($validator->errors())), 400);
+        // }
+        $city =  !empty($input['city'])? $input['city'] : 'mumbai' ;
 
         $coordinate = [
-            'lat' => $input['lat'],
-            'lon' => $input['lon']
+            'lat' => !empty($input['lat']) ? $input['lat']: "",
+            'lon' => !empty($input['lon']) ? $input['lon'] : ""
         ];
         
 		$decoded = null;
