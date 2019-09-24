@@ -9572,8 +9572,8 @@ Class Utilities {
 			{
 				//session is not complitated
 				$return = $this->checkinCheckoutSuccessMsg($finder, $customer);
-				$return['header'] = "Session is not completed.";
-				$return['sub_header_2'] = "Seems you have not completed your workout at ".$finder['title'].". The check-out time window is 45 minutes to 3 hours from your check-in time.\n Please make sure you check-out in the same window in order to get a successful check-in to level up on your workout milestone.";
+				$return['header'] = "Checkout Unsuccessful.";
+				$return['sub_header_2'] = "Seems you have not completed your workout at ".$finder['title'].". The check-out time window is 45 minutes to 3 hours from your check-in time.\n\n Please make sure you check-out in the same window in order to get a successful check-in to level up on your workout milestone.";
 				return $return;
 			}
 			else if(($difference > 45 * 60) &&($difference <= 180 * 60))
@@ -9865,7 +9865,7 @@ Class Utilities {
 			$resp = $this->checkinCheckoutSuccessMsg($finder, $customer);
 			$resp['header'] = 'CHECK- IN SUCCESSFUL';
             // $resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']."\n Make sure you check-out post your workout by scanning the QR code again to get the successful check-in towards the goal of reaching your milestone. \n\n Please note - The check-in will not be provided if your check-out time is not mapped out. Don`t forget to scan the QR code again post your workout.";
-            $resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']." ".$finder['location_id']['name'].". Workout for at-least 45 minutes before check-out.\nMake sure you check-out by scanning the QR code again to get the successful check-in.\n Please note - The checkout window is 45 minutes to 3 hours from the time of your check-in.";
+            $resp['sub_header_2'] = "Enjoy your workout at ".$finder['title']." ".$finder['location_id']['name'].". Workout for at-least 45 minutes before check-out.\n\n Make sure you check-out by scanning the QR code again to get the successful check-in.\n\n Please note - The checkout window is 45 minutes to 3 hours from the time of your check-in.";
             $resp['checkin'] = (!empty($addedCheckin['checkin'])? $addedCheckin['checkin']: null);
 			return $resp;
 		}else{	
