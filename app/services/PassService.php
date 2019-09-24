@@ -694,8 +694,8 @@ class PassService {
                 else if($passOrder['pass']['pass_type']=='hybrid') {
                     Log::info('inside hybrid passs:::::');
                     // $duration = $passOrder['pass']['duration'];
-                    if(empty($finder) || !in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
-                        Log::info('inside hybrid passs:::::', [$finder]);
+                    if(empty($finder) || empty($finder['brand_id']) || !in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
+                        Log::info('inside hybrid passs:::::', [$finder, $finderId,  array_column($passOrder['pass']['brands'], '_id')]);
                         return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> "Not Applicable on ".$finder['title']];
                     }
 
