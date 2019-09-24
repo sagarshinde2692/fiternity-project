@@ -682,7 +682,7 @@ return array(
                 "rate"=>13
             ),
             array(
-                "bankCode"=> "EMIICP6",
+                "bankCode"=> "EMIICP9",
                 "bankName"=> "ICICI",
                 "bankTitle"=>9,
                 "pgId"=> "8",
@@ -794,7 +794,7 @@ return array(
                 "rate"=>14
             ),
             array(
-                "bankCode"=> "SBI03",
+                "bankCode"=> "SBI09",
                 "bankName"=> "SBI",
                 "bankTitle"=>9,
                 "pgId"=> "8",
@@ -802,7 +802,7 @@ return array(
                 "rate"=>14
             ),
             array(
-                "bankCode"=> "SBI06",
+                "bankCode"=> "SBI12",
                 "bankName"=> "SBI",
                 "bankTitle"=>12,
                 "pgId"=> "8",
