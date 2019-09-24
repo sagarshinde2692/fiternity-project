@@ -665,7 +665,12 @@ class PassService {
         $finder = null;
         if(!empty($finderId)) {
             Finder::$withoutAppends = true;
-            $finder = Finder::active()->where('_id', $finderId)->where('flags.not_available_on_onepass', '!=', true)->first();
+            if($passType == 'hybrid'){
+                $finder = Finder::active()->where('_id', $finderId)->first();
+            }
+            else{
+                $finder = Finder::active()->where('_id', $finderId)->where('flags.not_available_on_onepass', '!=', true)->first();
+            }
             if(empty($finder)) {
                 return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
