@@ -783,7 +783,8 @@ Class CustomerReward {
             }
             
             if(
-                !empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] 
+                (!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] 
+                 || !empty($order['corporate_discount_coupon_flags']['cashback_100_per']) && $order['corporate_discount_coupon_flags']['cashback_100_per']) 
                 && !empty($order['amount']) 
                 && $order['amount'] > 0 
                 && (empty($order['customer_source']) || !in_array($order['customer_source'], ['admin', 'kiosk']))
@@ -1731,7 +1732,7 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null, $first_session_free = false){
+    public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null, $first_session_free = false, $corporate_discount_coupon = false){
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
 
@@ -1943,6 +1944,22 @@ Class CustomerReward {
             $coupon_data = !is_array($coupon) ? $coupon->toArray() : $coupon;
             
             $vendor_coupon = false;
+
+            if($corporate_discount_coupon == false){
+                $jwt_token = Request::header('Authorization');
+
+                if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                    $decoded = customerTokenDecode($jwt_token);
+                    $corporate_discount = !empty($decoded->customer->corporate_discount) ? $decoded->customer->corporate_discount : false;
+                }
+
+                if(!empty($corporate_discount) && $corporate_discount){
+                    if(!empty($coupon['overall_coupon']) && $coupon['overall_coupon']){
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon is either not valid or expired");
+                        return $resp;
+                    }
+                }
+            }
 
             if(isset($coupon["tickets"]) && !$ticket){
                 $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");

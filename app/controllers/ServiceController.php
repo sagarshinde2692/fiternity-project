@@ -951,11 +951,23 @@ class ServiceController extends \BaseController {
 							}
 							
 						}else if(empty($finder['flags']['monsoon_campaign_pps'])){
+                            
+                            $str = '';
+						
+                            if(empty($finder['flags']['monsoon_campaign_pps'])){
+                                $str = " (100% Cashback)";  
+                            }
+
+                            $corporate_discount_branding = $this->utilities->corporate_discount_branding();
+                            if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+                                $str = '';
+                            }
+                            
                             if(!empty($rsh['price'])){
-                                $rsh['price'].=" (100% Cashback)";
+                                $rsh['price'].= $str;
                             }
                             if(!empty($rsh['price'])){
-                                $nrsh['price'].=" (100% Cashback)";
+                                $nrsh['price'].= $str;
                             }
                             
 						}
@@ -1189,7 +1201,14 @@ class ServiceController extends \BaseController {
 				if($allowSession && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
-                    $service['non_peak']['price'] .= " (100% Cashback)";
+                    $str = " (100% Cashback)";
+				
+                    $corporate_discount_branding = $this->utilities->corporate_discount_branding();
+                    if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+                        $str = '';
+                    }
+
+                    $service['non_peak']['price'] .= $str;
 				}
             }
 			
@@ -1386,6 +1405,12 @@ class ServiceController extends \BaseController {
 						$sc['free_session_coupon'] = 'FREE';
 					}
 					
+					$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+					if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+						$str = '';
+					}
+
+					$sc['cost'] .= $str;
 					if(!empty($service['extended_validity'])){
 
                     }
@@ -1870,9 +1895,17 @@ class ServiceController extends \BaseController {
 			
             $service_details['price'] = "₹".$service_details['amount'];
 
-			if(empty($finder['flags']['monsoon_campaign_pps'])){
-				$service_details['price'].=" (100% Cashback)";
+			$str = '';
+            if(empty($finder['flags']['monsoon_campaign_pps'])){
+                $str =" (100% Cashback)";
 			}
+			
+			$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+        	if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+				$str = '';
+			}
+
+			$service_details['price'].= $str;
 
             if($service_details['amount'] != 73){
                 $service_details['finder_flags']['monsoon_campaign_pps'] = false;

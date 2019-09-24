@@ -1,5 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Config;
+use App\Services\Utilities as Utilities;
+
 /** 
  * ModelName : Service.
  * Maintains a list of functions used for Service.
@@ -506,7 +508,13 @@ class Service extends \Basemodel{
 				}else if(($offer_price == 99 || $value['price'] == 99 || $value['special_price'] == 99) && $value['type'] == "workout session" && !empty($finder['flags']['monsoon_campaign_pps']) && isFinderIntegrated($finder) && isServiceIntegrated($this)){
                     $value['remarks'] =  '';
                     $value['remarks_imp'] =  true;
-                }
+				}
+				
+				$utilities = new Utilities();
+				$corporate_discount_branding = $utilities->corporate_discount_branding();
+				if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+					$value['remarks'] =  "";
+				}
                 
                 if(in_array($value['type'], ["membership", "extended validity"])&& isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios']) ){
                     $value['campaign_offer'] =  "";

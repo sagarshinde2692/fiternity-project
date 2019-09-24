@@ -1358,8 +1358,8 @@ class FindersController extends \BaseController {
                     $this->orderRatecards($response);
                 }catch(Exception $e){
                     Log::info("Error while sorting ratecard");
-                }
-                
+				}
+
                 if(empty($response['vendor_stripe_data']['text']) ){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
                     
@@ -1408,7 +1408,12 @@ class FindersController extends \BaseController {
 
                 if(empty($response['vendor_stripe_data']['text1'])){
                     $response['vendor_stripe_data'] = "no-patti";
-                }
+				}
+				
+				$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+				if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+					$response['vendor_stripe_data'] = "no-patti";
+				}
 
                 $cashback_type_map = Config::get('app.cashback_type_map');
 
@@ -3890,6 +3895,10 @@ class FindersController extends \BaseController {
 			}
 		}
 		
+		$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+		if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+			$line = "";
+		}
 
         return $line;
 		
@@ -5396,7 +5405,13 @@ class FindersController extends \BaseController {
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
                             //     $ratecard['remarks'] = "Get 100% Instant Cashback, Use Code: PPS100";
                             // }
-                        }
+						}
+						
+						$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+						if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+							unset($ratecard['remarks']);
+						}
+
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
 							$ratecard_price = $ratecard['special_price'];
 						}else{

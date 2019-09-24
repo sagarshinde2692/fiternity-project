@@ -10215,6 +10215,17 @@ Class Utilities {
 		}
 		return $result;
 	}
+    
+    public function corporate_discount_branding(){
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $corporate_discount_branding = !empty($decoded->customer->corporate_discount) ? $decoded->customer->corporate_discount : false;
+        }
+
+        return $corporate_discount_branding;
+    }
 
 
     public function getCityData($slug){
