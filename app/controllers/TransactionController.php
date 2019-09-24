@@ -7337,6 +7337,7 @@ class TransactionController extends \BaseController {
                 $corporate_discount = !empty($decoded->customer->corporate_discount) ? $decoded->customer->corporate_discount : false;
             }
             // Log::info("corporate_discount  :::", [$corporate_discount]);
+            $data['actual_amount'] = $data['amount'];
             if(!empty($corporate_discount) && $corporate_discount){
                 Log::info("corporate_discount");
                 $coupons = Coupon::where('overall_coupon', true)->orderBy('overall_coupon_order', 'desc')->get(['code', 'flags']);
@@ -7516,7 +7517,7 @@ class TransactionController extends \BaseController {
                 $result['order_details'] = [
                     "session"=>[
                         "field"=> $data['service_name'],
-                        "value"=> "₹ ".number_format($data['amount'])
+                        "value"=> "₹ ".number_format($data['actual_amount'])
                     ]
                 ];
 
