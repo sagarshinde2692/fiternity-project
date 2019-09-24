@@ -904,16 +904,24 @@ class ServiceController extends \BaseController {
 		    		{	
 		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $this->utilities->getRupeeForm($p_np['non_peak'] + $p_np['non_peak_discount']):"");
                         $nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
-                        
+						
+						$str = '';
+						
                         if(empty($finder['flags']['monsoon_campaign_pps'])){
-                            if(!empty($rsh['price'])){
-                                $rsh['price'].=" (100% Cashback)";
-                            }
-                            if(!empty($rsh['price'])){
-                                $nrsh['price'].=" (100% Cashback)";
-                            }
-                            
-                        }
+							$str = " (100% Cashback)";  
+						}
+
+						$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+        				if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+							$str = '';
+						}
+						
+						if(!empty($rsh['price'])){
+							$rsh['price'].= $str;
+						}
+						if(!empty($rsh['price'])){
+							$nrsh['price'].= $str;
+						}
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
 				}
@@ -1130,9 +1138,17 @@ class ServiceController extends \BaseController {
 
                 }
 
+				$str = "";
                 if(empty($finder['flags']['monsoon_campaign_pps'])){
-                    $service['non_peak']['price'] .= " (100% Cashback)";
-                }
+                    $str = " (100% Cashback)";
+				}
+				
+				$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+        		if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+					$str = '';
+				}
+
+				$service['non_peak']['price'] .= $str;
             }
 			
 			$peak_exists = false;
@@ -1311,6 +1327,11 @@ class ServiceController extends \BaseController {
 					
 					if((isset($sc['free_trial_available']) && $sc['free_trial_available']) || !empty($finder['flags']['monsoon_campaign_pps'])){
 						$str = "";
+					}
+
+					$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+					if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+						$str = '';
 					}
 
 					$sc['cost'] .= $str;
@@ -1779,9 +1800,18 @@ class ServiceController extends \BaseController {
 			
             $service_details['price'] = "₹".$service_details['amount'];
 
+			$str = '';
             if(empty($finder['flags']['monsoon_campaign_pps'])){
-                $service_details['price'].=" (100% Cashback)";
-            }
+                $str =" (100% Cashback)";
+			}
+			
+			$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+        	if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+				$str = '';
+			}
+
+			$service_details['price'].= $str;
+
             if($service_details['amount'] != 99){
                 $service_details['finder_flags']['monsoon_campaign_pps'] = false;
             }
