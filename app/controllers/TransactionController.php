@@ -7798,7 +7798,7 @@ class TransactionController extends \BaseController {
 
             if(!empty(Request::header('corporate_discount')) && Request::header('corporate_discount')){
                 Log::info("corporate_discount");
-                $coupon = Coupon::where('overall_coupon', true)->orderBy('_id', 'desc')->first(['code']);
+                $coupon = Coupon::where('overall_coupon', true)->orderBy('overall_coupon_order', 'desc')->first(['code']);
                 // return $coupon;
                 
                 if(!empty($coupon) && !empty($ratecard)){
