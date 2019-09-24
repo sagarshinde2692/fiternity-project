@@ -722,7 +722,7 @@ return [
         ],
         "passes" => [
             [
-                "image" => "https://b.fitn.in/onepass/OnePass_Red_3x.png",//"https://b.fitn.in/passes/app-home/op_red_thumb.png",
+                "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",//"https://b.fitn.in/onepass/OnePass_Red_3x.png",
                 "header1" => "ONEPASS",
                 "header1_color" => "#000000",
                 "header2" => "RED",
@@ -732,7 +732,7 @@ return [
                 //"desc_subheader" => "With Expiry" 
             ],
             [
-                "image" => "https://b.fitn.in/onepass/OnePass_Black_3x.png",//"https://b.fitn.in/passes/app-home/op_black_thumb.png",
+                "image" => "https://b.fitn.in/passes/app-home/op_black_thumb.png",//"https://b.fitn.in/onepass/OnePass_Black_3x.png",
                 "header1" => "ONEPASS",
                 "header1_color" => "#000000",
                 "header2" => "BLACK",
@@ -799,7 +799,7 @@ return [
 
     "after_purchase_tab" => [
         "red" => [
-            "pass_image"  => "https://b.fitn.in/onepass/OnePass_Red_3x.png",//"https://b.fitn.in/passes/cards/onepass-red.png",
+            "pass_image"  => "https://b.fitn.in/passes/cards/onepass-red.png",//"https://b.fitn.in/onepass/OnePass_Red_3x.png",
             "name"  => "",
             "header" => "UNLIMITED USAGE",
             "subheader" => "", // duration or sessions
@@ -835,7 +835,7 @@ return [
             'pass_expired' => false,
         ],
         "black" => [
-            "pass_image"  => "https://b.fitn.in/onepass/OnePass_Black_3x.png",//"https://b.fitn.in/passes/cards/onepass-black.png",
+            "pass_image"  => "https://b.fitn.in/passes/cards/onepass-black.png",//"https://b.fitn.in/onepass/OnePass_Black_3x.png",
             "name"  => "",
             "header" => "UNLIMITED VALIDITY",
             "subheader" => "", // duration or sessions
