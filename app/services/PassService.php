@@ -1244,7 +1244,7 @@ class PassService {
 
         $passExpired = false;
 
-        $pass_type_template = $passOrder['pass']['pass_type'];
+        $pass_type_template_key = $passOrder['pass']['pass_type'];
         if($passOrder['pass']['pass_type']=='hybrid'){
             $pass_type_template_key = $passOrder['pass']['branding'];
         }
