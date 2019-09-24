@@ -1700,6 +1700,7 @@ class PassService {
                 'image' => $customerData['onepass']['photo']['url'],
                 'name' => ucwords($customerData['name']),
                 'text' => $interest,
+                'button_text' => "EDIT PREFERENCES"
             );
         }
 
