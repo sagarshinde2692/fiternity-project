@@ -691,6 +691,29 @@ class PassService {
                         }
                     }
                 }
+                else if($passOrder['pass']['pass_type']=='hybrid') {
+                    // $duration = $passOrder['pass']['duration'];
+                    if(empty($finder) || in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
+                        return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> "Not Applicable on ".$finder['title']];
+                    }
+
+                    if($schedule_time<strtotime($passOrder['end_date'])){
+                        $month=date("F",strtotime($date));
+                        Booktrial::$withoutAppends = true;
+                        $sessionsTotal = $passOrder['pass']['total_sessions'];
+                        $monthlySessionsTotal = $passOrder['pass']['monthly_total_sessions'];
+
+                        $BookingMonthSessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->whereMonth('schedule_date', [$month])->where('going_status_txt', '!=', 'cancel')->count();
+                        $totlaSessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->count();
+                        if($totlaSessionsUsed < $sessionsTotal) {
+                            $msg =  "You have used all ".$sessionsTotal." sessions.";
+                            if($BookingMonthSessionsUsed < $monthlySessionsTotal){
+                                $msg =  "You have used all monthly ".$BookingMonthSessionsUsed." session";
+                            }
+                            return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
+                        }
+                    }
+                }
             }
             if (($amount>1000 && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
                 // over 1000
