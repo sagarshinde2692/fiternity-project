@@ -42,10 +42,10 @@ class PassService {
         }
         
         if(!empty($pass_type)) {
-            $passList = $passList->where('pass_type', $pass_type);
+            $passList = $passList->whereIn('show_on_front', [null, true])->where('pass_type', $pass_type);
         }
 
-        $passList = $passList->orderBy('duration')->get();
+        $passList = $passList->whereIn('show_on_front', [null, true])->where('pass_type', '!=', 'hybrid')->orderBy('duration')->get();
         
         $response = Config::get('pass.list');
         foreach($passList as &$pass) {
