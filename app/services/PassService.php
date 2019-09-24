@@ -1244,8 +1244,12 @@ class PassService {
 
         $passExpired = false;
 
-        $homePassData = Config::get('pass.home.after_purchase.'.$passOrder['pass']['pass_type']);
-        $tnc = Config::get('pass.terms.'.$passOrder['pass']['pass_type'])[0];
+        $pass_type_template = $passOrder['pass']['pass_type'];
+        if($passOrder['pass']['pass_type']=='hybrid'){
+            $pass_type_template_key = $passOrder['pass']['branding'];
+        }
+        $homePassData = Config::get('pass.home.after_purchase.'.$pass_type_template_key);
+        $tnc = Config::get('pass.terms.'.$pass_type_template_key)[0];
         $homePassData['pass_order_id'] = $passOrder['_id'];
         $startDateDiff = $this->getDateDifference($passOrder['start_date']);
         $notStarted = false;
@@ -1263,12 +1267,8 @@ class PassService {
             else {
                 $usageLeft =  $totalSessions - $totalBookings;
             }
-            $homePassData['name'] = strtoupper(trim($passOrder['customer_name']));
-            $homePassData['subheader'] = $totalSessions.' SESSIONS';
-            $homePassData['left_value'] = strval($upcomingBookings);
-            $homePassData['right_value'] = strval($pastBookings);
             
-            $this->purchasedPassFormat($homePassData, $passOrder['pass']['pass_type'], $passExpired, $passOrder, $notStarted, $usageLeft);
+            $this->purchasedPassFormat($homePassData, $passOrder['pass']['pass_type'], $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, $totalSessions);
         }
         else if($passOrder['pass']['pass_type']=='red') {
             $totalDuration = $passOrder['pass']['duration'];
@@ -1278,12 +1278,19 @@ class PassService {
             if(empty($usageLeft) || $usageLeft<0) {
                 $passExpired = true;
             }
-            $homePassData['name'] = strtoupper(trim($passOrder['customer_name']));
-            $homePassData['subheader'] = strtoupper(trim($passOrder['pass']['duration_text']));
-            $homePassData['left_value'] = strval($upcomingBookings);
-            $homePassData['right_value'] = strval($pastBookings);
-
-            $this->purchasedPassFormat($homePassData, $passOrder['pass']['pass_type'], $passExpired, $passOrder, $notStarted, $usageLeft);
+            
+            $this->purchasedPassFormat($homePassData, $passOrder['pass']['pass_type'], $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, 0);
+        }
+        else if($passOrder['pass']['pass_type']=='hybrid') {
+            $totalDuration = $passOrder['pass']['duration'];
+            // $expiryDate = date("Y-m-d H:i:s", strtotime('+'.$totalDuration.' days', time()));
+            $expiryDate = date("Y-m-d H:i:s", strtotime($passOrder['end_date']));
+            $usageLeft = $this->getDateDifference($expiryDate);
+            if(empty($usageLeft) || $usageLeft<0) {
+                $passExpired = true;
+            }
+            
+            $this->purchasedPassFormat($homePassData, $passOrder['pass']['pass_type'], $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, 0);
         }
         $homePassData['pass_expired'] = $passExpired;
         if(!$showTnC && !empty($homePassData['terms'])) {
@@ -1662,7 +1669,19 @@ class PassService {
         }
     }
 
-    public function purchasedPassFormat(&$homePassData, $type, $passExpired, $passOrder, $notStarted, $usageLeft){
+    public function purchasedPassFormat(&$homePassData, $type, $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, $totalSessions){
+
+        $subheader = strtoupper(trim($passOrder['pass']['duration_text']));
+
+        if($type =='black'){
+            $subheader = $totalSessions.' SESSIONS';
+        }
+
+        $homePassData['name'] = strtoupper(trim($passOrder['customer_name']));
+        $homePassData['subheader'] = $subheader;
+        $homePassData['left_value'] = strval($upcomingBookings);
+        $homePassData['right_value'] = strval($pastBookings);
+
         if(!$passExpired) {
             $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('_id', 'desc')->first();
             if(!empty($lastOrder)) {
