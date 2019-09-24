@@ -1847,6 +1847,10 @@ class PassService {
         $res['recommended'] = $recommended;
         $res['footer'] = $footer;
 
+        if(!empty($res['upcoming'])){
+            unset($res['upcoming']);
+            $res['booknow'] = Config::get('pass.book_now');
+        }
         return $res;
     }
 
@@ -1881,10 +1885,10 @@ class PassService {
         ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id','finder_location', 'service_category')
         ->first();
 
-        //$data_new['session_data'] = $data;
+        if(empty($data)){
+            return;
+        }
         $upcoming = [];
-        //$upcoming['icon'] = "abccc";
-        //$upcoming['time_diff_text'] = "Starts In - ";
         
         $upcoming['header'] = "Upcoming Session";
         $upcoming['_id'] = $data['_id'];
@@ -1907,10 +1911,10 @@ class PassService {
         $upcoming['lat'] = $data['finder_lat'];
         $upcoming['lon'] = $data['finder_lon'];
 
-        $upcoming['footer'] = array(
+        $upcoming['footer'] = [
             'text' => 'You can only unlock this session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym',
             'unlock_text' => 'UNLOCK SESSION',
-            'cancel_text' => 'UNLOCK SESSION',
+            'cancel_text' => 'CANCEL SESSION',
             // 'footer2' => array(
             //     'contact_text' => 'Need Help? Contact your Personal Concierge',
             //     'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
@@ -1924,11 +1928,7 @@ class PassService {
             //     'unlock_button_text' => 'CANCEL SESSION',
             //     'unlock_button_url' => Config::get('app.url').'/canceltrial/'.$data['_id'],
             // ),
-        );
-
-        // $data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
-
-        // $upcoming = array_only($upcoming, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer']);
+        ];
 
         return $upcoming;
     }

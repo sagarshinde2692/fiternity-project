@@ -869,6 +869,13 @@ return [
             ],
             'pass_expired' => false
         ]
+    ],
+
+    "book_now" => [
+        "header" => "Upcoming Session",
+        "image" => "https://b.fitn.in/onepass/Clock_Icon.png",
+        "text" => "Uh Oh! You don't have any upcoming bookings",
+        "button_text" => "BOOK NOW"
     ]
 
 ];
