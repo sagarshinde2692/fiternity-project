@@ -207,7 +207,7 @@ class PassController extends \BaseController {
 			}
 		}
 		
-		if(!$passPurchased && !empty($passOrder['pass']['pass_type'])) {
+		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
 			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate);
 		}else {
             $result['onepass_pre'] = Config::get('pass.before_purchase_tab');

@@ -777,14 +777,14 @@ return [
         ],
 
         'faq' => [
-            "logo" => "https://b.fitn.in/onepass/FAQ_3x.png",
+            "icon" => "https://b.fitn.in/onepass/FAQ_3x.png",
             'header' => 'Frequently Asked Questions',
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
         ],
 
         'tnc' => [
-            'logo' => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
+            'icon' => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
             'header' => 'Terms and Conditions',
             'title' => '',
             'url' => $apiUrl.'/passtermscondition'
