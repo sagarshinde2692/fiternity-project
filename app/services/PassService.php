@@ -705,21 +705,23 @@ class PassService {
                     }
 
                     if($schedule_time<strtotime($passOrder['end_date'])){
-                        $month=date("F",strtotime($date));
+                        $month=date("m",strtotime($date));
                         Booktrial::$withoutAppends = true;
                         $sessionsTotal = $passOrder['pass']['total_sessions'];
                         $monthlySessionsTotal = $passOrder['pass']['monthly_total_sessions'];
-
-                        $BookingMonthSessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->whereMonth('schedule_date', $month)->where('going_status_txt', '!=', 'cancel')->count();
+                        Log::info('inside hybrid passs::::: counts', [$sessionsTotal, $monthlySessionsTotal, $month]);
+                        $BookingMonthSessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->count();
                         $totlaSessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->count();
                         Log::info('inside hybrid passs::::: counts', [$sessionsTotal, $totlaSessionsUsed, $monthlySessionsTotal, $BookingMonthSessionsUsed, $month]);
-                        if($totlaSessionsUsed < $sessionsTotal) {
+                        if($totlaSessionsUsed >= $sessionsTotal) {
                             $msg =  "You have used all ".$sessionsTotal." sessions.";
-                            if($BookingMonthSessionsUsed < $monthlySessionsTotal){
-                                $msg =  "You have used all monthly ".$BookingMonthSessionsUsed." session";
-                            }
                             return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
                         }
+                        if($BookingMonthSessionsUsed >= $monthlySessionsTotal){
+                            $msg =  "You have used all monthly ".$BookingMonthSessionsUsed." session";
+                            return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
+                        }
+                        $canBook = true;
                     }
                 }
             }
