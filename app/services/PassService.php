@@ -1267,44 +1267,8 @@ class PassService {
             $homePassData['subheader'] = $totalSessions.' SESSIONS';
             $homePassData['left_value'] = strval($upcomingBookings);
             $homePassData['right_value'] = strval($pastBookings);
-            if(!$passExpired) {
-                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('_id', 'desc')->first();
-                if(!empty($lastOrder)) {
-                    $homePassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
-                    $homePassData['footer']['section1']['no_last_order'] = false;
-                    $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
-                    $homePassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
-                }
-                else {
-                    unset($homePassData['footer']['section1']['button1_text']);
-                    unset($homePassData['footer']['section1']['button2_text']);
-                    if($notStarted) {
-                        unset($homePassData['top_right_button_text']);
-                        $homePassData['left_text'] = "Booking starts from:";
-                        unset($homePassData['left_value']);
-                        $homePassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
-                        unset($homePassData['right_value']);
-                    }
-                }
-                if(!empty($usageLeft) && $usageLeft>5) {
-                    // if(!Config::get('app.debug')) {
-                        unset($homePassData['footer']['section2']);
-                        unset($homePassData['footer']['section3']);
-                    // }
-                }
-                else {
-                    // $homePassData['footer'] = $homePassData['footer']['ending'];
-                    $homePassData['footer']['section2']['text'] = strtr($homePassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
-                    unset($homePassData['footer']['section3']);
-                }
-            }
-            else {
-                unset($homePassData['footer']['section1']['button1_subtext']);
-                unset($homePassData['footer']['section1']['no_last_order']);
-                unset($homePassData['footer']['section1']);
-                $homePassData['footer']['section2'] = $homePassData['footer']['section3'];
-                unset($homePassData['footer']['section3']);
-            }
+            
+            $this->purchasedPassFormat($homePassData, $passOrder['pass']['pass_type'], $passExpired, $passOrder, $notStarted, $usageLeft);
         }
         else if($passOrder['pass']['pass_type']=='red') {
             $totalDuration = $passOrder['pass']['duration'];
@@ -1319,43 +1283,7 @@ class PassService {
             $homePassData['left_value'] = strval($upcomingBookings);
             $homePassData['right_value'] = strval($pastBookings);
 
-            if(!$passExpired) {
-                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('_id', 'desc')->first();
-                if(!empty($lastOrder)) {
-                    $homePassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
-                    $homePassData['footer']['section1']['no_last_order'] = false;
-                    $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
-                    $homePassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
-                }
-                else {
-                    unset($homePassData['footer']['section1']['button1_text']);
-                    unset($homePassData['footer']['section1']['button2_text']);
-                    if($notStarted) {
-                        unset($homePassData['top_right_button_text']);
-                        $homePassData['left_text'] = "Booking starts from:";
-                        unset($homePassData['left_value']);
-                        $homePassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
-                        unset($homePassData['right_value']);
-                    }
-                }
-                if(!empty($usageLeft) && $usageLeft>5) {
-                    // if(!Config::get('app.debug')) {
-                        unset($homePassData['footer']['section2']);
-                        unset($homePassData['footer']['section3']);
-                    // }
-                }
-                else {
-                    // $homePassData['footer'] = $homePassData['footer']['ending'];
-                    $homePassData['footer']['section2']['text'] = strtr($homePassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
-                    unset($homePassData['footer']['section3']);
-                }
-            }
-            else {
-                unset($homePassData['footer']['section1']['button1_subtext']);
-                unset($homePassData['footer']['section1']['no_last_order']);
-                $homePassData['footer']['section2'] = $homePassData['footer']['section3'];
-                unset($homePassData['footer']['section3']);
-            }
+            $this->purchasedPassFormat($homePassData, $passOrder['pass']['pass_type'], $passExpired, $passOrder, $notStarted, $usageLeft);
         }
         $homePassData['pass_expired'] = $passExpired;
         if(!$showTnC && !empty($homePassData['terms'])) {
@@ -1731,6 +1659,49 @@ class PassService {
             }
         }catch (Exception $e) {
             Log::info('Error : '.$e->getMessage());
+        }
+    }
+
+    public function purchasedPassFormat(&$homePassData, $type, $passExpired, $passOrder, $notStarted, $usageLeft){
+        if(!$passExpired) {
+            $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('_id', 'desc')->first();
+            if(!empty($lastOrder)) {
+                $homePassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
+                $homePassData['footer']['section1']['no_last_order'] = false;
+                $homePassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
+                $homePassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
+            }
+            else {
+                unset($homePassData['footer']['section1']['button1_text']);
+                unset($homePassData['footer']['section1']['button2_text']);
+                if($notStarted) {
+                    unset($homePassData['top_right_button_text']);
+                    $homePassData['left_text'] = "Booking starts from:";
+                    unset($homePassData['left_value']);
+                    $homePassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
+                    unset($homePassData['right_value']);
+                }
+            }
+            if(!empty($usageLeft) && $usageLeft>5) {
+                // if(!Config::get('app.debug')) {
+                    unset($homePassData['footer']['section2']);
+                    unset($homePassData['footer']['section3']);
+                // }
+            }
+            else {
+                // $homePassData['footer'] = $homePassData['footer']['ending'];
+                $homePassData['footer']['section2']['text'] = strtr($homePassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
+                unset($homePassData['footer']['section3']);
+            }
+        }
+        else {
+            unset($homePassData['footer']['section1']['button1_subtext']);
+            unset($homePassData['footer']['section1']['no_last_order']);
+            $homePassData['footer']['section2'] = $homePassData['footer']['section3'];
+            unset($homePassData['footer']['section3']);
+            if($type =='black'){
+                unset($homePassData['footer']['section1']);
+            }
         }
     }
 }
