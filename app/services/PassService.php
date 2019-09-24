@@ -1882,51 +1882,55 @@ class PassService {
         ->first();
 
         //$data_new['session_data'] = $data;
-        $data_new = [];
-        //$data_new['icon'] = "abccc";
-        //$data_new['time_diff_text'] = "Starts In - ";
+        $upcoming = [];
+        //$upcoming['icon'] = "abccc";
+        //$upcoming['time_diff_text'] = "Starts In - ";
         
-        $data_new['header'] = "Upcoming Session";
+        $upcoming['header'] = "Upcoming Session";
+        $upcoming['_id'] = $data['_id'];
 
         $icons = $this->utilities->getServiceCategoriesIcon()[0];
         $icon = !empty($icons[$data['service_category']]) ? $icons[$data['service_category']]['icon']: '';
 
-        $data_new['workout'] = array(
+        $upcoming['workout'] = array(
             'icon' => $icon,
             'header' => ucwords($data['service_name']),
-            'datetime' => date('D, d M - h:i A', strtotime($data['schedule_date_time'])),
+            'text' => date('D, d M - h:i A', strtotime($data['schedule_date_time'])),
         ); 
-        $data_new['finder'] = array(
-            'title' => $data['finder_name'],
-            'location' => $data['finder_location'],
-            'address'=> $data['finder_address'],
-            'direction' => "Get Direction",
-            'lat' => $data['finder_lat'],
-            'lon' => $data['finder_lon'],
+        $upcoming['finder'] = array(
+            'header' => $data['finder_name'],
+            'text' => $data['finder_location'],
+            'address'=> $data['finder_address']
         );
 
-        $data_new['footer'] = array(
-            'footer1' => 'You can only unlock this session within 200 meters of the gym',
-            'footer2' => array(
-                'contact_text' => 'Need Help? Contact your Personal Concierge',
-                'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-                'contact_no' => '',
-            ),
-            'footer3' => array(
-                'unlock_button_text' => 'UNLOCK SESSION',
-                'unlock_button_url' => Config::get('app.url').'/unlocksession/'.$data['_id'],
-            ),
-            'footer4' => array(
-                'unlock_button_text' => 'CANCEL SESSION',
-                'unlock_button_url' => Config::get('app.url').'/canceltrial/'.$data['_id'],
-            ),
+        $upcoming['direction'] = "Get Direction";
+        $upcoming['lat'] = $data['finder_lat'];
+        $upcoming['lon'] = $data['finder_lon'];
+
+        $upcoming['footer'] = array(
+            'text' => 'You can only unlock this session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym',
+            'unlock_text' => 'UNLOCK SESSION',
+            'cancel_text' => 'UNLOCK SESSION',
+            // 'footer2' => array(
+            //     'contact_text' => 'Need Help? Contact your Personal Concierge',
+            //     'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+            //     'contact_no' => '',
+            // ),
+            // 'footer3' => array(
+            //     'unlock_button_text' => 'UNLOCK SESSION',
+            //     'unlock_button_url' => Config::get('app.url').'/unlocksession/'.$data['_id'],
+            // ),
+            // 'footer4' => array(
+            //     'unlock_button_text' => 'CANCEL SESSION',
+            //     'unlock_button_url' => Config::get('app.url').'/canceltrial/'.$data['_id'],
+            // ),
         );
 
         // $data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
 
-        // $data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer']);
+        // $upcoming = array_only($upcoming, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer']);
 
-        return $data_new;
+        return $upcoming;
     }
 
     public function workoutSessionNearMe($city, $coordinate){
