@@ -714,10 +714,12 @@ return [
     ],
     
     "before_purchase_tab" => [
-        "header_img" => "http://b.fitn.in/passes/onepass-app.png",
-        "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
-        "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
-        "header_sub_text"  => "Enjoy limitless access across Fitternity's 12,000+ fitness classes, gyms and sports facilities across India",
+        "headerview" =>[
+            "header_img" => "http://b.fitn.in/passes/onepass-app.png",
+            "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
+            "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
+            "header_sub_text"  => "Enjoy limitless access across Fitternity's 12,000+ fitness classes, gyms and sports facilities across India",
+        ],
         "passes" => [
             [
                 "image" => "https://b.fitn.in/onepass/OnePass_Red_3x.png",//"https://b.fitn.in/passes/app-home/op_red_thumb.png",
