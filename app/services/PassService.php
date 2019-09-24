@@ -1842,8 +1842,8 @@ class PassService {
         $res = array();
         $headerView = Config::get('pass.before_purchase_tab.headerview');
         unset($headerView['header_sub_text']);
-        $res['headerview'] = $headerView;
-        $res['profile'] = $profile;
+        $res['headerview'] = array_merge($headerView, $profile);
+        //$res['profile'] = $profile;
         $res['pass'] = $tabPassData;
         $res['upcoming'] = $upcomig;
         $res['recommended'] = $recommended;
