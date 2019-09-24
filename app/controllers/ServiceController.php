@@ -1165,7 +1165,6 @@ class ServiceController extends \BaseController {
 			$service['total_slots_count'] = $total_slots_count;
 			$service['total_slots_available_count'] = $total_slots_available_count;
 
-// 			return $service;
             if(count($slots) <= 0){
 
             	$avaliable_request = [
@@ -1232,7 +1231,6 @@ class ServiceController extends \BaseController {
         }
         
         
-//         return $service;
 
 		// return $schedules;
 
@@ -1394,8 +1392,13 @@ class ServiceController extends \BaseController {
 					if((isset($sc['free_trial_available']) && $sc['free_trial_available']) || !empty($finder['flags']['monsoon_campaign_pps'])){
 						$str = "";
 					}
-					
-					if($allowSession && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))) && (!empty($sc['flags']['classpass_available']) && $sc['flags']['classpass_available'])){
+                    
+                    $corporate_discount_branding = $this->utilities->corporate_discount_branding();
+					if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+						$str = '';
+					}
+                    
+                    if($allowSession && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))) && (!empty($sc['flags']['classpass_available']) && $sc['flags']['classpass_available'])){
 						$sc['cost'] = Config::get('app.onepass_free_string');
 					}else{
 						$sc['cost'] .= $str;
@@ -1404,16 +1407,6 @@ class ServiceController extends \BaseController {
 					if(!empty($sc['free_trial_available']) && $sc['free_trial_available']){
 						$sc['free_session_coupon'] = 'FREE';
 					}
-					
-					$corporate_discount_branding = $this->utilities->corporate_discount_branding();
-					if(!empty($corporate_discount_branding) && $corporate_discount_branding){
-						$str = '';
-					}
-
-					$sc['cost'] .= $str;
-					if(!empty($service['extended_validity'])){
-
-                    }
 
                 }
 			}
