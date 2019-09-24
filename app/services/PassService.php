@@ -710,7 +710,7 @@ class PassService {
                         $sessionsTotal = $passOrder['pass']['total_sessions'];
                         $monthlySessionsTotal = $passOrder['pass']['monthly_total_sessions'];
 
-                        $BookingMonthSessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->whereMonth('schedule_date', [$month])->where('going_status_txt', '!=', 'cancel')->count();
+                        $BookingMonthSessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->whereMonth('schedule_date', $month)->where('going_status_txt', '!=', 'cancel')->count();
                         $totlaSessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->count();
                         Log::info('inside hybrid passs::::: counts', [$sessionsTotal, $totlaSessionsUsed, $monthlySessionsTotal, $BookingMonthSessionsUsed, $month]);
                         if($totlaSessionsUsed < $sessionsTotal) {
