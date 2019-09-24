@@ -1289,7 +1289,9 @@ class PassService {
             if(empty($usageLeft) || $usageLeft<0) {
                 $passExpired = true;
             }
-            
+
+            $homePassData['header'] = $passOrder['pass']['total_sessions'].' SESSIONS';
+
             $this->purchasedPassFormat($homePassData, $passOrder['pass']['pass_type'], $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, 0);
         }
         $homePassData['pass_expired'] = $passExpired;
