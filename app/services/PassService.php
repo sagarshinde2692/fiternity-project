@@ -1840,6 +1840,9 @@ class PassService {
         $upcomig = $this->upcomingPassBooking($customerData);
         $recommended= $this->workoutSessionNearMe($city, $coordinate);
         $res = array();
+        $headerView = Config::get('pass.before_purchase_tab.headerview');
+        unset($headerView['header_sub_text']);
+        $res['headerview'] = $headerView;
         $res['profile'] = $profile;
         $res['pass'] = $tabPassData;
         $res['upcoming'] = $upcomig;
