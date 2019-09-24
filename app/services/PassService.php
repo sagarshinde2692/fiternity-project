@@ -1847,7 +1847,7 @@ class PassService {
         $res['recommended'] = $recommended;
         $res['footer'] = $footer;
 
-        if(!empty($res['upcoming'])){
+        if(empty($res['upcoming'])){
             unset($res['upcoming']);
             $res['booknow'] = Config::get('pass.book_now');
         }
