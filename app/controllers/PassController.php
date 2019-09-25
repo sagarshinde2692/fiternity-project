@@ -236,8 +236,10 @@ class PassController extends \BaseController {
             ];
         }
 
-        $order_data['forced'] = true;
+        $data = [];
+        $data['order'] = $order_data;
+        $data['forced'] = true;
 
-        return $this->passCaptureAuto(null, $order_data);
+        return $this->passCaptureAuto(null, $data);
     }
 }
