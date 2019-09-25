@@ -2305,6 +2305,12 @@ class ServiceController extends \BaseController {
 		if(!empty($data['service']['slots'] && in_array($this->device_type, ['android', 'ios']))){
 			$data['service']['slots'] = $this->utilities->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name']);
 		}
+
+
+		if(!empty($data['service']['finder_flags']['mfp']) && $data['service']['finder_flags']['mfp']){
+			$data = $this->mfpBranding($data);
+		}
+
 		return Response::json(array('status'=>200, 'data'=> $data));
 
 	}
@@ -2687,6 +2693,30 @@ class ServiceController extends \BaseController {
 			Log::info('error occured::::::::', [$e]);
 		}
 		return $price_text;
+	}
+
+	public function mfpBranding($data){
+		try{
+			$data['service']['price'] = "₹ ".$data['service']['amount'];
+
+			if(!empty($data['service']['slots'])){
+				$slot = array();
+				foreach($data['service']['slots'] as $k => $v){
+					Log::info('price',[$v['price']]);
+
+					$v['price'] = "₹ ".$v['price_only'];
+
+					unset($v['image']);
+
+					array_push($slot, $v);
+				}
+
+				$data['service']['slots'] = $slot;
+			}
+			return $data;
+		}catch(\Exception $e){
+			Log::info('error occured::::::::', [$e]);
+		}
 	}
 
 }
