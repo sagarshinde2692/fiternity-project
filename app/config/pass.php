@@ -95,7 +95,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off +  Additional 15% Instant Discount on OnePass | Offer Ends On 30th September", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off +  Additional 15% Instant Discount on OnePass", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -129,7 +129,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off +  Additional 15% Instant Discount on OnePass | Offer Ends On 30th September", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off +  Additional 15% Instant Discount on OnePass", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -451,7 +451,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "Get 30% off +  Additional 15% Instant Discount on OnePass | Offer Ends On 30th September",
+                "text" => "Get 30% off +  Additional 15% Instant Discount on OnePass",
                 "button_text" => "Know More"
             ]
         ],
