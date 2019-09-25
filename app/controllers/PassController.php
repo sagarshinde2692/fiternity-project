@@ -143,6 +143,7 @@ class PassController extends \BaseController {
         }
         
         $order = $input['order'];
+        $forced = !empty($input['forced']) ? $input['forced'] : false;
 
         $data = [
             "amount"=> 0,
@@ -159,18 +160,18 @@ class PassController extends \BaseController {
             "finder_id"=> 0,
             "gcm_reg_id"=> $order['gcm_reg_id'],
             "gender"=> $order['gender'],
-            "pass_id"=> $order['ratecard_flags']['complementary_pass_id'],
+            "pass_id"=> $order['combo_pass_id'],
             "preferred_starting_date"=> $order['preferred_starting_date'],
             "pt_applied"=> false,
             "customer_quantity"=> 1,
             "reward_ids"=> [],
             "type"=> "pass",
-            "membership_order_id" => $order['_id'],
-            "complementary_pass" => true
+            "membership_order_id" => $order['_id']
         ];
 
         $captureResponse = $this->passService->passCapture($data);
 
+        $resp = $captureResponse;
         Log::info('inside schudling complementary pass purchase capture response:', [$captureResponse]);
         if(!empty($captureResponse) && empty($captureResponse['status']) || empty($captureResponse['data']) || $captureResponse['status']!= 200){
             $order_update = Order::find($data['orderid']);
@@ -186,6 +187,57 @@ class PassController extends \BaseController {
             $captureResponse['data']['order_id'] = $captureResponse['data']['orderid'];
             $complementary_pass_success_response = $this->passService->passSuccessPayU($captureResponse['data']);
             Log::info('inside schudling complementary pass purchase success response:', [$complementary_pass_success_response]);
+            $resp = $complementary_pass_success_response;
         }
+
+        if(!empty($forced)){
+            return $resp;
+        }
+    }
+
+    public function passCaptureAutoForce(){
+        $input = Input::all();
+
+        $rules = [
+            'order_id'=>'required | integer',
+        ];
+        
+        $validator = Validator::make($input,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())), 400);
+        }
+
+        $order_data = Order::active()->where('_id', $input['order_id'])->first();
+
+        if(empty($order_data) || empty($order_data['combo_pass_id']) || (!empty($order_data['ratecard_flags']['onepass_attachment_type'] && $order_data['ratecard_flags']['onepass_attachment_type'] =='upgrade'))){
+
+            $msg = "Order is not Placed.";
+            if(!empty($order_data['ratecard_flags']['onepass_attachment_type']) && $order_data['ratecard_flags']['onepass_attachment_type'] =='upgrade'){
+                $msg = "cannot place pass order for this order.";
+            }
+            if(!empty($order_data['combo_pass_id'])){
+                $msg = "Pass is not listed for this order.";
+            }
+
+            return [
+                'status' => 400,
+                'msg' => $msg
+            ];
+        }
+
+        $pass_order = Order::active()->where("type", 'pass')->where('membership_order_id', $input['order_id'])->get(['_id', 'type', 'pass']);
+
+        if(!empty($pass_order)){
+            return [
+                'status' => 200,
+                'msg' => "Order already placed.",
+                'data' => $pass_order['pass']
+            ];
+        }
+
+        $order_data['forced'] = true;
+
+        return $this->passCaptureAuto(null, $order_data);
     }
 }
