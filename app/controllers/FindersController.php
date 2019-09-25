@@ -8418,11 +8418,11 @@ class FindersController extends \BaseController {
 				if(in_array($rc['type'], ['membership', 'extended validity', 'studio_extended_validity'])){
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
 					
-					if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
-						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Super September Sale \n\n Get 50% Off + Extra 20% Off On Memberships & Session Packs | Addnl 5% off On App \n Use Code - S3FIT");
-					}
 					if(!empty($finder['brand_id']) && $finder['brand_id']==88) {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
+					}
+					else if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
+						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Super September Sale \n\n Get 50% Off + Extra 20% Off On Memberships & Session Packs | Addnl 5% off On App \n Use Code - S3FIT");
 					}
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Super September Sale \n\n Book Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100");
