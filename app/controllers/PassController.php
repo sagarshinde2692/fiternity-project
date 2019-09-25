@@ -173,10 +173,12 @@ class PassController extends \BaseController {
 
         Log::info('inside schudling complementary pass purchase capture response:', [$captureResponse]);
         if(!empty($captureResponse) && empty($captureResponse['status']) || empty($captureResponse['data']) || $captureResponse['status']!= 200){
-            $order->complementary_pass_purchase_response = [
+            $order_update = Order::find($data['orderid']);
+            $order_update->complementary_pass_purchase_response = [
                 'at_state' => 'caputre', 
                 'data' => $captureResponse
             ];
+            $order_update->update();
         }
         else {
             $captureResponse['data']['internal_success'] = true;
