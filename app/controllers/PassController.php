@@ -143,7 +143,6 @@ class PassController extends \BaseController {
         }
         
         Log::info('auto pass purchase input::::', [$input]);
-        $input = 
         $order = $input['order'];
 
         $data = [
