@@ -179,6 +179,8 @@ class PassController extends \BaseController {
             ];
         }
         else {
+            $captureResponse['data']['internal_success'] = true;
+            $captureResponse['data']['verify_hash'] = null;
             $complementary_pass_success_response = $this->passService->passSuccessPayU($captureResponse['data']);
             Log::info('inside schudling complementary pass purchase success response:', [$complementary_pass_success_response]);
             $order->complementary_pass_purchase_response =  [
