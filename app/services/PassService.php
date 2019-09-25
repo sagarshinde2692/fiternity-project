@@ -699,10 +699,10 @@ class PassService {
                 else if($passOrder['pass']['pass_type']=='hybrid') {
                     Log::info('inside hybrid passs:::::');
                     // $duration = $passOrder['pass']['duration'];
-                    if(empty($finder) || empty($finder['brand_id']) || !in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
-                        Log::info('inside hybrid passs:::::', [$finder, $finderId,  array_column($passOrder['pass']['brands'], '_id')]);
-                        return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> "Not Applicable on ".$finder['title']];
-                    }
+                    // if(empty($finder) || empty($finder['brand_id']) || !in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
+                    //     Log::info('inside hybrid passs:::::', [$finder, $finderId,  array_column($passOrder['pass']['brands'], '_id')]);
+                    //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> "Not Applicable on ".$finder['title']];
+                    // }
 
                     if($schedule_time<strtotime($passOrder['end_date'])){
                         $month=date("m",strtotime($date));
@@ -712,7 +712,46 @@ class PassService {
                         Log::info('inside hybrid passs::::: counts', [$sessionsTotal, $monthlySessionsTotal, $month]);
                         $BookingMonthSessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->count();
                         $totlaSessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->count();
-                        Log::info('inside hybrid passs::::: counts', [$sessionsTotal, $totlaSessionsUsed, $monthlySessionsTotal, $BookingMonthSessionsUsed, $month]);
+                        $pass_order_id = 411922;//$passOrder['_id'];
+                        $booking_counters =Booktrial::raw(function($collection) use($month, $pass_order_id){
+                            $match = [
+                                '$match' => [
+                                    'pass_order_id' => $pass_order_id,
+                                    'going_status_txt' => [
+                                        '$ne' => 'cancel'
+                                    ]
+                                ]
+                            ];
+                            $addField = [
+                                '$addFields' =>[
+                                    'month' => [
+                                        '$month' => '$schedule_date'
+                                    ]
+                                ]
+                            ];
+                            $project = [
+                                '$project' => [
+                                    'total_bookings' => [
+                                        '$sum' => 1
+                                    ],
+                                    'months' => '$month'
+                                    // 'monthly_total_bookings' => [
+                                    //     '$sum' => [
+                                    //         '$cond' =>[
+                                    //             '$eq' => ['$month', '$schedule_date']
+                                    //         ]
+                                    //     ]
+                                    // ]
+                                ]
+                            ];
+
+                            return $collection->aggregate([
+                                $match,
+                                $addField,
+                                $project
+                            ]);
+                        });
+                        Log::info('inside hybrid passs::::: counts', [$booking_counters['result']]);
                         if($totlaSessionsUsed >= $sessionsTotal) {
                             $msg =  "You have used all ".$sessionsTotal." sessions.";
                             return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
