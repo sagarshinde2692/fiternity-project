@@ -802,6 +802,32 @@ class FindersController extends \BaseController {
 									// }
 								}
 
+								// if(!empty($service['attached_passes'])) {
+								// 	$passes = Pass::whereIn('pass_id', $service['attached_passes'])->get(['pass_id', 'price', 'total_sessions', 'total_sessions_text', 'monthly_total_sessions', 'monthly_total_sessions_text', 'pass_type', 'branding', 'duration', 'duration_text', 'payment_gateway']);
+								// 	if(!empty($passes)){
+								// 		$passes = $passes->toArray();
+								// 	}
+
+								// 	if(!empty($passes)) {
+								// 		foreach ($passes as $pass){
+								// 			$_rc = $pass;
+								// 			$_rc['type'] = 'pass';
+								// 			$_rc['combo_pass_id'] = $_rc['pass_id'];
+								// 			$_rc['title'] = 'Upgrade your membership with OnePass';
+								// 			$_rc['remarks'] = 'Your existing membership + '.(!empty($_rc['duration_text'])?$_rc['duration_text']:(!empty($_rc['total_sessions_text'])?$_rc['total_sessions_text']:'')).' All Access OnePass '.(($_rc['pass_type']=='hybrid')?ucwords($_rc['branding']):ucwords($_rc['pass_type']));
+								// 			$_rc['pass_details'] = [
+								// 				'pass_id' => $_rc['pass_id'],
+								// 				'pass_type' => ($_rc['pass_type']=='hybrid')?$_rc['branding']:$_rc['pass_type'],
+								// 				'duration' => $_rc['duration'],
+								// 				'duration_text' => $_rc['duration_text'],
+								// 				'total_sessions' => $_rc['total_sessions'],
+								// 				'total_sessions_text' => $_rc['total_sessions_text']
+								// 			];
+								// 			array_push($service['serviceratecard'], $_rc);
+								// 		}
+								// 	}
+								// }
+
 								$remarkImportantIndex = [];
 								foreach ($dupDurationDays as $record) {
 									if(count($record)>1) {
