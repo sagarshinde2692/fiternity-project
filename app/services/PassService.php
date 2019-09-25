@@ -1699,6 +1699,7 @@ class PassService {
             $profile = array(
                 'image' => $customerData['onepass']['photo']['url'],
                 'name' => ucwords($customerData['name']),
+                'gender' => ucwords($customerData['onepass']['gender']),
                 'text' => $interest,
                 'button_text' => "EDIT PREFERENCES"
             );
