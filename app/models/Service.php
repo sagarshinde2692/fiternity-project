@@ -427,14 +427,14 @@ class Service extends \Basemodel{
 					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && ($value['flags']['onepass_attachment_type']=='membership_plus')) ) {
 						$value['membership_plus'] = true;
 						$value['title'] = 'Membership Plus';
-						$value['validity'] = 0;
-						$value['validity_type'] = 'Membership Plus';
+						$value['validity'] = 1;
+						$value['validity_type'] = 'Year Membership Plus';
 					}
 					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && ($value['flags']['onepass_attachment_type']=='upgrade')) ) {
 						$value['upgrade_membership'] = true;
 						$value['title'] = 'Upgrade your membership with OnePass';
-						$value['validity'] = 0;
-						$value['validity_type'] = 'Upgrade your membership with OnePass';
+						$value['validity'] = 6;
+						$value['validity_type'] = 'Months - upgrade your membership with OnePass';
 					}
 					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && ($value['flags']['onepass_attachment_type']=='complementary')) ) {
 						$value['comp_onepass'] = true;
