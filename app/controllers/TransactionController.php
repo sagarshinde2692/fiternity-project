@@ -3071,6 +3071,20 @@ class TransactionController extends \BaseController {
                     $order->update(['schedule_bookings_redis_id'=>$scheduleBookingsRedisId]);
                 }
             }
+
+            if(!empty($order['ratecard_flags']['complementary_pass_id'])){
+                $complementry_pass_purchase = Queue::connection('redis')->push(
+                    'passController@passCaptureAuto', 
+                    array(
+                        'order' => $order
+                    ),
+                    Config::get('app.queue')
+                );
+                Log::info('inside schudling complementary pass purchase redis id:', [$complementry_pass_purchase]);
+
+                $order->update(['schedule_complementry_pass_purchase_redis_id'=>$complementry_pass_purchase]);
+            }
+
             Log::info("successCommon returned");
             Log::info($order['_id']);
             return Response::json($resp);

@@ -136,4 +136,50 @@ class PassController extends \BaseController {
         }
         return [ 'status' => 200, 'data' => $this->passService->homePostPassPurchaseData($customer_id), 'message' => 'Success' ];
     }
+
+    public function passCaptureAuto($input){
+        $order = $input['order'];
+
+        $data = [
+            "amount"=> 0,
+            "booking_for_others"=> false,
+            "cashback"=> false,
+            "customer_email"=> $order['customer_email'],
+            "customer_name"=> $order['customer_name'],
+            "customer_phone"=> $order['customer_phone'],
+            "customer_source"=> $order['customer_source'],
+            "wallet"=> false,
+            "device_type"=> $order['device_type'],
+            "env"=> 1,
+            "finder_id"=> 0,
+            "gcm_reg_id"=> $order['gcm_reg_id'],
+            "gender"=> $order['gender'],
+            "pass_id"=> $order['ratecard_flags']['complementary_pass_id'],
+            "preferred_starting_date"=> $order['preferred_starting_date'],
+            "pt_applied"=> false,
+            "customer_quantity"=> 1,
+            "reward_ids"=> [],
+            "type"=> "pass",
+            "membership_order_id" => $order['_id'],
+            "complementary_pass" => true
+        ];
+
+        $captureResponse = $this->passCapture($data);
+
+        Log::info('inside schudling complementary pass purchase capture response:', [$captureResponse]);
+        if(!empty($captureResponse) && empty($captureResponse['status']) || empty($captureResponse['data']) || $captureResponse['status']!= 200){
+            $order->complementary_pass_purchase_response = [
+                'at_state' => 'caputre', 
+                'data' => $captureResponse
+            ];
+        }
+        else {
+            $complementary_pass_success_response = $this->passService->passSuccessPayU($captureResponse['data']);
+            Log::info('inside schudling complementary pass purchase success response:', [$complementary_pass_success_response]);
+            $order->complementary_pass_purchase_response =  [
+                'at_state' => 'caputre', 
+                'data' => $complementary_pass_success_response
+            ];
+        }
+    }
 }
