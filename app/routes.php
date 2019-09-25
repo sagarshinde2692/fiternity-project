@@ -1402,4 +1402,4 @@ Route::get('homepostpasspurchase', 'PassController@homePostPassPurchaseData');
 Route::get('dynamicOnepassEMailSms', 'DebugController@dynamicOnepassEMailSms');
 Route::get('addFlagClasspassAvalible', 'DebugController@addFlagClasspassAvalible');
 Route::get('passCashback', 'DebugController@passCashback');
-Route::get('combopasscreateforce', 'PassController@passCaptureAutoForce');
+Route::post('combopasscreateforce', 'PassController@passCaptureAutoForce');
