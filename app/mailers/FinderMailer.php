@@ -1335,6 +1335,13 @@ Class FinderMailer extends Mailer {
 
 	public function common($label,$data,$message_data,$delay = 0){
 		// return($message_data['user_email']);
+
+		try{
+			if(!empty($data['ratecard_flags']['onepass_attachment_type']) && $data['ratecard_flags']['onepass_attachment_type']=='upgrade'){
+				return;
+			}
+		} catch(\Exception $e) { }
+
 		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
 			$delay = 0;
 			$data['label'] = $label;
