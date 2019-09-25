@@ -2691,7 +2691,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                             $data['pass_sessions_used']=(!!$passOrder['onepass_sessions_used'])?$passOrder['onepass_sessions_used']:0;
                             if($data['pass_type'] =='hybrid'){
                                 $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
-                                $data['pass_sessions_monthly_used'] = $passOrder['pass']['onepass_sessions_monthly_used'];
+                                $data['pass_sessions_monthly_used'] = $passOrder['onepass_sessions_monthly_used'];
                             }
                         }
                     }
@@ -4510,7 +4510,7 @@ if (!function_exists('setNewToken')) {
             $pass_data = ['pass'=>1, 'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 'pass_type' => $pass['pass']['pass_type'], 'pass_sessions_total'=>$pass['onepass_sessions_total'], 'pass_sessions_used'=>$pass['onepass_sessions_used']];
             if($pass['pass_type'] =='hybrid'){
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
-                $pass_data['pass_sessions_monthly_used'] = $pass['pass']['onepass_sessions_monthly_used'];
+                $pass_data['pass_sessions_monthly_used'] = $pass['onepass_sessions_monthly_used'];
             }
             $customer_data = array_merge($customer_data, $pass_data);
             $update_header = true;
