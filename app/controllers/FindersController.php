@@ -802,6 +802,32 @@ class FindersController extends \BaseController {
 									// }
 								}
 
+								// if(!empty($service['attached_passes'])) {
+								// 	$passes = Pass::whereIn('pass_id', $service['attached_passes'])->get(['pass_id', 'price', 'total_sessions', 'total_sessions_text', 'monthly_total_sessions', 'monthly_total_sessions_text', 'pass_type', 'branding', 'duration', 'duration_text', 'payment_gateway']);
+								// 	if(!empty($passes)){
+								// 		$passes = $passes->toArray();
+								// 	}
+
+								// 	if(!empty($passes)) {
+								// 		foreach ($passes as $pass){
+								// 			$_rc = $pass;
+								// 			$_rc['type'] = 'pass';
+								// 			$_rc['combo_pass_id'] = $_rc['pass_id'];
+								// 			$_rc['title'] = 'Upgrade your membership with OnePass';
+								// 			$_rc['remarks'] = 'Your existing membership + '.(!empty($_rc['duration_text'])?$_rc['duration_text']:(!empty($_rc['total_sessions_text'])?$_rc['total_sessions_text']:'')).' All Access OnePass '.(($_rc['pass_type']=='hybrid')?ucwords($_rc['branding']):ucwords($_rc['pass_type']));
+								// 			$_rc['pass_details'] = [
+								// 				'pass_id' => $_rc['pass_id'],
+								// 				'pass_type' => ($_rc['pass_type']=='hybrid')?$_rc['branding']:$_rc['pass_type'],
+								// 				'duration' => $_rc['duration'],
+								// 				'duration_text' => $_rc['duration_text'],
+								// 				'total_sessions' => $_rc['total_sessions'],
+								// 				'total_sessions_text' => $_rc['total_sessions_text']
+								// 			];
+								// 			array_push($service['serviceratecard'], $_rc);
+								// 		}
+								// 	}
+								// }
+
 								$remarkImportantIndex = [];
 								foreach ($dupDurationDays as $record) {
 									if(count($record)>1) {
@@ -3848,7 +3874,14 @@ class FindersController extends \BaseController {
 	public function getFinderOneLiner($data) {
 
         $line = null;
-        if(empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !empty($data['finder']['flags']['monsoon_campaign_pps'])){
+        if(!empty($data['finder']['brand_id']) && ($data['finder']['brand_id']==88)){
+			if($this->device_type == 'android'){
+				$line = "<u>Membership Plus - ".ucwords($data['finder']['title'])."</u><br><br>Lowest price Multifit membership + 6 Months All Access OnePass";
+            }else{	
+				$line = "\nMembership Plus - ".ucwords($data['finder']['title'])."\n\nLowest price Multifit membership + 6 Months All Access OnePass";
+            }
+		}
+        else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
             
 			if($this->device_type == 'android'){
@@ -3876,7 +3909,7 @@ class FindersController extends \BaseController {
 		}
 		
 		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && (empty($data['finder']['brand_id']) || ($data['finder']['brand_id']!=88))){
 			foreach($data['finder']['services'] as &$service){
 				foreach($service['ratecard'] as &$ratecard){
 					if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
@@ -8385,7 +8418,10 @@ class FindersController extends \BaseController {
 				if(in_array($rc['type'], ['membership', 'extended validity', 'studio_extended_validity'])){
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
 					
-					if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
+					if(!empty($finder['brand_id']) && $finder['brand_id']==88) {
+						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
+					}
+					else if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n World Heart Week Flash Sale \n\n Extra 25% Off On Lowest Price Memberships & Session Packs \nUse Code - FITHEART");
 					}
                 }else{

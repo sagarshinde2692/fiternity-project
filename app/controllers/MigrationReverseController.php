@@ -1167,6 +1167,9 @@ class MigrationReverseController extends \BaseController {
             $insertData['duration_type'] = $data['quantity_type'];
             $insertData['created_at'] = $data['created_at'];
             $insertData['updated_at'] = $data['updated_at'];
+            if(isset($data['combo_pass_id'])){
+                $insertData['combo_pass_id'] = (int)$data['combo_pass_id'];
+            }
             
             if(isset($data['expiry_date'])){
                 $insertData['expiry_date'] = $data['expiry_date'];
