@@ -213,10 +213,10 @@ class PassController extends \BaseController {
         if(empty($order_data) || empty($order_data['combo_pass_id']) || (!empty($order_data['ratecard_flags']['onepass_attachment_type'] && $order_data['ratecard_flags']['onepass_attachment_type'] =='upgrade'))){
 
             $msg = "Order is not Placed.";
-            if(!empty($order_data['ratecard_flags']['onepass_attachment_type']) && $order_data['ratecard_flags']['onepass_attachment_type'] =='upgrade'){
+            if((!empty($order_data['ratecard_flags']['onepass_attachment_type']) && $order_data['ratecard_flags']['onepass_attachment_type'] =='upgrade')){
                 $msg = "cannot place pass order for this order.";
             }
-            if(!empty($order_data['combo_pass_id'])){
+            if(empty($order_data['combo_pass_id'])){
                 $msg = "Pass is not listed for this order.";
             }
 
@@ -226,13 +226,13 @@ class PassController extends \BaseController {
             ];
         }
 
-        $pass_order = Order::active()->where("type", 'pass')->where('membership_order_id', $input['order_id'])->get(['_id', 'type', 'pass']);
+        $pass_order = Order::active()->where("type", 'pass')->where('membership_order_id', $order_data['_id'])->get(['_id', 'type', 'pass']);
 
-        if(!empty($pass_order)){
+        if(!empty($pass_order) && count($pass_order)){
             return [
                 'status' => 200,
                 'msg' => "Order already placed.",
-                'data' => $pass_order['pass']
+                'data' => $pass_order
             ];
         }
 
