@@ -3074,7 +3074,7 @@ class TransactionController extends \BaseController {
 
             if(!empty($order['ratecard_flags']['complementary_pass_id'])){
                 $complementry_pass_purchase = Queue::connection('redis')->push(
-                    'passController@passCaptureAuto', 
+                    'PassController@passCaptureAuto', 
                     array(
                         'order' => $order
                     ),
