@@ -1915,7 +1915,9 @@ class PassService {
         $upcoming['footer'] = [
             'text' => 'You can only unlock this session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym',
             'unlock_text' => 'UNLOCK SESSION',
+            'unlock_url' => Config::get('app.url').'/unlocksession/'.$data['_id'],
             'cancel_text' => 'CANCEL SESSION',
+            'cancel_url' => Config::get('app.url').'/canceltrial/'.$data['_id'],
             // 'footer2' => array(
             //     'contact_text' => 'Need Help? Contact your Personal Concierge',
             //     'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
