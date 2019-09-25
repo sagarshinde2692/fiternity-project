@@ -142,7 +142,6 @@ class PassController extends \BaseController {
             $job->delete();
         }
         
-        Log::info('auto pass purchase input::::', [$input]);
         $order = $input['order'];
 
         $data = [
@@ -153,6 +152,7 @@ class PassController extends \BaseController {
             "customer_name"=> $order['customer_name'],
             "customer_phone"=> $order['customer_phone'],
             "customer_source"=> $order['customer_source'],
+            "customer_id" => $order['customer_id'],
             "wallet"=> false,
             "device_type"=> $order['device_type'],
             "env"=> 1,
@@ -184,10 +184,6 @@ class PassController extends \BaseController {
             $captureResponse['data']['order_id'] = $captureResponse['data']['orderid'];
             $complementary_pass_success_response = $this->passService->passSuccessPayU($captureResponse['data']);
             Log::info('inside schudling complementary pass purchase success response:', [$complementary_pass_success_response]);
-            $order->complementary_pass_purchase_response =  [
-                'at_state' => 'caputre', 
-                'data' => $complementary_pass_success_response
-            ];
         }
     }
 }

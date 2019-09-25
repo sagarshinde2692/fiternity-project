@@ -3072,7 +3072,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(!empty($order['ratecard_flags']['complementary_pass_id'])){
+            if(!empty($order['combo_pass_id'])){
                 $complementry_pass_purchase = Queue::connection('redis')->push(
                     'PassController@passCaptureAuto', 
                     array(
@@ -4789,6 +4789,10 @@ class TransactionController extends \BaseController {
 
             
         // }
+
+        if(!empty($ratecard['combo_pass_id'])){
+            $data['combo_pass_id'] = $ratecard['combo_pass_id'];
+        }
 
         return array('status' => 200,'data' =>$data);
 
