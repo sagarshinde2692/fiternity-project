@@ -1917,20 +1917,7 @@ class PassService {
             'unlock_text' => 'UNLOCK SESSION',
             'unlock_url' => Config::get('app.url').'/unlocksession/'.$data['_id'],
             'cancel_text' => 'CANCEL SESSION',
-            'cancel_url' => Config::get('app.url').'/canceltrial/'.$data['_id'],
-            // 'footer2' => array(
-            //     'contact_text' => 'Need Help? Contact your Personal Concierge',
-            //     'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-            //     'contact_no' => '',
-            // ),
-            // 'footer3' => array(
-            //     'unlock_button_text' => 'UNLOCK SESSION',
-            //     'unlock_button_url' => Config::get('app.url').'/unlocksession/'.$data['_id'],
-            // ),
-            // 'footer4' => array(
-            //     'unlock_button_text' => 'CANCEL SESSION',
-            //     'unlock_button_url' => Config::get('app.url').'/canceltrial/'.$data['_id'],
-            // ),
+            'cancel_url' => Config::get('app.url').'/canceltrial/'.$data['_id']
         ];
 
         return $upcoming;
