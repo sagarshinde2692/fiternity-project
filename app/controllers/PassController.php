@@ -169,7 +169,7 @@ class PassController extends \BaseController {
             "complementary_pass" => true
         ];
 
-        $captureResponse = $this->passService->passCapture($data);($data);
+        $captureResponse = $this->passService->passCapture($data);
 
         Log::info('inside schudling complementary pass purchase capture response:', [$captureResponse]);
         if(!empty($captureResponse) && empty($captureResponse['status']) || empty($captureResponse['data']) || $captureResponse['status']!= 200){
