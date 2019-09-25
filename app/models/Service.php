@@ -412,6 +412,24 @@ class Service extends \Basemodel{
 				   //unset($value['remarks']);
 				}
 
+				if($finder->brand_id==88){
+					if(!empty($value['combo_pass_id'])) {
+						$pass 	= 	Pass::where('pass_id', $value['combo_pass_id'])->first();
+						$value['pass_details'] = [
+							'pass_id' => $pass['pass_id'],
+							'pass_type' => ($pass['pass_type']=='hybrid')?$pass['branding']:$pass['pass_type'],
+							'duration' => $pass['duration'],
+							'duration_text' => $pass['duration_text'],
+							'total_sessions' => $pass['total_sessions'],
+							'total_sessions_text' => $pass['total_sessions_text']
+						];
+					}
+					if((!empty($value['combo_pass_id'])) && (empty($value['flags']['complementary_pass']) || (!$value['flags']['complementary_pass'])) ) {
+						$value['membership_plus'] = true;
+						$value['title'] = 'Membership Plus';
+					}
+				}
+
                 if($value['type'] == 'membership' && !empty($GLOBALS['finder_commission'])){
                     if(!empty($value["special_price"] )){
                         $commission_discounted_price = $value["special_price"] = round($value["special_price"] * (100 - $GLOBALS['finder_commission'] + Config::get('app.pg_charge'))/100);
