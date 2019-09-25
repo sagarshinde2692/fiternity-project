@@ -137,7 +137,13 @@ class PassController extends \BaseController {
         return [ 'status' => 200, 'data' => $this->passService->homePostPassPurchaseData($customer_id), 'message' => 'Success' ];
     }
 
-    public function passCaptureAuto($input){
+    public function passCaptureAuto($job ,$input){
+        if($job){
+            $job->delete();
+        }
+        
+        Log::info('auto pass purchase input::::', [$input]);
+        $input = 
         $order = $input['order'];
 
         $data = [
