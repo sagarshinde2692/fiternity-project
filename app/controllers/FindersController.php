@@ -1366,7 +1366,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "50% Off + Extra 20% Off On Memberships | Get Addnl 5% Off on App | Use Code - S3FIT",
+								'text1'=> "Extra 25% Off On Lowest Price Memberships | Use Code - FITHEART | Offer Expires 30th September",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1378,7 +1378,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% Off + Extra 20% Off On Memberships | Get Addnl 5% Off on App | Use Code - S3FIT",
+								'text1'=> "Extra 25% Off On Lowest Price Memberships | Use Code - FITHEART | Offer Expires 30th September",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1390,7 +1390,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% Off + Extra 20% Off On Memberships | Get Addnl 5% Off on App | Use Code - S3FIT",
+								'text1'=> "Extra 25% Off On Lowest Price Memberships | Use Code - FITHEART | Offer Expires 30th September",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3852,25 +3852,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Super September Sale</u><br><br>- 50% Off + Extra 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App | Use Code : S3FIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "<u>World Heart Week Flash Sale</u><br><br>- Extra 25% Off On Lowest Price Memberships & Session Packs. Use Code : FITHEART<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }else{	
-				$line = "\nSuper September Sale\n\n- 50% Off + Extra 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App | Use Code : S3FIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "\nWorld Heart Week Flash Sale\n\n- Extra 25% Off On Lowest Price Memberships & Session Packs. Use Code : FITHEART\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Super September Sale</u><br><br>- 50% Off + Extra 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App | Use Code : S3FIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "<u>World Heart Week Flash Sale</u><br><br>- Extra 25% Off On Lowest Price Memberships & Session Packs. Use Code : FITHEART<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }else{	
-				$line = "\nSuper September Sale\n\n- 50% Off + Extra 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App | Use Code : S3FIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "\nWorld Heart Week Flash Sale\n\n- Extra 25% Off On Lowest Price Memberships & Session Packs. Use Code : FITHEART\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Super September Sale</u><br><br>- 50% Off + Extra 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App | Use Code : S3FIT<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "<u>World Heart Week Flash Sale</u><br><br>- Extra 25% Off On Lowest Price Memberships & Session Packs. Use Code : FITHEART<br><br>- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }else{	
-				$line = "\nSuper September Sale\n\n- 50% Off + Extra 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App | Use Code : S3FIT\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
+				$line = "\nWorld Heart Week Flash Sale\n\n- Extra 25% Off On Lowest Price Memberships & Session Packs. Use Code : FITHEART\n\n- Get 100% Instant Cashback on Workout Sessions. Use Code : PPS100 ";
             }
 			
 		}
@@ -3883,9 +3883,9 @@ class FindersController extends \BaseController {
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 							if($this->device_type == 'android'){
-								$line = "<u>Super September Sale</u><br><br>- 50% Off + Extra 20% Off On Memberships & Session Packs. <br>Addnl 5% Off on App | Use Code : S3FIT";
+								$line = "<u>World Heart Week Flash Sale</u><br><br>- Extra 25% Off On Lowest Price Memberships & Session Packs. Use Code : FITHEART";
 							}else{	
-								$line = "\nSuper September Sale\n\n- 50% Off + Extra 20% Off On Memberships & Session Packs. \nAddnl 5% Off on App | Use Code : S3FIT";
+								$line = "\nWorld Heart Week Flash Sale\n\n- Extra 25% Off On Lowest Price Memberships & Session Packs. Use Code : FITHEART";
 							}
 							
 							break;
@@ -8386,10 +8386,10 @@ class FindersController extends \BaseController {
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
 					
 					if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
-						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Super September Sale \n\n Get 50% Off + Extra 20% Off On Memberships & Session Packs | Addnl 5% off On App \n Use Code - S3FIT");
+						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n World Heart Week Flash Sale \n\n Extra 25% Off On Lowest Price Memberships & Session Packs <br>Use Code - FITHEART");
 					}
                 }else{
-                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Super September Sale \n\n Book Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100");
+                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n World Heart Week Flash Sale \n\n Book Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100");
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
 					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // }

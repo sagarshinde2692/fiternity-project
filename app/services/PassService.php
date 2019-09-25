@@ -85,7 +85,7 @@ class PassService {
                 }
             }
 
-            $passDetails['cashback'] = '(20% Instant Cashback)';
+            $passDetails['cashback'] = '(Additional 15% Discount)';
             unset($passDetails['extra_info']);
 
             if($pass['unlimited_access']) {
@@ -1366,7 +1366,7 @@ class PassService {
             ],
             [
                'field' => '',
-               'value' => 'Use code: OP20 to get 20% Instant Cashback',
+               'value' => 'Use code: ONE5 to get  Additional 15% Instant Discount',
             ]
         ];
 
