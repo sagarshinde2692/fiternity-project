@@ -8386,7 +8386,7 @@ class FindersController extends \BaseController {
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
 					
 					if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
-						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n World Heart Week Flash Sale \n\n Extra 25% Off On Lowest Price Memberships & Session Packs <br>Use Code - FITHEART");
+						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n World Heart Week Flash Sale \n\n Extra 25% Off On Lowest Price Memberships & Session Packs \nUse Code - FITHEART");
 					}
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n World Heart Week Flash Sale \n\n Book Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100");
