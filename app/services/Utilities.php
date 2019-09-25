@@ -10094,7 +10094,7 @@ Class Utilities {
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
-                    $sd['order_summary']['header'] = $orderSummary['header']; 
+                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nWorld Heart Week Flash Sale\nBook Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100"; 
                 }
             }
 		}
