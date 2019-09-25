@@ -424,9 +424,16 @@ class Service extends \Basemodel{
 							'total_sessions_text' => $pass['total_sessions_text']
 						];
 					}
-					if((!empty($value['combo_pass_id'])) && (empty($value['flags']['complementary_pass']) || (!$value['flags']['complementary_pass'])) ) {
+					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && (!$value['flags']['onepass_attachment_type']=='membership_plus')) ) {
 						$value['membership_plus'] = true;
 						$value['title'] = 'Membership Plus';
+					}
+					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && (!$value['flags']['onepass_attachment_type']=='upgrade')) ) {
+						$value['upgrade_membership'] = true;
+						$value['title'] = 'Upgrade your membership with OnePass';
+					}
+					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && (!$value['flags']['onepass_attachment_type']=='complementary')) ) {
+						$value['comp_onepass'] = true;
 					}
 				}
 
