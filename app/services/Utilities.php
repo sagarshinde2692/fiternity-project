@@ -10082,7 +10082,7 @@ Class Utilities {
 		
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
-				$slot['order_summary']['header'] = $orderSummary['header']." \n\nWorld Heart Week Flash Sale\nBook Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100";
+				$slot['order_summary']['header'] = $orderSummary['header']." \n\nWorld Heart Week Flash Sale\n\nBook Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100";
 		}
 		return $slotsdata;
     }
@@ -10094,7 +10094,7 @@ Class Utilities {
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
-                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nWorld Heart Week Flash Sale\nBook Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100"; 
+                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nWorld Heart Week Flash Sale\n\nBook Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100"; 
                 }
             }
 		}
