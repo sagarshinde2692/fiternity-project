@@ -3874,7 +3874,14 @@ class FindersController extends \BaseController {
 	public function getFinderOneLiner($data) {
 
         $line = null;
-        if(empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !empty($data['finder']['flags']['monsoon_campaign_pps'])){
+        if(!empty($data['finder']['brand_id']) && ($data['finder']['brand_id']==88)){
+			if($this->device_type == 'android'){
+				$line = "<u>Membership Plus - ".ucwords($data['finder']['title'])."</u><br><br>Lowest price Multifit membership + 6 Months All Access OnePass";
+            }else{	
+				$line = "\nMembership Plus - ".ucwords($data['finder']['title'])."\n\nLowest price Multifit membership + 6 Months All Access OnePass";
+            }
+		}
+        else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
             
 			if($this->device_type == 'android'){
@@ -8413,6 +8420,9 @@ class FindersController extends \BaseController {
 					
 					if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Super September Sale \n\n Get 50% Off + Extra 20% Off On Memberships & Session Packs | Addnl 5% off On App \n Use Code - S3FIT");
+					}
+					if(!empty($finder['brand_id']) && $finder['brand_id']==88) {
+						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
 					}
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Super September Sale \n\n Book Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100");
