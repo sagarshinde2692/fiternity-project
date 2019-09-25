@@ -1832,8 +1832,8 @@ class PassService {
 
         $footer = array();
         $footer = array(
-            'text1' => 'Lorem Ipsum Dolor Sit Amet',
-            'text2' => 'Cancel OnePass'
+            'text' => 'Lorem Ipsum Dolor Sit Amet',
+            'button_text' => 'Cancel OnePass'
         );
 
         $upcomig = $this->upcomingPassBooking($customerData);
