@@ -5607,6 +5607,11 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial['fitcode_button_text'] = 'Enter Fitcode';
         $booktrial['vendor_code'] = "0000";
+        if(!empty($booktrial['finder_flags']['mfp']) && $booktrial['finder_flags']['mfp']){
+            // Log::info("hdsghjgdhsf");
+            $booktrial = $this->utilities->mfpBranding($booktrial, 'booktrialdetail');
+        }
+
         $responsedata   = [
             'booktrial' => $booktrial,
             'message' => 'Booktrial Detail'

@@ -10389,6 +10389,16 @@ Class Utilities {
                     $data['optional'] = true;
                 }
             }
+
+            if($source == "booktrialdetail"){
+                if(!empty($data)){
+                    $data['cancel_enable'] = false;
+                    $data['fit_code'] = false;
+
+                    unset($data['fitcode_message']);
+                    unset($data['fitcode_button_text']);
+                }
+            }
 			
 			return $data;
 		}catch(\Exception $e){
