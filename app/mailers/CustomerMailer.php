@@ -189,6 +189,9 @@ Class CustomerMailer extends Mailer {
 				}
 			}
 			$label = "Pass-Purchase-Customer";
+			if(!empty($data['combo_pass_id'])){
+				$data['pass'] = \Pass::where('_id', (int)$data['combo_pass_id'])->first();
+			}
 			$this->passPurchaseAlert($data);
 		}
 
