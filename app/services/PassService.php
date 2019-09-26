@@ -1256,6 +1256,9 @@ class PassService {
             'start_date' => strtotime($data['start_date']),
         );
 
+        if(!empty($data['onepass_attachment_type'])){
+            $pass_data['onepass_attachment_type'] = $data['onepass_attachment_type'];
+        }
         if(empty($data['communication']['sms'])){
             $smsSent = $sms->sendPgOrderSms($pass_data);
             Log::info('sent smd',[$smsSent]);
