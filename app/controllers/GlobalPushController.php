@@ -51,7 +51,7 @@ class GlobalPushController extends \BaseController
         'method' => 'POST',
     );
 
-    echo es_curl_request($request);
+    es_curl_request($request);
     // sleep(5);
 
     // var_dump($request);exit;
@@ -67,7 +67,7 @@ class GlobalPushController extends \BaseController
         'method' => 'POST'
     );
 
-    echo es_curl_request($request);
+    es_curl_request($request);
     // sleep(5);
 
     $settings = '{
@@ -242,7 +242,7 @@ class GlobalPushController extends \BaseController
         'method' => 'PUT'
     );
 
-    echo es_curl_request($request);
+    es_curl_request($request);
     // sleep(5);
 
     /*
@@ -256,7 +256,7 @@ class GlobalPushController extends \BaseController
         'method' => 'POST'
     );
 
-    echo es_curl_request($request);
+    es_curl_request($request);
     // sleep(4);
 
     $mapping = '{
@@ -337,7 +337,7 @@ class GlobalPushController extends \BaseController
         'method' => 'PUT',
         'postfields' => $postfields_data
     );
-    echo es_curl_request($request);
+    es_curl_request($request);
     // sleep(5);
 
     /*
@@ -347,20 +347,20 @@ class GlobalPushController extends \BaseController
     */
 
     
-    $this->pushBrandOutlets($index_name);
-    $this->pushcategorylocations($index_name);
-    $this->pushcategorycity($index_name);
-    $this->pushallfittnesslocation($index_name);
+    // $this->pushBrandOutlets($index_name);//required
+    // $this->pushcategorylocations($index_name);//required
+    // $this->pushcategorycity($index_name);//required
+    // $this->pushallfittnesslocation($index_name);//required
     // $this->pushservicecategorylocations($index_name);
     // $this->pushservicecategorycity($index_name);
     foreach ($this->citylist as $key => $city) {
-        $this->pushfinders($index_name, $city);
+        return $this->pushfinders($index_name, $city);//required
     }
 
 
 // //        $this->pushcategorywithfacilities($index_name);
 // //        $this->pushcategoryoffering($index_name);
-        $this->pushcategoryofferinglocation($index_name);
+        // $this->pushcategoryofferinglocation($index_name);//required
 // //        $this->pushcategoryfacilitieslocation($index_name);
 // //        $this->pushofferingcity($index_name);
 
@@ -379,7 +379,55 @@ class GlobalPushController extends \BaseController
     ini_set('max_execution_time', 30000);
     // ini_set('memory_limit', '512M');
     $city_id = (int) $city_id;
-    $indexdocs = Finder::active()
+    Finder::$withoutAppends = true;
+
+    $limit = 500;
+
+    $i=0;
+
+    function esParse($source = ''){
+        $cluster = '';
+        Log::info($source['_id']);
+        $info_service_list = array();
+        $data = $source;
+
+        if(empty($data['multiaddress'])){
+            $data['multiaddress'] = null;
+        }
+        if(isset($data['services'])&& !empty($data['services'])){
+            $info_service_list = array_map('strtolower', array_pluck($data['services'], 'name'));
+        }
+
+        $data['lat'] = isset($data['lat']) ? floatval($data['lat']) : 0.0;
+        $data['lon'] = isset($data['lon']) ? floatval($data['lon']) : 0.0;
+        $data['autosuggestvalue'] = ($data['category']['_id'] == 42 || $data['category']['_id'] == 45 || $data['category']['_id'] == 41 || $data['category']['_id'] == 46 || $data['category']['_id'] == 25 || count($data['multiaddress']) > 1) ? ((count($data['multiaddress']) > 1) ? ucwords($data['title'])." (".count($data['multiaddress'])." locations)" : ucwords($data['title'])) : ucwords($data['title'])." in ".ucwords($data['location']['name']);
+        $postfields_data = array(
+            'input'                         =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
+            'autosuggestvalue'              =>       $data['autosuggestvalue'],
+            'inputv2'                       =>      $info_service_list,//(isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "",
+            'inputv3'                       =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
+            'inputv4'                       =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
+            'inputloc1'                     =>      strtolower((isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :""),
+            'inputloc2'                     =>      ($cluster == '' ? '': strtolower($cluster)),
+            'inputcat'                      =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
+            'inputcat1'                     =>      strtolower($data['category']['name']),
+            'city'                          =>      (isset($data['city']) && $data['city'] != '') ? $data['city']['name'] :"",
+            'location'                      =>      (isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :"",
+            'type'                          =>      'vendor',
+            'slug'                          =>      isset($data['slug']) ? $data['slug'] : '',
+            'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon']),
+            'inputservicecat'               =>      '',
+            'infrastructure_type'           =>      isset($data['business_type']) ? $data['business_type'] : ''
+            );
+        if($data['city_id'] == 10 || $data['city_id'] == 9){
+            Log::info($postfields_data);
+        }
+
+        return $postfields_data;
+    }
+    
+    do{
+        $indexdocs = Finder::active()
         ->where('status', '=', '1')
         ->whereNotIn('_id', Config::get('app.hide_from_search'))
         ->where('city_id', $city_id)
@@ -395,26 +443,39 @@ class GlobalPushController extends \BaseController
         ->with('facilities')
         // ->with('services')
         ->orderBy('_id')
-//          ->take(1000)->skip(0)
-        ->take(80000)->skip(0)
+         ->take($limit)->skip($i++ * $limit)
+        // ->take(80000)->skip(0)
         ->timeout(400000000)
         ->get(array("title","country_id","country","city_id","city","category_id","category","location_id","location","categorytags","locationtags","offerings","facilities","slug","business_type","lat","lon"));
 
-//      var_dump($indexdocs);
-//      exit();
+        
+        
+        $indexdocs = array_map('esParse',$indexdocs->toArray());
+
+    }while(!empty($indexdocs));
+
+    
+
     
      Log::info('I have $indexdocs.......');
+  
+    $t = time();
+    Log::info($t);
 
-    foreach ($indexdocs as $index => $data) {
-        Log::info($index);
-      $cluster = '';
-
-      $postdata = get_elastic_autosuggest_doc($data, $cluster);
-
-      $this->addToEsData($postdata);
+    $final_data = [];
+    $ab = $indexdocs->toArray();
+    $chunks = array_chunk($indexdocs->toArray(), 500);
+    
+    
+    
+    foreach($chunks as $chunk){
+        array_push($final_data, array_map('esParse',$chunk));
     }
 
-    // return DB::getQueryLog();
+    return count($final_data);
+     
+    Log::info(time()-$t);
+    
   }
 
   public function pushBrandOutlets($index_name){
