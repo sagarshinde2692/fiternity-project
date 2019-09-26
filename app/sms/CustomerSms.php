@@ -303,12 +303,12 @@ Class CustomerSms extends VersionNextSms{
 		if(!empty($data['type']) && $data['type'] ==  "pass"){
 			Log::info('sending pass purchase sms::::::::::::::::::::');
 			$label = 'Pass-Purchase-Customer';
-		}
-
-		if($data['pass_type'] =='hybrid'){
-			$data['pass_type'] = $data['pass']['branding'];
-			if(empty($data['ratecard_flags']['onepass_attachment_type']) || in_array($data['ratecard_flags']['onepass_attachment_type'], ['complementary', 'membership_plus'])){
-				return;
+			
+			if($data['pass_type'] =='hybrid'){
+				$data['pass_type'] = $data['pass']['branding'];
+				if(empty($data['ratecard_flags']['onepass_attachment_type']) || in_array($data['ratecard_flags']['onepass_attachment_type'], ['complementary', 'membership_plus'])){
+					return;
+				}
 			}
 		}
 
@@ -319,7 +319,7 @@ Class CustomerSms extends VersionNextSms{
 				return;
 			}
 		}
-		
+
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);

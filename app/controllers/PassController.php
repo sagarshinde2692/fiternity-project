@@ -172,7 +172,7 @@ class PassController extends \BaseController {
         if(!empty($order['ratecard_flags']['onepass_attachment_type'])){
             $data["onepass_attachment_type"] = $order['ratecard_flags']['onepass_attachment_type'];
         }
-        
+
         $captureResponse = $this->passService->passCapture($data);
 
         $resp = $captureResponse;
