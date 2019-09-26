@@ -4511,6 +4511,7 @@ if (!function_exists('setNewToken')) {
 
             if($pass_data['pass_type'] =='hybrid'){
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
+                $pass_data['pass_sessions_monthly_used'] = (!empty($pass['monthly_total_sessions_used']))?$pass['monthly_total_sessions_used']:0;
             }
             $customer_data = array_merge($customer_data, $pass_data);
             $update_header = true;
@@ -4522,6 +4523,7 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass_sessions_total']);
             unset($customer_data['pass_sessions_used']);
             unset($customer_data['pass_sessions_monthly_total']);
+            unset($customer_data['pass_sessions_monthly_used']);
             unset($customer_data['pass_order_id']);
             $update_header = true;
         }
