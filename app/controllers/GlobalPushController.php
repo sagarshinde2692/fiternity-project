@@ -51,7 +51,7 @@ class GlobalPushController extends \BaseController
         'method' => 'POST',
     );
 
-    es_curl_request($request);
+    echo es_curl_request($request);
     // sleep(5);
 
     // var_dump($request);exit;
@@ -67,7 +67,7 @@ class GlobalPushController extends \BaseController
         'method' => 'POST'
     );
 
-    es_curl_request($request);
+    echo es_curl_request($request);
     // sleep(5);
 
     $settings = '{
@@ -242,7 +242,7 @@ class GlobalPushController extends \BaseController
         'method' => 'PUT'
     );
 
-    es_curl_request($request);
+    echo es_curl_request($request);
     // sleep(5);
 
     /*
@@ -256,7 +256,7 @@ class GlobalPushController extends \BaseController
         'method' => 'POST'
     );
 
-    es_curl_request($request);
+    echo es_curl_request($request);
     // sleep(4);
 
     $mapping = '{
@@ -337,7 +337,7 @@ class GlobalPushController extends \BaseController
         'method' => 'PUT',
         'postfields' => $postfields_data
     );
-    es_curl_request($request);
+    echo es_curl_request($request);
     // sleep(5);
 
     /*
@@ -606,7 +606,7 @@ class GlobalPushController extends \BaseController
 
         $postfields_data = json_encode($postdata);
         $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);     //return $request;exit;
-        es_curl_request($request);
+        echo "<br>    ---  servicecategorylocation.................".es_curl_request($request);
 
 
 
@@ -639,7 +639,7 @@ class GlobalPushController extends \BaseController
           $postdata =  get_elastic_autosuggest_catfac_doc($cat, $fal, $string, $cityname);
           $postfields_data = json_encode($postdata);
           $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-          es_curl_request($request);
+          echo "<br> ---  ".es_curl_request($request);
         }
       }
     }
@@ -668,7 +668,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
             }
             break;
 
@@ -679,7 +679,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
             }
             break;
 
@@ -691,7 +691,7 @@ class GlobalPushController extends \BaseController
                 $postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);
                 $postfields_data = json_encode($postdata);
                 $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                es_curl_request($request);
+                echo "<br> ---  ".es_curl_request($request);
               }
             }
             break;
@@ -703,7 +703,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
             }
             break;
           case 'dance':
@@ -713,7 +713,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
             }
             break;
 
@@ -724,7 +724,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
             }
             break;
 
@@ -735,7 +735,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
             }
             break;
 
@@ -746,7 +746,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
             }
             break;
 
@@ -757,7 +757,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
             }
             break;
 
@@ -769,7 +769,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
             }
             break;
         }
@@ -821,7 +821,7 @@ class GlobalPushController extends \BaseController
                   $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                   $postfields_data = json_encode($postdata);
                   $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                  es_curl_request($request);
+                  Log::info( "<br> ---  ".es_curl_request($request));
                 }
                 break;
 
@@ -909,7 +909,7 @@ class GlobalPushController extends \BaseController
             $postdata =  get_elastic_autosuggest_catlocfac_doc($cat, $fal, $loc, $string, $cityname, $cluster);
             $postfields_data = json_encode($postdata);
             $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-            es_curl_request($request);
+            echo "<br> ---  ".es_curl_request($request);
           }
         }
       }
@@ -1045,7 +1045,7 @@ class GlobalPushController extends \BaseController
         $postdata = get_elastic_autosuggest_servicecatcity_doc($servicecategory, $cityname, $string);
         $postfields_data = json_encode($postdata);
         $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-        es_curl_request($request);
+        echo "<br> ---  ".es_curl_request($request);
       }
     }
 //    return $indexed_docs;
@@ -1063,7 +1063,7 @@ class GlobalPushController extends \BaseController
         'method' => 'POST',
     );
 
-    es_curl_request($request);
+    echo es_curl_request($request);
 
     $body = '{
       "analysis": {
@@ -1219,7 +1219,7 @@ class GlobalPushController extends \BaseController
         'method' => 'PUT',
     );
 
-    es_curl_request($request);
+    echo es_curl_request($request);
 
     $url = $this->build_elasticsearch_url."/_open";
     $request = array(
@@ -1228,7 +1228,7 @@ class GlobalPushController extends \BaseController
         'method' => 'POST',
     );
 
-    es_curl_request($request);
+    echo es_curl_request($request);
 
     $autosuggest_mappings = '{
       "_source": {
@@ -1304,7 +1304,7 @@ class GlobalPushController extends \BaseController
         'postfields' => $postfields_data
     );
 
-    es_curl_request($request);
+    return es_curl_request($request);
 
   }
 
@@ -1365,7 +1365,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
               break;
 
             case 'yoga':
@@ -1376,7 +1376,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
               break;
 
             case 'zumba':
@@ -1386,7 +1386,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
               break;
 
             case 'cross functional training':
@@ -1398,7 +1398,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
               break;
 
             case 'dance':
@@ -1410,7 +1410,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
               break;
 
             case 'fitness studios':
@@ -1421,7 +1421,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
               break;
 
             case 'crossfit':
@@ -1432,7 +1432,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
               break;
 
             case 'pilates':
@@ -1443,7 +1443,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
               break;
 
             case 'mma & kickboxing':
@@ -1454,7 +1454,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
               break;
 
             default:
@@ -1465,7 +1465,7 @@ class GlobalPushController extends \BaseController
               $postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $cityname, $string, $cityname, $cluster, $offeringrank);
               $postfields_data = json_encode($postdata);
               $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-              es_curl_request($request);
+              echo "<br> ---  ".es_curl_request($request);
               break;
           }
         }
@@ -1501,7 +1501,7 @@ class GlobalPushController extends \BaseController
         $post_string = $post_string.json_encode(["index"=>new stdClass()])."\n".json_encode($x)."\n";
     }
     $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/_bulk', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $post_string);     //return $request;exit;
-    es_curl_request($request);
+    Log::info( "<br>    ---  ".es_curl_request($request));
   }
 
     public function addToEsData($data = null, $push_to_es = false) {
