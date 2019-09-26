@@ -756,7 +756,7 @@ class PassService {
                                 $group
                             ]);
                         });
-                        Log::info('inside hybrid passs::::: counts', [$booking_counters['result']]);
+                        Log::info('inside hybrid passs::::: counts', [$booking_counters['result'], $sessionsTotal, $monthlySessionsTotal]);
                         
                         $totlaSessionsUsed = !empty($booking_counters['result']['total_bookings']) ? $booking_counters['result']['total_bookings'] : 0;
                         $BookingMonthSessionsUsed = !empty($booking_counters['result']['total_bookings']) ? $booking_counters['result']['total_bookings'] : 0;
