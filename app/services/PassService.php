@@ -677,6 +677,7 @@ class PassService {
         }
 
         $canBook = false;
+        $pass_branding= null;
         if(!empty($passOrder['pass'])) {
             if($schedule_time>=strtotime($passOrder['start_date'])){
                 if($passOrder['pass']['pass_type']=='black'){
@@ -768,6 +769,7 @@ class PassService {
                             return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
                         }
                         $canBook = true;
+                        $pass_branding = $passOrder['pass']['branding'];
                     }
                 }
             }
@@ -777,7 +779,7 @@ class PassService {
             }
             else {
                 // below 1001
-                return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
+                return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' =>$pass_branding ];
             }
         }
         
