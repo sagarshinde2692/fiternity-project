@@ -2880,6 +2880,9 @@ class TransactionController extends \BaseController {
                         $emailData['customer_email'] =   $emailData['customer_email'].',vg@fitmein.in';
                     }
 
+                    if(!empty($emailData['combo_pass_id'])){
+                        $emailData['pass'] = Passes::where('_id', (int)$emailData['combo_pass_id'])->first();
+                    }
                     //print_pretty($emailData);exit;
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
                         if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
