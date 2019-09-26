@@ -3073,7 +3073,7 @@ class TransactionController extends \BaseController {
             }
 
             if(!empty($order['combo_pass_id'])){
-                $complementry_pass_purchase = Queue::connection('sync')->push(
+                $complementry_pass_purchase = Queue::connection('redis')->push(
                     'PassController@passCaptureAuto', 
                     array(
                         'order' => $order,
