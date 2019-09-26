@@ -200,7 +200,7 @@ Class CustomerMailer extends Mailer {
 			else {
 				return;
 			}
-			Log::info('label:::::', [$label, $data]);
+			\Log::info('label:::::', [$label, $data]);
 		}
 
 		$message_data 	= array(
