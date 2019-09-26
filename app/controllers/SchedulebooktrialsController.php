@@ -2521,10 +2521,10 @@ class SchedulebooktrialsController extends \BaseController {
                         }
                         $passOrder->onepass_sessions_used += 1;
 
-                        if(empty($passOrder->onepass_sessions_monthly_used)) {
-                            $passOrder->onepass_sessions_monthly_used = 0;
-                        }
-                        $passOrder->onepass_sessions_monthly_used += 1;
+                        // if(empty($passOrder->onepass_sessions_monthly_used)) {
+                        //     $passOrder->onepass_sessions_monthly_used = 0;
+                        // }
+                        // $passOrder->onepass_sessions_monthly_used += 1;
                         $passOrder->update();
                     }
                 }
@@ -4783,7 +4783,7 @@ class SchedulebooktrialsController extends \BaseController {
                 ($order['onepass_sessions_used']>0)
             ){
                 $order->onepass_sessions_used -= 1;
-                $order->onepass_sessions_monthly_used -= 1;
+                //$order->onepass_sessions_monthly_used -= 1;
                 $order->update();
             }
         }
