@@ -6590,6 +6590,15 @@ class TransactionController extends \BaseController {
                     'value' => 'paymentgateway',
                     'payment_options'=>$payment_options
                 );
+
+                if(!empty($order['finder_flags']['mfp']) && $order['finder_flags']['mfp']){
+                    $payment_modes[] = array(
+                        'title' => 'Online Payment',
+                        'subtitle' => 'Transact online with netbanking, card and wallet',
+                        'value' => 'paymentgateway',
+                        'payment_options'=>$payment_options
+                    );
+                }
             }else{
                 $payment_modes[] = array(
                     'title' => 'Online Payment',

@@ -10076,13 +10076,17 @@ Class Utilities {
 		//customOpenPopup('gold-fit-rewards');
 	}
 
-    public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name){
+    public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name, $finder = null){
 		$orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
-				$slot['order_summary']['header'] = $orderSummary['header']; 
+                if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
+                    $slot['order_summary']['header'] = $orderSummary['header'];
+                }else{
+                    $slot['order_summary']['header'] = $orderSummary['header'];
+                }
 		}
 		return $slotsdata;
     }
