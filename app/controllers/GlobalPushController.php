@@ -455,8 +455,6 @@ class GlobalPushController extends \BaseController
     }while(!empty($indexdocs));
 
     
-
-    
      Log::info('I have $indexdocs.......');
   
     $t = time();
@@ -1571,17 +1569,19 @@ class GlobalPushController extends \BaseController
             array_push($this->es_data, $data);
         }
 
-        if((count($this->es_data) && $push_to_es) || count($this->es_data) == 500){
+        if((count($this->es_data) && $push_to_es) || count($this->es_data) >= 500){
 
-            $post_string = "";
-            foreach($this->es_data as $x){
-                $post_string = $post_string.json_encode(["index"=>new stdClass()])."\n".json_encode($x)."\n";
+            for($i = 0; count($this->es_data) > 0; $i++){
+                $post_string = "";
+                foreach($this->es_data as $x){
+                    $post_string = $post_string.json_encode(["index"=>new stdClass()])."\n".json_encode($x)."\n";
+                }
+                $request = array('url' => $this->elasticsearch_url_build.($this->index_name).'/autosuggestor/_bulk', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $post_string);     //return $request;exit;
+                Log::info($this->i++);
+                es_curl_request($request);
+                Log::info('es_curl_request($request)');
+                $this->es_data = [];
             }
-            $request = array('url' => $this->elasticsearch_url_build.($this->index_name).'/autosuggestor/_bulk', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $post_string);     //return $request;exit;
-            Log::info($this->i++);
-            es_curl_request($request);
-            Log::info('es_curl_request($request)');
-            $this->es_data = [];
         }
 
     }
