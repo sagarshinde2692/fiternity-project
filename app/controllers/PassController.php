@@ -210,12 +210,12 @@ class PassController extends \BaseController {
 
         $order_data = Order::active()->where('_id', $input['order_id'])->first();
 
-        if(empty($order_data) || empty($order_data['combo_pass_id']) || (!empty($order_data['ratecard_flags']['onepass_attachment_type'] && $order_data['ratecard_flags']['onepass_attachment_type'] =='upgrade'))){
+        if(empty($order_data) || empty($order_data['combo_pass_id'])){
 
             $msg = "Order is not Placed.";
-            if((!empty($order_data['ratecard_flags']['onepass_attachment_type']) && $order_data['ratecard_flags']['onepass_attachment_type'] =='upgrade')){
-                $msg = "cannot place pass order for this order.";
-            }
+            // if((!empty($order_data['ratecard_flags']['onepass_attachment_type']) && $order_data['ratecard_flags']['onepass_attachment_type'] =='upgrade')){
+            //     $msg = "cannot place pass order for this order.";
+            // }
             if(empty($order_data['combo_pass_id'])){
                 $msg = "Pass is not listed for this order.";
             }

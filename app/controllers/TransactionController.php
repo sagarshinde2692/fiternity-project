@@ -3072,7 +3072,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(!empty($order['combo_pass_id']) && (empty($order['ratecard_flags']['onepass_attachment_type']) || $order['ratecard_flags']['onepass_attachment_type'] != 'upgrade')){
+            if(!empty($order['combo_pass_id'])){
                 $complementry_pass_purchase = Queue::connection('redis')->push(
                     'PassController@passCaptureAuto', 
                     array(
