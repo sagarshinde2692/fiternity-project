@@ -2290,9 +2290,9 @@ class ServiceController extends \BaseController {
 
 		$service_details['time_description'] = "Select between ".date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min']))." and ".date('h:i a', strtotime($gym_end_time['hour'].':'.$gym_end_time['min']));
 		
-		$finder['flags'] = $service_details['finder_falgs'];
-
 		$data['service'] = $service_details;
+
+		$finder['flags'] = $data['service']['finder_flags'];
 
 		$data['bookmark'] = false;
 		if($service_details['servicecategory_id'] != 65){
