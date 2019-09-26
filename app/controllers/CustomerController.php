@@ -10602,6 +10602,6 @@ class CustomerController extends \BaseController {
 
 	public function voucherEmailReward($resp, $customer){
         return $redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
-    }
-	
+	}
+
 }
