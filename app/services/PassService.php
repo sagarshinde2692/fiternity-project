@@ -28,7 +28,7 @@ class PassService {
 
     public function listPasses($customerId, $pass_type=null, $device=null, $version=null){
         
-        $passList = Pass::where('status', '1');
+        $passList = Pass::where('status', '1')->where('pass_type', '!=', 'hybrid');
 
         if(!Config::get('app.debug')) {
             $trialPurchased =$this->checkTrialPassUsedByCustomer($customerId);
