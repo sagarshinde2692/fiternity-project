@@ -360,7 +360,7 @@ class GlobalPushController extends \BaseController
 
 // //        $this->pushcategorywithfacilities($index_name);
 // //        $this->pushcategoryoffering($index_name);
-//         $this->pushcategoryofferinglocation($index_name);
+        $this->pushcategoryofferinglocation($index_name);
 // //        $this->pushcategoryfacilitieslocation($index_name);
 // //        $this->pushofferingcity($index_name);
 
@@ -877,16 +877,10 @@ class GlobalPushController extends \BaseController
 
             }
             $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
-            if(count($all_data) == 1000){
-                $this->bulkPush($all_data, $index_name);
-                $all_data = [];
-            }
+            
+            $this->addToEsData($postdata);
         }
     
-        if(!empty($all_data)){
-            $this->bulkPush($all_data, $index_name);
-            $all_data = [];
-        }
         }
       }
     }
