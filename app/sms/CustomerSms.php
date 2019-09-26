@@ -304,8 +304,22 @@ Class CustomerSms extends VersionNextSms{
 			Log::info('sending pass purchase sms::::::::::::::::::::');
 			$label = 'Pass-Purchase-Customer';
 		}
-		
 
+		if($data['pass_type'] =='hybrid'){
+			$data['pass_type'] = $data['pass']['branding'];
+			if(empty($data['ratecard_flags']['onepass_attachment_type']) || in_array($data['ratecard_flags']['onepass_attachment_type'], ['complementary', 'membership_plus'])){
+				return;
+			}
+		}
+
+		if(!empty($data['combo_pass_id'])){
+			if(empty($data['ratecard_flags']['onepass_attachment_type']) || in_array($data['ratecard_flags']['onepass_attachment_type'], ['complementary', 'membership_plus']))
+				$label = "Membership-Plus-Hybrid-Pass-Purchase";
+			else {
+				return;
+			}
+		}
+		
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
