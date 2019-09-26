@@ -3877,7 +3877,7 @@ class CustomerController extends \BaseController {
 									unset($data['block_screen']);
 								}
 
-								$data['unlock'] = [];
+								unset($data['unlock']);
 								$data['subscription_text'] = "";
 								$data['subscription_code'] = "";
 								$data['image'] = "";
