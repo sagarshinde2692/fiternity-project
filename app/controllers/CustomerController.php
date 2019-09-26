@@ -4153,7 +4153,7 @@ class CustomerController extends \BaseController {
 			if(!empty($passOrder)) {
 				$passPurchased = true;
 				if(!empty($passOrder['pass']['pass_type']) && ($passOrder['pass']['pass_type']=='hybrid')) {
-					$booktrialCount = Booktrial::where('pass_order_id', $passOrder['_id'])->where('schedule_date', '>', new \MongoDate(strtotime($passOrder['start_date'])))->where('schedule_date', '<', new \MongoDate(strtotime('+1 month', strtotime($passOrder['start_date']))))->count();
+					$booktrialCount = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->where('schedule_date', '>', new \MongoDate(strtotime($passOrder['start_date'])))->where('schedule_date', '<', new \MongoDate(strtotime('+1 month', strtotime($passOrder['start_date']))))->count();
 					$passOrder['monthly_total_sessions_used'] = $booktrialCount;
 				}
 			}
