@@ -16,6 +16,7 @@ class GlobalPushController extends \BaseController
 
   protected $amenitiesrank = array('gyms' => array('24 hour facility' => '6', 'free wifi' => '5', 'juice bar' => '4', 'steam and sauna' => '3', 'stretching area' => '2', 'swimming pool' => '1'), 'yoga' => array('power yoga' => '9', 'iyengar yoga' => '8', 'ashtanga yoga' => '7', 'hatha yoga' => '6', 'aerial yoga' => '5', 'vinyassa yoga' => '4','hot yoga' => '3', 'post natal yoga' => '2', 'prenatal yoga' => '1'), 'zumba' => array('zumba classes' => '2', 'aqua zumba classes' => '1'), 'cross functional training' => array('les mills' => '7', 'calisthenics' => '6', 'cross training' => '5', 'trx training' => '4', 'combine training' => '3', 'group x training' => '2', 'trampoline workout' => '1'), 'crossfit' => array('open box' => '7', 'tires & ropes' => '6', 'olympic lifting' => '5', 'group training' => '4', 'personal training' => '3', 'gymnastic routines' => '2', 'kettle bell training' => '1'), 'pilates' => array('mat pilates' => '2', 'reformer pilates or stott pilates' => '1'), 'mma & kickboxing' => array('mixed martial arts' => '12', 'karate' => '11', 'kick boxing' => '10', 'judo' => '9', 'jujitsu' => '8', 'karv maga' => '7', 'kung fu' => '6', 'muay thai' => '5', 'taekwondo' => '4', 'tai chi' => '3', 'capoeira' => '2', 'kalaripayattu' => '1'), 'dance' => array('bollywood' =>'16', 'hip hop' => '15', 'salsa' => '14', 'free style' => '13', 'contemporary' => '12', 'jazz' => '11', 'jive' => '10', 'belly dancing' => '9', 'cha cha cha' => '8', 'kathak' => '7', 'b boying' => '6', 'bharatanatyam' => '5', 'ballroom' => '4', 'locking and popping' => '3', 'ballet' => '2', 'waltz' => '1'));
 
+    protected $es_data = [];
   public function __construct()
   {
     parent::__construct();
@@ -344,51 +345,27 @@ class GlobalPushController extends \BaseController
     */
 
     
-    $this->pushBrandOutlets($index_name);
+    // $this->pushBrandOutlets($index_name);
     $this->pushcategorylocations($index_name);
-    $this->pushcategorycity($index_name);
-    $this->pushallfittnesslocation($index_name);
-    // $this->pushservicecategorylocations($index_name);
-    // $this->pushservicecategorycity($index_name);
-    foreach ($this->citylist as $key => $city) {
-        $this->pushfinders($index_name, $city);
-    }
+//     $this->pushcategorycity($index_name);
+//     $this->pushallfittnesslocation($index_name);
+//     // $this->pushservicecategorylocations($index_name);
+//     // $this->pushservicecategorycity($index_name);
+//     foreach ($this->citylist as $key => $city) {
+//         $this->pushfinders($index_name, $city);
+//     }
 
 
-//        $this->pushcategorywithfacilities($index_name);
-//        $this->pushcategoryoffering($index_name);
-        $this->pushcategoryofferinglocation($index_name);
-//        $this->pushcategoryfacilitieslocation($index_name);
-//        $this->pushofferingcity($index_name);
+// //        $this->pushcategorywithfacilities($index_name);
+// //        $this->pushcategoryoffering($index_name);
+//         $this->pushcategoryofferinglocation($index_name);
+// //        $this->pushcategoryfacilitieslocation($index_name);
+// //        $this->pushofferingcity($index_name);
 
     /*
     point the aliases for the cluster to new created index
     */
-
-    $alias_request = '{
-          "actions": [ {
-            "remove": {
-              "index": "*",
-              "alias": "fitternity_autosuggestor"
-            }
-          },
-          {
-            "add": {
-              "index": "'.$index_name.'",
-              "alias": "fitternity_autosuggestor"
-            }
-          }]
-        }';
-
-    $url        =   $this->elasticsearch_url_build."_aliases";
-    $payload =  json_encode(json_decode($alias_request,true));
-    $request = array(
-        'url' => $url,
-        'port' => $this->elasticsearch_port,
-        'method' => 'POST',
-        'postfields' => $payload
-    );
-    es_curl_request($request);
+    return "Done";
 
   }
 
@@ -509,7 +486,7 @@ class GlobalPushController extends \BaseController
 
     Log::info('in categorylocations.......');
 
-
+    $i = 0;
     foreach ($this->citylist as $city) {
 
       $categorytags = Findercategorytag::active()
@@ -518,17 +495,12 @@ class GlobalPushController extends \BaseController
           ->whereNotIn('_id', array(22,30))
           ->get();
 
-      $locationtags = Location::where('name', 'Sector 67')->where('cities', $city)
+      $locationtags = Location::where('cities', $city)
           ->with('cities')
-          ->get()->toArray();
+          ->get();
 
-    if(count($locationtags) > 0){
-        print_r($locationtags);
-        exit();
-    }
-
+    
         foreach ($categorytags as $cat) {
-            $data = [];
           foreach ($locationtags as $loc) {
             $loc = $loc->toArray();
             $cluster = '';
@@ -546,21 +518,11 @@ class GlobalPushController extends \BaseController
               default:
                 $string = ucwords($cat['name']).' in '.ucwords($loc['name']);
                 break;                              }
-            Log::info("location".$loc['name']);
-            Log::info($loc);
+            Log::info("location ".$loc['name']);
+            // Log::info($loc);
             $postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['cities'][0]['name'], $cluster);
             
-            array_push($data, $postdata);
-            
-            if(count($data) == 500 || count($data) == count($locationtags)){
-                $post_string = "";
-                foreach($data as $x){
-                  $post_string = $post_string.json_encode(["index"=>new stdClass()])."\n".json_encode($x)."\n";
-                }
-                $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/_bulk', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $post_string);     //return $request;exit;
-                es_curl_request($request);
-                $data = [];
-            }
+            $this->addToEsData($postdata);
             
           }
         }
@@ -1557,4 +1519,25 @@ class GlobalPushController extends \BaseController
     $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/_bulk', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $post_string);     //return $request;exit;
     es_curl_request($request);
   }
+
+    public function addToEsData($data = null, $push_to_es = false) {
+        
+        if(!empty($data)){
+            array_push($this->es_data, $data);
+        }
+
+        if((count($this->es_data) && $push_to_es) || count($this->es_data) == 500){
+
+            $post_string = "";
+            foreach($this->es_data as $x){
+                $post_string = $post_string.json_encode(["index"=>new stdClass()])."\n".json_encode($x)."\n";
+            }
+            $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/_bulk', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $post_string);     //return $request;exit;
+            
+            es_curl_request($request);
+            Log::info('es_curl_request($request)');
+            $this->es_data = [];
+        }
+
+    }
 }
