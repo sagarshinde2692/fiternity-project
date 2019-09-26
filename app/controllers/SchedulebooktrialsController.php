@@ -2682,10 +2682,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial_data = $booktrial->toArray();
             if(!empty($booktrial_data['finder_flags']['mfp']) && $booktrial_data['finder_flags']['mfp']){
-                $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
-                $send_communication["customer_sms_instant"] = $this->customersms->bookTrial($booktrialdata);
-                $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrialdata);
-                $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrialdata);
+                $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrial_data);
+                $send_communication["customer_sms_instant"] = $this->customersms->bookTrial($booktrial_data);
+                $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrial_data);
+                $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrial_data);
 
                 $booktrial->send_communication = $send_communication;
                 $booktrial->auto_followup_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
