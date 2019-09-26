@@ -708,12 +708,10 @@ class PassService {
                     if($schedule_time<strtotime($passOrder['end_date'])){
                         $month=(int)date("n",strtotime($date));
 
-                        if($schedule_time<strtotime($passOrder['end_date'])){
-                            Booktrial::$withoutAppends = true;
-                            $todaysBooking = Booktrial::where('pass_order_id', $passOrder['_id'])->where('schedule_date', new \MongoDate($schedule_time))->where('going_status_txt', '!=', 'cancel')->first();
-                            if(empty($todaysBooking)) {
-                                $canBook = true;
-                            }
+                        Booktrial::$withoutAppends = true;
+                        $todaysBooking = Booktrial::where('pass_order_id', $passOrder['_id'])->where('schedule_date', new \MongoDate($schedule_time))->where('going_status_txt', '!=', 'cancel')->first();
+                        if(empty($todaysBooking)) {
+                            $canBook = true;
                         }
 
                         if($canBook){
