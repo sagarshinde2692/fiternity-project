@@ -314,7 +314,7 @@ Class CustomerSms extends VersionNextSms{
 
 		if(!empty($data['combo_pass_id'])){
 
-			$data['pass'] = \Pass::where('_id', (int)$data['combo_pass_id'])->first();
+			$data['pass'] = \Pass::where('pass_id', (int)$data['combo_pass_id'])->first();
 			
 			if(empty($data['ratecard_flags']['onepass_attachment_type']) || in_array($data['ratecard_flags']['onepass_attachment_type'], ['complementary', 'membership_plus']))
 				$label = "Membership-Plus-Hybrid-Pass-Purchase";
