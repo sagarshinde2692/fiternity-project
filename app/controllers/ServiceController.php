@@ -1417,7 +1417,7 @@ class ServiceController extends \BaseController {
 				}
 			}
 			else if(!empty($data['slots']) && in_array($this->device_type, ['android', 'ios'])){
-				$data['slots'] = $this->utilities->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'] );
+				$data['slots'] = $this->utilities->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'], $finder );
             }
             
             if(!empty($data['slots']) && count($data['slots']) == 1 && !empty($data['slots'][0]['title'])){
@@ -2290,6 +2290,8 @@ class ServiceController extends \BaseController {
 
 		$service_details['time_description'] = "Select between ".date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min']))." and ".date('h:i a', strtotime($gym_end_time['hour'].':'.$gym_end_time['min']));
 		
+		$finder['flags'] = $service_details['finder_falgs'];
+
 		$data['service'] = $service_details;
 
 		$data['bookmark'] = false;
@@ -2307,7 +2309,7 @@ class ServiceController extends \BaseController {
 			$data['service'] = $this->utilities->orderSummaryService($data['service']);
 		}
 		if(!empty($data['service']['slots'] && in_array($this->device_type, ['android', 'ios']))){
-			$data['service']['slots'] = $this->utilities->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name']);
+			$data['service']['slots'] = $this->utilities->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name'], $finder);
 		}
 
 
