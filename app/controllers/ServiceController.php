@@ -1444,7 +1444,7 @@ class ServiceController extends \BaseController {
 			// }
 
 			if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
-				$data = $this->mfpBranding($data, 'getschedulebyfinderservice');
+				$data = $this->utilities->mfpBranding($data, 'getschedulebyfinderservice');
 			}
 
             return Response::json($data,200);
@@ -2312,7 +2312,7 @@ class ServiceController extends \BaseController {
 
 
 		if(!empty($data['service']['finder_flags']['mfp']) && $data['service']['finder_flags']['mfp']){
-			$data = $this->mfpBranding($data, 'serviceDetailv1');
+			$data = $this->utilities->mfpBranding($data, 'serviceDetailv1');
 		}
 
 		return Response::json(array('status'=>200, 'data'=> $data));
@@ -2697,50 +2697,6 @@ class ServiceController extends \BaseController {
 			Log::info('error occured::::::::', [$e]);
 		}
 		return $price_text;
-	}
-
-	public function mfpBranding($data, $source){
-		try{
-			if($source == "serviceDetailv1"){
-				$data['service']['price'] = "₹ ".$data['service']['amount'];
-
-				if(!empty($data['service']['slots'])){
-					$slot = array();
-					foreach($data['service']['slots'] as $k => $v){
-						Log::info('price',[$v['price']]);
-
-						$v['price'] = "₹ ".$v['price_only'];
-
-						unset($v['image']);
-
-						array_push($slot, $v);
-					}
-
-					$data['service']['slots'] = $slot;
-				}
-			}
-
-			if($source == "getschedulebyfinderservice"){
-				if(!empty($data['slots'])){
-					$slot1 = array();
-					foreach($data['slots'] as $k1 => $v1){
-						Log::info('price',[$v1['price']]);
-
-						$v1['price'] = "₹ ".$v1['price_only'];
-
-						unset($v1['image']);
-
-						array_push($slot1, $v1);
-					}
-
-					$data['slots'] = $slot1;
-				}
-			}
-			
-			return $data;
-		}catch(\Exception $e){
-			Log::info('error occured::::::::', [$e]);
-		}
 	}
 
 }

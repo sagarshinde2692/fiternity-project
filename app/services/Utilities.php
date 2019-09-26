@@ -10345,4 +10345,54 @@ Class Utilities {
 
         $send_communication = $this->sendPromotionalNotification($promoData);
     }
+
+    public function mfpBranding($data, $source){
+		try{
+			if($source == "serviceDetailv1"){
+				$data['service']['price'] = "₹ ".$data['service']['amount'];
+
+				if(!empty($data['service']['slots'])){
+					$slot = array();
+					foreach($data['service']['slots'] as $k => $v){
+						Log::info('price',[$v['price']]);
+
+						$v['price'] = "₹ ".$v['price_only'];
+
+						unset($v['image']);
+
+						array_push($slot, $v);
+					}
+
+					$data['service']['slots'] = $slot;
+				}
+			}
+
+			if($source == "getschedulebyfinderservice"){
+				if(!empty($data['slots'])){
+					$slot1 = array();
+					foreach($data['slots'] as $k1 => $v1){
+						Log::info('price',[$v1['price']]);
+
+						$v1['price'] = "₹ ".$v1['price_only'];
+
+						unset($v1['image']);
+
+						array_push($slot1, $v1);
+					}
+
+					$data['slots'] = $slot1;
+				}
+            }
+            
+            if($source == "finderReviewData"){
+                if(!empty($data)){
+                    $data['optional'] = true;
+                }
+            }
+			
+			return $data;
+		}catch(\Exception $e){
+			Log::info('error occured::::::::', [$e]);
+		}
+	}
 }

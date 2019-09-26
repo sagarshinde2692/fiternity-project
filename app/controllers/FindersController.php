@@ -6960,7 +6960,7 @@ class FindersController extends \BaseController {
 		$finder = Finder::active()->where('_id', intval($finder_id))
 				->with(array('category'=>function($query){$query->select('_id', 'detail_rating','detail_ratings_images');}))
 				->with(array('location'=>function($query){$query->select('_id','name');}))
-				->first(array('title','category_id', 'category','location_id'));
+				->first(array('title','category_id', 'category','location_id', 'flags'));
 
 		if(!empty($_GET['service_name'])){
 			$finder['service_name'] = ucwords(trim(urldecode($_GET['service_name'])));
@@ -6984,6 +6984,11 @@ class FindersController extends \BaseController {
 				'tag' => ['Membership', 'Trial', 'Workout-session'],
 				'header' => 'What is your review based on',
 			];
+		}
+
+
+		if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
+			$review_data = $this->utilities->mfpBranding($review_data, 'finderReviewData');
 		}
 
 		return $review_data;
