@@ -3658,6 +3658,9 @@ class TransactionController extends \BaseController {
                 if(!empty($passSession['pass_premium_session'])) {
                     $data['pass_premium_session'] = true;
                 }
+                if(!empty($passSession['pass_branding'])){
+                    $data['pass_branding'] = $passSession['pass_branding'];
+                }
                 $amount = 0;
             }
         }
@@ -9794,7 +9797,8 @@ class TransactionController extends \BaseController {
             
         $ordinalBookingCount = $this->utilities->getOrdinalNumber($totalPassBookings + 1);
 
-        if($data['pass_type'] =='hybrid'){
+        Log::info('capture data::::', [$data]);
+        if(!empty($data['pass_branding']) && $data['pass_type'] == true){
             $data['pass_type'] = $data['pass']['branding'];
         }
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
