@@ -3881,7 +3881,7 @@ class CustomerController extends \BaseController {
 								unset($data['image']);
 								// unset($data['subscription_code']);
 								
-								$data['subscription_text'] = "";
+								$data['subscription_text'] = " ";
 								$data['subscription_code'] = " ";
 								// $data['image'] = "";
 							}
