@@ -2682,13 +2682,37 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial_data = $booktrial->toArray();
             if(!empty($booktrial_data['finder_flags']['mfp']) && $booktrial_data['finder_flags']['mfp']){
+                $order_id = $booktrial_data['order_id'];
+                $emailData      =   [];
+                $emailData      =   $order->toArray();
+                if($emailData['type'] == 'events'){
+                    if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
+                        $emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
+                    }
+                    if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
+                        $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
+                    }
+                }
+
+                if(!empty($emailData['event_type']) && $emailData['event_type'] == 'TOI' && !empty($emailData['event_customers'])){
+                    foreach($emailData['event_customers'] as $c){
+                        $emailData['bbcustomer_name'] = $emailData['customer_name'];
+                        $emailData['customer_email'] = $c['customer_email'];
+                        $emailData['customer_name'] = $c['customer_name'];
+                        $emailData['jockey_code'] = !empty($c['jockey_code']) ? $c['jockey_code'] :'';
+                        $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                    }
+                            
+                }else{
+                    $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                }
+                                 
                 $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrial_data);
-                $send_communication["customer_sms_instant"] = $this->customersms->bookTrial($booktrial_data);
-                $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrial_data);
-                $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrial_data);
+                $send_communication["customer_sms_instant"] = $this->customersms->sendPgOrderSms($emailData);
+                // $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrial_data);
+                // $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrial_data);
 
                 $booktrial->send_communication = $send_communication;
-                $booktrial->auto_followup_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
                 $booktrial->update();
 
                 return;
