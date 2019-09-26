@@ -759,7 +759,7 @@ class PassService {
                         Log::info('inside hybrid passs::::: counts', [$booking_counters['result'], $sessionsTotal, $monthlySessionsTotal]);
                         
                         $totlaSessionsUsed = !empty($booking_counters['result']['total_bookings']) ? $booking_counters['result']['total_bookings'] : 0;
-                        $BookingMonthSessionsUsed = !empty($booking_counters['result']['total_bookings']) ? $booking_counters['result']['total_bookings'] : 0;
+                        $BookingMonthSessionsUsed = !empty($booking_counters['result']['monthly_total_bookings']) ? $booking_counters['result']['monthly_total_bookings'] : 0;
                         if($totlaSessionsUsed >= $sessionsTotal) {
                             $msg =  "You have used all ".$sessionsTotal." sessions.";
                             return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
