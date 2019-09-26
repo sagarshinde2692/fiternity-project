@@ -9794,6 +9794,9 @@ class TransactionController extends \BaseController {
             
         $ordinalBookingCount = $this->utilities->getOrdinalNumber($totalPassBookings + 1);
 
+        if($data['pass_type'] =='hybrid'){
+            $data['pass_type'] = $data['pass']['branding'];
+        }
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
         $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using Onepass ".ucfirst($data['pass_type']);
 
