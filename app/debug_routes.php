@@ -2746,4 +2746,3 @@ Route::get('addAmountTransferToVendorBreakup', 'DebugController@addAmountTransfe
 Route::get('manualToSession', 'DebugController@manualToSession');
 Route::get('hyperLocal', 'DebugController@hyperLocal');
 Route::get('fitnessForce','TransactionController@fitnessForce');
-Route::get('emailtesting','DebugController@emailTesting');
