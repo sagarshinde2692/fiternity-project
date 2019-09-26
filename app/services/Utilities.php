@@ -10099,9 +10099,9 @@ Class Utilities {
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
                     if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
-                        $slot['order_summary']['header'] = $orderSummary['header'];
+                        $sd['order_summary']['header'] = $orderSummary['header'];
                     }else{
-                        $slot['order_summary']['header'] = $orderSummary['header'];
+                        $sd['order_summary']['header'] = $orderSummary['header'];
                     }
                 }
             }
