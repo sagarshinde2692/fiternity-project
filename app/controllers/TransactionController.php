@@ -9797,7 +9797,6 @@ class TransactionController extends \BaseController {
             
         $ordinalBookingCount = $this->utilities->getOrdinalNumber($totalPassBookings + 1);
 
-        Log::info('capture data::::', [$data]);
         if(!empty($data['pass_branding']) && $data['pass_type'] == true){
             $data['pass_type'] = $data['pass_branding'];
         }
