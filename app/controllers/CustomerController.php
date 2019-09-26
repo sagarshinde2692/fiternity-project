@@ -4152,6 +4152,10 @@ class CustomerController extends \BaseController {
 			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
 			if(!empty($passOrder)) {
 				$passPurchased = true;
+				if(!empty($passOrder['pass']['pass_type']) && ($passOrder['pass']['pass_type']=='hybrid')) {
+					$booktrialCount = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->where('schedule_date', '>', new \MongoDate(strtotime($passOrder['start_date'])))->where('schedule_date', '<', new \MongoDate(strtotime('+1 month', strtotime($passOrder['start_date']))))->count();
+					$passOrder['monthly_total_sessions_used'] = $booktrialCount;
+				}
 			}
 			// $this->flexipassHome($order, $result);
 			// if(empty($order)) {
