@@ -184,7 +184,7 @@ Class CustomerMailer extends Mailer {
 		if(!empty($data['type']) && ($data['type']=='pass')){
 			if($data['pass']['pass_type'] =='hybrid'){
 				$data['pass']['pass_type'] = $data['pass']['branding'];
-				if(empty($data['ratecard_flags']['onepass_attachment_type']) || in_array($data['ratecard_flags']['onepass_attachment_type'], ['complementary', 'membership_plus'])){
+				if(empty($data['onepass_attachment_type']) || in_array($data['onepass_attachment_type'], ['complementary', 'membership_plus'])){
 					return;
 				}
 			}
