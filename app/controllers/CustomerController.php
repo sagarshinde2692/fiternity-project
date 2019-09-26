@@ -3878,12 +3878,16 @@ class CustomerController extends \BaseController {
 								}
 
 								if(!empty($data['unlock'])){
-									unset($data['unlock']);
+									// unset($data['unlock']);
+									$data['unlock'] = null;
 								}
 								
-								unset($data['subscription_text']);
-								unset($data['subscription_code']);
-								unset($data['image']);
+								// unset($data['subscription_text']);
+								// unset($data['subscription_code']);
+								// unset($data['image']);
+								$data['subscription_text'] = null;
+								$data['subscription_code'] = null;
+								$data['image'] = null;
 							}
 							
 						}
