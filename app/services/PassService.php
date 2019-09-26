@@ -756,10 +756,11 @@ class PassService {
                                 $group
                             ]);
                         });
-                        Log::info('inside hybrid passs::::: counts', [$booking_counters['result'], $sessionsTotal, $monthlySessionsTotal]);
+                        Log::info('inside hybrid passs::::: counts', [$booking_counters['result'][0]['monthly_total_bookings'], $sessionsTotal, $monthlySessionsTotal]);
                         
-                        $totlaSessionsUsed = !empty($booking_counters['result']['total_bookings']) ? $booking_counters['result']['total_bookings'] : 0;
-                        $BookingMonthSessionsUsed = !empty($booking_counters['result']['monthly_total_bookings']) ? $booking_counters['result']['monthly_total_bookings'] : 0;
+                        $totlaSessionsUsed = !empty($booking_counters['result'][0]['total_bookings']) ? $booking_counters['result'][0]['total_bookings'] : 0;
+                        $BookingMonthSessionsUsed = !empty($booking_counters['result'][0]['monthly_total_bookings']) ? $booking_counters['result'][0]['monthly_total_bookings'] : 0;
+                        Log::info('info::::::',[$BookingMonthSessionsUsed, $BookingMonthSessionsUsed >= $monthlySessionsTotal]);
                         if($totlaSessionsUsed >= $sessionsTotal) {
                             $msg =  "You have used all ".$sessionsTotal." sessions.";
                             return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
