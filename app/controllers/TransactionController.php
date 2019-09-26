@@ -6142,6 +6142,10 @@ class TransactionController extends \BaseController {
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']]))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
+
+            if(!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']){
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
+            }
         }
         
         $booking_details_all = [];
