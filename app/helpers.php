@@ -4508,7 +4508,8 @@ if (!function_exists('setNewToken')) {
         $pass_data = [];
         if(!empty($pass)){
             $pass_data = ['pass'=>1, 'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 'pass_type' => $pass['pass']['pass_type'], 'pass_sessions_total'=>$pass['onepass_sessions_total'], 'pass_sessions_used'=>$pass['onepass_sessions_used'],'pass_order_id'=>$pass['_id']];
-            if($pass['pass_type'] =='hybrid'){
+
+            if($pass_data['pass_type'] =='hybrid'){
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
             }
             $customer_data = array_merge($customer_data, $pass_data);
