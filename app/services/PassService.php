@@ -1822,7 +1822,7 @@ class PassService {
             $months_count = (int) ($data['pass']['duration']/30);
             $monthly_total_sessions_used= [];
             $start_date = strtotime(date('Y-m-d H:i:s', $data['start_date']->sec));
-            $end_date = strtotime('=30 days', $start_date);
+            $end_date = strtotime('+30 days', $start_date);
             for($i=0; $i< $months_count; $i++){
 
                 
