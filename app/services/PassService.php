@@ -703,9 +703,12 @@ class PassService {
 
                     if($schedule_time<strtotime($passOrder['end_date'])){
                         // $month=(int)date("n",strtotime($date));
+                    Log::info('inside hybrid passs::::: after end date ::::::::::', [strtotime($date)]);
 
                         Booktrial::$withoutAppends = true;
                         $todaysBooking = Booktrial::where('pass_order_id', $passOrder['_id'])->where('schedule_date', new \MongoDate($schedule_time))->where('going_status_txt', '!=', 'cancel')->first();
+
+                        Log::info('inside hybrid passs::::: after end date ::::::::::2222', [strtotime($date), $todaysBooking]);
                         if(empty($todaysBooking)) {
                             // $sessionsTotal = $passOrder['pass']['total_sessions'];
                             // $monthlySessionsTotal = $passOrder['pass']['monthly_total_sessions'];
