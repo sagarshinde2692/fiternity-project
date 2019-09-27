@@ -719,7 +719,7 @@ class PassService {
                                 $pass_start_date = strtotime($passOrder['start_date']);
                                 $pass_end_date = strtotime($passOrder['end_date']);
                                 $trial_date = strtotime($date);
-                                $end_date = strtotime('+1 month', strtotime($passOrder['start_date']));
+                                $end_date = strtotime('+30 days', strtotime($passOrder['start_date']));
                                 $length = (int)$passOrder['pass']['duration']/30;
                                 $monthly_bookings = $passOrder['monthly_total_sessions_used']; 
                                 for($i=0; $i < $length; $i++){
@@ -1826,7 +1826,7 @@ class PassService {
             $monthly_total_sessions_used= [];
             $start_date = strtotime(date('Y-m-d H:i:s', $data['start_date']->sec));
             //$end_date = strtotime('+30 days', $start_date);
-            $end_date = strtotime('+1 month', $start_date);
+            $end_date = strtotime('+30 days', $start_date);
             for($i=0; $i< $months_count; $i++){
 
                 
@@ -1837,7 +1837,7 @@ class PassService {
                     'count' => 0
                 ];
                 $start_date = $end_date;
-                $end_date = strtotime('+1 month', $start_date);
+                $end_date = strtotime('+30 days', $start_date);
             }
             $data['monthly_total_sessions_used'] = $monthly_total_sessions_used;
         }
