@@ -295,6 +295,7 @@ class PassService {
             // $data['amount'] = 0;
             $data['preferred_starting_date'] = (!empty($data['preferred_starting_date']))?date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date'])):null;
             $data['code'] = (string) random_numbers(5);
+            $this->addMonthlyBookingCounter($data);
             if(empty($order_exists)){
                 $order = new Order($data);
                 $order['_id'] = $data['_id'];
@@ -1812,6 +1813,27 @@ class PassService {
             if($type =='black'){
                 unset($homePassData['footer']['section1']);
             }
+        }
+    }
+
+    public function addMonthlyBookingCounter(&$data){
+        if($data['type']== 'hybrid'){
+            $months_count = (int) ($data['duration']/30);
+            $monthly_total_sessions_used= [];
+            $end_date = strtotime('-30 days', $data['start_date']);
+            for($i=0; $i< $months_count; $i++){
+
+                $start_date = $end_date;
+                $end_date = strtotime('+30 days', $start_date);
+                $monthly_total_sessions_used[] = [
+                    'month' => $i+1,
+                    'start_date' => new MongoDate($start_date),
+                    'end_date' => new MongoDate($end_date),
+                    'count' => 0
+                ];
+                
+            }
+            $data['monthly_total_sessions_used'] = $monthly_total_sessions_used;
         }
     }
 }

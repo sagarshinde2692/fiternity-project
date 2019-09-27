@@ -2521,10 +2521,17 @@ class SchedulebooktrialsController extends \BaseController {
                         }
                         $passOrder->onepass_sessions_used += 1;
 
-                        // if(empty($passOrder->onepass_sessions_monthly_used)) {
-                        //     $passOrder->onepass_sessions_monthly_used = 0;
-                        // }
-                        // $passOrder->onepass_sessions_monthly_used += 1;
+                        if(!empty($passOrder->monthly_total_sessions_used) && is_array($passOrder->monthly_total_sessions_used)) {
+                            $booking_date = strtotime($booktrial['schedule_date']);
+                            foreach($order->monthly_total_sessions_used as &$value){
+                                if($booking_date >= strtotime($value['start_date']) && $booking_date < strtotime($value['start_date']) ){
+                                    $value['count'] -= 1;
+                                    unset($booking_date);
+                                    break;
+                                }
+                            }
+                        }
+                        
                         $passOrder->update();
                     }
                 }
@@ -4783,7 +4790,18 @@ class SchedulebooktrialsController extends \BaseController {
                 ($order['onepass_sessions_used']>0)
             ){
                 $order->onepass_sessions_used -= 1;
-                //$order->onepass_sessions_monthly_used -= 1;
+                
+                if(!empty($order['monthly_total_sessions_used']) && is_array($order['monthly_total_sessions_used'])) {
+                    $booking_date = strtotime($booktrial['schedule_date']);
+                    foreach($order->monthly_total_sessions_used as &$value){
+                        if($booking_date >= strtotime($value['start_date']) && $booking_date < strtotime($value['start_date']) ){
+                            $value['count'] -= 1;
+                            unset($booking_date);
+                            break;
+                        }
+                    }
+                }
+
                 $order->update();
             }
         }
