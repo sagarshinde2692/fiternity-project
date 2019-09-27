@@ -2523,13 +2523,18 @@ class SchedulebooktrialsController extends \BaseController {
 
                         if(!empty($passOrder->monthly_total_sessions_used) && is_array($passOrder->monthly_total_sessions_used)) {
                             $booking_date = strtotime($booktrial['schedule_date']);
-                            foreach($order->monthly_total_sessions_used as &$value){
-                                if($booking_date >= strtotime($value['start_date']) && $booking_date < strtotime($value['start_date']) ){
+                            $temp = $passOrder->monthly_total_sessions_used;
+                            Log::info('temp::::::', [$passOrder->monthly_total_sessions_used]);
+                            foreach($temp as &$value){
+                                
+                                if($booking_date >= strtotime(date('Y-m-d H:i:s',$value['start_date']->sec)) && $booking_date < strtotime(date('Y-m-d H:i:s',$value['end_date']->sec)) ){
                                     $value['count'] += 1;
                                     unset($booking_date);
                                     break;
                                 }
                             }
+                            $passOrder->monthly_total_sessions_used= $temp;
+                            unset($temp);
                         }
                         
                         $passOrder->update();
@@ -4793,13 +4798,16 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 if(!empty($order['monthly_total_sessions_used']) && is_array($order['monthly_total_sessions_used'])) {
                     $booking_date = strtotime($booktrial['schedule_date']);
-                    foreach($order->monthly_total_sessions_used as &$value){
-                        if($booking_date >= strtotime($value['start_date']) && $booking_date < strtotime($value['start_date']) ){
+                    $temp =$order->monthly_total_sessions_used;
+                    foreach($temp as &$value){
+                        if($booking_date >= strtotime(date('Y-m-d H:i:s',$value['start_date']->sec)) && $booking_date < strtotime(date('Y-m-d H:i:s',$value['end_date']->sec))  ){
                             $value['count'] -= 1;
                             unset($booking_date);
                             break;
                         }
                     }
+                    $order->monthly_total_sessions_used = $temp;
+                    unset($temp);
                 }
 
                 $order->update();
