@@ -1821,16 +1821,18 @@ class PassService {
         if($data['pass']['pass_type']== 'hybrid'){
             $months_count = (int) ($data['pass']['duration']/30);
             $monthly_total_sessions_used= [];
-            $end_date = strtotime(date('Y-m-d H:i:s', $data['start_date']->sec));
+            $start_date = strtotime(date('Y-m-d H:i:s', $data['start_date']->sec));
+            $end_date = strtotime('=30 days', $start_date);
             for($i=0; $i< $months_count; $i++){
 
-                $start_date = $end_date;
+                
                 $monthly_total_sessions_used[] = [
                     'month' => $i+1,
                     'start_date' => new \MongoDate($start_date),
                     'end_date' => new \MongoDate($end_date),
                     'count' => 0
                 ];
+                $start_date = $end_date;
                 $end_date = strtotime('+30 days', $start_date);
             }
             $data['monthly_total_sessions_used'] = $monthly_total_sessions_used;
