@@ -2686,7 +2686,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $order = Order::find((int) $order_id);
                 $emailData      =   [];
                 $emailData      =   $order->toArray();
-                $emailData['type'] = 'event';
+                $emailData['type'] = 'events';
 
                 if(!empty($emailData['ratecard_flags']['ticket_id']) && $emailData['ratecard_flags']['ticket_id'] != ''){
                     $emailData['ticket'] = Ticket::find(intval($emailData['ratecard_flags']['ticket_id']))->toArray();
@@ -2695,7 +2695,7 @@ class SchedulebooktrialsController extends \BaseController {
                 if(!empty($emailData['ratecard_flags']['event_id']) && $emailData['ratecard_flags']['event_id'] != ''){
                     $emailData['event'] = DbEvent::find(intval($emailData['ratecard_flags']['event_id']))->toArray();
                 }
-                                 
+                
                 $send_communication["customer_email_instant"] = $this->customermailer->sendPgOrderMail($emailData);
                 $send_communication["customer_sms_instant"] = $this->customersms->sendPgOrderSms($emailData);
                 // $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrial_data);
