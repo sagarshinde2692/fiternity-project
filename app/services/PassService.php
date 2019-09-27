@@ -781,7 +781,7 @@ class PassService {
                             //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
                             // }
                             // $canBook = true;
-                            $pass_branding = $passOrder['pass']['branding'];
+                            // $pass_branding = $passOrder['pass']['branding'];
                         }
                         
                     }
@@ -789,11 +789,11 @@ class PassService {
             }
             if (($amount>1000 && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
                 // over 1000
-                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => (!empty($pass_branding))?$pass_branding:null ];
+                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding ];
             }
             else {
                 // below 1001
-                return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => (!empty($pass_branding))?$pass_branding:null ];
+                return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding ];
             }
         }
         
