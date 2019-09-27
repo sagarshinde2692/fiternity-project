@@ -694,7 +694,7 @@ class PassService {
                     }
                 }
                 else if($passOrder['pass']['pass_type']=='hybrid') {
-                    Log::info('inside hybrid passs:::::');
+                    Log::info('inside hybrid passs:::::', [strtotime($date)]);
                     // $duration = $passOrder['pass']['duration'];
                     // if(empty($finder) || empty($finder['brand_id']) || !in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
                     //     Log::info('inside hybrid passs:::::', [$finder, $finderId,  array_column($passOrder['pass']['brands'], '_id')]);
@@ -716,6 +716,7 @@ class PassService {
                             $monthlySessionsTotal = $passOrder['pass']['monthly_total_sessions'];
                             if($sessionsTotal > $sessionsUsed) {
 
+                                Log::info('inside hybrid passs::::: before monthly booking checkins::::', [strtotime($date)]);
                                 $pass_start_date = strtotime($passOrder['start_date']);
                                 $pass_end_date = strtotime($passOrder['end_date']);
                                 $trial_date = strtotime($date);
@@ -723,6 +724,7 @@ class PassService {
                                 $length = (int)$passOrder['pass']['duration']/30;
                                 $monthly_bookings = $passOrder['monthly_total_sessions_used']; 
                                 for($i=0; $i < $length; $i++){
+                                    Log::info('inside hybrid pass:::::::::::::::::::', [$trial_date, strtotime(date('Y-m-d H:i:s',$monthly_bookings[$i]['start_date']->sec)), $i]);
                                     if(!($trial_date >= strtotime(date('Y-m-d H:i:s',$monthly_bookings[$i]['start_date']->sec)) && $trial_date < strtotime($monthly_bookings[$i]['end_date']->sec))){
                                         Log::info('inside hybrid pass:::::::::::::::::::', [$monthlySessionsTotal,  $monthly_bookings[$i]['count'], $date]);
                                         if($monthlySessionsTotal > $monthly_bookings[$i]['count']){
