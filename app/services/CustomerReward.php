@@ -2459,7 +2459,8 @@ Class CustomerReward {
 
                 $header = [];
                 if(!empty(Request::header('Source')) && Request::header('Source') == 'multifit'){
-                    $header = array('source', 'multifit');
+                    Log::info('added');
+                    $header = array('source'=>'multifit');
                 }
                 
                 $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header];
@@ -2784,7 +2785,8 @@ Class CustomerReward {
 
                 $header = [];
                 if(!empty(Request::header('Source')) && Request::header('Source') == 'multifit'){
-                    $header = array('source', 'multifit');
+                    Log::info("headre");
+                    $header = array('source'=>'multifit');
                 }
                 
                 $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header];
