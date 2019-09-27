@@ -714,6 +714,16 @@ class PassService {
                             $sessionsTotal = $passOrder['onepass_sessions_total'];
                             $monthlySessionsTotal = $passOrder['pass']['monthly_total_sessions'];
                             if($sessionsTotal > $sessionsUsed) {
+
+                                $pass_start_date = strtotime($passOrder['start_date']);
+                                $pass_end_date = strtotime($passOrder['end_date']);
+                                $trial_date = strtotime($date);
+                                $end_date = strtotime('+1 month', strtotime($passOrder['start_date']));
+
+                                if(!($trial_date >= $pass_start_date && $trial_date < $end_date)){
+                                    $pass_start_date = $end_date;
+                                    $end_date = strtotime('+1 month', $end_date);
+                                }
                                 Booktrial::$withoutAppends = true;
                                 $monthlySessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->where('schedule_date', '>=', new \MongoDate(strtotime($passOrder['start_date'])))->where('schedule_date', '<', new \MongoDate(strtotime('+1 month', strtotime($passOrder['start_date']))))->count();
                                 Log::info('monthly session total used :::::::', [$monthlySessionsUsed]);
