@@ -2526,7 +2526,7 @@ class SchedulebooktrialsController extends \BaseController {
                             $temp = $passOrder->monthly_total_sessions_used;
                             foreach($temp as &$value){
                                 
-                                if($booking_date >= strtotime($value['start_date']) && $booking_date < strtotime($value['end_date']) ){
+                                if($booking_date >= strtotime(date('Y-m-d H:i:s',$value['start_date']->sec)) && $booking_date < strtotime(date('Y-m-d H:i:s',$value['end_date']->sec)) ){
                                     $value['count'] += 1;
                                     unset($booking_date);
                                     break;
@@ -4799,7 +4799,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $booking_date = strtotime($booktrial['schedule_date']);
                     $temp =$order->monthly_total_sessions_used;
                     foreach($temp as &$value){
-                        if($booking_date >= strtotime($value['start_date']) && $booking_date < strtotime($value['end_date']) ){
+                        if($booking_date >= strtotime(date('Y-m-d H:i:s',$value['start_date']->sec)) && $booking_date < strtotime(date('Y-m-d H:i:s',$value['end_date']->sec)) ){
                             $value['count'] -= 1;
                             unset($booking_date);
                             break;
