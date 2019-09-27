@@ -721,19 +721,19 @@ class PassService {
                                 $trial_date = strtotime($date);
                                 $end_date = strtotime('+1 month', strtotime($passOrder['start_date']));
                                 $length = (int)$passOrder['pass']['duration']/30;
+                                $monthly_bookings = $passOrder['monthly_total_sessions_used']; 
                                 for($i=0; $i < $length; $i++){
-                                    if(!($trial_date >= $pass_start_date && $trial_date < $end_date)){
-                                        $pass_start_date = $end_date;
-                                        $end_date = strtotime('+1 month', $end_date);
+                                    if(!($trial_date >= strtotime($monthly_bookings[$i]['start_date']) && $trial_date < strtotime($monthly_bookings[$i]['end_date']) )){
+                                        $canBook= true;
                                         break;
                                     }
                                 }
-                                Booktrial::$withoutAppends = true;
-                                $monthlySessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->where('schedule_date', '>=', new \MongoDate($pass_start_date))->where('schedule_date', '<', new \MongoDate($end_date))->count();
-                                Log::info('monthly session total used :::::::', [$monthlySessionsUsed]);
-                                if($monthlySessionsTotal>$monthlySessionsUsed) {
-                                    $canBook = true;
-                                }
+                                // Booktrial::$withoutAppends = true;
+                                // $monthlySessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->where('schedule_date', '>=', new \MongoDate($pass_start_date))->where('schedule_date', '<', new \MongoDate($end_date))->count();
+                                // Log::info('monthly session total used :::::::', [$monthlySessionsUsed]);
+                                // if($monthlySessionsTotal>$monthlySessionsUsed) {
+                                //     $canBook = true;
+                                // }
                             }
                             $pass_branding = $passOrder['pass']['branding'];
 
