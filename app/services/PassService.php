@@ -1817,21 +1817,21 @@ class PassService {
     }
 
     public function addMonthlyBookingCounter(&$data){
-        if($data['type']== 'hybrid'){
-            $months_count = (int) ($data['duration']/30);
+
+        if($data['pass']['pass_type']== 'hybrid'){
+            $months_count = (int) ($data['pass']['duration']/30);
             $monthly_total_sessions_used= [];
-            $end_date = strtotime('-30 days', $data['start_date']);
+            $end_date = strtotime(date('Y-m-d H:i:s', $data['start_date']->sec));
             for($i=0; $i< $months_count; $i++){
 
                 $start_date = $end_date;
-                $end_date = strtotime('+30 days', $start_date);
                 $monthly_total_sessions_used[] = [
                     'month' => $i+1,
-                    'start_date' => new MongoDate($start_date),
-                    'end_date' => new MongoDate($end_date),
+                    'start_date' => new \MongoDate($start_date),
+                    'end_date' => new \MongoDate($end_date),
                     'count' => 0
                 ];
-                
+                $end_date = strtotime('+30 days', $start_date);
             }
             $data['monthly_total_sessions_used'] = $monthly_total_sessions_used;
         }
