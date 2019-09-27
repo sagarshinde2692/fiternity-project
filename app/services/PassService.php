@@ -725,7 +725,7 @@ class PassService {
                                     $end_date = strtotime('+1 month', $end_date);
                                 }
                                 Booktrial::$withoutAppends = true;
-                                $monthlySessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->where('schedule_date', '>=', new \MongoDate(strtotime($passOrder['start_date'])))->where('schedule_date', '<', new \MongoDate(strtotime('+1 month', strtotime($passOrder['start_date']))))->count();
+                                $monthlySessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->where('schedule_date', '>=', new \MongoDate($pass_start_date))->where('schedule_date', '<', new \MongoDate($end_date))->count();
                                 Log::info('monthly session total used :::::::', [$monthlySessionsUsed]);
                                 if($monthlySessionsTotal>$monthlySessionsUsed) {
                                     $canBook = true;
