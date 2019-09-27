@@ -4594,7 +4594,7 @@ class TransactionController extends \BaseController {
         $data['ratecard_price_wo_offer'] = $data['amount_finder'];
 
         if(!empty($ratecard['price'])){
-            $data['ratecard_price'] = $ratecard['price'];
+            $data['ratecard_original_price'] = $ratecard['price'];
         }
 
         $data['offer_id'] = false;
