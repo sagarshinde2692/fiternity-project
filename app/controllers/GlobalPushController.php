@@ -18,7 +18,7 @@ class GlobalPushController extends \BaseController
 
     protected $es_data = [];
     protected $i = 0;
-  
+    protected $t = 0;
     public function __construct()
   {
     parent::__construct();
@@ -353,12 +353,15 @@ class GlobalPushController extends \BaseController
     // $this->pushallfittnesslocation($index_name);//required
     // $this->pushservicecategorylocations($index_name);
     // $this->pushservicecategorycity($index_name);
+    $this->t = time();
     foreach ($this->citylist as $key => $city) {
-        return $this->pushfinders($index_name, $city);//required
+        $this->pushfinders($index_name, $city);//required
     }
+    Log::info(time() - $t);
+    return "Done";
 
 
-// //        $this->pushcategorywithfacilities($index_name);
+// //        $this->pushcategorywithf$thosacilities($index_name);
 // //        $this->pushcategoryoffering($index_name);
         // $this->pushcategoryofferinglocation($index_name);//required
 // //        $this->pushcategoryfacilitieslocation($index_name);
@@ -375,7 +378,7 @@ class GlobalPushController extends \BaseController
 
 
   public function pushfinders($index_name, $city_id){
-
+    $this->t = time() - $this->t;
     ini_set('max_execution_time', 30000);
     // ini_set('memory_limit', '512M');
     $city_id = (int) $city_id;
@@ -384,46 +387,47 @@ class GlobalPushController extends \BaseController
     $limit = 500;
 
     $i=0;
+    if (!function_exists(('esParse'))) {
+        function esParse($source = ''){
+            $cluster = '';
+            Log::info($source['_id']);
+            $info_service_list = array();
+            $data = $source;
 
-    function esParse($source = ''){
-        $cluster = '';
-        Log::info($source['_id']);
-        $info_service_list = array();
-        $data = $source;
+            if(empty($data['multiaddress'])){
+                $data['multiaddress'] = null;
+            }
+            if(isset($data['services'])&& !empty($data['services'])){
+                $info_service_list = array_map('strtolower', array_pluck($data['services'], 'name'));
+            }
 
-        if(empty($data['multiaddress'])){
-            $data['multiaddress'] = null;
+            $data['lat'] = isset($data['lat']) ? floatval($data['lat']) : 0.0;
+            $data['lon'] = isset($data['lon']) ? floatval($data['lon']) : 0.0;
+            $data['autosuggestvalue'] = ($data['category']['_id'] == 42 || $data['category']['_id'] == 45 || $data['category']['_id'] == 41 || $data['category']['_id'] == 46 || $data['category']['_id'] == 25 || count($data['multiaddress']) > 1) ? ((count($data['multiaddress']) > 1) ? ucwords($data['title'])." (".count($data['multiaddress'])." locations)" : ucwords($data['title'])) : ucwords($data['title'])." in ".ucwords($data['location']['name']);
+            $postfields_data = array(
+                'input'                         =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
+                'autosuggestvalue'              =>       $data['autosuggestvalue'],
+                'inputv2'                       =>      $info_service_list,//(isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "",
+                'inputv3'                       =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
+                'inputv4'                       =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
+                'inputloc1'                     =>      strtolower((isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :""),
+                'inputloc2'                     =>      ($cluster == '' ? '': strtolower($cluster)),
+                'inputcat'                      =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
+                'inputcat1'                     =>      strtolower($data['category']['name']),
+                'city'                          =>      (isset($data['city']) && $data['city'] != '') ? $data['city']['name'] :"",
+                'location'                      =>      (isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :"",
+                'type'                          =>      'vendor',
+                'slug'                          =>      isset($data['slug']) ? $data['slug'] : '',
+                'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon']),
+                'inputservicecat'               =>      '',
+                'infrastructure_type'           =>      isset($data['business_type']) ? $data['business_type'] : ''
+                );
+            if($data['city_id'] == 10 || $data['city_id'] == 9){
+                Log::info($postfields_data);
+            }
+
+            return $postfields_data;
         }
-        if(isset($data['services'])&& !empty($data['services'])){
-            $info_service_list = array_map('strtolower', array_pluck($data['services'], 'name'));
-        }
-
-        $data['lat'] = isset($data['lat']) ? floatval($data['lat']) : 0.0;
-        $data['lon'] = isset($data['lon']) ? floatval($data['lon']) : 0.0;
-        $data['autosuggestvalue'] = ($data['category']['_id'] == 42 || $data['category']['_id'] == 45 || $data['category']['_id'] == 41 || $data['category']['_id'] == 46 || $data['category']['_id'] == 25 || count($data['multiaddress']) > 1) ? ((count($data['multiaddress']) > 1) ? ucwords($data['title'])." (".count($data['multiaddress'])." locations)" : ucwords($data['title'])) : ucwords($data['title'])." in ".ucwords($data['location']['name']);
-        $postfields_data = array(
-            'input'                         =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
-            'autosuggestvalue'              =>       $data['autosuggestvalue'],
-            'inputv2'                       =>      $info_service_list,//(isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "",
-            'inputv3'                       =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
-            'inputv4'                       =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
-            'inputloc1'                     =>      strtolower((isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :""),
-            'inputloc2'                     =>      ($cluster == '' ? '': strtolower($cluster)),
-            'inputcat'                      =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
-            'inputcat1'                     =>      strtolower($data['category']['name']),
-            'city'                          =>      (isset($data['city']) && $data['city'] != '') ? $data['city']['name'] :"",
-            'location'                      =>      (isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :"",
-            'type'                          =>      'vendor',
-            'slug'                          =>      isset($data['slug']) ? $data['slug'] : '',
-            'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon']),
-            'inputservicecat'               =>      '',
-            'infrastructure_type'           =>      isset($data['business_type']) ? $data['business_type'] : ''
-            );
-        if($data['city_id'] == 10 || $data['city_id'] == 9){
-            Log::info($postfields_data);
-        }
-
-        return $postfields_data;
     }
     
     do{
@@ -455,24 +459,26 @@ class GlobalPushController extends \BaseController
     }while(!empty($indexdocs));
 
     
-     Log::info('I have $indexdocs.......');
+    //  Log::info('I have $indexdocs.......');
   
-    $t = time();
-    Log::info($t);
+    // $t = time();
+    // Log::info($t);
 
-    $final_data = [];
-    $ab = $indexdocs->toArray();
-    $chunks = array_chunk($indexdocs->toArray(), 500);
+    // $final_data = [];
+    // $ab = $indexdocs->toArray();
+    // $chunks = array_chunk($indexdocs->toArray(), 500);
     
     
     
-    foreach($chunks as $chunk){
-        array_push($final_data, array_map('esParse',$chunk));
-    }
+    // foreach($chunks as $chunk){
+    //     array_push($final_data, array_map('esParse',$chunk));
+    // }
 
-    return count($final_data);
+    // return count($final_data);
+
+    
      
-    Log::info(time()-$t);
+    // Log::info(time()-$t);
     
   }
 
@@ -525,7 +531,7 @@ class GlobalPushController extends \BaseController
 
         $postdata =  get_elastic_autosuggest_brandoutlets_doc($data);
         
-        $this->addToEsData($postdata);
+        $this->addToEsData([$postdata]);
 
       }
     }
@@ -571,7 +577,7 @@ class GlobalPushController extends \BaseController
             // Log::info($loc);
             $postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['cities'][0]['name'], $cluster);
             
-            $this->addToEsData($postdata);
+            $this->addToEsData([$postdata]);
             
           }
         }
@@ -937,7 +943,7 @@ class GlobalPushController extends \BaseController
             }
             $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
             
-            $this->addToEsData($postdata);
+            $this->addToEsData([$postdata]);
         }
     
         }
@@ -994,7 +1000,7 @@ class GlobalPushController extends \BaseController
             $postdata = get_elastic_autosuggest_catcity_doc($cat, $cityname, $string);
             $postfields_data = json_encode($postdata);
             $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-            $this->addToEsData($postdata);
+            $this->addToEsData([$postdata]);
             break;
 
           case 'zumba':
@@ -1002,7 +1008,7 @@ class GlobalPushController extends \BaseController
             $postdata = get_elastic_autosuggest_catcity_doc($cat, $cityname, $string);
             $postfields_data = json_encode($postdata);
             $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-            $this->addToEsData($postdata);
+            $this->addToEsData([$postdata]);
             break;
 
           default:
@@ -1010,7 +1016,7 @@ class GlobalPushController extends \BaseController
             $postdata = get_elastic_autosuggest_catcity_doc($cat, $cityname, $string);
             $postfields_data = json_encode($postdata);
             $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-            $this->addToEsData($postdata);
+            $this->addToEsData([$postdata]);
             break;
         }
       }
@@ -1546,7 +1552,7 @@ class GlobalPushController extends \BaseController
         $postdata = get_elastic_autosuggest_allfitness_doc($loc, $cityname, $string);
         $postfields_data = json_encode($postdata);
         $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-        $this->addToEsData($postdata);
+        $this->addToEsData([$postdata]);
       }
     }
 
@@ -1566,7 +1572,9 @@ class GlobalPushController extends \BaseController
     public function addToEsData($data = null, $push_to_es = false) {
         
         if(!empty($data)){
-            array_push($this->es_data, $data);
+            
+            $this->es_data = array_merge($this->es_data, $data);
+            
         }
 
         if((count($this->es_data) && $push_to_es) || count($this->es_data) >= 500){
