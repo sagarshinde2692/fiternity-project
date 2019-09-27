@@ -720,9 +720,12 @@ class PassService {
                                 $trial_date = strtotime($date);
                                 $end_date = strtotime('+1 month', strtotime($passOrder['start_date']));
 
-                                if(!($trial_date >= $pass_start_date && $trial_date < $end_date)){
-                                    $pass_start_date = $end_date;
-                                    $end_date = strtotime('+1 month', $end_date);
+                                for($i=0; $i=6; $i++){
+                                    if(!($trial_date >= $pass_start_date && $trial_date < $end_date)){
+                                        $pass_start_date = $end_date;
+                                        $end_date = strtotime('+1 month', $end_date);
+                                        break;
+                                    }
                                 }
                                 Booktrial::$withoutAppends = true;
                                 $monthlySessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->where('schedule_date', '>=', new \MongoDate($pass_start_date))->where('schedule_date', '<', new \MongoDate($end_date))->count();
