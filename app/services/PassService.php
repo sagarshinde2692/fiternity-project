@@ -724,7 +724,8 @@ class PassService {
                                 $monthly_bookings = $passOrder['monthly_total_sessions_used']; 
                                 for($i=0; $i < $length; $i++){
                                     if(!($trial_date >= strtotime($monthly_bookings[$i]['start_date']) && $trial_date < strtotime($monthly_bookings[$i]['end_date']))){
-                                        if($monthlySessionsTotal >$monthly_bookings[$i]['count']){
+                                        Log::info('inside hybrid pass:::::::::::::::::::', [$monthlySessionsTotal,  $monthly_bookings[$i]['count']]);
+                                        if($monthlySessionsTotal > $monthly_bookings[$i]['count']){
                                             $canBook= true;
                                             break;
                                         }
