@@ -99,6 +99,7 @@ return array(
 	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-live.cloudfunctions.net/',
     // 'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
 
+	"app_download_url_branch_io" => "https://ftrnty.app.link/8v6VWNGwi0",
     'creditMap' => [
 		['max_price'=>300, 'credits'=>2],
 		['max_price'=>500, 'credits'=>3],
