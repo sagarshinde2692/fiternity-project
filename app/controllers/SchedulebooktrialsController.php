@@ -2525,7 +2525,7 @@ class SchedulebooktrialsController extends \BaseController {
                             $booking_date = strtotime($booktrial['schedule_date']);
                             foreach($order->monthly_total_sessions_used as &$value){
                                 if($booking_date >= strtotime($value['start_date']) && $booking_date < strtotime($value['start_date']) ){
-                                    $value['count'] -= 1;
+                                    $value['count'] += 1;
                                     unset($booking_date);
                                     break;
                                 }
