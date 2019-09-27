@@ -723,12 +723,12 @@ class PassService {
                                 $length = (int)$passOrder['pass']['duration']/30;
                                 $monthly_bookings = $passOrder['monthly_total_sessions_used']; 
                                 for($i=0; $i < $length; $i++){
-                                    if(!($trial_date >= strtotime($monthly_bookings[$i]['start_date']) && $trial_date < strtotime($monthly_bookings[$i]['end_date']))){
+                                    if(!($trial_date >= strtotime(date('Y-m-d H:i:s',$monthly_bookings[$i]['start_date']->sec)) && $trial_date < strtotime($monthly_bookings[$i]['end_date']->sec))){
                                         Log::info('inside hybrid pass:::::::::::::::::::', [$monthlySessionsTotal,  $monthly_bookings[$i]['count']]);
                                         if($monthlySessionsTotal > $monthly_bookings[$i]['count']){
                                             $canBook= true;
-                                            break;
                                         }
+                                        break;
                                     }
                                 }
                                 // Booktrial::$withoutAppends = true;
