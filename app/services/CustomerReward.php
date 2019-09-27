@@ -2456,8 +2456,13 @@ Class CustomerReward {
                 if($ratecard){
                     $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
                 }
+
+                $header = [];
+                if(!empty(Request::header('Source')) && Request::header('Source') == 'multifit'){
+                    $header = array('source', 'multifit');
+                }
                 
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header];
                
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
@@ -2776,8 +2781,13 @@ Class CustomerReward {
                 if($ratecard){
                     $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
                 }
+
+                $header = [];
+                if(!empty(Request::header('Source')) && Request::header('Source') == 'multifit'){
+                    $header = array('source', 'multifit');
+                }
                 
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header];
 
                 $discount_max_overridable = false;
 
