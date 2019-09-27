@@ -2459,7 +2459,6 @@ Class CustomerReward {
 
                 $header = [];
                 if(!empty(Request::header('Source')) && Request::header('Source') == 'multifit'){
-                    Log::info('added');
                     $header = array('source'=>'multifit');
                 }
                 
@@ -2785,7 +2784,6 @@ Class CustomerReward {
 
                 $header = [];
                 if(!empty(Request::header('Source')) && Request::header('Source') == 'multifit'){
-                    Log::info("headre");
                     $header = array('source'=>'multifit');
                 }
                 
