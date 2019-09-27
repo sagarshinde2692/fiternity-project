@@ -2524,7 +2524,6 @@ class SchedulebooktrialsController extends \BaseController {
                         if(!empty($passOrder->monthly_total_sessions_used) && is_array($passOrder->monthly_total_sessions_used)) {
                             $booking_date = strtotime($booktrial['schedule_date']);
                             $temp = $passOrder->monthly_total_sessions_used;
-                            Log::info('temp::::::', [$passOrder->monthly_total_sessions_used]);
                             foreach($temp as &$value){
                                 
                                 if($booking_date >= strtotime(date('Y-m-d H:i:s',$value['start_date']->sec)) && $booking_date < strtotime(date('Y-m-d H:i:s',$value['end_date']->sec)) ){
