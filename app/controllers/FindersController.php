@@ -623,7 +623,7 @@ class FindersController extends \BaseController {
 				
 				// end top selling and newly launched logic 
 				
-				
+				$finderOnepassAvailable = false;
 				// return $info_timing;
 				if(count($finder['services']) > 0 ){
 
@@ -636,7 +636,9 @@ class FindersController extends \BaseController {
 						// if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && $service['showOnFront']))){
 						if((!isset($service['showOnFront']) || (isset($service['showOnFront']) && (in_array('web', $service['showOnFront']) || $isThirdParty))) && count($service['serviceratecard'])){ 
 
-
+							if(!empty($service['flags']['classpass_available'])) {
+								$finderOnepassAvailable = true;
+							}
 
 							$service = $service;
 
@@ -873,6 +875,7 @@ class FindersController extends \BaseController {
 
 
 
+					array_set($finder, 'finder_onepass_available', $finderOnepassAvailable);
 					array_set($finder, 'services', $serviceArr);
 
 					// $info_timing = $this->getInfoTiming($finder['services']);
