@@ -5150,7 +5150,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $this->findersms->cancelBookTrial($emaildata);
                 $this->customersms->cancelBookTrial($emaildata);
             }
-            else{
+            else if(empty($booktrial['third_party_details']['ekn'])){
                 if(empty($booktrial['studio_extended_validity_order_id']) || !empty($booktrial['studio_extended_session'])){
                     $this->findermailer->cancelBookTrial($emaildata);
                     $this->findersms->cancelBookTrial($emaildata);
@@ -8542,4 +8542,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
     }
 
+    function tpcancelsession() {
+
+    }
 }
