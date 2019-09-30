@@ -10544,18 +10544,23 @@ class CustomerController extends \BaseController {
    
     public function directLogin($data){
 		Log::info("directLogin");
-        $customer_exists = Customer::where('email', 'like', $data['email'])->count();
+		if(!empty($data['direct_login_key']) && $data['direct_login_key'] == "Cshd8qxgReMvR1A" ){
+			$customer_exists = Customer::where('email', 'like', $data['email'])->count();
         
-        $data["identity"] = 'email';
-        $data["direct_login"] = true;
-		// Log::info("direct_login data   ::", [$data]);
-        if(!empty($customer_exists)){
-			Log::info("login");
-			return $this->customerLogin($data);
-        }else{
-			Log::info("register");
-            return $this->register($data);
-        }
+			$data["identity"] = 'email';
+			$data["direct_login"] = true;
+			// Log::info("direct_login data   ::", [$data]);
+			if(!empty($customer_exists)){
+				Log::info("login");
+				return $this->customerLogin($data);
+			}else{
+				Log::info("register");
+				return $this->register($data);
+			}
+		}else{
+			return Response::json(array('status' => 400,'message' => 'Invalid Key'),400);
+		}
+        
 
     }
 	
