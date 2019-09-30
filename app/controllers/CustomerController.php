@@ -992,7 +992,7 @@ class CustomerController extends \BaseController {
 			return $this->vendorLogin($data);
         }
 		
-		if(!empty($data['direct_login_key']) && empty($data['direct_login'])){
+		if(!empty($data['direct_login_key']) && empty($data['direct_login']) && $data['direct_login_key'] == "Cshd8qxgReMvR1A" ){
 			return $this->directLogin($data);
 		}
 		
