@@ -1805,7 +1805,7 @@ class PassService {
                     unset($homePassData['right_value']);
                 }
             }
-            if(!empty($usageLeft) && $usageLeft>5) {
+            if(!empty($usageLeft) && $usageLeft>5 && $type !='hybrid') {
                 // if(!Config::get('app.debug')) {
                     unset($homePassData['footer']['section2']);
                     unset($homePassData['footer']['section3']);
