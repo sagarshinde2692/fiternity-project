@@ -8601,7 +8601,7 @@ class SchedulebooktrialsController extends \BaseController {
         ];
         $booktrial = Booktrial::where('_id',$booktrial_id)
            ->where('customer_id',$customer_id)
-           ->where('post_trial_status', 'ne', 'attended')
+           ->where('post_trial_status', '!=', 'attended')
            ->whereIn('type',['booktrials','3daystrial','workout-session'])
            ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
            ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
