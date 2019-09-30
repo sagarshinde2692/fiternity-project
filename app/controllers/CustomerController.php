@@ -10558,7 +10558,7 @@ class CustomerController extends \BaseController {
 				return $this->register($data);
 			}
 		}else{
-			return Response::json(array('status' => 400,'message' => 'Invalid Key'),200);
+			return Response::json(array('status' => 400,'message' => 'Invalid Key'),400);
 		}
         
 
