@@ -3822,7 +3822,6 @@ class CustomerController extends \BaseController {
 							}
 							
 							$data_new = $this->passService->upcomingPassBooking($customer, $data);
-							Log::info('data new :::::', [$data_new]);
 							// $data_new['icon'] = "abccc";
 							// $data_new['time_diff_text'] = "Starts In - ";
 							
