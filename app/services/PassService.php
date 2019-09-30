@@ -1924,7 +1924,7 @@ class PassService {
             $upcoming['header'] = "Session Activated";
             unset($upcoming['footer']);
             $upcoming['footer'] =[
-                'text' => 'Subscription code :'.$data['code']
+                'subscription_desscription' => 'Subscription code :'.$data['code']
             ];
         }
 
