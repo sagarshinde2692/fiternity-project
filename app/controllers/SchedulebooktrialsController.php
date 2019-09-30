@@ -4786,11 +4786,12 @@ class SchedulebooktrialsController extends \BaseController {
         $trialbooked        = 	$booktrial->update($bookdata);
         
         if(!empty($booktrial['pass_order_id'])){
+            Log::info('pass order id', [$booktrial['pass_order_id']]);
             $order = Order::find($booktrial['pass_order_id']);
             if(
-                /*(in_array($order['pass']['pass_type'], ['black', 'hybrid'])) &&*/
+                (in_array($order['pass']['pass_type'], ['black', 'hybrid'])) &&
                 (strtotime($order['start_date']) <= time()) && 
-                ($order['onepass_sessions_used'] < $order['onepass_sessions_total']) &&
+                ($order['onepass_sessions_used'] <= $order['onepass_sessions_total']) &&
                 ($order['onepass_sessions_used']>0)
             ){
                 $order->onepass_sessions_used -= 1;
