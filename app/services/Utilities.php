@@ -10357,7 +10357,11 @@ Class Utilities {
     public function mfpBranding($data, $source){
 		try{
 			if($source == "serviceDetailv1"){
-				$data['service']['price'] = "₹ ".$data['service']['amount'];
+                $data['service']['price'] = "₹ ".$data['service']['amount'];
+                
+                if(!empty($data['service']['easy_cancellation'])){
+                    unset($data['service']['easy_cancellation']);
+                }
 
 				if(!empty($data['service']['slots'])){
 					$slot = array();
