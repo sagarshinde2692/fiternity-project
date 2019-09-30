@@ -10452,7 +10452,11 @@ Class Utilities {
         return $resp;
     }
 
-    public function checkOnepassProfileCompleted($customer=null){
+    public function checkOnepassProfileCompleted($customer=null, $customer_id=null){
+
+        if(empty($customer)){
+            $customer = Customer::active()->where('_id', $customer_id)->first();
+        }
 
         if(empty($customer->onepass)){
             return false; 

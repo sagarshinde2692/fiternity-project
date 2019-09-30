@@ -960,6 +960,11 @@ class PassService {
             //     $item = $utilities->bullet()." ".$item;
             // }
             unset($success_template['info']['app_data']);
+            $profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $success['customer_id']);
+            if(empty($profile_completed)){
+                $success_template['personalize'] = "PERSONALIZE YOUR ONEPASS";
+            }
+
         }
 
         return $success_template;
@@ -1698,7 +1703,7 @@ class PassService {
 
             $gender = !empty($customerData['onepass']['gender']) ? ucwords($customerData['onepass']['gender']) : null;
             $profile = array(
-                'image' => $customerData['onepass']['photo']['url'],
+                'image' => !empty($customerData['onepass']['photo']['url']) ? $customerData['onepass']['photo']['url']: null,
                 'name' => ucwords($customerData['name']),
                 'gender' => $gender,
                 'text' => $interest,
