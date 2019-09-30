@@ -1883,7 +1883,7 @@ class PassService {
             });
         })
         ->orderBy('schedule_date_time', 'asc')
-        ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id','finder_location', 'service_category')
+        ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id','finder_location', 'service_category', 'post_trial_initail_status', 'post_trial_status_updated_by_unlocksession')
         ->first();
 
         if(empty($data)){
@@ -1919,6 +1919,14 @@ class PassService {
             'cancel_text' => 'CANCEL SESSION',
             'cancel_url' => Config::get('app.url').'/canceltrial/'.$data['_id']
         ];
+
+        if(!empty($data['post_trial_initail_status']) && $data['post_trial_initail_status'] == 'interested'  && !empty($data['post_trial_status']) && $data['post_trial_status'] == 'attended' && !empty($data['post_trial_status_updated_by_unlocksession'])){
+            $upcoming['header'] = "Session Activated";
+            unset($upcoming['footer']);
+            $upcoming['footer'] =[
+                'text' => 'Subscription code :'.$data['code']
+            ];
+        }
 
         return $upcoming;
     }
