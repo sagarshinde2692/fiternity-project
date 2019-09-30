@@ -3071,6 +3071,21 @@ class TransactionController extends \BaseController {
                     $order->update(['schedule_bookings_redis_id'=>$scheduleBookingsRedisId]);
                 }
             }
+
+            if(!empty($order['combo_pass_id'])){
+                $complementry_pass_purchase = Queue::connection('redis')->push(
+                    'PassController@passCaptureAuto', 
+                    array(
+                        'order' => $order,
+                        'forced' => false
+                    ),
+                    Config::get('app.queue')
+                );
+                Log::info('inside schudling complementary pass purchase redis id:', [$complementry_pass_purchase]);
+
+                $order->update(['schedule_complementry_pass_purchase_redis_id'=>$complementry_pass_purchase]);
+            }
+
             Log::info("successCommon returned");
             Log::info($order['_id']);
             return Response::json($resp);
@@ -3643,6 +3658,9 @@ class TransactionController extends \BaseController {
 
                 if(!empty($passSession['pass_premium_session'])) {
                     $data['pass_premium_session'] = true;
+                }
+                if(!empty($passSession['pass_branding'])){
+                    $data['pass_branding'] = $passSession['pass_branding'];
                 }
                 $amount = 0;
             }
@@ -4667,6 +4685,10 @@ class TransactionController extends \BaseController {
 
         $data['ratecard_price_wo_offer'] = $data['amount_finder'];
 
+        if(!empty($ratecard['price'])){
+            $data['ratecard_original_price'] = $ratecard['price'];
+        }
+
         $data['offer_id'] = false;
 
         // $offer = Offer::where('ratecard_id',$ratecard['_id'])
@@ -4867,6 +4889,10 @@ class TransactionController extends \BaseController {
 
             
         // }
+
+        if(!empty($ratecard['combo_pass_id'])){
+            $data['combo_pass_id'] = $ratecard['combo_pass_id'];
+        }
 
         return array('status' => 200,'data' =>$data);
 
@@ -9956,6 +9982,9 @@ class TransactionController extends \BaseController {
             
         $ordinalBookingCount = $this->utilities->getOrdinalNumber($totalPassBookings + 1);
 
+        if(!empty($data['pass_branding']) && $data['pass_type'] == true){
+            $data['pass_type'] = $data['pass_branding'];
+        }
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
         $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using Onepass ".ucfirst($data['pass_type']);
 
