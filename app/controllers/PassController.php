@@ -1,13 +1,17 @@
 <?PHP
 use App\Services\PassService as PassService;
 use App\Services\Utilities;
+use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Sms\CustomerSms as CustomerSms;
 
 class PassController extends \BaseController {
 
-    public function __construct(PassService $passService, Utilities $utilities) {
+    public function __construct(PassService $passService, Utilities $utilities, CustomerMailer $customerMailer, CustomerSms $customerSms) {
         parent::__construct();
         $this->passService = $passService;
         $this->utilities = $utilities;
+        $this->customerMailer = $customerMailer;
+        $this->customerSms = $customerSms;
     }
 
     public function listPasses($pass_type=null){
@@ -244,6 +248,20 @@ class PassController extends \BaseController {
         $data['order'] = $order_data;
         $data['forced'] = true;
 
-        return $this->passCaptureAuto(null, $data);
+        $passPurchaseResponse =  $this->passCaptureAuto(null, $data);
+
+        if(!empty($passPurchaseResponse['status']) && $passPurchaseResponse['status']= 200){
+            $customer_email = $this->customerMailer->sendPgOrderMail($order_data->toArray());
+            $customer_sms = $this->customerSms->sendPgOrderSms($order_data->toArray());
+
+            $order_update = Order::find($order_data['_id']);
+            $order_update->forcepass_communication = [
+                'sms' => 0, $customer_sms, 
+                'email' => $customer_email
+            ];
+
+            $order_update->update();
+        }
+        return $passPurchaseResponse;
     }
 }
