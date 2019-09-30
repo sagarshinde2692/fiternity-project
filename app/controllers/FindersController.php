@@ -8686,6 +8686,12 @@ class FindersController extends \BaseController {
 			// 	$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: PPS100";
 			// }
 			$rateCard['remarks_imp'] = true;
+
+			$corporate_discount_branding = $this->utilities->corporate_discount_branding();
+			if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+				unset($rateCard['remarks']);
+				unset($rateCard['remarks_imp']);
+			}
 		
 		}
 	}
