@@ -727,7 +727,7 @@ class PassService {
                                 $length = (int)$passOrder['pass']['duration']/30;
 
                                 if(empty($passOrder['monthly_total_sessions_used'])){
-                                    return;
+                                    return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
                                 }
                                 
                                 $monthly_bookings = $passOrder['monthly_total_sessions_used']; 
