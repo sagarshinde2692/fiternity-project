@@ -1820,7 +1820,8 @@ class PassService {
             }
             else {
                 // $homePassData['footer'] = $homePassData['footer']['ending'];
-                $homePassData['footer']['section2']['text'] = strtr($homePassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
+                $remaining_text =(( $type =='black') ? ' sessions': ' days');
+                $homePassData['footer']['section2']['text'] = strtr($homePassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.$remaining_text]);
                 unset($homePassData['footer']['section3']);
             }
         }

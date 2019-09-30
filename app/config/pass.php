@@ -478,7 +478,7 @@ return [
                         'contact_no' => '+917400062849'
                     ],
                     'section2' => [
-                        'text' => 'Your Onepass Red will expire after remaining_text',
+                    'text' => 'Your Onepass Red will expire after remaining_text',
                         'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
                         'button_text' => 'RENEW NOW',
                         'index' => 0
