@@ -1775,6 +1775,7 @@ class PassService {
 
     public function purchasedPassFormat(&$homePassData, $type, $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, $totalSessions){
 
+        Log::info('purchase pass format::::::::', [$type, $passExpired]);
         $subheader = strtoupper(trim($passOrder['pass']['duration_text']));
 
         if($type =='black'){
