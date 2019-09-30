@@ -725,9 +725,14 @@ class PassService {
                                 $trial_date = strtotime($date);
                                 $end_date = strtotime('+30 days', strtotime($passOrder['start_date']));
                                 $length = (int)$passOrder['pass']['duration']/30;
+
+                                if(empty($passOrder['monthly_total_sessions_used'])){
+                                    return;
+                                }
+                                
                                 $monthly_bookings = $passOrder['monthly_total_sessions_used']; 
                                 for($i=0; $i < $length; $i++){
-                                    Log::info('inside hybrid pass:::::::::::::::::::', [$trial_date, strtotime(date('Y-m-d H:i:s',$monthly_bookings[$i]['start_date']->sec)), $i, strtotime(date('Y-m-d H:i:s', $monthly_bookings[$i]['end_date']->sec))]);
+                                    // Log::info('inside hybrid pass:::::::::::::::::::', [$trial_date, strtotime(date('Y-m-d H:i:s',$monthly_bookings[$i]['start_date']->sec)), $i, strtotime(date('Y-m-d H:i:s', $monthly_bookings[$i]['end_date']->sec))]);
                                     if(
                                         (
                                             $trial_date >= strtotime(date('Y-m-d H:i:s', $monthly_bookings[$i]['start_date']->sec)) && $trial_date < strtotime(date('Y-m-d H:i:s', $monthly_bookings[$i]['end_date']->sec))
