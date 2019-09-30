@@ -960,7 +960,7 @@ class PassService {
             //     $item = $utilities->bullet()." ".$item;
             // }
             unset($success_template['info']['app_data']);
-            $profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $success['customer_id']);
+            $profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $order['customer_id']);
             if(empty($profile_completed)){
                 $success_template['personalize'] = "PERSONALIZE YOUR ONEPASS";
             }
