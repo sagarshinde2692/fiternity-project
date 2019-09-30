@@ -95,7 +95,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off +  Additional 15% Instant Discount on OnePass", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional FLAT INR 500 Off", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -129,7 +129,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off +  Additional 15% Instant Discount on OnePass", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional FLAT INR 500 Off", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -150,10 +150,10 @@ return [
         "red"=>[
             "<ul>
                 <li>Discount of upto 30% off is pre-applied on MRP</li>
-                <li>Code: ONE5 will give the user  Additional 15% instant discount </li>
-                <li>Additional 15% instant discount is upto INR 1500 </li>
+                <li>Code: FIVE00 will give the user additional INR 500 off</li>
                 <li>Discount varies across different types of pass</li>
-                <li>The offer cannot be clubbed with any other existing offer </li>
+                <li>The offer cannot be clubbed with any other existing offer</li>
+                <li>The offer expires on 6th October after which code: FIVE00 will be invalid</li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -185,10 +185,10 @@ return [
         "black" =>[
             "<ul>
                 <li>Discount of upto 30% off is pre-applied on MRP</li>
-                <li>Code: ONE5 will give the user  Additional 15% instant discount </li>
-                <li>Additional 15% instant discount is upto INR 1500 </li>
+                <li>Code: FIVE00 will give the user additional INR 500 off</li>
                 <li>Discount varies across different types of pass</li>
-                <li>The offer cannot be clubbed with any other existing offer </li>
+                <li>The offer cannot be clubbed with any other existing offer</li>
+                <li>The offer expires on 6th October after which code: FIVE00 will be invalid</li>
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
@@ -219,10 +219,10 @@ return [
         "default"=>[
             "<ul>
                 <li>Discount of upto 30% off is pre-applied on MRP</li>
-                <li>Code: ONE5 will give the user  Additional 15% instant discount </li>
-                <li>Additional 15% instant discount is upto INR 1500 </li>
+                <li>Code: FIVE00 will give the user additional INR 500 off</li>
                 <li>Discount varies across different types of pass</li>
-                <li>The offer cannot be clubbed with any other existing offer </li>
+                <li>The offer cannot be clubbed with any other existing offer</li>
+                <li>The offer expires on 6th October after which code: FIVE00 will be invalid</li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -451,7 +451,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "Get 30% off +  Additional 15% Instant Discount on OnePass",
+                "text" => "Get 30% Off + Additional FLAT INR 500 Off",
                 "button_text" => "Know More"
             ]
         ],

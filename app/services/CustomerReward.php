@@ -799,6 +799,10 @@ Class CustomerReward {
                         $amount_paid = $amount_paid - $order['convinience_fee'];
                     }
 
+                    if($amount_paid > 1000){
+                        $amount_paid = 1000;
+                    }
+
                 }else{
                     $amount_paid = $order['amount'];
 
