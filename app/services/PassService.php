@@ -85,7 +85,7 @@ class PassService {
                 }
             }
 
-            $passDetails['cashback'] = '(Additional 15% Discount)';
+            $passDetails['cashback'] = '(Additional FLAT INR 500 Off)';
             unset($passDetails['extra_info']);
 
             if($pass['unlimited_access']) {
@@ -1434,7 +1434,7 @@ class PassService {
             ],
             [
                'field' => '',
-               'value' => 'Use code: ONE5 to get  Additional 15% Instant Discount',
+               'value' => 'Use code: FIVE00 to get additional FLAT INR 500 off',
             ]
         ];
 
@@ -1820,7 +1820,8 @@ class PassService {
             }
             else {
                 // $homePassData['footer'] = $homePassData['footer']['ending'];
-                $homePassData['footer']['section2']['text'] = strtr($homePassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
+                $remaining_text =(( $type =='black') ? ' sessions': ' days');
+                $homePassData['footer']['section2']['text'] = strtr($homePassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.$remaining_text]);
                 unset($homePassData['footer']['section3']);
             }
         }
