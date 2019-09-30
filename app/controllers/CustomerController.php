@@ -3819,42 +3819,46 @@ class CustomerController extends \BaseController {
 							}
 							
 							$data_new = $data;
-							$data_new['icon'] = "abccc";
-							$data_new['time_diff_text'] = "Starts In - ";
-							
-							$data_new['header'] = "Session Starts In";
-							
-							$data_new['workout'] = array(
-								'icon' => '',
-								'header' => ucwords($data['service_name']),
-								'datetime' => date('D, d M - h:i A', strtotime($data['schedule_date_time']))
-							);
-							
-							$data_new['finder'] = array(
-								'title' => $data['finder_name'],
-								'location' => $data['finder_location'],
-								'address'=> $data['finder_address'],
-								'direction' => "Get Direction",
-								'lat' => $data['finder_lat'],
-								'lon' => $data['finder_lon']
-							);
 
-							$data_new['footer'] = array(
-								'footer1' => 'You can only unlock this session within 200 meters of the gym',
-								'footer2' => array(
-									'contact_text' => 'Need Help? Contact your Personal Concierge',
-									'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-									'contact_no' => '',
-								),
-								'footer3' => array(
-									'unlock_button_text' => 'UNLOCK SESSION',
-									'unlock_button_url' => Config::get('app.url').'/unlocksession/'.$data['trial_id'],
-								),
-							);
+							Customer::$withoutAppends = true;
+							$customer = Customer::active()->where('email', $customeremail)->first();
+							$data_new = $this->passService->upcomingPassBooking($customer, $data);
+							// $data_new['icon'] = "abccc";
+							// $data_new['time_diff_text'] = "Starts In - ";
 							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
+							// $data_new['header'] = "Session Starts In";
+							
+							// $data_new['workout'] = array(
+							// 	'icon' => '',
+							// 	'header' => ucwords($data['service_name']),
+							// 	'datetime' => date('D, d M - h:i A', strtotime($data['schedule_date_time']))
+							// );
+							
+							// $data_new['finder'] = array(
+							// 	'title' => $data['finder_name'],
+							// 	'location' => $data['finder_location'],
+							// 	'address'=> $data['finder_address'],
+							// 	'direction' => "Get Direction",
+							// 	'lat' => $data['finder_lat'],
+							// 	'lon' => $data['finder_lon']
+							// );
 
-							$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer']);
+							// $data_new['footer'] = array(
+							// 	'footer1' => 'You can only unlock this session within 200 meters of the gym',
+							// 	'footer2' => array(
+							// 		'contact_text' => 'Need Help? Contact your Personal Concierge',
+							// 		'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+							// 		'contact_no' => '',
+							// 	),
+							// 	'footer3' => array(
+							// 		'unlock_button_text' => 'UNLOCK SESSION',
+							// 		'unlock_button_url' => Config::get('app.url').'/unlocksession/'.$data['trial_id'],
+							// 	),
+							// );
+							
+							// $data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
+
+							// $data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer']);
 
 							
 						}
