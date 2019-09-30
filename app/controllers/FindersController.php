@@ -1387,7 +1387,11 @@ class FindersController extends \BaseController {
                     $this->orderRatecards($response);
                 }catch(Exception $e){
                     Log::info("Error while sorting ratecard");
-				}
+                }
+                
+                if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
+                    $response['show_timer'] = true;
+                }
 
                 if(empty($response['vendor_stripe_data']['text']) ){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
