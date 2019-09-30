@@ -1696,10 +1696,11 @@ class PassService {
                 $interest = implode(', ', $interests_name);
             }
 
+            $gender = !empty($customerData['onepass']['gender']) ? ucwords($customerData['onepass']['gender']) : null;
             $profile = array(
                 'image' => $customerData['onepass']['photo']['url'],
                 'name' => ucwords($customerData['name']),
-                'gender' => ucwords($customerData['onepass']['gender']),
+                'gender' => $gender,
                 'text' => $interest,
                 'button_text' => "EDIT PREFERENCES"
             );
