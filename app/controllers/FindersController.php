@@ -92,7 +92,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderdetail($slug, $cache = true){
+	public function finderdetail($slug, $cache = false){
 
 		// Log::info($_SERVER['REQUEST_URI']);        
 
@@ -977,7 +977,7 @@ class FindersController extends \BaseController {
 				}
 
 			}
-
+			//return $finder;
 			if($finder){
 
 				$categoryTagDefinationArr     =   [];
@@ -1387,7 +1387,7 @@ class FindersController extends \BaseController {
                     $this->orderRatecards($response);
                 }catch(Exception $e){
                     Log::info("Error while sorting ratecard");
-                }
+                }return $response;
                 
                 if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
                     $response['show_timer'] = true;
