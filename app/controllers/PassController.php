@@ -29,7 +29,7 @@ class PassController extends \BaseController {
         $category = null;
         $city = null;
 
-        if(!empty($input['category'])){
+        if(!empty($input['category']) && !empty($input['city'])){
             $category = $input['category'];
             $city = strtolower($input['city']);
         }

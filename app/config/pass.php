@@ -69,11 +69,6 @@ return [
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
 
-                ],
-                'local_pass' => [
-                    'header' => 'This is local red pass',
-                    'description' => 'description of red pass',
-                    'button_text' => 'buy'
                 ]
             ]
         ],
@@ -150,11 +145,6 @@ return [
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
 
-                ],
-                'local_pass' => [
-                    'header' => 'This is local black pass',
-                    'description' => 'description of black pass',
-                    'button_text' => 'buy'
                 ]
             ]
         ],
