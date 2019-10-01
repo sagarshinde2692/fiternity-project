@@ -1992,7 +1992,6 @@ class PassService {
         
         if(empty($data))
         {
-            Log::info('$customer_id'.$customer_id);
             $data = \Booktrial::where('customer_id', '=', $customer_id)
             ->where('going_status_txt','!=','cancel')
             ->where('post_trial_status', '!=', 'no show')
