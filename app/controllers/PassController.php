@@ -20,13 +20,17 @@ class PassController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
         }
+
         $input = Input::all();
         $category = null;
+        $city = null;
+
         if(!empty($input['category'])){
             $category = $input['category'];
+            $city = strtolower($input['city']);
         }
 
-        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category);
+        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city);
         if(empty($passes)) {
             return [
                 "status" => 400,

@@ -28,7 +28,7 @@ class PassService {
         $this->utilities	=	$utilities;
     }
 
-    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null){
+    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null){
         
         $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local');
 
@@ -36,7 +36,8 @@ class PassService {
 
         if(!empty($category) && $category == 'local'){
 
-            $passList = Pass::where('status', '1')->where('pass_category', 'local');
+            $passList = Pass::where('status', '1')->where('pass_category', 'local')->where('local_cities.city_name', $city);
+
             unset($response['passes'][0]['local_pass']);
             unset($response['passes'][1]['local_pass']);
             unset($response['app_passes'][0]['local_pass']);
