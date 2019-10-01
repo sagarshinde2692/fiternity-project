@@ -1399,7 +1399,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY",
+								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY | Offer Expires On 6th October",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1411,7 +1411,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY",
+								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY | Offer Expires On 6th October",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1423,7 +1423,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY",
+								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY | Offer Expires On 6th October",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1437,6 +1437,10 @@ class FindersController extends \BaseController {
 					
                 }else if(!empty($response['vendor_stripe_data']['text'])){
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
+				}
+				
+				if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+                    $response['vendor_stripe_data'] = "no-patti";
                 }
 
                 if(empty($response['vendor_stripe_data']['text1'])){
@@ -3892,25 +3896,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 <br><br>Offer Expires On 6th October";
             }else{	
-				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 \n\nOffer Expires On 6th October";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 <br><br>Offer Expires On 6th October";
             }else{	
-				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 \n\nOffer Expires On 6th October";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 <br><br>Offer Expires On 6th October";
             }else{	
-				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 \n\nOffer Expires On 6th October";
             }
 			
 		}
@@ -3923,9 +3927,9 @@ class FindersController extends \BaseController {
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 							if($this->device_type == 'android'){
-								$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY";
+								$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY <br><br>Offer Expires On 6th October";
 							}else{	
-								$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY";
+								$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY \n\nOffer Expires On 6th October";
 							}
 							
 							break;
@@ -3937,6 +3941,10 @@ class FindersController extends \BaseController {
 		
 		$corporate_discount_branding = $this->utilities->corporate_discount_branding();
 		if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+			$line = "";
+		}
+
+		if(in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id'))){
 			$line = "";
 		}
 
@@ -5449,6 +5457,10 @@ class FindersController extends \BaseController {
 						
 						$corporate_discount_branding = $this->utilities->corporate_discount_branding();
 						if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+							unset($ratecard['remarks']);
+						}
+
+						if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
 							unset($ratecard['remarks']);
 						}
 
@@ -8693,6 +8705,11 @@ class FindersController extends \BaseController {
 
 			$corporate_discount_branding = $this->utilities->corporate_discount_branding();
 			if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+				unset($rateCard['remarks']);
+				unset($rateCard['remarks_imp']);
+			}
+
+			if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
 				unset($rateCard['remarks']);
 				unset($rateCard['remarks_imp']);
 			}
