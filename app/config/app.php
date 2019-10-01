@@ -811,7 +811,7 @@ return array(
                 "rate"=>14
             )
         ),
-	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','surajpalai@fitternity.com','kedarkhanvilkar@fitternity.com','nikitasharma@fitternity.com', 'firojmulani@fitternity.com', 'vipulchauhan@fitternity.com'],	
+	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','surajpalai@fitternity.com','kedarkhanvilkar@fitternity.com','nikitasharma@fitternity.com', 'firojmulani@fitternity.com', 'vipulchauhan@fitternity.com', 'vipul.chauhan705@gmail.com'],	
     
 	'test_vendors' => ['fitternity-test-page', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym'],
 	'hide_from_search' => [11128, 6332, 6865, 7146, 9309, 9329, 9379, 9381, 9403, 9623, 9863, 9869, 9891, 10037, 11128, 12110],
