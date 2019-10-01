@@ -4759,14 +4759,14 @@ class SchedulebooktrialsController extends \BaseController {
                     $resp = array('status' => 400, 'message' => "This session cannot be cancelled");
                     return Response::json($resp,200);
             }
-        }else{
-            if(
-                // (!empty($booktrial['third_party_details'])) &&
-                ((isset($booktrial['post_trial_status_updated_by_lostfitcode'])) || (isset($booktrial['post_trial_status_updated_by_fitcode'])) || (isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600) && !$isBackendReq))){
-                    $resp = array('status' => 400, 'message' => "This session cannot be cancelled");
-                    return Response::json($resp,200);
+            }else{
+                if(
+                    // (!empty($booktrial['third_party_details'])) &&
+                    ((isset($booktrial['post_trial_status_updated_by_lostfitcode'])) || (isset($booktrial['post_trial_status_updated_by_fitcode'])) || (isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600) && !$isBackendReq))|| (isset($booktrial['post_trial_status_updated_by_unlocksession']))){
+                        $resp = array('status' => 400, 'message' => "This session cannot be cancelled");
+                        return Response::json($resp,200);
+                }
             }
-        }
 
         array_set($bookdata, 'going_status', 2);
         array_set($bookdata, 'going_status_txt', 'cancel');
@@ -8581,6 +8581,9 @@ class SchedulebooktrialsController extends \BaseController {
         $message = "Trial Canceled";
         if (isset($booktrial['studio_extended_order_id'])) {
             $message = "We have cancelled you out from this batch but we have got you covered. This gets you an exclusive chance to attend this missed session later in other batches. You can extend maximum <x> sessions within <y> days of extension.";
+        }
+        else if(!empty($booktrial['pass_order_id'])){
+            $message = "Your session has been successfully cancelled.";
         }
         $resp = array('status' => 200, 'message' => $message);
         if (!empty($booktrial['third_party_details'])) {
