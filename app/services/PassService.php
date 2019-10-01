@@ -176,14 +176,28 @@ class PassService {
         }
 
         if(!empty($pass['pass_category']) && $pass['pass_category'] =='local'){
-            
-            if(empty($data['pass_city_id']) || !in_array($data['pass_city_id'], array_column($pass['local_cities'], 'city_id'))){
+
+            if(empty($data['city'])){
+
+                return [
+                    'status' =>400,
+                    'data' => null,
+                    'msg' => 'First selecte city.'
+                ];
+            }
+
+            $data['pass_city_name'] = $data['city'];
+
+            if(!in_array(strtolower($data['pass_city_name']), array_column($pass['local_cities'], 'city_name'))){
+
                 return [
                     'status' =>400,
                     'data' => null,
                     'msg' => 'Not availabe a local pass in your selected city.'
                 ];
             }
+
+            $data['pass_city_id'] = $this->utilities->getCityId(strtolower($data['pass_city_name']));
         }
 
         $data['pass'] = $pass;

@@ -10516,4 +10516,9 @@ Class Utilities {
     public function getServiceCategoriesIcon(){
         return \Ordervariables::where('name', 'service_categories')->lists('service_categories');
     }
+
+    public function getCityId($city_name){
+        $city_id = City::where('name', $city_name)->list('_id');
+        return $city_id[0];
+    }
 }
