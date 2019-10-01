@@ -1955,8 +1955,8 @@ class PassService {
             'cancel_text' => 'CANCEL SESSION',
             'cancel_url' => Config::get('app.url').'/canceltrial/'.$data['_id']
         ];
-
-        if(!empty($data['post_trial_initail_status']) && $data['post_trial_initail_status'] == 'interested'  && !empty($data['post_trial_status']) && $data['post_trial_status'] == 'attended' && !empty($data['post_trial_status_updated_by_unlocksession'])){
+        
+        if(!empty($data['post_trial_initail_status']) && strtolower($data['post_trial_initail_status']) == 'interested'  && !empty($data['post_trial_status']) && strtolower($data['post_trial_status']) == 'attended' && !empty($data['post_trial_status_updated_by_unlocksession'])){
             $upcoming['header'] = "Session Activated";
             unset($upcoming['footer']);
             $upcoming['footer'] =[
