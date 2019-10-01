@@ -1437,6 +1437,10 @@ class FindersController extends \BaseController {
 					
                 }else if(!empty($response['vendor_stripe_data']['text'])){
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
+				}
+				
+				if((in_array($finder['_id'], [579, 1233, 1260, 1261, 1262, 1874, 2105, 9171, 9178, 5742, 10675]))){
+                    $response['vendor_stripe_data'] = "no-patti";
                 }
 
                 if(empty($response['vendor_stripe_data']['text1'])){
@@ -3937,6 +3941,10 @@ class FindersController extends \BaseController {
 		
 		$corporate_discount_branding = $this->utilities->corporate_discount_branding();
 		if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+			$line = "";
+		}
+
+		if((in_array($finder['_id'], [579, 1233, 1260, 1261, 1262, 1874, 2105, 9171, 9178, 5742, 10675]))){
 			$line = "";
 		}
 

@@ -1071,6 +1071,7 @@ class PassService {
             //     $item = $utilities->bullet()." ".$item;
             // }
             unset($success_template['info']['app_data']);
+            unset($success_template['subline_1']);
 
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
                 $success_template['subline'] .= 'Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
