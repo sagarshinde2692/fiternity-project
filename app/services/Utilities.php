@@ -10518,7 +10518,7 @@ Class Utilities {
     }
 
     public function getCityId($city_name){
-        $city_id = City::where('name', $city_name)->list('_id');
+        $city_id = \City::where('name', $city_name)->lists('_id');
         return $city_id[0];
     }
 }
