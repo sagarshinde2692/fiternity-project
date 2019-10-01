@@ -689,9 +689,9 @@ class PassService {
         $profile_completed = false;
         if(!empty($passOrder)) {
             $passType = $passOrder['pass']['pass_type'];
-            Log::info('pass orders:::::::::::::::::', [$passOrder]);
 
             $profile_completed = !empty($fromService) ? $this->utilities->checkOnepassProfileCompleted($customer): true;
+            Log::info('pass orders:::::::::::::::::', [$passOrder, $profile_completed]);
         }
 
         if(!empty($finderId)) {
@@ -713,7 +713,7 @@ class PassService {
                 return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType,  'profile_incomplete' => !$profile_completed ];
             }
         }
-        Log::info('before chec king can bookk::');
+        
         $canBook = false;
         if(!empty($passOrder['pass'])) {
             if($schedule_time>=strtotime($passOrder['start_date'])){
@@ -742,7 +742,7 @@ class PassService {
             else {
                 // below 1001
                 
-                return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'msg'=>"onepass profile not complete", 'profile_incomplete' => !$profile_completed ];
+                return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'profile_incomplete' => !$profile_completed ];
 
                 //return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }

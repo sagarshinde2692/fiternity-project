@@ -963,7 +963,7 @@ class ServiceController extends \BaseController {
 						$rsh['onepass_booking_block'] = false;
 						$nrsh['onepass_booking_block'] = false;
 
-						if(!empty($allowSession['order_id']) && isset($allowSession['profile_incomplete']) && $allowSession['profile_incomplete']== false){
+						if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
 							$rsh['onepass_booking_block'] = true;
 							$nrsh['onepass_booking_block'] = true;
 						}
@@ -1214,7 +1214,7 @@ class ServiceController extends \BaseController {
 				}
 
 				$service['non_peak']['onepass_booking_block'] = true;
-				if(!empty($allowSession['order_id']) && isset($allowSession['profile_incomplete']) && $allowSession['profile_incomplete']== false){
+				if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
 					$service['non_peak']['onepass_booking_block'] = true;
 				}
             }
@@ -1413,7 +1413,7 @@ class ServiceController extends \BaseController {
 					}
 					
 					$sc['onepass_booking_block'] = true;
-					if(!empty($allowSession['order_id']) && isset($allowSession['profile_incomplete']) && $allowSession['profile_incomplete']== false){
+					if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
 						$sc['onepass_booking_block'] = true;
 					}
 
@@ -2087,7 +2087,7 @@ class ServiceController extends \BaseController {
 		}
 
 		$service_details['onepass_booking_block'] = false;
-		if(!empty($allowSession['order_id']) && isset($allowSession['profile_incomplete']) && $allowSession['profile_incomplete']== false){
+		if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
 			$service_details['onepass_booking_block'] = true;
 		}
 
