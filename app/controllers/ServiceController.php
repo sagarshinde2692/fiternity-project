@@ -1450,6 +1450,12 @@ class ServiceController extends \BaseController {
                         $slt['cost'] = "₹ ".$slt['price_int'];
 					}
 				}
+
+				if(!empty($data['slots'])){
+                    foreach($data['slots'] as &$slot){
+                        $slot['price'] = "₹ ".$slot['price_only'];
+					}
+				}
 			}
 
             return Response::json($data,200);
