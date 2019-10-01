@@ -8708,6 +8708,11 @@ class FindersController extends \BaseController {
 				unset($rateCard['remarks']);
 				unset($rateCard['remarks_imp']);
 			}
+
+			if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+				unset($rateCard['remarks']);
+				unset($rateCard['remarks_imp']);
+			}
 		
 		}
 	}
