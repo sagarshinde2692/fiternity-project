@@ -1403,3 +1403,4 @@ Route::get('dynamicOnepassEMailSms', 'DebugController@dynamicOnepassEMailSms');
 Route::get('addFlagClasspassAvalible', 'DebugController@addFlagClasspassAvalible');
 Route::get('passCashback', 'DebugController@passCashback');
 Route::post('tpcancelsession', 'SchedulebooktrialsController@tpcancelsession');
+Route::post('decryptqrcode', 'ThirdPartyController@decryptQRCode');
