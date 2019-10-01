@@ -944,19 +944,10 @@ class ServiceController extends \BaseController {
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
 							if($rsh['price_only'] < Config::get('pass.price_upper_limit')){
 								$rsh['price'] = Config::get('app.onepass_free_string');
-								$rsh['onepass_booking_block'] = false;
-								if(!empty($allowSession['profile_incomplete'])){
-									$rsh['onepass_booking_block'] = true;
-								}
 							}
 							
 							if($nrsh['price_only'] < Config::get('pass.price_upper_limit')){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
-
-								$nrsh['onepass_booking_block'] = false;
-								if(!empty($allowSession['profile_incomplete'])){
-									$nrsh['onepass_booking_block'] = true;
-								}
 							}
 							
 						}else if(empty($finder['flags']['monsoon_campaign_pps'])){
@@ -967,6 +958,14 @@ class ServiceController extends \BaseController {
                                 $nrsh['price'].=" (100% Cashback)";
                             }
                             
+						}
+
+						$rsh['onepass_booking_block'] = false;
+						$nrsh['onepass_booking_block'] = false;
+
+						if(!empty($allowSession['order_id']) && isset($allowSession['profile_incomplete']) && $allowSession['profile_incomplete']== false){
+							$rsh['onepass_booking_block'] = true;
+							$nrsh['onepass_booking_block'] = true;
 						}
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
@@ -1210,13 +1209,13 @@ class ServiceController extends \BaseController {
 				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 				if($allowSession['allow_session'] && $service['non_peak']['price'] < Config::get('pass.price_upper_limit')){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
-
-					$service['non_peak']['onepass_booking_block'] = false;
-					if(!empty($allowSession['profile_incomplete'])){
-						$service['non_peak']['onepass_booking_block'] = true;
-					}
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $service['non_peak']['price'] .= " (100% Cashback)";
+				}
+
+				$service['non_peak']['onepass_booking_block'] = true;
+				if(!empty($allowSession['order_id']) && isset($allowSession['profile_incomplete']) && $allowSession['profile_incomplete']== false){
+					$service['non_peak']['onepass_booking_block'] = true;
 				}
             }
 			
@@ -1405,17 +1404,18 @@ class ServiceController extends \BaseController {
 					
 					if($allowSession['allow_session'] && (!empty($sc['price_int']) && $sc['price_int'] < Config::get('pass.price_upper_limit'))){
 						$sc['cost'] = Config::get('app.onepass_free_string');
-						$sc['onepass_booking_block'] = false;
-						if(!empty($allowSession['profile_incomplete'])){
-							$sc['onepass_booking_block'] = true;
-						}
 					}else{
 						$sc['cost'] .= $str;
 					}
 					
 					if(!empty($service['extended_validity'])){
 
-                    }
+					}
+					
+					$sc['onepass_booking_block'] = true;
+					if(!empty($allowSession['order_id']) && isset($allowSession['profile_incomplete']) && $allowSession['profile_incomplete']== false){
+						$sc['onepass_booking_block'] = true;
+					}
 
                 }
 			}
@@ -2084,12 +2084,13 @@ class ServiceController extends \BaseController {
 				"header" => "Easy Cancelletion: ",
 				"description" => $des
 			);
-
-			$service_details['onepass_booking_block'] = false;
-			if(!empty($allowSession['profile_incomplete'])){
-				$service_details['onepass_booking_block'] = true;
-			}
 		}
+
+		$service_details['onepass_booking_block'] = false;
+		if(!empty($allowSession['order_id']) && isset($allowSession['profile_incomplete']) && $allowSession['profile_incomplete']== false){
+			$service_details['onepass_booking_block'] = true;
+		}
+
 		$time = isset($_GET['time']) ? $_GET['time'] : null;
 		$time_interval = null;
 		$within_time = null;
