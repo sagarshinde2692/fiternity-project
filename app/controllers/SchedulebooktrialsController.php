@@ -23,6 +23,7 @@ use App\Services\CustomerInfo as CustomerInfo;
 use App\Services\Jwtauth as Jwtauth;
 use App\Services\Metropolis as Metropolis;
 use App\Services\RelianceService as RelianceService;
+use App\Services\PassService as PassService;
 
 
 class SchedulebooktrialsController extends \BaseController {
@@ -40,6 +41,7 @@ class SchedulebooktrialsController extends \BaseController {
     protected $customerreward;
     protected $jwtauth;
     protected $relianceService;
+    protected $passService;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -53,7 +55,8 @@ class SchedulebooktrialsController extends \BaseController {
         Utilities $utilities,
         CustomerReward $customerreward,
         Jwtauth $jwtauth,
-        RelianceService $relianceService
+        RelianceService $relianceService,
+        PassService $passService
     ) {
         parent::__construct();
         date_default_timezone_set("Asia/Kolkata");
@@ -70,6 +73,7 @@ class SchedulebooktrialsController extends \BaseController {
         $this->jwtauth 	=	$jwtauth;
         $this->vendor_token = false;
         $this->relianceService = $relianceService;
+        $this->passService = $passService;
 
         $vendor_token = Request::header('Authorization-Vendor');
 
@@ -8663,38 +8667,39 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->update();
 
             $data = $booktrial;
-				
-			$data_new['header'] = "Session Activated";
+                
+            $data_new = $this->passService->upcomingPassBooking(null, $data, $customer_id);
+			// $data_new['header'] = "Session Activated";
 							
-			$data_new['workout'] = array(
-                'image' => '',
-				'name' => ucwords($data['customer_name']),
-				'icon' => '',
-				'header' => ucwords($data['service_name']),
-				'datetime' => date('D, d M - h:i A', strtotime($data['schedule_date_time']))
-			);
+			// $data_new['workout'] = array(
+            //     'image' => '',
+			// 	'name' => ucwords($data['customer_name']),
+			// 	'icon' => '',
+			// 	'header' => ucwords($data['service_name']),
+			// 	'datetime' => date('D, d M - h:i A', strtotime($data['schedule_date_time']))
+			// );
 							
-			$data_new['finder'] = array(
-				'title' => $data['finder_name'],
-				'location' => $data['finder_location'],
-				'address'=> $data['finder_address'],
-				'direction_text' => "Get Direction",
-				'lat' => $data['finder_lat'],
-				'lon' => $data['finder_lon']
-			);
+			// $data_new['finder'] = array(
+			// 	'title' => $data['finder_name'],
+			// 	'location' => $data['finder_location'],
+			// 	'address'=> $data['finder_address'],
+			// 	'direction_text' => "Get Direction",
+			// 	'lat' => $data['finder_lat'],
+			// 	'lon' => $data['finder_lon']
+			// );
 
 			
-            $data_new['footer'] = array(
-				'footer1' => 'You can only unlock this session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym',
-				'footer2' => array(
-					'contact_text' => 'Need Help? Contact your Personal Concierge',
-					'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-					'contact_no' => '',
-				),
-				'footer3' => array(
-					'unlock_button_text' => 'Session ID:',
-				),
-			);
+            // $data_new['footer'] = array(
+			// 	'footer1' => 'You can only unlock this session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym',
+			// 	'footer2' => array(
+			// 		'contact_text' => 'Need Help? Contact your Personal Concierge',
+			// 		'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+			// 		'contact_no' => '',
+			// 	),
+			// 	'footer3' => array(
+			// 		'unlock_button_text' => 'Session ID:',
+			// 	),
+			// );
 							
 			$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer']);
             

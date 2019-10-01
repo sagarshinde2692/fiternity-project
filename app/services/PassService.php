@@ -1980,9 +1980,14 @@ class PassService {
         return $res;
     }
 
-    public function upcomingPassBooking($customer, $data=null){
+    public function upcomingPassBooking($customer, $data=null, $customer_id=null){
         
-        $customer_id = $customer['_id'];
+        if(empty($customer)){
+            $customer = Customer::where('_id', $customer_id)->first();
+        }
+        else{
+            $customer_id = $customer['_id'];
+        }
         
         if(empty($data))
         {
