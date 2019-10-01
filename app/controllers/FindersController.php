@@ -5460,6 +5460,10 @@ class FindersController extends \BaseController {
 							unset($ratecard['remarks']);
 						}
 
+						if((in_array($finder['_id'], [579, 1233, 1260, 1261, 1262, 1874, 2105, 9171, 9178, 5742, 10675]))){
+							unset($ratecard['remarks']);
+						}
+
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
 							$ratecard_price = $ratecard['special_price'];
 						}else{
