@@ -339,7 +339,8 @@ return [
             ]
         ],
         "conclusion" => $success_page_template['conclusion'],
-        "feedback" => $success_page_template["feedback"]
+        "feedback" => $success_page_template["feedback"],
+        "personalize" => "PERSONALIZE YOUR ONEPASS"
     ],
     'pass_image_silver' => $red_pass,
     'pass_image_gold' => $black_pass,
