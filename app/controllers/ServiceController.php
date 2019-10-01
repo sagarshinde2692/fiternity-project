@@ -1429,8 +1429,6 @@ class ServiceController extends \BaseController {
 					}else{
 						$sc['cost'] .= $str;
 					}
-
-					}
 					
 					$sc['onepass_booking_block'] = true;
 					if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
@@ -1478,7 +1476,7 @@ class ServiceController extends \BaseController {
             return Response::json($data,200);
         }
 
-
+	}
     public function checkWorkoutSessionAvailable($schedules){
 
     	foreach ($schedules as $key => $value) {
