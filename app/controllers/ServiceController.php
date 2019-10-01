@@ -1413,11 +1413,11 @@ class ServiceController extends \BaseController {
 
 			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
 				foreach($data['schedules'] as &$schedule){
-					$schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title']);
+					$schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title'], $finder);
 				}
 			}
 			else if(!empty($data['slots']) && in_array($this->device_type, ['android', 'ios'])){
-				$data['slots'] = $this->utilities->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'] );
+				$data['slots'] = $this->utilities->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'] , $finder);
             }
             
             if(!empty($data['slots']) && count($data['slots']) == 1 && !empty($data['slots'][0]['title'])){
@@ -1442,6 +1442,14 @@ class ServiceController extends \BaseController {
 			// 		$this->addCreditPoints($slot, $customer_id, $workout_amount, 'data');
 			//  	}
 			// }
+
+			if(!empty($finder) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+				if(!empty($data['slots'])){
+                    foreach($data['slots'] as &$slt){
+                        $slt['price'] = "₹ ".$slt['price_only'];
+					}
+				}
+			}
 
             return Response::json($data,200);
         }
@@ -2267,6 +2275,7 @@ class ServiceController extends \BaseController {
 			}
 			// $service_details['next_session'] = "No sessions available";
 		}
+		$finder = $service_details['finder'];
 		unset($service_details['finder']);
 		unset($service_details['workout_session_ratecard']);
 		if(isset($service_details['session_unavailable']) && $service_details['session_unavailable']){
@@ -2303,8 +2312,19 @@ class ServiceController extends \BaseController {
 			$data['service'] = $this->utilities->orderSummaryService($data['service']);
 		}
 		if(!empty($data['service']['slots'] && in_array($this->device_type, ['android', 'ios']))){
-			$data['service']['slots'] = $this->utilities->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name']);
+			$data['service']['slots'] = $this->utilities->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name'], $finder);
 		}
+
+		if(!empty($finder) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+			$data['service']['price'] = "₹ ".$data['service']['amount'];
+
+			if(!empty($data['service']['slots'])){
+				foreach($data['service']['slots'] as &$sl){
+					$sl['price'] = "₹ ".$sl['price_only'];
+				}
+			}
+		}
+
 		return Response::json(array('status'=>200, 'data'=> $data));
 
 	}
