@@ -28,9 +28,13 @@ class PassService {
         $this->utilities	=	$utilities;
     }
 
-    public function listPasses($customerId, $pass_type=null, $device=null, $version=null){
+    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null){
         
-        $passList = Pass::where('status', '1');
+        $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local');
+
+        if(!empty($category) && $category == 'local'){
+            $passList = Pass::where('status', '1')->where('pass_category', 'local');
+        }
 
         if(!Config::get('app.debug')) {
             $trialPurchased =$this->checkTrialPassUsedByCustomer($customerId);
@@ -50,6 +54,14 @@ class PassService {
         $passList = $passList->orderBy('duration')->get();
         
         $response = Config::get('pass.list');
+
+        if(!empty($category) && $category == 'local'){
+            unset($response['passes'][0]['local_pass']);
+            unset($response['passes'][1]['local_pass']);
+            unset($response['app_passes'][0]['local_pass']);
+            unset($response['app_passes'][1]['local_pass']);
+        }
+        
         foreach($passList as &$pass) {
             $passSubHeader = strtr($response['subheader'], ['duration_text' => $pass['duration_text'], 'usage_text' => (($pass['pass_type']=='red')?'LIMITLESS WORKOUTS':'LIMITLESS VALIDITY')]);
             $passDetails = [
