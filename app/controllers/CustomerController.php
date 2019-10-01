@@ -3879,7 +3879,27 @@ class CustomerController extends \BaseController {
 								$data['amount'] = "₹".$data['amount_finder'];
 							}
 							
-							$data_new = $this->passService->upcomingPassBooking($customer, $data);
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
+
+
+							$upcoming[] = $data;
+							
+							if(!empty($data['pass_order_id'])){
+
+								$data_new = $this->passService->upcomingPassBooking($customer, $data);
+
+								$data_new = array_merge($data,$data_new);
+
+								$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'direction', 'lat', 'lon', 'user_photo']);
+
+								$data_new['header_text'] = "Session Starts In";
+								if(!empty($data_new['footer']['subscription_description'])){
+									unset($data_new['header']);
+									$data_new['header_text']  = "Session Activated";
+								}
+
+								$upcoming_new[] = $data_new;
+							}
 							// $data_new['icon'] = "abccc";
 							// $data_new['time_diff_text'] = "Starts In - ";
 							
@@ -3912,22 +3932,7 @@ class CustomerController extends \BaseController {
 							// 		'unlock_button_url' => Config::get('app.url').'/unlocksession/'.$data['trial_id'],
 							// 	),
 							// );
-							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
-
-							$data_new = array_merge($data,$data_new);
-							$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'direction', 'lat', 'lon', 'user_photo']);
 						}
-						
-						
-						$data_new['header_text'] = "Session Starts In";
-						if(!empty($data_new['footer']['subscription_description'])){
-							unset($data_new['header']);
-							$data_new['header_text']  = "Session Activated";
-						}
-
-						$upcoming[] = $data;
-						$upcoming_new[] = $data_new;
 
                     }
 
