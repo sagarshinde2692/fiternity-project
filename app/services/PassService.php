@@ -1823,7 +1823,7 @@ class PassService {
             $gender = !empty($customerData['onepass']['gender']) ? ucwords($customerData['onepass']['gender']) : null;
             $profile = array(
                 'image' => !empty($customerData['onepass']['photo']['url']) ? $customerData['onepass']['photo']['url']: null,
-                'name' => ucwords($customerData['name']),
+                'name' => !empty($customerData['name']) ? ucwords($customerData['name']): null,
                 'gender' => $gender,
                 'text' => $interest,
                 'button_text' => "EDIT PREFERENCES"
@@ -2070,6 +2070,7 @@ class PassService {
             if(!empty($customer->onepass['photo']['url'])){
                 $upcoming['user_photo'] = $customer->onepass['photo']['url'];
             }
+            $upcoming['time_diff'] = 0;
         }
 
         return $upcoming;

@@ -3924,7 +3924,6 @@ class CustomerController extends \BaseController {
 						if(!empty($data_new['footer']['subscription_description'])){
 							unset($data_new['header']);
 							$data_new['header_text']  = "Session Activated";
-							$data_new['time_diff']  = 0;
 						}
 
 						$upcoming[] = $data;
