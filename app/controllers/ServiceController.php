@@ -1444,6 +1444,8 @@ class ServiceController extends \BaseController {
 			// }
 
 			if(!empty($finder) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+
+				$data['schedules']['cost'] = "₹ ".$data['schedules']['price_int'];
 				if(!empty($data['slots'])){
                     foreach($data['slots'] as &$slt){
                         $slt['price'] = "₹ ".$slt['price_only'];
