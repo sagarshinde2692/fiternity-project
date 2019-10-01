@@ -303,8 +303,25 @@ Class CustomerSms extends VersionNextSms{
 		if(!empty($data['type']) && $data['type'] ==  "pass"){
 			Log::info('sending pass purchase sms::::::::::::::::::::');
 			$label = 'Pass-Purchase-Customer';
+			
+			if($data['pass']['pass_type'] =='hybrid'){
+				$data['pass']['pass_type'] = $data['pass']['branding'];
+				if(empty($data['onepass_attachment_type']) || in_array($data['onepass_attachment_type'], ['complementary', 'membership_plus'])){
+					return;
+				}
+			}
 		}
-		
+
+		if(!empty($data['combo_pass_id'])){
+
+			$data['pass'] = \Pass::where('pass_id', (int)$data['combo_pass_id'])->first();
+			
+			if(empty($data['ratecard_flags']['onepass_attachment_type']) || in_array($data['ratecard_flags']['onepass_attachment_type'], ['complementary', 'membership_plus']))
+				$label = "Membership-Plus-Hybrid-Pass-Purchase";
+			else {
+				return;
+			}
+		}
 
 		$to = $data['customer_phone'];
 
@@ -1329,6 +1346,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	protected function onePass100PerCashback($data){
+
+		$label = 'OnePass100PerCashback-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+	}
+
 	public function multifitUserHeader(){
 		$vendor_token = \Request::header('Authorization-Vendor');
 		\Log::info('register auth             :: ', [$vendor_token]);
@@ -1376,6 +1402,12 @@ Class CustomerSms extends VersionNextSms{
 	}
 	
 	public function common($label,$to,$data,$delay = 0){
+
+		try{
+			if(!empty($data['ratecard_flags']['onepass_attachment_type']) && $data['ratecard_flags']['onepass_attachment_type']=='upgrade'){
+				return;
+			}
+		} catch(\Exception $e) { }
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
 			return "";

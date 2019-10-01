@@ -1407,3 +1407,4 @@ Route::get('addFlagClasspassAvalible', 'DebugController@addFlagClasspassAvalible
 Route::get('localpassratecard', 'PassController@localPassRatecards');
 Route::post('unlocksession/{trial_id}','SchedulebooktrialsController@unlockSession');
 Route::post('passtab', 'PassController@passTab');
+Route::get('passCashback', 'DebugController@passCashback');

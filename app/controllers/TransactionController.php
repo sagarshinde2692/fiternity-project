@@ -745,15 +745,15 @@ class TransactionController extends \BaseController {
             $finder_id = (int) $data['finder_id'];
     
             $finderDetail = $this->getFinderDetail($finder_id);
-    
+
             if($finderDetail['status'] != 200){
                 return Response::json($finderDetail,$this->error_status);
             }
-    
-            
-    
+
+
+
             // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
-    
+            
             $orderfinderdetail = $finderDetail;
             $data = array_merge($data,$orderfinderdetail['data']);
             unset($orderfinderdetail["data"]["finder_flags"]);
@@ -775,6 +775,10 @@ class TransactionController extends \BaseController {
 
         }else{
             $finderDetail['data']['finder_flags'] = [];
+        }
+
+        if(!empty($data['type']) && $data['type'] == 'workout-session' && !empty($data['trial']) && $data['trial'] == 'disable'){
+            return Response::json(['status' => 404,'message' =>'Transaction not allowed'],$this->error_status);
         }
         
         if($data['type'] == 'workout-session'){
@@ -984,7 +988,7 @@ class TransactionController extends \BaseController {
              } 
         }
             //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
-
+        
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
             
             if(!empty($order['duration'])){
@@ -3067,6 +3071,21 @@ class TransactionController extends \BaseController {
                     $order->update(['schedule_bookings_redis_id'=>$scheduleBookingsRedisId]);
                 }
             }
+
+            if(!empty($order['combo_pass_id'])){
+                $complementry_pass_purchase = Queue::connection('redis')->push(
+                    'PassController@passCaptureAuto', 
+                    array(
+                        'order' => $order,
+                        'forced' => false
+                    ),
+                    Config::get('app.queue')
+                );
+                Log::info('inside schudling complementary pass purchase redis id:', [$complementry_pass_purchase]);
+
+                $order->update(['schedule_complementry_pass_purchase_redis_id'=>$complementry_pass_purchase]);
+            }
+
             Log::info("successCommon returned");
             Log::info($order['_id']);
             return Response::json($resp);
@@ -3545,6 +3564,7 @@ class TransactionController extends \BaseController {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
+            $corporate_discount = !empty($decoded->customer->corporate_discount) ? $decoded->customer->corporate_discount : false;
         }
         $data['ratecard_amount'] = $data['amount'];
         if(!empty($data['customer_quantity'])){
@@ -3631,13 +3651,16 @@ class TransactionController extends \BaseController {
         if($data['type'] == 'workout-session') {
             Order::$withoutAppends = true;
             $passSession = $this->passService->allowSession($data['amount'], $data['customer_id'], $data['schedule_date'], $data['finder_id']);
-            if($passSession['allow_session']) {
+            if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
                 $data['pass_type'] = $passSession['pass_type'];
                 $data['pass_order_id'] = $passSession['order_id'];
                 $data['pass_booking'] = true;
 
                 if(!empty($passSession['pass_premium_session'])) {
                     $data['pass_premium_session'] = true;
+                }
+                if(!empty($passSession['pass_branding'])){
+                    $data['pass_branding'] = $passSession['pass_branding'];
                 }
                 $amount = 0;
             }
@@ -3670,23 +3693,111 @@ class TransactionController extends \BaseController {
                     // $data['vendor_price'] = 0;
                     // }
                 }
-            }    
-           if(empty($data['session_pack_discount']) && empty($order['session_pack_discount']) && ((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
-
+            }
+            
+            $first_session_free = false;
+           if(empty($data['session_pack_discount']) && empty($order['session_pack_discount']) && ((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
             $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
 
             if($free_trial_ratecard){
                 if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
-                    $data['coupon_code'] = 'FIRSTPPSFREE';
-                    $data['coupon_description'] = 'First wourkout session free';
-                    $data['coupon_discount_amount'] = $data['ratecard_amount'];
-                    $amount = $data['amount'] - $data['coupon_discount_amount'];
+                    // $data['coupon_code'] = 'FIRSTPPSFREE';
+                    // $data['coupon_description'] = 'First wourkout session free';
+                    // $data['coupon_discount_amount'] = $data['ratecard_amount'];
+                    // $amount = $data['amount'] - $data['coupon_discount_amount'];
                     $data['first_session_free'] = true;
-                    $data['amount_finder'] = 0;
-                    $data['vendor_price'] = 0;
+                    // $data['amount_finder'] = 0;
+                    // $data['vendor_price'] = 0;
+                    $first_session_free = true;
                 }
             }
 
+        }
+        
+        if(!empty($corporate_discount) && $corporate_discount){
+            Log::info("corporate_discount");
+            Log::info("corporate_discount  :::", [$corporate_discount]);
+            $coupons = Coupon::where('overall_coupon', true)->orderBy('overall_coupon_order', 'desc')->get(['code']);
+            // return $coupon;
+            if(!empty($coupons)){
+                foreach($coupons as $coupon){
+                    // if(!empty($coupon)){
+                        Log::info("coupon_code :: ",[$coupon['code']]);
+                        $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
+                        $ticket = null;
+        
+                        if(isset($data['ticket_id'])){
+                            $ticket = Ticket::find($data['ticket_id']);
+                            if(!$ticket){
+                                $resp = array('status'=>400, 'message'=>'Ticket not found');
+                                return Response::json($resp, 400);
+                            }
+                        }
+                        
+                        $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
+        
+                        $service_id = isset($data['service_id']) ? $data['service_id'] : null;
+        
+                        $total_amount = null;
+        
+                        if(!empty($data['customer_quantity'])){
+                            $total_amount = $data['amount'];
+                        }
+        
+                        !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
+        
+                        $couponCheck1 = $this->customerreward->couponCodeDiscountCheck($ratecard,$coupon["code"],$customer_id, $ticket, $ticket_quantity, $service_id, $total_amount, $customer_email, null, null, $corporate_discount_coupon = true);
+        
+                        Log::info("couponCheck1");
+                        Log::info($couponCheck1);
+        
+                        if(isset($couponCheck1["coupon_applied"]) && $couponCheck1["coupon_applied"]){
+        
+                            $data['corporate_discount_coupon_code'] = $coupon['code'];
+        
+                            if(isset($couponCheck1['vendor_commission'])){
+                                $data['vendor_commission'] = $couponCheck1['vendor_commission'];
+                            }
+                            if(isset($couponCheck1['description'])){
+                                $data['corporate_discount_coupon_description'] = $couponCheck1['description'];
+                            }
+                            
+                            if(isset($couponCheck1['spin_coupon'])){
+                                $data['corporate_discount_spin_coupon'] = $couponCheck1['spin_coupon'];
+                            }else{
+                                $data['corporate_discount_spin_coupon'] = "";
+                            }
+                            
+                            if(isset($couponCheck1['coupon_discount_percent'])){
+                                $data['corporate_discount_coupon_discount_percent'] = $couponCheck1['coupon_discount_percent'];
+                            }else{
+                                $data['corporate_discount_coupon_discount_percent'] = 0;
+                            }
+            
+                            $data["corporate_discount_coupon_discount_amount"] = $amount > $couponCheck1["data"]["discount"] ? $couponCheck1["data"]["discount"] : $amount;
+                            
+                            $amount -= $data["corporate_discount_coupon_discount_amount"];
+        
+                            if(isset($couponCheck1["vendor_coupon"]) && $couponCheck1["vendor_coupon"]){
+                                $data["payment_mode"] = "at the studio";
+                                $data["secondary_payment_mode"] = "cod_membership";
+                            }
+            
+                            if(!empty($couponCheck1['flags']['disc_by_vendor'])){
+                                $data['amount_finder'] -= $data["coupon_discount_amount"];
+                            }
+            
+                            if(!empty($couponCheck1['flags'])){
+                                $data['corporate_discount_coupon_flags'] = $couponCheck1['flags'];
+                            }
+        
+                            $total_amount = $data['amount_final'] - $data["corporate_discount_coupon_discount_amount"];
+                            
+                            break;
+                        }
+                    // }
+                }
+            }    
         }
 
         if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
@@ -3706,15 +3817,17 @@ class TransactionController extends \BaseController {
 
             $service_id = isset($data['service_id']) ? $data['service_id'] : null;
 
-            $total_amount = null;
+            if(empty($total_amount)){
+                $total_amount = null;
+            }
 
             if(!empty($data['customer_quantity'])){
-                $total_amount = $data['amount'];
+                $total_amount = $amount;
             }
 
             !empty($data['customer_email']) ? $customer_email = strtolower($data['customer_email']) : $customer_email = null;
 
-            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id, $total_amount, $customer_email);
+            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id, $total_amount, $customer_email, null, $first_session_free);
 
             Log::info("couponCheck");
             Log::info($couponCheck);
@@ -3761,6 +3874,11 @@ class TransactionController extends \BaseController {
                     $data['corporate_coupon'] = true;
                 }
 
+                if(!empty($first_session_free) && $first_session_free && !empty($couponCheck['flags']['first_pps_free']) && $couponCheck['flags']['first_pps_free']){
+                    $data['first_session_free'] = true;
+                    $data['amount_finder'] = 0;
+                    $data['vendor_price'] = 0;
+                }
                 // if(strtolower($data["coupon_code"]) == 'fit2018'){
                 //     $data['routed_order'] = "1";
                 // }
@@ -4507,6 +4625,9 @@ class TransactionController extends \BaseController {
         $data['duration_type'] = (isset($ratecard['duration_type'])) ? $ratecard['duration_type'] : "";
         $data['validity'] = (isset($ratecard['validity'])) ? $ratecard['validity'] : "";
         $data['validity_type'] = (isset($ratecard['validity_type'])) ? $ratecard['validity_type'] : "";
+        if((isset($ratecard['combo_pass_id']))) {
+            $data['combo_pass_id'] = $ratecard['combo_pass_id'];
+        }
 
         if($ratecard['type'] == 'workout session' && !empty($ratecard['vendor_price'])){
             $data['vendor_price'] = $ratecard['vendor_price'];
@@ -4563,6 +4684,10 @@ class TransactionController extends \BaseController {
         }
 
         $data['ratecard_price_wo_offer'] = $data['amount_finder'];
+
+        if(!empty($ratecard['price'])){
+            $data['ratecard_original_price'] = $ratecard['price'];
+        }
 
         $data['offer_id'] = false;
 
@@ -4765,6 +4890,10 @@ class TransactionController extends \BaseController {
             
         // }
 
+        if(!empty($ratecard['combo_pass_id'])){
+            $data['combo_pass_id'] = $ratecard['combo_pass_id'];
+        }
+
         return array('status' => 200,'data' =>$data);
 
     }
@@ -4862,6 +4991,7 @@ class TransactionController extends \BaseController {
         $data['category_slug'] = $finder_category_slug;
         $data['finder_flags'] = $finder_flags;
         $data['finder_notes'] = $finder_notes;
+        $data['trial'] = !empty($finder['trial']) ? $finder['trial'] : 'auto';
 
         return array('status' => 200,'data' =>$data);
     }
@@ -5806,7 +5936,7 @@ class TransactionController extends \BaseController {
         $position = 0;
 
         $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < Config::get('pass.price_upper_limit') && !empty($data['type']) && $data['type'] == 'workout-session'){
+        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']])) && !empty($data['type']) && $data['type'] == 'workout-session'){
             $booking_details_data["customer_name"] = ['field'=>'NAME','value'=>$data['customer_name'],'position'=>$position++];
 			$booking_details_data["customer_email"] = ['field'=>'EMAIL','value'=>$data['customer_email'],'position'=>$position++];
 			$booking_details_data["customer_contact_no"] = ['field'=>'CONTACT NO','value'=>$data['customer_phone'],'position'=>$position++];
@@ -6026,14 +6156,19 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'Get 50% off + extra 20% off, use code: PAYDAY','position'=>$position++];
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase. Use Code : FIT100','position'=>$position++];
+
+            $first_session_free = $this->firstSessionFree($data);
+            if(!empty($first_session_free) && $first_session_free){
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>'Apply code FREE to get this session for free','position'=>$position++];
+            }
             
-            if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && $data['amount_customer'] < Config::get('pass.price_upper_limit')){
+            if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']]))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
         }
@@ -6326,7 +6461,7 @@ class TransactionController extends \BaseController {
             $allowSession = false;
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
                 $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id, $data['schedule_date'], $data['finder_id']);
-                if(!empty($allowSession['allow_session'])) {
+                if(!empty($allowSession['allow_session']) && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
                     $allowSession = $allowSession['allow_session'];
                 }
                 else {
@@ -6621,6 +6756,10 @@ class TransactionController extends \BaseController {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
+            
+            if(!empty($decoded->customer->contact_no)){
+                $data['customer_phone'] = $decoded->customer->contact_no;
+            }
         }
 
         $service_id = isset($data['service_id']) ? $data['service_id']: null;
@@ -6649,7 +6788,14 @@ class TransactionController extends \BaseController {
         if(isset($data['ratecard_id'])){
 
             $ratecard = Ratecard::find($data['ratecard_id']);
+            
+            $data['type'] = $ratecard['type'];
+            if(!empty($ratecard['type']) && $ratecard['type'] == 'workout session'){
+                $data['type'] = 'workout-session';
+            }
 
+            $data['finder_id'] = $ratecard['finder_id'];
+            
             if(!$ratecard){
                 $resp = array("status"=> 400, "message" => "Ratecard not found", "error_message" => "Coupon cannot be applied on this transaction");
                 return Response::json($resp,400);   
@@ -6750,7 +6896,17 @@ class TransactionController extends \BaseController {
         if(!empty($data['pass_id'])) {
             $pass = Pass::where('pass_id', intval($data['pass_id']))->first();
         }
-        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, $amount_without_fitcash, $customer_email, $pass); 
+
+        $first_session_free = false;
+        if(!empty($data['order_id'])){
+            Log::info("Order   ::::::::", [$data['order_id']]);
+            $orderData = Order::where('_id', $data['order_id'])->first()->toArray();
+            $first_session_free = $this->firstSessionFree($orderData);
+        }else{
+            $first_session_free = $this->firstSessionFree($data);
+        }
+
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, $amount_without_fitcash, $customer_email, $pass, $first_session_free); 
         Log::info("REsponse from CustomerReward", $resp);
         if($resp["coupon_applied"]){
 
@@ -6820,7 +6976,11 @@ class TransactionController extends \BaseController {
 
             $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" =>$errorMessage, "data"=>$resp["data"]);
 
-            return Response::json($resp,400);    
+            if(checkAppVersionFromHeader(['ios'=>'4.9.0', 'android'=>0])){
+                return Response::json($resp,200);    
+            }else{
+                return Response::json($resp,400);    
+            }
         }
 
         return Response::json($resp,200);
@@ -7163,6 +7323,10 @@ class TransactionController extends \BaseController {
             if(!empty($order->customer_email)){
                 $data['customer_email'] = $order->customer_email;
             }
+
+            if(empty($data['service_flags'])) {
+                $data['service_flags'] = !empty($order['service_flags']) ? $order['service_flags'] : null;
+            }
         
         }elseif(isset($data['ticket_id'])){
             if(empty($data['customer_quantity'])){
@@ -7340,7 +7504,7 @@ class TransactionController extends \BaseController {
                     $scheduleDate = (!empty($data['slot']['date']))?$data['slot']['date']:null;
                     $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id, $scheduleDate, $data['finder_id']);
                     Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
-                    if($passSession['allow_session']) {
+                    if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
                         $result['payment_details']['amount_summary'][] = [
                             'field' => ((!empty($passSession['pass_type']) && $passSession['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
                             'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'
@@ -7350,7 +7514,9 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if((empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
+            // if((empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
+            $first_session_free = false;
+            if((empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
                 $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])
                 ->where('type', 'trial')
@@ -7371,20 +7537,22 @@ class TransactionController extends \BaseController {
                     $already_booked_trials = $this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, !empty($data['customer_email']) ? $data['customer_email'] : '', !empty($data['customer_phone']) ? $data['customer_phone'] : null , true, 'checkoutSummary');
                     if(empty($already_booked_trials)){
 
-                        $data['coupon_discount'] = $data['ratecard_amount'];
+                        // $data['coupon_discount'] = $data['ratecard_amount'];
 
-                        $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                        // $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
                         
-                        $data['you_save'] += $data['coupon_discount'];
+                        // $data['you_save'] += $data['coupon_discount'];
 
                         $result['free_trial_available'] = true;
                         
-                        $result['payment_details']['amount_summary'][] = [
-                            'field' => 'Coupon Discount',
-                            'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
-                        ];
+                        // $result['payment_details']['amount_summary'][] = [
+                        //     'field' => 'Coupon Discount',
+                        //     'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
+                        // ];
 
                         $first_session_free = true;
+
+                        $result['payment_details']['free_session_coupon'] = "FREE";
                         
                     }else{
                         Log::info($already_booked_trials['created_at']);
@@ -7392,6 +7560,62 @@ class TransactionController extends \BaseController {
                     }
                 }
             }
+            Log::info("amount_payable 1",[$data['amount_payable']]);
+            Log::info("you_save 1",[$data['you_save']]);
+            $jwt_token = Request::header('Authorization');
+                
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                $decoded = customerTokenDecode($jwt_token);
+                $corporate_discount = !empty($decoded->customer->corporate_discount) ? $decoded->customer->corporate_discount : false;
+            }
+            // Log::info("corporate_discount  :::", [$corporate_discount]);
+            $data['actual_amount'] = $data['amount'];
+            if(!empty($corporate_discount) && $corporate_discount){
+                Log::info("corporate_discount");
+                $coupons = Coupon::where('overall_coupon', true)->orderBy('overall_coupon_order', 'desc')->get(['code', 'flags']);
+                // return $coupon;
+                if(!empty($coupons)){
+                    foreach($coupons as $coupon){
+                        // if(!empty($coupon)){
+                            Log::info("coupon :::",[$coupon['code']]);
+                            $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
+                            $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
+        
+                            $resp1 = $this->customerreward->couponCodeDiscountCheck($ratecard, $coupon['code'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email, null, null, $corporate_discount_coupon = true);
+                            // Log::info("resp1 :::", [$resp1]);
+                            if($resp1["coupon_applied"]){
+                                Log::info("corporate_discount_coupon_applied");
+                                $data['corporate_coupon_discount'] = $data['amount_payable'] > $resp1['data']['discount'] ? $resp1['data']['discount'] : $data['amount_payable'];
+        
+                                $data['amount_payable'] = $data['amount_payable'] - $data['corporate_coupon_discount'];
+                                
+                                $data['you_save'] += $data['corporate_coupon_discount'];
+                                
+                                if((isset($data['corporate_coupon_discount']) && $data['corporate_coupon_discount'] > 0) || (!empty($coupon['flags']['cashback_100_per']))){
+                                    $result['payment_details']['amount_summary'][] = [
+                                        'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
+                                        'value' => !empty($data['corporate_coupon_discount']) ? '-Rs. '.$data['corporate_coupon_discount'] : "100% Cashback"
+                                    ];
+                                }else{
+                                    $result['payment_details']['amount_summary'][] = [
+                                        'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
+                                        'value' => '-Rs. '.(string) number_format($data['corporate_coupon_discount'])
+                                    ];
+                                }
+        
+                                $data['amount'] = $data['amount'] - $data['corporate_coupon_discount'];
+                                
+                                break;
+                            }
+                        // }
+                    }
+                }
+                
+                
+            }
+
+            Log::info("amount_payable 2",[$data['amount_payable']]);
+            Log::info("you_save 2",[$data['you_save']]);
 
             if(!empty($order['coupon_code'])){
                 $data['coupon'] = $order['coupon_code'];
@@ -7400,8 +7624,8 @@ class TransactionController extends \BaseController {
             if(isset($data['coupon'])){
                 $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
                 $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
-
-                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email);
+                
+                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id_for_coupon, null, null, null, $data['amount'], $customer_email, null, $first_session_free);
                 if($resp["coupon_applied"]){
                     
                     $data['coupon_discount'] = $data['amount_payable'] > $resp['data']['discount'] ? $resp['data']['discount'] : $data['amount_payable'];
@@ -7418,6 +7642,9 @@ class TransactionController extends \BaseController {
                 }
 
             }
+
+            Log::info("amount_payable 3",[$data['amount_payable']]);
+            Log::info("you_save 3",[$data['you_save']]);
                 
             if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
                 
@@ -7473,14 +7700,17 @@ class TransactionController extends \BaseController {
                 $result['register_loyalty'] = empty($customer['loyalty']);
             }
 
+            Log::info("amount_payable 4",[$data['amount_payable']]);
+            Log::info("you_save 4",[$data['you_save']]);
+
             $result['payment_details']['amount_payable'] = [
                 'field' => 'Total Amount Payable',
                 'value' => 'Rs. '.(string)number_format($data['amount_payable'])
             ];
 
-            if(!empty($first_session_free) && $data['amount_payable'] == 0){
-                $result['payment_details']['amount_payable']['value'] = "Free via Fitternity";
-            }
+            // if(!empty($first_session_free) && $data['amount_payable'] == 0){
+            //     $result['payment_details']['amount_payable']['value'] = "Free via Fitternity";
+            // }
 
             if(!empty($headerSource) && $headerSource=='multifit' && !empty($first_session_free) && $data['amount_payable'] == 0) {
                 $result['payment_details']['amount_payable']['value'] = "Free via Multifit";
@@ -7519,7 +7749,7 @@ class TransactionController extends \BaseController {
                 $result['order_details'] = [
                     "session"=>[
                         "field"=> $data['service_name'],
-                        "value"=> "₹ ".number_format($data['amount'])
+                        "value"=> "₹ ".number_format($data['actual_amount'])
                     ]
                 ];
 
@@ -7891,6 +8121,33 @@ class TransactionController extends \BaseController {
             if(!empty($order['ratecard_id'])){
                 $ratecard = Ratecard::where('_id',$order['ratecard_id'])->first();
             }
+
+            if(!empty(Request::header('corporate_discount')) && Request::header('corporate_discount')){
+                Log::info("corporate_discount");
+                $coupon = Coupon::where('overall_coupon', true)->orderBy('overall_coupon_order', 'desc')->first(['code']);
+                // return $coupon;
+                
+                if(!empty($coupon) && !empty($ratecard)){
+                    
+                    $resp1 = $this->customerreward->couponCodeDiscountCheck($ratecard, $coupon['code']);
+
+                    if($resp1["coupon_applied"]){
+                        
+                        $data['corporate_coupon_discount'] = $data['amount_payable'] > $resp1['data']['discount'] ? $resp1['data']['discount'] : $data['amount_payable'];
+
+                        $data['amount_payable'] = $data['amount_payable'] - $data['corporate_coupon_discount'];
+                        
+                        $data['you_save'] += $data['corporate_coupon_discount'];
+                        
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
+                            'value' => '-Rs. '.(string)$data['corporate_coupon_discount']
+                        ];
+                    
+                    }
+                }
+                
+            }
             
             if(!empty($data['coupon']) && !empty($ratecard)){
                 
@@ -7962,61 +8219,61 @@ class TransactionController extends \BaseController {
             $result['order_details'] = array_values($result['order_details']);
             
 
-        //     $ratecard = Ratecard::find(intval($order->ratecard_id));
+            //     $ratecard = Ratecard::find(intval($order->ratecard_id));
+                    
+            //     $order_details= $this->getBookingDetails($order->toArray());
                 
-        //     $order_details= $this->getBookingDetails($order->toArray());
-            
-        //     $result['order_details'] = [];
+            //     $result['order_details'] = [];
 
-        //     $reward_amount = 0;
+            //     $reward_amount = 0;
 
-        //     if(isset($order['reward_ids']) && !empty($order['reward_ids'])){
-        //         $reward_ids = array_map('intval',$data['reward_ids']);
-        //         $rewards = Reward::whereIn('_id',$reward_ids)->get(array('payload'));
-        //         if(count($rewards) > 0){
-        //             foreach ($rewards as $value) {
-        //                 $reward_amount += $value['payload']['price'];
-        //             }
-        //         }
-        //     }
-        //     if(isset($order['cashback']) && $order['cashback']){
-        //         $reward_amount += $order['cashback_detail']['wallet_amount'];
-        //     }
+            //     if(isset($order['reward_ids']) && !empty($order['reward_ids'])){
+            //         $reward_ids = array_map('intval',$data['reward_ids']);
+            //         $rewards = Reward::whereIn('_id',$reward_ids)->get(array('payload'));
+            //         if(count($rewards) > 0){
+            //             foreach ($rewards as $value) {
+            //                 $reward_amount += $value['payload']['price'];
+            //             }
+            //         }
+            //     }
+            //     if(isset($order['cashback']) && $order['cashback']){
+            //         $reward_amount += $order['cashback_detail']['wallet_amount'];
+            //     }
 
-        //     foreach($order_details as $value){
-        //         if(in_array($value['field'], ['ADDRESS', 'START DATE'])){
-        //             continue;
-        //         }
+            //     foreach($order_details as $value){
+            //         if(in_array($value['field'], ['ADDRESS', 'START DATE'])){
+            //             continue;
+            //         }
 
-        //         if(!in_array($value['field'], ['REWARD', 'DURATION'])){
-        //             $value['field'] = "";
-        //         }
+            //         if(!in_array($value['field'], ['REWARD', 'DURATION'])){
+            //             $value['field'] = "";
+            //         }
 
-        //         if(in_array($value['field'], ['DURATION'])){
-        //             $value['field'] = "";
-        //             $value['value'] = "Rs. ".$ratecard['price'];
-        //         }
+            //         if(in_array($value['field'], ['DURATION'])){
+            //             $value['field'] = "";
+            //             $value['value'] = "Rs. ".$ratecard['price'];
+            //         }
 
-        //         $result['order_details'][] = $value;
+            //         $result['order_details'][] = $value;
 
-        //     }
+            //     }
 
-        //     $result['payment_details'] = $this->getPaymentDetails($order->toArray(),'paymentgateway');
-            
-        //     if($reward_amount > 0){
-        //         if(isset($result['payment_details']['savings'])){
-        //             $savings_amount = $reward_amount + $result['payment_details']['savings']['amount'];
-        //             $result['payment_details']['savings'] = [
-        //                 'field' => 'Your total savings',
-        //                 'value' => "Rs. ".$savings_amount
-        //             ];
-        //         }else{
-        //             $result['payment_details']['savings'] = [
-        //                 'field' => 'Your total savings',
-        //                 'value' => "Rs.".$reward_amount
-        //             ];
-        //         }
-        //     }
+            //     $result['payment_details'] = $this->getPaymentDetails($order->toArray(),'paymentgateway');
+                
+            //     if($reward_amount > 0){
+            //         if(isset($result['payment_details']['savings'])){
+            //             $savings_amount = $reward_amount + $result['payment_details']['savings']['amount'];
+            //             $result['payment_details']['savings'] = [
+            //                 'field' => 'Your total savings',
+            //                 'value' => "Rs. ".$savings_amount
+            //             ];
+            //         }else{
+            //             $result['payment_details']['savings'] = [
+            //                 'field' => 'Your total savings',
+            //                 'value' => "Rs.".$reward_amount
+            //             ];
+            //         }
+            //     }
             
         }
 
@@ -9725,6 +9982,9 @@ class TransactionController extends \BaseController {
             
         $ordinalBookingCount = $this->utilities->getOrdinalNumber($totalPassBookings + 1);
 
+        if(!empty($data['pass_branding']) && $data['pass_type'] == true){
+            $data['pass_type'] = $data['pass_branding'];
+        }
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
         $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using Onepass ".ucfirst($data['pass_type']);
 
@@ -9741,6 +10001,23 @@ class TransactionController extends \BaseController {
         $passBookingDetails['easy_cancellation'] = $easy_cancellation;
 
         return $passBookingDetails;
+    }
+
+    public function firstSessionFree($data = null,$order = null){
+        Log::info("data   :::::", [$data]);
+        $first_session_free = false;
+        
+        if(empty($data['session_pack_discount']) && empty($order['session_pack_discount']) && ((!empty($order['init_source']) && $order['init_source'] == 'vendor') || (!empty($data['init_source']) && $data['init_source'] == 'vendor')) && $data['type'] == 'workout-session' && !empty($this->authorization) && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
+            $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
+
+            if($free_trial_ratecard){
+                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
+                    $first_session_free = true;
+                }
+            }
+        }
+
+        return $first_session_free;
     }
 
 }

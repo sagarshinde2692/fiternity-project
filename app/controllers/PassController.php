@@ -1,13 +1,17 @@
 <?PHP
 use App\Services\PassService as PassService;
 use App\Services\Utilities;
+use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Sms\CustomerSms as CustomerSms;
 
 class PassController extends \BaseController {
 
-    public function __construct(PassService $passService, Utilities $utilities) {
+    public function __construct(PassService $passService, Utilities $utilities, CustomerMailer $customerMailer, CustomerSms $customerSms) {
         parent::__construct();
         $this->passService = $passService;
         $this->utilities = $utilities;
+        $this->customerMailer = $customerMailer;
+        $this->customerSms = $customerSms;
     }
 
     public function listPasses($pass_type=null){
@@ -147,36 +151,6 @@ class PassController extends \BaseController {
         return [ 'status' => 200, 'data' => $this->passService->homePostPassPurchaseData($customer_id), 'message' => 'Success' ];
     }
 
-    public function localPassRatecards(){
-        $data = Input::all();
-
-        $rules= [
-            'city'=>'required'
-        ];
-
-        $validator = Validator::make($data,$rules);
-
-        if ($validator->fails()) {
-            return Response::json(array('status' => 404,'message' => error_message($validator->errors())), 400);
-        }
-
-        $type = 'red';
-        if(!empty($data['type'])){
-            $type= $data['type'];
-        }
-
-        $ratecards = $this->passService->localPassRatecards($type, $data['city']);
-
-        $resp = [ 'status' => 200, 'data' => $ratecards, 'message' => 'Success'];
-
-        if(empty(count($ratecards))){
-            $resp['message'] = "wo dont serve in ".$data['city']." as of now. ".$type. " pass";
-            $resp['status'] = 400;
-        }
-
-        return $resp;
-    }
-
     public function passTab(){
     
         $input= Input::all();
@@ -228,5 +202,158 @@ class PassController extends \BaseController {
 
 		$response = Response::make($result);
 		return $response;
-	}
+    }
+    
+    public function passCaptureAuto($job ,$input){
+        if($job){
+            $job->delete();
+        }
+        
+        $order = $input['order'];
+        $forced = !empty($input['forced']) ? $input['forced'] : false;
+
+        $data = [
+            "amount"=> 0,
+            "booking_for_others"=> false,
+            "cashback"=> false,
+            "customer_email"=> $order['customer_email'],
+            "customer_name"=> $order['customer_name'],
+            "customer_phone"=> $order['customer_phone'],
+            "customer_source"=> $order['customer_source'],
+            "customer_id" => $order['customer_id'],
+            "wallet"=> false,
+            "device_type"=> $order['device_type'],
+            "env"=> 1,
+            "finder_id"=> 0,
+            "gcm_reg_id"=> $order['gcm_reg_id'],
+            "gender"=> $order['gender'],
+            "pass_id"=> $order['combo_pass_id'],
+            "preferred_starting_date"=> $order['preferred_starting_date'],
+            "pt_applied"=> false,
+            "customer_quantity"=> 1,
+            "reward_ids"=> [],
+            "type"=> "pass",
+            "membership_order_id" => $order['_id']
+        ];
+
+        if(!empty($order['ratecard_flags']['onepass_attachment_type'])){
+            $data["onepass_attachment_type"] = $order['ratecard_flags']['onepass_attachment_type'];
+        }
+
+        $captureResponse = $this->passService->passCapture($data);
+
+        $resp = $captureResponse;
+        Log::info('inside schudling complementary pass purchase capture response:', [$captureResponse]);
+        if(!empty($captureResponse) && empty($captureResponse['status']) || empty($captureResponse['data']) || $captureResponse['status']!= 200){
+            $order_update = Order::find($data['orderid']);
+            $order_update->complementary_pass_purchase_response = [
+                'at_state' => 'caputre', 
+                'data' => $captureResponse
+            ];
+            $order_update->update();
+        }
+        else {
+            $captureResponse['data']['internal_success'] = true;
+            $captureResponse['data']['verify_hash'] = 'internal_success';
+            $captureResponse['data']['order_id'] = $captureResponse['data']['orderid'];
+            $complementary_pass_success_response = $this->passService->passSuccessPayU($captureResponse['data']);
+            Log::info('inside schudling complementary pass purchase success response:', [$complementary_pass_success_response]);
+            $resp = $complementary_pass_success_response;
+        }
+
+        if(!empty($forced)){
+            return $resp;
+        }
+    }
+
+    public function localPassRatecards(){
+        $data = Input::all();
+
+        $rules= [
+            'city'=>'required'
+        ];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())), 400);
+        }
+        $type = 'red';
+        if(!empty($data['type'])){
+            $type= $data['type'];
+        }
+
+        $ratecards = $this->passService->localPassRatecards($type, $data['city']);
+
+        $resp = [ 'status' => 200, 'data' => $ratecards, 'message' => 'Success'];
+
+        if(empty(count($ratecards))){
+            $resp['message'] = "wo dont serve in ".$data['city']." as of now. ".$type. " pass";
+            $resp['status'] = 400;
+        }
+
+        return $resp;
+    }
+    
+    public function passCaptureAutoForce(){
+        $input = Input::all();
+
+        $rules = [
+            'order_id'=>'required | integer',
+        ];
+        
+        $validator = Validator::make($input,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())), 400);
+        }
+
+        $order_data = Order::active()->where('_id', $input['order_id'])->first();
+
+        if(empty($order_data) || empty($order_data['combo_pass_id'])){
+
+            $msg = "Order is not Placed.";
+            // if((!empty($order_data['ratecard_flags']['onepass_attachment_type']) && $order_data['ratecard_flags']['onepass_attachment_type'] =='upgrade')){
+            //     $msg = "cannot place pass order for this order.";
+            // }
+            if(empty($order_data['combo_pass_id'])){
+                $msg = "Pass is not listed for this order.";
+            }
+
+            return [
+                'status' => 400,
+                'msg' => $msg
+            ];
+        }
+
+        $pass_order = Order::active()->where("type", 'pass')->where('membership_order_id', $order_data['_id'])->get(['_id', 'type', 'pass']);
+
+        if(!empty($pass_order) && count($pass_order)){
+            return [
+                'status' => 200,
+                'msg' => "Order already placed.",
+                'data' => $pass_order
+            ];
+        }
+
+        $data = [];
+        $data['order'] = $order_data;
+        $data['forced'] = true;
+
+        $passPurchaseResponse =  $this->passCaptureAuto(null, $data);
+
+        if(!empty($passPurchaseResponse['status']) && $passPurchaseResponse['status']= 200){
+            $customer_email = $this->customerMailer->sendPgOrderMail($order_data->toArray());
+            $customer_sms = $this->customerSms->sendPgOrderSms($order_data->toArray());
+
+            $order_update = Order::find($order_data['_id']);
+            $order_update->forcepass_communication = [
+                'sms' => 0, $customer_sms, 
+                'email' => $customer_email
+            ];
+
+            $order_update->update();
+        }
+        return $passPurchaseResponse;
+    }
 }
