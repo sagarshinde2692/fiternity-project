@@ -1439,7 +1439,7 @@ class FindersController extends \BaseController {
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
 				}
 				
-				if((in_array($finder['_id'], [579, 1233, 1260, 1261, 1262, 1874, 2105, 9171, 9178, 5742, 10675]))){
+				if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
                     $response['vendor_stripe_data'] = "no-patti";
                 }
 
@@ -3944,7 +3944,7 @@ class FindersController extends \BaseController {
 			$line = "";
 		}
 
-		if((in_array($data['finder']['_id'], [579, 1233, 1260, 1261, 1262, 1874, 2105, 9171, 9178, 5742, 10675]))){
+		if(in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id'))){
 			$line = "";
 		}
 
@@ -5460,7 +5460,7 @@ class FindersController extends \BaseController {
 							unset($ratecard['remarks']);
 						}
 
-						if((in_array($finder['_id'], [579, 1233, 1260, 1261, 1262, 1874, 2105, 9171, 9178, 5742, 10675]))){
+						if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
 							unset($ratecard['remarks']);
 						}
 
