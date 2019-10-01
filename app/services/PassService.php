@@ -1947,6 +1947,9 @@ class PassService {
         $upcoming['direction'] = "Get Direction";
         $upcoming['lat'] = $data['finder_lat'];
         $upcoming['lon'] = $data['finder_lon'];
+        if(!empty($customer->onepass['photo']['url'])){
+            $upcoming['user_photo'] = $customer->onepass['photo']['url'];
+        }
 
         $upcoming['footer'] = [
             'text' => 'You can only unlock this session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym',
@@ -1957,8 +1960,14 @@ class PassService {
         ];
         
         if(!empty($data['post_trial_initail_status']) && strtolower($data['post_trial_initail_status']) == 'interested'  && !empty($data['post_trial_status']) && strtolower($data['post_trial_status']) == 'attended' && !empty($data['post_trial_status_updated_by_unlocksession'])){
+
             $upcoming['header'] = "Session Activated";
+
             unset($upcoming['footer']);
+            unset($upcoming['direction']);
+            unset($upcoming['lat']);
+            unset($upcoming['lon']);
+
             $upcoming['footer'] =[
                 'subscription_description' => 'Subscription code :'.$data['code']
             ];
