@@ -876,7 +876,7 @@ class PassService {
             }
             if (($amount>1000 && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
                 // over 1000
-                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType,  'profile_incomplete' => !$profile_completed ];
+                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType,  'profile_incomplete' => !$profile_completed, 'pass_branding' => $pass_branding];
             }
             else {
                 // below 1001
