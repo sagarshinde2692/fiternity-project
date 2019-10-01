@@ -1860,7 +1860,7 @@ class OrderController extends \BaseController {
 
     public function getOrderDetail($orderid){
 
-        $orderdata 		=	Order::find(intval($orderid));
+        $orderdata 		=	Order::customerValidation(customerIdFromToken())->find(intval($orderid));
 
         if(isset($orderdata->reward_ids) && !empty($orderdata->reward_ids)){
 

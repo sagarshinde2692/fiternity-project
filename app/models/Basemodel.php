@@ -17,7 +17,11 @@ class Basemodel extends \Moloquent {
 	public function setIdAttribute($value){
 		
 		$this->attributes['_id'] = intval($value);
-	}
+    }
+    
+    public function scopeCustomerValidation($query,  $logged_in_customer_id){
+        return $query->where(function ($query) use($logged_in_customer_id) { $query->orWhere('customer_id', $logged_in_customer_id)->orWhere("logged_in_customer_id", $logged_in_customer_id);});
+    }
 
 
 }

@@ -4698,6 +4698,19 @@ if (!function_exists('curl_call_get')) {
         
     }
 }
+if (!function_exists('customerIdFromToken')) {
+    function customerIdFromToken()
+    {
+        $utilities = new Utilities();
+        $customer = $utilities->getCustomerFromToken();
+
+        if(empty($customer)){
+            return;
+        }
+        return $customer['_id'];
+        
+    }
+}
 
 
 ?>

@@ -3226,6 +3226,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $query->select('_id', 'name', 'slug');
             }))->with('locationtags')->where('_id', '=', $finderid)->first()->toArray();
             $data['customer_id'] = $customer_id = autoRegisterCustomer($data);
+            $data['logged_in_customer_id'] = customerIdFromToken();
 
             $cleartrip_count                   =    $this->getCleartripCount($finderid);
             $trial_count                       =    $this->getTrialCount($finderid);
@@ -5447,10 +5448,12 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(isset($type) && $type == "healthytiffintrail"){
-            $booktrial      =   Order::active()->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid));
+            $booktrial      =   Order::active()->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}));
         }else{
-            $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid)); 
+            $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));})); 
         }
+
+        $booktrial = $booktrial->customerValidation(customerIdFromToken())->find(intval($captureid));
 
         if(!$booktrial){
 

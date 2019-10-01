@@ -11587,5 +11587,16 @@ public function yes($msg){
         return "done";
             
     }
+
+    public function migrateLoggedInCustomerId(){
+
+        $order_ids = Booktrial::where('created_at', '>', new DateTime('01-01-2019'))->where('logged_in_customer_id', null)->where('order_id', '!=', null)->lists('order_id');
+
+        $orders = Order::whereIn('_id', $order_ids)->where('logged_in_customer_id', '!=', null)->where('booktrial_id', '!=', null)->get(['logged_in_customer_id', 'booktrial_id']);
+
+        
+
+
+    }
 }
 
