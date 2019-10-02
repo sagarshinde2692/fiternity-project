@@ -8722,7 +8722,7 @@ class SchedulebooktrialsController extends \BaseController {
 			// 	),
 			// );
 							
-			$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'user_photo', '_id']);
+			$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'user_photo', '_id', 'header_text']);
             
             $response = [
                 'status' => 200,
