@@ -3879,7 +3879,6 @@ class CustomerController extends \BaseController {
 								$data['amount'] = "₹".$data['amount_finder'];
 							}
 							
-							$upcoming_new = [];
 							if(!empty($data['pass_order_id'])){
 
 								$data_new = $this->passService->upcomingPassBooking($customer, $data);
