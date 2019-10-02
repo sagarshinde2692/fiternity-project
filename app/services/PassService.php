@@ -2054,7 +2054,7 @@ class PassService {
             'cancel_text' => 'CANCEL SESSION',
             'cancel_url' => Config::get('app.url').'/canceltrial/'.$data['_id']
         ];
-        $upcoming['header_text'] = "Session Starts In";
+        //$upcoming['header_text'] = "Session Starts In";
         if(!empty($data['post_trial_initail_status']) && strtolower($data['post_trial_initail_status']) == 'interested'  && !empty($data['post_trial_status']) && strtolower($data['post_trial_status']) == 'attended' && !empty($data['post_trial_status_updated_by_unlocksession'])){
 
             $upcoming['header'] = "Session Activated";
