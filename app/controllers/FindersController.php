@@ -1388,8 +1388,8 @@ class FindersController extends \BaseController {
                 }catch(Exception $e){
                     Log::info("Error while sorting ratecard");
                 }
-
-				if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
+                
+                if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
                     $response['show_timer'] = true;
                 }
 
@@ -8406,7 +8406,7 @@ class FindersController extends \BaseController {
             $membership_buckets = createBucket($membership_ratecards, 'duration_day', array_keys($duration_session_pack));
 
 			$studio_extended_buckets = createBucket($studio_extended_validity, 'duration', array_keys($duration_session_pack));
-			// Log::info('studio extended at order ratecard::::::', [$studio_extended_buckets]);
+			//Log::info('studio extended at order ratecard::::::', [$studio_extended_buckets]);
             foreach($duration_session_pack as $key => $value){
                 $all_ratecards = array_merge($all_ratecards, $studio_extended_buckets[$key], $session_buckets[$value], $membership_buckets[$key]);
             }
