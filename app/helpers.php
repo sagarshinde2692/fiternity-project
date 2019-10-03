@@ -990,7 +990,7 @@ if (!function_exists('pluck')) {
 
 if (!function_exists(('get_elastic_autosuggest_doc'))) {
 
-    function get_elastic_autosuggest_doc($source = '', $cluster='')
+    function get_elastic_autosuggest_doc($source = '', $cluster)
     {
 
         $info_service_list = array();
