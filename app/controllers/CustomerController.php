@@ -3666,8 +3666,8 @@ class CustomerController extends \BaseController {
                                     ->where('post_trial_verified_status', '!=', 'no')
                                     ->where('going_status_txt','!=','cancel');
                                 })
-                                ->orWhere(function($query){
-                                        $query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))
+                                ->orWhere(function($query){//strtotime('-3 days', time())
+                                        $query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', time())))
                                                 ->whereIn('post_trial_status', [null, '', 'unavailable']);	
                                 })
                                 ->orWhere(function($query){
