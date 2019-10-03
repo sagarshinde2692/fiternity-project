@@ -1917,4 +1917,12 @@ Class RelianceService {
         return $res;
     }
 
+    function getCustomerDetails($customerId) {
+        if(empty($customerId)) {
+            return null;
+        }
+        Customer::$withoutAppends = true;
+        return Customer::active()->where('_id', $customerId)->first();
+    }
+
 }   

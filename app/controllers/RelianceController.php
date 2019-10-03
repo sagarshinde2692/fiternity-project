@@ -127,6 +127,36 @@ class RelianceController extends \BaseController {
 
     }
 
+    public function buildHealthObjectStructure() {
+      $data = Input::all();
+      $token = Request::header('Authorization');
+      $deviceType = Request::header('Device-Type');
+      $appVersion = Request::header('App-Version');
+
+      if(!empty($token)) {
+        $custInfo = $this->utilities->customerTokenDecode($token);
+      }
+
+      $rules = [
+        'dob' => 'required|date',
+      ];
+      Validator::make($data,$rules);
+
+      Log::info('custinf', [$custInfo->customer->_id]);
+
+      $customerDetails = $this->relianceService->getCustomerDetails($custInfo->customer->_id);
+      
+      if(!empty($customerDetails['corporate_id'])) {
+        $healthObject = $this->relianceService->buildHealthObjectStructure($custInfo->customer->_id, $customerDetails['corporate_id'], $deviceType, $data['city'], $appVersion, $customerDetails);
+        if(!empty($healthObject)) {
+          return Response::json(array('status' => 200, 'data' => $healthObject, 'message' => 'success'));
+        }
+      }
+      
+      return Response::json(array('status' => 400, 'message' => 'Invalid Input'));
+
+    }
+
 }
 
 // 576012 - Unable to proceed this request, please try again later
