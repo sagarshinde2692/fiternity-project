@@ -891,6 +891,10 @@ return [
         "image" => "https://b.fitn.in/onepass/Clock_Icon.png",
         "text" => "Uh Oh! You don't have any upcoming bookings",
         "button_text" => "BOOK NOW"
-    ]
+    ],
 
+    "cancel_onepass" => [
+        'text' => 'Not Satisfied with Onepass',
+        'button_text' => 'Cancel OnePass'
+    ]
 ];

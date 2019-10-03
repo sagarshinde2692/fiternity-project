@@ -1960,12 +1960,6 @@ class PassService {
         //     $tabPassData['terms'] = "<h2>Terms and Conditions</h2>".$tnc;
         // }
 
-        $footer = array();
-        $footer = array(
-            'text' => 'Lorem Ipsum Dolor Sit Amet',
-            'button_text' => 'Cancel OnePass'
-        );
-
         $upcomig = $this->upcomingPassBooking($customerData);
         $recommended= $this->workoutSessionNearMe($city, $coordinate);
         $res = array();
@@ -1976,7 +1970,7 @@ class PassService {
         $res['pass'] = $tabPassData;
         $res['upcoming'] = $upcomig;
         $res['recommended'] = $recommended;
-        $res['footer'] = $footer;
+        $res['footer'] = Config::get('pass.cancel_onepass');
 
         if(empty($res['upcoming'])){
             unset($res['upcoming']);
