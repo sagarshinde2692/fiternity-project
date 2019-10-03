@@ -145,12 +145,10 @@ class RelianceController extends \BaseController {
       Log::info('custinf', [$custInfo->customer->_id]);
 
       $customerDetails = $this->relianceService->getCustomerDetails($custInfo->customer->_id);
+      $result = $this->relianceService->getHealthObject($customerDetails, $custInfo, $data, $deviceType, $appVersion);
       
-      if(!empty($customerDetails['corporate_id'])) {
-        $healthObject = $this->relianceService->buildHealthObjectStructure($custInfo->customer->_id, $customerDetails['corporate_id'], $deviceType, $data['city'], $appVersion, $customerDetails);
-        if(!empty($healthObject)) {
-          return Response::json(array('status' => 200, 'data' => ['health' => $healthObject], 'message' => 'success'));
-        }
+      if(!empty($result)) {
+        return Response::json(array('status' => 200, 'data' => $result, 'message' => 'success'));
       }
       
       return Response::json(array('status' => 400, 'message' => 'Invalid Input'));
