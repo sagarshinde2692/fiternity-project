@@ -347,23 +347,23 @@ class GlobalPushController extends \BaseController
     */
 
     
-    // $this->pushBrandOutlets($index_name);//required
-    // $this->pushcategorylocations($index_name);//required
-    // $this->pushcategorycity($index_name);//required
-    // $this->pushallfittnesslocation($index_name);//required
-    // $this->pushservicecategorylocations($index_name);
-    // $this->pushservicecategorycity($index_name);
-    $this->t = time();
+    $this->pushBrandOutlets($index_name);//required
+    $this->pushcategorylocations($index_name);//required
+    $this->pushcategorycity($index_name);//required
+    $this->pushallfittnesslocation($index_name);//required
+    // // $this->pushservicecategorylocations($index_name);
+    // // $this->pushservicecategorycity($index_name);
+    // $this->t = time();
     foreach ($this->citylist as $key => $city) {
         $this->pushfinders($index_name, $city);//required
     }
-    Log::info(time() - $t);
-    return "Done";
+    // Log::info(time() - $t);
+    // return "Done";
 
 
 // //        $this->pushcategorywithf$thosacilities($index_name);
 // //        $this->pushcategoryoffering($index_name);
-        // $this->pushcategoryofferinglocation($index_name);//required
+        $this->pushcategoryofferinglocation($index_name);//required
 // //        $this->pushcategoryfacilitieslocation($index_name);
 // //        $this->pushofferingcity($index_name);
 
@@ -455,6 +455,8 @@ class GlobalPushController extends \BaseController
         
         
         $indexdocs = array_map('esParse',$indexdocs->toArray());
+
+        $this->addToEsData($indexdocs);
 
     }while(!empty($indexdocs));
 
