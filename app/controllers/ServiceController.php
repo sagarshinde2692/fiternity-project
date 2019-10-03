@@ -2733,12 +2733,24 @@ class ServiceController extends \BaseController {
 	}
 
 	public function addDisableBooking(&$service, $allowSession){
+
 		if(!empty($service['slots']) && !empty($allowSession['allow_session']) && !empty($allowSession['profile_incomplete'])){
+	
 			foreach($service['slots'] as &$value){
+
+				if(!empty($value['data'])){
+					foreach($value['data'] as &$value_data){
+						if($value_data['price']< 1001){
+							$value_data['onepass_booking_block'] = true;
+						}
+					}
+				}
+				
 				if($value['price']< 1001){
 					$value['onepass_booking_block'] = true;
 				}
 			}
+			
 		}
 	}
 }
