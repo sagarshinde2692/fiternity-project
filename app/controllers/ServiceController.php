@@ -940,7 +940,7 @@ class ServiceController extends \BaseController {
                         $nrsh['price_only']=(isset($p_np['non_peak']))?$p_np['non_peak']:"";
                         Log::info("rsh price",[$rsh['price_only']]);
                         Log::info("nrsh price",[$rsh['price_only']]);
-						if($allowSession['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+						if(!empty($allowSession['allow_session']) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
 							if($rsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
 								$rsh['price'] = Config::get('app.onepass_free_string');
@@ -1218,7 +1218,7 @@ class ServiceController extends \BaseController {
                 }
 
 				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-				if($allowSession['allow_session'] && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+				if(!empty($allowSession['allow_session']) && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $str = " (100% Cashback)";
@@ -1426,7 +1426,7 @@ class ServiceController extends \BaseController {
 						$str = '';
 					}
                     
-                    if($allowSession['allow_session'] && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))) && (!empty($sc['flags']['classpass_available']) && $sc['flags']['classpass_available'])){
+                    if(!empty($allowSession['allow_session']) && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))) && (!empty($sc['flags']['classpass_available']) && $sc['flags']['classpass_available'])){
 						$sc['cost'] = Config::get('app.onepass_free_string');
 					}else{
 						$sc['cost'] .= $str;
@@ -2102,7 +2102,7 @@ class ServiceController extends \BaseController {
 			// }
 		}
 		
-		if($allowSession['allow_session'] && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $service_details['finder_flags']])) && (!empty($service_details['flags']['classpass_available']) && $service_details['flags']['classpass_available'])){
+		if(!empty($allowSession['allow_session']) && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $service_details['finder_flags']])) && (!empty($service_details['flags']['classpass_available']) && $service_details['flags']['classpass_available'])){
 			$des = 'You can cancel this session 1 hour prior to your session time.';
 			if($service_details['finder_category_id'] == 5){
 				$des = 'You can cancel this session 15 min prior to your session time.';
@@ -2112,13 +2112,11 @@ class ServiceController extends \BaseController {
 				"header" => "Easy Cancelletion: ",
 				"description" => $des
 			);
+			if(!empty($allowSession['profile_incomplete'])){
+				$service_details['onepass_booking_block'] = true;
+			}
 		}
-
-		// $service_details['onepass_booking_block'] = false;
-		// if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
-		// 	$service_details['onepass_booking_block'] = true;
-		// }
-
+		
 		$time = isset($_GET['time']) ? $_GET['time'] : null;
 		$time_interval = null;
 		$within_time = null;

@@ -704,7 +704,7 @@ class PassService {
             $passType = $passOrder['pass']['pass_type'];
 
             $profile_completed = !empty($fromService) ? $this->utilities->checkOnepassProfileCompleted($customer): true;
-            Log::info('pass orders:::::::::::::::::', [$passOrder, $profile_completed]);
+            Log::info('pass orders:::::::::::::::::', [$amount, $passOrder, $profile_completed]);
         }
 
         $finder = null;
