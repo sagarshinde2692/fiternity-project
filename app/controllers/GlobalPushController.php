@@ -403,7 +403,7 @@ class GlobalPushController extends \BaseController
 
 
   public function pushfinders($index_name, $city_id){
-    $this->t = time() - $this->t;
+    
     ini_set('max_execution_time', 30000);
     // ini_set('memory_limit', '512M');
     $city_id = (int) $city_id;
@@ -546,7 +546,6 @@ class GlobalPushController extends \BaseController
 
     Log::info('in categorylocations.......');
 
-    $i = 0;
     foreach ($this->citylist as $city) {
 
       $categorytags = Findercategorytag::active()
@@ -862,7 +861,7 @@ class GlobalPushController extends \BaseController
           ->whereNotIn('_id', array(22,30))
           //->whereIn('_id',array(32))
           ->get(array('_id','name','offering_header','slug','status','offerings'));
-          $all_data = [];
+          
           foreach ($categorytag_offerings as $cat) {
               $catprioroff = isset($this->amenitiesrank[strtolower($cat['name'])]) ? $this->amenitiesrank[strtolower($cat['name'])] : null;
               $offerings = $cat['offerings'];
@@ -1555,8 +1554,7 @@ class GlobalPushController extends \BaseController
       foreach ($locations as $loc) {
         $string = 'All Fitness options in '.ucwords($loc['name']);
         $postdata = get_elastic_autosuggest_allfitness_doc($loc, $cityname, $string);
-        $postfields_data = json_encode($postdata);
-        $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
+        
         $this->addToEsData([$postdata]);
       }
     }
