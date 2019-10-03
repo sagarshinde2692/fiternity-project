@@ -1054,6 +1054,7 @@ class HomeController extends BaseController {
             
             $show_other_vendor = false;
             $why_buy = false;
+            $checkin_response = !empty($itemData['checkin_response']) ? $itemData['checkin_response'] : null;
 
             if(isset($item['type']) && $item['type']=='workout-session' && $device_type && $app_version && in_array($device_type, ['android', 'ios']) && $app_version > '4.4.3'){
 
@@ -1063,6 +1064,10 @@ class HomeController extends BaseController {
 
                 if(!empty($item['coupon_flags']['cashback_100_per'])){
                     $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
+                }
+
+                if(!empty($item['pass_order_id'])){
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there.';
                 }
 
                 if(isset($item['pay_later']) && $item['pay_later']){
@@ -1125,9 +1130,9 @@ class HomeController extends BaseController {
                     
                     $customer = Customer::find($customer_id, ['loyalty']);
                     
-                    if(!empty($customer['loyalty'])){
+                    // if(!empty($customer['loyalty'])){
                         // $response['milestones'] = $this->utilities->getMilestoneSection();
-                    }
+                    // }
                     
                 }
                 
@@ -1141,6 +1146,10 @@ class HomeController extends BaseController {
                 
                 if(!empty($item['qrcodepayment'])){
                     unset($response['subline']);
+                    if(!empty($checkin_response)){
+                        $response['header'] .= "\n ".$checkin_response['header'];
+                        $response['subline'] ='<p>'.$checkin_response['sub_header_2'].'</p>';
+                    } 
                 }
                 
                 if(isset($item['pay_later']) && $item['pay_later'] && $item['status'] == '1'){
@@ -1886,6 +1895,10 @@ class HomeController extends BaseController {
                     default:
                         $header = "WORKOUT SESSION CONFIRMED";
                         $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying Rs ".$item['amount'].". We have also sent you a confirmation Email & SMS.";
+
+                        if(!empty($item['coupon_code']) && in_array($item['coupon_code'], ['FREE', 'free'])){
+                            $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed. We have also sent you a confirmation Email & SMS.";
+                        }
 
                         if(!empty($item['pass_order_id'])){
                             $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by using unlimited access pass. We have also sent you a confirmation Email & SMS."; 
@@ -3948,7 +3961,7 @@ class HomeController extends BaseController {
         if($device_type == "android"){
             $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
         }else{
-            $notification_object = array("aps"=>array("alert"=> array("body" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+            $notification_object = array("aps"=>array("alert"=> array("body" => $data["body"], "title" => $data["title"],), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
         }
         $notificationData = array("to" =>$data['to'],"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
         $route  = $device_type;

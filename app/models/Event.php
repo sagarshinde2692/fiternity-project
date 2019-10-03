@@ -13,7 +13,17 @@ class Event extends \Basemodel {
 
 	protected $collection = "events";
 
-	protected $dates = array('start_date','end_date');
+    protected $dates = array('start_date','end_date');
+    
+    public function newQuery($excludeDeleted = true){
+        
+        $query = parent::newQuery($excludeDeleted);
+
+        $query->where('status', '!=', '0');
+
+        return $query;
+    
+    }
 
 	public function scopeActive ($query){
 		return $query->where('status','=','1');
@@ -21,4 +31,8 @@ class Event extends \Basemodel {
 	public function city(){
 		return $this->belongsTo('City');
 	}	
+
+	public function images(){
+		return $this->hasOne('EventSuccess', 'city_id', 'city_id');
+	}
 }

@@ -1,5 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Config;
+use App\Services\Utilities as Utilities;
+
 /** 
  * ModelName : Service.
  * Maintains a list of functions used for Service.
@@ -410,6 +412,35 @@ class Service extends \Basemodel{
 				   //unset($value['remarks']);
 				}
 
+				if($finder->brand_id==88){
+					if(!empty($value['combo_pass_id'])) {
+						$pass 	= 	Pass::where('pass_id', $value['combo_pass_id'])->first();
+						$value['pass_details'] = [
+							'pass_id' => $pass['pass_id'],
+							'pass_type' => ($pass['pass_type']=='hybrid')?$pass['branding']:$pass['pass_type'],
+							'duration' => $pass['duration'],
+							'duration_text' => $pass['duration_text'],
+							'total_sessions' => $pass['total_sessions'],
+							'total_sessions_text' => $pass['total_sessions_text']
+						];
+					}
+					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && ($value['flags']['onepass_attachment_type']=='membership_plus')) ) {
+						$value['membership_plus'] = true;
+						$value['title'] = 'Membership Plus';
+						$value['validity'] = 1;
+						$value['validity_type'] = 'Year Membership Plus';
+					}
+					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && ($value['flags']['onepass_attachment_type']=='upgrade')) ) {
+						$value['upgrade_membership'] = true;
+						$value['title'] = 'Upgrade your membership with OnePass';
+						$value['validity'] = 6;
+						$value['validity_type'] = 'Months - upgrade your membership with OnePass';
+					}
+					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && ($value['flags']['onepass_attachment_type']=='complementary')) ) {
+						$value['comp_onepass'] = true;
+					}
+				}
+
                 if($value['type'] == 'membership' && !empty($GLOBALS['finder_commission'])){
                     if(!empty($value["special_price"] )){
                         $commission_discounted_price = $value["special_price"] = round($value["special_price"] * (100 - $GLOBALS['finder_commission'] + Config::get('app.pg_charge'))/100);
@@ -492,10 +523,10 @@ class Service extends \Basemodel{
 
                 if(isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
                     if(!empty($value['offers'][0]['remarks'])){
-                        $value['offers'][0]['remarks'] = "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+                        $value['offers'][0]['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
                         $value['remarks_imp'] =  true;
                     }else{
-                        $value['remarks'] =  "End Of Monsoon Sale |  Get 100% Instant Cashback, code: CB100";
+                        $value['remarks'] =  "Get 100% Instant Cashback, Use Code: FIT100";
                         $value['remarks_imp'] =  true;
                     }
                 }
@@ -506,7 +537,13 @@ class Service extends \Basemodel{
 				}else if(($offer_price == 99 || $value['price'] == 99 || $value['special_price'] == 99) && $value['type'] == "workout session" && !empty($finder['flags']['monsoon_campaign_pps']) && isFinderIntegrated($finder) && isServiceIntegrated($this)){
                     $value['remarks'] =  '';
                     $value['remarks_imp'] =  true;
-                }
+				}
+				
+				$utilities = new Utilities();
+				$corporate_discount_branding = $utilities->corporate_discount_branding();
+				if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+					$value['remarks'] =  "";
+				}
                 
                 if(in_array($value['type'], ["membership", "extended validity"])&& isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios']) ){
                     $value['campaign_offer'] =  "";

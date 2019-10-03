@@ -1876,6 +1876,24 @@ class OrderController extends \BaseController {
             unset($orderdata->preferred_starting_date);
         }
 
+        if(!empty($orderdata->type) && $orderdata->type=='events' && !empty($orderdata->event_start_date)){
+            $event_start_date = $orderdata->event_start_date['date'];
+            $event_end_date = $orderdata->event_end_date['date'];
+            $data_time = [];
+            $data_time['start']['date'] = date('d M, Y', strtotime($event_start_date));
+            $data_time['start']['time'] = date('h:i A', strtotime($event_start_date));
+        
+            $data_time['end']['date'] = date('d M, Y',strtotime($event_end_date));
+            $data_time['end']['time'] = date('h:i A', strtotime($event_end_date));
+            
+            $orderdata->data_time = $data_time;
+            $orderdata->subscription_code = $orderdata['_id'];
+
+            $event_success = EventSuccess::where('city_id', (string)$orderdata['city_id'])->first();
+            $orderdata->top_text = $event_success['top_text'];
+            $orderdata->footer_text = $event_success['footer_text'];
+            $orderdata->cover_image = $event_success['cover_image'];
+        }
         if(!$orderdata){
             return $this->responseNotFound('Order does not exist');
         }

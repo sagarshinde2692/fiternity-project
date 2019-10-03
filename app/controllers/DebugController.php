@@ -8531,7 +8531,7 @@ public function yes($msg){
             
         $pt_collection = $mongoclient->selectDB ( Config::get ( "database.connections.$db.database" ) )->selectCollection ( $collection );
         // return $update_service_data;
-        $batch_update = new \MongoUpdateBatch($pt_collection);
+        $batch_update = new MongoUpdateBatch($pt_collection);
 
         foreach($update_data as $item){
             $batch_update->add($item); 
@@ -11460,5 +11460,132 @@ public function yes($msg){
             }
 
         }    
+	}
+	
+	public function testOnePassUser(){
+		$utilities = new Utilities();
+
+		return $utilities->onepassHoldCustomer();
+		
+		return $onepassHoldCustomer;		
+	}
+
+	public function dynamicOnepassEMailSms(){
+		$destinationPath = public_path();
+		$fileName = "onepass_customers-test.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+		
+		$finArr = array();
+
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if( !empty($value['customer_name']) && !empty($value['customer_email']) && !empty($value['contact_number'])  && !empty($value['type'])){
+					
+					$data = array();
+					$data['customer_name'] = $value['customer_name'];
+					$data['customer_email'] = $value['customer_email'];
+					$data['customer_phone'] = $value['contact_number'];
+					$data['pass_type'] = $value['type'];
+					
+					$customermailer = new CustomerMailer();
+					$customermailer->onepassDynamic($data);
+
+					array_push($finArr, $data);
+					// $customersms = new CustomerSms();
+					// $customersms->onepassDynamic($value);
+				}
+			}
+		}
+		return $finArr;
+    }
+    
+    public function addFlagClasspassAvalible(){
+		ini_set('max_execution_time', 0);
+		Ratecard::$withoutAppends = true;
+
+		$integratedFinder = Finder::integrated()->lists('_id');
+
+		$integratedService = Service::integrated()->whereIn('finder_id', $integratedFinder)->lists('_id');
+
+		$ratecards = Ratecard::whereIn('service_id', $integratedService)
+			->whereIn('type', ['workout session'])
+			// ->take(1)
+			->get(['service_id', 'price', 'special_price']);
+		$updates = array();
+		foreach($ratecards as $ratecard){
+
+			$price = $ratecard['price'];
+			if(!empty($ratecard['special_price']) && $ratecard['special_price'] > 0){
+				$price = $ratecard['special_price'];
+			}
+
+			Log::info("ratecard_id", [$ratecard['_id']]);
+			Log::info("service_id", [$ratecard['service_id']]);
+			Log::info("price", [$price]);
+
+			if($price < Config::get('pass.price_upper_limit')){
+				array_push($updates, [
+					"q"=>['_id'=> $ratecard['service_id']],
+					"u"=>[
+						'$set'=>[
+							'flags.classpass_available'=>true
+						]
+					],
+					'multi' => false
+	
+                ]);
+                break;
+			}
+
+			
+		}
+        // return $updates;
+		$this->batchUpdate('mongodb2', 'vendorservices', $updates);
+		$this->batchUpdate('mongodb', 'services', $updates);
+        // return count($ratecard);
+        return "Done";
+    }
+    
+    public function passCashback(){
+        $ids = [
+        //     4382967,
+        // 4371334,
+        // 4375550,
+        // 4394499,
+        // 4384743,
+        // 4384743,
+        4375550
+        
+    ];
+        $orders = Order::active()->whereIn('_id', $ids)->get();
+        $utilities = new Utilities();
+        foreach($orders as $order){
+            $a=1;
+            if(!empty($order['amount']) && !empty($order['pass']['cashback'])){
+                $validity = strtotime($order['created_at'])+(86400*30);
+                $amount = ceil($order['amount']);
+                $walletData = array(
+                    "order_id"=>$order['_id'],
+                    "customer_id"=> intval($order['customer_id']),
+                    "amount"=> $amount,
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => $amount,
+                    "type"=>'CASHBACK',
+                    'entry'=>'credit',
+                    'order_type'=>['pass'],
+                    "description"=> "100% Cashback on buying trial pass, Expires On : ".date('d-m-Y',$validity),
+                    "validity"=>$validity,
+                );
+        
+                $utilities->walletTransaction($walletData);
+            }
+        }
+        return "done";
+            
     }
 }
+

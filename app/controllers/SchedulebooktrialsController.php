@@ -1883,9 +1883,12 @@ class SchedulebooktrialsController extends \BaseController {
             // $show_location_flag 		       =   (count($finder['locationtags']) > 1) ? false : true;
 
             $description =  $what_i_should_carry = $what_i_should_expect = $service_category = '';
+            $service_slug = null;
             if($service_id != ''){
                 $serviceArr 				       = 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('category')->with('subcategory')->find($service_id);
-
+                if(!empty($serviceArr['slug'])) {
+                    $service_slug = $serviceArr['slug'];
+                }
                 if((isset($serviceArr['category']['description']) && $serviceArr['category']['description'] != '')){
                     $description = $serviceArr['category']['description'];
                 }else{
@@ -2101,6 +2104,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 'service_id'                    =>      $service_id,
                 'service_name'                  =>      $service_name,
+                'service_slug'                  =>      $service_slug,
                 'schedule_slot_start_time'      =>      $schedule_slot_start_time,
                 'schedule_slot_end_time'        =>      $schedule_slot_end_time,
                 'schedule_date'                 =>      $schedule_date,
@@ -2508,38 +2512,31 @@ class SchedulebooktrialsController extends \BaseController {
                     array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
                 }
 
-                if(!empty($order['pass_premium_session'])) {
+                if(!empty($order['pass_order_id'])) {
                     Order::$withoutAppends = true;
                     $passOrder = Order::where('_id', $order['pass_order_id'])->first();
-
                     if(!empty($passOrder)) {
-                        if(empty($passOrder->premium_sessions_used)) {
-                            $passOrder->premium_sessions_used = 0;
+                        if(empty($passOrder->onepass_sessions_used)) {
+                            $passOrder->onepass_sessions_used = 0;
                         }
-                        if($passOrder->total_credits_used<$passOrder->total_credits) {
-                            $passOrder->premium_sessions_used += 1;
-                            $passOrder->update();
-                        }
-                        else {
-                            return ['status'=>400, 'reason'=>'Used up premium sessions, please try again.'];
-                        }
-                    }
-                }
-                else if(!empty($order['pass_credits'])) {
-                    Order::$withoutAppends = true;
-                    $passOrder = Order::where('_id', $order['pass_order_id'])->first();
+                        $passOrder->onepass_sessions_used += 1;
 
-                    if(!empty($passOrder)) {
-                        if(empty($passOrder->total_credits_used)) {
-                            $passOrder->total_credits_used = 0;
+                        if(!empty($passOrder->monthly_total_sessions_used) && is_array($passOrder->monthly_total_sessions_used)) {
+                            $booking_date = strtotime($booktrial['schedule_date']);
+                            $temp = $passOrder->monthly_total_sessions_used;
+                            foreach($temp as &$value){
+                                
+                                if($booking_date >= strtotime(date('Y-m-d H:i:s',$value['start_date']->sec)) && $booking_date < strtotime(date('Y-m-d H:i:s',$value['end_date']->sec)) ){
+                                    $value['count'] += 1;
+                                    unset($booking_date);
+                                    break;
+                                }
+                            }
+                            $passOrder->monthly_total_sessions_used= $temp;
+                            unset($temp);
                         }
-                        if((!empty($passOrder->pass['unlimited_access']) && $passOrder->pass['unlimited_access']) || ($passOrder->total_credits_used<$passOrder->total_credits)) {
-                            $passOrder->total_credits_used += $order['pass_credits'];
-                            $passOrder->update();
-                        }
-                        else {
-                            return ['status'=>400, 'reason'=>'Used up premium sessions, please try again.'];
-                        }
+                        
+                        $passOrder->update();
                     }
                 }
             }
@@ -2550,7 +2547,7 @@ class SchedulebooktrialsController extends \BaseController {
             try{
                 $after_booking_response = $this->utilities->afterTranSuccess($booktrial->toArray(), 'booktrial');
             }catch(Exception $e){
-                Log::info("afterTranSuccess error");
+                Log::info("afterTranSuccess error", [$e]);
             }    
                 
             Log::info("after_booking_response");
@@ -2561,6 +2558,14 @@ class SchedulebooktrialsController extends \BaseController {
                     $booktrial->checkin = $after_booking_response['checkin']['checkin']['_id'];
                 }
             }
+
+            if(!empty($after_booking_response['checkin']['checkin_response'])){
+                unset($after_booking_response['checkin']['checkin_response']['milestones']);
+                unset($after_booking_response['checkin']['checkin_response']['image']);
+                unset($after_booking_response['checkin']['checkin_response']['checkin']);
+                $orderData['checkin_response'] = $after_booking_response['checkin']['checkin_response'];
+            }
+
             if(!empty($after_booking_response['loyalty_registration']['status']) && $after_booking_response['loyalty_registration']['status'] == 200){
                 $booktrial->loyalty_registration = true;
                 $orderData['loyalty_registration'] = true;
@@ -2788,9 +2793,12 @@ class SchedulebooktrialsController extends \BaseController {
                         $alreadyWorkoutTaken=Order::where("booktrial_id","!=",(int)$booktrialdata['_id'])->where("type","=",'workout-session')->where("status","=","1")->where("created_at",">=",new DateTime("2018/04/23"))->where("customer_id","=",(int)$booktrialdata['customer_id'])->first();
                         Log::info(" alreadyWorkoutTaken ".print_r($alreadyWorkoutTaken,true));
                         if(empty($alreadyWorkoutTaken))
-                            $send_communication["customer_email_instant_workoutlevelstart"] = $this->customermailer->workoutSessionInstantWorkoutLevelStart($booktrialdata);
+                            $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+					        if(!(!empty($onepassHoldCustomer) && $onepassHoldCustomer)){
+                                $send_communication["customer_email_instant_workoutlevelstart"] = $this->customermailer->workoutSessionInstantWorkoutLevelStart($booktrialdata);
+                            }       
                     }
-                
+                    
                     if(isset($booktrialdata['is_tab_active'])&&$booktrialdata['is_tab_active']!=""&&$booktrialdata['is_tab_active']==true&&$booktrialdata['type']=='workout-session')
                     {
                         
@@ -3343,10 +3351,15 @@ class SchedulebooktrialsController extends \BaseController {
             // $show_location_flag              =   (count($finder['locationtags']) > 1) ? false : true;
 
             $description =  $what_i_should_carry = $what_i_should_expect = $service_category = '';
+            $service_slug = null;
             if ($service_id != '') {
                 $serviceArr = Service::with(array('location' => function ($query) {
                     $query->select('_id', 'name', 'slug');
                 }))->with('category')->with('subcategory')->where('_id', '=', intval($service_id))->first()->toArray();
+
+                if(!empty($serviceArr['slug'])) {
+                    $service_slug = $serviceArr['slug'];
+                }
 
                 if((isset($serviceArr['category']['description']) && $serviceArr['category']['description'] != '')){
                     $description = $serviceArr['category']['description'];
@@ -3532,6 +3545,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 'service_id'          =>      $service_id,
                 'service_name'        =>      $service_name,
+                'service_slug'                  =>      $service_slug,
                 'schedule_slot_start_time'      =>      $schedule_slot_start_time,
                 'schedule_slot_end_time'        =>      $schedule_slot_end_time,
                 'schedule_date'       =>      $schedule_date,
@@ -4771,6 +4785,35 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'cancel_by', $source_flag);
         $trialbooked        = 	$booktrial->update($bookdata);
         
+        if(!empty($booktrial['pass_order_id'])){
+            Log::info('pass order id', [$booktrial['pass_order_id']]);
+            $order = Order::find($booktrial['pass_order_id']);
+            if(
+                (in_array($order['pass']['pass_type'], ['black', 'hybrid'])) &&
+                (strtotime($order['start_date']) <= time()) && 
+                ($order['onepass_sessions_used'] <= $order['onepass_sessions_total']) &&
+                ($order['onepass_sessions_used']>0)
+            ){
+                $order->onepass_sessions_used -= 1;
+                
+                if(!empty($order['monthly_total_sessions_used']) && is_array($order['monthly_total_sessions_used'])) {
+                    $booking_date = strtotime($booktrial['schedule_date']);
+                    $temp =$order->monthly_total_sessions_used;
+                    foreach($temp as &$value){
+                        if($booking_date >= strtotime(date('Y-m-d H:i:s',$value['start_date']->sec)) && $booking_date < strtotime(date('Y-m-d H:i:s',$value['end_date']->sec)) ){
+                            $value['count'] -= 1;
+                            unset($booking_date);
+                            break;
+                        }
+                    }
+                    $order->monthly_total_sessions_used = $temp;
+                    unset($temp);
+                }
+
+                $order->update();
+            }
+        }
+
         if(!empty($booktrial['extended_validity_order_id'])){
             $order = Order::find($booktrial['extended_validity_order_id']);
             if(
@@ -7532,7 +7575,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'fitcash'=>$fitcash
             ];
 
-            $this->utilities->addCheckin(['customer_id'=>$booktrial['customer_id'], 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id']]);
+            $this->utilities->addCheckin(['customer_id'=>$booktrial['customer_id'], 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id'],"checkout_status"=> true, 'device_token' => $this->device_token]);
             if(!empty($booktrial->corporate_id)) {
                 // $this->relianceService->updateServiceStepCount();
                 $orderId = null;
@@ -7742,12 +7785,12 @@ class SchedulebooktrialsController extends \BaseController {
                 // if(isset($customer_level_data['next_level']) && isset($customer_level_data['next_level']['cashback'])){
                 //     $response['streak']['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Make sure to continue as next level gets you '.$customer_level_data['next_level']['cashback'].'%.Higher the Level, Higher the Cashback';
                 // }
+                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
+
+                Log::info('customer_level_data');
+                Log::info($customer_level_data);
+                
                 if($verify_fitcode_result->fitcash > 0 || empty($booktrial['pass_order_id'])){
-
-                    $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
-
-                    Log::info('customer_level_data');
-                    Log::info($customer_level_data);
 
                     if($payment_done){
                         $response['sub_header_1'] = $customer_level_data['current_level']['cashback']."% Cashback";
