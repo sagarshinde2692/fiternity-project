@@ -2579,6 +2579,7 @@ class CustomerController extends \BaseController {
 			$corporate_id  = $reliance_customer['corporate_id'];
             if(!empty($corporate_id) && !empty($customer[0])){
 				$customer[0]['is_health_shown'] = true;
+				$customer[0]['show_health'] = true; // to show the health object in profile - onepass phase2
 				// if(empty($customer[0]['external_reliance']) || !($customer[0]['external_reliance'])) {
 				// 	$customer[0]['corporate_manual_request'] = 'Request Profile Changes';
 				// }
@@ -4204,7 +4205,16 @@ class CustomerController extends \BaseController {
 			if(empty($customerRec['corporate_id']) && (!empty($result['health_popup']))) {
 				unset($result['health_popup']);
 			}
-            //disable reliance section 05-sept-2019 above
+			//disable reliance section 05-sept-2019 above
+			
+			unset($result['health']);
+			unset($result['is_health_rewad_shown']);
+			unset($result['health_popup']);
+			unset($result['non_reliance']);
+			unset($result['dob_popup']);
+			unset($result['is_health_rewad_shown']);
+
+			//disable reliance section on home from onepass phase2
 		}
         
         if(!isExternalCity($city)){
