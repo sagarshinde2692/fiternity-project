@@ -10800,10 +10800,11 @@ class CustomerController extends \BaseController {
 		$resp = [
 			'name' => $customer->name
 		];
-		$photo = !empty($image) && ((empty($customer->onepass) || empty($customer->onepass['photo_upload']) || !empty($customer->onepass['photo_upload'])) )  ? $this->utilities->onePassCustomerAddImage($image, $customer_id, $customer): null;
+		//return array('data' => !isset($customer->onepass['photo_upload']) );
+		$photo = !empty($image) && ((empty($customer->onepass) || !isset($customer->onepass['photo_upload']) || !empty($customer->onepass['photo_upload'])) )  ? $this->utilities->onePassCustomerAddImage($image, $customer_id, $customer): null;
 
-		if(!empty($customer->onepass['photo_upload'])){
-			
+		if( !empty($image) && !((empty($customer->onepass) || !isset($customer->onepass['photo_upload']) || !empty($customer->onepass['photo_upload'])) )  ){
+
 			return Response::json(array('status'=>400, 'message'=>'Can not update Image.'), 200);
 		}
 		else if((!empty($photo['status']) && $photo['status']==200)){
@@ -10828,7 +10829,11 @@ class CustomerController extends \BaseController {
 		$resp = array_merge($resp, $customer->onepass);
 
 		if(!empty($data['submit']) && !empty($data['profile_completed'])){
-			$customer->onepass['photo_upload']= false;
+
+			$onepass = $customer->onepass;
+			$onepass['photo_upload']= false;
+			$customer->onepass = $onepass;
+
 			//here interests is array of ids
 			$resp =['profile_data' => $this->utilities->personlizedProfileData($resp)];
 		}
