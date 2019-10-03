@@ -8370,7 +8370,6 @@ class FindersController extends \BaseController {
             });
             
             $membership_ratecards = array_filter($service[$serviceRatecards], function($rc){
-				Log::info('service ratecards::::', [$rc['type'], $rc['_id']]);
                 return $rc['type'] == 'membership';
             });
 
@@ -8395,7 +8394,7 @@ class FindersController extends \BaseController {
             $membership_buckets = createBucket($membership_ratecards, 'duration_day', array_keys($duration_session_pack));
 
 			$studio_extended_buckets = createBucket($studio_extended_validity, 'duration', array_keys($duration_session_pack));
-			Log::info('studio extended at order ratecard::::::', [$studio_extended_buckets, $membership_buckets]);
+			Log::info('studio extended at order ratecard::::::', [$studio_extended_buckets]);
             foreach($duration_session_pack as $key => $value){
                 $all_ratecards = array_merge($all_ratecards, $studio_extended_buckets[$key], $session_buckets[$value], $membership_buckets[$key]);
             }
