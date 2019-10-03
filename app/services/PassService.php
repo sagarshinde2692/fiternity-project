@@ -2005,7 +2005,7 @@ class PassService {
                     ->where('going_status_txt','!=','cancel');
                 })
                 ->orWhere(function($query){
-                        $query	->where('schedule_date_time', '>', new \DateTime(date('Y-m-d H:i:s', time())))
+                        $query	->where('schedule_date_time', '>', new \DateTime(date('Y-m-d H:i:s', strtotime('-1 hour'))))
                                 ->whereIn('post_trial_status', [null, '', 'unavailable']);	
                 })
                 ->orWhere(function($query){
