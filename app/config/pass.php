@@ -730,7 +730,7 @@ return [
     
     "before_purchase_tab" => [
         "headerview" =>[
-            "header_img" => "http://b.fitn.in/passes/onepass-app.png",
+            "header_img" => "https://b.fitn.in/passes/onepass-app.png",
             "background_image" => "https://b.fitn.in/onepass/onepss_background_logo.png", //"http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
             "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
             "header_sub_text"  => "Enjoy limitless access across Fitternity's 12,000+ fitness classes, gyms and sports facilities across India",
