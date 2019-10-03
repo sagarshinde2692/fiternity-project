@@ -820,7 +820,7 @@ return array(
 
 	'fitternity_personal_trainers' => 'Personal Training at Home by Fitternity',
 
-	'delay_methods' =>["bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "postTrialStatusUpdate", "bookTrialReminderAfter2Hour", "bookTrialReminderBefore10Min", "bookTrialReminderBefore3Hour", 'bookTrialReminderBefore20Min', 'offhoursConfirmation', "bookTrialReminderAfter30Mins", 'abandonCartCustomerAfter2hoursFinder'],
+	'delay_methods' =>["bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "postTrialStatusUpdate", "bookTrialReminderAfter2Hour", "bookTrialReminderBefore10Min", "bookTrialReminderBefore3Hour", 'bookTrialReminderBefore20Min', 'offhoursConfirmation', "bookTrialReminderAfter30Mins", 'abandonCartCustomerAfter2hoursFinder','ankitamamnia@fitternity.com'],
 
 
 	'my_fitness_party_slug' => ['mfp','mfp-mumbai','mfp-delhi'],
