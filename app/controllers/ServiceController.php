@@ -2743,9 +2743,10 @@ class ServiceController extends \BaseController {
 						}
 					}
 				}
-				
-				if($value['price']< 1001){
-					$value['onepass_booking_block'] = true;
+				else{
+					if($value['price']< 1001){
+						$value['onepass_booking_block'] = true;
+					}
 				}
 			}
 			
