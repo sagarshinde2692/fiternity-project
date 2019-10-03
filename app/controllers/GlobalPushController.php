@@ -484,28 +484,6 @@ class GlobalPushController extends \BaseController
         $this->addToEsData($indexdocs);
 
     }while(!empty($indexdocs));
-
-    
-    //  Log::info('I have $indexdocs.......');
-  
-    // $t = time();
-    // Log::info($t);
-
-    // $final_data = [];
-    // $ab = $indexdocs->toArray();
-    // $chunks = array_chunk($indexdocs->toArray(), 500);
-    
-    
-    
-    // foreach($chunks as $chunk){
-    //     array_push($final_data, array_map('esParse',$chunk));
-    // }
-
-    // return count($final_data);
-
-    
-     
-    // Log::info(time()-$t);
     
   }
 
@@ -1585,15 +1563,6 @@ class GlobalPushController extends \BaseController
 
     Log::info("done allfittnesslocation.......");
 
-  }
-
-  public function bulkPush($all_data, $index_name){
-    $post_string = "";
-    foreach($all_data as $x){
-        $post_string = $post_string.json_encode(["index"=>new stdClass()])."\n".json_encode($x)."\n";
-    }
-    $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/_bulk', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $post_string);     //return $request;exit;
-    Log::info( "<br>    ---  ".es_curl_request($request));
   }
 
     public function addToEsData($data = null, $push_to_es = false) {
