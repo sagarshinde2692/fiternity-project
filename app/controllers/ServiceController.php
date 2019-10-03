@@ -2738,13 +2738,13 @@ class ServiceController extends \BaseController {
 
 				if(!empty($value['data'])){
 					foreach($value['data'] as &$value_data){
-						if($value_data['price']< 1001){
+						if($value_data['price']< Config::get('pass.price_upper_limit')){
 							$value_data['onepass_booking_block'] = true;
 						}
 					}
 				}
 				else{
-					if($value['price']< 1001){
+					if($value['price']<  Config::get('pass.price_upper_limit')){
 						$value['onepass_booking_block'] = true;
 					}
 				}
