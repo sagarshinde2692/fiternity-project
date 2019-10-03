@@ -149,7 +149,7 @@ class RelianceController extends \BaseController {
       if(!empty($customerDetails['corporate_id'])) {
         $healthObject = $this->relianceService->buildHealthObjectStructure($custInfo->customer->_id, $customerDetails['corporate_id'], $deviceType, $data['city'], $appVersion, $customerDetails);
         if(!empty($healthObject)) {
-          return Response::json(array('status' => 200, 'data' => $healthObject, 'message' => 'success'));
+          return Response::json(array('status' => 200, 'data' => ['health' => $healthObject], 'message' => 'success'));
         }
       }
       
