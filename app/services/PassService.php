@@ -1855,49 +1855,51 @@ class PassService {
             $totalSessions = $passOrder['pass']['duration'];
             if($totalSessions <= $totalBookings) {
                 $passExpired = true;
+                $usageLeft = 0;
             }
             else {
                 $usageLeft =  $totalSessions - $totalBookings;
             }
-            $tabPassData['name'] = strtoupper(trim($passOrder['customer_name']));
-            $tabPassData['subheader'] = $totalSessions.' SESSIONS';
-            $tabPassData['left_value'] = strval($upcomingBookings);
-            $tabPassData['right_value'] = strval($pastBookings);
-            if(!$passExpired) {
-                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('_id', 'desc')->first();
-                if(!empty($lastOrder)) {
-                    $tabPassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
-                    $tabPassData['footer']['section1']['no_last_order'] = false;
-                    $tabPassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
-                    $tabPassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
-                }
-                else {
-                    unset($tabPassData['footer']['section1']['button1_text']);
-                    unset($tabPassData['footer']['section1']['button2_text']);
-                    if($notStarted) {
-                        unset($tabPassData['top_right_button_text']);
-                        $tabPassData['left_text'] = "Booking starts from:";
-                        unset($tabPassData['left_value']);
-                        $tabPassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
-                        unset($tabPassData['right_value']);
-                    }
-                }
-                if(!empty($usageLeft) && $usageLeft>5) {
-                    unset($tabPassData['footer']['section2']);
-                    unset($tabPassData['footer']['section3']);
-                }
-                else {
-                    $tabPassData['footer']['section2']['text'] = strtr($tabPassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
-                    unset($tabPassData['footer']['section3']);
-                }
-            }
-            else {
-                unset($tabPassData['footer']['section1']['button1_subtext']);
-                unset($tabPassData['footer']['section1']['no_last_order']);
-                unset($tabPassData['footer']['section1']);
-                $tabPassData['footer']['section2'] = $tabPassData['footer']['section3'];
-                unset($tabPassData['footer']['section3']);
-            }
+            $this->purchasedPassFormat($tabPassData, 'black', $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, $totalSessions);
+            // $tabPassData['name'] = strtoupper(trim($passOrder['customer_name']));
+            // $tabPassData['subheader'] = $totalSessions.' SESSIONS';
+            // $tabPassData['left_value'] = strval($upcomingBookings);
+            // $tabPassData['right_value'] = strval($pastBookings);
+            // if(!$passExpired) {
+            //     $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('_id', 'desc')->first();
+            //     if(!empty($lastOrder)) {
+            //         $tabPassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
+            //         $tabPassData['footer']['section1']['no_last_order'] = false;
+            //         $tabPassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
+            //         $tabPassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
+            //     }
+            //     else {
+            //         unset($tabPassData['footer']['section1']['button1_text']);
+            //         unset($tabPassData['footer']['section1']['button2_text']);
+            //         if($notStarted) {
+            //             unset($tabPassData['top_right_button_text']);
+            //             $tabPassData['left_text'] = "Booking starts from:";
+            //             unset($tabPassData['left_value']);
+            //             $tabPassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
+            //             unset($tabPassData['right_value']);
+            //         }
+            //     }
+            //     if(!empty($usageLeft) && $usageLeft>5) {
+            //         unset($tabPassData['footer']['section2']);
+            //         unset($tabPassData['footer']['section3']);
+            //     }
+            //     else {
+            //         $tabPassData['footer']['section2']['text'] = strtr($tabPassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
+            //         unset($tabPassData['footer']['section3']);
+            //     }
+            // }
+            // else {
+            //     unset($tabPassData['footer']['section1']['button1_subtext']);
+            //     unset($tabPassData['footer']['section1']['no_last_order']);
+            //     unset($tabPassData['footer']['section1']);
+            //     $tabPassData['footer']['section2'] = $tabPassData['footer']['section3'];
+            //     unset($tabPassData['footer']['section3']);
+            // }
         }
         else if($passOrder['pass']['pass_type']=='red') {
             $totalDuration = $passOrder['pass']['duration'];
@@ -1906,45 +1908,47 @@ class PassService {
             if(empty($usageLeft) || $usageLeft<0) {
                 $passExpired = true;
             }
-            $tabPassData['name'] = strtoupper(trim($passOrder['customer_name']));
-            $tabPassData['subheader'] = strtoupper(trim($passOrder['pass']['duration_text']));
-            $tabPassData['left_value'] = strval($upcomingBookings);
-            $tabPassData['right_value'] = strval($pastBookings);
 
-            if(!$passExpired) {
-                $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('_id', 'desc')->first();
-                if(!empty($lastOrder)) {
-                    $tabPassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
-                    $tabPassData['footer']['section1']['no_last_order'] = false;
-                    $tabPassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
-                    $tabPassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
-                }
-                else {
-                    unset($tabPassData['footer']['section1']['button1_text']);
-                    unset($tabPassData['footer']['section1']['button2_text']);
-                    if($notStarted) {
-                        unset($tabPassData['top_right_button_text']);
-                        $tabPassData['left_text'] = "Booking starts from:";
-                        unset($tabPassData['left_value']);
-                        $tabPassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
-                        unset($tabPassData['right_value']);
-                    }
-                }
-                if(!empty($usageLeft) && $usageLeft>5) {
-                    unset($tabPassData['footer']['section2']);
-                    unset($tabPassData['footer']['section3']);
-                }
-                else {
-                    $tabPassData['footer']['section2']['text'] = strtr($tabPassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
-                    unset($tabPassData['footer']['section3']);
-                }
-            }
-            else {
-                unset($tabPassData['footer']['section1']['button1_subtext']);
-                unset($tabPassData['footer']['section1']['no_last_order']);
-                $tabPassData['footer']['section2'] = $tabPassData['footer']['section3'];
-                unset($tabPassData['footer']['section3']);
-            }
+            $this->purchasedPassFormat($tabPassData, 'red', $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, 0);
+            // $tabPassData['name'] = strtoupper(trim($passOrder['customer_name']));
+            // $tabPassData['subheader'] = strtoupper(trim($passOrder['pass']['duration_text']));
+            // $tabPassData['left_value'] = strval($upcomingBookings);
+            // $tabPassData['right_value'] = strval($pastBookings);
+
+            // if(!$passExpired) {
+            //     $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('_id', 'desc')->first();
+            //     if(!empty($lastOrder)) {
+            //         $tabPassData['footer']['section1']['button1_subtext'] = ucwords($lastOrder->finder_name);
+            //         $tabPassData['footer']['section1']['no_last_order'] = false;
+            //         $tabPassData['footer']['section1']['service_slug'] = $lastOrder->service_slug;
+            //         $tabPassData['footer']['section1']['finder_slug'] = $lastOrder->finder_slug;
+            //     }
+            //     else {
+            //         unset($tabPassData['footer']['section1']['button1_text']);
+            //         unset($tabPassData['footer']['section1']['button2_text']);
+            //         if($notStarted) {
+            //             unset($tabPassData['top_right_button_text']);
+            //             $tabPassData['left_text'] = "Booking starts from:";
+            //             unset($tabPassData['left_value']);
+            //             $tabPassData['right_text'] = date('d M Y', strtotime($passOrder['start_date']));
+            //             unset($tabPassData['right_value']);
+            //         }
+            //     }
+            //     if(!empty($usageLeft) && $usageLeft>5) {
+            //         unset($tabPassData['footer']['section2']);
+            //         unset($tabPassData['footer']['section3']);
+            //     }
+            //     else {
+            //         $tabPassData['footer']['section2']['text'] = strtr($tabPassData['footer']['section2']['text'], ['remaining_text' => $usageLeft.' sessions']);
+            //         unset($tabPassData['footer']['section3']);
+            //     }
+            // }
+            // else {
+            //     unset($tabPassData['footer']['section1']['button1_subtext']);
+            //     unset($tabPassData['footer']['section1']['no_last_order']);
+            //     $tabPassData['footer']['section2'] = $tabPassData['footer']['section3'];
+            //     unset($tabPassData['footer']['section3']);
+            // }
         }
         $tabPassData['pass_expired'] = $passExpired;
 
@@ -2107,6 +2111,7 @@ class PassService {
 
         return $this->utilities->getWorkoutSessions($near_by_workout_request, 'customerHome');
     }
+
     public function giveCashbackOnOrderSuccess($order){
         try{
             

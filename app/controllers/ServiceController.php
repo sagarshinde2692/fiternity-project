@@ -972,13 +972,13 @@ class ServiceController extends \BaseController {
                             
 						}
 
-						$rsh['onepass_booking_block'] = false;
-						$nrsh['onepass_booking_block'] = false;
+						// $rsh['onepass_booking_block'] = false;
+						// $nrsh['onepass_booking_block'] = false;
 
-						if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
-							$rsh['onepass_booking_block'] = true;
-							$nrsh['onepass_booking_block'] = true;
-						}
+						// if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
+						// 	$rsh['onepass_booking_block'] = true;
+						// 	$nrsh['onepass_booking_block'] = true;
+						// }
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
 				}
@@ -1231,10 +1231,10 @@ class ServiceController extends \BaseController {
                     $service['non_peak']['price'] .= $str;
 				}
 
-				$service['non_peak']['onepass_booking_block'] = true;
-				if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
-					$service['non_peak']['onepass_booking_block'] = true;
-				}
+				// $service['non_peak']['onepass_booking_block'] = true;
+				// if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
+				// 	$service['non_peak']['onepass_booking_block'] = true;
+				// }
             }
 			
 			$peak_exists = false;
@@ -1246,11 +1246,13 @@ class ServiceController extends \BaseController {
 
             	if(!empty($slots)){
 
+					//$this->addDisableBooking($service, $allowSession);
             		array_push($schedules, $service);
             	}
 
             }else{
 
+				$this->addDisableBooking($service, $allowSession);
             	array_push($schedules, $service);
             }
             
@@ -1430,10 +1432,10 @@ class ServiceController extends \BaseController {
 						$sc['cost'] .= $str;
 					}
 					
-					$sc['onepass_booking_block'] = true;
-					if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
-						$sc['onepass_booking_block'] = true;
-					}
+					// $sc['onepass_booking_block'] = true;
+					// if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
+					// 	$sc['onepass_booking_block'] = true;
+					// }
 					if(!empty($sc['free_trial_available']) && $sc['free_trial_available']){
 						$sc['free_session_coupon'] = 'FREE';
 					}
@@ -2112,10 +2114,10 @@ class ServiceController extends \BaseController {
 			);
 		}
 
-		$service_details['onepass_booking_block'] = false;
-		if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
-			$service_details['onepass_booking_block'] = true;
-		}
+		// $service_details['onepass_booking_block'] = false;
+		// if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
+		// 	$service_details['onepass_booking_block'] = true;
+		// }
 
 		$time = isset($_GET['time']) ? $_GET['time'] : null;
 		$time_interval = null;
@@ -2730,4 +2732,13 @@ class ServiceController extends \BaseController {
 		return $price_text;
 	}
 
+	public function addDisableBooking(&$service, $allowSession){
+		if(!empty($service['slots']) && !empty($allowSession['allow_session']) && !empty($allowSession['profile_incomplete'])){
+			foreach($service['slots'] as &$value){
+				if($value['price']< 1001){
+					$value['onepass_booking_block'] = true;
+				}
+			}
+		}
+	}
 }
