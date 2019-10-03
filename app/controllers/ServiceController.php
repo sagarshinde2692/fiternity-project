@@ -1245,8 +1245,8 @@ class ServiceController extends \BaseController {
             if($this->vendor_token){
 
             	if(!empty($slots)){
-
-					//$this->addDisableBooking($service, $allowSession);
+					Log::info('service details::::::::::::::::::: with slots::::', [$slots]);
+					$this->addDisableBooking($service, $allowSession);
             		array_push($schedules, $service);
             	}
 
