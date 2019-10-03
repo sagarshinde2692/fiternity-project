@@ -4198,7 +4198,7 @@ class CustomerController extends \BaseController {
 					unset($result['health_popup']);
 				}
 			}
-			if(!empty($result['non_reliance'])) {
+			if(empty($customerRec['corporate_id']) && !empty($result['non_reliance'])) {
 				unset($result['non_reliance']);
 			}
 			if(empty($customerRec['corporate_id']) && (!empty($result['health_popup']))) {
