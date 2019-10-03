@@ -811,7 +811,7 @@ return array(
                 "rate"=>14
             )
         ),
-	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','surajpalai@fitternity.com','kedarkhanvilkar@fitternity.com','nikitasharma@fitternity.com', 'firojmulani@fitternity.com', 'vipulchauhan@fitternity.com', 'vipul.chauhan705@gmail.com'],	
+	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','surajpalai@fitternity.com','kedarkhanvilkar@fitternity.com','nikitasharma@fitternity.com', 'firojmulani@fitternity.com', 'vipulchauhan@fitternity.com', 'vipul.chauhan705@gmail.com', 'ankitamamnia@fitternity.com'],	
     
 	'test_vendors' => ['fitternity-test-page', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym'],
 	'hide_from_search' => [11128, 6332, 6865, 7146, 9309, 9329, 9379, 9381, 9403, 9623, 9863, 9869, 9891, 10037, 11128, 12110],
@@ -895,7 +895,7 @@ return array(
 		'offhours_instant_td_mins'=>5,
 		'offhours_fixed_time_1'=>22,
 		'offhours_fixed_time_2'=>20,
-		'full_day_weekend'=>['Sunday', 'Saturday'],
+		'full_day_weekend'=>['Sunday', 'Wednesday'],
 		'begin_weekend'=>['Saturday'],
 		'end_weekend'=>['Monday'],
 	],
@@ -1035,7 +1035,9 @@ return array(
 
     'anytime_finder_ids'=> [7335,5745,5728,8821,8871,5747,12221,5748,5746,6250,9480,8823,10570,10568,7909,13124,11363,7907,11103,12516,15103,11037,11129,11742,7902,16209,13980,15103,15384,13031,],
     
-    'non_flexi_service_cat'=>[111, 65, 5],
+	'non_flexi_service_cat'=>[111, 65, 5],
+	
+	'camp_excluded_vendor_id'=>[579, 1233, 1260, 1261, 1262, 1874, 2105, 9171, 9178, 5742, 10675],
     
     'tab_session_pack_vendor_ids'=>[1490,424,1935,9423,9481,9932,9954,10970,11021,11223,12208,13968,14102,15431,15775,15980,16251]
     
