@@ -1245,14 +1245,10 @@ class ServiceController extends \BaseController {
             if($this->vendor_token){
 
             	if(!empty($slots)){
-					Log::info('service details::::::::::::::::::: with slots::::', [$slots]);
-					$this->addDisableBooking($service, $allowSession);
             		array_push($schedules, $service);
             	}
 
             }else{
-
-				$this->addDisableBooking($service, $allowSession);
             	array_push($schedules, $service);
             }
             
@@ -1446,10 +1442,14 @@ class ServiceController extends \BaseController {
 			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
 				foreach($data['schedules'] as &$schedule){
 					$schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title']);
+
+					$this->addDisableBooking($schedule, $allowSession);
 				}
 			}
 			else if(!empty($data['slots']) && in_array($this->device_type, ['android', 'ios'])){
 				$data['slots'] = $this->utilities->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'] );
+
+				$this->addDisableBooking($data, $allowSession);
             }
             
             if(!empty($data['slots']) && count($data['slots']) == 1 && !empty($data['slots'][0]['title'])){
