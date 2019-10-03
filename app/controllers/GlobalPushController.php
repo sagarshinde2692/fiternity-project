@@ -366,11 +366,36 @@ class GlobalPushController extends \BaseController
         $this->pushcategoryofferinglocation($index_name);//required
 // //        $this->pushcategoryfacilitieslocation($index_name);
 // //        $this->pushofferingcity($index_name);
+    $this->addToEsData(null, true);
 
     /*
     point the aliases for the cluster to new created index
     */
-    $this->addToEsData(null, true);
+
+    $alias_request = '{
+        "actions": [ {
+        "remove": {
+            "index": "*",
+            "alias": "fitternity_autosuggestor"
+        }
+        },
+        {
+        "add": {
+            "index": "'.$index_name.'",
+            "alias": "fitternity_autosuggestor"
+        }
+        }]
+    }';
+
+    $url        =   $this->elasticsearch_url_build."_aliases";
+    $payload =  json_encode(json_decode($alias_request,true));
+    $request = array(
+        'url' => $url,
+        'port' => $this->elasticsearch_port,
+        'method' => 'POST',
+        'postfields' => $payload
+    );
+    echo es_curl_request($request);
     Log::info($this->index_name);
     return "Done";
 
