@@ -2059,7 +2059,7 @@ class PassService {
 
             $upcoming['header'] = "Session Activated";
 
-            $upcoming['header_text'] = "Session Activated";
+            //$upcoming['header_text'] = "Session Activated";
 
             unset($upcoming['footer']);
             unset($upcoming['direction']);
