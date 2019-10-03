@@ -5310,81 +5310,81 @@ class FindersController extends \BaseController {
 					"callback_header" => "Renewal request for ".$finderData['finder']['title']
 				];
 			}
-			$finderData['total_photos_count'] = count($finder['photos']);
+            $finderData['total_photos_count'] = count($finder['photos']);
+            
+            try{
+                $this->orderRatecards($finderData, 'app');
+            }catch(Exception $e){
+                Log::info("Error while sorting ratecard", [$e]);
+            }
+    
+            // $workout_ratecard_arr = array();
+            // foreach($finderData['finder']['services'] as $service){
+            // 	foreach($service['ratecard'] as $ratecard){
+            // 		if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+            // 		Log::info("ratecard_id :::", [$ratecard['_id']]);
+            // 			array_push($workout_ratecard_arr, 1);
+            // 		}
+            // 	}
+            // }
+    
+            // Log::info("workout_ratecard_arr ::", [$workout_ratecard_arr]);
+            // Log::info("count workout_ratecard_arr ::", [count($workout_ratecard_arr)]);
+            
+            // if(count($workout_ratecard_arr) == 0){
+            // 	Log::info("no workout ratecard");
+            // 	$finderData['call_for_action_button'] = "";
+            // 	$finderData['finder']['pay_per_session'] = false;
+            // }
+    
+            // commented on 9th August - Akhil
+            if(!empty($customer_id)){
+                $this->addCreditPoints($finderData['finder']['services'], $customer_id);
+            }
+            //adding static data for hanman fitness
+            // if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
+            // 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
+            // }
+            //Log::info('finder',[$finderData['finder']]);
+            $allowSession = false;
+            $allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
+            foreach($finderData['finder']['services'] as &$service){
+                foreach($service['ratecard'] as &$ratecard){
+                    if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+                        $price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+                        Log::info("Price onepass ::",[$price]);
+                        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+                        
+                        $_allowSession = false;
+                        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+                            if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price<Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finderData['finder'])) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])) {
+                                $_allowSession = $allowSession['allow_session'];
+                            }
+                        }
+                        if($_allowSession){
+                            unset($ratecard['button_color']);
+                            unset($ratecard['pps_know_more']);
+                            unset($ratecard['pps_title']);
+                            unset($ratecard['remarks']);
+                            unset($ratecard['remarks_imp']);
+                            unset($ratecard['price_text']);
+    
+                            unset($finderData['fit_ex']);
+    
+                            $ratecard['price'] = $ratecard['special_price'] = "0";
+                            $ratecard['start_price_text'] = Config::get('app.onepass_free_string');
+                            $ratecard['skip_share_detail'] = true;
+                        }
+                    }
+                }
+            }
+    
+            $this->photosOrderFloor($finderData['finder']);
 
 		}else{
 
 			$finderData['status'] = 404;
 		}
-
-		try{
-			$this->orderRatecards($finderData, 'app');
-		}catch(Exception $e){
-			Log::info("Error while sorting ratecard", [$e]);
-		}
-
-		// $workout_ratecard_arr = array();
-		// foreach($finderData['finder']['services'] as $service){
-		// 	foreach($service['ratecard'] as $ratecard){
-		// 		if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
-		// 		Log::info("ratecard_id :::", [$ratecard['_id']]);
-		// 			array_push($workout_ratecard_arr, 1);
-		// 		}
-		// 	}
-		// }
-
-		// Log::info("workout_ratecard_arr ::", [$workout_ratecard_arr]);
-		// Log::info("count workout_ratecard_arr ::", [count($workout_ratecard_arr)]);
-		
-		// if(count($workout_ratecard_arr) == 0){
-		// 	Log::info("no workout ratecard");
-		// 	$finderData['call_for_action_button'] = "";
-		// 	$finderData['finder']['pay_per_session'] = false;
-		// }
-
-		// commented on 9th August - Akhil
-		if(!empty($customer_id)){
-			$this->addCreditPoints($finderData['finder']['services'], $customer_id);
-		}
-		//adding static data for hanman fitness
-		// if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
-		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
-		// }
-		//Log::info('finder',[$finderData['finder']]);
-		$allowSession = false;
-		$allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
-		foreach($finderData['finder']['services'] as &$service){
-			foreach($service['ratecard'] as &$ratecard){
-				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
-					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-					Log::info("Price onepass ::",[$price]);
-					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					
-					$_allowSession = false;
-					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-						if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price<Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finderData['finder'])) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])) {
-							$_allowSession = $allowSession['allow_session'];
-						}
-					}
-					if($_allowSession){
-						unset($ratecard['button_color']);
-						unset($ratecard['pps_know_more']);
-						unset($ratecard['pps_title']);
-						unset($ratecard['remarks']);
-						unset($ratecard['remarks_imp']);
-						unset($ratecard['price_text']);
-
-						unset($finderData['fit_ex']);
-
-						$ratecard['price'] = $ratecard['special_price'] = "0";
-						$ratecard['start_price_text'] = Config::get('app.onepass_free_string');
-						$ratecard['skip_share_detail'] = true;
-					}
-				}
-			}
-		}
-
-		$this->photosOrderFloor($finderData['finder']);
 
 		return Response::json($finderData,$finderData['status']);
 
