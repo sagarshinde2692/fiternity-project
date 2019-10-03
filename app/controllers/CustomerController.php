@@ -10800,9 +10800,13 @@ class CustomerController extends \BaseController {
 		$resp = [
 			'name' => $customer->name
 		];
-		$photo = !empty($image) ? $this->utilities->onePassCustomerAddImage($image, $customer_id, $customer): null;
+		$photo = !empty($image) && ((empty($customer->onepass) || empty($customer->onepass['photo_upload']) || !empty($customer->onepass['photo_upload'])) )  ? $this->utilities->onePassCustomerAddImage($image, $customer_id, $customer): null;
 
-		if((!empty($photo['status']) && $photo['status']==200)){
+		if(!empty($customer->onepass['photo_upload'])){
+			
+			return Response::json(array('status'=>400, 'message'=>'Can not update Image.'), 200);
+		}
+		else if((!empty($photo['status']) && $photo['status']==200)){
 
 			if(!empty($photo['customer_photo'])){
 				$data['customer_photo'] = $photo['customer_photo'];
@@ -10818,6 +10822,21 @@ class CustomerController extends \BaseController {
 		
 		$data['profile_completed'] = $this->utilities->checkOnepassProfileCompleted($customer);
 
+		
+		//$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
+
+		$resp = array_merge($resp, $customer->onepass);
+
+		if(!empty($data['submit']) && !empty($data['profile_completed'])){
+			$customer->onepass['photo_upload']= false;
+			//here interests is array of ids
+			$resp =['profile_data' => $this->utilities->personlizedProfileData($resp)];
+		}
+		else{
+			//interests is array of object alog with slug and id;
+			$resp = $this->utilities->formatOnepassCustomerDataResponse($resp);
+		}
+
 		try{
 			if(!empty($input_fields_count)){
 				$customer->save();
@@ -10828,19 +10847,6 @@ class CustomerController extends \BaseController {
 
 			return array('status'=>400, 'message'=>'Error');
 
-		}
-
-		//$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
-
-		$resp = array_merge($resp, $customer->onepass);
-
-		if(!empty($data['submit']) && !empty($data['profile_completed'])){
-			//here interests is array of ids
-			$resp =['profile_data' => $this->utilities->personlizedProfileData($resp)];
-		}
-		else{
-			//interests is array of object alog with slug and id;
-			$resp = $this->utilities->formatOnepassCustomerDataResponse($resp);
 		}
 
 		return Response::json(['status'=> 200, "message"=> "Success", "data"=> $resp]);
