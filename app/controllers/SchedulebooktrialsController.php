@@ -8672,7 +8672,7 @@ class SchedulebooktrialsController extends \BaseController {
            // ->orderBy('_id','desc')
            ->first();
 
-        if(!empty($booktrial) && $booktrial['schedule_date_time'] > strtotime(date('Y-m-d 00:00:00'))){
+        if(!empty($booktrial) && strtotime($booktrial['schedule_date_time']) > strtotime(date('Y-m-d 23:59:59'))){
             return ["status"=>400, "message"=> "You can unlock your session at booking day only."];
         }
         else if(!empty($booktrial)){
