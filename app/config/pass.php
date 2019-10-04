@@ -717,6 +717,7 @@ return [
             "subheader" => "Select at least 3"
         ],
         "personlized_profile" => [
+            "header" => "Explore our fitness options",
             "url" => "",
             "success_image" => "https://b.fitn.in/passes/check_circle.png",
             "text" => "personalization Completed",
