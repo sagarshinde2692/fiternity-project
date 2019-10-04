@@ -55,6 +55,9 @@ class PassService {
             $response['app_passes'][0]['why_pass'] = $local_pass['why_local_pass'];
             $response['app_passes'][0]['offerings'] = $local_pass['local_pass_offerings'];
             $response['app_passes'][0]['remarks'] = $local_pass['local_pass_remarks'];
+
+            $response['app_passes'][0]['offerings']['text'] = strtr($response['passes'][0]['offerings']['text'], ['city_centers_count'=> 1000, 'city_name'=>ucwords($city) ]);
+
             unset($response['app_passes'][0]['local_pass']);
             $response['app_passes'][0]['header'] = $response['app_passes'][0]['header']. " LOCAL";
             unset($response['app_passes'][1]);
@@ -68,8 +71,6 @@ class PassService {
 
                 $response['app_passes'][0]['local_pass']['header'] = strtr($response['app_passes'][0]['local_pass']['header'], ['city_name'=> ucwords($city)]);
 
-                $response['passes'][0]['offerings']['text']  = strtr($response['passes'][0]['offerings']['text'], ['city_centers_count'=>1000, 'city_name'=> ucwords($city)]);
-                $response['app_passes'][0]['offerings']['text']  = strtr($response['app_passes'][0]['offerings']['text'], ['city_centers_count'=>1000, 'city_name'=> ucwords($city)]);
             }
             else{
                 unset($response['passes'][0]['local_pass']);
