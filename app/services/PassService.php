@@ -2032,7 +2032,7 @@ class PassService {
                     $query->where('payment_done', false)
                     ->where('post_trial_verified_status', '!=', 'no')
                     ->where('going_status_txt','!=','cancel')
-                ->where('schedule_date_time', '>', new DateTime(date('Y-m-d'/*, strtotime('-2 hour')*/)));
+                ->where('schedule_date_time', '>', new \DateTime(date('Y-m-d'/*, strtotime('-2 hour')*/)));
                 })
                 ->orWhere(function($query){
                         $query	->where('schedule_date_time', '>', new \DateTime(date('Y-m-d'/*, strtotime('-2 hour')*/)))
