@@ -17,7 +17,12 @@ class Basemodel extends \Moloquent {
 	public function setIdAttribute($value){
 		
 		$this->attributes['_id'] = intval($value);
-	}
+    }
+    
+    public function scopeCustomerValidation($query,  $customer_email){
+        // return $query;
+        return $query->where(function ($query) use($customer_email) { $query->orWhere('customer_email', $customer_email);});
+    }
 
 
 }
