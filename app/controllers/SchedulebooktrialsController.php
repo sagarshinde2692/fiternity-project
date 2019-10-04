@@ -5567,6 +5567,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $hour2 = 60*60*2;
         $hour1 = 60*60;
+        $minutes15 = 15*60;
 		$going_status_txt = ['rescheduled','cancel'];
 
 		if(!isset($booktrial['going_status_txt'])){
@@ -5593,7 +5594,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$cancel_enable = true;
 		}
         
-        if($booktrial['type'] == 'workout-session' && $time_diff > $hour1){
+        if($booktrial['type'] == 'workout-session' && (($booktrial['finder_category_id'] == 5 && $time_diff > $minutes15) || ($booktrial['finder_category_id'] != 5 && $time_diff > $hour1))){
 			$cancel_enable = true;
         }
 
