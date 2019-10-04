@@ -8668,11 +8668,14 @@ class SchedulebooktrialsController extends \BaseController {
            ->where('post_trial_status', '!=', 'attended')
            ->whereIn('type',['booktrials','3daystrial','workout-session'])
            ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
-           ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+           //->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            // ->orderBy('_id','desc')
            ->first();
 
-        if(!empty($booktrial)){
+        if(!empty($booktrial) && $booktrial['schedule_date_time'] > strtotime(date('Y-m-d 00:00:00'))){
+            return ["status"=>400, "message"=> "You can unlock your session at booking day only."];
+        }
+        else if(!empty($booktrial)){
             $finder_cordinates = [
                 'lat' => $booktrial['finder_lat'],
                 'lon' => $booktrial['finder_lon']
