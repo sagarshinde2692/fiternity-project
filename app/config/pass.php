@@ -38,7 +38,7 @@ return [
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
                 ],
                 'local_pass' => [
-                    'header' => 'This is local red pass',
+                    'header' => 'Onepass Red city_name',
                     'description' => 'description of red pass',
                     'button_text' => 'buy'
                 ]

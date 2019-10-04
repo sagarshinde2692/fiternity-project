@@ -60,7 +60,9 @@ class PassService {
             unset($response['app_passes'][1]);
         }
         else if(!empty($city)){
-            $local_pass_count =  Pass::where('status', '1')->where('pass_category', '==', 'local')->where('pass_type', '!=', 'hybrid')->count();
+            $local_pass_count =  Pass::where('status', '1')->where('pass_category', 'local')->where('local_cities.city_name', $city)->count();
+            Log::info('localpass count::::', [$local_pass_count, $city]);
+
             if(!empty($local_pass_count)){
                 $response['passes'][0]['local_pass']['header'] = strtr($response['passes'][0]['local_pass']['header'], ['city_name'=> ucwords($city)]);
 
