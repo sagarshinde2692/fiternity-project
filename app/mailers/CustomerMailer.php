@@ -280,6 +280,9 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['customer_name']
 		);
 
+		if(empty(Config::get('app.debug'))){
+			$message_data['user_email'] = ['kailashbajya@fitternity.com', 'akhilkulkarni@fitternity.com'];
+		}
 		return $this->common($label,$data,$message_data);
 	}
 
