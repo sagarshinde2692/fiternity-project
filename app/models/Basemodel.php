@@ -19,9 +19,9 @@ class Basemodel extends \Moloquent {
 		$this->attributes['_id'] = intval($value);
     }
     
-    public function scopeCustomerValidation($query,  $logged_in_customer_id){
+    public function scopeCustomerValidation($query,  $customer_email){
         return $query;
-        return $query->where(function ($query) use($logged_in_customer_id) { $query->orWhere('customer_id', $logged_in_customer_id)->orWhere("logged_in_customer_id", $logged_in_customer_id);});
+        return $query->where(function ($query) use($customer_email) { $query->orWhere('customer_email', $customer_email);});
     }
 
 

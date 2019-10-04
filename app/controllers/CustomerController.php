@@ -5340,7 +5340,7 @@ class CustomerController extends \BaseController {
 
 		$order_id = (int) $order_id;
 
-        $order = Order::with(['service'=>function($query){$query->select('slug');}])->customerValidation(customerIdFromToken())->find($order_id);
+        $order = Order::with(['service'=>function($query){$query->select('slug');}])->customerValidation(customerEmailFromToken())->find($order_id);
 
 	    if(!$order){
 

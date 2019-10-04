@@ -1388,7 +1388,7 @@ class TransactionController extends \BaseController {
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['finder_name'] = strtolower($data['finder_name']);
         $result['type'] = $data['type'];
-        $result['customer_id'] = $data['customer_id'];
+        
         if(isset($data['type']) && ($data['type'] == 'workout-session')){
             $result['session_payment'] = true;
         }

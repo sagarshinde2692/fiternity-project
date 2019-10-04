@@ -4698,8 +4698,8 @@ if (!function_exists('curl_call_get')) {
         
     }
 }
-if (!function_exists('customerIdFromToken')) {
-    function customerIdFromToken()
+if (!function_exists('customerEmailFromToken')) {
+    function customerEmailFromToken()
     {
         $utilities = new Utilities();
         $customer = $utilities->getCustomerFromToken();
@@ -4707,7 +4707,7 @@ if (!function_exists('customerIdFromToken')) {
         if(empty($customer)){
             return;
         }
-        return $customer['_id'];
+        return $customer['email'];
         
     }
 }
