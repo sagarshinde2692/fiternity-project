@@ -2139,6 +2139,7 @@ class PassService {
             "lat"=>$lat,
             "lon"=>$lon,
             "city"=>strtolower($city),
+            "onepass_available" => true,
             "keys"=>[
                 "average_rating",
                 "contact",
