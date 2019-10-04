@@ -3882,7 +3882,7 @@ class CustomerController extends \BaseController {
 								$data['amount'] = "₹".$data['amount_finder'];
 							}
 							
-							if(!empty($data['pass_order_id']) && $data['time_diff']> 0){
+							if(!empty($data['pass_order_id']) && $data['time_diff']> 0){ //have to list bookings,  post 2 hour of booking end time   
 
 								$data_new = $this->passService->upcomingPassBooking($customer, $data);
 
