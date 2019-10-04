@@ -10513,7 +10513,7 @@ Class Utilities {
 
         $resp['url'] = $data['photo']['url'];
 
-        $resp['interests']['data'] = $this->personlizedServiceCategoryList($data['interests']);
+        $resp['interests']['data'] = array_merge($this->personlizedServiceCategoryList($data['interests']), $resp['interests']['data']);
 
         return $resp;
     }
@@ -10533,7 +10533,8 @@ Class Utilities {
             $base_url_extention  = Config::get('app.service_icon_base_url_extention');
 			foreach($servicecategories as &$category){
 				$category['image'] = !empty($icons[$category['name']]) ? $icons[$category['name']]['icon']: $base_url.$category['slug'].$base_url_extention;
-				if($category['slug'] == 'martial-arts'){
+                Log::info('slug at martial of service:::', [$category['slug']]);
+                if($category['slug'] == 'martial-arts'){
 					$category['name'] = 'MMA & Kick-boxing';
 				}
 			}

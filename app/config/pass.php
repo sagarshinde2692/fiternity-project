@@ -725,6 +725,11 @@ return [
             "interests" => [
                 "header" => "Explore our fitness options",
                 "data" => [
+                    [
+                        'slug'=>'', 
+                        'name'=> 'Explore All', 
+                        'icon'=> ''
+                    ]
     
                 ]
             ]
