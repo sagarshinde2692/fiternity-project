@@ -2805,7 +2805,7 @@ Class CustomerReward {
                                 Log::info("embedded_value1", [$embedded_value1]);
                                 Log::info("yc values", [$yc['values']]);
                                 if($yc['operator'] == 'in'){
-                                    if(empty($embedded_value1)){
+                                    if(empty($embedded_value1) && $embedded_value1 != 0){
                                         $discount_max_overridable = false;
                                         break;
                                     }
