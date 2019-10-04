@@ -10816,13 +10816,13 @@ class CustomerController extends \BaseController {
 			'name' => $customer->name
 		];
 		//return array('data' => !isset($customer->onepass['photo_upload']) );
-		$photo = !empty($image) && ((empty($customer->onepass) || !isset($customer->onepass['photo_upload']) || !empty($customer->onepass['photo_upload'])) )  ? $this->utilities->onePassCustomerAddImage($image, $customer_id, $customer): null;
+		$photo = !empty($image) /*&& ((empty($customer->onepass) || !isset($customer->onepass['photo_upload']) || !empty($customer->onepass['photo_upload'])) )*/  ? $this->utilities->onePassCustomerAddImage($image, $customer_id, $customer): null;
 
-		if( !empty($image) && !((empty($customer->onepass) || !isset($customer->onepass['photo_upload']) || !empty($customer->onepass['photo_upload'])) )  ){
+		/*if( !empty($image) && !((empty($customer->onepass) || !isset($customer->onepass['photo_upload']) || !empty($customer->onepass['photo_upload'])) )  ){
 
 			return Response::json(array('status'=>400, 'message'=>'Can not update Image.'), 200);
 		}
-		else if((!empty($photo['status']) && $photo['status']==200)){
+		else*/ if((!empty($photo['status']) && $photo['status']==200)){
 
 			if(!empty($photo['customer_photo'])){
 				$data['customer_photo'] = $photo['customer_photo'];
