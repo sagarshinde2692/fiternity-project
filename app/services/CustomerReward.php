@@ -2807,7 +2807,7 @@ Class CustomerReward {
                                 if($yc['operator'] == 'in'){
                                     if(empty($embedded_value1)){
                                         $discount_max_overridable = false;
-                                        // break;
+                                        break;
                                     }
                                     if(!empty($yc['values'][0]['valid_till'])){
                             
@@ -2820,17 +2820,17 @@ Class CustomerReward {
                                         }
                                         
                                     }else{
-                                        if(!in_array($embedded_value1, $yc['values'])){
-                                            $discount_max_overridable = false;
-                                            break;
+                                        if(in_array($embedded_value1, $yc['values'])){
+                                            $discount_max_overridable = true;
+                                            // break;
                                         }
                                     
                                     }
                                     Log::info('discount_max_overridable in ::::',[$discount_max_overridable]);
                                 }else if($yc['operator'] == 'nin'){
-                                    if(!empty($embedded_value1) && in_array($embedded_value1, $yc['values'])){
-                                        $discount_max_overridable = false;
-                                        break;
+                                    if(!empty($embedded_value1) && !in_array($embedded_value1, $yc['values'])){
+                                        $discount_max_overridable = true;
+                                        // break;
         
                                     }
                                     Log::info('discount_max_overridable nin ::::',[$discount_max_overridable]);
@@ -2838,12 +2838,12 @@ Class CustomerReward {
                                     
                                     if(empty($embedded_value1)){
                                         $discount_max_overridable = false;
-                                        // break;
+                                        break;
                                     }
                                     
-                                    if(!preg_match($yc['values'], $embedded_value1)){
-                                        $discount_max_overridable = false;
-                                        break;
+                                    if(preg_match($yc['values'], $embedded_value1)){
+                                        $discount_max_overridable = true;
+                                        // break;
         
                                     }
                                     Log::info('discount_max_overridable regex ::::',[$discount_max_overridable]);
