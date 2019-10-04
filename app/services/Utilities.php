@@ -10200,6 +10200,9 @@ Class Utilities {
 		    'time_tag' => 'later-today',
             'date' => date('d-m-y')
         ];
+        if(!empty($input['onepass_available'])){
+            $near_by_workout_request['onepass_available'] = true; 
+        }
         Log::info('payload:::::::::', [$near_by_workout_request]);
 		$workout = geoLocationWorkoutSession($near_by_workout_request, $source);
 		$result=[
