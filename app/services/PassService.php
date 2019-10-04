@@ -2000,10 +2000,11 @@ class PassService {
                 ->orWhere(function($query){
                     $query->where('payment_done', false)
                     ->where('post_trial_verified_status', '!=', 'no')
-                    ->where('going_status_txt','!=','cancel');
+                    ->where('going_status_txt','!=','cancel')
+                ->where('schedule_date_time', '>', new DateTime(date('Y-m-d'/*, strtotime('-2 hour')*/)));
                 })
                 ->orWhere(function($query){
-                        $query	->where('schedule_date_time', '>', new \DateTime(date('Y-m-d H:i:s', strtotime('-2 hour'))))
+                        $query	->where('schedule_date_time', '>', new \DateTime(date('Y-m-d'/*, strtotime('-2 hour')*/)))
                                 ->whereIn('post_trial_status', [null, '', 'unavailable']);	
                 })
                 ->orWhere(function($query){
