@@ -726,6 +726,7 @@ return [
                 "header" => "Explore our fitness options",
                 "data" => [
                     [
+                        '_id'=>0,
                         'slug'=>'', 
                         'name'=> 'Explore All', 
                         'icon'=> 'http://b.fitn.in/iconsv1/select-all-icon.png'
