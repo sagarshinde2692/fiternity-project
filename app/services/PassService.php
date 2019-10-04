@@ -2049,8 +2049,7 @@ class PassService {
                     $query	->where('schedule_date_time', '>', new \DateTime(date('Y-m-d', strtotime('-3 hour'))))
                             ->where('going_status_txt','!=','cancel')
                             ->whereIn('post_trial_status', [null, '', 'unavailable']);
-                });	
-            });
+                });
                 // ->orWhere(function($query){
                 //     $query	->where('ask_review', true)
                 //             ->where('schedule_date_time', '<', new \DateTime(date('Y-m-d H:i:s', strtotime('-1 hour'))))
