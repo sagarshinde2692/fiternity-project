@@ -4622,6 +4622,9 @@ if (!function_exists(('geoLocationWorkoutSession'))){
             "time_tag"=> $request['time_tag'],
             'date'=> $request['date']
         ];
+        if(!empty($request['onepass_available'])){
+            $payload['onepass_available'] = true;
+        }
 
         $url = Config::get('app.new_search_url')."/search/paypersession";
 
