@@ -41,6 +41,14 @@ return [
                     'header' => 'This is local red pass',
                     'description' => 'description of red pass',
                     'button_text' => 'buy'
+                ],
+                'why_local_pass' => [
+                    'header' => 'WHY GO FOR A PASS',
+                    'text' => 'LIMITLESS WORKOUTS, LIMITLESS CHOICES, LIMITLESS VALIDITY, LIMITLESS YOU',
+                    "data" => [
+                        "Limitless workouts across city_centers_count fitness classes, gyms and sports facilities across city_name",
+                        "Use it like a fitness membership - choose a duration of 15 days to 1 year"
+                    ]
                 ]
             ],
             [
@@ -107,9 +115,17 @@ return [
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
                 ],
                 'local_pass' => [
-                    'header' => 'This is local red pass',
+                    'header' => 'Onepass Red city_name',
                     'description' => 'description of red pass',
                     'button_text' => 'buy'
+                ],
+                'why_local_pass' => [
+                    'header' => 'WHY GO FOR A PASS',
+                    'text' => 'LIMITLESS WORKOUTS, LIMITLESS CHOICES, LIMITLESS VALIDITY, LIMITLESS YOU',
+                    "data" => [
+                        "Limitless workouts across city_centers_count fitness classes, gyms and sports facilities across city_name",
+                        "Use it like a fitness membership - choose a duration of 15 days to 1 year"
+                    ]
                 ]
             ],
             [

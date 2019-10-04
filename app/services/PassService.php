@@ -39,10 +39,22 @@ class PassService {
             $passList = Pass::where('status', '1')->where('pass_category', 'local')->where('local_cities.city_name', $city);
 
             unset($response['passes'][0]['local_pass']);
+            $why_pass = $response['passes'][0]['why_local_pass'];
+            $response['passes'][0]['why_pass'] = $why_pass;
+            unset($response['passes'][0]['why_local_pass']);
+            $response['app_passes'][0]['header'] = $response['passes'][0]['header']. " LOCAL";
             unset($response['passes'][1]);
+
             unset($response['app_passes'][0]['local_pass']);
+            $why_pass = $response['app_passes'][0]['why_local_pass'];
+            $response['app_passes'][0]['why_pass'] = $why_pass;
+            unset($response['app_passes'][0]['why_local_pass']);
             $response['app_passes'][0]['header'] = $response['app_passes'][0]['header']. " LOCAL";
             unset($response['app_passes'][1]);
+        }
+        else{
+            unset($response['passes'][0]['why_local_pass']);
+            unset($response['app_passes'][0]['why_local_pass']);
         }
 
         if(!Config::get('app.debug')) {
