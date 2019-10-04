@@ -912,5 +912,28 @@ return [
     "cancel_onepass" => [
         'text' => 'Not Satisfied with Onepass',
         'button_text' => 'Cancel OnePass'
+    ],
+
+    'local_pass_fields' => [
+        'why_local_pass' => [
+            'header' => 'WHY GO FOR A PASS',
+            'text' => 'LIMITLESS WORKOUTS, LIMITLESS CHOICES, LIMITLESS VALIDITY, LIMITLESS YOU',
+            'data' => [
+                'OnePass Red give you Unlimited Access',
+                'OnePass Red gives you Membership Privileges',
+                'Onepass Red gives you the option to workout Anytime, Anywhere'
+            ]
+        ],
+        'local_pass_offerings' => [
+            'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across < X+> fitness classes, gyms and sports facilities across city_name. \n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
+            'button_text' => 'Checkout Gyms/Studios',
+            'ratecards' => []
+        ],
+        'local_pass_remarks' => [
+            'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional FLAT INR 500 Off", // need content
+            'text' => 'Terms and Conditions',
+            "title" =>'Terms and Conditions',
+            'url' => $apiUrl.'/passtermscondition?type=unlimited'
+        ]
     ]
 ];
