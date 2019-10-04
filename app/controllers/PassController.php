@@ -29,11 +29,14 @@ class PassController extends \BaseController {
         $category = null;
         $city = null;
 
-        if(!empty($input['category']) && !empty($input['city'])){
+        if(!empty($input['category'])){
             $category = $input['category'];
-            $city = strtolower($input['city']);
         }
 
+        if(!empty($input['city'])){
+            $city = strtolower($input['city']);
+        }
+        
         $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city);
         if(empty($passes)) {
             return [

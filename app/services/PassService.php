@@ -34,27 +34,46 @@ class PassService {
 
         $response = Config::get('pass.list');
 
-        if(!empty($category) && $category == 'local'){
+        if(!empty($category) && $category == 'local' && !empty($city)){
 
             $passList = Pass::where('status', '1')->where('pass_category', 'local')->where('local_cities.city_name', $city);
 
+            
+            $local_pass = Config::get('pass.local_pass_fields');
+
+            $response['passes'][0]['why_pass'] = $local_pass['why_local_pass'];
+            $response['passes'][0]['offerings'] = $local_pass['local_pass_offerings'];
+            $response['passes'][0]['remarks'] = $local_pass['local_pass_remarks'];
+
+            $response['passes'][0]['offerings']['text'] = strtr($response['passes'][0]['offerings']['text'], ['city_centers_count'=> 1000, 'city_name'=>ucwords($city) ]);
+
             unset($response['passes'][0]['local_pass']);
-            $why_pass = $response['passes'][0]['why_local_pass'];
-            $response['passes'][0]['why_pass'] = $why_pass;
-            unset($response['passes'][0]['why_local_pass']);
-            $response['app_passes'][0]['header'] = $response['passes'][0]['header']. " LOCAL";
+            $response['passes'][0]['header'] = $response['passes'][0]['header']. " LOCAL";
             unset($response['passes'][1]);
 
+            
+            $response['app_passes'][0]['why_pass'] = $local_pass['why_local_pass'];
+            $response['app_passes'][0]['offerings'] = $local_pass['local_pass_offerings'];
+            $response['app_passes'][0]['remarks'] = $local_pass['local_pass_remarks'];
             unset($response['app_passes'][0]['local_pass']);
-            $why_pass = $response['app_passes'][0]['why_local_pass'];
-            $response['app_passes'][0]['why_pass'] = $why_pass;
-            unset($response['app_passes'][0]['why_local_pass']);
             $response['app_passes'][0]['header'] = $response['app_passes'][0]['header']. " LOCAL";
             unset($response['app_passes'][1]);
         }
+        else if(!empty($city)){
+            $local_pass_count =  Pass::where('status', '1')->where('pass_category', '==', 'local')->where('pass_type', '!=', 'hybrid')->count();
+            if(!empty($local_pass_count)){
+                $response['passes'][0]['local_pass']['header'] = strtr($response['passes'][0]['local_pass']['header'], ['city_name'=> ucwords($city)]);
+
+                $response['app_passes'][0]['local_pass']['header'] = strtr($response['app_passes'][0]['local_pass']['header'], ['city_name'=> ucwords($city)]);
+            }
+            else{
+                unset($response['passes'][0]['local_pass']);
+                unset($response['app_passes'][0]['local_pass']);
+            }
+        }
         else{
-            unset($response['passes'][0]['why_local_pass']);
-            unset($response['app_passes'][0]['why_local_pass']);
+            unset($response['passes'][0]['local_pass']);
+            unset($response['app_passes'][0]['local_pass']);
         }
 
         if(!Config::get('app.debug')) {
