@@ -147,6 +147,10 @@ class RelianceController extends \BaseController {
       $customerDetails = $this->relianceService->getCustomerDetails($custInfo->customer->_id);
       $result = $this->relianceService->getHealthObject($customerDetails, $custInfo, $data, $deviceType, $appVersion);
       
+      if(!!$customerDetails && empty($customerDetails['corporate_id'])) {
+        return Response::json(array('status' => 400, 'message' => 'Not applicable for new customers.'));  
+      }
+      
       if(!empty($result)) {
         return Response::json(array('status' => 200, 'data' => $result, 'message' => 'success'));
       }
