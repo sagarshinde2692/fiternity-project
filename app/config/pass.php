@@ -919,5 +919,14 @@ return [
             "title" =>'Terms and Conditions',
             'url' => $apiUrl.'/passtermscondition?type=unlimited'
         ]
+    ],
+
+    'city_centers_count' => [
+        'pune' => 1000,
+        'mumbai' => 1500,
+        'delhi' => 2000,
+        'faridabad' => 800,
+        'bangalore' =>1200,
+        'hydrabad' => 1000
     ]
 ];

@@ -40,12 +40,13 @@ class PassService {
 
             
             $local_pass = Config::get('pass.local_pass_fields');
+            $city_centers_count = Config::get('pass.city_centers_count');
 
             $response['passes'][0]['why_pass'] = $local_pass['why_local_pass'];
             $response['passes'][0]['offerings'] = $local_pass['local_pass_offerings'];
             $response['passes'][0]['remarks'] = $local_pass['local_pass_remarks'];
 
-            $response['passes'][0]['offerings']['text'] = strtr($response['passes'][0]['offerings']['text'], ['city_centers_count'=> 1000, 'city_name'=>ucwords($city) ]);
+            $response['passes'][0]['offerings']['text'] = strtr($response['passes'][0]['offerings']['text'], ['city_centers_count'=> $city_centers_count[$city], 'city_name'=>ucwords($city) ]);
 
             unset($response['passes'][0]['local_pass']);
             $response['passes'][0]['header'] = $response['passes'][0]['header']. " LOCAL";
@@ -56,7 +57,7 @@ class PassService {
             $response['app_passes'][0]['offerings'] = $local_pass['local_pass_offerings'];
             $response['app_passes'][0]['remarks'] = $local_pass['local_pass_remarks'];
 
-            $response['app_passes'][0]['offerings']['text'] = strtr($response['passes'][0]['offerings']['text'], ['city_centers_count'=> 1000, 'city_name'=>ucwords($city) ]);
+            $response['app_passes'][0]['offerings']['text'] = strtr($response['passes'][0]['offerings']['text'], ['city_centers_count'=> $city_centers_count[$city], 'city_name'=>ucwords($city) ]);
 
             unset($response['app_passes'][0]['local_pass']);
             $response['app_passes'][0]['header'] = $response['app_passes'][0]['header']. " LOCAL";
