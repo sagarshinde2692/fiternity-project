@@ -728,7 +728,7 @@ return [
                     [
                         'slug'=>'', 
                         'name'=> 'Explore All', 
-                        'icon'=> ''
+                        'icon'=> 'http://b.fitn.in/iconsv1/select-all-icon.png'
                     ]
     
                 ]
