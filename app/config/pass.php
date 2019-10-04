@@ -708,7 +708,9 @@ return [
 
     "pass_profile" =>[
         "address_details" => [
-            "header" => "Let us know where you are"
+            "header" => "Let us know where you are",
+            "home_subtext" => "We will use this address to send you vouchers and gifts.",
+            "work_subtext" => "We will use this address to send you vouchers and gifts.",
         ],
         "interests" => [
             "header" => "Tell us about your interests",
