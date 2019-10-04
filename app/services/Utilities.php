@@ -10437,11 +10437,12 @@ Class Utilities {
         }
         $resp['interests'] = $onepassProfileConfig['interests'];
         $resp['interests']['data'] = $resp['service_categories'];
+        $resp['address_details'] = $onepassProfileConfig['address_details'];
+        
         unset($resp['service_categories']);
 		
 		
 		if(!empty($resp['home_address'])){
-            $resp['address_details'] = $onepassProfileConfig['address_details'];
 			$resp['address_details']['home_address'] = $resp['home_address'];
             unset($resp['home_address']);
 		}
