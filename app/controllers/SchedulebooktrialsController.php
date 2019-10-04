@@ -5627,10 +5627,10 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial['amount'] = $booktrial['amount_finder'];
         }
 
-        if(empty($booktrial['studio_extended_validity_order_id'])){
+        if(empty($booktrial['studio_extended_validity_order_id']) && empty($booktrial['pass_order_id'])){
             $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
         }
-        else {
+        else if(empty($booktrial['pass_order_id'])) {
             Order::$withoutAppends = true;
             $order = Order::where('_id', $booktrial['studio_extended_validity_order_id'])->first(['_id', 'studio_extended_validity', 'studio_sessions', 'studio_membership_duration']);
             if(!empty($order['studio_sessions'])){
@@ -5659,7 +5659,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial['lost_code'] = true;
         }
 
-        if($booktrial['type'] == 'workout-session'){
+        if($booktrial['type'] == 'workout-session' && empty($booktrial['pass_order_id'])){
             if(!isset($booktrial['extended_validity_order_id'])){
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
 
@@ -5668,13 +5668,15 @@ class SchedulebooktrialsController extends \BaseController {
             else {
                 $booktrial['fitcode_message'] = 'Punch the code to mark your attendance.';
             }
-        }else{
+        }else if(empty($booktrial['pass_order_id'])){
 
             $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';
         }
 
-        $booktrial['fitcode_button_text'] = 'Enter Fitcode';
-        $booktrial['vendor_code'] = "0000";
+        if(empty($booktrial['pass_order_id'])){
+            $booktrial['fitcode_button_text'] = 'Enter Fitcode';
+            $booktrial['vendor_code'] = "0000";
+        }
         $responsedata   = [
             'booktrial' => $booktrial,
             'message' => 'Booktrial Detail'
