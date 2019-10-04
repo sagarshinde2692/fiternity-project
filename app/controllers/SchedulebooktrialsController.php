@@ -5677,6 +5677,10 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial['fitcode_button_text'] = 'Enter Fitcode';
             $booktrial['vendor_code'] = "0000";
         }
+        else{
+            unset($booktrial['code']);
+            unset($booktrial['vendor_code']);
+        }
         $responsedata   = [
             'booktrial' => $booktrial,
             'message' => 'Booktrial Detail'
