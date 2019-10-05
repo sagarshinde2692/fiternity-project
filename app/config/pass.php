@@ -729,7 +729,7 @@ return [
                         '_id'=>0,
                         'slug'=>'', 
                         'name'=> 'Explore All', 
-                        'icon'=> 'https://b.fitn.in/iconsv1/all_category_icon.png'
+                        'image'=> 'https://b.fitn.in/iconsv1/all_category_icon.png'
                     ]
     
                 ]
