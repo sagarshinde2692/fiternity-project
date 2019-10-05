@@ -2837,35 +2837,35 @@ Class CustomerReward {
                                     }
                                     // Log::info('discount_max_overridable in ::::',[$discount_max_overridable]);
                                 }else if($yc['operator'] == 'nin'){
-                                    if(!empty($embedded_value1) && !in_array($embedded_value1, $yc['values'])){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && !in_array($embedded_value1, $yc['values'])){
                                         $discount_max_overridable = true;
                                     }else{
                                         break;
                                     }
                                     // Log::info('discount_max_overridable nin ::::',[$discount_max_overridable]);
                                 }else if($yc['operator'] == 'regex'){
-                                    if(!empty($embedded_value1) && preg_match($yc['values'], $embedded_value1)){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && preg_match($yc['values'], $embedded_value1)){
                                         $discount_max_overridable = true;
                                     }else{
                                         break;
                                     }
                                     // Log::info('discount_max_overridable regex ::::',[$discount_max_overridable]);
                                 }else if($yc['operator'] == 'gt'){
-                                    if(!empty($embedded_value1) && $embedded_value1 > $yc['values']){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 > $yc['values']){
                                         $discount_max_overridable = true;
                                     }else{
                                         break;
                                     }
                                     // Log::info('discount_max_overridable gt ::::',[$discount_max_overridable]);
                                 }else if($yc['operator'] == 'gte'){
-                                    if(!empty($embedded_value1) && $embedded_value1 >= $yc['values']){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 >= $yc['values']){
                                         $discount_max_overridable = true;
                                     }else{
                                         break;
                                     }
                                     // Log::info('discount_max_overridable gte ::::',[$discount_max_overridable]);
                                 }else if($yc['operator'] == 'lt'){
-                                    if(!empty($embedded_value1) && $embedded_value1 < $yc['values']){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 < $yc['values']){
                                         Log::info("chk");
                                         $discount_max_overridable = true;
                                     }else{
@@ -2873,14 +2873,14 @@ Class CustomerReward {
                                     }
                                     // Log::info('discount_max_overridable lt ::::',[$discount_max_overridable]);
                                 }else if($yc['operator'] == 'lte'){
-                                    if(!empty($embedded_value1) && $embedded_value1 <= $yc['values']){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 <= $yc['values']){
                                         $discount_max_overridable = true;
                                     }else{
                                         break;
                                     }
                                     // Log::info('discount_max_overridable lte ::::',[$discount_max_overridable]);
                                 }else if($yc['operator'] == 'eq'){
-                                    if(!empty($embedded_value1) && $embedded_value1 == $yc['values']){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 == $yc['values']){
                                         $discount_max_overridable = true;
                                     }else{
                                         break;
@@ -2892,36 +2892,36 @@ Class CustomerReward {
                     }else if(!empty($y['key']) && !empty($y['operator']) && !empty($y['values'])){
                         $embedded_value = $this->getEmbeddedValue($data , $y['key']);
                         if($y['operator'] == 'in'){
-                            if(!empty($embedded_value) && in_array($embedded_value, $y['values'])){
+                            if((!empty($embedded_value) || $embedded_value == 0) && in_array($embedded_value, $y['values'])){
                                 $discount_max_overridable = true;
                             }
                         }else if($y['operator'] == 'nin'){
-                            if(!empty($embedded_value) && !in_array($embedded_value, $y['values'])){
+                            if((!empty($embedded_value) || $embedded_value == 0) && !in_array($embedded_value, $y['values'])){
                                 $discount_max_overridable = true;
                             }
                         }else if($y['operator'] == 'regex'){
-                            if(!empty($embedded_value) && preg_match($y['values'], $embedded_value)){
+                            if((!empty($embedded_value) || $embedded_value == 0) && preg_match($y['values'], $embedded_value)){
                                 $discount_max_overridable = true;
                             }
                         }else if($yc['operator'] == 'gt'){
-                            if(!empty($embedded_value1) && $embedded_value1 > $yc['values']){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value > $yc['values']){
                                 $discount_max_overridable = true;
                             }
                         }else if($yc['operator'] == 'gte'){
-                            if(!empty($embedded_value1) && $embedded_value1 >= $yc['values']){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value >= $yc['values']){
                                 $discount_max_overridable = true;
                             }
                         }else if($yc['operator'] == 'lt'){
-                            if(!empty($embedded_value1) && $embedded_value1 < $yc['values']){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value < $yc['values']){
                                 Log::info("chk");
                                 $discount_max_overridable = true;
                             }
                         }else if($yc['operator'] == 'lte'){
-                            if(!empty($embedded_value1) && $embedded_value1 <= $yc['values']){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value <= $yc['values']){
                                 $discount_max_overridable = true;
                             }
                         }else if($yc['operator'] == 'eq'){
-                            if(!empty($embedded_value1) && $embedded_value1 == $yc['values']){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value == $yc['values']){
                                 $discount_max_overridable = true;
                             }
                         }
