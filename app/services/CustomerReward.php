@@ -2805,51 +2805,43 @@ Class CustomerReward {
                                 Log::info("embedded_value1", [$embedded_value1]);
                                 Log::info("yc values", [$yc['values']]);
                                 if($yc['operator'] == 'in'){
-                                    if(empty($embedded_value1) && $embedded_value1 != 0){
-                                        $discount_max_overridable = false;
-                                        break;
-                                    }
-                                    if(!empty($yc['values'][0]['valid_till'])){
-                            
-                                        $values = array_column($yc['values'], 'value');
-                                        $dates = array_column($yc['values'], 'valid_till');
-                                        
-                                        if(!in_array($embedded_value1, $values) || time() > $dates[array_search($embedded_value1, $values)]->sec){
-                                            $discount_max_overridable = false;
-                                            break;
-                                        }
-                                        
-                                    }else{
-                                        if(in_array($embedded_value1, $yc['values'])){
-                                            $discount_max_overridable = true;
-                                            // break;
-                                        }
-                                    
+                                    if(!empty(empty($embedded_value1)) && in_array($embedded_value1, $yc['values'])){
+                                        $discount_max_overridable = true;
                                     }
                                     Log::info('discount_max_overridable in ::::',[$discount_max_overridable]);
                                 }else if($yc['operator'] == 'nin'){
                                     if(!empty($embedded_value1) && !in_array($embedded_value1, $yc['values'])){
                                         $discount_max_overridable = true;
-                                        // break;
-        
                                     }
                                     Log::info('discount_max_overridable nin ::::',[$discount_max_overridable]);
                                 }else if($yc['operator'] == 'regex'){
-                                    
-                                    if(empty($embedded_value1)){
-                                        $discount_max_overridable = false;
-                                        break;
-                                    }
-                                    
-                                    if(preg_match($yc['values'], $embedded_value1)){
+                                    if(!empty($embedded_value1) && preg_match($yc['values'], $embedded_value1)){
                                         $discount_max_overridable = true;
-                                        // break;
-        
                                     }
                                     Log::info('discount_max_overridable regex ::::',[$discount_max_overridable]);
+                                }else if($yc['operator'] == 'gt'){
+                                    if(!empty($embedded_value1) && $embedded_value1 > $yc['values']){
+                                        $discount_max_overridable = true;
+                                    }
+                                    Log::info('discount_max_overridable gt ::::',[$discount_max_overridable]);
+                                }else if($yc['operator'] == 'gte'){
+                                    if(!empty($embedded_value1) && $embedded_value1 >= $yc['values']){
+                                        $discount_max_overridable = true;
+                                    }
+                                    Log::info('discount_max_overridable gte ::::',[$discount_max_overridable]);
+                                }else if($yc['operator'] == 'lt'){
+                                    if(!empty($embedded_value1) && $embedded_value1 < $yc['values']){
+                                        $discount_max_overridable = true;
+                                    }
+                                    Log::info('discount_max_overridable lt ::::',[$discount_max_overridable]);
+                                }else if($yc['operator'] == 'lte'){
+                                    if(!empty($embedded_value1) && $embedded_value1 <= $yc['values']){
+                                        $discount_max_overridable = true;
+                                    }
+                                    Log::info('discount_max_overridable lte ::::',[$discount_max_overridable]);
                                 }
                             }
-                            Log::info('discount_max_overridable12 ::::',[$discount_max_overridable]);
+                            Log::info('discount_max_overridable  ::::',[$discount_max_overridable]);
                         }
                         Log::info('discount_max_overridable11 ::::',[$discount_max_overridable]);
                     }else if(!empty($y['key']) && !empty($y['operator']) && !empty($y['values'])){
