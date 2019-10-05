@@ -2833,6 +2833,7 @@ Class CustomerReward {
                                     if((!empty($embedded_value1) || $embedded_value1 == 0) && in_array($embedded_value1, $yc['values'])){
                                         $discount_max_overridable = true;
                                     }else{
+                                        $discount_max_overridable = false;
                                         break;
                                     }
                                     // Log::info('discount_max_overridable in ::::',[$discount_max_overridable]);
@@ -2840,6 +2841,7 @@ Class CustomerReward {
                                     if((!empty($embedded_value1) || $embedded_value1 == 0) && !in_array($embedded_value1, $yc['values'])){
                                         $discount_max_overridable = true;
                                     }else{
+                                        $discount_max_overridable = false;
                                         break;
                                     }
                                     // Log::info('discount_max_overridable nin ::::',[$discount_max_overridable]);
@@ -2847,6 +2849,7 @@ Class CustomerReward {
                                     if((!empty($embedded_value1) || $embedded_value1 == 0) && preg_match($yc['values'], $embedded_value1)){
                                         $discount_max_overridable = true;
                                     }else{
+                                        $discount_max_overridable = false;
                                         break;
                                     }
                                     // Log::info('discount_max_overridable regex ::::',[$discount_max_overridable]);
@@ -2854,6 +2857,7 @@ Class CustomerReward {
                                     if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 > $yc['values']){
                                         $discount_max_overridable = true;
                                     }else{
+                                        $discount_max_overridable = false;
                                         break;
                                     }
                                     // Log::info('discount_max_overridable gt ::::',[$discount_max_overridable]);
@@ -2861,6 +2865,7 @@ Class CustomerReward {
                                     if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 >= $yc['values']){
                                         $discount_max_overridable = true;
                                     }else{
+                                        $discount_max_overridable = false;
                                         break;
                                     }
                                     // Log::info('discount_max_overridable gte ::::',[$discount_max_overridable]);
@@ -2869,6 +2874,7 @@ Class CustomerReward {
                                         Log::info("chk");
                                         $discount_max_overridable = true;
                                     }else{
+                                        $discount_max_overridable = false;
                                         break;
                                     }
                                     // Log::info('discount_max_overridable lt ::::',[$discount_max_overridable]);
@@ -2876,6 +2882,7 @@ Class CustomerReward {
                                     if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 <= $yc['values']){
                                         $discount_max_overridable = true;
                                     }else{
+                                        $discount_max_overridable = false;
                                         break;
                                     }
                                     // Log::info('discount_max_overridable lte ::::',[$discount_max_overridable]);
@@ -2883,6 +2890,7 @@ Class CustomerReward {
                                     if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 == $yc['values']){
                                         $discount_max_overridable = true;
                                     }else{
+                                        $discount_max_overridable = false;
                                         break;
                                     }
                                     // Log::info('discount_max_overridable eq ::::',[$discount_max_overridable]);
