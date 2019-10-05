@@ -2830,7 +2830,7 @@ Class CustomerReward {
                                 // Log::info("embedded_value1", [$embedded_value1]);
                                 // Log::info("yc values", [$yc['values']]);
                                 if($yc['operator'] == 'in'){
-                                    if(!empty($embedded_value1) && in_array($embedded_value1, $yc['values'])){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && in_array($embedded_value1, $yc['values'])){
                                         $discount_max_overridable = true;
                                     }else{
                                         break;
