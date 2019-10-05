@@ -2520,6 +2520,22 @@ class SchedulebooktrialsController extends \BaseController {
                             $passOrder->onepass_sessions_used = 0;
                         }
                         $passOrder->onepass_sessions_used += 1;
+
+                        if(!empty($passOrder->monthly_total_sessions_used) && is_array($passOrder->monthly_total_sessions_used)) {
+                            $booking_date = strtotime($booktrial['schedule_date']);
+                            $temp = $passOrder->monthly_total_sessions_used;
+                            foreach($temp as &$value){
+                                
+                                if($booking_date >= strtotime(date('Y-m-d H:i:s',$value['start_date']->sec)) && $booking_date < strtotime(date('Y-m-d H:i:s',$value['end_date']->sec)) ){
+                                    $value['count'] += 1;
+                                    unset($booking_date);
+                                    break;
+                                }
+                            }
+                            $passOrder->monthly_total_sessions_used= $temp;
+                            unset($temp);
+                        }
+                        
                         $passOrder->update();
                     }
                 }
@@ -4770,14 +4786,30 @@ class SchedulebooktrialsController extends \BaseController {
         $trialbooked        = 	$booktrial->update($bookdata);
         
         if(!empty($booktrial['pass_order_id'])){
+            Log::info('pass order id', [$booktrial['pass_order_id']]);
             $order = Order::find($booktrial['pass_order_id']);
             if(
-                ($order['pass']['pass_type'] == 'black') &&
+                (in_array($order['pass']['pass_type'], ['black', 'hybrid'])) &&
                 (strtotime($order['start_date']) <= time()) && 
-                ($order['onepass_sessions_used'] < $order['onepass_sessions_total']) &&
+                ($order['onepass_sessions_used'] <= $order['onepass_sessions_total']) &&
                 ($order['onepass_sessions_used']>0)
             ){
                 $order->onepass_sessions_used -= 1;
+                
+                if(!empty($order['monthly_total_sessions_used']) && is_array($order['monthly_total_sessions_used'])) {
+                    $booking_date = strtotime($booktrial['schedule_date']);
+                    $temp =$order->monthly_total_sessions_used;
+                    foreach($temp as &$value){
+                        if($booking_date >= strtotime(date('Y-m-d H:i:s',$value['start_date']->sec)) && $booking_date < strtotime(date('Y-m-d H:i:s',$value['end_date']->sec)) ){
+                            $value['count'] -= 1;
+                            unset($booking_date);
+                            break;
+                        }
+                    }
+                    $order->monthly_total_sessions_used = $temp;
+                    unset($temp);
+                }
+
                 $order->update();
             }
         }
@@ -5415,10 +5447,12 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(isset($type) && $type == "healthytiffintrail"){
-            $booktrial      =   Order::active()->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid));
+            $booktrial      =   Order::active()->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}));
         }else{
-            $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid)); 
+            $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));})); 
         }
+
+        $booktrial = $booktrial->customerValidation(customerEmailFromToken())->find(intval($captureid));
 
         if(!$booktrial){
 
