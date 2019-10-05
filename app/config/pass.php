@@ -487,7 +487,7 @@ return [
                         'no_last_order' => true,
                         'contact_text' => 'Need Help? Contact your Personal Concierge',
                         'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-                        'contact_no' => '+917400062849'
+                        'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
                     ],
                     'section2' => [
                     'text' => 'Your Onepass Red will expire after remaining_text',
@@ -530,7 +530,7 @@ return [
                         'no_last_order' => true,
                         'contact_text' => 'Need Help? Contact your Personal Concierge',
                         'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-                        'contact_no' => '+917400062849'
+                        'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
                     ],
                     'section2' => [
                         'text' => 'Your Onepass Black will expire after remaining_text',
@@ -635,7 +635,7 @@ return [
                         'no_last_order' => true,
                         'contact_text' => 'Need Help? Contact your Personal Concierge',
                         'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-                        'contact_no' => '+917400062849'
+                        'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
                     ],
                     'section2' => [
                         'text' => 'Your Onepass Red will expire after remaining_text',
@@ -678,7 +678,7 @@ return [
                         'no_last_order' => true,
                         'contact_text' => 'Need Help? Contact your Personal Concierge',
                         'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-                        'contact_no' => '+917400062849'
+                        'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
                     ],
                     'section2' => [
                         'text' => 'Your Onepass Black will expire after remaining_text',
@@ -817,7 +817,7 @@ return [
         'footer' => [
             'contact_text' => 'Need Help? Contact your Personal Concierge',
             'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-            'contact_no' => '+917400062849'
+            'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
         ]
     ],
 
@@ -841,7 +841,7 @@ return [
                     'no_last_order' => true,
                     'contact_text' => 'Need Help? Contact your Personal Concierge',
                     'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-                    'contact_no' => '+917400062849'
+                    'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
                 ],
                 'section2' => [
                     'text' => 'Your Onepass Red will expire after remaining_text',
@@ -876,7 +876,7 @@ return [
                     'no_last_order' => true,
                     'contact_text' => 'Need Help? Contact your Personal Concierge',
                     'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-                    'contact_no' => '+917400062849'
+                    'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
                 ],
                 'section2' => [
                     'text' => 'Your Onepass Black will expire after remaining_text',
@@ -937,5 +937,6 @@ return [
         'faridabad' => 800,
         'bangalore' =>1200,
         'hydrabad' => 1000
-    ]
+    ],
+
 ];
