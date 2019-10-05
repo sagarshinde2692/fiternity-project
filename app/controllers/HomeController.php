@@ -1067,7 +1067,7 @@ class HomeController extends BaseController {
                 }
 
                 if(!empty($item['pass_order_id'])){
-                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there.';
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
                 }
 
                 if(isset($item['pay_later']) && $item['pay_later']){
