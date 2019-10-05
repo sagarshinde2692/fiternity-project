@@ -2990,18 +2990,20 @@ class SchedulebooktrialsController extends \BaseController {
                     $send_communication["customer_sms_after30mins_abg"] = $this->customersms->bookTrialReminderAfter30Mins($booktrialdata, $delayReminderTimeAfter30Mins);
                 }
                 else {
-                    Log::info('customer sm after 2 houers scheduling at schedulebooktrailController',[$booktrialdata]);
-                    $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
-                    $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter6Hrs);
-                
-                    $promoData = [
-                        'customer_id'=>$booktrialdata['customer_id'],
-                        'delay'=>$delayReminderTimeAfter2Hrs,
-                        'text'=>'Punch the Fitcode now & get instant Cashback',
-                        'title'=>'Claim Your Fitcash'
-                    ];
+                    if(empty($booktrialdata['pass_order_id'])){
+                        Log::info('customer sm after 2 houers scheduling at schedulebooktrailController',[$booktrialdata]);
+                        $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
+                        $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter6Hrs);
+                    
+                        $promoData = [
+                            'customer_id'=>$booktrialdata['customer_id'],
+                            'delay'=>$delayReminderTimeAfter2Hrs,
+                            'text'=>'Punch the Fitcode now & get instant Cashback',
+                            'title'=>'Claim Your Fitcash'
+                        ];
 
-                    $send_communication["customer_notification_block_screen"] = $this->utilities->sendPromotionalNotification($promoData);
+                        $send_communication["customer_notification_block_screen"] = $this->utilities->sendPromotionalNotification($promoData);
+                    }
 
                     if(isset($booktrial->type)&&$booktrial->type!='workout-session'){
                         $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
