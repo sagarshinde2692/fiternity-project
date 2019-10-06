@@ -6157,12 +6157,12 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'Get 50% off + extra 20% off, use code: PAYDAY','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'Get 50% Off + Extra 20% Off, Use Code: BIG20','position'=>$position++];
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase. Use Code : FIT100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
 
             $first_session_free = $this->firstSessionFree($data);
             if(!empty($first_session_free) && $first_session_free){
@@ -6615,7 +6615,7 @@ class TransactionController extends \BaseController {
             
             if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount']) && empty($order['finder_flags']['monsoon_campaign_pps'])){
                 $payment_modes[] = array(
-                    'title' => 'Online Payment (100% Cashback)',
+                    'title' => 'Online Payment',
                     'subtitle' => 'Transact online with netbanking, card and wallet',
                     'value' => 'paymentgateway',
                     'payment_options'=>$payment_options

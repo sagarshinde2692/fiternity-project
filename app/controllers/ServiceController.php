@@ -955,7 +955,7 @@ class ServiceController extends \BaseController {
                             $str = '';
 						
                             if(empty($finder['flags']['monsoon_campaign_pps'])){
-                                $str = " (100% Cashback)";  
+                                $str = "";  
                             }
 
                             $corporate_discount_branding = $this->utilities->corporate_discount_branding();
@@ -1200,7 +1200,7 @@ class ServiceController extends \BaseController {
 				if($allowSession && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
-                    $str = " (100% Cashback)";
+                    $str = "";
 				
                     $corporate_discount_branding = $this->utilities->corporate_discount_branding();
                     if(!empty($corporate_discount_branding) && $corporate_discount_branding){
@@ -1363,7 +1363,7 @@ class ServiceController extends \BaseController {
                         $sc['free_trial_available'] = false;
                     }
 					
-					$str = " (100% Cashback)";
+					$str = "";
 					if(((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])) || (!empty($sc['extended_validity']))){
 						
 						$str = "";
@@ -1905,7 +1905,7 @@ class ServiceController extends \BaseController {
 
 			$str = '';
             if(empty($finder['flags']['monsoon_campaign_pps'])){
-                $str =" (100% Cashback)";
+                $str ="";
 			}
 			
 			$corporate_discount_branding = $this->utilities->corporate_discount_branding();

@@ -85,7 +85,7 @@ class PassService {
                 }
             }
 
-            $passDetails['cashback'] = '(Additional FLAT INR 500 Off)';
+            $passDetails['cashback'] = '(Additional 15% Off)';
             unset($passDetails['extra_info']);
 
             if($pass['unlimited_access']) {
@@ -1435,7 +1435,7 @@ class PassService {
             ],
             [
                'field' => '',
-               'value' => 'Use code: FIVE00 to get additional FLAT INR 500 off',
+               'value' => 'Use Code: BIG15 To Get Additional 15% Off',
             ]
         ];
 

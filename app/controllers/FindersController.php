@@ -1399,7 +1399,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY | Offer Expires On 6th October",
+								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: BIG20 |7th-14th October",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1411,7 +1411,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY | Offer Expires On 6th October",
+								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: BIG20 |7th-14th October",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1423,7 +1423,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY | Offer Expires On 6th October",
+								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: BIG20 |7th-14th October",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3896,25 +3896,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 <br><br>Offer Expires On 6th October";
+				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Offer Valid 7th-14th October";
             }else{	
-				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 \n\nOffer Expires On 6th October";
+				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nOffer Valid 7th-14th October";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 <br><br>Offer Expires On 6th October";
+				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Offer Valid 7th-14th October";
             }else{	
-				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 \n\nOffer Expires On 6th October";
+				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nOffer Valid 7th-14th October";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 <br><br>Offer Expires On 6th October";
+				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Offer Valid 7th-14th October";
             }else{	
-				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 \n\nOffer Expires On 6th October";
+				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nOffer Valid 7th-14th October";
             }
 			
 		}
@@ -3927,9 +3927,9 @@ class FindersController extends \BaseController {
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 							if($this->device_type == 'android'){
-								$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY <br><br>Offer Expires On 6th October";
+								$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20 <br><br>Offer Valid 7th-14th October";
 							}else{	
-								$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY \n\nOffer Expires On 6th October";
+								$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20 \n\nOffer Valid 7th-14th October";
 							}
 							
 							break;
@@ -5449,9 +5449,9 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-                            $ratecard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
+                            $ratecard['remarks'] = "Get 40% Off On Workout Sessions, Use Code: BIG40";
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
-                            //     $ratecard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
+                            //     $ratecard['remarks'] = "Get 40% Off On Workout Sessions, Use Code: BIG40";
                             // }
 						}
 						
@@ -8441,10 +8441,10 @@ class FindersController extends \BaseController {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
 					}
 					else if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
-						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Pay Day Sale \n\n 50% off + Extra 20% Off On Memberships & Session Packs \n Use Code: PAYDAY");
+						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n The Big Fitness Sale \n\n 50% off + Extra 20% Off On Memberships & Session Packs \n Use Code: BIG20");
 					}
                 }else{
-                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Pay Day Sale \n\n Book Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100");
+                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n The Big Fitness Sale \n\n Get 40% Off On Workout Sessions. Use Code: BIG40");
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
 					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // }
@@ -8697,9 +8697,9 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
+			$rateCard['remarks'] = "Get 40% Off On Workout Sessions, Use Code: BIG40";
 			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
-			// 	$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
+			// 	$rateCard['remarks'] = "Get 40% Off On Workout Sessions, Use Code: BIG40";
 			// }
 			$rateCard['remarks_imp'] = true;
 
