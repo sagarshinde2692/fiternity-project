@@ -10518,7 +10518,9 @@ Class Utilities {
 
         $resp['url'] = $data['photo']['url'];
 
-        $resp['interests']['data'] = array_merge($this->personlizedServiceCategoryList($data['interests']), $resp['interests']['data']);
+        if(!empty($data['interests']) && !empty($resp['interests']['data'])){
+            $resp['interests']['data'] = array_merge($this->personlizedServiceCategoryList($data['interests']), $resp['interests']['data']);
+        }
 
         return $resp;
     }
