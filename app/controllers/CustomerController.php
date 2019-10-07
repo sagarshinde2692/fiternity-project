@@ -10838,7 +10838,7 @@ class CustomerController extends \BaseController {
 		
 		$data['profile_completed'] = $this->utilities->checkOnepassProfileCompleted($customer);
 
-		Log::info('profile completed:::', [$data['profile_completed']]);
+		Log::info('profile completed:::', [$data['profile_completed'], $customer]);
 		//$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
 
 		$resp = array_merge($resp, $customer->onepass);
