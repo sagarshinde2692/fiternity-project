@@ -2687,8 +2687,15 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                             $data['pass_start_date']=(!empty($passOrder['start_date']))?strtotime($passOrder['start_date']):null;
                             $data['pass_expiry_date']=(!empty($passOrder['end_date']))?strtotime($passOrder['end_date']):null;
                             $data['pass_type']=$passOrder['pass']['pass_type'];
-                            $data['pass_sessions_total']=$passOrder['onepass_sessions_total'];
+                            $data['pass_sessions_total']=null;
+                            if(!empty($passOrder['onepass_sessions_total'])) {
+                                $data['pass_sessions_total']=$passOrder['onepass_sessions_total']-1;
+                            }
                             $data['pass_sessions_used']=(!!$passOrder['onepass_sessions_used'])?$passOrder['onepass_sessions_used']:0;
+                            $data['pass_order_id']=(!!$passOrder['_id'])?$passOrder['_id']: null;
+                            if($data['pass_type'] =='hybrid'){
+                                $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
+                            }
                         }
                     }
 
@@ -4503,7 +4510,13 @@ if (!function_exists('setNewToken')) {
         Log::info('gettype($customer_data)');
         $pass_data = [];
         if(!empty($pass)){
-            $pass_data = ['pass'=>1, 'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 'pass_type' => $pass['pass']['pass_type'], 'pass_sessions_total'=>$pass['onepass_sessions_total'], 'pass_sessions_used'=>$pass['onepass_sessions_used']];
+            $totalSessions = (!empty($pass['onepass_sessions_total']))?($pass['onepass_sessions_total']-1):null;
+            $pass_data = ['pass'=>1, 'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 'pass_type' => $pass['pass']['pass_type'], 'pass_sessions_total'=>$totalSessions, 'pass_sessions_used'=>$pass['onepass_sessions_used'],'pass_order_id'=>$pass['_id']];
+
+            if($pass_data['pass_type'] =='hybrid'){
+                $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
+                $pass_data['pass_sessions_monthly_used'] = (!empty($pass['monthly_total_sessions_used']))?$pass['monthly_total_sessions_used']:0;
+            }
             $customer_data = array_merge($customer_data, $pass_data);
             $update_header = true;
         }else if(empty($pass)){
@@ -4513,6 +4526,9 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass_type']);
             unset($customer_data['pass_sessions_total']);
             unset($customer_data['pass_sessions_used']);
+            unset($customer_data['pass_sessions_monthly_total']);
+            unset($customer_data['pass_sessions_monthly_used']);
+            unset($customer_data['pass_order_id']);
             $update_header = true;
         }
         if(!empty($update_header) || $rel_banner_shown){
@@ -4679,6 +4695,19 @@ if (!function_exists('curl_call_get')) {
         curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
         Log::info(curl_exec($c));
+        
+    }
+}
+if (!function_exists('customerEmailFromToken')) {
+    function customerEmailFromToken()
+    {
+        $utilities = new Utilities();
+        $customer = $utilities->getCustomerFromToken();
+
+        if(empty($customer)){
+            return;
+        }
+        return $customer['email'];
         
     }
 }

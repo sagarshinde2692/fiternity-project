@@ -11548,5 +11548,45 @@ public function yes($msg){
 		$this->batchUpdate('mongodb', 'services', $updates);
         // return count($ratecard);
         return "Done";
-	}
+    }
+    
+    public function passCashback(){
+        $ids = [
+        //     4382967,
+        // 4371334,
+        // 4375550,
+        // 4394499,
+        // 4384743,
+        // 4384743,
+        4375550
+        
+    ];
+        $orders = Order::active()->whereIn('_id', $ids)->get();
+        $utilities = new Utilities();
+        foreach($orders as $order){
+            $a=1;
+            if(!empty($order['amount']) && !empty($order['pass']['cashback'])){
+                $validity = strtotime($order['created_at'])+(86400*30);
+                $amount = ceil($order['amount']);
+                $walletData = array(
+                    "order_id"=>$order['_id'],
+                    "customer_id"=> intval($order['customer_id']),
+                    "amount"=> $amount,
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => $amount,
+                    "type"=>'CASHBACK',
+                    'entry'=>'credit',
+                    'order_type'=>['pass'],
+                    "description"=> "100% Cashback on buying trial pass, Expires On : ".date('d-m-Y',$validity),
+                    "validity"=>$validity,
+                );
+        
+                $utilities->walletTransaction($walletData);
+            }
+        }
+        return "done";
+            
+    }
+
 }
+
