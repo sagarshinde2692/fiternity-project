@@ -10359,7 +10359,6 @@ Class Utilities {
         
         //$onepass['profile_completed'] = $data['profile_completed'];
 
-        Log::info('data::::::: at one pass cstomer;;;;;;', [$data]);
         if(!empty($data['customer_photo'])){
             $onepass['photo'] = $data['customer_photo'];
         }
