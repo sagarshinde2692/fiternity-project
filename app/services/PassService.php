@@ -1863,10 +1863,9 @@ class PassService {
                 'button_text' => "EDIT PREFERENCES"
             ];
 
-            if(!empty($customerData['onepass']['gender'])){
-                $profile['gender'] = $customerData['onepass']['gender'];
+            if(!empty($customerData['onepass']['gender']) || !empty($customerData['gender'])){
+                $profile['gender'] = !empty($customerData['onepass']['gender']) ? $customerData['onepass']['gender'] : $customerData['gender'];
             }
-            $gender = !empty($customerData['onepass']['gender']) ? ucwords($customerData['onepass']['gender']) : null;
 
             if(!empty($customerData['onepass']['photo']['url'])){
                 $profile['image'] = $customerData['onepass']['photo']['url'];
