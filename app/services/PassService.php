@@ -1859,14 +1859,26 @@ class PassService {
                 $interest = implode(', ', $interests_name);
             }
 
-            $gender = !empty($customerData['onepass']['gender']) ? ucwords($customerData['onepass']['gender']) : null;
-            $profile = array(
-                'image' => !empty($customerData['onepass']['photo']['url']) ? $customerData['onepass']['photo']['url']: null,
-                'name' => !empty($customerData['name']) ? ucwords($customerData['name']): null,
-                'gender' => $gender,
-                'text' => $interest,
+            $profile = [
                 'button_text' => "EDIT PREFERENCES"
-            );
+            ];
+
+            if(!empty($customerData['onepass']['gender'])){
+                $profile['gender'] = $customerData['onepass']['gender'];
+            }
+            $gender = !empty($customerData['onepass']['gender']) ? ucwords($customerData['onepass']['gender']) : null;
+
+            if(!empty($customerData['onepass']['photo']['url'])){
+                $profile['image'] = $customerData['onepass']['photo']['url'];
+            }
+
+            if(!empty($interest) && $interest !=''){
+                $profile['text'] = $interest;
+            }
+
+            if(!empty($customerData['name'])){
+                $profile['name'] = $customerData['name'];
+            }
         }
 
         $passOrder = $this->getPassOrder($customerId);
