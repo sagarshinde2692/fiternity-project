@@ -2122,7 +2122,7 @@ class PassService {
                 $upcoming['user_photo'] = $customer->onepass['photo']['url'];
             }
             $upcoming['time_diff'] = 0;
-            $upcoming['footer'] =Config('app.before_purchase_tab.footer');
+            $upcoming['footer'] = Config::get('app.before_purchase_tab.footer');
         }
 
         return $upcoming;
