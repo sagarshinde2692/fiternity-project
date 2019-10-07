@@ -38,7 +38,7 @@ class GlobalPushController extends \BaseController
     appending date to rolling builds for new index
     */
     $timestamp =  date('Y-m-d');
-    $index_name = $this->index_name = $this->name.$timestamp.'-'.random_numbers(3);
+    $index_name = $this->index_name = $this->name.$timestamp.'-'.date('H-i-s');
 
     /*
    creating new index appended with timestamp
