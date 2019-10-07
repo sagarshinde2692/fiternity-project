@@ -10779,6 +10779,7 @@ class CustomerController extends \BaseController {
 	public function onePassCustomerUpdate(){
 
 		$data = Input::all();
+		Log::info('data at api start:::', [$data]);
 		$rules = [
 			'interests' => 'array|min:3',
 			'gender' => 'string|in:male,female,Male,Female, MALE, FEMALE'
