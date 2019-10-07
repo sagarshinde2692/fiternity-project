@@ -10496,6 +10496,7 @@ Class Utilities {
         $required_keys = ['photo', 'gender', 'home_address', 'interests'];
 
         $profileKeys = array_keys($customer->onepass);
+        Log::info('profileKeys', [$profileKeys]);
         $status = true;
 
         foreach($required_keys as $key=>$value){

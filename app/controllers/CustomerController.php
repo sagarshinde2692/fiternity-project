@@ -10838,12 +10838,12 @@ class CustomerController extends \BaseController {
 		
 		$data['profile_completed'] = $this->utilities->checkOnepassProfileCompleted($customer);
 
-		
+		Log::info('profile completed:::', [$data['profile_completed']]);
 		//$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
 
 		$resp = array_merge($resp, $customer->onepass);
 
-		if(!empty($data['submit']) && !empty($data['profile_completed'])){
+		if(!empty($data['submit']) /*&& !empty($data['profile_completed'])*/){
 
 			$onepass = $customer->onepass;
 			$onepass['photo_upload']= false;
