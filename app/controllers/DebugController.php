@@ -11586,7 +11586,112 @@ public function yes($msg){
         }
         return "done";
             
-    }
+	}
+	
+	public function hyperLocalList(){
+		Finder::$withoutAppends=true;
+		$destinationPath = public_path();
+		$fileName = "vendor.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+		$not_found = array();
+		if($csv_to_array){
+
+			foreach ($csv_to_array as $key => $value) {
+
+				if( !empty($value['_id']) && !empty($value['category']) && !empty($value['location']) ){
+					Log::info("vendor_id", [$value['_id']]);
+					$vendor_id = (int)$value['_id'];
+					$finder = Finder::where('_id', $vendor_id)->first();
+					$vendor = Vendor::where('_id', $vendor_id)->first();
+					// return $finder;
+
+					
+					$location = Location::where('name', $value['location'])->first(['_id']);
+					$location_id = (int)$location['_id'];
+
+					$cv = trim(strtolower($value['category']));
+								
+					if($cv == 'gym' || $cv == 'gyms'){
+						$id['_id'] = 5;
+					}else{
+						$id = Findercategory::where('name', 'LIKE', '%'.$cv.'%')->first(['_id']);
+					}
+						
+					$cat_id = (int)$id['_id'];
+
+					if($finder){
+						//finder
+						$f_flags = $finder->flags;
+						
+						$hyper_local_list = array();
+						if(!empty($f_flags['hyper_local_list'])){
+							$hyper_local_list = $f_flags['hyper_local_list'];
+							foreach($hyper_local_list as $hll){
+								if(!($hll['loc_id'] == $location_id && $hll['cat_id'] == $cat_id)){
+									array_push($hyper_local_list, array(
+										'loc_id' => $location_id,
+										'cat_id' => $cat_id
+									));
+								}
+							}
+							
+						}else{
+							array_push($hyper_local_list, array(
+								'loc_id' => $location_id,
+								'cat_id' => $cat_id
+							));
+						}
+
+						$f_flags['hyper_local_list'] = $hyper_local_list;
+						$f_flags['hyper_local'] = true;
+
+						$finder->flags = $f_flags;
+						$finder->update();
+					}else{
+						array_push($not_found, $vendor_id);
+					}
+
+					if($vendor){
+						//vendor
+						$v_flags = $vendor->flags;
+						
+						$v_hyper_local_list = array();
+						if(!empty($v_flags['hyper_local_list'])){
+							$v_hyper_local_list = $v_flags['hyper_local_list'];
+							foreach($v_hyper_local_list as $v_hll){
+								if(!($v_hll['loc_id'] == $location_id && $v_hll['cat_id'] == $cat_id)){
+									array_push($v_hyper_local_list, array(
+										'loc_id' => $location_id,
+										'cat_id' => $cat_id
+									));
+								}
+							}
+							
+						}else{
+							array_push($v_hyper_local_list, array(
+								'loc_id' => $location_id,
+								'cat_id' => $cat_id
+							));
+						}
+
+						$v_flags['hyper_local_list'] = $v_hyper_local_list;
+						$v_flags['hyper_local'] = true;
+
+						// return $finder;
+						$vendor->flags = $v_flags;
+						$vendor->update();
+						// return;
+					}else{
+						array_push($not_found, $vendor_id);
+					}
+				}
+			}
+		}
+
+		return $not_found;
+	}
 
 }
 
