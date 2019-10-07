@@ -425,6 +425,7 @@ class PassService {
 
         if(!empty($order['status'])){
             $block_communication = true;
+            $block_success_transactions = true;
         }
 
         $wallet_update = $this->updateWallet($order);
@@ -456,7 +457,9 @@ class PassService {
 
         $success_data = $this->getSuccessData($order);
 
-        $this->giveCashbackOnOrderSuccess($order);
+        if(empty($block_success_transactions)){
+            $this->giveCashbackOnOrderSuccess($order);
+        }
 
         return ['status'=>200, 'data'=>$success_data, 'order'=>$order];
 
