@@ -10779,6 +10779,9 @@ class CustomerController extends \BaseController {
 	public function onePassCustomerUpdate(){
 
 		$data = Input::all();
+		if(empty($data)){
+			$data = Input::json()->all();
+		}
 		Log::info('data at api start:::', [$data]);
 		$rules = [
 			'interests' => 'array|min:3',
