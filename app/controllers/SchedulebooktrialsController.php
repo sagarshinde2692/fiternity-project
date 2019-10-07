@@ -5632,7 +5632,7 @@ class SchedulebooktrialsController extends \BaseController {
         if(empty($booktrial['studio_extended_validity_order_id']) && empty($booktrial['pass_order_id'])){
             $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
         }
-        else /*if(empty($booktrial['pass_order_id']))*/ {
+        else if(!empty($booktrial['studio_extended_validity_order_id'])) {
             Order::$withoutAppends = true;
             $order = Order::where('_id', $booktrial['studio_extended_validity_order_id'])->first(['_id', 'studio_extended_validity', 'studio_sessions', 'studio_membership_duration']);
             if(!empty($order['studio_sessions'])){
