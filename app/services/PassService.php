@@ -2142,7 +2142,6 @@ class PassService {
             $minutes15 = 60*15;
             $scheduleDateTime 				=	\Carbon::parse($data['schedule_date_time']);
             $time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
-            Log::info('time fidd::::', [$time_diff, $data['finder_category_id'] ]);
             if(($data['finder_category_id'] == 5 && $time_diff < $minutes15) || ($data['finder_category_id'] != 5 && $time_diff < $hour1)){
                 Log::info('unsessting');
                 unset($upcoming['footer']['cancel_text']);

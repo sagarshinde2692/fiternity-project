@@ -3682,7 +3682,7 @@ class CustomerController extends \BaseController {
                                 });
                             })
                             ->orderBy('schedule_date_time', 'asc')
-                            ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id','finder_location', 'post_trial_status_updated_by_unlocksession', 'post_trial_initail_status', 'service_category')
+                            ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id','finder_location', 'post_trial_status_updated_by_unlocksession', 'post_trial_initail_status', 'service_category', 'finder_category_id')
                             ->get();
                     
                     }else if($this->app_version > '4.4.3'){
