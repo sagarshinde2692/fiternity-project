@@ -1067,7 +1067,7 @@ class HomeController extends BaseController {
                 }
 
                 if(!empty($item['pass_order_id'])){
-                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.'<br><br>You can unlock your session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym / studio. <br><br>Activate your session by Tap on UNLOCK SESSION to activate your session.';
                 }
 
                 if(isset($item['pay_later']) && $item['pay_later']){
@@ -1090,9 +1090,10 @@ class HomeController extends BaseController {
                 ];
 
                 if(!empty($item['corporate_id']) && empty($item['external_reliance'])){
-                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps.';
-                    if(empty($item['pass_order_id'])){
-                        $subline = $subline.' Session activation also helps you earn cashback into your Fitternity Wallet.';
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps. Session activation also helps you earn cashback into your Fitternity Wallet.';
+
+                    if(!empty($item['pass_order_id'])){
+                        $subline  = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>You can unlock your session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym / studio. <br><br>Activate your session by Tap on UNLOCK SESSION to activate your session and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps. Session activation also helps you earn cashback into your Fitternity Wallet.';
                     }
                 }
 

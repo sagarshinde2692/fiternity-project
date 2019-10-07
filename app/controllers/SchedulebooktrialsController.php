@@ -8684,9 +8684,13 @@ class SchedulebooktrialsController extends \BaseController {
             ];
             
             $distance_in_meters = $this->utilities->distanceCalculationOfCheckinsCheckouts($customer_cordinates, $finder_cordinates);
-
-            if($distance_in_meters > Config::get('app.checkin_checkout_max_distance_in_meters')){
-                return ["status"=>400, "message"=> "Please mark your check in by visiting ".$booktrial['finder_name']];
+            $max_unlock_distance= Config::get('app.checkin_checkout_max_distance_in_meters');
+            if($distance_in_meters > $max_unlock_distance){
+                $message =  "You can only unlok your session with ".$max_unlock_distance."m of the Gym.";
+                if($booktrial['finder_category_id'] != 5){
+                    $message =  "You can only unlok your session with ".$max_unlock_distance."m of the Studio.";
+                }
+                return ["status"=>400, "message"=>$message];
             }
         }
 
