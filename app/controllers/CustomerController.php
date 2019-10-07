@@ -10782,7 +10782,7 @@ class CustomerController extends \BaseController {
 		if(empty($data)){
 			$data = Input::json()->all();
 		}
-		Log::info('data at api start:::', [$data]);
+
 		$rules = [
 			'interests' => 'array|min:3',
 			'gender' => 'string|in:male,female,Male,Female, MALE, FEMALE'
@@ -10842,12 +10842,11 @@ class CustomerController extends \BaseController {
 		
 		$data['profile_completed'] = $this->utilities->checkOnepassProfileCompleted($customer);
 
-		Log::info('profile completed:::', [$data['profile_completed'], $customer]);
 		//$resp['service_categories'] = $this->utilities->getParentServicesCategoryList();
 
 		$resp = array_merge($resp, $customer->onepass);
 
-		if(!empty($data['submit']) /*&& !empty($data['profile_completed'])*/){
+		if(!empty($data['submit']) && !empty($data['profile_completed'])){
 
 			$onepass = $customer->onepass;
 			$onepass['photo_upload']= false;
@@ -10880,7 +10879,6 @@ class CustomerController extends \BaseController {
 	function check_array($data){
 		return count(
 				array_filter($data, function ($var)  {
-					Log::info('var', [$var]);
 					return $var;
 				})
 			);
