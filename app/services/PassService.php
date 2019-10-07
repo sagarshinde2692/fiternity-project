@@ -2135,6 +2135,18 @@ class PassService {
             $upcoming['time_diff'] = 0;
             $upcoming['footer'] = Config::get('app.before_purchase_tab.footer');
         }
+        else{
+            
+            $currentDateTime =	\Carbon\Carbon::now();
+            $hour1 = 60*60*1;
+            $minutes15 = 60*15;
+            $scheduleDateTime 				=	Carbon::parse($data['schedule_date_time']);
+            $time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
+            if((($data['finder_category_id'] == 5 && $time_diff > $minutes15) || ($data['finder_category_id'] != 5 && $time_diff > $hour1))){
+                unset($upcoming['footer']['cancel_text']);
+                unset($upcoming['footer']['cancel_url']);
+            }
+        }
 
         return $upcoming;
     }
