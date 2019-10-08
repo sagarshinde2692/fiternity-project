@@ -9,7 +9,7 @@
 
 class Finder extends  \Basemodel {
 
-	protected $collection = "finders_hyper";
+	protected $collection = "finders";
 	
 	// Add your validation rules here
 	public static $rules = [
