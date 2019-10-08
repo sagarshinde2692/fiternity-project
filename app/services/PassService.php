@@ -2056,7 +2056,7 @@ class PassService {
                             ->where('going_status_txt','!=','cancel')
                             ->where('post_trial_status', 'attended')
                             ->where('post_trial_status_updated_by_unlocksession', 'exists', true);
-                });;
+                });
                 // ->orWhere(function($query){
                 //     $query->where('payment_done', false)
                 //     ->where('post_trial_verified_status', '!=', 'no')
