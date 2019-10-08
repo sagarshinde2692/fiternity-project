@@ -2635,7 +2635,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer = Customer::find($customer_id);
                         $customer = array_except($customer->toArray(), array('password'));
                         
-                        $passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+                        //$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
 
 
                         $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
@@ -2682,23 +2682,24 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         if(!empty($customer['cart_id']))
                             $data['cart_id']=$customer['cart_id'];
 
-                        if(!empty($passOrder)){
-                            $data['pass']=1;
-                            $data['pass_start_date']=(!empty($passOrder['start_date']))?strtotime($passOrder['start_date']):null;
-                            $data['pass_expiry_date']=(!empty($passOrder['end_date']))?strtotime($passOrder['end_date']):null;
-                            $data['pass_type']=$passOrder['pass']['pass_type'];
-                            $data['pass_sessions_total']=null;
-                            if(!empty($passOrder['onepass_sessions_total'])) {
-                                $data['pass_sessions_total']=$passOrder['onepass_sessions_total']-1;
-                            }
-                            $data['pass_sessions_used']=(!!$passOrder['onepass_sessions_used'])?$passOrder['onepass_sessions_used']:0;
-                            $data['pass_city_id'] = !empty($passOrder['pass_city_id']) ? $passOrder['pass_city_id'] : null;
-                            $data['pass_city_name'] = !empty($passOrder['pass_city_name']) ? $passOrder['pass_city_name'] : null;
-                            $data['pass_order_id']=(!!$passOrder['_id'])?$passOrder['_id']: null;
-                            if($data['pass_type'] =='hybrid'){
-                                $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
-                            }
-                        }
+                        setPassToToken($customer, $data);
+                        // if(!empty($passOrder)){
+                        //     $data['pass']=1;
+                        //     $data['pass_start_date']=(!empty($passOrder['start_date']))?strtotime($passOrder['start_date']):null;
+                        //     $data['pass_expiry_date']=(!empty($passOrder['end_date']))?strtotime($passOrder['end_date']):null;
+                        //     $data['pass_type']=$passOrder['pass']['pass_type'];
+                        //     $data['pass_sessions_total']=null;
+                        //     if(!empty($passOrder['onepass_sessions_total'])) {
+                        //         $data['pass_sessions_total']=$passOrder['onepass_sessions_total']-1;
+                        //     }
+                        //     $data['pass_sessions_used']=(!!$passOrder['onepass_sessions_used'])?$passOrder['onepass_sessions_used']:0;
+                        //     $data['pass_city_id'] = !empty($passOrder['pass_city_id']) ? $passOrder['pass_city_id'] : null;
+                        //     $data['pass_city_name'] = !empty($passOrder['pass_city_name']) ? $passOrder['pass_city_name'] : null;
+                        //     $data['pass_order_id']=(!!$passOrder['_id'])?$passOrder['_id']: null;
+                        //     if($data['pass_type'] =='hybrid'){
+                        //         $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
+                        //     }
+                        // }
                     }
 
                     		
@@ -4708,5 +4709,28 @@ if (!function_exists('curl_call_get')) {
     }
 }
 
+if (!function_exists(('setPassToToken'))){
+    function setPassToToken($customer, &$data){
+        $passOrder = $passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer['_id'])->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+
+        if(!empty($passOrder)){
+            $data['pass']=1;
+            $data['pass_start_date']=(!empty($passOrder['start_date']))?strtotime($passOrder['start_date']):null;
+            $data['pass_expiry_date']=(!empty($passOrder['end_date']))?strtotime($passOrder['end_date']):null;
+            $data['pass_type']=$passOrder['pass']['pass_type'];
+            $data['pass_sessions_total']=null;
+            if(!empty($passOrder['onepass_sessions_total'])) {
+                $data['pass_sessions_total']=$passOrder['onepass_sessions_total']-1;
+            }
+            $data['pass_sessions_used']=(!!$passOrder['onepass_sessions_used'])?$passOrder['onepass_sessions_used']:0;
+            $data['pass_city_id'] = !empty($passOrder['pass_city_id']) ? $passOrder['pass_city_id'] : null;
+            $data['pass_city_name'] = !empty($passOrder['pass_city_name']) ? $passOrder['pass_city_name'] : null;
+            $data['pass_order_id']=(!!$passOrder['_id'])?$passOrder['_id']: null;
+            if($data['pass_type'] =='hybrid'){
+                $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
+            }
+        }
+    }
+}
 
 ?>

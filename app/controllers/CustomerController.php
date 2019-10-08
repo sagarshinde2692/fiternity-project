@@ -1655,6 +1655,7 @@ class CustomerController extends \BaseController {
 		if(!empty($customer['corporate_discount']) && $customer['corporate_discount']) {
 			$data['corporate_discount'] = true;
 		}
+		setPassToToken($customer, $data);
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
 			"nbf" => Config::get('app.jwt.nbf'),
