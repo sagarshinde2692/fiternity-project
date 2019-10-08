@@ -377,7 +377,7 @@ _id,location,category
 12690,Sarjapur Road,Fitness Studios
 16211,Sarjapur Road,Gyms
 16211,Sarjapur Road,Cross Functional Training
-16778,Sector 127 ,Gyms
+16778,Sector 127,Gyms
 8868,Sector 14,Gyms
 6534,Sector 14,Cross Functional Training
 7902,Sector 16,Gyms
@@ -446,7 +446,6 @@ _id,location,category
 16265,Yelahanka,Fitness Studios
 3331,Yelahanka,Gyms
 3331,Yelahanka,Fitness Studios
-16778,sector 127,Gyms
 8822,Krishna Nagar ,Gyms
 15148,DLF Phase 1,Gyms
 16788,Rohini,Gyms

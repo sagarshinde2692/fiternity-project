@@ -11596,101 +11596,144 @@ public function yes($msg){
 
 		$csv_to_array = $this->csv_to_array($filePath);
 		$not_found = array();
+		$finder_update = array();
+		$vendor_update = array();
+		$final_hyper_local_list = array();
 		if($csv_to_array){
 
-			foreach ($csv_to_array as $key => $value) {
+			$all_cat = array_values(array_unique(array_map(function($rec){
+				return trim(strtolower($rec['category']));
+			},$csv_to_array)));
 
-				if( !empty($value['_id']) && !empty($value['category']) && !empty($value['location']) ){
-					Log::info("vendor_id", [$value['_id']]);
-					$vendor_id = (int)$value['_id'];
-					$finder = Finder::where('_id', $vendor_id)->first();
-					$vendor = Vendor::where('_id', $vendor_id)->first();
-					// return $finder;
+			$cat_name_id_arr = array();
+			foreach($all_cat as $ac){
+				if($ac == 'gym' || $ac == 'gyms'){
+					$cat_name_id_arr[$ac] = 5;
+				}else{
+					$id = Findercategory::where('name', 'LIKE', '%'.$ac.'%')->first(['_id']);
+					$cat_name_id_arr[$ac] = (int)$id['_id'];
+				}
+			}
+			// return $cat_name_id_arr;
 
-					
-					$location = Location::where('name', $value['location'])->first(['_id']);
-					$location_id = (int)$location['_id'];
+			$all_loc = array_values(array_unique(array_map(function($rec){
+				return $rec['location'];
+			},$csv_to_array)));
 
-					$cv = trim(strtolower($value['category']));
+			$all_loc_arr = Location::whereIn('name', $all_loc)->get(['_id','name']);
+			
+			$loc_name_id_arr = array();
+			foreach($all_loc_arr as $ala){
+				$loc_name_id_arr[$ala['name']] = (int)$ala['_id'];
+			}
+			// return $loc_name_id_arr;
+
+			$chunks = array_chunk($csv_to_array, 500);
+
+			foreach($chunks as $chunk){
+				$updates = array();
+
+				$all_vendor = array_values(array_unique(array_map(function($rec){
+					return (int)$rec['_id'];
+				},$chunk)));
+	
+				$all_vendor_arr = Vendor::whereIn('_id', $all_vendor)->get(['_id','flags']);
+				$vendor_hyper_arr = array();
+				foreach($all_vendor_arr as $ava){
+					$vendor_hyper_arr[(int)$ava['_id']] = $ava['flags']['hyper_local_list'];
+				}
+
+				foreach ($chunk as $key => $value) {
+
+					if( !empty($value['_id']) && !empty($value['category']) && !empty($value['location']) ){
+						Log::info("vendor_id", [$value['_id']]);
+						$vendor_id = (int)$value['_id'];
+						
+						$vendor = Vendor::where('_id', $vendor_id)->first();
+						
+						$cv = trim(strtolower($value['category']));
+									
+						$location_id = "";
+						if (array_key_exists($value['location'],$loc_name_id_arr)){
+							$location_id = $loc_name_id_arr[$value['location']];
+						}
+	
+						$cat_id = "";
+						if (array_key_exists($cv,$cat_name_id_arr)){
+							$cat_id = $cat_name_id_arr[$cv];
+						}
+						
+						if($vendor && !empty($location_id) && !empty($cat_id)){
+							
+							// Log::info("location_id", [$location_id]);
+							// Log::info("cat_id", [$cat_id]);
+							
+							$flags = $vendor->flags;
+							
+							$hyper_local_list = array();
+							$hyper_local_list_ = array();
+
+							if(array_key_exists($vendor_id,$vendor_hyper_arr)){
 								
-					if($cv == 'gym' || $cv == 'gyms'){
-						$id['_id'] = 5;
-					}else{
-						$id = Findercategory::where('name', 'LIKE', '%'.$cv.'%')->first(['_id']);
-					}
-						
-					$cat_id = (int)$id['_id'];
+								$hyper_local_list_ = $vendor_hyper_arr[$vendor_id];
+								
+								$exists = false;
+								foreach($hyper_local_list_ as $hll){
+									// Log::info("loc_id", [$hll['loc_id']]);
+									// Log::info("cat_id", [$hll['cat_id']]);
+									if($hll['loc_id'] == $location_id && $hll['cat_id'] == $cat_id){
+										$exists = true;
+									}
+								}
 
-					if($finder){
-						//finder
-						$f_flags = $finder->flags;
-						
-						$hyper_local_list = array();
-						if(!empty($f_flags['hyper_local_list'])){
-							$hyper_local_list = $f_flags['hyper_local_list'];
-							foreach($hyper_local_list as $hll){
-								if(!($hll['loc_id'] == $location_id && $hll['cat_id'] == $cat_id)){
+								if(!$exists){
 									array_push($hyper_local_list, array(
 										'loc_id' => $location_id,
 										'cat_id' => $cat_id
 									));
 								}
+							}else{
+								array_push($hyper_local_list, array(
+									'loc_id' => $location_id,
+									'cat_id' => $cat_id
+								));
 							}
-							
+
+							$final_hyper_local_list = array_merge($hyper_local_list, $hyper_local_list_);
+							// Log::info("final", [$final_hyper_local_list]);
+
+							$vendor_hyper_arr[$vendor_id] = $final_hyper_local_list;
+	
+							array_push($updates, [
+								"q"=>['_id'=> $vendor_id],
+								"u"=>[
+									'$set'=>[
+										'flags.hyper_local_list'=>$vendor_hyper_arr[$vendor_id],
+										'flags.hyper_local'=>true
+									]
+								],
+								'multi' => false
+				
+							]);
+
 						}else{
-							array_push($hyper_local_list, array(
-								'loc_id' => $location_id,
-								'cat_id' => $cat_id
-							));
+							array_push($not_found, $value);
 						}
-
-						$f_flags['hyper_local_list'] = $hyper_local_list;
-						$f_flags['hyper_local'] = true;
-
-						$finder->flags = $f_flags;
-						$finder->update();
-					}else{
-						array_push($not_found, $vendor_id);
-					}
-
-					if($vendor){
-						//vendor
-						$v_flags = $vendor->flags;
+	
 						
-						$v_hyper_local_list = array();
-						if(!empty($v_flags['hyper_local_list'])){
-							$v_hyper_local_list = $v_flags['hyper_local_list'];
-							foreach($v_hyper_local_list as $v_hll){
-								if(!($v_hll['loc_id'] == $location_id && $v_hll['cat_id'] == $cat_id)){
-									array_push($v_hyper_local_list, array(
-										'loc_id' => $location_id,
-										'cat_id' => $cat_id
-									));
-								}
-							}
-							
-						}else{
-							array_push($v_hyper_local_list, array(
-								'loc_id' => $location_id,
-								'cat_id' => $cat_id
-							));
-						}
-
-						$v_flags['hyper_local_list'] = $v_hyper_local_list;
-						$v_flags['hyper_local'] = true;
-
-						// return $finder;
-						$vendor->flags = $v_flags;
-						$vendor->update();
-						// return;
-					}else{
-						array_push($not_found, $vendor_id);
 					}
 				}
+				// return $vendor_hyper_arr;
+				
+				array_push($finder_update, $this->batchUpdate('mongodb', 'finders_hyper', $updates));
+				array_push($vendor_update, $this->batchUpdate('mongodb2', 'vendors_hyper', $updates));
 			}
+
+			
 		}
 
-		return $not_found;
+		// return $not_found;
+		return Response::json(array('not_fount' => $not_found,'vendor'=>$vendor_update,'finder'=>$finder_update));
 	}
 
 }
