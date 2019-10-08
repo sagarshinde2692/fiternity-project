@@ -4728,6 +4728,7 @@ if (!function_exists(('setPassToToken'))){
             $data['pass_order_id']=(!!$passOrder['_id'])?$passOrder['_id']: null;
             if($data['pass_type'] =='hybrid'){
                 $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
+                $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
             }
         }
     }
