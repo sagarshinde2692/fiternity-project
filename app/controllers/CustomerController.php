@@ -3670,7 +3670,7 @@ class CustomerController extends \BaseController {
 									->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 hour'))));
                                 })
                                 ->orWhere(function($query){//strtotime('-3 days', time())
-                                        $query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s'/*, strtotime('-2 hour')*/)))
+                                        $query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 hour'))))
                                                 ->whereIn('post_trial_status', [null, '', 'unavailable']);	
                                 })
                                 ->orWhere(function($query){
