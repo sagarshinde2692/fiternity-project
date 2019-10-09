@@ -2120,8 +2120,28 @@ class PassService {
         $scheduleDateTime 				=	\Carbon::parse($data['schedule_date_time']);
         $scheduleDateTime = strtotime($scheduleDateTime);
 
-        Log::info('differ::', [($scheduleDateTime - strtotime('now') <= $hour2),  ($scheduleDateTime - strtotime('now') >= $hour2)]);
-        if(!($data['finder_category_id'] == 5 && (($scheduleDateTime - strtotime('now') <= $hour2) || ($scheduleDateTime - strtotime('now') >= $hour2))) && !($data['finder_category_id'] != 5 && (($scheduleDateTime - strtotime('now') <= $minutes30) || ($scheduleDateTime - strtotime('now') >= $minutes30)))){
+        $time_diff = $scheduleDateTime - strtotime('now');
+        if(
+            !(
+                $data['finder_category_id'] == 5 
+                && 
+                (
+                    ($time_diff > 0 && $time_diff <= $hour2) 
+                    || 
+                    ($time_diff <=0 && $time_diff >= $hour2)
+                )
+            ) 
+            && 
+            !(
+                $data['finder_category_id'] != 5 
+                && 
+                (
+                    ($time_diff > 0 && $time_diff <= $minutes30) 
+                    || 
+                    ($time_diff <=0 && $time_diff >= $minutes30)
+                )
+            )
+        ){
             Log::info('unsessting');
             unset($upcoming['footer']['unlock_text']);
             unset($upcoming['footer']['unlock_url']);
@@ -2145,7 +2165,7 @@ class PassService {
             if(!empty($customer->onepass['photo']['url'])){
                 $upcoming['user_photo'] = $customer->onepass['photo']['url'];
             }
-            $upcoming['time_diff'] = 0;
+            $upcoming['time_diff'] = -1;
             $upcoming['contact_us'] = Config::get('pass.before_purchase_tab.footer');
         }
         else{
