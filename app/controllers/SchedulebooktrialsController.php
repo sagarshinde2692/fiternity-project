@@ -7489,7 +7489,7 @@ class SchedulebooktrialsController extends \BaseController {
         return $resp;
 
     }
-    public function verifyFitCode($booktrial_id,$vendor_code){
+    public function verifyFitCode($booktrial_id,$vendor_code, $booktrail=null){
 
         $booktrial_id = (int) $booktrial_id;
         $vendor_code = (int) $vendor_code;
@@ -7506,17 +7506,19 @@ class SchedulebooktrialsController extends \BaseController {
 
 
 
-        $booktrial = Booktrial::where('vendor_code',$vendor_code)
-           ->where('customer_id',$customer_id)
-           ->where('_id',$booktrial_id)
-           ->whereIn('type',['booktrials','3daystrial', 'workout-session'])
-           ->where('third_party_details','exists',false)
-           ->with('category')
-           ->with('city')
-           // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
-           // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
-           // ->orderBy('_id','desc')
-           ->first();
+        if(empty($booktrail)){
+            $booktrial = Booktrial::where('vendor_code',$vendor_code)
+            ->where('customer_id',$customer_id)
+            ->where('_id',$booktrial_id)
+            ->whereIn('type',['booktrials','3daystrial', 'workout-session'])
+            ->where('third_party_details','exists',false)
+            ->with('category')
+            ->with('city')
+            // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
+            // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+            // ->orderBy('_id','desc')
+            ->first();
+        }
         $message = '';
         $fitcash = 0;
         if(isset($booktrial)){
@@ -8706,40 +8708,14 @@ class SchedulebooktrialsController extends \BaseController {
 
             $data = $booktrial;
                 
-            $data_new = $this->passService->upcomingPassBooking(null, $data, $customer_id);
-			// $data_new['header'] = "Session Activated";
-							
-			// $data_new['workout'] = array(
-            //     'image' => '',
-			// 	'name' => ucwords($data['customer_name']),
-			// 	'icon' => '',
-			// 	'header' => ucwords($data['service_name']),
-			// 	'datetime' => date('D, d M - h:i A', strtotime($data['schedule_date_time']))
-			// );
-							
-			// $data_new['finder'] = array(
-			// 	'title' => $data['finder_name'],
-			// 	'location' => $data['finder_location'],
-			// 	'address'=> $data['finder_address'],
-			// 	'direction_text' => "Get Direction",
-			// 	'lat' => $data['finder_lat'],
-			// 	'lon' => $data['finder_lon']
-			// );
+            if(!empty('pass_order_id')){
+                $data_new = $this->passService->upcomingPassBooking(null, $data, $customer_id);
+            }
+            else {
+                $data_new['session_activated'] = $this->verifyFitCode($booktrial['_id'], $booktrial['vendor_code']);
+            }
 
-			
-            // $data_new['footer'] = array(
-			// 	'footer1' => 'You can only unlock this session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym',
-			// 	'footer2' => array(
-			// 		'contact_text' => 'Need Help? Contact your Personal Concierge',
-			// 		'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-			// 		'contact_no' => '',
-			// 	),
-			// 	'footer3' => array(
-			// 		'unlock_button_text' => 'Session ID:',
-			// 	),
-			// );
-							
-            $data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'user_photo', '_id', 'header_text']);
+            $data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'user_photo', '_id', 'header_text', 'session_activated']);
             $data_new['header_text'] = "Session Activated";
             
             $response = [
