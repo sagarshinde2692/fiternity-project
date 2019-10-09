@@ -2047,16 +2047,17 @@ class PassService {
             ->where(function($query){
                 $query->orWhere('schedule_date_time','>=',new \DateTime())
                 ->orWhere(function($query){
-                    $query	->where('schedule_date_time', '>', new \DateTime(date('Y-m-d H:i:s', strtotime('-3 hour'))))
-                            ->where('going_status_txt','!=','cancel')
-                            ->whereIn('post_trial_status', [null, '', 'unavailable']);
-                })
-                ->orWhere(function($query){
                     $query	->where('post_trial_status_updated_by_unlocksession_date', '>', new \DateTime(date('Y-m-d H:i:s', strtotime('-2 hour'))))
                             ->where('going_status_txt','!=','cancel')
                             ->where('post_trial_status', 'attended')
                             ->where('post_trial_status_updated_by_unlocksession', 'exists', true);
+                })
+                ->orWhere(function($query){
+                    $query	->where('schedule_date_time', '>', new \DateTime(date('Y-m-d H:i:s', strtotime('-3 hour'))))
+                            ->where('going_status_txt','!=','cancel')
+                            ->whereIn('post_trial_status', [null, '', 'unavailable']);
                 });
+                
                 // ->orWhere(function($query){
                 //     $query->where('payment_done', false)
                 //     ->where('post_trial_verified_status', '!=', 'no')
