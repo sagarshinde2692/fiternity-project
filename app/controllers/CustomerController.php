@@ -7617,6 +7617,7 @@ class CustomerController extends \BaseController {
 					unset($response['button_text']['activate']['cancel']);
 					unset($response['button_text']['activate']['cancel']);
 					unset($response['button_text']['qrcode']);
+					unset($response['button_text']['didnt_get']);
 					unset($response['subscription_code']);
 					$response['sub_header'] = $upcoming_booking['footer']['unlock_text'];//$upcoming_booking['header'];
 					$response['footer'] = "need to ask vipu/saili";
