@@ -7605,6 +7605,17 @@ class CustomerController extends \BaseController {
 					];
 					Booktrial::where('_id', $data['_id'])->update(['kiosk_block_shown'=>true]);
 				}
+				if(!empty($data['pass_order_id'])){
+					$upcoming_booking = $this->passService->upcomingPassBooking(null, $data, $data['customer_id']);
+					$response['button_text']['activate'] = $upcoming_booking['footer'];
+					unset($response['button_text']['activate']['cancel_text']);
+					unset($response['button_text']['activate']['cancel']);
+					unset($response['button_text']['didnt_get']);
+					unset($response['button_text']['cant_make']);
+					unset($response['subscription_code']);
+					$response['sub_header'] = $upcoming_booking['header'];
+					$response['footer'] = "need to ask vipu/saili";
+				}
 				break;
 			case 'let_us_know':
 			case 'n+2':
