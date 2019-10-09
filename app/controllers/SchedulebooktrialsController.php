@@ -8708,14 +8708,20 @@ class SchedulebooktrialsController extends \BaseController {
 
             $data = $booktrial;
                 
-            if(!empty('pass_order_id')){
-                $data_new = $this->passService->upcomingPassBooking(null, $data, $customer_id);
-            }
-            else {
-                $data_new['session_activated'] = $this->verifyFitCode($booktrial['_id'], $booktrial['vendor_code']);
-            }
+            
+            $data_new = $this->passService->upcomingPassBooking(null, $data, $customer_id);
+            
+            
 
             $data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'user_photo', '_id', 'header_text', 'session_activated']);
+            
+            if(empty($data['pass_order_id'])) {
+                
+                $session_activate= $data_new;
+                unset($data_new);
+                $data_new['session_activate'] = $session_activate;
+            }
+
             $data_new['header_text'] = "Session Activated";
             
             $response = [
