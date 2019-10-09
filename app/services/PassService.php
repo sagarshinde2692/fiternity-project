@@ -750,11 +750,6 @@ class PassService {
             Finder::$withoutAppends = true;
             $finder = Finder::active()->where('_id', $finderId)->where('flags.not_available_on_onepass', '!=', true)->first();
             
-            if(empty($finder)) {
-                $service_count = Service::active()->where('finder_id', $finderId)->where('flags.classpass_available', true)->lists('city_id');
-            }
-            
-            $local_finder_service_city_id = !empty($finder)? $finder['city_id'] :!empty($service_count) ? $service_count[0]: null;
             // if(empty($finder) && empty($service_count)){
             //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             // }
@@ -766,7 +761,7 @@ class PassService {
                     !empty($passOrder['pass_city_id']) 
                     && 
                     (
-                        $local_finder_service_city_id 
+                        (int)$finder['city_id'] 
                         != 
                         (int)$passOrder['pass_city_id']
                     )
