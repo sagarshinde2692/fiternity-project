@@ -7592,6 +7592,7 @@ class CustomerController extends \BaseController {
 						$response['sub_header'] = $upcoming_booking['header'];
 						$response['footer'] = "need to ask vipu/saili";
 						unset($response['button_text']);
+						$response['block'] = false;
 					}
 	
 					unset($response['activation_success']);
