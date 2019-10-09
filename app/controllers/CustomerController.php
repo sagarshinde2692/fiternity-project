@@ -10865,7 +10865,7 @@ class CustomerController extends \BaseController {
 			//here interests is array of ids
 			$resp =['profile_data' => $this->utilities->personlizedProfileData($resp)];
 		}
-		else if(!empty($data['from_booking'])){
+		else if(!empty($resp['profile_data']) && !empty($data['from_booking'])){
 			unset($resp['profile_data']['interests']);
 		}
 		else{
