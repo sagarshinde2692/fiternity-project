@@ -461,6 +461,8 @@ class PassService {
             $this->giveCashbackOnOrderSuccess($order);
         }
 
+        \Queue::connection('redis')->push('PassService@afterTransQueued', array('data'=>$order),Config::get('app.queue'));
+
         return ['status'=>200, 'data'=>$success_data, 'order'=>$order];
 
     }
@@ -1862,5 +1864,29 @@ class PassService {
             }
             $data['monthly_total_sessions_used'] = $monthly_total_sessions_used;
         }
+    }
+
+    public function afterTransQueued($job, $data){
+
+        if($job){
+            $job->delete();
+        }
+        
+        $data = $data['data'];
+
+        $this->updateRenewalOnepass($data);
+    }
+
+    public function updateRenewalOnepass($data){
+
+        $customer_id = (int)$data['customer_id'];
+
+        Order::$withoutAppends = true;
+        $passOrders = Order::active()->where('customer_id', $customer_id)->where('type', 'pass')->count();
+
+        if($passOrders > 0){
+            Order::where('_id',(int)$data['order_id'])->update(array('pass_repeat'=> true));
+        }
+
     }
 }

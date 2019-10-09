@@ -2748,3 +2748,4 @@ Route::get('hyperLocal', 'DebugController@hyperLocal');
 Route::get('fitnessForce','TransactionController@fitnessForce');
 Route::post('combopasscreateforce', 'PassController@passCaptureAutoForce');
 Route::get('hyperLocalList', 'DebugController@hyperLocalList');
+Route::get('renewalOnepass', 'DebugController@renewalOnepass');
