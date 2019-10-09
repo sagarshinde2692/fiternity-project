@@ -3899,6 +3899,7 @@ class CustomerController extends \BaseController {
 
 								$data_new['header_text'] = "Session Starts In";
 								if(!empty($data_new['footer']['subscription_description'])){
+									
 									unset($data_new['header']);
 									$data['time_diff'] =-1;
 									$data_new['header_text']  = "Session Activated";
