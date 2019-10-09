@@ -10844,7 +10844,10 @@ class CustomerController extends \BaseController {
 
 		$resp = array_merge($resp, $customer->onepass);
 
-		$onepass['photo_upload'] = true;
+		if(!isset($customer->onepass['photo_upload'])){
+			$onepass['photo_upload'] = true;
+		}
+		
 		if(!empty($data['submit']) && !empty($data['profile_completed'])){
 
 			$onepass = $customer->onepass;
