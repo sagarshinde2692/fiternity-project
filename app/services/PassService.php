@@ -2123,22 +2123,24 @@ class PassService {
         $time_diff = $scheduleDateTime - strtotime('now');
         if(
             !(
-                $data['finder_category_id'] == 5 
-                && 
                 (
-                    ($time_diff > 0 && $time_diff <= $hour2) 
-                    || 
-                    ($time_diff <=0 && $time_diff >= $hour2)
-                )
-            ) 
-            && 
-            !(
-                $data['finder_category_id'] != 5 
-                && 
+                    $data['finder_category_id'] == 5 
+                    && 
+                    (
+                        ($time_diff > 0 && $time_diff <= $hour2) 
+                        || 
+                        ($time_diff <=0 && $time_diff >= $hour2)
+                    )
+                ) 
+                ||
                 (
-                    ($time_diff > 0 && $time_diff <= $minutes30) 
-                    || 
-                    ($time_diff <=0 && $time_diff >= $minutes30)
+                    $data['finder_category_id'] != 5 
+                    && 
+                    (
+                        ($time_diff > 0 && $time_diff <= $minutes30) 
+                        || 
+                        ($time_diff <=0 && $time_diff >= $minutes30)
+                    )
                 )
             )
         ){
