@@ -2120,7 +2120,8 @@ class PassService {
         $scheduleDateTime 				=	\Carbon::parse($data['schedule_date_time']);
         $scheduleDateTime = strtotime($scheduleDateTime);
 
-        if(($data['finder_category_id'] == 5 && (($scheduleDateTime - strtotime('now') <= $minutes30) || ($scheduleDateTime - strtotime('now') >= $minutes30))) || ($data['finder_category_id'] != 5 && (($scheduleDateTime - strtotime('now') <= $hour2) || ($scheduleDateTime - strtotime('now') >= $hour2)))){
+        Log::info('differ::', [($scheduleDateTime - strtotime('now') <= $hour2),  ($scheduleDateTime - strtotime('now') >= $hour2)]);
+        if(!($data['finder_category_id'] == 5 && (($scheduleDateTime - strtotime('now') <= $hour2) || ($scheduleDateTime - strtotime('now') >= $hour2))) && !($data['finder_category_id'] != 5 && (($scheduleDateTime - strtotime('now') <= $minutes30) || ($scheduleDateTime - strtotime('now') >= $minutes30)))){
             Log::info('unsessting');
             unset($upcoming['footer']['unlock_text']);
             unset($upcoming['footer']['unlock_url']);
