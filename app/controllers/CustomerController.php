@@ -3889,7 +3889,7 @@ class CustomerController extends \BaseController {
 								$data['amount'] = "₹".$data['amount_finder'];
 							}
 							
-							if(/*!empty($data['pass_order_id']) &&*/ $data['time_diff'] > -(60 *60 *3)){ //have to list bookings,  post 2 hour of booking end time   
+							// if(!empty($data['pass_order_id']) && $data['time_diff'] > -(60 *60 *3)){ //have to list bookings,  post 2 hour of booking end time   
 
 								$data_new = $this->passService->upcomingPassBooking($customer, $data);
 
@@ -3906,7 +3906,7 @@ class CustomerController extends \BaseController {
 								}
 
 								$upcoming_new[] = $data_new;
-							}
+							// }
 
 							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
 
