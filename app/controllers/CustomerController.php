@@ -10856,7 +10856,7 @@ class CustomerController extends \BaseController {
 			$onepass['photo_upload'] = true;
 		}
 		
-		if(!empty($data['submit']) && !empty($data['profile_completed'])){
+		if(!empty($data['submit']) && empty($data['from_booking']) && !empty($data['profile_completed'])){
 
 			$onepass = $customer->onepass;
 			$onepass['photo_upload']= false;
@@ -10864,6 +10864,9 @@ class CustomerController extends \BaseController {
 
 			//here interests is array of ids
 			$resp =['profile_data' => $this->utilities->personlizedProfileData($resp)];
+		}
+		else if(!empty($data['from_booking'])){
+			unset($resp['profile_data']['interests']);
 		}
 		else{
 			//interests is array of object alog with slug and id;
