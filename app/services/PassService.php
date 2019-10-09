@@ -2045,6 +2045,7 @@ class PassService {
         $scheduleDateTime = strtotime($scheduleDateTime);
 
         $time_diff = $scheduleDateTime - strtotime('now');
+        Log::info('timediff::: for unlock', [$time_diff]);
         if(
             !(
                 (
@@ -2053,7 +2054,7 @@ class PassService {
                     (
                         ($time_diff > 0 && $time_diff <= $hour2) 
                         || 
-                        ($time_diff <=0 && $time_diff >= $hour2)
+                        ($time_diff <=0 && $time_diff >= - $hour2)
                     )
                 ) 
                 ||
@@ -2063,7 +2064,7 @@ class PassService {
                     (
                         ($time_diff > 0 && $time_diff <= $minutes30) 
                         || 
-                        ($time_diff <=0 && $time_diff >= $minutes30)
+                        ($time_diff <=0 && $time_diff >= - $minutes30)
                     )
                 )
             )
