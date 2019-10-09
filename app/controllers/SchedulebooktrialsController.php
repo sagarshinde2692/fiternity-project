@@ -8699,6 +8699,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status = 'attended';
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_unlocksession = time();
+            $booktrial->post_trial_status_updated_by_unlocksession_date = new MongoDate(time());
             $booktrial->post_trial_status_date = time();
 
             $booktrial->update();
