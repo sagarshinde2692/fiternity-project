@@ -3958,7 +3958,6 @@ class CustomerController extends \BaseController {
 
 						$upcoming_new = array_merge($activate_new, $let_us_know_new, $review_new, $future_new, $no_block_new);
 						$upcoming_new = $this->orderBooking($upcoming_new);
-						Log::info('data new::::', [$upcoming_new[0]]);
 					}
 
 				}
@@ -10998,7 +10997,6 @@ class CustomerController extends \BaseController {
 		}
 
 		$data_prepa = array_merge($activated_session, $not_activated_session);
-		Log::info('data::::::', [count($data),count($activated_session), count($not_activated_session), $data_prepa[0]]);
 		return $data_prepa;
 	}
 }
