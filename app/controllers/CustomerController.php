@@ -3912,38 +3912,6 @@ class CustomerController extends \BaseController {
 
 
 							$upcoming[] = $data;
-							// $data_new['icon'] = "abccc";
-							// $data_new['time_diff_text'] = "Starts In - ";
-							
-							// $data_new['header'] = "Session Starts In";
-							
-							// $data_new['workout'] = array(
-							// 	'icon' => '',
-							// 	'header' => ucwords($data['service_name']),
-							// 	'datetime' => date('D, d M - h:i A', strtotime($data['schedule_date_time']))
-							// );
-							
-							// $data_new['finder'] = array(
-							// 	'title' => $data['finder_name'],
-							// 	'location' => $data['finder_location'],
-							// 	'address'=> $data['finder_address'],
-							// 	'direction' => "Get Direction",
-							// 	'lat' => $data['finder_lat'],
-							// 	'lon' => $data['finder_lon']
-							// );
-
-							// $data_new['footer'] = array(
-							// 	'footer1' => 'You can only unlock this session within 200 meters of the gym',
-							// 	'footer2' => array(
-							// 		'contact_text' => 'Need Help? Contact your Personal Concierge',
-							// 		'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-							// 		'contact_no' => '',
-							// 	),
-							// 	'footer3' => array(
-							// 		'unlock_button_text' => 'UNLOCK SESSION',
-							// 		'unlock_button_url' => Config::get('app.url').'/unlocksession/'.$data['trial_id'],
-							// 	),
-							// );
 						}
 
                     }

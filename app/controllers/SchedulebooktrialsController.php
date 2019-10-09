@@ -5655,34 +5655,34 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
 
-        $booktrial['lost_code'] = false;
+        // $booktrial['lost_code'] = false;
         
-        if(isset($booktrial['schedule_date_time']) && time() >= strtotime($booktrial['schedule_date_time'])){
-            $booktrial['lost_code'] = true;
-        }
+        // if(isset($booktrial['schedule_date_time']) && time() >= strtotime($booktrial['schedule_date_time'])){
+        //     $booktrial['lost_code'] = true;
+        // }
 
-        if($booktrial['type'] == 'workout-session' && empty($booktrial['pass_order_id'])){
-            if(!isset($booktrial['extended_validity_order_id'])){
-                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
+        // if($booktrial['type'] == 'workout-session' && empty($booktrial['pass_order_id'])){
+        //     if(!isset($booktrial['extended_validity_order_id'])){
+        //         $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
 
-                $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
-            }
-            else {
-                $booktrial['fitcode_message'] = 'Punch the code to mark your attendance.';
-            }
-        }else if(empty($booktrial['pass_order_id'])){
+        //         $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
+        //     }
+        //     else {
+        //         $booktrial['fitcode_message'] = 'Punch the code to mark your attendance.';
+        //     }
+        // }else if(empty($booktrial['pass_order_id'])){
 
-            $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';
-        }
+        //     $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';
+        // }
 
-        if(empty($booktrial['pass_order_id'])){
-            $booktrial['fitcode_button_text'] = 'Enter Fitcode';
-            $booktrial['vendor_code'] = "0000";
-        }
-        else{
-            unset($booktrial['code']);
-            unset($booktrial['vendor_code']);
-        }
+        // if(empty($booktrial['pass_order_id'])){
+        //     $booktrial['fitcode_button_text'] = 'Enter Fitcode';
+        //     $booktrial['vendor_code'] = "0000";
+        // }
+        // else{
+        //     unset($booktrial['code']);
+        //     unset($booktrial['vendor_code']);
+        // }
         $responsedata   = [
             'booktrial' => $booktrial,
             'message' => 'Booktrial Detail'
@@ -8607,7 +8607,7 @@ class SchedulebooktrialsController extends \BaseController {
         //for studio membership as workout session
         Log::info('before updating order');
         Log::info('after updating order');
-        $message = "Trial Canceled";
+        $message = "Session Cancelled"; //"Trial Canceled";
         if (isset($booktrial['studio_extended_order_id'])) {
             $message = "We have cancelled you out from this batch but we have got you covered. This gets you an exclusive chance to attend this missed session later in other batches. You can extend maximum <x> sessions within <y> days of extension.";
         }
@@ -8688,10 +8688,7 @@ class SchedulebooktrialsController extends \BaseController {
             $distance_in_meters = $this->utilities->distanceCalculationOfCheckinsCheckouts($customer_cordinates, $finder_cordinates);
             $max_unlock_distance= Config::get('app.checkin_checkout_max_distance_in_meters');
             if($distance_in_meters > $max_unlock_distance){
-                $message =  "You can only unlok your session with ".$max_unlock_distance."m of the Gym.";
-                if($booktrial['finder_category_id'] != 5){
-                    $message =  "You can only unlok your session with ".$max_unlock_distance."m of the Studio.";
-                }
+                $message =  "Please unlock your session by visiting ".$booktrial['finder_name'];
                 return ["status"=>400, "message"=>$message];
             }
         }
