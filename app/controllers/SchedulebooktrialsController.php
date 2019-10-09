@@ -5680,8 +5680,8 @@ class SchedulebooktrialsController extends \BaseController {
         //     $booktrial['vendor_code'] = "0000";
         // }
         // else{
-        //     unset($booktrial['code']);
-        //     unset($booktrial['vendor_code']);
+            unset($booktrial['code']);
+            unset($booktrial['vendor_code']);
         // }
         $responsedata   = [
             'booktrial' => $booktrial,
