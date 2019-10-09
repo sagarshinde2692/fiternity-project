@@ -2115,7 +2115,7 @@ class PassService {
             'cancel_url' => Config::get('app.url').'/canceltrial/'.$data['_id']
         ];
         //$upcoming['header_text'] = "Session Starts In";
-        $minute30 = 60*30;
+        $minutes30 = 60*30;
         $hour2 = 60 * 60 *2;
         $scheduleDateTime 				=	\Carbon::parse($data['schedule_date_time']);
         $scheduleDateTime = strtotime($scheduleDateTime);
