@@ -2115,6 +2115,17 @@ class PassService {
             'cancel_url' => Config::get('app.url').'/canceltrial/'.$data['_id']
         ];
         //$upcoming['header_text'] = "Session Starts In";
+        $minute30 = 60*30;
+        $hour2 = 60 * 60 *2;
+        $scheduleDateTime 				=	\Carbon::parse($data['schedule_date_time']);
+        $scheduleDateTime = strtotime($scheduleDateTime);
+
+        if(($data['finder_category_id'] == 5 && (($scheduleDateTime - strtotime('now') <= $minutes30) || ($scheduleDateTime - strtotime('now') >= $minutes30))) || ($data['finder_category_id'] != 5 && (($scheduleDateTime - strtotime('now') <= $hour2) || ($scheduleDateTime - strtotime('now') >= $hour2)))){
+            Log::info('unsessting');
+            unset($upcoming['footer']['unlock_text']);
+            unset($upcoming['footer']['unlock_url']);
+        }
+
         if(!empty($data['post_trial_initail_status']) && strtolower($data['post_trial_initail_status']) == 'interested'  && !empty($data['post_trial_status']) && strtolower($data['post_trial_status']) == 'attended' && !empty($data['post_trial_status_updated_by_unlocksession'])){
 
             $upcoming['header'] = "Session Activated";
@@ -2141,8 +2152,7 @@ class PassService {
             $currentDateTime =	\Carbon\Carbon::now();
             $hour1 = 60*60*1;
             $minutes15 = 60*15;
-            $scheduleDateTime 				=	\Carbon::parse($data['schedule_date_time']);
-            $time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
+            $time_diff = $scheduleDateTime - strtotime($currentDateTime);
             Log::info('time_duff', [$time_diff, $data['finder_category_id']]);
             if(($data['finder_category_id'] == 5 && $time_diff < $minutes15) || ($data['finder_category_id'] != 5 && $time_diff < $hour1)){
                 Log::info('unsessting');
