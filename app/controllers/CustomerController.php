@@ -7577,7 +7577,11 @@ class CustomerController extends \BaseController {
 				}
 				if(!empty($data['pass_order_id'])){
 					$upcoming_booking = $this->passService->upcomingPassBooking(null, $data, $data['customer_id']);
-					$response['unlocktext'] = $upcoming_booking['footer']['text'];
+					
+					if(!empty($upcoming_booking['footer']['text'])){
+						$response['unlocktext'] = $upcoming_booking['footer']['text'];
+					}
+
 					$response['button_text']['unlock'] = [
 						'text' => $upcoming_booking['footer']['unlock_text'],
 						'url' => $upcoming_booking['footer']['unlock_url']."?from=notification_before10min",
