@@ -3889,17 +3889,18 @@ class CustomerController extends \BaseController {
 								$data['amount'] = "₹".$data['amount_finder'];
 							}
 							
-							if(!empty($data['pass_order_id']) && $data['time_diff'] > -(60 *60 *3)){ //have to list bookings,  post 2 hour of booking end time   
+							if(/*!empty($data['pass_order_id']) &&*/ $data['time_diff'] > -(60 *60 *3)){ //have to list bookings,  post 2 hour of booking end time   
 
 								$data_new = $this->passService->upcomingPassBooking($customer, $data);
 
 								$data_new = array_merge($data, $data_new);
 
-								$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'direction', 'lat', 'lon', 'user_photo', 'header_text', 'activation_url']);
+								$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'direction', 'lat', 'lon', 'user_photo', 'header_text', 'activation_url', 'schedule_date_time_text']);
 
 								$data_new['header_text'] = "Session Starts In";
 								if(!empty($data_new['footer']['subscription_description'])){
 									unset($data_new['header']);
+									$data['time_diff'] =-1;
 									$data_new['header_text']  = "Session Activated";
 								}
 
