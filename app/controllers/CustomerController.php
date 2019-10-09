@@ -7578,7 +7578,7 @@ class CustomerController extends \BaseController {
 				if(!empty($data['pass_order_id'])){
 					$upcoming_booking = $this->passService->upcomingPassBooking(null, $data, $data['customer_id']);
 					Log::info('upcoming booking:::', [$upcoming_booking]);
-					if(empty($upcoming_booking['footer']['subscription_description'])){
+					if(empty($upcoming_booking['footer']['unlock_url'])){
 						$response['unlocktext'] = $upcoming_booking['footer']['text'];
 						$response['button_text']['unlock'] = [
 							'text' => $upcoming_booking['footer']['unlock_text'],
