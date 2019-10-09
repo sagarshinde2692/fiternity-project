@@ -8703,16 +8703,16 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->update();
 
-            $data = $booktrial;
+            $booktrial_data = $booktrial;
                 
             
-            $data_new = $this->passService->upcomingPassBooking(null, $data, $customer_id);
+            $data_new = $this->passService->upcomingPassBooking(null, $booktrial_data, $customer_id);
             
             
 
             $data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'user_photo', '_id', 'header_text', 'session_activated']);
             
-            if(empty($data['pass_order_id'])) {
+            if(!empty($_GET['from']) && $_GET['from']=='notification_before10min') {
                 
                 $session_activate= $data_new;
                 unset($data_new);
