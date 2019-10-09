@@ -3895,7 +3895,7 @@ class CustomerController extends \BaseController {
 
 								$data_new = array_merge($data, $data_new);
 
-								$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'direction', 'lat', 'lon', 'user_photo', 'header_text', 'activation_url', 'schedule_date_time_text']);
+								$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'direction', 'lat', 'lon', 'user_photo', 'header_text', 'activation_url', 'schedule_date_time_text', 'post_trial_status_updated_by_unlocksession']);
 
 								$data_new['header_text'] = "Session Starts In";
 								if(!empty($data_new['footer']['subscription_description'])){
@@ -3957,6 +3957,8 @@ class CustomerController extends \BaseController {
 						}
 
 						$upcoming_new = array_merge($activate_new, $let_us_know_new, $review_new, $future_new, $no_block_new);
+						$upcoming_new = $this->orderBooking($upcoming_new);
+						Log::info('data new::::', [$upcoming_new[0]]);
 					}
 
 				}
@@ -10980,5 +10982,23 @@ class CustomerController extends \BaseController {
 
 			return $result;
 		}
+	}
+
+	public function orderBooking($data){
+		$activated_session = [];
+		$not_activated_session = [];
+
+		foreach($data as $key=>$value){
+			if(!empty($value['post_trial_status_updated_by_unlocksession'])){
+				unset($value['post_trial_status_updated_by_unlocksession']);
+				 array_push($activated_session, $value);
+			}else{
+				array_push($not_activated_session, $value);
+			}
+		}
+
+		$data_prepa = array_merge($activated_session, $not_activated_session);
+		Log::info('data::::::', [count($data),count($activated_session), count($not_activated_session), $data_prepa[0]]);
+		return $data_prepa;
 	}
 }
