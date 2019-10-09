@@ -2792,11 +2792,12 @@ class SchedulebooktrialsController extends \BaseController {
                         
                         $alreadyWorkoutTaken=Order::where("booktrial_id","!=",(int)$booktrialdata['_id'])->where("type","=",'workout-session')->where("status","=","1")->where("created_at",">=",new DateTime("2018/04/23"))->where("customer_id","=",(int)$booktrialdata['customer_id'])->first();
                         Log::info(" alreadyWorkoutTaken ".print_r($alreadyWorkoutTaken,true));
-                        if(empty($alreadyWorkoutTaken))
+                        if(empty($alreadyWorkoutTaken)){
                             $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 					        if(!(!empty($onepassHoldCustomer) && $onepassHoldCustomer)){
                                 $send_communication["customer_email_instant_workoutlevelstart"] = $this->customermailer->workoutSessionInstantWorkoutLevelStart($booktrialdata);
-                            }       
+                            }
+                        }
                     }
                     
                     if(isset($booktrialdata['is_tab_active'])&&$booktrialdata['is_tab_active']!=""&&$booktrialdata['is_tab_active']==true&&$booktrialdata['type']=='workout-session')
