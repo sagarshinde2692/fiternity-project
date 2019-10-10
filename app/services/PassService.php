@@ -1960,8 +1960,8 @@ class PassService {
                     'lon'=> $customerData['onepass']['home_lon']
                 ]
             );
-            $res['pps_near_work']['subheader'] = $pps_near_work['header'];
-            $res['pps_near_work']['data'] = $pps_near_work['data'];
+            $res['near_by_work']['subheader'] = $pps_near_work['header'];
+            $res['near_by_work']['data'] = $pps_near_work['data'];
         }
 
         if(empty($res['near_by_home']) && empty($res['pps_near_work'])){
