@@ -10205,7 +10205,6 @@ Class Utilities {
         }
         Log::info('payload:::::::::', [$near_by_workout_request]);
         $workout = geoLocationWorkoutSession($near_by_workout_request, $source);
-        Log::info('$workout session:::', [$workout]);
 		$result=[
 			'header'=> 'Workouts near me',
 			'data'=>[]
@@ -10497,7 +10496,7 @@ Class Utilities {
             $resp['address_details']['work_city'] = $resp['work_city'];
             unset($resp['work_city']);
         }
-        
+
         return $resp;
     }
 
