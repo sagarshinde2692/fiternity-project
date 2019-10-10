@@ -3891,6 +3891,10 @@ class CustomerController extends \BaseController {
 							
 							// if(!empty($data['pass_order_id']) && $data['time_diff'] > -(60 *60 *3)){ //have to list bookings,  post 2 hour of booking end time   
 
+								if($data['time_diff'] < 0){
+									$data['time_diff']= -1;
+								}
+								
 								$data_new = $this->passService->upcomingPassBooking($customer, $data);
 
 								$data_new = array_merge($data, $data_new);

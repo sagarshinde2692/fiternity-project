@@ -195,7 +195,7 @@ class PassController extends \BaseController {
 			}
 		}
 		
-		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
+		if(!$passPurchased && !empty($passOrder['pass']['pass_type'])) {
 			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate, $customer);
 		}else {
             $coordinate['city'] = $city;
@@ -204,7 +204,7 @@ class PassController extends \BaseController {
             $vendor_near_by = $this->utilities->getVendorNearMe($coordinate);
             Log::info('near by vendors');
             $result['onepass_pre']['near_by']['subheader'] = $vendor_near_by['header'];
-            $result['onepass_pre']['near_by']['data'] = $vendor_near_by['data'];
+            $result['onepass_pre']['near_by']['near_by_vendor'] = $vendor_near_by['data'];
 		}
 
 		$response = Response::make($result);
