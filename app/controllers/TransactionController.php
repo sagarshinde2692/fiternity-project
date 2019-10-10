@@ -8635,12 +8635,7 @@ class TransactionController extends \BaseController {
     					'hash'=> $val["hash"]
     			];
     			if($website == "1"){
-    				$url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
-    				if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
-    					$url = Config::get('app.website')."/paymentsuccesstrial?". http_build_query($success_data, '', '&');
-    				}
-    				Log::info(http_build_query($success_data, '', '&'));
-    				Log::info($url);
+    				$url = $this->getAmazonPaySuccessUrl($order, $success_data);
     				return Redirect::to($url);
     			}else{
     				Log::info(" info success data ".print_r($success_data,true));
@@ -8732,12 +8727,7 @@ class TransactionController extends \BaseController {
     					'hash'=> $val["hash"]
     			];
     			if($website == "1"){
-    				$url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
-    				if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
-    					$url = Config::get('app.website')."/paymentsuccesstrial?". http_build_query($success_data, '', '&');
-    				}
-    				Log::info(http_build_query($success_data, '', '&'));
-    				Log::info($url);
+    				$url = $this->getAmazonPaySuccessUrl($order, $success_data);
     				return Redirect::to($url);
     			}else{
     				$paymentSuccess = $this->fitweb->paymentSuccess($success_data);
@@ -10019,6 +10009,21 @@ class TransactionController extends \BaseController {
         }
 
         return $first_session_free;
+    }
+
+    public function getAmazonPaySuccessUrl($order, $success_data){
+        
+        $origin = !empty($order['origin_url']) ? $order['origin_url'] : Config::get('app.website');
+        $base_url = $origin."/paymentsuccess";
+        
+        if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
+            $base_url = $origin."/paymentsuccesstrial";
+        }else if($order['type'] == "events"){
+            $base_url = $origin."/eventpaymentsuccess";
+        }
+        
+        Log::info(http_build_query($success_data, '', '&'));
+        return $base_url."?". http_build_query($success_data, '', '&');
     }
 
 }
