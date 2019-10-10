@@ -1936,16 +1936,47 @@ class PassService {
         // }
 
         $upcomig = $this->upcomingPassBooking($customerData);
-        $recommended= $this->workoutSessionNearMe($city, $coordinate);
-        $recommended['header'] = 'Recommended for You';
+
         $res = array();
+        if(!empty($customerData['onepass']['home_lat']) && !empty($customerData['onepass']['home_lon'])){
+            $pps_near_home= $this->workoutSessionNearMe(
+                $city, 
+                [
+                    'lat'=>$customerData['onepass']['home_lat'], 
+                    'lon'=> $customerData['onepass']['home_lon']
+                ]
+            );
+
+            Log::info('home sugges:::', $pps_near_home);
+            $res['near_by_home']['header'] = $pps_near_home['header'];
+            $res['near_by_home']['data'] = $pps_near_home['data'];
+        }
+
+        if(!empty($customerData['onepass']['work_lat']) && !empty($customerData['onepass']['work_lon'])){
+            $pps_near_work = $this->workoutSessionNearMe(
+                null, 
+                [
+                    'lat'=>$customerData['onepass']['home_lat'], 
+                    'lon'=> $customerData['onepass']['home_lon']
+                ]
+            );
+            $res['pps_near_work']['subheader'] = $pps_near_work['header'];
+            $res['pps_near_work']['data'] = $pps_near_work['data'];
+        }
+
+        if(empty($res['near_by_home']) && empty($res['pps_near_work'])){
+
+            $recommended= $this->workoutSessionNearMe($city, $coordinate);
+            $recommended['header'] = 'Recommended for You';
+            $res['recommended'] = $recommended;
+        }
+        
         $headerView = Config::get('pass.before_purchase_tab.headerview');
         unset($headerView['header_sub_text']);
         $res['headerview'] = $headerView;
         $res['profile'] = $profile;
         $res['pass'] = $tabPassData;
         $res['upcoming'] = $upcomig;
-        $res['recommended'] = $recommended;
         $res['footer'] = Config::get('pass.cancel_onepass');
 
         if(empty($res['upcoming'])){

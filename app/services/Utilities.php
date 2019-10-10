@@ -10204,7 +10204,8 @@ Class Utilities {
             $near_by_workout_request['onepass_available'] = true; 
         }
         Log::info('payload:::::::::', [$near_by_workout_request]);
-		$workout = geoLocationWorkoutSession($near_by_workout_request, $source);
+        $workout = geoLocationWorkoutSession($near_by_workout_request, $source);
+        Log::info('$workout session:::', [$workout]);
 		$result=[
 			'header'=> 'Workouts near me',
 			'data'=>[]

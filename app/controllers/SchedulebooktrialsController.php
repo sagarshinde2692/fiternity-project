@@ -8716,7 +8716,7 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 $session_activate= $data_new;
                 unset($data_new);
-                $data_new['session_activate'] = $session_activate;
+                $data_new['session_activated'] = $session_activate;
             }
 
             $data_new['header_text'] = "Session Activated";
@@ -8724,6 +8724,7 @@ class SchedulebooktrialsController extends \BaseController {
             $response = [
                 'status' => 200,
                 'data' => $data_new,
+                'session_activated' => $data_new['session_activated'],
                 'booktrial_id'=> (int)$booktrial['_id'],
             ];
         }
