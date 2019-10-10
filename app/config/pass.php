@@ -904,7 +904,10 @@ return [
     "cancel_onepass" => [
         'text' => 'Not Satisfied with Onepass',
         'button_text' => 'Cancel OnePass',
-        'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
+        'contact_no' => \Config::get('app.contact_us_customer_number_onepass'),
+        'display_contact_no' => \Config::get('app.display_contact_us_customer_number_onepass'),
+        'email' => \Config::get('app.contact_us_customer_email_onepass'),
+        'email_text' => "Contect Us"
     ],
 
     'local_pass_fields' => [
@@ -944,14 +947,5 @@ return [
         "image" => "https://b.fitn.in/passes/check_circle.png",
         "text" => "service_name @ finder_name",
         "session_activated" => []
-    ],
-
-    'contact_us' => [
-        'contact_text' => 'Need Help? Contact your Personal Concierge',
-        'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-        'contact_no' => \Config::get('app.contact_us_customer_number_onepass'),
-        'display_contact_no' => \Config::get('app.display_contact_us_customer_number_onepass'),
-        'email' => \Config::get('app.contact_us_customer_email_onepass'),
-        'email_text' => "Contect Us"
     ]
 ];
