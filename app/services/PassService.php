@@ -1844,10 +1844,13 @@ class PassService {
         );
     }
 
-    public function passTabPostPassPurchaseData($customerId, $city, $showTnC = true, $coordinate) {
+    public function passTabPostPassPurchaseData($customerId, $city, $showTnC = true, $coordinate, $customerData=null) {
         Log::info('passTabPostPassPurchaseData');
-        $customerData = Customer::where('_id', $customerId)->first();
-        // return $customerData;
+
+        if(!empty($customerData)){
+            $customerData = Customer::where('_id', $customerId)->first();
+        }
+        
         $profile = array();
         if(!empty($customerData)){
 
@@ -2045,7 +2048,7 @@ class PassService {
         $scheduleDateTime = strtotime($scheduleDateTime);
 
         $time_diff = $scheduleDateTime - strtotime('now');
-        Log::info('timediff::: for unlock', [$time_diff]);
+        Log::info('timediff::: for unlock', [$time_diff, $hour2]);
         if(
             !(
                 (

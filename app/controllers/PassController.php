@@ -188,6 +188,7 @@ class PassController extends \BaseController {
 		$passOrder = null;
 
 		if(!empty($customeremail)) {
+            $customer = Customer::where('_id', $customer_id)->first();
 			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
 			if(!empty($passOrder)) {
 				$passPurchased = true;
@@ -195,12 +196,27 @@ class PassController extends \BaseController {
 		}
 		
 		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
-			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate);
+			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate, $customer);
 		}else {
             $result['onepass_pre'] = Config::get('pass.before_purchase_tab');
-            $pps_near_by = $this->passService->workoutSessionNearMe($city, $coordinate);
-			$result['onepass_pre']['near_by']['subheader'] = $pps_near_by['header'];
-			$result['onepass_pre']['near_by']['data'] = $pps_near_by['data'];
+            if(!empty($customer['onepass']['home_lat']) && !empty($customer['onepass']['home_lon'])){
+                $pps_near_home= $this->passService->workoutSessionNearMe($city, $coordinate);
+			    $result['onepass_pre']['near_by_home']['subheader'] = $pps_near_home['header'];
+			    $result['onepass_pre']['near_by_home']['data'] = $pps_near_home['data'];
+            }
+
+            if(!empty($customer['onepass']['work_lat']) && !empty($customer['onepass']['work_lon'])){
+                $pps_near_work = $this->passService->workoutSessionNearMe($city, $coordinate);
+			    $result['onepass_pre']['pps_near_work']['subheader'] = $pps_near_work['header'];
+			    $result['onepass_pre']['pps_near_work']['data'] = $pps_near_work['data'];
+            }
+
+            if(empty($result['near_by']['home']) && empty($result['near_by']['work'])){
+
+                $pps_near_by = $this->passService->workoutSessionNearMe($city, $coordinate);
+			    $result['onepass_pre']['near_by']['subheader'] = $pps_near_by['header'];
+			    $result['onepass_pre']['near_by']['data'] = $pps_near_by['data'];
+            }
 		}
 
 		$response = Response::make($result);
