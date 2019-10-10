@@ -10400,6 +10400,13 @@ Class Utilities {
             if(!empty($data['address_details']['work_landmark'])){
                 $onepass['work_landmark'] =  $data['address_details']['work_landmark'];
             }
+
+            if(!empty($data['address_details']['home_city'])){
+                $onepass['home_city'] =  $data['address_details']['home_city'];
+            }
+            if(!empty($data['address_details']['work_city'])){
+                $onepass['work_city'] =  $data['address_details']['work_city'];
+            }
         }
         $customer->onepass = $onepass;
         return $customer;
@@ -10479,6 +10486,16 @@ Class Utilities {
             $resp['address_details']['work_lon'] = $resp['work_lon'];
             unset($resp['work_lat']);
             unset($resp['work_lon']);
+        }
+
+        if(!empty($resp['home_city'])){
+            $resp['address_details']['home_city'] = $resp['home_city'];
+            unset($resp['home_city']);
+        }
+
+        if(!empty($resp['work_city'])){
+            $resp['address_details']['work_city'] = $resp['work_city'];
+            unset($resp['work_city']);
         }
         
         return $resp;
