@@ -10892,6 +10892,7 @@ class CustomerController extends \BaseController {
 		if(!empty($resp['profile_data']) && !empty($data['ratecard_id'])){
 			unset($resp['booking_text']);
 			unset($resp['profile_data']['interests']);
+			$resp['profile_data']['skip_text'] = 'Continue';
 		}
 
 		if(empty($data['ratecard_id'])){
