@@ -7687,7 +7687,15 @@ class CustomerController extends \BaseController {
 				
 				$response['image'] = "https://b.fitn.in/paypersession/timer.png";
 				
-				$response['sub_header_2'] = "Your ".$data['service_name']." at ".$data['finder_name']." is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?\n\nCancellation window for this session is available upto 1 hour prior to the session time (Cancel before ".$one_hour_before.")\nCancellation post the window will be chargeable " ;
+				
+				$prior_time = '1 hour';
+				if(!empty($data['finder_category_id']) && $data['finder_category_id'] ==5){
+					$prior_time = '15 minutes';
+				}
+				else{
+					$prior_time = '1 hour';
+				}
+				$response['sub_header_2'] = "Your ".$data['service_name']." at ".$data['finder_name']." is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?\n\nCancellation window for this session is available upto ".$prior_time." prior to the session time (Cancel before ".$one_hour_before.")\nCancellation post the window will be chargeable " ;
 				$response['button_text'] = [
 					'attended'=>['text'=>'YES I’LL BE THERE','url'=>Config::get('app.url')."/sessionstatuscapture/confirm/".$data['_id'], 'type'=>"SUCCESS"],
 					'did_not_attend'=>['text'=>'NO, I’M NOT GOING','url'=>Config::get('app.url')."/sessionstatuscapture/cantmake/".$data['_id']]
