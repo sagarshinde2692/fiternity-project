@@ -201,6 +201,10 @@ class TransactionController extends \BaseController {
         if(!empty($_SERVER['REQUEST_URI'])){
             Log::info($_SERVER['REQUEST_URI']);
         }
+        
+        if(!empty(Request::header('Origin'))){
+            $data['origin_url'] = Request::header('Origin');
+        }
         Log::info('------------transactionCapture---------------',$data);
 
         if(!empty($data['customer_quantity']) && is_string($data['customer_quantity'])){
