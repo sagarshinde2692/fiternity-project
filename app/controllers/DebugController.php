@@ -11736,5 +11736,115 @@ public function yes($msg){
 		return Response::json(array('not_fount' => $not_found,'vendor'=>$vendor_update,'finder'=>$finder_update));
 	}
 
+	public function renewalOnepass(){
+
+		$passOrders = Order::raw(function($collection){
+
+			$aggregate = [];
+			
+			$match = [
+				'$match'=>[
+					'type'=>['$in'=>["pass"]], 
+					'status'=>"1",
+					// 'customer_id' => 521668
+				]
+			];
+
+			$aggregate[] = $match;
+
+			$sort = [
+				'$sort'=>[
+					'created_at'=> 1
+				]
+			];
+
+			$aggregate[] = $sort;
+			
+			$group = [
+				'$group'=>[
+					'_id'=>'$customer_id',
+					'count' => ['$sum' => 1],
+					'data'=>[
+						'$addToSet'=> array('order_id' => '$order_id', 'created_at' => '$created_at')
+					],
+					'first' => [
+						'$first' => array('order_id' => '$order_id', 'created_at' => '$created_at')
+					]
+				]
+			];
+			$aggregate[] = $group;
+
+			$match1 = [
+				'$match'=>[
+					'count'=>['$gt'=>1], 
+				]
+			];
+			$aggregate[] = $match1;
+			
+			return $collection->aggregate($aggregate);
+
+		});
+
+		$passOrdersRes = $passOrders['result'];
+
+		// return $passOrdersRes;
+
+		$to_update_order_ids = array(); 
+		foreach($passOrdersRes as $por){
+			Log::info('customer_id', [$por['_id']]);
+			$or_id = array_map(function($rec){
+				return (int)$rec['order_id'];
+			},$por['data']);
+			// print_r($or_id);
+			// echo "<hr>";
+
+			$first_or_id[] = (int)$por['first']['order_id'];
+			// print_r($first_or_id);
+			// echo "<hr>";
+			// return;
+
+			$fin_or_id = array_diff($or_id, $first_or_id);
+			// print_r($fin_or_id);
+			// echo "<hr>";
+			
+
+			$to_update_order_ids = array_merge($to_update_order_ids, $fin_or_id);
+			// print_r($to_update_order_ids);
+			// return;
+		}
+		
+		Log::info("total orders",[count($to_update_order_ids)]);
+		// return $to_update_order_ids;
+		$response = array();
+		$chunks = array_chunk($to_update_order_ids, 25);
+		Log::info('chunks',[count($chunks)]);
+
+		foreach($chunks as $chunk){
+			$updates = array();
+			foreach($chunk as $val){
+				array_push($updates, [
+					"q"=>['_id'=> $val],
+					"u"=>[
+						'$set'=>[
+							'pass_repeat'=>true,
+							'pass_repeat_manual'=>true,
+						]
+					],
+					'multi' => false
+	
+				]);
+			}
+
+			$res = $this->batchUpdate('mongodb', 'orders', $updates);
+			array_push($response, $res);
+			// exit;
+		}
+
+		// Order::whereIn('_id', $to_update_order_ids)->update(['pass_repeat'=>true, 'pass_repeat_manual'=>true]);
+
+		return $response;
+
+	}
+
 }
 

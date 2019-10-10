@@ -461,6 +461,8 @@ class PassService {
             $this->giveCashbackOnOrderSuccess($order);
         }
 
+        \Queue::connection('redis')->push('PassController@afterTransQueued', array('data'=>$order),Config::get('app.queue'));
+
         return ['status'=>200, 'data'=>$success_data, 'order'=>$order];
 
     }
