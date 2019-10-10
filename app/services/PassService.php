@@ -2134,7 +2134,7 @@ class PassService {
                 $upcoming['user_photo'] = $customer->onepass['photo']['url'];
             }
             $upcoming['time_diff'] = -1;
-            $upcoming['contact_us'] = Config::get('pass.before_purchase_tab.footer');
+            $upcoming['contact_us'] = Config::get('pass.contact_us');
             if(!empty($from) && $from =='pass_tab'){
                 $upcoming_config = Config::get('pass.upcoming_booking');
                 $upcoming_config['text'] = strtr($upcoming_config['text'], ['service_name'=> ucwords($data['service_name']), 'finder_name'=>ucwords($data['finder_name'])]);
