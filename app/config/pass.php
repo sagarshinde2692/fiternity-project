@@ -707,6 +707,7 @@ return [
     ],
 
     "pass_profile" =>[
+        "booking_text" =>"Please completee your personlization first-----------kailash-----------------------",
         "address_details" => [
             "header" => "Let us know where you are",
             "home_subtext" => "We will use this address to send you vouchers and gifts.",
