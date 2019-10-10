@@ -7489,7 +7489,7 @@ class SchedulebooktrialsController extends \BaseController {
         return $resp;
 
     }
-    public function verifyFitCode($booktrial_id,$vendor_code, $booktrail=null){
+    public function verifyFitCode($booktrial_id,$vendor_code, $booktrial=null){
 
         $booktrial_id = (int) $booktrial_id;
         $vendor_code = (int) $vendor_code;
@@ -7506,7 +7506,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 
 
-        if(empty($booktrail)){
+        if(empty($booktrial)){
             $booktrial = Booktrial::where('vendor_code',$vendor_code)
             ->where('customer_id',$customer_id)
             ->where('_id',$booktrial_id)
@@ -7563,7 +7563,8 @@ class SchedulebooktrialsController extends \BaseController {
                 !isset($booktrial->post_trial_status_updated_by_fitcode) && 
                 !(isset($booktrial->payment_done) && !$booktrial->payment_done) && 
                 !isset($booktrial->post_trial_status_updated_by_lostfitcode) &&
-                !isset($booktrial['pass_order_id'])
+                !isset($booktrial['pass_order_id']) &&
+                empty($booktrial->post_trial_status_updated_by_unlocksession)
             ){
 
                 $post_trial_status_updated_by_fitcode = time();
@@ -8663,6 +8664,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $customer_id = (int)$decoded->customer->_id;
 
+        Log::info('customer_id:::', [$customer_id]);
         $customer_cordinates = [
             'lat' => $data['lat'],
             'lon' => $data['lon']
@@ -8694,6 +8696,13 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(isset($booktrial)){
+
+
+            if(empty($booktrial['pass_order_id'])){
+                $vefify_fitcode_using_unlock = json_decode(json_encode($this->verifyFitCode(null, $booktrial->vendor_code, $booktrial)->getData()));
+                $booktrial->vefify_fitcode_using_unlock = $vefify_fitcode_using_unlock;
+                Log::info('vefify_fitcode_usin_unlock ::::::::', [$vefify_fitcode_using_unlock, $booktrial->vendor_code, $booktrial->type]);
+            }
 
             $booktrial->post_trial_status = 'attended';
             $booktrial->post_trial_initail_status = 'interested';
