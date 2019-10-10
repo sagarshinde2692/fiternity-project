@@ -11815,11 +11815,34 @@ public function yes($msg){
 		
 		Log::info("total orders",[count($to_update_order_ids)]);
 		// return $to_update_order_ids;
-		
+		$response = array();
+		$chunks = array_chunk($to_update_order_ids, 25);
+		Log::info('chunks',[count($chunks)]);
 
-		Order::whereIn('_id', $to_update_order_ids)->update(['pass_repeat'=>true, 'pass_repeat_manual'=>true]);
+		foreach($chunks as $chunk){
+			$updates = array();
+			foreach($chunk as $val){
+				array_push($updates, [
+					"q"=>['_id'=> $val],
+					"u"=>[
+						'$set'=>[
+							'pass_repeat'=>true,
+							'pass_repeat_manual'=>true,
+						]
+					],
+					'multi' => false
+	
+				]);
+			}
 
-		return "done";
+			$res = $this->batchUpdate('mongodb', 'orders', $updates);
+			array_push($response, $res);
+			// exit;
+		}
+
+		// Order::whereIn('_id', $to_update_order_ids)->update(['pass_repeat'=>true, 'pass_repeat_manual'=>true]);
+
+		return $response;
 
 	}
 
