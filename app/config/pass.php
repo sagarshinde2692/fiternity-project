@@ -903,7 +903,8 @@ return [
 
     "cancel_onepass" => [
         'text' => 'Not Satisfied with Onepass',
-        'button_text' => 'Cancel OnePass'
+        'button_text' => 'Cancel OnePass',
+        'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
     ],
 
     'local_pass_fields' => [
@@ -937,5 +938,12 @@ return [
         'bangalore' =>1200,
         'hydrabad' => 1000
     ],
+
+    'upcoming_booking' => [
+        'header' => "Upcoming Session",
+        "image" => "https://b.fitn.in/passes/check_circle.png",
+        "text" => "service_name @ finder_name",
+        "session_activated" => []
+    ]
 
 ];

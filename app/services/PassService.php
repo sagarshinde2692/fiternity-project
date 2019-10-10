@@ -1935,7 +1935,7 @@ class PassService {
         //     $tabPassData['terms'] = "<h2>Terms and Conditions</h2>".$tnc;
         // }
 
-        $upcomig = $this->upcomingPassBooking($customerData);
+        $upcomig = $this->upcomingPassBooking($customerData, null, null, 'pass_tab');
 
         $res = array();
         $search_results = [];
@@ -1995,7 +1995,7 @@ class PassService {
         return $res;
     }
 
-    public function upcomingPassBooking($customer, $data=null, $customer_id=null){
+    public function upcomingPassBooking($customer, $data=null, $customer_id=null, $from=null){
         
         if(empty($customer)){
             $customer = Customer::where('_id', $customer_id)->first();
@@ -2135,6 +2135,12 @@ class PassService {
             }
             $upcoming['time_diff'] = -1;
             $upcoming['contact_us'] = Config::get('pass.before_purchase_tab.footer');
+            if(!empty($from) && $from =='pass_tab'){
+                $upcoming_config = Config::get('pass.upcoming_booking');
+                $upcoming_config['text'] = strtr($upcoming_config['text'], ['service_name'=> ucwords($data['service_name']), 'finder_name'=>ucwords($data['finder_name'])]);
+                $upcoming_config['session_activated'] = $upcoming;
+                $upcoming = $upcoming_config;
+            }
         }
         else{
 
