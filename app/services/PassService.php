@@ -2126,7 +2126,7 @@ class PassService {
             "category"=>"",
             "lat"=>$lat,
             "lon"=>$lon,
-            "city"=>strtolower($city),
+            "city"=>!empty($city) ? strtolower($city): null,
             "onepass_available" => true,
             "pass" => true,
             "keys"=>[

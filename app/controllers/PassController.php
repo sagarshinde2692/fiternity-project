@@ -200,13 +200,26 @@ class PassController extends \BaseController {
 		}else {
             $result['onepass_pre'] = Config::get('pass.before_purchase_tab');
             if(!empty($customer['onepass']['home_lat']) && !empty($customer['onepass']['home_lon'])){
-                $pps_near_home= $this->passService->workoutSessionNearMe($city, $coordinate);
+                $pps_near_home= $this->passService->workoutSessionNearMe(
+                    null, 
+                    [
+                        'lat'=>$customer['onepass']['home_lat'], 
+                        'lon'=> $customer['onepass']['home_lon']
+                    ]
+                );
+
 			    $result['onepass_pre']['near_by_home']['subheader'] = $pps_near_home['header'];
 			    $result['onepass_pre']['near_by_home']['data'] = $pps_near_home['data'];
             }
 
             if(!empty($customer['onepass']['work_lat']) && !empty($customer['onepass']['work_lon'])){
-                $pps_near_work = $this->passService->workoutSessionNearMe($city, $coordinate);
+                $pps_near_work = $this->passService->workoutSessionNearMe(
+                    null, 
+                    [
+                        'lat'=>$customer['onepass']['home_lat'], 
+                        'lon'=> $customer['onepass']['home_lon']
+                    ]
+                );
 			    $result['onepass_pre']['pps_near_work']['subheader'] = $pps_near_work['header'];
 			    $result['onepass_pre']['pps_near_work']['data'] = $pps_near_work['data'];
             }
