@@ -465,6 +465,7 @@ return array(
 	'customer_care_number' => '+919699998838',
 	'contact_us_vendor_email' => 'business@fitternity.com',
 	'contact_us_customer_email' => 'support@fitternity.com',
+	'contact_us_customer_email_onepass' => 'onepass@fitternity.com',
 	'contact_us_vendor_number' => '+919699998838',
 	'contact_us_customer_number' => '+912261094444',
 	'contact_us_customer_number_onepass' => '+917400062849',
