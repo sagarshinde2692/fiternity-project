@@ -10593,7 +10593,7 @@ Class Utilities {
             "offset" => 0,
             "limit" => 9,
             "radius" => "2km",
-            "category"=> [],
+            "category"=> "",
             "lat"=> !empty($data['lat']) ? $data['lat']: "",
             "lon"=>!empty($data['lon']) ? $data['lon']: "",
             "city"=>!empty($data['city']) ? strtolower($data['city']) : null,
@@ -10627,8 +10627,8 @@ Class Utilities {
             'header'=> 'Workouts near me',
             'data'=>[]
         ];
-        if(!empty($workout['workout'])){
-            $result['data'] = $workout['workout'];
+        if(!empty($workout['finder'])){
+            $result['data'] = $workout['finder'];
         }
         if(empty($data['lat']) && empty($data['lon'])){
             $result['header'] = "Workouts in ".ucwords($data['city']);
