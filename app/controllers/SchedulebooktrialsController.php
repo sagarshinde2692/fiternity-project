@@ -8724,7 +8724,7 @@ class SchedulebooktrialsController extends \BaseController {
             $response = [
                 'status' => 200,
                 'data' => $data_new,
-                'session_activated' => $data_new['session_activated'],
+                'session_activated' => !empty($data_new['session_activated']) ? $data_new['session_activated'] : null,
                 'booktrial_id'=> (int)$booktrial['_id'],
             ];
         }

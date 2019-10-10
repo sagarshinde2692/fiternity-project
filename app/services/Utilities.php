@@ -10587,4 +10587,52 @@ Class Utilities {
 
         $send_communication = $this->sendPromotionalNotification($promoData);
     }
+
+    public function getVendorNearMe($data){
+        $near_by_vendor_request = [
+            "offset" => 0,
+            "limit" => 9,
+            "radius" => "2km",
+            "category"=> [],
+            "lat"=> !empty($data['lat']) ? $data['lat']: "",
+            "lon"=>!empty($data['lon']) ? $data['lon']: "",
+            "city"=>!empty($data['city']) ? strtolower($data['city']) : null,
+            "keys"=>[
+                "average_rating",
+                "slug",
+                "name",
+                "categorytags",
+                "category",
+                "vendor_slug",
+                "vendor_name",
+                "overlayimage",
+                "total_slots",
+                "next_slot",
+                "id",
+                "contact",
+                "coverimage",
+                "location",
+                "multiaddress"
+            ]
+        ];
+
+        $near_by_vendor_request['pass'] = true;
+        $near_by_vendor_request['time_tag'] = 'later-today';
+        $near_by_vendor_request['date'] = date('d-m-y');
+
+        if($data)
+        $workout = geoLocationFinder($near_by_vendor_request, 'customerhome');
+
+        $result=[
+            'header'=> 'Workouts near me',
+            'data'=>[]
+        ];
+        if(!empty($workout['workout'])){
+            $result['data'] = $workout['workout'];
+        }
+        if(empty($data['lat']) && empty($data['lon'])){
+            $result['header'] = "Workouts in ".ucwords($data['city']);
+        }
+        return $result;
+    }
 }
