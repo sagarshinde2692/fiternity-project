@@ -1940,7 +1940,7 @@ class PassService {
         $res = array();
         if(!empty($customerData['onepass']['home_city']) && !empty($customerData['onepass']['home_lat']) && !empty($customerData['onepass']['home_lon'])){
             $pps_near_home= $this->workoutSessionNearMe(
-                $city, 
+                $customerData['onepass']['home_city'], 
                 [
                     'lat'=>$customerData['onepass']['home_lat'], 
                     'lon'=> $customerData['onepass']['home_lon']
@@ -1954,7 +1954,7 @@ class PassService {
 
         if(!empty($customerData['onepass']['work_city'])  && !empty($customerData['onepass']['work_lat']) && !empty($customerData['onepass']['work_lon'])){
             $pps_near_work = $this->workoutSessionNearMe(
-                null, 
+                $customerData['onepass']['work_city'], 
                 [
                     'lat'=>$customerData['onepass']['home_lat'], 
                     'lon'=> $customerData['onepass']['home_lon']
