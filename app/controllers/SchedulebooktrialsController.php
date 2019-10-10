@@ -8664,7 +8664,6 @@ class SchedulebooktrialsController extends \BaseController {
 
         $customer_id = (int)$decoded->customer->_id;
 
-        Log::info('customer_id:::', [$customer_id]);
         $customer_cordinates = [
             'lat' => $data['lat'],
             'lon' => $data['lon']
