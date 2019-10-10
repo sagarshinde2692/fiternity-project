@@ -3899,7 +3899,7 @@ class CustomerController extends \BaseController {
 
 								$data_new = array_merge($data, $data_new);
 
-								$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'direction', 'lat', 'lon', 'user_photo', 'header_text', 'activation_url', 'schedule_date_time_text', 'post_trial_status_updated_by_unlocksession']);
+								$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'direction', 'lat', 'lon', 'user_photo', 'header_text', 'activation_url', 'schedule_date_time_text', 'post_trial_status_updated_by_unlocksession', 'block_screen']);
 
 								$data_new['header_text'] = "Session Starts In";
 								unset($data_new['header']);
@@ -3941,9 +3941,14 @@ class CustomerController extends \BaseController {
 
 						$upcoming = array_merge($activate, $let_us_know, $review, $future, $no_block);
 
+						$unlocked = [];
 						foreach($upcoming_new as $x_new){
 
-							if(isset($x_new['block_screen'])){
+							if(isset($x_new['post_trial_status_updated_by_unlocksession'])){
+								unset($x_new['post_trial_status_updated_by_unlocksession']);
+								array_push($unlocked, $x_new);
+							}
+							else if(isset($x_new['block_screen'])){
 
 								if( (isset($x_new['block_screen']) && $x_new['block_screen']['type'] == 'activate_session')){
 									array_push($activate_new, $x_new);
@@ -3959,8 +3964,10 @@ class CustomerController extends \BaseController {
 							}
 						}
 
-						$upcoming_new = array_merge($activate_new, $let_us_know_new, $review_new, $future_new, $no_block_new);
-						$upcoming_new = $this->orderBooking($upcoming_new);
+
+						Log::info('post trial:::::::::::::;', $unlocked);
+						$upcoming_new = array_merge($unlocked, $activate_new, $let_us_know_new, $review_new, $future_new, $no_block_new);
+						//$upcoming_new = $this->orderBooking($upcoming_new);
 					}
 
 				}

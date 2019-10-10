@@ -2047,7 +2047,7 @@ class PassService {
             ->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown', 'has_reviewed', 'skip_review','amount','studio_extended_validity_order_id','studio_block_shown','pass_order_id','finder_location', 'service_category', 'post_trial_initail_status', 'post_trial_status_updated_by_unlocksession', 'finder_category_id')
             ->first();
         }
-        //return (new \DateTime(date('Y-m-d H:i:s', strtotime('-2 hour'))));
+        
         if(empty($data)){
             return;
         }
@@ -2088,7 +2088,6 @@ class PassService {
         $scheduleDateTime = strtotime($scheduleDateTime);
 
         $time_diff = $scheduleDateTime - strtotime('now');
-        Log::info('timediff::: for unlock', [$time_diff, $hour2]);
         if(
             !(
                 (
@@ -2112,7 +2111,6 @@ class PassService {
                 )
             )
         ){
-            Log::info('unsessting');
             unset($upcoming['footer']['unlock_text']);
             unset($upcoming['footer']['unlock_url']);
         }
@@ -2144,9 +2142,7 @@ class PassService {
             $hour1 = 60*60*1;
             $minutes15 = 60*15;
             $time_diff = $scheduleDateTime - strtotime($currentDateTime);
-            Log::info('time_duff', [$time_diff, $data['finder_category_id']]);
             if(($data['finder_category_id'] == 5 && $time_diff < $minutes15) || ($data['finder_category_id'] != 5 && $time_diff < $hour1)){
-                Log::info('unsessting');
                 unset($upcoming['footer']['cancel_text']);
                 unset($upcoming['footer']['cancel_url']);
             }
