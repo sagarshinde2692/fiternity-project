@@ -8670,15 +8670,38 @@ class SchedulebooktrialsController extends \BaseController {
         ];
         $booktrial = Booktrial::where('_id',$booktrial_id)
            ->where('customer_id',$customer_id)
-           ->where('post_trial_status', '!=', 'attended')
+           //->where('post_trial_status', '!=', 'attended')
            ->whereIn('type',['booktrials','3daystrial','workout-session'])
            ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
            //->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            // ->orderBy('_id','desc')
            ->first();
 
-        if(!empty($booktrial) && strtotime($booktrial['schedule_date_time']) > strtotime(date('Y-m-d 23:59:59'))){
-            return ["status"=>400, "message"=> "You can unlock your session at booking day only."];
+        if(empty($booktrial->post_trial_status)){
+
+            if(empty($booktrial->unlock_trial_count)){
+                $booktrial->unlock_trial_count = 1;
+            }else{
+                $booktrial->unlock_trial_count = $booktrial->unlock_trial_count + 1;
+            }
+        }
+
+        $pass_further = false;
+        $time_in_seconds = 60* 60;
+        $post_hour = '1 Hour';
+        if(!empty($booktrial->finder_category_id) && $booktrial->finder_category_id !=5){
+            $time_in_seconds = 60*30;
+            $post_hour = '30 Minutes';
+        }
+        $time_check = abs(strtotime($booktrial['schedule_date_time']) - strtotime('now') )   <=  $time_in_seconds ? true : false;
+
+        Log::info('time check::', [strtotime($booktrial['schedule_date_time']), strtotime('now') , abs(strtotime($booktrial['schedule_date_time']) - strtotime('now') ), $time_in_seconds, $time_check]);
+        if(!empty($booktrial) && !$time_check){
+            if($booktrial->unlock_trial_count <3){
+                $pass_further =true;
+                $message = "You can unlock your session at booking day only. ".$post_hour." post and pre";
+                //return ["status"=>400, "message"=> ""];
+            }
         }
         else if(!empty($booktrial)){
             $finder_cordinates = [
@@ -8688,16 +8711,16 @@ class SchedulebooktrialsController extends \BaseController {
             
             $distance_in_meters = $this->utilities->distanceCalculationOfCheckinsCheckouts($customer_cordinates, $finder_cordinates);
             $max_unlock_distance= Config::get('app.checkin_checkout_max_distance_in_meters');
-            if($distance_in_meters > $max_unlock_distance){
+            if($distance_in_meters > $max_unlock_distance && $booktrial->unlock_trial_count < 3){
+                $pass_further =true;
                 $message =  "Please unlock your session by visiting ".$booktrial['finder_name'];
-                return ["status"=>400, "message"=>$message];
+                //return ["status"=>400, "message"=>$message];
             }
         }
 
-        if(isset($booktrial)){
+        if(empty($booktrial->post_trial_status) && (empty($pass_further) || $booktrial->unlock_trial_count ==3)){
 
-
-            if(empty($booktrial['pass_order_id'])){
+            if(empty($booktrial->pass_order_id && empty($booktrial->vefify_fitcode_using_unlock))){
                 $vefify_fitcode_using_unlock = json_decode(json_encode($this->verifyFitCode(null, $booktrial->vendor_code, $booktrial)->getData()));
                 $booktrial->vefify_fitcode_using_unlock = $vefify_fitcode_using_unlock;
                 Log::info('vefify_fitcode_usin_unlock ::::::::', [$vefify_fitcode_using_unlock, $booktrial->vendor_code, $booktrial->type]);
@@ -8710,6 +8733,9 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_date = time();
 
             $booktrial->update();
+        }
+
+        if(!empty($booktrial->post_trial_status) && $booktrial->post_trial_status == 'attended'){
 
             $booktrial_data = $booktrial;
                 
@@ -8735,6 +8761,17 @@ class SchedulebooktrialsController extends \BaseController {
                 'session_activated' => !empty($data_new['session_activated']) ? $data_new['session_activated'] : null,
                 'booktrial_id'=> (int)$booktrial['_id'],
             ];
+        }
+        else{
+            $booktrial->update();
+            if(!empty($pass_further) && $booktrial->unlock_trial_count ==2){
+                return [
+                    'status' =>200,
+                    "message" => "Do you Want to unlock",
+                    "button_text" => "Process"
+                ];
+            }
+            return ["status"=>400, "message"=>$message];
         }
 
         return Response::json($response,200);
