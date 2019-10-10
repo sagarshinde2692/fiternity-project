@@ -1938,6 +1938,7 @@ class PassService {
         $upcomig = $this->upcomingPassBooking($customerData);
 
         $res = array();
+        $search_results = [];
         if(!empty($customerData['onepass']['home_city']) && !empty($customerData['onepass']['home_lat']) && !empty($customerData['onepass']['home_lon'])){
             $pps_near_home= $this->workoutSessionNearMe(
                 $customerData['onepass']['home_city'], 
@@ -1946,10 +1947,9 @@ class PassService {
                     'lon'=> $customerData['onepass']['home_lon']
                 ]
             );
-
-            Log::info('home sugges:::', $pps_near_home);
-            $res['near_by_home']['header'] = $pps_near_home['header'];
-            $res['near_by_home']['data'] = $pps_near_home['data'];
+            unset($pps_near_home['header']);
+            $pps_near_home['subheader'] = "Workout near Home";
+            array_push($search_results, $pps_near_home);
         }
 
         if(!empty($customerData['onepass']['work_city'])  && !empty($customerData['onepass']['work_lat']) && !empty($customerData['onepass']['work_lon'])){
@@ -1960,17 +1960,26 @@ class PassService {
                     'lon'=> $customerData['onepass']['home_lon']
                 ]
             );
-            $res['near_by_work']['subheader'] = $pps_near_work['header'];
-            $res['near_by_work']['data'] = $pps_near_work['data'];
+
+            $pps_near_work['subheader'] = "Workout near Work";
+            unset($pps_near_work['header']);
+            array_push($search_results, $pps_near_work);
         }
 
-        if(empty($res['near_by_home']) && empty($res['pps_near_work'])){
+        if(empty($search_results)){
 
-            $recommended= $this->workoutSessionNearMe($city, $coordinate);
-            $recommended['header'] = 'Recommended for You';
-            $res['recommended'] = $recommended;
+            $near_me= $this->workoutSessionNearMe($city, $coordinate);
+            $near_me['subheader'] = $near_me['header'];
+            unset($near_me['header']);
+            array_push($search_results, $near_me);
         }
         
+        $recommended = [ 
+            'header' => 'Recommended for You',
+            'data' => $search_results
+        ];
+
+        $res['recommended'] = $recommended;
         $headerView = Config::get('pass.before_purchase_tab.headerview');
         unset($headerView['header_sub_text']);
         $res['headerview'] = $headerView;
