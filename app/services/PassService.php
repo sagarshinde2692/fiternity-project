@@ -1872,6 +1872,8 @@ class PassService {
             $job->delete();
         }
         
+        Log::info('afterTransQueued');
+
         $data = $data['data'];
 
         $this->updateRenewalOnepass($data);
