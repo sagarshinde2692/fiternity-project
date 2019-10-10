@@ -10427,6 +10427,7 @@ Class Utilities {
     public function formatOnepassCustomerDataResponse($resp){
         
         $onepassProfileConfig = Config::get('pass.pass_profile');
+        $resp['booking_text'] = $onepassProfileConfig['booking_text'];
 
         if(!empty($resp['photo'])){
 			$resp['url'] = $resp['photo']['url'];
