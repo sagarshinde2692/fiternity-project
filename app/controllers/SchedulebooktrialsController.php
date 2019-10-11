@@ -8768,7 +8768,7 @@ class SchedulebooktrialsController extends \BaseController {
                 return [
                     'status' =>200,
                     "message" => "Do you Want to unlock/ either your are unlocking your session at not session timin  or you are not art gym",
-                    "button_text" => "Process"
+                    "button_text" => "Proceed"
                 ];
             }
             return ["status"=>200, "message"=>$message, "button_text"=> "Try Again"];
