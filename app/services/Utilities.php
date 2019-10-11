@@ -10625,14 +10625,14 @@ Class Utilities {
         $workout = geoLocationFinder($near_by_vendor_request, 'customerhome');
 
         $result=[
-            'header'=> 'Workouts near me',
+            'header'=> 'Trending near me',
             'data'=>[]
         ];
         if(!empty($workout['finder'])){
             $result['data'] = $workout['finder'];
         }
         if(empty($data['lat']) && empty($data['lon'])){
-            $result['header'] = "Workouts in ".ucwords($data['city']);
+            $result['header'] = "Trending in ".ucwords($data['city']);
         }
         return $result;
     }
