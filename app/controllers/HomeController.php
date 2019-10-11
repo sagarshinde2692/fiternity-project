@@ -1140,7 +1140,7 @@ class HomeController extends BaseController {
                 }
                 
                 
-                if(!empty($item['loyalty_registration']) && $this->utilities->sendLoyaltyCommunication($item)){
+                if(empty($item['pass_order_id']) && !empty($item['loyalty_registration']) && $this->utilities->sendLoyaltyCommunication($item)){
                     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
                     $cashback_type_map = Config::get('app.cashback_type_map');
                     $response['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 2;
@@ -1166,6 +1166,9 @@ class HomeController extends BaseController {
                     $response['subline'] = 'Your payment for '.$service_name.' session at '.$finder_name.' for '.$schedule_date.' at '.$schedule_slot.' is successful. Keep booking, reach milestones & earn rewards';
                 }
                 
+                if(!empty($item['pass_order_id'])){
+                    unset($response['feedback']);
+                }
             
                 $response['branch_obj'] = $this->utilities->branchIOData($itemData);
 
