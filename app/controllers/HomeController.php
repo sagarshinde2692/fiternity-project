@@ -1067,8 +1067,9 @@ class HomeController extends BaseController {
                 }
 
                 if(!empty($item['pass_order_id'])){
-                    $pass_booking_success_message = Config::get('pass.booking_using_pass');
-                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.$pass_booking_success_message;
+                    $finder_category = !empty($item['finder_category_id']) ? $item['finder_category_id'] ==5 ? 'gym' : 'studio': 'gym / studio';
+                    $pass_booking_success_message = Config::get('pass.booking_using_pass_success_message');
+                    $subline = strtr($pass_booking_success_message, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category]);
                 }
 
                 if(isset($item['pay_later']) && $item['pay_later']){
@@ -1094,8 +1095,9 @@ class HomeController extends BaseController {
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps. Session activation also helps you earn cashback into your Fitternity Wallet.';
 
                     if(!empty($item['pass_order_id'])){
-                        $pass_booking_success_message = Config::get('pass.booking_using_pass');
-                        $subline  = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.$pass_booking_success_message;
+                        $finder_category = !empty($item['finder_category_id']) ? $item['finder_category_id'] ==5 ? 'gym' : 'studio': 'gym / studio';
+                        $pass_booking_success_message = Config::get('pass.booking_using_pass_success_message');
+                        $subline = strtr($pass_booking_success_message, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category]);
                     }
                 }
 

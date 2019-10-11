@@ -908,7 +908,7 @@ return [
     ],
 
     "cancel_onepass" => [
-        'text' => "Request To Cancel OnePass \n Want to just call us? Reach out to us at",
+        'text' => "Not Satisfied with Onepass",
         'button_text' => 'Cancel OnePass',
         'contact_no' => \Config::get('app.contact_us_customer_number_onepass'),
         'display_contact_no' => \Config::get('app.display_contact_us_customer_number_onepass'),
@@ -955,5 +955,5 @@ return [
         "text" => "finder_name",
         "session_data" => []
     ],
-    'booking_using_pass' => "<br/><br/><b>Steps to unlock your Session</b> &bull; Navigate to Upcoming Session section in the Onepass Tab.<br/> &bull; Tap on UNLOCK SESSION button within gym/studio premises to activate your session.<br/> &bull; Show your activated session slider with your photo at the finder_category to enjoy the session."
+    'booking_using_pass_success_message' => "<p style='align:center'>Your service_name session at finder_name is confirmed on schedule_date at start_time </p><br/><br/><p><b>Steps to unlock your Session</b></p> <ul><li>&bull; Navigate to Upcoming Session section in the Onepass Tab.</li> <li>&bull; Tap on UNLOCK SESSION button within gym/studio premises to activate your session.</li><li> &bull; Show your activated session slider with your photo at the finder_category to enjoy the session.</li></ul>"
 ];
