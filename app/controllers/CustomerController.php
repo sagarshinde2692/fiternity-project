@@ -3671,7 +3671,7 @@ class CustomerController extends \BaseController {
 								->orWhere(function($query){
 									$query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 hour'))))
 											->whereIn('post_trial_status', [null, '', 'unavailable'])
-											->whereIn('pass_order_id', 'exists', true);
+											->where('pass_order_id', 'exists', true);
 								})
                                 ->orWhere(function($query){
                                         $query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))
@@ -3904,7 +3904,7 @@ class CustomerController extends \BaseController {
 
 								$data_new = array_merge($data, $data_new);
 
-								$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'direction', 'lat', 'lon', 'user_photo', 'header_text', 'activation_url', 'schedule_date_time_text', 'post_trial_status_updated_by_unlocksession', 'block_screen', 'contact_us']);
+								$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'direction', 'lat', 'lon', 'user_photo', 'header_text', 'activation_url', 'schedule_date_time_text', 'post_trial_status_updated_by_unlocksession', 'block_screen', 'contact_us', 'end_time']);
 
 								$data_new['header_text'] = "Session Starts In";
 								unset($data_new['header']);
