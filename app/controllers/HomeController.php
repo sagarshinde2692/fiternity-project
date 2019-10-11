@@ -1064,7 +1064,7 @@ class HomeController extends BaseController {
 
                 $pps_booking_success_message = Config::get('paypersession.pps_booking_success_message');
                 
-                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.'.'. strtr($pps_booking_success_message, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category]); 
+                $subline = strtr($pps_booking_success_message, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category]); 
 
                 if(!empty($item['coupon_flags']['cashback_100_per'])){
                     $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
@@ -1096,7 +1096,7 @@ class HomeController extends BaseController {
 
                 if(!empty($item['corporate_id']) && empty($item['external_reliance'])){
                     $pps_booking_success_message_corporate = Config::get('paypersession.pps_booking_success_message_corporate');
-                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.'.'.strtr($pps_booking_success_message_corporate, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category, 'steps_count' => $this->relianceService->getStepsByServiceCategory($item['servicecategory_id'])]).' steps. Session activation also helps you earn cashback into your Fitternity Wallet.';
+                    $subline = strtr($pps_booking_success_message_corporate, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category, 'steps_count' => $this->relianceService->getStepsByServiceCategory($item['servicecategory_id'])]).' steps. Session activation also helps you earn cashback into your Fitternity Wallet.';
 
                     if(!empty($item['pass_order_id'])){
                         $pass_booking_success_message = Config::get('pass.booking_using_pass_success_message_corporate');
