@@ -972,13 +972,13 @@ class ServiceController extends \BaseController {
                             
 						}
 
-						// $rsh['onepass_booking_block'] = false;
-						// $nrsh['onepass_booking_block'] = false;
-
-						// if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
-						// 	$rsh['onepass_booking_block'] = true;
-						// 	$nrsh['onepass_booking_block'] = true;
-						// }
+						$rsh['onepass_booking_block'] = false;
+						$nrsh['onepass_booking_block'] = false;
+						$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
+						if(empty($profile_completed)){
+							$rsh['onepass_booking_block'] = true;
+							$nrsh['onepass_booking_block'] = true;
+						}
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
 				}
@@ -1231,10 +1231,11 @@ class ServiceController extends \BaseController {
                     $service['non_peak']['price'] .= $str;
 				}
 
-				// $service['non_peak']['onepass_booking_block'] = true;
-				// if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
-				// 	$service['non_peak']['onepass_booking_block'] = true;
-				// }
+				$service['non_peak']['onepass_booking_block'] = true;
+				$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
+				if(empty($profile_completed)){
+					$service['non_peak']['onepass_booking_block'] = true;
+				}
             }
 			
 			$peak_exists = false;
@@ -1439,17 +1440,18 @@ class ServiceController extends \BaseController {
                 }
 			}
 
+			$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
 			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
 				foreach($data['schedules'] as &$schedule){
 					$schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title']);
 
-					$this->addDisableBooking($schedule, $allowSession);
+					$this->addDisableBooking($schedule, $profile_completed, $allowSession);
 				}
 			}
 			else if(!empty($data['slots']) && in_array($this->device_type, ['android', 'ios'])){
 				$data['slots'] = $this->utilities->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'] );
 
-				$this->addDisableBooking($data, $allowSession);
+				$this->addDisableBooking($data, $profile_completed, $allowSession);
             }
             
             if(!empty($data['slots']) && count($data['slots']) == 1 && !empty($data['slots'][0]['title'])){
@@ -2112,9 +2114,15 @@ class ServiceController extends \BaseController {
 				"header" => "Easy Cancelletion: ",
 				"description" => $des
 			);
-			if(!empty($allowSession['profile_incomplete'])){
-				$service_details['onepass_booking_block'] = true;
-			}
+			// if(!empty($allowSession['profile_incomplete'])){
+			// 	$service_details['onepass_booking_block'] = true;
+			// }
+		}
+
+		$service_details['onepass_booking_block'] = true;
+		$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
+		if(empty($profile_completed)){
+			$service_details['onepass_booking_block'] = true;
 		}
 		
 		$time = isset($_GET['time']) ? $_GET['time'] : null;
@@ -2730,23 +2738,23 @@ class ServiceController extends \BaseController {
 		return $price_text;
 	}
 
-	public function addDisableBooking(&$service, $allowSession){
+	public function addDisableBooking(&$service, $profile_completed, $allowSession){
 
-		if(!empty($service['slots']) && !empty($allowSession['allow_session']) && !empty($allowSession['profile_incomplete'])){
+		if(!empty($service['slots']) /*&& !empty($allowSession['allow_session'])*/ && empty($profile_completed)){
 	
 			foreach($service['slots'] as &$value){
 
 				if(!empty($value['data'])){
 					foreach($value['data'] as &$value_data){
-						if($value_data['price']< Config::get('pass.price_upper_limit')){
+						// if($value_data['price']< Config::get('pass.price_upper_limit')){
 							$value_data['onepass_booking_block'] = true;
-						}
+						// }
 					}
 				}
 				else{
-					if($value['price']<  Config::get('pass.price_upper_limit')){
+					// if($value['price']<  Config::get('pass.price_upper_limit')){
 						$value['onepass_booking_block'] = true;
-					}
+					// }
 				}
 			}
 			
