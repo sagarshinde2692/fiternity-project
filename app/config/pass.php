@@ -955,5 +955,5 @@ return [
         "text" => "finder_name",
         "session_data" => []
     ],
-    'booking_using_pass' => "<br/><b>Steps to unlock your Session</b><br/><br/>\t&bull; Navigate to Upcoming Session section in the Onepass Tab.<br/>\t&bull; Tap on UNLOCK SESSION button within gym/studio premises to activate your session.<br/>\t&bull; Show your activated session slider with your photo at the gym / studio to enjoy the session."
+    'booking_using_pass' => "<br/><br/><b>Steps to unlock your Session</b><br/> &bull; Navigate to Upcoming Session section in the Onepass Tab.<br/> &bull; Tap on UNLOCK SESSION button within gym/studio premises to activate your session.<br/> &bull; Show your activated session slider with your photo at the gym / studio to enjoy the session."
 ];
