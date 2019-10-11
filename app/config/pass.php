@@ -954,5 +954,6 @@ return [
         "title" => "service_name",
         "text" => "finder_name",
         "session_data" => []
-    ]
+    ],
+    'booking_using_pass' => "\n<b>Steps to unlock your Session</b>\n\n\t&bull; Navigate to Upcoming Session section in the Onepass Tab.\n\t&bull; Tap on UNLOCK SESSION button within gym/studio premises to activate your session.\n\t&bull; Show your activated session slider with your photo at the gym / studio to enjoy the session."
 ];
