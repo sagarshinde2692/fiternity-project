@@ -5493,6 +5493,10 @@ class SchedulebooktrialsController extends \BaseController {
         Booktrial::$withoutAppends=true;
         Order::$withoutAppends=true;
 
+
+        $device_type = !empty($_GET['Device-Type']) ? $_GET['Device-Type'] : null;
+        $app_version = !empty($_GET['App-Version']) ? $_GET['App-Version'] : null;
+        
         if(isset($_REQUEST['type'])){
             $type = $_REQUEST['type'];
         }
@@ -5654,9 +5658,6 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrialModel->update();
         }
 
-
-        $device_type = !empty($_GET['Device-Type']) ? $_GET['Device-Type'] : null;
-        $app_version = !empty($_GET['App-Version']) ? $_GET['App-Version'] : null;
         if(!empty($device_type) && !empty($app_version) && ($device_type =='android' && $app_version < '5.31') || ($device_type =='ios' && $app_version < '5.2.4')){
 
             $booktrial['lost_code'] = false;
