@@ -949,7 +949,7 @@ return [
     ],
 
     'upcoming_booking' => [
-        'header' => "Upcoming Session",
+        'header' => "Session Activated",
         "image" => "https://b.fitn.in/passes/check_circle.png",
         "title" => "service_name",
         "text" => "finder_name",
