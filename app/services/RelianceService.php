@@ -1936,6 +1936,8 @@ Class RelianceService {
                 $customeremail = $custInfo->customer->email;
                 $corporate_id  = $reliance_customer['corporate_id'];
                 $external_reliance = $reliance_customer['external_reliance'];
+
+                $result['health_popup'] = Config::get('health_config.health_popup');
                 
                 Customer::$withoutAppends = true;
                 if(!empty($customer_id) && !empty($corporate_id) && empty($external_reliance) && $corporate_id == 1) {
