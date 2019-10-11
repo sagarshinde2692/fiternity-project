@@ -1992,6 +1992,10 @@ class PassService {
             unset($res['upcoming']);
             $res['booknow'] = Config::get('pass.book_now');
         }
+        else if(!empty($res['upcoming']['session_data'])){
+            $res['session_activated'] = $res['upcoming'];
+            unset($res['upcoming']);
+        }
         return $res;
     }
 
@@ -2137,8 +2141,10 @@ class PassService {
             $upcoming['time_diff'] = -1;
             if(!empty($from) && $from =='pass_tab'){
                 $upcoming_config = Config::get('pass.upcoming_booking');
-                $upcoming_config['text'] = strtr($upcoming_config['text'], ['service_name'=> ucwords($data['service_name']), 'finder_name'=>ucwords($data['finder_name'])]);
-                $upcoming_config['session_activated'] = $upcoming;
+                $upcoming_config['title'] = ucwords($data['service_name']);
+                $upcoming_config['text'] = ucwords($data['finder_name']);
+                // strtr($upcoming_config['text'], ['service_name'=> ucwords($data['service_name']), 'finder_name'=>ucwords($data['finder_name'])]);
+                $upcoming_config['session_data'] = $upcoming;
                 $upcoming = $upcoming_config;
             }
         }

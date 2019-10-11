@@ -951,7 +951,8 @@ return [
     'upcoming_booking' => [
         'header' => "Upcoming Session",
         "image" => "https://b.fitn.in/passes/check_circle.png",
-        "text" => "service_name @ finder_name",
-        "session_activated" => []
+        "title" => "service_name",
+        "text" => "finder_name",
+        "session_data" => []
     ]
 ];

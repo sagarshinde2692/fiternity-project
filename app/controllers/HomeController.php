@@ -1067,6 +1067,7 @@ class HomeController extends BaseController {
                 }
 
                 if(!empty($item['pass_order_id'])){
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.'<br><br>You can unlock your session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym / studio. <br><br> Tap on UNLOCK SESSION to activate your session.';
                 }
 
