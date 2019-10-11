@@ -3901,20 +3901,23 @@ class CustomerController extends \BaseController {
 							
 							if(!empty($this->device_type) && !empty($this->app_version) && ($this->device_type =='android' && $this->app_version >= '5.31') || ($this->device_type =='ios' && $this->app_version >= '5.2.4')){  
 
-								if($data['time_diff'] < 0){
-									$data['time_diff']= -1;
-								}
+								
 								
 								$data_new = $this->passService->upcomingPassBooking($customer, $data);
 
 								$data_new = array_merge($data, $data_new);
 
 								$data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'direction', 'lat', 'lon', 'user_photo', 'header_text', 'activation_url', 'schedule_date_time_text', 'post_trial_status_updated_by_unlocksession', 'block_screen', 'contact_us', 'end_time']);
+								
+								if($data['time_diff'] < 0){
+									$data['time_diff']= -1;
+								}
 
 								$data_new['header_text'] = "Session Starts In";
 								unset($data_new['header']);
 								if(!empty($data_new['footer']['subscription_description'])){
-									$data['time_diff'] =-1;
+									$data_new['schedule_date_time_text'] ="Session Activated";
+									$data_new['time_diff'] =-1;
 									$data_new['header_text']  = "Session Activated";
 								}
 
