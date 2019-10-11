@@ -1956,8 +1956,8 @@ class PassService {
             $pps_near_work = $this->workoutSessionNearMe(
                 $customerData['onepass']['work_city'], 
                 [
-                    'lat'=>$customerData['onepass']['home_lat'], 
-                    'lon'=> $customerData['onepass']['home_lon']
+                    'lat'=>$customerData['onepass']['work_lat'], 
+                    'lon'=> $customerData['onepass']['work_lon']
                 ]
             );
 
