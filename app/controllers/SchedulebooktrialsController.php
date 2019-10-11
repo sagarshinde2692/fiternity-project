@@ -8652,9 +8652,16 @@ class SchedulebooktrialsController extends \BaseController {
         $validator = Validator::make($data,$rules);
 
         if($validator->fails()) {
-            $resp = array('status' => 400,'message' =>'Not able to find your location');
-            return  Response::json($resp, 400);
+            $message = 'Not able to find your location';
+            // $resp = array('status' => 400,'message' =>'Not able to find your location');
+            // return  Response::json($resp, 400);
+        }else{
+            $customer_cordinates = [
+                'lat' => $data['lat'],
+                'lon' => $data['lon']
+            ];
         }
+
         $booktrial_id = (int) $booktrial_id;
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
@@ -8664,10 +8671,6 @@ class SchedulebooktrialsController extends \BaseController {
 
         $customer_id = (int)$decoded->customer->_id;
 
-        $customer_cordinates = [
-            'lat' => $data['lat'],
-            'lon' => $data['lon']
-        ];
         $booktrial = Booktrial::where('_id',$booktrial_id)
            ->where('customer_id',$customer_id)
            //->where('post_trial_status', '!=', 'attended')
@@ -8677,7 +8680,7 @@ class SchedulebooktrialsController extends \BaseController {
            // ->orderBy('_id','desc')
            ->first();
 
-        if(empty($booktrial->post_trial_status)){
+        if(!empty($booktrial) && empty($booktrial->post_trial_status)){
 
             if(empty($booktrial->unlock_trial_count)){
                 $booktrial->unlock_trial_count = 1;
@@ -8693,32 +8696,39 @@ class SchedulebooktrialsController extends \BaseController {
             $time_in_seconds = 60*30;
             $post_hour = '30 Minutes';
         }
-        $time_check = abs(strtotime($booktrial['schedule_date_time']) - strtotime('now') )   <=  $time_in_seconds ? true : false;
 
-        Log::info('time check::', [strtotime($booktrial['schedule_date_time']), strtotime('now') , abs(strtotime($booktrial['schedule_date_time']) - strtotime('now') ), $time_in_seconds, $time_check]);
+        if(!empty($booktrial)){
+
+            $time_check = abs(strtotime($booktrial['schedule_date_time']) - strtotime('now') )   <=  $time_in_seconds ? true : false;
+            Log::info('time check::', [strtotime($booktrial['schedule_date_time']), strtotime('now') , abs(strtotime($booktrial['schedule_date_time']) - strtotime('now') ), $time_in_seconds, $time_check]);
+        }
+
         if(!empty($booktrial) && !$time_check){
-            if($booktrial->unlock_trial_count <3){
-                $pass_further =true;
-                $message = "You can unlock your session at booking day only. ".$post_hour." post and pre";
-                //return ["status"=>400, "message"=> ""];
-            }
+            $message = "You can unlock your session at booking day only. ".$post_hour." post and pre";
+            return ["status"=>400, "message"=> $message];
         }
         else if(!empty($booktrial)){
+
             $finder_cordinates = [
                 'lat' => $booktrial['finder_lat'],
                 'lon' => $booktrial['finder_lon']
             ];
-            
-            $distance_in_meters = $this->utilities->distanceCalculationOfCheckinsCheckouts($customer_cordinates, $finder_cordinates);
-            $max_unlock_distance= Config::get('app.checkin_checkout_max_distance_in_meters');
-            if($distance_in_meters > $max_unlock_distance && $booktrial->unlock_trial_count < 3){
+            if(empty($customer_cordinates)){
                 $pass_further =true;
-                $message =  "Please unlock your session by visiting ".$booktrial['finder_name'];
-                //return ["status"=>400, "message"=>$message];
+            }
+            else {
+
+                $distance_in_meters = $this->utilities->distanceCalculationOfCheckinsCheckouts($customer_cordinates, $finder_cordinates);
+                $max_unlock_distance= Config::get('app.checkin_checkout_max_distance_in_meters');
+
+                if($distance_in_meters > $max_unlock_distance && $booktrial->unlock_trial_count < 3){
+                    $pass_further =true;
+                    $message =  "Please unlock your session by visiting ".$booktrial['finder_name'];
+                }
             }
         }
 
-        if(empty($booktrial->post_trial_status) && (empty($pass_further) || $booktrial->unlock_trial_count ==3)){
+        if(!empty($booktrial) && empty($booktrial->post_trial_status) && (empty($pass_further) || $booktrial->unlock_trial_count ==3)){
 
             if(empty($booktrial->pass_order_id && empty($booktrial->vefify_fitcode_using_unlock))){
                 $vefify_fitcode_using_unlock = json_decode(json_encode($this->verifyFitCode(null, $booktrial->vendor_code, $booktrial)->getData()));
@@ -8762,7 +8772,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'booktrial_id'=> (int)$booktrial['_id'],
             ];
         }
-        else{
+        else if(!empty($booktrial)){
             $booktrial->update();
             if(!empty($pass_further) && $booktrial->unlock_trial_count ==2){
                 return [
