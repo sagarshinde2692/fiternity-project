@@ -202,6 +202,7 @@ class PassController extends \BaseController {
             $vendor_search =$coordinate['city'];
             $vendor_search['city'] = $city;
             $vendor_search['selected_region'] = $selected_region;
+            $vendor_search['onepass_available'] = true;
             $result['onepass_pre'] = Config::get('pass.before_purchase_tab');
             //$pps_near_by = $this->passService->workoutSessionNearMe($city, $coordinate);
             $vendor_near_by = $this->utilities->getVendorNearMe($vendor_search);

@@ -10621,7 +10621,14 @@ Class Utilities {
         $near_by_vendor_request['time_tag'] = 'later-today';
         $near_by_vendor_request['date'] = date('d-m-y');
 
-        if($data)
+        if(!empty($data['selected_region'])){
+            $near_by_vendor_request['region'] = $data['selected_region'];
+        }
+
+        if(!empty($data['onepass_available'])){
+            $near_by_vendor_request['onepass_available'] = $data['onepass_available'];
+        }
+
         $workout = geoLocationFinder($near_by_vendor_request, 'customerhome');
 
         $result=[
@@ -10637,7 +10644,7 @@ Class Utilities {
         if(!empty($data['selected_region'])){
             $result['header'] = "Trending in ".ucwords($data['selected_region']);
         }
-        
+
         return $result;
     }
 }
