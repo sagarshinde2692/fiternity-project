@@ -8744,7 +8744,7 @@ class SchedulebooktrialsController extends \BaseController {
             
             
 
-            $data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'user_photo', '_id', 'header_text', 'session_activated']);
+            $data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'user_photo', '_id', 'header_text', 'session_activated', 'contact_us']);
             
             if(!empty($_GET['from']) && $_GET['from']=='notification_before10min') {
                 
@@ -8767,11 +8767,11 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($pass_further) && $booktrial->unlock_trial_count ==2){
                 return [
                     'status' =>200,
-                    "message" => "Do you Want to unlock",
+                    "message" => "Do you Want to unlock/ either your are unlocking your session at not session timin  or you are not art gym",
                     "button_text" => "Process"
                 ];
             }
-            return ["status"=>400, "message"=>$message];
+            return ["status"=>400, "message"=>$message, "button_text"=> "Try Again"];
         }
 
         return Response::json($response,200);
