@@ -142,7 +142,11 @@ class CustomerController extends \BaseController {
 			$trial['interaction_date'] = strtotime($trial['created_at']);
 
 			if($type=='upcoming') {
-				$trial['show_details'] = false;
+
+				$trial['show_details'] = true;
+				if(!empty($trial['pass_order_id'])){
+					$trial['show_details'] = false;
+				}
 				$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 				$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
 
