@@ -199,7 +199,7 @@ class PassController extends \BaseController {
 		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
 			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate, $customer);
 		}else {
-            $vendor_search =$coordinate['city'];
+            $vendor_search = $coordinate;
             $vendor_search['city'] = $city;
             $vendor_search['selected_region'] = $selected_region;
             $vendor_search['onepass_available'] = true;

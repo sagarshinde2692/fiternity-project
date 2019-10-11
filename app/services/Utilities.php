@@ -10621,9 +10621,9 @@ Class Utilities {
         $near_by_vendor_request['time_tag'] = 'later-today';
         $near_by_vendor_request['date'] = date('d-m-y');
 
-        if(!empty($data['selected_region'])){
-            $near_by_vendor_request['region'] = $data['selected_region'];
-        }
+        // if(!empty($data['selected_region'])){
+        //     $near_by_vendor_request['region'] = $data['selected_region'];
+        // }
 
         if(!empty($data['onepass_available'])){
             $near_by_vendor_request['onepass_available'] = $data['onepass_available'];
