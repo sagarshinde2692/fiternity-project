@@ -8771,7 +8771,7 @@ class SchedulebooktrialsController extends \BaseController {
                     "button_text" => "Process"
                 ];
             }
-            return ["status"=>400, "message"=>$message, "button_text"=> "Try Again"];
+            return ["status"=>200, "message"=>$message, "button_text"=> "Try Again"];
         }
 
         return Response::json($response,200);
