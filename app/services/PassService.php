@@ -2088,32 +2088,32 @@ class PassService {
         $scheduleDateTime = strtotime($scheduleDateTime);
 
         $time_diff = $scheduleDateTime - strtotime('now');
-        if(
-            !(
-                (
-                    $data['finder_category_id'] == 5 
-                    && 
-                    (
-                        ($time_diff > 0 && $time_diff <= $hour2) 
-                        || 
-                        ($time_diff <=0 && $time_diff >= - $hour2)
-                    )
-                ) 
-                ||
-                (
-                    $data['finder_category_id'] != 5 
-                    && 
-                    (
-                        ($time_diff > 0 && $time_diff <= $minutes30) 
-                        || 
-                        ($time_diff <=0 && $time_diff >= - $minutes30)
-                    )
-                )
-            )
-        ){
-            unset($upcoming['footer']['unlock_text']);
-            unset($upcoming['footer']['unlock_url']);
-        }
+        // if(
+        //     !(
+        //         (
+        //             $data['finder_category_id'] == 5 
+        //             && 
+        //             (
+        //                 ($time_diff > 0 && $time_diff <= $hour2) 
+        //                 || 
+        //                 ($time_diff <=0 && $time_diff >= - $hour2)
+        //             )
+        //         ) 
+        //         ||
+        //         (
+        //             $data['finder_category_id'] != 5 
+        //             && 
+        //             (
+        //                 ($time_diff > 0 && $time_diff <= $minutes30) 
+        //                 || 
+        //                 ($time_diff <=0 && $time_diff >= - $minutes30)
+        //             )
+        //         )
+        //     )
+        // ){
+        //     unset($upcoming['footer']['unlock_text']);
+        //     unset($upcoming['footer']['unlock_url']);
+        // }
 
         $upcoming['contact_us'] = Config::get('pass.before_purchase_tab.footer');
         if(!empty($data['post_trial_initail_status']) && strtolower($data['post_trial_initail_status']) == 'interested'  && !empty($data['post_trial_status']) && strtolower($data['post_trial_status']) == 'attended' && !empty($data['post_trial_status_updated_by_unlocksession'])){
