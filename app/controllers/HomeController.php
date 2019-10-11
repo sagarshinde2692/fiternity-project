@@ -1062,7 +1062,7 @@ class HomeController extends BaseController {
 
                 $finder_category = !empty($item['finder_category_id']) ? $item['finder_category_id'] ==5 ? 'gym' : 'studio': 'gym / studio';
 
-                $pps_booking_success_message = Config('paypersession.pps_booking_success_message');
+                $pps_booking_success_message = Config::get('paypersession.pps_booking_success_message');
                 
                 $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.'.'. strtr($pps_booking_success_message, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category]); 
 
@@ -1095,7 +1095,7 @@ class HomeController extends BaseController {
                 ];
 
                 if(!empty($item['corporate_id']) && empty($item['external_reliance'])){
-                    $pps_booking_success_message_corporate = Config('paypersession.pps_booking_success_message_corporate');
+                    $pps_booking_success_message_corporate = Config::get('paypersession.pps_booking_success_message_corporate');
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.'.'.strtr($pps_booking_success_message_corporate, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category, 'steps_count' => $this->relianceService->getStepsByServiceCategory($item['servicecategory_id'])]).' steps. Session activation also helps you earn cashback into your Fitternity Wallet.';
 
                     if(!empty($item['pass_order_id'])){
