@@ -2132,7 +2132,7 @@ class PassService {
             unset($upcoming['lon']);
 
             $upcoming['footer'] =[
-                'subscription_description' => 'Session id : '.$data['_id']
+                'subscription_description' => 'Session id : '.$data['code']
             ];
             
             if(!empty($customer->onepass['photo']['url'])){

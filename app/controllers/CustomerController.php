@@ -3899,7 +3899,7 @@ class CustomerController extends \BaseController {
 								$data['amount'] = "₹".$data['amount_finder'];
 							}
 							
-							// if(!empty($data['pass_order_id']) && $data['time_diff'] > -(60 *60 *3)){ //have to list bookings,  post 2 hour of booking end time   
+							if(!empty($this->device_type) && !empty($this->app_version) && ($this->device_type =='android' && $this->app_version >= '5.31') || ($this->device_type =='ios' && $this->app_version >= '5.2.4')){  
 
 								if($data['time_diff'] < 0){
 									$data['time_diff']= -1;
@@ -3919,7 +3919,7 @@ class CustomerController extends \BaseController {
 								}
 
 								$upcoming_new[] = $data_new;
-							// }
+							}
 
 							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
 
@@ -3951,6 +3951,9 @@ class CustomerController extends \BaseController {
 
 						$upcoming = array_merge($activate, $let_us_know, $review, $future, $no_block);
 
+					}
+
+					if(!empty($this->device_type) && !empty($this->app_version) && ($this->device_type =='android' && $this->app_version >= '5.31') || ($this->device_type =='ios' && $this->app_version >= '5.2.4')){
 						$unlocked = [];
 						foreach($upcoming_new as $x_new){
 
@@ -3974,8 +3977,6 @@ class CustomerController extends \BaseController {
 							}
 						}
 
-
-						Log::info('post trial:::::::::::::;', $unlocked);
 						$upcoming_new = array_merge($unlocked, $activate_new, $let_us_know_new, $review_new, $future_new, $no_block_new);
 						//$upcoming_new = $this->orderBooking($upcoming_new);
 					}
@@ -4059,7 +4060,9 @@ class CustomerController extends \BaseController {
 		}
 		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
-		$result['upcoming_new'] = $upcoming_new;
+		if(!empty($upcoming_new)){
+			$result['upcoming_new'] = $upcoming_new;
+		}
         
         
         $result['collections'] = [];
