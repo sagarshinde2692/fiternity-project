@@ -8754,6 +8754,8 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_date = time();
 
             $booktrial->update();
+
+            $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour", "customer_notification_brfore10min","customer_sms_brfore10min", "customer_email_brfore10min"]]);
         }
 
         if(!empty($booktrial->post_trial_status) && $booktrial->post_trial_status == 'attended'){

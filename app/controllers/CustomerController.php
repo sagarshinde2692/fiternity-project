@@ -3919,6 +3919,8 @@ class CustomerController extends \BaseController {
 									$data_new['schedule_date_time_text'] ="Session Activated";
 									$data_new['time_diff'] =-1;
 									$data_new['header_text']  = "Session Activated";
+									unset($data_new['block_screen']);
+									unset($data_new['activation_url']);
 								}
 
 								$upcoming_new[] = $data_new;
