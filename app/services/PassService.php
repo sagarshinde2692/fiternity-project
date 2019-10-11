@@ -2078,8 +2078,9 @@ class PassService {
         $upcoming['lat'] = $data['finder_lat'];
         $upcoming['lon'] = $data['finder_lon'];
 
+        $vendor_type = $data['finder_category_id'] == 5 ? 'gym' : 'studio';
         $upcoming['footer'] = [
-            'text' => 'You can only unlock this session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym',
+            'text' => 'Tap on UNLOCK SESSION button within '.$vendor_type.' premises to activate your session.',
             'unlock_text' => 'UNLOCK SESSION',
             'unlock_url' => Config::get('app.url').'/unlocksession/'.$data['_id'],
             'cancel_text' => 'CANCEL SESSION',
@@ -2124,7 +2125,6 @@ class PassService {
 
             $upcoming['header'] = "Session Activated";
 
-            //$upcoming['header_text'] = "Session Activated";
 
             unset($upcoming['footer']);
             unset($upcoming['direction']);
@@ -2140,6 +2140,7 @@ class PassService {
             }
             $upcoming['time_diff'] = -1;
             if(!empty($from) && $from =='pass_tab'){
+                $upcoming['header_text'] = "Session Activated";
                 $upcoming_config = Config::get('pass.upcoming_booking');
                 $upcoming_config['title'] = ucwords($data['service_name']);
                 $upcoming_config['text'] = ucwords($data['finder_name']);
