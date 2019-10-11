@@ -752,14 +752,15 @@ class ServiceController extends \BaseController {
 
 		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 		$allowSession['allow_session'] = false;
-		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-			if(empty($customer_id)){
-				$jwt_token = Request::header('Authorization');
-				if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
-					$decoded = decode_customer_token();		
-					$customer_id = intval($decoded->customer->_id);
-				}
+		if(empty($customer_id)){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
+				$decoded = decode_customer_token();		
+				$customer_id = intval($decoded->customer->_id);
 			}
+		}
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+			
 			$allowSession = $this->passService->allowSession(1, $customer_id, $date, $finder_id, true);
 			// if(empty($allowSession['allow_session'])) {
 			// 	$allowSession = $allowSession['allow_session'];
