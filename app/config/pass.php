@@ -327,7 +327,7 @@ return [
     'success'=>[
         'image' => 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
         "header" => "Your ___type pass is active",
-        'subline'=>"Congratulations __customer_name! \n Your __pass_name for __pass_duration is now confirmed. A confirmation email and SMS has been sent to you.",
+        'subline'=>"Congratulations __customer_name! \n Your __pass_name for __pass_duration is now confirmed. A confirmation email and sms has been sent to you.",
         'subline_1'=>'Booking starts from 5th of September 2019.',
         "pass" => [
             // "text" => "(__usage_remark) __end_date",
@@ -342,14 +342,19 @@ return [
         'info'=>[
             'header'=>'Things to keep in mind',
             'data'=>[
+                'Personalize your OnePass for top recommendations basis your interests.',
+                'Book a session at any of the 12,000+ gyms or studios of your choice.',
+                'Activate/Unlock  your session at the gym/studio premises.',
+                'Flash your active booking screen at the gym/studio and enjoy your workout.',
+                'Onepass bookings can only be done through the app.',
                 'Download the app & get started.',
-                'Book classes at any gym/studio near you of your choice.',
-                'Not loving it? easy cancellation available.',
             ],
             'app_data'=>[
-                'Book your sessions through the App.',
-                'Book classes at any gym/studio near you of your choice.',
-                'Not loving it? easy cancellation available.',
+                'Personalize your OnePass for top recommendations basis your interests.',
+                'Book a session at any of the 12,000+ gyms or studios of your choice.',
+                'Activate/Unlock  your session at the gym/studio premises.',
+                'Flash your active booking screen at the gym/studio and enjoy your workout.',
+                'Onepass bookings can only be done through the app.'
             ]
         ],
         "conclusion" => $success_page_template['conclusion'],
@@ -707,23 +712,23 @@ return [
     ],
 
     "pass_profile" =>[
-        "booking_text" =>"Please completee your personlization first-----------kailash-----------------------",
+        "booking_text" =>"Personalize your OnePass Booking experience by sharing few details. This helps us to offer you top recommendations basis your interests.",
         "address_details" => [
-            "header" => "Let us know where you are",
+            "header" => "Share your preferred location to help you with curated list of top gyms/classes near you.",
             "home_subtext" => "We will use this address to send you vouchers and gifts.",
         ],
         "interests" => [
-            "header" => "Tell us about your interests",
+            "header" => "Tell Us About Your Favorite/Preferred Fitness Forms",
             "subheader" => "Select at least 3"
         ],
         "personlized_profile" => [
-            "header" => "Explore our fitness options",
+            "header" => "Enjoy your OnePass Subscription!",
             "url" => "",
             "success_image" => "https://b.fitn.in/passes/check_circle.png",
-            "text" => "personalization Completed",
+            "text" => "Awesome !\nYour OnePass pass_type is now personalized as per your interests. Checkout the OnePass section for our top recommendations of studios/classes matching your preferences.",
             "skip_text" => "Skip for now",
             "interests" => [
-                "header" => "Explore our fitness options",
+                "header" => "Enjoy your OnePass Subscription!",
                 "data" => [
                     [
                         '_id'=>0,
@@ -768,20 +773,20 @@ return [
         ],
 
         'why_pass' => [
-            'header' => 'Why Go For OnePass?',
+            'header' => 'How it Works',//'Why Go For OnePass?',
             'data' => [
                 [
-                    'header' => 'Select a fitness Centre & slot',
-                    'text' => 'select a fitness centre and slot',
+                    'header' => 'Select a Fitness Center & Slot',
+                    'text' => 'Easy search & filter by name, activity, location',
                     'image' => 'https://b.fitn.in/global/onepass/icon-1.png'
                 ],
                 [
-                    'header' => 'Book & Go Workout',
+                    'header' => 'Book & go workout',
                     'text' => 'Reach the fitness centre & flash your booking to unlock your session',
                     'image' => 'https://b.fitn.in/global/onepass/icon-2.png'
                 ],
                 [
-                    'header' => 'Make The best workout regime',
+                    'header' => 'Make the best workout regime',
                     'text' => 'Go to your favourite place multiple times or mix it up',
                     'image' => 'https://b.fitn.in/global/onepass/icon-3.png'
                 ]
@@ -898,17 +903,17 @@ return [
     "book_now" => [
         "header" => "Upcoming Session",
         "image" => "https://b.fitn.in/onepass/Clock_Icon.png",
-        "text" => "Uh Oh! You don't have any upcoming bookings",
+        "text" => "You don’t have any upcoming booking. Start booking to make the most of your OnePass Subscription!",
         "button_text" => "BOOK NOW"
     ],
 
     "cancel_onepass" => [
-        'text' => 'Not Satisfied with Onepass',
+        'text' => "Request To Cancel OnePass \n Want to just call us? Reach out to us at",
         'button_text' => 'Cancel OnePass',
         'contact_no' => \Config::get('app.contact_us_customer_number_onepass'),
         'display_contact_no' => \Config::get('app.display_contact_us_customer_number_onepass'),
         'email' => \Config::get('app.contact_us_customer_email_onepass'),
-        'email_text' => "Contect Us"
+        'email_text' => "You can also write to us on"
     ],
 
     'local_pass_fields' => [

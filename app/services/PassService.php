@@ -1948,7 +1948,7 @@ class PassService {
                 ]
             );
             unset($pps_near_home['header']);
-            $pps_near_home['subheader'] = "Workout near Home";
+            $pps_near_home['subheader'] = "Top Recommendation Near Your Home";
             array_push($search_results, $pps_near_home);
         }
 
@@ -1961,7 +1961,7 @@ class PassService {
                 ]
             );
 
-            $pps_near_work['subheader'] = "Workout near Work";
+            $pps_near_work['subheader'] = "Top Recommendations Near Your Office";
             unset($pps_near_work['header']);
             array_push($search_results, $pps_near_work);
         }

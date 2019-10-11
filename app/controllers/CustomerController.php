@@ -3876,6 +3876,7 @@ class CustomerController extends \BaseController {
 							$data['current_time'] = date('Y-m-d H:i:s', time());
 							
 							$data['time_diff'] = strtotime($data['schedule_date_time']) - time();
+							$data['end_time'] = strtotime($data['schedule_date_time']);
 
 							if($data['time_diff'] < 0){
 								$data['schedule_date_time_text'] = "Happened on ".date('jS M, h:i a', strtotime($data['schedule_date_time']));
