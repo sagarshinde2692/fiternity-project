@@ -10634,6 +10634,10 @@ Class Utilities {
         if(empty($data['lat']) && empty($data['lon'])){
             $result['header'] = "Trending in ".ucwords($data['city']);
         }
+        if(!empty($data['selected_region'])){
+            $result['header'] = "Trending in ".ucwords($data['selected_region']);
+        }
+        
         return $result;
     }
 }

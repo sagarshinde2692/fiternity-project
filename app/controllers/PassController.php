@@ -168,6 +168,7 @@ class PassController extends \BaseController {
         //     return Response::json(array('status' => 400,'message' => error_message($validator->errors())), 400);
         // }
         $city =  !empty($input['city'])? $input['city'] : 'mumbai' ;
+        $selected_region =  !empty($input['selected_region'])? $input['selected_region'] : null;
 
         $coordinate = [
             'lat' => !empty($input['lat']) ? $input['lat']: "",
@@ -198,10 +199,12 @@ class PassController extends \BaseController {
 		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
 			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate, $customer);
 		}else {
-            $coordinate['city'] = $city;
+            $vendor_search =$coordinate['city'];
+            $vendor_search['city'] = $city;
+            $vendor_search['selected_region'] = $selected_region;
             $result['onepass_pre'] = Config::get('pass.before_purchase_tab');
             //$pps_near_by = $this->passService->workoutSessionNearMe($city, $coordinate);
-            $vendor_near_by = $this->utilities->getVendorNearMe($coordinate);
+            $vendor_near_by = $this->utilities->getVendorNearMe($vendor_search);
             Log::info('near by vendors');
             $result['onepass_pre']['near_by']['subheader'] = $vendor_near_by['header'];
             $result['onepass_pre']['near_by']['near_by_vendor'] = $vendor_near_by['data'];
