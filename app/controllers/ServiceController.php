@@ -975,10 +975,12 @@ class ServiceController extends \BaseController {
 
 						$rsh['onepass_booking_block'] = false;
 						$nrsh['onepass_booking_block'] = false;
-						$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
-						if(empty($profile_completed)){
-							$rsh['onepass_booking_block'] = true;
-							$nrsh['onepass_booking_block'] = true;
+						if(!empty($customer_id)){
+							$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
+							if(empty($profile_completed)){
+								$rsh['onepass_booking_block'] = true;
+								$nrsh['onepass_booking_block'] = true;
+							}
 						}
 		    		}
 					array_push($slots,$rsh);array_push($slots,$nrsh);
@@ -1232,10 +1234,14 @@ class ServiceController extends \BaseController {
                     $service['non_peak']['price'] .= $str;
 				}
 
-				$service['non_peak']['onepass_booking_block'] = true;
-				$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
-				if(empty($profile_completed)){
-					$service['non_peak']['onepass_booking_block'] = true;
+				$service['non_peak']['onepass_booking_block'] = false;
+
+				if(!empty($customer_id)){
+					Log::info('customer_id:::: FIRST', [$customer_id]);
+					$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
+					if(empty($profile_completed)){
+						$service['non_peak']['onepass_booking_block'] = true;
+					}
 				}
             }
 			
@@ -1441,28 +1447,33 @@ class ServiceController extends \BaseController {
                 }
 			}
 
-			$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
+			if(!empty(Request::header('Authorization'))){
+				$decoded = decode_customer_token();
+				$customer_id = intval($decoded->customer->_id);
+			}
+
+			if(!empty($customer_id)){
+				Log::info('customer id ::::', [$customer_id, isset($profile_completed) ]);
+				$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
+			}
+
 			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
 				foreach($data['schedules'] as &$schedule){
 					$schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title']);
 
-					$this->addDisableBooking($schedule, $profile_completed, $allowSession);
+					isset($profile_completed) ? $this->addDisableBooking($schedule, $profile_completed, $allowSession): null;
 				}
 			}
 			else if(!empty($data['slots']) && in_array($this->device_type, ['android', 'ios'])){
 				$data['slots'] = $this->utilities->orderSummarySlots($data['slots'], $service['service_name'], $finder['title'] );
 
-				$this->addDisableBooking($data, $profile_completed, $allowSession);
+				isset($profile_completed) ? $this->addDisableBooking($data, $profile_completed, $allowSession): null;
             }
             
             if(!empty($data['slots']) && count($data['slots']) == 1 && !empty($data['slots'][0]['title'])){
                 $data['slots'][0]['title'] = "Select a slot";
 			}
 			
-			if(!empty(Request::header('Authorization'))){
-				$decoded = decode_customer_token();
-				$customer_id = intval($decoded->customer->_id);
-			}
 
             // if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && !empty($customer_id)){
 			// 	foreach($data['schedules'] as &$schedule){
@@ -2120,10 +2131,12 @@ class ServiceController extends \BaseController {
 			// }
 		}
 
-		$service_details['onepass_booking_block'] = true;
-		$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
-		if(empty($profile_completed)){
-			$service_details['onepass_booking_block'] = true;
+		$service_details['onepass_booking_block'] = false;
+		if(!empty($customer_id)){
+			$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
+			if(empty($profile_completed)){
+				$service_details['onepass_booking_block'] = true;
+			}
 		}
 		
 		$time = isset($_GET['time']) ? $_GET['time'] : null;
@@ -2741,6 +2754,7 @@ class ServiceController extends \BaseController {
 
 	public function addDisableBooking(&$service, $profile_completed, $allowSession){
 
+		Log::info('profile completed::::', [$profile_completed]);
 		if(!empty($service['slots']) /*&& !empty($allowSession['allow_session'])*/ && empty($profile_completed)){
 	
 			foreach($service['slots'] as &$value){
