@@ -118,8 +118,23 @@ class PassController extends \BaseController {
         $response =  $this->passService->passSuccess($data);
         if(!empty($response['order'])){
             $response['data']['branch_obj'] = $this->utilities->branchIOData($response['order']);
+            //unset($response['order']);
+        }
+
+        if(!empty($response['order']) && (($this->device_type == 'ios' && $this->app_version >= '5.2.4') ||($this->device_type == 'android' && $this->app_version >= '5.31') )){
+
+            $token = createCustomerToken($response['order']['customer_id']);
+            unset($response['order']);
+            $response['token'] = $token;
+            $response = Response::make($response);
+            $response->headers->set('token', $token );
+            return $response;
+        }
+
+        if(!empty($response['order'])){
             unset($response['order']);
         }
+
         return $response;
 
     }

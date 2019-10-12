@@ -26,6 +26,9 @@ class PassService {
 
     public function __construct(Utilities $utilities) {
         $this->utilities	=	$utilities;
+        $this->device_type = Request::header('Device-Type');
+        $this->app_version = Request::header('App-Version');
+        $this->device_id = !empty(Request::header('Device-Id'))? Request::header('Device-Id'): null;
     }
 
     public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null){
