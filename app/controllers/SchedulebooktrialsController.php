@@ -8015,7 +8015,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 
                 if(isset($booktrial['corporate_id']) && $booktrial['corporate_id'] != ''){
-                    $response['sub_header_2'] = "Sorry, cancellation is available only 60 minutes prior to your session time.\n\nKeep booking workouts to get closer to your steps milestone.";
+                    $response['sub_header_2'] = "Sorry, cancellation is available only ".$cancel_preior_time." prior to your session time.\n\nKeep booking workouts to get closer to your steps milestone.";
                 }
 
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
