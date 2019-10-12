@@ -7965,9 +7965,11 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "will be added into your steps counter post verifying your attendance from gym/studio.";    
                 }
 
-                // if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
-                //     $response['sub_header_2'] = "Awesome !\nWe are glad you enjoyed your workout.";
-                // }
+                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
+                    $response['sub_header_1'] = "Awesome !\n";
+                    $response['sub_header_2'] = "We are glad you enjoyed your workout.";
+                    $response['image'] = "https://b.fitn.in/paypersession/happy_face_icon-2.png";
+                }
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 

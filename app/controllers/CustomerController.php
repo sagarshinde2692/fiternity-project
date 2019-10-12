@@ -7641,6 +7641,7 @@ class CustomerController extends \BaseController {
 				$device_type = Request::header('Device-Type');
 				if(($device_type == 'ios' && $app_version >= '5.2.4') || ($device_type == 'android' && $app_version >= '5.31')){
 					$response = $this->getFirstScreen($data);
+					$response['button_text']['attended']['type'] = 'SUCCESS'; 
 				}
 				else if(($device_type == 'ios' && $app_version > '4.9') || ($device_type == 'android' && $app_version > '4.9')){
 
