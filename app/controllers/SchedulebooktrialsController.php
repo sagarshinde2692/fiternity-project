@@ -7966,7 +7966,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
-                    $response['header'] = "Awesome !\nWe are glad you enjoyed your workout.";
+                    $response['sub_header_2'] = "Awesome !\nWe are glad you enjoyed your workout.";
                 }
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
@@ -8238,7 +8238,7 @@ class SchedulebooktrialsController extends \BaseController {
             $response['description'] = '';
             $response['sub_header_1'] = '';
             unset($response['milestones']);
-            if(!in_array($status, ['cantmake', 'didnotattend'])){
+            if(!in_array($status, ['cantmake', 'didnotattend', 'lost'])){
                 $response['sub_header_2'] = '';
             }
         }
