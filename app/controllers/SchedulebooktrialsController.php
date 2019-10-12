@@ -24,7 +24,6 @@ use App\Services\Jwtauth as Jwtauth;
 use App\Services\Metropolis as Metropolis;
 use App\Services\RelianceService as RelianceService;
 use App\Services\PassService as PassService;
-use Zend\Validator\InArray;
 
 class SchedulebooktrialsController extends \BaseController {
 
