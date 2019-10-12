@@ -955,12 +955,8 @@ return [
         "text" => "finder_name",
         "session_data" => []
     ],
-    'booking_using_pass_success_message' => "<p style='align:center'>Your service_name session at finder_name is confirmed on schedule_date at start_time </p><br/><br/><p><b>Steps to unlock your Session</b></p><ul><li> Navigate to Upcoming Session section in the Onepass Tab.</li><li> Tap on UNLOCK SESSION button within gym/studio premises to activate your session.</li><li>Show your activated session slider with your photo at the finder_category to enjoy the session.</li></ul>",
-    
-    'booking_using_pass_success_message_corporate' => "<p style='align:center'>Your service_name session at finder_name is confirmed on schedule_date at start_time </p><br/><br/><p><b>Steps to unlock your Session</b></p><ul><li> Navigate to Upcoming Session section in the Onepass Tab.</li><li> Tap on UNLOCK SESSION button within gym/studio premises to activate your session.</li><li>Show your activated session slider with your photo at the finder_category to enjoy the session.</li></ul><p>unlock session and earn steps_count steps.</p>",
 
     'booking_using_pass_success_message' => [
-        'text' => 'Your service_name session at finder_name is confirmed on schedule_date at start_time',
         'subheader' => 'Steps to unlock your Session',
         'data' => [
             "Navigate to Upcoming Session section in the Onepass Tab.",

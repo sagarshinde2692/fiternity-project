@@ -1083,7 +1083,7 @@ class HomeController extends BaseController {
                     }
 
                     if(!empty($item['pass_order_id'])){
-                        $steps =  Config::get('app.pps_booking_success_message');
+                        $steps =  Config::get('pass.booking_using_pass_success_message');
                     }
                 }
 
@@ -1115,10 +1115,14 @@ class HomeController extends BaseController {
                 }
 
                 if((($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='andeoid' && $this->app_version >= '5.31')) && !empty($item['corporate_id']) && empty($item['external_reliance'])){
+
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
+                    
                     $steps = Config::get('paypersession.pps_booking_success_message_corporate');
-                
+                    $steps_count = $this->relianceService->getStepsByServiceCategory($item['servicecategory_id']);
+
                     if(!empty($item['first_session_free'])){
-                        $steps = Config::get('paypersession.trial_booking_success_message');
+                        $steps = Config::get('paypersession.trial_booking_success_message_corporate');
                     }
                     
                     if(!empty($item['pass_order_id'])){
@@ -1138,6 +1142,15 @@ class HomeController extends BaseController {
                     'id'=>$id
                 ];
                 
+                if(!empty($steps)){
+
+                    foreach($steps['data'] as &$value){
+                        strtr($value, ['finder_category'=> $finder_category, 'steps_count'=> $steps_count]);
+                    }
+
+                    $response['steps'] = $steps;
+                }
+
                 if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
                     $response['streak']['header'] = '';
                     $response['streak']['items'] = [];
