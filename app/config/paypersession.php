@@ -56,15 +56,15 @@ return array(
         'subheader' => 'Steps to unlock your Session',
         'data' => [
             "Navigate to Upcoming booking slider on home screen.",
-            "Tap on UNLOCK SESSION button within finder_name premises to activate your session.",
-            "Show your activated session slider at the gym / studio to enjoy the session."
+            "Tap on UNLOCK SESSION button within finder_category premises to activate your session.",
+            "Show your activated session slider at the finder_category to enjoy the session."
         ] 
     ],
     'trial_booking_success_message_corporate' => [
         'subheader' => 'Steps to unlock your Session',
         'data' => [
             "Navigate to Upcoming booking slider on home screen..",
-            "Tap on UNLOCK SESSION button within finder_name premises to activate your session.",
+            "Tap on UNLOCK SESSION button within finder_category premises to activate your session.",
             "Show your activated session slider at the finder_category to enjoy the session",
             "unlock session and earn steps_count steps."
         ] 
