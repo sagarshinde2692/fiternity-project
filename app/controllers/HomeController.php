@@ -1070,7 +1070,8 @@ class HomeController extends BaseController {
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
                 }
 
-                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='andeoid' && $this->app_version >= '5.31')){
+                Log::info('indfo::::', [$this->device_type, $this->app_version]);
+                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 
                     $finder_category = !empty($item['finder_category_id']) ? $item['finder_category_id'] ==5 ? 'gym' : 'studio': 'gym / studio';
 
@@ -1110,14 +1111,14 @@ class HomeController extends BaseController {
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps. Session activation also helps you earn cashback into your Fitternity Wallet.';
 
                     if(!empty($item['pass_order_id'])){
-                        $subline  = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>You can unlock your session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym / studio. <br><br>Activate your session by Tap on UNLOCK SESSION to activate your session and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps.';
+                        $subline  = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps.';
                     }
                 }
 
-                if((($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='andeoid' && $this->app_version >= '5.31')) && !empty($item['corporate_id']) && empty($item['external_reliance'])){
+                if((($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')) && !empty($item['corporate_id']) && empty($item['external_reliance'])){
 
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
-                    
+
                     $steps = Config::get('paypersession.pps_booking_success_message_corporate');
                     $steps_count = $this->relianceService->getStepsByServiceCategory($item['servicecategory_id']);
 
@@ -1145,7 +1146,7 @@ class HomeController extends BaseController {
                 if(!empty($steps)){
 
                     foreach($steps['data'] as &$value){
-                        strtr($value, ['finder_category'=> $finder_category, 'steps_count'=> $steps_count]);
+                        $value = strtr($value, ['finder_category'=> $finder_category, 'steps_count'=> $steps_count]);
                     }
 
                     $response['steps'] = $steps;
