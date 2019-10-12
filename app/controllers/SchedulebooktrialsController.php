@@ -8099,6 +8099,14 @@ class SchedulebooktrialsController extends \BaseController {
 				if(isTabActive($booktrial['finder_id'])){
                     $response['activate']['sub_header_2'] = 'Punch your subscription code on the kiosk/tab available at the center to activate your session';
                 }
+
+                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
+                    $response['activate'] = [
+                        'sub_header_1' =>'UNLOCK YOUR SESSION',
+                        'sub_header_2' =>'Navigate to upcoming session ticker on your homescreen to unlock this session at '.$booktrial['finder_name']
+                    ];
+                }
+
                 if(isset($booktrial['studio_extended_validity_order_id'])){
                     unset($response['activate']);
                     unset($response['attend']['sub_header_1']);
@@ -8212,6 +8220,10 @@ class SchedulebooktrialsController extends \BaseController {
             $response['description'] = '';
             $response['sub_header_1'] = '';
             $response['sub_header_2'] = '';
+        }
+
+        if(!empty($booktrial['pass_order_id'])){
+            unset($response['milestones']);
         }
 
         return Response::json($response);
