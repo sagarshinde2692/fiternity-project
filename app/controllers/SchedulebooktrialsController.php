@@ -25,6 +25,7 @@ use App\Services\Metropolis as Metropolis;
 use App\Services\RelianceService as RelianceService;
 use App\Services\PassService as PassService;
 
+
 class SchedulebooktrialsController extends \BaseController {
 
     protected $customermailer;
