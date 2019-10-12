@@ -7713,7 +7713,10 @@ class CustomerController extends \BaseController {
 				else{
 					$prior_time = '1 hour';
 				}
-				$response['sub_header_2'] = "Your ".$data['service_name']." at ".$data['finder_name']." is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?\n\nCancellation window for this session is available upto ".$prior_time." prior to the session time (Cancel before ".$one_hour_before.")\nCancellation post the window will be chargeable " ;
+				$response['sub_header_2'] = "Your ".$data['service_name']." at ".$data['finder_name']." is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?\n\nCancellation window for this session is available upto ".$prior_time." prior to the session time";
+				if(empty($data['pass_order_id'])){
+					$response['sub_header_2'] .= " (Cancel before ".$one_hour_before.")\nCancellation post the window will be chargeable " ;
+				}
 				$response['button_text'] = [
 					'attended'=>['text'=>'YES I’LL BE THERE','url'=>Config::get('app.url')."/sessionstatuscapture/confirm/".$data['_id'], 'type'=>"SUCCESS"],
 					'did_not_attend'=>['text'=>'NO, I’M NOT GOING','url'=>Config::get('app.url')."/sessionstatuscapture/cantmake/".$data['_id']]
