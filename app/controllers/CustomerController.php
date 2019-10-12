@@ -7641,7 +7641,10 @@ class CustomerController extends \BaseController {
 
 				$app_version = Request::header('App-Version');
 				$device_type = Request::header('Device-Type');
-				if(($device_type == 'ios' && $app_version > '4.9') || ($device_type == 'android' && $app_version > '4.9')){
+				if(($device_type == 'ios' && $app_version >= '5.2.4') || ($device_type == 'android' && $app_version >= '5.31')){
+					$response = $this->getFirstScreen($data);
+				}
+				else if(($device_type == 'ios' && $app_version > '4.9') || ($device_type == 'android' && $app_version > '4.9')){
 
 					if(isset($_GET['getreasons']) && $_GET['getreasons'] == '1'){
 						$fitcash = "";
