@@ -8021,7 +8021,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
-                    $response['header'] = "Don't worry! Rebook the session and continue with your fitness journey.";
+                    $response['sub_header_2'] = "Don't worry! Rebook the session and continue with your fitness journey.";
                 }
 
                 Log::info("removing n+2 communication");
