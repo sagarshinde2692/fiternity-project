@@ -7608,18 +7608,18 @@ class CustomerController extends \BaseController {
 					$upcoming_booking = $this->passService->upcomingPassBooking(null, $data, $data['customer_id']);
 					Log::info('upcoming booking:::', [$upcoming_booking]);
 					if(!empty($upcoming_booking['footer']['unlock_url'])){
-						$response['unlocktext'] = $upcoming_booking['footer']['text'];
+						$response['unlocktext'] = "Show your activated session screen at ".$data['finder_name']." and enjoy your ".$data['service_name'];//$upcoming_booking['footer']['text'];
 						$response['button_text']['unlock'] = [
-							'text' => 'Activate Session',/*$upcoming_booking['footer']['unlock_text'],*/
+							'text' => $upcoming_booking['footer']['unlock_text'],
 							'url' => $upcoming_booking['footer']['unlock_url']."?from=notification_before10min",
 						];
 
-						$response['sub_header'] = $upcoming_booking['footer']['unlock_text'];
-						$response['footer'] = "Show your activated session screen at ".$data['finder_name']." and enjoy your ".$data['service_name'];
+						$response['sub_header'] = "Activate Session";//$upcoming_booking['footer']['unlock_text'];
+						$response['footer'] = "NOTE :  You can access your active session screen from the homescreen active session footer as well.";
 					}
 					else {
 						$response['sub_header'] = $upcoming_booking['header'];
-						$response['footer'] = "need to ask vipu/saili";
+						$response['footer'] = "NOTE :  You can access your active session screen from the homescreen active session footer as well.";
 						unset($response['button_text']);
 						$response['block'] = false;
 					}
