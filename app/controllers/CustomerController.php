@@ -7610,7 +7610,7 @@ class CustomerController extends \BaseController {
 					if(!empty($upcoming_booking['footer']['unlock_url'])){
 						$response['unlocktext'] = $upcoming_booking['footer']['text'];
 						$response['button_text']['unlock'] = [
-							'text' => $upcoming_booking['footer']['unlock_text'],
+							'text' => 'Activate Session',/*$upcoming_booking['footer']['unlock_text'],*/
 							'url' => $upcoming_booking['footer']['unlock_url']."?from=notification_before10min",
 						];
 
