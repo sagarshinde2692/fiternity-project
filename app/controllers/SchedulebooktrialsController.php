@@ -7979,7 +7979,7 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);     
                 
-                $cancel_preior_time = !empty($booktrial->finder_category_id) ? $booktrial->finder_category_id ==5 ? '60 minutes' : '30 minutes' : '60 minutes';
+                $cancel_preior_time = !empty($booktrial->finder_category_id) ? $booktrial->finder_category_id ==5 ? '15 minutes' : '60 minutes' : '60 minutes';
                 $response = [
                     'status'=>200,
                     'header'=>'OOPS!',
@@ -8730,8 +8730,8 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         $pass_further = false;
-        $time_in_seconds = 60* 60;
-        $post_hour = '1 Hour';
+        $time_in_seconds = 60* 60 * 2;
+        $post_hour = '2 Hour';
         if(!empty($booktrial->finder_category_id) && $booktrial->finder_category_id !=5){
             $time_in_seconds = 60*30;
             $post_hour = '30 Minutes';
