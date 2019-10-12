@@ -7615,7 +7615,7 @@ class CustomerController extends \BaseController {
 						];
 
 						$response['sub_header'] = $upcoming_booking['footer']['unlock_text'];
-						$response['footer'] = "need to ask vipu/saili";
+						$response['footer'] = "Show your activated session screen at ".$data['finder_name']." and enjoy your ".$data['service_name'];
 					}
 					else {
 						$response['sub_header'] = $upcoming_booking['header'];
