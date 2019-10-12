@@ -11048,5 +11048,4 @@ class CustomerController extends \BaseController {
 		$data_prepa = array_merge($activated_session, $not_activated_session);
 		return $data_prepa;
 	}
-
 }
