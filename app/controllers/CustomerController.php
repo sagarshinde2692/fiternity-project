@@ -7604,7 +7604,7 @@ class CustomerController extends \BaseController {
 					];
 					Booktrial::where('_id', $data['_id'])->update(['kiosk_block_shown'=>true]);
 				}
-				if(!empty($data['pass_order_id'])){
+				if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 					$upcoming_booking = $this->passService->upcomingPassBooking(null, $data, $data['customer_id']);
 					Log::info('upcoming booking:::', [$upcoming_booking]);
 					if(!empty($upcoming_booking['footer']['unlock_url'])){
