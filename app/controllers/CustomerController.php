@@ -7605,37 +7605,36 @@ class CustomerController extends \BaseController {
 					Booktrial::where('_id', $data['_id'])->update(['kiosk_block_shown'=>true]);
 				}
 
-				// if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
-				// 	$upcoming_booking = $this->passService->upcomingPassBooking(null, $data, $data['customer_id']);
-				// 	Log::info('upcoming booking:::', [$upcoming_booking]);
-				// 	if(!empty($upcoming_booking['footer']['unlock_url'])){
-				// 		$response['unlocktext'] = $upcoming_booking['footer']['text'];
-				// 		$response['button_text']['unlock'] = [
-				// 			'text' => $upcoming_booking['footer']['unlock_text'],
-				// 			'url' => $upcoming_booking['footer']['unlock_url']."?from=notification_before10min",
-				// 		];
+				if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
+					$upcoming_booking = $this->passService->upcomingPassBooking(null, $data, $data['customer_id']);
+					Log::info('upcoming booking:::', [$upcoming_booking]);
+					if(!empty($upcoming_booking['footer']['unlock_url'])){
+						$response['unlocktext'] = $upcoming_booking['footer']['text'];
+						$response['button_text']['unlock'] = [
+							'text' => $upcoming_booking['footer']['unlock_text'],
+							'url' => $upcoming_booking['footer']['unlock_url']."?from=notification_before10min",
+						];
 
-				// 		$response['sub_header'] = $upcoming_booking['footer']['unlock_text'];
-				// 		$response['footer'] = "need to ask vipu/saili";
-				// 	}
-				// 	else {
-				// 		$response['sub_header'] = $upcoming_booking['header'];
-				// 		$response['footer'] = "need to ask vipu/saili";
-				// 		unset($response['button_text']);
-				// 		$response['block'] = false;
-				// 	}
+						$response['sub_header'] = $upcoming_booking['footer']['unlock_text'];
+						$response['footer'] = "need to ask vipu/saili";
+					}
+					else {
+						$response['sub_header'] = $upcoming_booking['header'];
+						$response['footer'] = "need to ask vipu/saili";
+						unset($response['button_text']);
+						$response['block'] = false;
+					}
 	
-				// 	unset($response['activation_success']);
-				// 	unset($response['button_text']['activate']);
-				// 	unset($response['button_text']['activate']['cancel_text']);
-				// 	unset($response['button_text']['activate']['cancel']);
-				// 	unset($response['button_text']['activate']['cancel']);
-				// 	unset($response['button_text']['qrcode']);
-				// 	unset($response['button_text']['didnt_get']);
-				// 	unset($response['subscription_code']);//$upcoming_booking['header'];
-				// }
+					unset($response['activation_success']);
+					unset($response['button_text']['activate']);
+					unset($response['button_text']['activate']['cancel_text']);
+					unset($response['button_text']['activate']['cancel']);
+					unset($response['button_text']['activate']['cancel']);
+					unset($response['button_text']['qrcode']);
+					unset($response['button_text']['didnt_get']);
+					unset($response['subscription_code']);//$upcoming_booking['header'];
+				}
 
-				$this->formatNotificationDataOfUnlock($response, $data, 'notification_before10min');
 				break;
 			case 'let_us_know':
 			case 'n+2':
@@ -7698,7 +7697,6 @@ class CustomerController extends \BaseController {
 				}
 				
 				$response['block'] = true;
-				$this->formatNotificationDataOfUnlock($response, $data, 'notification_after2hours');
 				break;
 			case 'n-3':
             case 'session_reminder':
@@ -11050,7 +11048,7 @@ class CustomerController extends \BaseController {
 		return $data_prepa;
 	}
 
-	public function formatNotificationDataOfUnlock(&$response, &$data, $from){
+	public function formatNotificationDataOfUnlock(&$response, &$data){
 		if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 			$upcoming_booking = $this->passService->upcomingPassBooking(null, $data, $data['customer_id']);
 			Log::info('upcoming booking:::', [$upcoming_booking]);
@@ -11058,7 +11056,7 @@ class CustomerController extends \BaseController {
 				$response['unlocktext'] = $upcoming_booking['footer']['text'];
 				$response['button_text']['unlock'] = [
 					'text' => $upcoming_booking['footer']['unlock_text'],
-					'url' => $upcoming_booking['footer']['unlock_url']."?from=".$from,
+					'url' => $upcoming_booking['footer']['unlock_url']."?from=notification_before10min",
 				];
 
 				$response['sub_header'] = $upcoming_booking['footer']['unlock_text'];
