@@ -7965,8 +7965,10 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "will be added into your steps counter post verifying your attendance from gym/studio.";    
                 }
 
-                if(!empty($booktrial['pass_order_id'])){
+                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
                     $response['header'] = "Awesome !\nWe are glad you enjoyed your workout.";
+                }
+                if(!empty($booktrial['pass_order_id'])){
                 }
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
