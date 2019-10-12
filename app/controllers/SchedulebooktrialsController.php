@@ -24,7 +24,7 @@ use App\Services\Jwtauth as Jwtauth;
 use App\Services\Metropolis as Metropolis;
 use App\Services\RelianceService as RelianceService;
 use App\Services\PassService as PassService;
-
+use Zend\Validator\InArray;
 
 class SchedulebooktrialsController extends \BaseController {
 
@@ -8049,6 +8049,9 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
                 }
 
+                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
+                    $response['sub_header_2'] ="Don't worry! You can rebook the session for later and continue with your fitness journey.";
+                }
                 if(!empty($booktrial->pass_order_id)){
                     unset($response['footer']);
                 }
@@ -8216,14 +8219,19 @@ class SchedulebooktrialsController extends \BaseController {
         //     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
         // }
 
-        if(isset($booktrial['extended_validity_order_id']) || !empty($booktrial['pass_order_id'])){
+        if(isset($booktrial['extended_validity_order_id'])){
             $response['description'] = '';
             $response['sub_header_1'] = '';
             $response['sub_header_2'] = '';
         }
 
         if(!empty($booktrial['pass_order_id'])){
+            $response['description'] = '';
+            $response['sub_header_1'] = '';
             unset($response['milestones']);
+            if(!in_array($status, ['cantmake'])){
+                $response['sub_header_2'] = '';
+            }
         }
 
         return Response::json($response);
