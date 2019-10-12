@@ -964,7 +964,7 @@ return [
         'subheader' => 'Steps to unlock your Session',
         'data' => [
             "Navigate to Upcoming Session section in the Onepass Tab.",
-            "Tap on UNLOCK SESSION button within gym/studio premises to activate your session.",
+            "Tap on UNLOCK SESSION button within finder_category premises to activate your session.",
             "Show your activated session slider with your photo at the finder_category to enjoy the session."
         ] 
     ],
@@ -972,7 +972,7 @@ return [
         'subheader' => 'Steps to unlock your Session',
         'data' => [
             "Navigate to Upcoming Session section in the Onepass Tab.",
-            "Tap on UNLOCK SESSION button within gym/studio premises to activate your session.",
+            "Tap on UNLOCK SESSION button within finder_category premises to activate your session.",
             "Show your activated session slider with your photo at the finder_category to enjoy the session.",
             "unlock session and earn steps_count steps."
         ] 

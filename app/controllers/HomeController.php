@@ -1059,20 +1059,32 @@ class HomeController extends BaseController {
             if(isset($item['type']) && $item['type']=='workout-session' && $device_type && $app_version && in_array($device_type, ['android', 'ios']) && $app_version > '4.4.3'){
 
                 $header = "BOOKING SUCCESSFUL!";
-
-                $finder_category = !empty($item['finder_category_id']) ? $item['finder_category_id'] ==5 ? 'gym' : 'studio': 'gym / studio';
-
-                $pps_booking_success_message = Config::get('paypersession.pps_booking_success_message');
                 
-                $subline = strtr($pps_booking_success_message, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category]); 
+                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there. FitCode helps you mark your attendance that let\'s you earn cashbacks.'."<br><br>Keep booking sessions at ".$item['finder_name']." without buying a membership and earn rewards on your every workout";
 
                 if(!empty($item['coupon_flags']['cashback_100_per'])){
                     $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
                 }
 
                 if(!empty($item['pass_order_id'])){
-                    $pass_booking_success_message = Config::get('pass.booking_using_pass_success_message');
-                    $subline = strtr($pass_booking_success_message, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category]);
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
+                }
+
+                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='andeoid' && $this->app_version >= '5.31')){
+
+                    $finder_category = !empty($item['finder_category_id']) ? $item['finder_category_id'] ==5 ? 'gym' : 'studio': 'gym / studio';
+
+                    $steps = Config::get('paypersession.pps_booking_success_message');
+
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
+
+                    if(!empty($item['first_session_free'])){
+                        $steps = Config::get('paypersession.trial_booking_success_message');
+                    }
+
+                    if(!empty($item['pass_order_id'])){
+                        $steps =  Config::get('app.pps_booking_success_message');
+                    }
                 }
 
                 if(isset($item['pay_later']) && $item['pay_later']){
@@ -1095,12 +1107,22 @@ class HomeController extends BaseController {
                 ];
 
                 if(!empty($item['corporate_id']) && empty($item['external_reliance'])){
-                    $pps_booking_success_message_corporate = Config::get('paypersession.pps_booking_success_message_corporate');
-                    $subline = strtr($pps_booking_success_message_corporate, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category, 'steps_count' => $this->relianceService->getStepsByServiceCategory($item['servicecategory_id'])]).'. Session activation also helps you earn cashback into your Fitternity Wallet.';
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps. Session activation also helps you earn cashback into your Fitternity Wallet.';
 
                     if(!empty($item['pass_order_id'])){
-                        $pass_booking_success_message = Config::get('pass.booking_using_pass_success_message_corporate');
-                        $subline = strtr($pass_booking_success_message, ['service_name'=>$service_name, 'finder_name'=>$finder_name, 'schedule_date'=>$schedule_date, 'start_time'=>$start_time , 'finder_category'=> $finder_category, 'steps_count' =>$this->relianceService->getStepsByServiceCategory($item['servicecategory_id'])]);
+                        $subline  = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>You can unlock your session within '.Config::get('app.checkin_checkout_max_distance_in_meters').' meters of the gym / studio. <br><br>Activate your session by Tap on UNLOCK SESSION to activate your session and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps.';
+                    }
+                }
+
+                if((($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='andeoid' && $this->app_version >= '5.31')) && !empty($item['corporate_id']) && empty($item['external_reliance'])){
+                    $steps = Config::get('paypersession.pps_booking_success_message_corporate');
+                
+                    if(!empty($item['first_session_free'])){
+                        $steps = Config::get('paypersession.trial_booking_success_message');
+                    }
+                    
+                    if(!empty($item['pass_order_id'])){
+                        $steps = Config::get('pass.booking_using_pass_success_message_corporate');
                     }
                 }
 
