@@ -1453,7 +1453,6 @@ class ServiceController extends \BaseController {
 			}
 
 			if(!empty($customer_id)){
-				Log::info('customer id ::::', [$customer_id, isset($profile_completed) ]);
 				$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
 			}
 
@@ -2754,7 +2753,6 @@ class ServiceController extends \BaseController {
 
 	public function addDisableBooking(&$service, $profile_completed, $allowSession){
 
-		Log::info('profile completed::::', [$profile_completed]);
 		if(!empty($service['slots']) /*&& !empty($allowSession['allow_session'])*/ && empty($profile_completed)){
 	
 			foreach($service['slots'] as &$value){
