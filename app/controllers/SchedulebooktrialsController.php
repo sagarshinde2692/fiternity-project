@@ -3001,7 +3001,9 @@ class SchedulebooktrialsController extends \BaseController {
                             'title'=>'Claim Your Fitcash'
                         ];
 
-                        $send_communication["customer_notification_block_screen"] = $this->utilities->sendPromotionalNotification($promoData);
+                        if(empty($booktrialdata['pass_order_id'])){
+                            $send_communication["customer_notification_block_screen"] = $this->utilities->sendPromotionalNotification($promoData);
+                        }
                     
 
                     if(isset($booktrial->type)&&$booktrial->type!='workout-session'){
