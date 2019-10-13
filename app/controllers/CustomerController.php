@@ -8540,8 +8540,8 @@ class CustomerController extends \BaseController {
 			$un_updated=[];$not_located=[];$already_attended=[];$attended=[];$not_attended=[];
 
 			if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
-				$scheduleBookTrialController =new ServiceController($this->utilities, $this->relianceService, $this->passService) ;
-				return $this->scheduleBookTrialController->unlockSession($data['data'][0]['_id'], $data);
+				Log::info('iside calling unlock session:::');
+				return json_decode(json_encode(app(\SchedulebooktrialsController::class)->unlockSession($data['data'][0]['_id'], $data)), true);
 			}
 
 			$total_fitcash=0;

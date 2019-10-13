@@ -3002,7 +3002,7 @@ class SchedulebooktrialsController extends \BaseController {
                         ];
 
                         if(empty($booktrialdata['pass_order_id'])){
-                            $send_communication["customer_notification_block_screen"] = $this->utilities->sendPromotionalNotification($promoData);
+                            //$send_communication["customer_notification_block_screen"] = $this->utilities->sendPromotionalNotification($promoData);
                         }
                     
 
@@ -8689,6 +8689,7 @@ class SchedulebooktrialsController extends \BaseController {
     public function unlockSession($booktrial_id, $data=null){
         Log::info($_SERVER['REQUEST_URI']);
 
+        Log::info('unlock session called::::');
         $rules = [
             'lat' => 'required',
             'lon' => 'required'
