@@ -8538,7 +8538,12 @@ class CustomerController extends \BaseController {
 			$invalid_data=array_filter($data['data'],function ($e){return (empty($e['_id'])||!isset($e['mark']));});
 			if(count($invalid_data)>0) return ['status' => 400,'message' =>"Invalid Data"];
 			$un_updated=[];$not_located=[];$already_attended=[];$attended=[];$not_attended=[];
-			
+
+			if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
+				$scheduleBookTrialController =new ServiceController($this->utilities, $this->relianceService, $this->passService) ;
+				return $this->scheduleBookTrialController->unlockSession($data['data'][0]['_id'], $data);
+			}
+
 			$total_fitcash=0;
 			foreach ($data['data'] as $key => $value)
 			{

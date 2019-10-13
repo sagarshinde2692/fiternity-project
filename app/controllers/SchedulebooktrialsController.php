@@ -8686,7 +8686,7 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
 
-    public function unlockSession($booktrial_id){
+    public function unlockSession($booktrial_id, $data=null){
         Log::info($_SERVER['REQUEST_URI']);
 
         $rules = [
@@ -8694,7 +8694,9 @@ class SchedulebooktrialsController extends \BaseController {
             'lon' => 'required'
         ];
 
-        $data = Input::json()->all();
+        if(empty($data)){
+            $data = Input::json()->all();
+        }
 
         $validator = Validator::make($data,$rules);
 
