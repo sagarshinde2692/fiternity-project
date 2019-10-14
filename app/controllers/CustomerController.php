@@ -8229,12 +8229,12 @@ class CustomerController extends \BaseController {
 		$response['block'] = true;
 
 		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
-			$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn 300 steps.";
+			$response['sub_header_2'] = "Did you attend your ".$data['service_name']." session at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn 300 steps.";
 			if(isset($data['servicecategory_id']) && $data['servicecategory_id'] != ''){
 				$service_cat_steps_map = Config::get('health_config.service_cat_steps_map');
 				if(in_array($data['servicecategory_id'], array_keys($service_cat_steps_map))){
 					$service_steps = $service_cat_steps_map[$data['servicecategory_id']];
-					$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn ".$service_steps." steps.";
+					$response['sub_header_2'] = "Did you attend your ".$data['service_name']." session at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn ".$service_steps." steps.";
 				}
 			}
 		}
