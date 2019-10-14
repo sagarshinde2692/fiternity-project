@@ -712,8 +712,8 @@ return [
     ],
 
     "pass_profile" =>[
-        "booking_text" =>"Personalize your OnePass Booking experience by sharing few details. This helps us to offer you top recommendations basis your interests.",
-        "booking_text_pps" =>"Personalize your Session Booking experience by sharing few details. This helps us to offer you top recommendations basis your interests.",
+        "booking_text" =>"Personalize your OnePass booking experience by sharing few details. This helps us to offer you top recommendations basis your interests.",
+        "booking_text_pps" =>"Personalize your session booking experience by sharing few details. This helps us to offer you top recommendations basis your interests.",
         "title" => "Personalize OnePass",
         "title_pps" => "Personalize Session",
         "address_details" => [
