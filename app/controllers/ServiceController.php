@@ -1079,8 +1079,8 @@ class ServiceController extends \BaseController {
 						}
 
 						$des = 'You can cancel this session 1 hour prior to your session time. The paid amount will be refunded to you in form of Fitcash.';
-						
-						if(!empty($findercategory_id) && $findercategory_id == 5){
+
+						if(!empty($item['servicecategory_id']) && $item['servicecategory_id'] == 65){
 							$des = 'You can cancel this session 15 min prior to your session time. The paid amount will be refunded to you in form of Fitcash.';
 						}
 
@@ -2117,7 +2117,7 @@ class ServiceController extends \BaseController {
 		
 		if(!empty($allowSession['allow_session']) && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $service_details['finder_flags']])) && (!empty($service_details['flags']['classpass_available']) && $service_details['flags']['classpass_available'])){
 			$des = 'You can cancel this session 1 hour prior to your session time.';
-			if($service_details['finder_category_id'] == 5){
+			if(!empty($service_details['servicecategory_id']) && $service_details['servicecategory_id'] == 65){
 				$des = 'You can cancel this session 15 min prior to your session time.';
 			}
 			$service_details['price'] = Config::get('app.onepass_free_string');
