@@ -965,18 +965,18 @@ return [
     'booking_using_pass_success_message' => [
         'header' => 'Steps to unlock your Session',
         'data' => [
-            "Navigate to Upcoming Session section in the Onepass Tab.",
-            "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.",
-            "Show your activated session screen with your photo at the finder_category to enjoy the session."
+            "Navigate to Upcoming Session section in the Onepass Tab.\n",
+            "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.\n",
+            "Show your activated session screen with your photo at the finder_category to enjoy the session.\n"
         ] 
     ],
     'booking_using_pass_success_message_corporate' => [
         'header' => 'Steps to unlock your Session',
         'data' => [
-            "Navigate to Upcoming Session section in the Onepass Tab.",
-            "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.",
-            "Show your activated session screen with your photo at the finder_category to enjoy the session.",
-            "unlock session and earn steps_count steps."
+            "Navigate to Upcoming Session section in the Onepass Tab.\n",
+            "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.\n",
+            "Show your activated session screen with your photo at the finder_category to enjoy the session.\n",
+            "unlock session and earn steps_count steps.\n"
         ] 
     ]
 ];

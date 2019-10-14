@@ -8543,8 +8543,8 @@ class CustomerController extends \BaseController {
 				Log::info('iside calling unlock session:::');
 				$data['from']='mark_customer_attanance';
 				$response =  json_decode(json_encode(app(\SchedulebooktrialsController::class)->unlockSession($data['data'][0]['_id'], $data)->getData()), true);
-				Log::info('response at kvkdfjvdfkhvdf', [$response]);
-				$response = !empty($response['data']) ?  $response['data'] : !empty($response['session_activated'])? $response['session_activated'] :null;
+				Log::info('response at kvkdfjvdfkhvdf', [!empty($response['data'])]);
+				$response = !empty($response['data']) ?  $response['data'] : (!empty($response['session_activated'])? $response['session_activated'] :null);
 				
 				return ["response"=>['session_activated' =>$response], "status"=>200];
 			}

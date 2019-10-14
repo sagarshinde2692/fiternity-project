@@ -37,36 +37,36 @@ return array(
     'pps_booking_success_message' => [
         'header' => 'Steps to unlock your Session',
         'data' => [
-            "Navigate to Upcoming booking slider on home screen.",
-            "Tap on UNLOCK SESSION button within finder_category premises to activate your session.",
-            "Show your activated session slider with your photo at the finder_category to enjoy the session."
+            "Navigate to Upcoming booking slider on home screen.\n",
+            "Tap on UNLOCK SESSION button within finder_category premises to activate your session.\n",
+            "Show your activated session slider with your photo at the finder_category to enjoy the session.\n"
         ] 
     ],
     'pps_booking_success_message_corporate' => [
         'header' => 'Steps to unlock your Session',
         'data' => [
-            "Navigate to Upcoming booking slider on home screen.",
-            "Tap on UNLOCK SESSION button within finder_category premises to activate your session.",
-            "Show your activated session slider with your photo at the finder_category to enjoy the session.",
-            "unlock session and earn steps_count steps."
+            "Navigate to Upcoming booking slider on home screen.\n",
+            "Tap on UNLOCK SESSION button within finder_category premises to activate your session.\n",
+            "Show your activated session slider with your photo at the finder_category to enjoy the session.\n",
+            "unlock session and earn steps_count steps.\n"
         ] 
     ],
 
     'trial_booking_success_message' => [
         'header' => 'Steps to unlock your Session',
         'data' => [
-            "Navigate to Upcoming booking slider on home screen.",
-            "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.",
-            "Show your activated session screen at the finder_category to enjoy the session."
+            "Navigate to Upcoming booking slider on home screen.\n",
+            "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.\n",
+            "Show your activated session screen at the finder_category to enjoy the session.\n"
         ] 
     ],
     'trial_booking_success_message_corporate' => [
         'header' => 'Steps to unlock your Session',
         'data' => [
-            "Navigate to Upcoming booking slider on home screen.",
-            "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.",
-            "Show your activated session screen at the finder_category to enjoy the session",
-            "unlock session and earn steps_count steps."
+            "Navigate to Upcoming booking slider on home screen.\n",
+            "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.\n",
+            "Show your activated session screen at the finder_category to enjoy the session.\n",
+            "unlock session and earn steps_count steps.\n"
         ] 
     ]
 );
