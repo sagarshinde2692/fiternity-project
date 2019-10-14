@@ -2116,19 +2116,21 @@ class ServiceController extends \BaseController {
 		}
 		
 		if(!empty($allowSession['allow_session']) && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $service_details['finder_flags']])) && (!empty($service_details['flags']['classpass_available']) && $service_details['flags']['classpass_available'])){
-			$des = 'You can cancel this session 1 hour prior to your session time.';
-			if(!empty($service_details['servicecategory_id']) && $service_details['servicecategory_id'] == 65){
-				$des = 'You can cancel this session 15 min prior to your session time.';
-			}
+			
 			$service_details['price'] = Config::get('app.onepass_free_string');
-			$service_details['easy_cancellation'] = array(
-				"header" => "Easy Cancelletion: ",
-				"description" => $des
-			);
 			// if(!empty($allowSession['profile_incomplete'])){
 			// 	$service_details['onepass_booking_block'] = true;
 			// }
 		}
+
+		$des = 'You can cancel this session 1 hour prior to your session time.';
+		if(!empty($service_details['servicecategory_id']) && $service_details['servicecategory_id'] == 65){
+			$des = 'You can cancel this session 15 min prior to your session time.';
+		}
+		$service_details['easy_cancellation'] = array(
+			"header" => "Easy Cancelletion: ",
+			"description" => $des
+		);
 
 		$service_details['onepass_booking_block'] = false;
 		if(!empty($customer_id)){
