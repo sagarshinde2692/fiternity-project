@@ -201,6 +201,10 @@ class TransactionController extends \BaseController {
         if(!empty($_SERVER['REQUEST_URI'])){
             Log::info($_SERVER['REQUEST_URI']);
         }
+        
+        if(!empty(Request::header('Origin'))){
+            $data['origin_url'] = Request::header('Origin');
+        }
         Log::info('------------transactionCapture---------------',$data);
 
         if(!empty($data['customer_quantity']) && is_string($data['customer_quantity'])){
@@ -1428,6 +1432,7 @@ class TransactionController extends \BaseController {
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['finder_name'] = strtolower($data['finder_name']);
         $result['type'] = $data['type'];
+        
         if(isset($data['type']) && ($data['type'] == 'workout-session')){
             $result['session_payment'] = true;
         }
@@ -3111,6 +3116,21 @@ class TransactionController extends \BaseController {
                     $order->update(['schedule_bookings_redis_id'=>$scheduleBookingsRedisId]);
                 }
             }
+
+            if(!empty($order['combo_pass_id'])){
+                $complementry_pass_purchase = Queue::connection('redis')->push(
+                    'PassController@passCaptureAuto', 
+                    array(
+                        'order' => $order,
+                        'forced' => false
+                    ),
+                    Config::get('app.queue')
+                );
+                Log::info('inside schudling complementary pass purchase redis id:', [$complementry_pass_purchase]);
+
+                $order->update(['schedule_complementry_pass_purchase_redis_id'=>$complementry_pass_purchase]);
+            }
+
             Log::info("successCommon returned");
             Log::info($order['_id']);
             return Response::json($resp);
@@ -3683,6 +3703,9 @@ class TransactionController extends \BaseController {
 
                 if(!empty($passSession['pass_premium_session'])) {
                     $data['pass_premium_session'] = true;
+                }
+                if(!empty($passSession['pass_branding'])){
+                    $data['pass_branding'] = $passSession['pass_branding'];
                 }
                 $amount = 0;
             }
@@ -4707,6 +4730,10 @@ class TransactionController extends \BaseController {
 
         $data['ratecard_price_wo_offer'] = $data['amount_finder'];
 
+        if(!empty($ratecard['price'])){
+            $data['ratecard_original_price'] = $ratecard['price'];
+        }
+
         $data['offer_id'] = false;
 
         // $offer = Offer::where('ratecard_id',$ratecard['_id'])
@@ -4907,6 +4934,10 @@ class TransactionController extends \BaseController {
 
             
         // }
+
+        if(!empty($ratecard['combo_pass_id'])){
+            $data['combo_pass_id'] = $ratecard['combo_pass_id'];
+        }
 
         return array('status' => 200,'data' =>$data);
 
@@ -6170,12 +6201,12 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'Get 50% Off + Extra 20% Off, Use Code: BIG20','position'=>$position++];
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
 
             $first_session_free = $this->firstSessionFree($data);
             if(!empty($first_session_free) && $first_session_free){
@@ -6183,6 +6214,10 @@ class TransactionController extends \BaseController {
             }
             
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']]))){
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
+            }
+
+            if(in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
         }
@@ -6624,7 +6659,7 @@ class TransactionController extends \BaseController {
             
             if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount']) && empty($order['finder_flags']['monsoon_campaign_pps'])){
                 $payment_modes[] = array(
-                    'title' => 'Online Payment (100% Cashback)',
+                    'title' => 'Online Payment',
                     'subtitle' => 'Transact online with netbanking, card and wallet',
                     'value' => 'paymentgateway',
                     'payment_options'=>$payment_options
@@ -8641,15 +8676,12 @@ class TransactionController extends \BaseController {
     					'txnid'=>$order['txnid'],
     					'amount'=>(int)$val["transactionValue"],
     					'status' => 'success',
-    					'hash'=> $val["hash"]
+                        'hash'=> $val["hash"],
+                        'orderId'=>$order['_id']
+                        
     			];
     			if($website == "1"){
-    				$url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
-    				if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
-    					$url = Config::get('app.website')."/paymentsuccesstrial?". http_build_query($success_data, '', '&');
-    				}
-    				Log::info(http_build_query($success_data, '', '&'));
-    				Log::info($url);
+    				$url = $this->getAmazonPaySuccessUrl($order, $success_data);
     				return Redirect::to($url);
     			}else{
     				Log::info(" info success data ".print_r($success_data,true));
@@ -8738,15 +8770,11 @@ class TransactionController extends \BaseController {
     					'txnid'=>$val['sellerOrderId'],
     					'amount'=>(int)$val["orderTotalAmount"],
     					'status' => 'success',
-    					'hash'=> $val["hash"]
+                        'hash'=> $val["hash"],
+                        'orderId'=>$order['_id']
     			];
     			if($website == "1"){
-    				$url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
-    				if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
-    					$url = Config::get('app.website')."/paymentsuccesstrial?". http_build_query($success_data, '', '&');
-    				}
-    				Log::info(http_build_query($success_data, '', '&'));
-    				Log::info($url);
+    				$url = $this->getAmazonPaySuccessUrl($order, $success_data);
     				return Redirect::to($url);
     			}else{
     				$paymentSuccess = $this->fitweb->paymentSuccess($success_data);
@@ -9996,6 +10024,9 @@ class TransactionController extends \BaseController {
             
         $ordinalBookingCount = $this->utilities->getOrdinalNumber($totalPassBookings + 1);
 
+        if(!empty($data['pass_branding']) && $data['pass_type'] == true){
+            $data['pass_type'] = $data['pass_branding'];
+        }
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
         $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using Onepass ".ucfirst($data['pass_type']);
 
@@ -10025,6 +10056,21 @@ class TransactionController extends \BaseController {
         }
 
         return $first_session_free;
+    }
+
+    public function getAmazonPaySuccessUrl($order, $success_data){
+        
+        $origin = !empty($order['origin_url']) ? $order['origin_url'] : Config::get('app.website');
+        $base_url = $origin."/paymentsuccess";
+        
+        if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
+            $base_url = $origin."/paymentsuccesstrial";
+        }else if($order['type'] == "events"){
+            $base_url = $origin."/eventpaymentsuccess";
+        }
+        
+        Log::info(http_build_query($success_data, '', '&'));
+        return $base_url."?". http_build_query($success_data, '', '&');
     }
 
 }

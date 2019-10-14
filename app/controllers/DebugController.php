@@ -11586,6 +11586,265 @@ public function yes($msg){
         }
         return "done";
             
-    }
+	}
+	
+	public function hyperLocalList(){
+		Finder::$withoutAppends=true;
+		$destinationPath = public_path();
+		$fileName = "vendor.csv";
+		$filePath = $destinationPath.'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+		$not_found = array();
+		$finder_update = array();
+		$vendor_update = array();
+		$final_hyper_local_list = array();
+		if($csv_to_array){
+
+			$all_cat = array_values(array_unique(array_map(function($rec){
+				return trim(strtolower($rec['category']));
+			},$csv_to_array)));
+
+			$cat_name_id_arr = array();
+			foreach($all_cat as $ac){
+				if($ac == 'gym' || $ac == 'gyms'){
+					$cat_name_id_arr[$ac] = 5;
+				}else{
+					$id = Findercategory::where('name', 'LIKE', '%'.$ac.'%')->first(['_id']);
+					$cat_name_id_arr[$ac] = (int)$id['_id'];
+				}
+			}
+			// return $cat_name_id_arr;
+
+			$all_loc = array_values(array_unique(array_map(function($rec){
+				return $rec['location'];
+			},$csv_to_array)));
+
+			$all_loc_arr = Location::whereIn('name', $all_loc)->get(['_id','name']);
+			
+			$loc_name_id_arr = array();
+			foreach($all_loc_arr as $ala){
+				$loc_name_id_arr[$ala['name']] = (int)$ala['_id'];
+			}
+			// return $loc_name_id_arr;
+
+			$chunks = array_chunk($csv_to_array, 500);
+
+			foreach($chunks as $chunk){
+				$updates = array();
+
+				$all_vendor = array_values(array_unique(array_map(function($rec){
+					return (int)$rec['_id'];
+				},$chunk)));
+	
+				$all_vendor_arr = Vendor::whereIn('_id', $all_vendor)->get(['_id','flags']);
+				$vendor_hyper_arr = array();
+				foreach($all_vendor_arr as $ava){
+					$vendor_hyper_arr[(int)$ava['_id']] = $ava['flags']['hyper_local_list'];
+				}
+
+				foreach ($chunk as $key => $value) {
+
+					if( !empty($value['_id']) && !empty($value['category']) && !empty($value['location']) ){
+						Log::info("vendor_id", [$value['_id']]);
+						$vendor_id = (int)$value['_id'];
+						
+						$vendor = Vendor::where('_id', $vendor_id)->first();
+						
+						$cv = trim(strtolower($value['category']));
+									
+						$location_id = "";
+						if (array_key_exists($value['location'],$loc_name_id_arr)){
+							$location_id = $loc_name_id_arr[$value['location']];
+						}
+	
+						$cat_id = "";
+						if (array_key_exists($cv,$cat_name_id_arr)){
+							$cat_id = $cat_name_id_arr[$cv];
+						}
+						
+						if($vendor && !empty($location_id) && !empty($cat_id)){
+							
+							// Log::info("location_id", [$location_id]);
+							// Log::info("cat_id", [$cat_id]);
+							
+							$flags = $vendor->flags;
+							
+							$hyper_local_list = array();
+							$hyper_local_list_ = array();
+
+							if(array_key_exists($vendor_id,$vendor_hyper_arr)){
+								
+								$hyper_local_list_ = $vendor_hyper_arr[$vendor_id];
+								
+								$exists = false;
+								foreach($hyper_local_list_ as $hll){
+									// Log::info("loc_id", [$hll['loc_id']]);
+									// Log::info("cat_id", [$hll['cat_id']]);
+									if($hll['loc_id'] == $location_id && $hll['cat_id'] == $cat_id){
+										$exists = true;
+									}
+								}
+
+								if(!$exists){
+									array_push($hyper_local_list, array(
+										'loc_id' => $location_id,
+										'cat_id' => $cat_id
+									));
+								}
+							}else{
+								array_push($hyper_local_list, array(
+									'loc_id' => $location_id,
+									'cat_id' => $cat_id
+								));
+							}
+
+							$final_hyper_local_list = array_merge($hyper_local_list, $hyper_local_list_);
+							// Log::info("final", [$final_hyper_local_list]);
+
+							$vendor_hyper_arr[$vendor_id] = $final_hyper_local_list;
+	
+							array_push($updates, [
+								"q"=>['_id'=> $vendor_id],
+								"u"=>[
+									'$set'=>[
+										'flags.hyper_local_list'=>$vendor_hyper_arr[$vendor_id],
+										'flags.hyper_local'=>true
+									]
+								],
+								'multi' => false
+				
+							]);
+
+						}else{
+							array_push($not_found, $value);
+						}
+	
+						
+					}
+				}
+				// return $vendor_hyper_arr;
+				
+				array_push($finder_update, $this->batchUpdate('mongodb', 'finders_hyper', $updates));
+				array_push($vendor_update, $this->batchUpdate('mongodb2', 'vendors_hyper', $updates));
+			}
+
+			
+		}
+
+		// return $not_found;
+		return Response::json(array('not_fount' => $not_found,'vendor'=>$vendor_update,'finder'=>$finder_update));
+	}
+
+	public function renewalOnepass(){
+
+		$passOrders = Order::raw(function($collection){
+
+			$aggregate = [];
+			
+			$match = [
+				'$match'=>[
+					'type'=>['$in'=>["pass"]], 
+					'status'=>"1",
+					// 'customer_id' => 521668
+				]
+			];
+
+			$aggregate[] = $match;
+
+			$sort = [
+				'$sort'=>[
+					'created_at'=> 1
+				]
+			];
+
+			$aggregate[] = $sort;
+			
+			$group = [
+				'$group'=>[
+					'_id'=>'$customer_id',
+					'count' => ['$sum' => 1],
+					'data'=>[
+						'$addToSet'=> array('order_id' => '$order_id', 'created_at' => '$created_at')
+					],
+					'first' => [
+						'$first' => array('order_id' => '$order_id', 'created_at' => '$created_at')
+					]
+				]
+			];
+			$aggregate[] = $group;
+
+			$match1 = [
+				'$match'=>[
+					'count'=>['$gt'=>1], 
+				]
+			];
+			$aggregate[] = $match1;
+			
+			return $collection->aggregate($aggregate);
+
+		});
+
+		$passOrdersRes = $passOrders['result'];
+
+		// return $passOrdersRes;
+
+		$to_update_order_ids = array(); 
+		foreach($passOrdersRes as $por){
+			Log::info('customer_id', [$por['_id']]);
+			$or_id = array_map(function($rec){
+				return (int)$rec['order_id'];
+			},$por['data']);
+			// print_r($or_id);
+			// echo "<hr>";
+
+			$first_or_id[] = (int)$por['first']['order_id'];
+			// print_r($first_or_id);
+			// echo "<hr>";
+			// return;
+
+			$fin_or_id = array_diff($or_id, $first_or_id);
+			// print_r($fin_or_id);
+			// echo "<hr>";
+			
+
+			$to_update_order_ids = array_merge($to_update_order_ids, $fin_or_id);
+			// print_r($to_update_order_ids);
+			// return;
+		}
+		
+		Log::info("total orders",[count($to_update_order_ids)]);
+		// return $to_update_order_ids;
+		$response = array();
+		$chunks = array_chunk($to_update_order_ids, 25);
+		Log::info('chunks',[count($chunks)]);
+
+		foreach($chunks as $chunk){
+			$updates = array();
+			foreach($chunk as $val){
+				array_push($updates, [
+					"q"=>['_id'=> $val],
+					"u"=>[
+						'$set'=>[
+							'pass_repeat'=>true,
+							'pass_repeat_manual'=>true,
+						]
+					],
+					'multi' => false
+	
+				]);
+			}
+
+			$res = $this->batchUpdate('mongodb', 'orders', $updates);
+			array_push($response, $res);
+			// exit;
+		}
+
+		// Order::whereIn('_id', $to_update_order_ids)->update(['pass_repeat'=>true, 'pass_repeat_manual'=>true]);
+
+		return $response;
+
+	}
+
 }
 
