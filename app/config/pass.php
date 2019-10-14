@@ -713,6 +713,9 @@ return [
 
     "pass_profile" =>[
         "booking_text" =>"Personalize your OnePass Booking experience by sharing few details. This helps us to offer you top recommendations basis your interests.",
+        "booking_text_pps" =>"Personalize your session Booking experience by sharing few details. This helps us to offer you top recommendations basis your interests.",
+        "title" => "Personalize OnePass",
+        "title_pps" => "Personalize Session",
         "address_details" => [
             "header" => "Share your preferred location to help you with curated list of top gyms/classes near you.",
             "home_subtext" => "We will use this address to send you vouchers and gifts.",
@@ -723,12 +726,15 @@ return [
         ],
         "personlized_profile" => [
             "header" => "Enjoy your OnePass Subscription!",
+            "header_pps" => "Enjoy your session Subscription!",
             "url" => "",
             "success_image" => "https://b.fitn.in/passes/check_circle.png",
             "text" => "Awesome !\nYour OnePass is now personalized as per your interests. Checkout the OnePass section for our top recommendations of studios and classes matching your preferences.",
+            "text_pps" => "Awesome !\nYour OnePass is now personalized as per your interests. Checkout the OnePass section for our top recommendations of studios and classes matching your preferences.",
             "skip_text" => "Skip for now",
             "interests" => [
                 "header" => "Enjoy your OnePass Subscription!",
+                "header_pps" => "Enjoy your session Subscription!",
                 "data" => [
                     [
                         '_id'=>0,

@@ -10424,10 +10424,11 @@ Class Utilities {
             return $number. $ends[$number % 10];
     }
 
-    public function formatOnepassCustomerDataResponse($resp){
+    public function formatOnepassCustomerDataResponse($resp, $pass_order_id){
         
         $onepassProfileConfig = Config::get('pass.pass_profile');
-        $resp['booking_text'] = $onepassProfileConfig['booking_text'];
+        $resp['booking_text'] = empty($pass_order_id)? $onepassProfileConfig['booking_text']:$onepassProfileConfig['booking_text_pps'];
+        $resp['title'] = empty($pass_order_id)? $onepassProfileConfig['title']:$onepassProfileConfig['title_pps'];
 
         if(!empty($resp['photo'])){
 			$resp['url'] = $resp['photo']['url'];
@@ -10528,12 +10529,25 @@ Class Utilities {
         return $status;
     }
 
-    public function personlizedProfileData($data){
+    public function personlizedProfileData($data, $pass_order_id){
         
         $resp = Config::get('pass.pass_profile.personlized_profile');
 
         $resp['url'] = $data['photo']['url'];
 
+        if(empty($pass_order_id)){
+            $resp['header'] = $resp['header_pps'];
+            unset($resp['header_pps']);
+            $resp['text'] = $resp['text_pps'];
+            unset($resp['text_pps']);
+            $resp['interests']['header'] = $resp['interests']['header_pps'];
+            unset($resp['interests']['header_pps']);
+        }
+        else {
+            unset($resp['header_pps']);
+            unset($resp['text_pps']);
+            unset($resp['interests']['header_pps']);
+        }
         if(!empty($data['interests']) && !empty($resp['interests']['data'])){
             $resp['interests']['data'] = array_merge($this->personlizedServiceCategoryList($data['interests']), $resp['interests']['data']);
         }

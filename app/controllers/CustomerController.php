@@ -10871,7 +10871,9 @@ class CustomerController extends \BaseController {
 		$image = Input::file('image');
 
 		$customer = Customer::find($customer_id);
+		$pass_order_id = Order::active()->where('type', 'pass')->where('customer_id', $customer->id)->where('end_date', '>', new MongoDate(time()))->lists('_id');
 
+		Log::info('pass order id', [$customer->id, $pass_order_id]);
 		$resp = [
 			'name' => $customer->name
 		];
@@ -10917,7 +10919,7 @@ class CustomerController extends \BaseController {
 		}
 		else{
 			//interests is array of object alog with slug and id;
-			$resp = $this->utilities->formatOnepassCustomerDataResponse($resp);
+			$resp = $this->utilities->formatOnepassCustomerDataResponse($resp, $pass_order_id);
 		}
 
 		if(!empty($resp['profile_data']) && !empty($data['ratecard_id'])){
