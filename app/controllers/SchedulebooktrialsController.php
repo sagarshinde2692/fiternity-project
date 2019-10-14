@@ -8771,8 +8771,11 @@ class SchedulebooktrialsController extends \BaseController {
             else {
 
                 $distance_in_meters = $this->utilities->distanceCalculationOfCheckinsCheckouts($customer_cordinates, $finder_cordinates);
+                
+                $booktrial->customer_cordinates = $customer_cordinates;
+                $booktrial->distance_in_meters = $distance_in_meters;
                 $max_unlock_distance= Config::get('app.checkin_checkout_max_distance_in_meters');
-
+                
                 if($distance_in_meters > $max_unlock_distance && $booktrial->unlock_trial_count < 3){
                     $pass_further =true;
                     $message =  "You need to be within the ".$finder_category_name." premises to activate your session.";
@@ -8780,7 +8783,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
         }
 
-        if(!empty($booktrial) && empty($booktrial->post_trial_status) && (empty($pass_further) || $booktrial->unlock_trial_count ==3)){
+        if(!empty($booktrial) && empty($booktrial->post_trial_status) && (empty($pass_further) || $booktrial->unlock_trial_count ==3 || (!empty($data['from'])&& $data['from'] =='mark_customer_attanance'))){
 
             if(empty($booktrial->pass_order_id && empty($booktrial->vefify_fitcode_using_unlock))){
                 $vefify_fitcode_using_unlock = json_decode(json_encode($this->verifyFitCode($booktrial->_id, $booktrial->vendor_code, $booktrial)->getData()));
