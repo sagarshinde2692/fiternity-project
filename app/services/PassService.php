@@ -1951,6 +1951,7 @@ class PassService {
                 ]
             );
 
+            $pps_near_home['pps_near_home'] = true;
             if(!empty($pps_near_home['data']) && !empty(count($pps_near_home['data']))){
                 unset($pps_near_home['header']);
                 $pps_near_home['subheader'] = "Top Recommendation Near Your Home";
@@ -1967,6 +1968,7 @@ class PassService {
                 ]
             );
 
+            $pps_near_work['pps_near_home'] = true;
             if(!empty($pps_near_work['data']) && !empty(count($pps_near_work['data']))){
                 $pps_near_work['subheader'] = "Top Recommendations Near Your Office";
                 unset($pps_near_work['header']);
