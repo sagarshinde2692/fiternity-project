@@ -8789,7 +8789,7 @@ class SchedulebooktrialsController extends \BaseController {
         if(!empty($booktrial) && empty($booktrial->post_trial_status) && (empty($pass_further) || $booktrial->unlock_trial_count ==3 || (!empty($data['from'])&& $data['from'] =='mark_customer_attanance'))){
 
             if(empty($booktrial->pass_order_id) && empty($booktrial->vefify_fitcode_using_unlock)){
-                if($booktrial->unlock_trial_count<3 && !empty($distance_in_meters) && $distance_in_meters <= $max_unlock_distance){
+                if($booktrial->unlock_trial_count<3 && (empty($distance_in_meters) || !empty($distance_in_meters) && $distance_in_meters <= $max_unlock_distance)){
                     $vefify_fitcode_using_unlock = json_decode(json_encode($this->verifyFitCode($booktrial->_id, $booktrial->vendor_code, $booktrial)->getData()));
                     $booktrial->vefify_fitcode_using_unlock = $vefify_fitcode_using_unlock;
                     Log::info('vefify_fitcode_usin_unlock ::::::::', [$vefify_fitcode_using_unlock, $booktrial->vendor_code, $booktrial->type]);
