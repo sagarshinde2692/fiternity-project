@@ -8743,7 +8743,7 @@ class SchedulebooktrialsController extends \BaseController {
         $time_in_seconds = 60* 60 * 2;
         $post_hour = '2 Hour';
         $finder_category_name = 'gym';
-        if(!empty($booktrial->finder_category_id) && $booktrial->finder_category_id !=5){
+        if(!empty($booktrial->servicecategory_id) && $booktrial->servicecategory_id != 65){
             $time_in_seconds = 60*30;
             $post_hour = '30 Minutes';
             $finder_category_name = 'studio';
