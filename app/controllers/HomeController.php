@@ -1209,7 +1209,9 @@ class HomeController extends BaseController {
                 }
                 
                 if(!empty($item['pass_order_id'])){
+                    Log::info('pas order ::::::::::::::::::::::::::', [$item['pass_order_id']]);
                     unset($response['feedback']);
+                    unset($response['conclusion']);
                 }
             
                 $response['branch_obj'] = $this->utilities->branchIOData($itemData);

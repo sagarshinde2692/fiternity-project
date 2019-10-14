@@ -1950,9 +1950,12 @@ class PassService {
                     'lon'=> $customerData['onepass']['home_lon']
                 ]
             );
-            unset($pps_near_home['header']);
-            $pps_near_home['subheader'] = "Top Recommendation Near Your Home";
-            array_push($search_results, $pps_near_home);
+
+            if(!empty($pps_near_home['data']) && !empty(count($pps_near_home['data']))){
+                unset($pps_near_home['header']);
+                $pps_near_home['subheader'] = "Top Recommendation Near Your Home";
+                array_push($search_results, $pps_near_home);
+            }
         }
 
         if(!empty($customerData['onepass']['work_city'])  && !empty($customerData['onepass']['work_lat']) && !empty($customerData['onepass']['work_lon'])){
@@ -1964,17 +1967,23 @@ class PassService {
                 ]
             );
 
-            $pps_near_work['subheader'] = "Top Recommendations Near Your Office";
-            unset($pps_near_work['header']);
-            array_push($search_results, $pps_near_work);
+            if(!empty($pps_near_work['data']) && !empty(count($pps_near_work['data']))){
+                $pps_near_work['subheader'] = "Top Recommendations Near Your Office";
+                unset($pps_near_work['header']);
+                array_push($search_results, $pps_near_work);
+            }
         }
 
         if(empty($search_results)){
 
             $near_me= $this->workoutSessionNearMe($city, $coordinate);
-            $near_me['subheader'] = $near_me['header'];
-            unset($near_me['header']);
-            array_push($search_results, $near_me);
+
+            if(!empty($near_me['data']) && !empty(count($near_me['data']))){
+                $near_me['subheader'] = $near_me['header'];
+                unset($near_me['header']);
+                array_push($search_results, $near_me);
+            }
+            
         }
         
         $recommended = [ 

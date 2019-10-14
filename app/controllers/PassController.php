@@ -222,8 +222,10 @@ class PassController extends \BaseController {
             //$pps_near_by = $this->passService->workoutSessionNearMe($city, $coordinate);
             $vendor_near_by = $this->utilities->getVendorNearMe($vendor_search);
             Log::info('near by vendors');
-            $result['onepass_pre']['near_by']['subheader'] = $vendor_near_by['header'];
-            $result['onepass_pre']['near_by']['near_by_vendor'] = $vendor_near_by['data'];
+            if(!empty(count($vendor_near_by['data']))){
+                $result['onepass_pre']['near_by']['subheader'] = $vendor_near_by['header'];
+                $result['onepass_pre']['near_by']['near_by_vendor'] = $vendor_near_by['data'];
+            }
 		}
 
 		$response = Response::make($result);
