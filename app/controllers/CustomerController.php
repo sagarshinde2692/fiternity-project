@@ -7629,7 +7629,7 @@ class CustomerController extends \BaseController {
 					unset($response['button_text']['activate']['cancel_text']);
 					unset($response['button_text']['activate']['cancel']);
 					unset($response['button_text']['activate']['cancel']);
-					unset($response['button_text']['qrcode']);
+					// unset($response['button_text']['qrcode']);
 					unset($response['button_text']['didnt_get']);
 					unset($response['subscription_code']);//$upcoming_booking['header'];
 				}
