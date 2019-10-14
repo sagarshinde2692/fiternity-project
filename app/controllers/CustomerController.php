@@ -7614,12 +7614,12 @@ class CustomerController extends \BaseController {
 							'url' => $upcoming_booking['footer']['unlock_url']."?from=notification_before10min",
 						];
 
-						$response['sub_header'] = "Activate Session";//$upcoming_booking['footer']['unlock_text'];
-						$response['footer'] = "NOTE :  You can access your active session screen from the homescreen active session footer as well.";
+						$response['sub_header'] = "Activate Your Session";//$upcoming_booking['footer']['unlock_text'];
+						$response['footer'] = "NOTE :  You can access your active session screen from the homescreen ticker as well.";
 					}
 					else {
 						$response['sub_header'] = $upcoming_booking['header'];
-						$response['footer'] = "NOTE :  You can access your active session screen from the homescreen active session footer as well.";
+						$response['footer'] = "NOTE :  You can access your active session screen from the homescreen ticker as well.";
 						unset($response['button_text']);
 						$response['block'] = false;
 					}
