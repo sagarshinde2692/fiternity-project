@@ -8542,7 +8542,7 @@ class CustomerController extends \BaseController {
 			if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 				Log::info('iside calling unlock session:::');
 				$response =  json_decode(json_encode(app(\SchedulebooktrialsController::class)->unlockSession($data['data'][0]['_id'], $data)->getData()), true);
-				return ["response"=>$response['data'], "status"=>200];
+				return ["response"=>['session_activated' =>$response['data']], "status"=>200];
 			}
 
 			$total_fitcash=0;
