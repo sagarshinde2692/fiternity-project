@@ -2698,69 +2698,69 @@ Class CustomerReward {
             
             // }
                 // return $coupon;
-            if(!empty($coupon['flags']['discount_max_overridable']) && is_array($coupon['flags']['discount_max_overridable'])){
+            // if(!empty($coupon['flags']['discount_max_overridable']) && is_array($coupon['flags']['discount_max_overridable'])){
 
-                foreach($coupon['flags']['discount_max_overridable'] as $x){
+            //     foreach($coupon['flags']['discount_max_overridable'] as $x){
 
-                    if(!empty($x['conditions']) && is_array($x['conditions'])){
-                        $applied = true;
-                        foreach($x['conditions'] as $y){
+            //         if(!empty($x['conditions']) && is_array($x['conditions'])){
+            //             $applied = true;
+            //             foreach($x['conditions'] as $y){
 
-                            if($y['comparator'] == '='){
+            //                 if($y['comparator'] == '='){
 
-                                $applicaple = !empty($finder['flags'][$y['finder_flags_key']]) && $finder['flags'][$y['finder_flags_key']] == $y['value'];
-                                if(!$applicaple){
-                                    $applied = false;
-                                    break;
-                                }
-                            }else if($y['comparator'] == '>='){
-                                $applicaple = !empty($finder['flags'][$y['finder_flags_key']]) && $finder['flags'][$y['finder_flags_key']] >= $y['value'];
-                                if(!$applicaple){
-                                    $applied = false;
-                                    break;
-                                }
-                            }
+            //                     $applicaple = !empty($finder['flags'][$y['finder_flags_key']]) && $finder['flags'][$y['finder_flags_key']] == $y['value'];
+            //                     if(!$applicaple){
+            //                         $applied = false;
+            //                         break;
+            //                     }
+            //                 }else if($y['comparator'] == '>='){
+            //                     $applicaple = !empty($finder['flags'][$y['finder_flags_key']]) && $finder['flags'][$y['finder_flags_key']] >= $y['value'];
+            //                     if(!$applicaple){
+            //                         $applied = false;
+            //                         break;
+            //                     }
+            //                 }
 
 
-                        }
+            //             }
 
-                        if(!empty($applied)){
+            //             if(!empty($applied)){
                             
-                            $selected_coupon = $x;
-                            break;
+            //                 $selected_coupon = $x;
+            //                 break;
                         
-                        }
+            //             }
 
 
-                    }else if(
-                        !empty($x['discount_max']) 
-                        && !empty($x['finder_flags_key']) 
-                        && !empty($x['value']) 
-                        && !empty($finder['flags'][$x['finder_flags_key']])  
-                        && $finder['flags'][$x['finder_flags_key']] == $x['value']
-                    ){
-                        $selected_coupon = $x;
-                        break;
-                    }
-                }
+            //         }else if(
+            //             !empty($x['discount_max']) 
+            //             && !empty($x['finder_flags_key']) 
+            //             && !empty($x['value']) 
+            //             && !empty($finder['flags'][$x['finder_flags_key']])  
+            //             && $finder['flags'][$x['finder_flags_key']] == $x['value']
+            //         ){
+            //             $selected_coupon = $x;
+            //             break;
+            //         }
+            //     }
 
-                if(!empty($selected_coupon) ){
+            //     if(!empty($selected_coupon) ){
 
-                    $keys = ['discount_percent','discount_max','description','final_amount','app_discount_percent','app_discount_max','app_description'];
+            //         $keys = ['discount_percent','discount_max','description','final_amount','app_discount_percent','app_discount_max','app_description'];
                     
-                    foreach($keys as $key){
-                        if(isset($selected_coupon[$key])){
-                            $coupon[$key] = $selected_coupon[$key];
-                        }
-                    }
-                }
+            //         foreach($keys as $key){
+            //             if(isset($selected_coupon[$key])){
+            //                 $coupon[$key] = $selected_coupon[$key];
+            //             }
+            //         }
+            //     }
 
 
-            }
+            // }
+            
 
-
-            if(($ratecard || $pass) && !empty($coupon['discount_max_overridable']) && is_array($coupon['discount_max_overridable'])){
-
+            if(($ratecard || $pass) && !empty($coupon['flags']['discount_max_overridable']) && is_array($coupon['flags']['discount_max_overridable'])){
+                
                 if(empty($finder)){
                     $finder = Finder::where('_id', $ratecard['finder_id'])->first();
                 }
@@ -2795,7 +2795,7 @@ Class CustomerReward {
 
                 $discount_max_overridable = false;
 
-                foreach($coupon['discount_max_overridable'] as $y){
+                foreach($coupon['flags']['discount_max_overridable'] as $y){
                     if(!empty($y['conditions'])){
                         $discount_max_overridable = false;
                         Log::info("conditinsss:::");
@@ -2822,8 +2822,29 @@ Class CustomerReward {
                                     }                    
                     
                                     \Order::$withoutAppends = true;
-                    
-                                    $embedded_value1 = \Order::active()->where("customer_email", $customer_email)->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+                                    $query = \Order::active()->where("customer_email", $customer_email);
+
+                                    if(!empty($yc['conditions'])){
+                                        foreach($yc['conditions'] as $tc){
+                                            if($tc['operator'] == 'in'){
+                                                $query->whereIn($tc['key'], $tc['values']);
+                                            }else if($tc['operator'] == 'nin'){
+                                                $query->whereNotIn($tc['key'], $tc['values']);
+                                            }else if($tc['operator'] == 'gt'){
+                                                $query->where($tc['key'], '>', $tc['values']);
+                                            }else if($tc['operator'] == 'gte'){
+                                                $query->where($tc['key'], '>=', $tc['values']);
+                                            }else if($tc['operator'] == 'lt'){
+                                                $query->where($tc['key'], '<', $tc['values']);
+                                            }else if($tc['operator'] == 'lte'){
+                                                $query->where($tc['key'], '<=', $tc['values']);
+                                            }else{
+                                                $query->where($tc['key'], $tc['values']);
+                                            }
+                                        }
+                                    }
+                                    
+                                    $embedded_value1 = $query->count();
                                 }else{
                                     $embedded_value1 = $this->getEmbeddedValue($data , $yc['key']);
                                 }
@@ -2976,7 +2997,7 @@ Class CustomerReward {
                 }
                 
             }
-            
+
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;

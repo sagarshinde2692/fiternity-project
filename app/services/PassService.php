@@ -286,6 +286,15 @@ class PassService {
                         // if(strtolower($data["coupon_code"]) == 'fit2018'){
                         //     $data['routed_order'] = "1";
                         // }
+
+                        if(!empty($couponCheck['flags']['extension_percent'])){
+                            $data['duration_more'] = round(($pass['duration'] * $couponCheck['flags']['extension_percent']) / 100);
+
+                            $data['duration_total'] = $pass['duration'] + $data['duration_more'];
+
+                            $data['end_date'] = new \MongoDate(strtotime('midnight', strtotime('+'.$data['duration_total'].' days', (!empty($data['preferred_starting_date']))?strtotime($data['preferred_starting_date']):time())));
+                        }
+
                     }
                 }
             }
