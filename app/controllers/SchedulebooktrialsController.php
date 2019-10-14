@@ -8714,7 +8714,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial_id = (int) $booktrial_id;
 
-        $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
+        $response = Response::json(array('status' => 400,'message' =>'Sorry! Cannot locate your booking'),200);
 
         $jwt_token = Request::header('Authorization');
         $decoded = customerTokenDecode($jwt_token);
@@ -8829,13 +8829,13 @@ class SchedulebooktrialsController extends \BaseController {
         else if(!empty($booktrial)){
             $booktrial->update();
             if(!empty($pass_further) && $booktrial->unlock_trial_count ==2){
-                return [
+                return Response::json([
                     'status' =>200,
                     "message" => "Still facing the issue? Proceed without Unlock & enjoy your session",
                     "button_text" => "Proceed"
-                ];
+                ],200);
             }
-            return ["status"=>200, "message"=>$message, "button_text"=> "Try Again"];
+            return Response::json(["status"=>200, "message"=>$message, "button_text"=> "Try Again"], 200);
         }
 
         return Response::json($response,200);
