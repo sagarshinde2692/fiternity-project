@@ -1399,7 +1399,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: BIG20 |7th-14th October",
+								'text1'=> "50% off + Extra 20% Off On Memberships. Last Few Hours Left. Buy Now!",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1411,7 +1411,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: BIG20 |7th-14th October",
+								'text1'=> "50% off + Extra 20% Off On Memberships. Last Few Hours Left. Buy Now!",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1423,7 +1423,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: BIG20 |7th-14th October",
+								'text1'=> "50% off + Extra 20% Off On Memberships. Last Few Hours Left. Buy Now!",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3896,25 +3896,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Offer Valid 7th-14th October";
+				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Last Few Hours Left. Buy Now!";
             }else{	
-				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nOffer Valid 7th-14th October";
+				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nLast Few Hours Left. Buy Now!";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Offer Valid 7th-14th October";
+				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Last Few Hours Left. Buy Now!";
             }else{	
-				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nOffer Valid 7th-14th October";
+				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nLast Few Hours Left. Buy Now!";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Offer Valid 7th-14th October";
+				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Last Few Hours Left. Buy Now!";
             }else{	
-				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nOffer Valid 7th-14th October";
+				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nLast Few Hours Left. Buy Now!";
             }
 			
 		}
@@ -3927,9 +3927,9 @@ class FindersController extends \BaseController {
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 							if($this->device_type == 'android'){
-								$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20 <br><br>Offer Valid 7th-14th October";
+								$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20 <br><br>Last Few Hours Left. Buy Now!";
 							}else{	
-								$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20 \n\nOffer Valid 7th-14th October";
+								$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20 \n\nLast Few Hours Left. Buy Now!";
 							}
 							
 							break;

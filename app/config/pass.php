@@ -95,7 +95,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off + Additional 15% Off On OnePass, Use Code: BIG15\nOffer Expires On 14th October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off + Additional 15% Off On OnePass, Use Code: BIG15\nLast Few Hours Left. Buy Now!", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -129,7 +129,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off + Additional 15% Off On OnePass, Use Code: BIG15\nOffer Expires On 14th October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off + Additional 15% Off On OnePass, Use Code: BIG15\nLast Few Hours Left. Buy Now!", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -154,7 +154,6 @@ return [
                 <li>Additional 15% instant discount is upto INR 1500 </li>
                 <li>Discount varies across different types of pass</li>
                 <li>The offer cannot be clubbed with any other existing offer</li>
-                <li>The offer ends on 14th October post which code BIG15 is invalid</li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -190,7 +189,6 @@ return [
                 <li>Additional 15% instant discount is upto INR 1500 </li>
                 <li>Discount varies across different types of pass</li>
                 <li>The offer cannot be clubbed with any other existing offer</li>
-                <li>The offer ends on 14th October post which code BIG15 is invalid</li>
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
@@ -225,7 +223,6 @@ return [
                 <li>Additional 15% instant discount is upto INR 1500 </li>
                 <li>Discount varies across different types of pass</li>
                 <li>The offer cannot be clubbed with any other existing offer</li>
-                <li>The offer ends on 14th October post which code BIG15 is invalid</li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
