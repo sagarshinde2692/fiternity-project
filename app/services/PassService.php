@@ -86,6 +86,15 @@ class PassService {
             }
 
             $passDetails['cashback'] = '(Additional 15% Off)';
+
+            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 90){
+                $passDetails['cashback'] = '(3 Weeks Extension or Additional 15% off)';
+            }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 180){
+                $passDetails['cashback'] = '(1.5 Months Extension or Additional 15% off)';
+            }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 360){
+                $passDetails['cashback'] = '(3 Months Extension or Additional 15% off)';
+            }
+
             unset($passDetails['extra_info']);
 
             if($pass['unlimited_access']) {
@@ -1449,7 +1458,7 @@ class PassService {
             ],
             [
                'field' => '',
-               'value' => 'Use Code: BIG15 To Get Additional 15% Off',
+               'value' => 'Use Code: MORE25 To Get Free Extension or Use Code: BIG15 To Get Additional 15% Off',
             ]
         ];
 

@@ -10082,7 +10082,7 @@ Class Utilities {
 		
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
-                $slot['order_summary']['header'] = $orderSummary['header']." \n\nThe Big Fitness Sale\n\nGet 40% Off On Workout Sessions. Use Code: BIG40";
+                $slot['order_summary']['header'] = $orderSummary['header']." \n\nGet Fit Go Sale\n\nGet 50% Off On Workout Sessions. Use Code: PPS";
                 if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
                     $slot['order_summary']['header'] = $orderSummary['header'];
                 }
@@ -10097,7 +10097,7 @@ Class Utilities {
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
-                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nThe Big Fitness Sale\n\nGet 40% Off On Workout Sessions. Use Code: BIG40"; 
+                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nGet Fit Go Sale\n\nGet 50% Off On Workout Sessions. Use Code: PPS"; 
                     if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
                         $sd['order_summary']['header'] = $orderSummary['header'];
                     }
