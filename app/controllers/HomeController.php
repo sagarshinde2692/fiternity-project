@@ -1182,12 +1182,12 @@ class HomeController extends BaseController {
                 }
                 
                 
-                if(empty($item['pass_order_id']) && !empty($item['loyalty_registration']) && $this->utilities->sendLoyaltyCommunication($item)){
-                    $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
-                    $cashback_type_map = Config::get('app.cashback_type_map');
-                    $response['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 2;
-                    $response['fitsquad_sub_type'] = !empty($item['finder_flags']['cashback_type']) ?  $cashback_type_map[strval($item['finder_flags']['cashback_type'])] : null;
-                }
+                // if(empty($item['pass_order_id']) && !empty($item['loyalty_registration']) && $this->utilities->sendLoyaltyCommunication($item)){
+                //     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
+                //     $cashback_type_map = Config::get('app.cashback_type_map');
+                //     $response['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 2;
+                //     $response['fitsquad_sub_type'] = !empty($item['finder_flags']['cashback_type']) ?  $cashback_type_map[strval($item['finder_flags']['cashback_type'])] : null;
+                // }
                 
                 if(!empty($item['qrcodepayment'])){
                     unset($response['subline']);
