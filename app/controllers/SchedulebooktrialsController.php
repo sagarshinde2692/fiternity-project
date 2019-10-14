@@ -7986,7 +7986,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $cancel_preior_time = !empty($booktrial->finder_category_id) ? $booktrial->finder_category_id ==5 ? '15 minutes' : '60 minutes' : '60 minutes';
                 $response = [
                     'status'=>200,
-                    'header'=>'OOPS!',
+                    'header'=>'No Worries',
                     'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
                     'sub_header_2'=>'Sorry, cancellation is available only '.$cancel_preior_time.' prior to your session time.',
                     'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
