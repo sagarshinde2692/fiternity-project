@@ -63,7 +63,7 @@ return array(
     'trial_booking_success_message_corporate' => [
         'subheader' => 'Steps to unlock your Session',
         'data' => [
-            "Navigate to Upcoming booking slider on home screen..",
+            "Navigate to Upcoming booking slider on home screen.",
             "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.",
             "Show your activated session screen at the finder_category to enjoy the session",
             "unlock session and earn steps_count steps."
