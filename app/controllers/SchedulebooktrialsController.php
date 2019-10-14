@@ -8241,15 +8241,18 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(!empty($booktrial['pass_order_id'])){
-            $response['sub_header_1'] = '';
-            unset($response['milestones']);
-
-            if($status !='lost'){
-                $response['description'] = '';
+            
+            if($status =='lost'){
+                $response['sub_header_2'] = $response['description'];
             }
-            if(!in_array($status, ['cantmake', 'didnotattend'])){
+
+            if(!in_array($status, ['cantmake', 'didnotattend', 'lost'])){
                 $response['sub_header_2'] = '';
             }
+            
+            $response['sub_header_1'] = '';
+            unset($response['milestones']);
+            $response['description'] = '';
         }
 
         return Response::json($response);
