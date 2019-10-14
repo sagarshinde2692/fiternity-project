@@ -8829,7 +8829,7 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($pass_further) && $booktrial->unlock_trial_count ==2){
                 return [
                     'status' =>200,
-                    "message" => "",
+                    "message" => "Do you Want to unlock/ either your are unlocking your session at not session timin  or you are not art gym",
                     "button_text" => "Proceed"
                 ];
             }
