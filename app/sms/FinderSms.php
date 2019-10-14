@@ -306,6 +306,12 @@ Class FinderSms extends VersionNextSms{
 
 	public function common($label,$to,$data,$delay = 0){
 
+		try{
+			if(!empty($data['ratecard_flags']['onepass_attachment_type']) && $data['ratecard_flags']['onepass_attachment_type']=='upgrade'){
+				return;
+			}
+		} catch(\Exception $e) { }
+
 		$template = \Template::where('label',$label)->first();
 
 		$message = $this->bladeCompile($template->sms_text,$data);

@@ -4202,7 +4202,7 @@ class CustomerController extends \BaseController {
 			'header_sub_text' => 'WORKOUT WHEN YOU CAN, PAY WHEN YOU WORKOUT',
 			'subheader' => "Choose your fitness form, book a workout, pay for that session and go workout, it's that simple.",
             // 'knowmorelink' => 'know more',
-			'footer' => "Get 100% Instant Cashback on Workout Sessions",
+			'footer' => "Get 40% Off On Workout Sessions",
 			'button_text' => 'EXPLORE'
 		];
 
@@ -4300,7 +4300,7 @@ class CustomerController extends \BaseController {
                 "logo"=>"https://b.fitn.in/global/pps/fexclusive1.png",
                 "header"=>"EXPERIENCE FITNESS LIKE NEVER BEFORE!",
                 "subheader"=>"Book sessions and only pay for days you workout",
-                "footer"=>"Get 100% Instant Cashback on Workout Sessions"
+                "footer"=>"Get 40% Off On Workout Sessions"
             ];
         }
         
@@ -5346,7 +5346,7 @@ class CustomerController extends \BaseController {
 
 		$order_id = (int) $order_id;
 
-		$order = Order::with(['service'=>function($query){$query->select('slug');}])->find($order_id);
+        $order = Order::with(['service'=>function($query){$query->select('slug');}])->customerValidation(customerEmailFromToken())->find($order_id);
 
 	    if(!$order){
 
@@ -10550,18 +10550,23 @@ class CustomerController extends \BaseController {
    
     public function directLogin($data){
 		Log::info("directLogin");
-        $customer_exists = Customer::where('email', 'like', $data['email'])->count();
+		if(!empty($data['direct_login_key']) && $data['direct_login_key'] == "Cshd8qxgReMvR1A" ){
+			$customer_exists = Customer::where('email', 'like', $data['email'])->count();
         
-        $data["identity"] = 'email';
-        $data["direct_login"] = true;
-		// Log::info("direct_login data   ::", [$data]);
-        if(!empty($customer_exists)){
-			Log::info("login");
-			return $this->customerLogin($data);
-        }else{
-			Log::info("register");
-            return $this->register($data);
-        }
+			$data["identity"] = 'email';
+			$data["direct_login"] = true;
+			// Log::info("direct_login data   ::", [$data]);
+			if(!empty($customer_exists)){
+				Log::info("login");
+				return $this->customerLogin($data);
+			}else{
+				Log::info("register");
+				return $this->register($data);
+			}
+		}else{
+			return Response::json(array('status' => 400,'message' => 'Invalid Key'),400);
+		}
+        
 
     }
 	
@@ -10683,6 +10688,6 @@ class CustomerController extends \BaseController {
 
 	public function voucherEmailReward($resp, $customer){
         return $redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
+	}
+
     }
-	
-}

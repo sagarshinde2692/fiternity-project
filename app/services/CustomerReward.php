@@ -799,6 +799,10 @@ Class CustomerReward {
                         $amount_paid = $amount_paid - $order['convinience_fee'];
                     }
 
+                    if($amount_paid > 1000){
+                        $amount_paid = 1000;
+                    }
+
                 }else{
                     $amount_paid = $order['amount'];
 
@@ -860,7 +864,7 @@ Class CustomerReward {
                             $sms_data['customer_phone'] = $order['customer_phone'];
                     
                             // $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$cashback_amount." Fitcash has been added in your Fitternity wallet.Valid for 14 days from booking time. For quick assistance call ".Config::get('app.contact_us_customer_number');
-                            $sms_data['message'] = "Congratulations on receiving your instant cashback of ".$cashback_amount." as Fitcash. Book multiple workout sessions using this cashback on Fitternity App for yourself as well as your friends & family without any restriction on spend value.\nValidity: 14 days\nHappy working out!";
+                            $sms_data['message'] = "Congratulations on receiving your instant cashback of".$cashback_amount." as Fitcash. Book multiple workout sessions using this cashback on Fitternity App for yourself as well as your friends & family.\nValidity: 14 days\nHappy working out!";
                     
                             $customersms->custom($sms_data);
                         }
@@ -2456,8 +2460,13 @@ Class CustomerReward {
                 if($ratecard){
                     $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
                 }
+
+                $header = [];
+                if(!empty(Request::header('Source')) && Request::header('Source') == 'multifit'){
+                    $header = array('source'=>'multifit');
+                }
                 
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header];
                
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
@@ -2776,62 +2785,157 @@ Class CustomerReward {
                 if($ratecard){
                     $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
                 }
+
+                $header = [];
+                if(!empty(Request::header('Source')) && Request::header('Source') == 'multifit'){
+                    $header = array('source'=>'multifit');
+                }
                 
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header];
 
                 $discount_max_overridable = false;
 
                 foreach($coupon['discount_max_overridable'] as $y){
-                    if(!empty($y['key']) && !empty($y['operator']) && !empty($y['values'])){
-                        // print_r($condition['key']);
+                    if(!empty($y['conditions'])){
+                        $discount_max_overridable = false;
+                        Log::info("conditinsss:::");
+                        foreach($y['conditions'] as $yc){
+                            if(!empty($yc['key']) && !empty($yc['operator']) && !empty($yc['values'])){
+                                
+                                if (strpos($yc['key'], 'transaction') !== false) {
+                                    Log::info('transaction');
+                                    if(empty($customer_email)){
+        
+                                        $jwt_token = Request::header('Authorization');
+                    
+                                        if(empty($jwt_token)){
+                    
+                                            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+                    
+                                            return $resp;
+                                        }
+                    
+                                        $decoded = $this->customerTokenDecode($jwt_token);
+                                        $customer_id = $decoded->customer->_id;
+                                        $customer_email = $decoded->customer->email;
+                    
+                                    }                    
+                    
+                                    \Order::$withoutAppends = true;
+                    
+                                    $embedded_value1 = \Order::active()->where("customer_email", $customer_email)->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+                                }else{
+                                    $embedded_value1 = $this->getEmbeddedValue($data , $yc['key']);
+                                }
+                                // Log::info("embedded_value1", [$embedded_value1]);
+                                // Log::info("yc values", [$yc['values']]);
+                                if($yc['operator'] == 'in'){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && in_array($embedded_value1, $yc['values'])){
+                                        $discount_max_overridable = true;
+                                    }else{
+                                        $discount_max_overridable = false;
+                                        break;
+                                    }
+                                    // Log::info('discount_max_overridable in ::::',[$discount_max_overridable]);
+                                }else if($yc['operator'] == 'nin'){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && !in_array($embedded_value1, $yc['values'])){
+                                        $discount_max_overridable = true;
+                                    }else{
+                                        $discount_max_overridable = false;
+                                        break;
+                                    }
+                                    // Log::info('discount_max_overridable nin ::::',[$discount_max_overridable]);
+                                }else if($yc['operator'] == 'regex'){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && preg_match($yc['values'], $embedded_value1)){
+                                        $discount_max_overridable = true;
+                                    }else{
+                                        $discount_max_overridable = false;
+                                        break;
+                                    }
+                                    // Log::info('discount_max_overridable regex ::::',[$discount_max_overridable]);
+                                }else if($yc['operator'] == 'gt'){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 > $yc['values']){
+                                        $discount_max_overridable = true;
+                                    }else{
+                                        $discount_max_overridable = false;
+                                        break;
+                                    }
+                                    // Log::info('discount_max_overridable gt ::::',[$discount_max_overridable]);
+                                }else if($yc['operator'] == 'gte'){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 >= $yc['values']){
+                                        $discount_max_overridable = true;
+                                    }else{
+                                        $discount_max_overridable = false;
+                                        break;
+                                    }
+                                    // Log::info('discount_max_overridable gte ::::',[$discount_max_overridable]);
+                                }else if($yc['operator'] == 'lt'){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 < $yc['values']){
+                                        Log::info("chk");
+                                        $discount_max_overridable = true;
+                                    }else{
+                                        $discount_max_overridable = false;
+                                        break;
+                                    }
+                                    // Log::info('discount_max_overridable lt ::::',[$discount_max_overridable]);
+                                }else if($yc['operator'] == 'lte'){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 <= $yc['values']){
+                                        $discount_max_overridable = true;
+                                    }else{
+                                        $discount_max_overridable = false;
+                                        break;
+                                    }
+                                    // Log::info('discount_max_overridable lte ::::',[$discount_max_overridable]);
+                                }else if($yc['operator'] == 'eq'){
+                                    if((!empty($embedded_value1) || $embedded_value1 == 0) && $embedded_value1 == $yc['values']){
+                                        $discount_max_overridable = true;
+                                    }else{
+                                        $discount_max_overridable = false;
+                                        break;
+                                    }
+                                    // Log::info('discount_max_overridable eq ::::',[$discount_max_overridable]);
+                                }
+                            }
+                        }
+                    }else if(!empty($y['key']) && !empty($y['operator']) && !empty($y['values'])){
                         $embedded_value = $this->getEmbeddedValue($data , $y['key']);
                         if($y['operator'] == 'in'){
-                            if(empty($embedded_value)){
-                                $discount_max_overridable = false;
-                                break;
-                            }
-                            if(!empty($y['values'][0]['valid_till'])){
-                    
-                                $values = array_column($y['values'], 'value');
-                                $dates = array_column($y['values'], 'valid_till');
-                                
-                                if(!in_array($embedded_value, $values) || time() > $dates[array_search($embedded_value, $values)]->sec){
-                                    $discount_max_overridable = false;
-                                    break;
-                                }
-                                
-                            }else{
-                                
-                                if(in_array($embedded_value, $y['values'])){
-                                    $discount_max_overridable = true;
-                                    // break;
-                                }
-                            
-                            }
-                            
-                        }else if($y['operator'] == 'nin'){
-                            if(!empty($embedded_value) && !in_array($embedded_value, $y['values'])){
+                            if((!empty($embedded_value) || $embedded_value == 0) && in_array($embedded_value, $y['values'])){
                                 $discount_max_overridable = true;
-                                // break;
-
+                            }
+                        }else if($y['operator'] == 'nin'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && !in_array($embedded_value, $y['values'])){
+                                $discount_max_overridable = true;
                             }
                         }else if($y['operator'] == 'regex'){
-                            // print_r ($embedded_value);
-                            // exit();
-                            
-                            if(empty($embedded_value)){
-                                $discount_max_overridable = false;
-                                break;
-                            }
-                            
-                            if(preg_match($y['values'], $embedded_value)){
+                            if((!empty($embedded_value) || $embedded_value == 0) && preg_match($y['values'], $embedded_value)){
                                 $discount_max_overridable = true;
-                                // break;
-
+                            }
+                        }else if($yc['operator'] == 'gt'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value > $yc['values']){
+                                $discount_max_overridable = true;
+                            }
+                        }else if($yc['operator'] == 'gte'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value >= $yc['values']){
+                                $discount_max_overridable = true;
+                            }
+                        }else if($yc['operator'] == 'lt'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value < $yc['values']){
+                                Log::info("chk");
+                                $discount_max_overridable = true;
+                            }
+                        }else if($yc['operator'] == 'lte'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value <= $yc['values']){
+                                $discount_max_overridable = true;
+                            }
+                        }else if($yc['operator'] == 'eq'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value == $yc['values']){
+                                $discount_max_overridable = true;
                             }
                         }
                     }
-                        
+                    
+                    Log::info('discount_max_overridable final ::::',[$discount_max_overridable]); 
                     if($discount_max_overridable){
                         $coupon_selected = $y;
                         break;

@@ -10082,25 +10082,33 @@ Class Utilities {
 		
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
+                
+                $slot['order_summary']['header'] = $orderSummary['header']." \n\nThe Big Fitness Sale\n\nGet 40% Off On Workout Sessions. Use Code: BIG40";
+
                 if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
                     $slot['order_summary']['header'] = $orderSummary['header'];
-                }else{
+                
+
+                }else if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+
                     $slot['order_summary']['header'] = $orderSummary['header'];
                 }
 		}
 		return $slotsdata;
     }
     
-    public function orderSummarySlots($slotsdata, $service_name, $vendor_name, $finder=null){
+    public function orderSummarySlots($slotsdata, $service_name, $vendor_name, $finder = null){
         $orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
+                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nThe Big Fitness Sale\n\nGet 40% Off On Workout Sessions. Use Code: BIG40"; 
+
                     if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
                         $sd['order_summary']['header'] = $orderSummary['header'];
-                    }else{
+                    }else if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
                         $sd['order_summary']['header'] = $orderSummary['header'];
                     }
                 }
