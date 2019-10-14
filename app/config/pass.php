@@ -963,7 +963,7 @@ return [
     ],
 
     'booking_using_pass_success_message' => [
-        'subheader' => 'Steps to unlock your Session',
+        'header' => 'Steps to unlock your Session',
         'data' => [
             "Navigate to Upcoming Session section in the Onepass Tab.",
             "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.",
@@ -971,7 +971,7 @@ return [
         ] 
     ],
     'booking_using_pass_success_message_corporate' => [
-        'subheader' => 'Steps to unlock your Session',
+        'header' => 'Steps to unlock your Session',
         'data' => [
             "Navigate to Upcoming Session section in the Onepass Tab.",
             "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.",
