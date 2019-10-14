@@ -7718,7 +7718,7 @@ class CustomerController extends \BaseController {
 				else{
 					$prior_time = '1 hour';
 				}
-				$response['sub_header_2'] = "Your ".$data['service_name']." at ".$data['finder_name']." is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?\n\nCancellation window for this session is available upto ".$prior_time." prior to the session time";
+				$response['sub_header_2'] = "Your ".$data['service_name']." Session at ".$data['finder_name']." is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?\n\nCancellation window for this session is available upto ".$prior_time." prior to the session time";
 				if(empty($data['pass_order_id'])){
 					$response['sub_header_2'] .= " (Cancel before ".$one_hour_before.")\nCancellation post the window will be chargeable " ;
 				}
@@ -7734,7 +7734,7 @@ class CustomerController extends \BaseController {
 					if(!empty($order['studio_sessions'])){
 						$avail = $order['studio_sessions']['total_cancel_allowed'] - $order['studio_sessions']['cancelled'];
 						$avail = ($avail<0)?0:$avail;
-						$response['sub_header_2'] = "Your ".$data['service_name']." at ".$data['finder_name']." is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?\n\nCan't make it? Cancel your session 60 minutes prior from your user profile to avail the extension.";
+						$response['sub_header_2'] = "Your ".$data['service_name']." session at ".$data['finder_name']." is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?\n\nCan't make it? Cancel your session 60 minutes prior from your user profile to avail the extension.";
 					}
 					$response['button_text'] = [
 						'attended'=>['text'=>'YES I’LL BE THERE','url'=>Config::get('app.url')."/sessionstatuscapture/confirm/".$data['_id'], 'type'=>"SUCCESS"],
