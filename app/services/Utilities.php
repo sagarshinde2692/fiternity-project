@@ -10427,8 +10427,8 @@ Class Utilities {
     public function formatOnepassCustomerDataResponse($resp, $pass_order_id){
         
         $onepassProfileConfig = Config::get('pass.pass_profile');
-        $resp['booking_text'] = empty($pass_order_id)? $onepassProfileConfig['booking_text']:$onepassProfileConfig['booking_text_pps'];
-        $resp['title'] = empty($pass_order_id)? $onepassProfileConfig['title']:$onepassProfileConfig['title_pps'];
+        $resp['booking_text'] = !empty($pass_order_id)? $onepassProfileConfig['booking_text']:$onepassProfileConfig['booking_text_pps'];
+        $resp['title'] = !empty($pass_order_id)? $onepassProfileConfig['title']:$onepassProfileConfig['title_pps'];
 
         if(!empty($resp['photo'])){
 			$resp['url'] = $resp['photo']['url'];

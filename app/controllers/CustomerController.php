@@ -10915,7 +10915,7 @@ class CustomerController extends \BaseController {
 			$customer->onepass = $onepass;
 
 			//here interests is array of ids
-			$resp =['profile_data' => $this->utilities->personlizedProfileData($resp)];
+			$resp =['profile_data' => $this->utilities->personlizedProfileData($resp, $pass_order_id)];
 		}
 		else{
 			//interests is array of object alog with slug and id;
