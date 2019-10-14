@@ -8783,7 +8783,7 @@ class SchedulebooktrialsController extends \BaseController {
         if(!empty($booktrial) && empty($booktrial->post_trial_status) && (empty($pass_further) || $booktrial->unlock_trial_count ==3)){
 
             if(empty($booktrial->pass_order_id && empty($booktrial->vefify_fitcode_using_unlock))){
-                $vefify_fitcode_using_unlock = json_decode(json_encode($this->verifyFitCode(null, $booktrial->vendor_code, $booktrial)->getData()));
+                $vefify_fitcode_using_unlock = json_decode(json_encode($this->verifyFitCode($booktrial->_id, $booktrial->vendor_code, $booktrial)->getData()));
                 $booktrial->vefify_fitcode_using_unlock = $vefify_fitcode_using_unlock;
                 Log::info('vefify_fitcode_usin_unlock ::::::::', [$vefify_fitcode_using_unlock, $booktrial->vendor_code, $booktrial->type]);
             }
