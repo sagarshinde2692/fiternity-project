@@ -1020,7 +1020,8 @@ Class CustomerMailer extends Mailer {
     protected function common($label,$data,$message_data,$delay = 0){
 
 		try{
-			if(!empty($data['ratecard_flags']['onepass_attachment_type']) && $data['ratecard_flags']['onepass_attachment_type']=='upgrade'){
+			$ekincareCust = !empty($data['third_party_details']['ekn']);
+			if((!empty($data['ratecard_flags']['onepass_attachment_type']) && $data['ratecard_flags']['onepass_attachment_type']=='upgrade') || ($ekincareCust)){
 				return;
 			}
 		} catch(\Exception $e) { }
