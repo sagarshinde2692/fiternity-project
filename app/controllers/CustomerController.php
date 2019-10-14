@@ -8542,11 +8542,17 @@ class CustomerController extends \BaseController {
 			if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 				Log::info('iside calling unlock session:::');
 				$data['from']='mark_customer_attanance';
-				$response =  json_decode(json_encode(app(\SchedulebooktrialsController::class)->unlockSession($data['data'][0]['_id'], $data)->getData()), true);
-				Log::info('response at kvkdfjvdfkhvdf', [!empty($response['data'])]);
-				$response = !empty($response['data']) ?  $response['data'] : (!empty($response['session_activated'])? $response['session_activated'] :null);
+				$unlock_session_response = [];
+
+				foreach ($data['data'] as $key => $value){
+					$unlock_session_response[] =  json_decode(json_encode(app(\SchedulebooktrialsController::class)->unlockSession($data['data'][0]['_id'], $data)->getData()), true);
+				}
 				
-				return ["response"=>['session_activated' =>$response], "status"=>200];
+				$total_session_unlocked = count($unlock_session_response);
+				$unlock_response_last = $unlock_session_response[$total_session_unlocked-1];
+				$unlock_response_last = !empty($unlock_response_last['data']) ?  $unlock_response_last['data'] : (!empty($unlock_response_last['session_activated'])? $unlock_response_last['session_activated'] :null);
+				
+				return ["response"=>['session_activated' =>$unlock_response_last], "status"=>200];
 			}
 
 			$total_fitcash=0;
