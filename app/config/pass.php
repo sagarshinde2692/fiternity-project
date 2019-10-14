@@ -730,7 +730,7 @@ return [
             "url" => "",
             "success_image" => "https://b.fitn.in/passes/check_circle.png",
             "text" => "Awesome !\nYour OnePass is now personalized as per your interests. Checkout the OnePass section for our top recommendations of studios and classes matching your preferences.",
-            "text_pps" => "Awesome !\nYour session booking is now personalized basis your interest!.\nContinue to book your session and experience the all new Unlock feature to activate the session at the studio.",
+            "text_pps" => "Awesome !\nYour session booking is now personalized basis your interest.\nContinue to book your session and experience the all new Unlock feature to activate the session at the studio.",
             "skip_text" => "Skip for now",
             "interests" => [
                 "header" => "Enjoy your OnePass Subscription!",
