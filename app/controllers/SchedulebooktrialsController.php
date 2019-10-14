@@ -4755,7 +4755,7 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json($resp,200);
         }
 
-       if(!empty($booktrial['finder_category_id']) && $booktrial['finder_category_id'] == 5){
+       if(!empty($booktrial['servicecategory_id']) && $booktrial['servicecategory_id'] == 65){
             if(
                 // (!empty($booktrial['third_party_details'])) &&
                 (
@@ -8806,7 +8806,13 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_updated_by_unlocksession_date = new MongoDate(time());
             $booktrial->post_trial_status_date = time();
 
-            $booktrial->update();
+            try{
+                $booktrial->update();
+            }
+            catch(\Exception $e){
+                Log::info('error occured in while saving booktrial',[$e]);
+                return Response::json(['data'=>'something went wrong.'],200);
+            }
 
             $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour", "customer_notification_before10min","customer_sms_before10Min", "customer_email_before10min", "customer_notification_block_screen"]]);
         }
