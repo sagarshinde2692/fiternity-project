@@ -8828,19 +8828,20 @@ class SchedulebooktrialsController extends \BaseController {
 
             $data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'user_photo', '_id', 'header_text', 'session_activated', 'contact_us']);
             
+
+            $data_new['header_text'] = "Session Activated";
+
             if(!empty($_GET['from']) && $_GET['from']=='notification_before10min') {
                 
                 $session_activate= $data_new;
-                unset($data_new);
-                $data_new['session_activated'] = $session_activate;
+                $data_new = null;
+                //$data_new['session_activated'] = $session_activate;
             }
-
-            $data_new['header_text'] = "Session Activated";
             
             $response = [
                 'status' => 200,
                 'data' => $data_new,
-                'session_activated' => !empty($data_new['session_activated']) ? $data_new['session_activated'] : null,
+                'session_activated' => !empty($session_activate) ? $session_activate : null,
                 'booktrial_id'=> (int)$booktrial['_id'],
             ];
         }
