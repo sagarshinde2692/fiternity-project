@@ -8794,7 +8794,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->update();
 
-            $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour", "customer_notification_before10min","customer_sms_before10min", "customer_email_before10min", "customer_notification_block_screen"]]);
+            $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour", "customer_notification_before10min","customer_sms_before10Min", "customer_email_before10min", "customer_notification_block_screen"]]);
         }
 
         if(!empty($booktrial->post_trial_status) && $booktrial->post_trial_status == 'attended'){
@@ -8829,7 +8829,7 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($pass_further) && $booktrial->unlock_trial_count ==2){
                 return [
                     'status' =>200,
-                    "message" => "Do you Want to unlock/ either your are unlocking your session at not session timin  or you are not art gym",
+                    "message" => "",
                     "button_text" => "Proceed"
                 ];
             }
