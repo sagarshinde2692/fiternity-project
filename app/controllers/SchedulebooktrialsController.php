@@ -8742,9 +8742,11 @@ class SchedulebooktrialsController extends \BaseController {
         $pass_further = false;
         $time_in_seconds = 60* 60 * 2;
         $post_hour = '2 Hour';
+        $finder_category_name = 'gym';
         if(!empty($booktrial->finder_category_id) && $booktrial->finder_category_id !=5){
             $time_in_seconds = 60*30;
             $post_hour = '30 Minutes';
+            $finder_category_name = 'studio';
         }
 
         if(!empty($booktrial)){
@@ -8754,7 +8756,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(!empty($booktrial) && !$time_check){
-            $message = "You can unlock your session at booking day only. ".$post_hour." post and pre";
+            $message = "You can only unlock your session within the unlock duration window.";
             return ["status"=>400, "message"=> $message];
         }
         else if(!empty($booktrial)){
@@ -8773,7 +8775,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if($distance_in_meters > $max_unlock_distance && $booktrial->unlock_trial_count < 3){
                     $pass_further =true;
-                    $message =  "Please unlock your session by visiting ".$booktrial['finder_name'];
+                    $message =  "You need to be within the ".$finder_category_name." premises to activate your session.";
                 }
             }
         }
