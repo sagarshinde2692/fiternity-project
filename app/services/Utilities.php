@@ -10536,7 +10536,7 @@ Class Utilities {
         $resp['url'] = $data['photo']['url'];
 
         if(empty($pass_order_id)){
-            $resp['header'] = $resp['header_pps'];
+            unset($resp['header']);
             unset($resp['header_pps']);
             $resp['text'] = $resp['text_pps'];
             unset($resp['text_pps']);
