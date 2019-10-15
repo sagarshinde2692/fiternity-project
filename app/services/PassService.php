@@ -88,11 +88,11 @@ class PassService {
             $passDetails['cashback'] = '(Additional 15% Off)';
 
             if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 90){
-                $passDetails['cashback'] = '(3 Weeks Extension or Additional 15% off)';
+                $passDetails['cashback'] = "(3 Weeks Extension \nor Additional 15% off)";
             }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 180){
-                $passDetails['cashback'] = '(1.5 Months Extension or Additional 15% off)';
+                $passDetails['cashback'] = "(1.5 Months Extension \nor Additional 15% off)";
             }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 360){
-                $passDetails['cashback'] = '(3 Months Extension or Additional 15% off)';
+                $passDetails['cashback'] = "(3 Months Extension \nor Additional 15% off)";
             }
 
             if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
