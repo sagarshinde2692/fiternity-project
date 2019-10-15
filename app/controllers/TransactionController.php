@@ -1495,7 +1495,7 @@ class TransactionController extends \BaseController {
                 }
             }
     
-            if(empty($data['session_payment']) && empty($data['session_pack_discount'])){
+            if(empty($data['session_payment']) && empty($data['session_pack_discount']) && empty($data['ratecard_flags']['hide_mfp_quantity'])){
                 
                 if(in_array($order['type'], ['booktrials', 'workout-session'])){
                     $resp['data']["quantity_details"] = [
