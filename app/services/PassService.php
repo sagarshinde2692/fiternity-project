@@ -95,6 +95,12 @@ class PassService {
                 $passDetails['cashback'] = '(3 Months Extension or Additional 15% off)';
             }
 
+            if(empty($device)){
+                if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
+                    unset($passDetails['text']);
+                }
+            }
+
             unset($passDetails['extra_info']);
 
             if($pass['unlimited_access']) {
@@ -1439,7 +1445,9 @@ class PassService {
 
     function getBookingDetails($data){
 
+        $pass_type_ori = $data['pass']['pass_type'];
         $pass_type = ucwords($data['pass']['pass_type']);
+        $pass_duration = $data['pass']['duration'];
         $duration_field = $data['pass']['pass_type'] == 'red' ? 'Duration' : 'No of Sessions';
         
 
@@ -1455,12 +1463,20 @@ class PassService {
             [
                'field' => 'START DATE',
                'value' => date('l, j M Y',strtotime($data['start_date'])),
-            ],
-            [
-               'field' => '',
-               'value' => 'Use Code: MORE25 To Get Free Extension or Use Code: BIG15 To Get Additional 15% Off',
             ]
         ];
+
+        if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [90,180,360])){
+            $resp[] = [
+                   'field' => '',
+                   'value' => 'Use Code: MORE25 To Get Free Extension or Use Code: BIG15 To Get Additional 15% Off',
+            ];
+        }else {
+            $resp[] = [
+                'field' => '',
+                'value' => 'Get 30% Off + Extra 15% Off Use Code: BIG15',
+            ];
+        }
 
         return $resp;
     }
