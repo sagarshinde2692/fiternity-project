@@ -2158,7 +2158,7 @@ class PassService {
             $hour1 = 60*60*1;
             $minutes15 = 60*15;
             $time_diff = $scheduleDateTime - strtotime($currentDateTime);
-            if(!empty($data['servicecategory_id']) && ($data['servicecategory_id'] == 65 && $time_diff < $minutes15) || ($data['servicecategory_id'] != 65 && $time_diff < $hour1)){
+            if(!empty($data['servicecategory_id']) && (($data['servicecategory_id'] == 65 && $time_diff < $minutes15) || ($data['servicecategory_id'] != 65 && $time_diff < $hour1))){
                 unset($upcoming['footer']['cancel_text']);
                 unset($upcoming['footer']['cancel_url']);
             }
