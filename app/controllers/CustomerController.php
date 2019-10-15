@@ -3929,13 +3929,14 @@ class CustomerController extends \BaseController {
 							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
 
 
-							$upcoming[] = $data;
+							
 							$ori_data = $data;
 
 							if(!empty($ori_data['finder_flags']['mfp']) && $ori_data['finder_flags']['mfp']){
                                 // $data =array();
                                 continue;
 							}
+							$upcoming[] = $data;
 						}
 
 					}
