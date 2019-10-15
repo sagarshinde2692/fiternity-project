@@ -95,10 +95,9 @@ class PassService {
                 $passDetails['cashback'] = '(3 Months Extension or Additional 15% off)';
             }
 
-            if(empty($device)){
-                if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
-                    unset($passDetails['text']);
-                }
+            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
+                $passDetails['text'] = $passDetails['cashback'];
+                unset($passDetails['cashback']);
             }
 
             unset($passDetails['extra_info']);
