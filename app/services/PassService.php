@@ -782,7 +782,7 @@ class PassService {
                 if($passOrder['pass']['pass_type']=='black'){
                     $sessionsUsed = $passOrder['onepass_sessions_used'];
                     $sessionsTotal = $passOrder['onepass_sessions_total']-1;
-                    if($sessionsTotal>$sessionsUsed) {
+                    if($sessionsTotal >= $sessionsUsed) {
                         $canBook = true;
                     }
                 }
@@ -1522,6 +1522,7 @@ class PassService {
         else {
             $homePassData['terms'] = "<h2>Terms and Conditions</h2>".$tnc;
         }
+        
         return $homePassData;
     }
 
@@ -2289,7 +2290,6 @@ class PassService {
         $homePassData['subheader'] = $subheader;
         $homePassData['left_value'] = strval($upcomingBookings);
         $homePassData['right_value'] = strval($pastBookings);
-
         if(!$passExpired) {
             $lastOrder = Booktrial::where('pass_order_id', $passOrder->_id)->where('going_status', '!=', 'cancel')->orderBy('_id', 'desc')->first();
             if(!empty($lastOrder)) {
