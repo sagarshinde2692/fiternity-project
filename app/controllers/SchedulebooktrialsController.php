@@ -8798,7 +8798,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(!empty($booktrial) && !$time_check){
-            $message = "You can only unlock your session within the unlock duration window.( Unlock Window : ".$post_hour." prior & ".$post_hour." post session time)";
+            $message = "You can only unlock your session within the unlock duration window.\n ( Unlock Window : ".$post_hour." prior & ".$post_hour." post session time)";
             return ["status"=>400, "message"=> $message];
         }
         else if(!empty($booktrial)){
