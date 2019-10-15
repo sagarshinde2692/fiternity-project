@@ -3660,7 +3660,7 @@ class CustomerController extends \BaseController {
                 // }
 				
                 
-                Log::info("------------home------------$customeremail", [(new DateTime(date('Y-m-d H:i:s', strtotime('-1 hour'))))]);
+                Log::info("------------home------------$customeremail");
 
 				Log::info('device_type'.$this->device_type);
 				Log::info('app_version'.$this->app_version);
@@ -3701,7 +3701,7 @@ class CustomerController extends \BaseController {
                                     $query	->where('ask_review', true)
                                             ->where('schedule_date_time', '<', new DateTime(date('Y-m-d H:i:s', strtotime('-1 hour'))))
                                             ->whereIn('post_trial_status', ['attended'])
-                                            ->where('pass_order_id', 'exists', false)
+                                            ->where('pass_order_id', null)
                                             ->where('has_reviewed', '!=', '1')
                                             ->where('skip_review', '!=', true);	
 								})
