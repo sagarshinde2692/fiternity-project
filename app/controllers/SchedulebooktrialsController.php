@@ -8781,13 +8781,13 @@ class SchedulebooktrialsController extends \BaseController {
 
         $pass_further = false;
         $time_in_seconds = 60* 60 * 2;
-        $post_hour = '2 Hour';
+        $post_hour = '2 hr';
         $finder_category_name = 'gym';
         $max_unlock_distance= Config::get('app.checkin_checkout_max_distance_in_meters');
 
         if(!empty($booktrial->servicecategory_id) && $booktrial->servicecategory_id != 65){
             $time_in_seconds = 60*30;
-            $post_hour = '30 Minutes';
+            $post_hour = '30 min';
             $finder_category_name = 'studio';
         }
 
@@ -8798,7 +8798,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(!empty($booktrial) && !$time_check){
-            $message = "You can only unlock your session within the unlock duration window.\n ( Unlock Window : ".$post_hour." prior & ".$post_hour." post session time)";
+            $message = "You can only unlock your session within the unlock duration window.\n (Unlock Window : ".$post_hour." prior & ".$post_hour." post session time)";
             return ["status"=>400, "message"=> $message];
         }
         else if(!empty($booktrial)){
