@@ -129,7 +129,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Extra 15% Off (Code: BIG15) or Free 3 Months Extension (Code: MORE25)\nOffer Expires On 21st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Extra 15% Off (Code: BIG15)\nOffer Expires On 21st October", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
