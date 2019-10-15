@@ -3911,7 +3911,7 @@ class CustomerController extends \BaseController {
 							if(!empty($this->device_type) && !empty($this->app_version) && ($this->device_type =='android' && $this->app_version >= '5.31') || ($this->device_type =='ios' && $this->app_version >= '5.2.4')){  
 
 								
-								
+								Log::info('service category id :::::::', [$data['servicecategory_id']]);
 								$data_new = $this->passService->upcomingPassBooking($customer, $data);
 
 								$data_new = array_merge($data, $data_new);
