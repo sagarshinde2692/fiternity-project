@@ -6177,7 +6177,7 @@ class TransactionController extends \BaseController {
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
 
-            if(in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
+            if(!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp'] || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
         }
@@ -6618,12 +6618,22 @@ class TransactionController extends \BaseController {
         }else{
             
             if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount']) && empty($order['finder_flags']['monsoon_campaign_pps'])){
-                $payment_modes[] = array(
-                    'title' => 'Online Payment',
-                    'subtitle' => 'Transact online with netbanking, card and wallet',
-                    'value' => 'paymentgateway',
-                    'payment_options'=>$payment_options
-                );
+                
+                if(!empty($order['finder_flags']['mfp']) && $order['finder_flags']['mfp']){
+                    $payment_modes[] = array(
+                        'title' => 'Online Payment',
+                        'subtitle' => 'Transact online with netbanking, card and wallet',
+                        'value' => 'paymentgateway',
+                        'payment_options'=>$payment_options
+                    );
+                }else{
+                    $payment_modes[] = array(
+                        'title' => 'Online Payment (100% Cashback)',
+                        'subtitle' => 'Transact online with netbanking, card and wallet',
+                        'value' => 'paymentgateway',
+                        'payment_options'=>$payment_options
+                    );
+                }
             }else{
                 $payment_modes[] = array(
                     'title' => 'Online Payment',

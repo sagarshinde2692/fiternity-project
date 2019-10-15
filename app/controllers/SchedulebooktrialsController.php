@@ -2696,6 +2696,33 @@ class SchedulebooktrialsController extends \BaseController {
 
             $this->deleteTrialCommunication($booktrial);
 
+            $booktrial_data = $booktrial->toArray();
+            if(!empty($booktrial_data['finder_flags']['mfp']) && $booktrial_data['finder_flags']['mfp']){
+                $order_id = $booktrial_data['order_id'];
+                $order = Order::find((int) $order_id);
+                $emailData      =   [];
+                $emailData      =   $order->toArray();
+                $emailData['type'] = 'events';
+
+                if(!empty($emailData['ratecard_flags']['ticket_id']) && $emailData['ratecard_flags']['ticket_id'] != ''){
+                    $emailData['ticket'] = Ticket::find(intval($emailData['ratecard_flags']['ticket_id']))->toArray();
+                }
+
+                if(!empty($emailData['ratecard_flags']['event_id']) && $emailData['ratecard_flags']['event_id'] != ''){
+                    $emailData['event'] = DbEvent::find(intval($emailData['ratecard_flags']['event_id']))->toArray();
+                }
+                
+                $send_communication["customer_email_instant"] = $this->customermailer->sendPgOrderMail($emailData);
+                $send_communication["customer_sms_instant"] = $this->customersms->sendPgOrderSms($emailData);
+                // $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrial_data);
+                // $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrial_data);
+
+                $booktrial->send_communication = $send_communication;
+                $booktrial->update();
+
+                return;
+            }
+
             $this->firstTrial($booktrial->toArray()); // first trial communication
 
             $booktrialdata = $booktrial->toArray();
@@ -5628,6 +5655,11 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial['fitcode_button_text'] = 'Enter Fitcode';
         $booktrial['vendor_code'] = "0000";
+        if(!empty($booktrial['finder_flags']['mfp']) && $booktrial['finder_flags']['mfp']){
+            // Log::info("hdsghjgdhsf");
+            $booktrial = $this->utilities->mfpBranding($booktrial, 'booktrialdetail');
+        }
+
         $responsedata   = [
             'booktrial' => $booktrial,
             'message' => 'Booktrial Detail'
