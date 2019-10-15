@@ -1399,7 +1399,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "50% off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships | 15th-21st October",
+								'text1'=> "50% off + Extra 15% On Memberships. Addnl 5% Off For New Users | 15th-21st October",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1411,7 +1411,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships | 15th-21st October",
+								'text1'=> "50% off + Extra 15% On Memberships. Addnl 5% Off For New Users | 15th-21st October",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1423,7 +1423,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships | 15th-21st October",
+								'text1'=> "50% off + Extra 15% On Memberships. Addnl 5% Off For New Users | 15th-21st October",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3896,25 +3896,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
+				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
             }else{	
-				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
+				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
+				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
             }else{	
-				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
+				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
+				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
             }else{	
-				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
+				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
             }
 			
 		}
@@ -3927,9 +3927,9 @@ class FindersController extends \BaseController {
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 							if($this->device_type == 'android'){
-								$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships, Use Code: GO5 <br><br>Offer Valid 15th-21st October";
+								$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5 <br><br>Offer Valid 15th-21st October";
 							}else{	
-								$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships, Use Code: GO5 \n\nOffer Valid 15th-21st October";
+								$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5 \n\nOffer Valid 15th-21st October";
 							}
 							
 							break;
@@ -8441,7 +8441,7 @@ class FindersController extends \BaseController {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
 					}
 					else if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
-						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n 50% Off + Extra 15% + Addnl 5% Off (New Users Only) On Memberships \n Use Code: GO5");
+						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n 50% off + Extra 15% Off On Memberships. Addnl 5% Off For New Users. \n Use Code: GO5");
 					}
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Get Fit Go Sale \n\n Get 50% Off On Workout Sessions. Use Code: PPS");

@@ -6161,7 +6161,7 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'50% Off + Extra 15% + Addnl 5% Off (New Users Only), Use Code: GO5','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'50% off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5','position'=>$position++];
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
