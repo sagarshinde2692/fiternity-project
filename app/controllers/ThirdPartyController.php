@@ -19,13 +19,14 @@ class ThirdPartyController extends \BaseController {
         Log::info('$data: ', [$data]);
         $smsdata = [];
         if(isset($data['booktrial_id'])){
-            $bookTrialData = Booktrial::where('_id', intval($data["booktrial_id"]))->get(['customer_name', 'finder_name', 'vendor_code']);
+            $bookTrialData = Booktrial::where('_id', intval($data["booktrial_id"]))->get(['customer_name', 'finder_name', 'vendor_code', 'third_party_details']);
             Log::info('$bookTrialData: ', [$bookTrialData]);
             
             $smsdata = [
                 "customer_name" => $bookTrialData[0]["customer_name"],
                 "finder_name" => $bookTrialData[0]["finder_name"],
-                "vendor_code" => $bookTrialData[0]["vendor_code"]
+                "vendor_code" => $bookTrialData[0]["vendor_code"],
+                "third_party_details" => $bookTrialData[0]["third_party_details"],
             ];
         }
         else {
