@@ -1480,7 +1480,7 @@ class PassService {
             // $homePassData = $homePassData[$passOrder['pass']['pass_type']];
 
             $totalSessions = $passOrder['pass']['duration'];
-            if($totalSessions <= $totalBookings) {
+            if($totalSessions < $totalBookings) {
                 $passExpired = true;
                 $usageLeft = 0;
             }
