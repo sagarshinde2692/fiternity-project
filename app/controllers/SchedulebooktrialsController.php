@@ -8869,6 +8869,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $data_new['header_text'] = "Session Activated";
 
+            $data_new['time_diff'] =-1;
             if(!empty($_GET['from']) && $_GET['from']=='notification_before10min') {
                 
                 $session_activate= $data_new;
