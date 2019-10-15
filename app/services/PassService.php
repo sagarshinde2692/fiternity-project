@@ -188,7 +188,7 @@ class PassService {
             }else{
                 $order = $existing_order;
             }
-            $keys = ['customer_email', 'customer_name', 'customer_phone', 'pass_id', 'coupon_code'];
+            $keys = ['customer_email', 'customer_name', 'customer_phone', 'pass_id'];
             foreach($keys as $key){
                 if(empty($data[$key]) & !empty($order[$key])){
                     $data[$key] = $order[$key];

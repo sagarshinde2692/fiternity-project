@@ -726,7 +726,7 @@ return [
         ],
         "personlized_profile" => [
             "header" => "Enjoy your OnePass Subscription!",
-            "header_pps" => "Enjoy your session Subscription!",
+            "header_pps" => "Enjoy your session Subscription!\n",
             "url" => "",
             "success_image" => "https://b.fitn.in/passes/check_circle.png",
             "text" => "Awesome !\nYour OnePass is now personalized as per your interests. Checkout the OnePass section for our top recommendations of studios and classes matching your preferences.",

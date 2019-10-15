@@ -70,10 +70,19 @@ class CustomerController extends \BaseController {
 			->whereIn('booktrial_type', array('auto'))
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
-			->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')));
-
+			//->where('schedule_date_time',$type=='lte'?'<=':'>',new MongoDate(strtotime('-90 minutes')));
+			->orWhere(function($query) use($type){
+				$query->where('schedule_date_time',$type=='lte'?'<=':'>', new MongoDate(strtotime('-90 minutes')));
+			});
 			if(!empty($orderId)) {
 				$query->where('pass_order_id', $orderId);
+			}
+			if($type == 'gt'){
+				$query->where('going_status_txt', '!=', 'cancel');
+			}else {
+				$query->orWhere(function($query){
+					$query->where('going_status_txt','cancel');
+				});
 			}
 
 			return $query->orderBy('schedule_date_time', $type=='lte'?'desc':'asc')->skip($offset)->take($limit)
