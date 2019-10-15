@@ -90,7 +90,7 @@ class PassService {
             if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 90){
                 $passDetails['text'] = "(Additional 15% off \nor 3 Weeks Extension)";
             }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 180){
-                $passDetails['text'] = "Additional 15% off \nor 1.5 Months Extension";
+                $passDetails['text'] = "(Additional 15% off \nor 1.5 Months Extension)";
             }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 360){
                 $passDetails['text'] = "(Additional 15% off \nor 3 Months Extension)";
             }
