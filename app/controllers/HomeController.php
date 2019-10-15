@@ -684,7 +684,7 @@ class HomeController extends BaseController {
             
             if (in_array($type, $booktrialItemArr)){
 
-                $itemData       =   Booktrial::find(intval($id));
+                $itemData       =   Booktrial::customerValidation(customerEmailFromToken())->find(intval($id));
                 
                 
                 //reliance section 
@@ -775,7 +775,7 @@ class HomeController extends BaseController {
 
             if (in_array($type, $orderItemArr)) {
 
-                $itemData = Order::find(intval($id));
+                $itemData = Order::customerValidation(customerEmailFromToken())->find(intval($id));
 
                 if(empty($itemData)){
                     return ['status'=>400];
@@ -1094,6 +1094,10 @@ class HomeController extends BaseController {
                     $subline .= '</p>';
                 }
 
+                if(!empty($item['finder_flags']['mfp']) && $item['finder_flags']['mfp']){
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' ';  
+                }
+
                 $streak_items = [];
 
                 foreach(Config::get('app.streak_data') as $value){
@@ -1131,7 +1135,7 @@ class HomeController extends BaseController {
                         $steps = Config::get('pass.booking_using_pass_success_message_corporate');
                     }
                 }
-
+                
                 $response = [
                     'status'=>200,
                     'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
@@ -1143,6 +1147,10 @@ class HomeController extends BaseController {
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
+
+                if(!empty($item['finder_flags']['mfp']) && $item['finder_flags']['mfp']){
+                    unset($response['streak']);
+                }
                 
                 if(!empty($steps)){
 
@@ -1719,7 +1727,7 @@ class HomeController extends BaseController {
 
                 if(isset($item['booktrial_id']) && $item['booktrial_id'] != ""){
 
-                    $order_booktrial = Booktrial::find(intval($item['booktrial_id']));
+                    $order_booktrial = Booktrial::customerValidation(customerEmailFromToken())->find(intval($item['booktrial_id']));
 
                     if(isset($order_booktrial['code'])){
                         

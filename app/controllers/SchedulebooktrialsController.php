@@ -2700,6 +2700,33 @@ class SchedulebooktrialsController extends \BaseController {
 
             $this->deleteTrialCommunication($booktrial);
 
+            $booktrial_data = $booktrial->toArray();
+            if(!empty($booktrial_data['finder_flags']['mfp']) && $booktrial_data['finder_flags']['mfp']){
+                $order_id = $booktrial_data['order_id'];
+                $order = Order::find((int) $order_id);
+                $emailData      =   [];
+                $emailData      =   $order->toArray();
+                $emailData['type'] = 'events';
+
+                if(!empty($emailData['ratecard_flags']['ticket_id']) && $emailData['ratecard_flags']['ticket_id'] != ''){
+                    $emailData['ticket'] = Ticket::find(intval($emailData['ratecard_flags']['ticket_id']))->toArray();
+                }
+
+                if(!empty($emailData['ratecard_flags']['event_id']) && $emailData['ratecard_flags']['event_id'] != ''){
+                    $emailData['event'] = DbEvent::find(intval($emailData['ratecard_flags']['event_id']))->toArray();
+                }
+                
+                $send_communication["customer_email_instant"] = $this->customermailer->sendPgOrderMail($emailData);
+                $send_communication["customer_sms_instant"] = $this->customersms->sendPgOrderSms($emailData);
+                // $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrial_data);
+                // $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrial_data);
+
+                $booktrial->send_communication = $send_communication;
+                $booktrial->update();
+
+                return;
+            }
+
             $this->firstTrial($booktrial->toArray()); // first trial communication
 
             $booktrialdata = $booktrial->toArray();
@@ -2796,11 +2823,12 @@ class SchedulebooktrialsController extends \BaseController {
                         
                         $alreadyWorkoutTaken=Order::where("booktrial_id","!=",(int)$booktrialdata['_id'])->where("type","=",'workout-session')->where("status","=","1")->where("created_at",">=",new DateTime("2018/04/23"))->where("customer_id","=",(int)$booktrialdata['customer_id'])->first();
                         Log::info(" alreadyWorkoutTaken ".print_r($alreadyWorkoutTaken,true));
-                        if(empty($alreadyWorkoutTaken))
+                        if(empty($alreadyWorkoutTaken)){
                             $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 					        if(!(!empty($onepassHoldCustomer) && $onepassHoldCustomer)){
                                 $send_communication["customer_email_instant_workoutlevelstart"] = $this->customermailer->workoutSessionInstantWorkoutLevelStart($booktrialdata);
-                            }       
+                            }
+                        }
                     }
                     
                     if(isset($booktrialdata['is_tab_active'])&&$booktrialdata['is_tab_active']!=""&&$booktrialdata['is_tab_active']==true&&$booktrialdata['type']=='workout-session')
@@ -5503,10 +5531,12 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(isset($type) && $type == "healthytiffintrail"){
-            $booktrial      =   Order::active()->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid));
+            $booktrial      =   Order::active()->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}));
         }else{
-            $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid)); 
+            $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));})); 
         }
+
+        $booktrial = $booktrial->customerValidation(customerEmailFromToken())->find(intval($captureid));
 
         if(!$booktrial){
 
@@ -5696,6 +5726,11 @@ class SchedulebooktrialsController extends \BaseController {
             unset($booktrial['vendor_code']);
         }
         
+        if(!empty($booktrial['finder_flags']['mfp']) && $booktrial['finder_flags']['mfp']){
+            // Log::info("hdsghjgdhsf");
+            $booktrial = $this->utilities->mfpBranding($booktrial, 'booktrialdetail');
+        }
+
         $responsedata   = [
             'booktrial' => $booktrial,
             'message' => 'Booktrial Detail'

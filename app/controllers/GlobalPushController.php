@@ -16,7 +16,10 @@ class GlobalPushController extends \BaseController
 
   protected $amenitiesrank = array('gyms' => array('24 hour facility' => '6', 'free wifi' => '5', 'juice bar' => '4', 'steam and sauna' => '3', 'stretching area' => '2', 'swimming pool' => '1'), 'yoga' => array('power yoga' => '9', 'iyengar yoga' => '8', 'ashtanga yoga' => '7', 'hatha yoga' => '6', 'aerial yoga' => '5', 'vinyassa yoga' => '4','hot yoga' => '3', 'post natal yoga' => '2', 'prenatal yoga' => '1'), 'zumba' => array('zumba classes' => '2', 'aqua zumba classes' => '1'), 'cross functional training' => array('les mills' => '7', 'calisthenics' => '6', 'cross training' => '5', 'trx training' => '4', 'combine training' => '3', 'group x training' => '2', 'trampoline workout' => '1'), 'crossfit' => array('open box' => '7', 'tires & ropes' => '6', 'olympic lifting' => '5', 'group training' => '4', 'personal training' => '3', 'gymnastic routines' => '2', 'kettle bell training' => '1'), 'pilates' => array('mat pilates' => '2', 'reformer pilates or stott pilates' => '1'), 'mma & kickboxing' => array('mixed martial arts' => '12', 'karate' => '11', 'kick boxing' => '10', 'judo' => '9', 'jujitsu' => '8', 'karv maga' => '7', 'kung fu' => '6', 'muay thai' => '5', 'taekwondo' => '4', 'tai chi' => '3', 'capoeira' => '2', 'kalaripayattu' => '1'), 'dance' => array('bollywood' =>'16', 'hip hop' => '15', 'salsa' => '14', 'free style' => '13', 'contemporary' => '12', 'jazz' => '11', 'jive' => '10', 'belly dancing' => '9', 'cha cha cha' => '8', 'kathak' => '7', 'b boying' => '6', 'bharatanatyam' => '5', 'ballroom' => '4', 'locking and popping' => '3', 'ballet' => '2', 'waltz' => '1'));
 
-  public function __construct()
+    protected $es_data = [];
+    protected $i = 0;
+    protected $t = 0;
+    public function __construct()
   {
     parent::__construct();
     $this->elasticsearch_host = Config::get('app.es.host');
@@ -35,7 +38,7 @@ class GlobalPushController extends \BaseController
     appending date to rolling builds for new index
     */
     $timestamp =  date('Y-m-d');
-    $index_name = $this->name.$timestamp.'-'.random_numbers(3);
+    $index_name = $this->index_name = $this->name.$timestamp.'-'.date('H-i-s');
 
     /*
    creating new index appended with timestamp
@@ -48,8 +51,8 @@ class GlobalPushController extends \BaseController
         'method' => 'POST',
     );
 
-    echo es_curl_request($request);
-    sleep(5);
+    es_curl_request($request);
+    // sleep(5);
 
     // var_dump($request);exit;
 
@@ -64,8 +67,8 @@ class GlobalPushController extends \BaseController
         'method' => 'POST'
     );
 
-    echo es_curl_request($request);
-    sleep(5);
+    es_curl_request($request);
+    // sleep(5);
 
     $settings = '{
   "analysis": {
@@ -239,8 +242,8 @@ class GlobalPushController extends \BaseController
         'method' => 'PUT'
     );
 
-    echo es_curl_request($request);
-    sleep(5);
+    es_curl_request($request);
+    // sleep(5);
 
     /*
     open newly created index
@@ -253,8 +256,8 @@ class GlobalPushController extends \BaseController
         'method' => 'POST'
     );
 
-    echo es_curl_request($request);
-    sleep(4);
+    es_curl_request($request);
+    // sleep(4);
 
     $mapping = '{
           "_source": {
@@ -334,8 +337,8 @@ class GlobalPushController extends \BaseController
         'method' => 'PUT',
         'postfields' => $postfields_data
     );
-    echo es_curl_request($request);
-    sleep(5);
+    es_curl_request($request);
+    // sleep(5);
 
     /*
 
@@ -344,41 +347,45 @@ class GlobalPushController extends \BaseController
     */
 
     
-    $this->pushBrandOutlets($index_name);
-    $this->pushcategorylocations($index_name);
-    $this->pushcategorycity($index_name);
-    $this->pushallfittnesslocation($index_name);
-    // $this->pushservicecategorylocations($index_name);
-    // $this->pushservicecategorycity($index_name);
+    $this->pushBrandOutlets($index_name);//required
+    $this->pushcategorylocations($index_name);//required
+    $this->pushcategorycity($index_name);//required
+    $this->pushallfittnesslocation($index_name);//required
+    // // $this->pushservicecategorylocations($index_name);
+    // // $this->pushservicecategorycity($index_name);
+    // $this->t = time();
     foreach ($this->citylist as $key => $city) {
-      $this->pushfinders($index_name, $city);
+        $this->pushfinders($index_name, $city);//required
     }
+    // Log::info(time() - $t);
+    // return "Done";
 
 
-//        $this->pushcategorywithfacilities($index_name);
-//        $this->pushcategoryoffering($index_name);
-        $this->pushcategoryofferinglocation($index_name);
-//        $this->pushcategoryfacilitieslocation($index_name);
-//        $this->pushofferingcity($index_name);
+// //        $this->pushcategorywithf$thosacilities($index_name);
+// //        $this->pushcategoryoffering($index_name);
+        $this->pushcategoryofferinglocation($index_name);//required
+// //        $this->pushcategoryfacilitieslocation($index_name);
+// //        $this->pushofferingcity($index_name);
+    $this->addToEsData(null, true);
 
     /*
     point the aliases for the cluster to new created index
     */
 
     $alias_request = '{
-          "actions": [ {
-            "remove": {
-              "index": "*",
-              "alias": "fitternity_autosuggestor"
-            }
-          },
-          {
-            "add": {
-              "index": "'.$index_name.'",
-              "alias": "fitternity_autosuggestor"
-            }
-          }]
-        }';
+        "actions": [ {
+        "remove": {
+            "index": "*",
+            "alias": "fitternity_autosuggestor"
+        }
+        },
+        {
+        "add": {
+            "index": "'.$index_name.'",
+            "alias": "fitternity_autosuggestor"
+        }
+        }]
+    }';
 
     $url        =   $this->elasticsearch_url_build."_aliases";
     $payload =  json_encode(json_decode($alias_request,true));
@@ -389,16 +396,67 @@ class GlobalPushController extends \BaseController
         'postfields' => $payload
     );
     echo es_curl_request($request);
+    Log::info($this->index_name);
+    return "Done";
 
   }
 
 
   public function pushfinders($index_name, $city_id){
-
+    
     ini_set('max_execution_time', 30000);
     // ini_set('memory_limit', '512M');
     $city_id = (int) $city_id;
-    $indexdocs = Finder::active()
+    Finder::$withoutAppends = true;
+
+    $limit = 500;
+
+    $i=0;
+    if (!function_exists(('esParse'))) {
+        function esParse($source = ''){
+            $cluster = '';
+            Log::info($source['_id']);
+            $info_service_list = array();
+            $data = $source;
+
+            if(empty($data['multiaddress'])){
+                $data['multiaddress'] = null;
+            }
+            if(isset($data['services'])&& !empty($data['services'])){
+                $info_service_list = array_map('strtolower', array_pluck($data['services'], 'name'));
+            }
+
+            $data['lat'] = isset($data['lat']) ? floatval($data['lat']) : 0.0;
+            $data['lon'] = isset($data['lon']) ? floatval($data['lon']) : 0.0;
+            $data['autosuggestvalue'] = ($data['category']['_id'] == 42 || $data['category']['_id'] == 45 || $data['category']['_id'] == 41 || $data['category']['_id'] == 46 || $data['category']['_id'] == 25 || count($data['multiaddress']) > 1) ? ((count($data['multiaddress']) > 1) ? ucwords($data['title'])." (".count($data['multiaddress'])." locations)" : ucwords($data['title'])) : ucwords($data['title'])." in ".ucwords($data['location']['name']);
+            $postfields_data = array(
+                'input'                         =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
+                'autosuggestvalue'              =>       $data['autosuggestvalue'],
+                'inputv2'                       =>      $info_service_list,//(isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "",
+                'inputv3'                       =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
+                'inputv4'                       =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
+                'inputloc1'                     =>      strtolower((isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :""),
+                'inputloc2'                     =>      ($cluster == '' ? '': strtolower($cluster)),
+                'inputcat'                      =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
+                'inputcat1'                     =>      strtolower($data['category']['name']),
+                'city'                          =>      (isset($data['city']) && $data['city'] != '') ? $data['city']['name'] :"",
+                'location'                      =>      (isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :"",
+                'type'                          =>      'vendor',
+                'slug'                          =>      isset($data['slug']) ? $data['slug'] : '',
+                'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon']),
+                'inputservicecat'               =>      '',
+                'infrastructure_type'           =>      isset($data['business_type']) ? $data['business_type'] : ''
+                );
+            if($data['city_id'] == 10 || $data['city_id'] == 9){
+                Log::info($postfields_data);
+            }
+
+            return $postfields_data;
+        }
+    }
+    
+    do{
+        $indexdocs = Finder::active()
         ->where('status', '=', '1')
         ->whereNotIn('_id', Config::get('app.hide_from_search'))
         ->where('city_id', $city_id)
@@ -414,72 +472,19 @@ class GlobalPushController extends \BaseController
         ->with('facilities')
         // ->with('services')
         ->orderBy('_id')
-//          ->take(1000)->skip(0)
-        ->take(80000)->skip(0)
+         ->take($limit)->skip($i++ * $limit)
+        // ->take(80000)->skip(0)
         ->timeout(400000000)
         ->get(array("title","country_id","country","city_id","city","category_id","category","location_id","location","categorytags","locationtags","offerings","facilities","slug","business_type","lat","lon"));
 
-//      var_dump($indexdocs);
-//      exit();
+        
+        
+        $indexdocs = array_map('esParse',$indexdocs->toArray());
 
-     Log::info('I have $indexdocs.......');
+        $this->addToEsData($indexdocs);
 
-
-    foreach ($indexdocs as $data) {
-
-       Log::info('Processing $indexdocs $data.......');
-
-
-      //Exclude exceptional Finders.........
-      $exclude_finders = Config::get('elasticsearch.exclude_finders');
-      $finder_id = intval($data['_id']);
-      if(in_array($finder_id, $exclude_finders)){
-        continue;
-      }
-
-      $clusterid = '';
-
-      // if(!isset($data['location']['locationcluster_id']))
-      // {
-      //   continue;
-      // }
-
-      // else
-      // {
-      //   $clusterid  = $data['location']['locationcluster_id'];
-      // }
-
-      // $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
-      // $locationcluster->toArray();
-      // $cluster = (isset($locationcluster[0]) && isset($locationcluster[0]['name'])) ? $locationcluster[0]['name'] : '';
-      $cluster = '';
-
-//        Log::info('$data for autosuggest.......');
-
-
-      $postdata = get_elastic_autosuggest_doc($data, $cluster);
-
-      $postfields_data = json_encode($postdata);
-
-       Log::info('$postfields_data for autosuggest.......');
-
-
-      // $postfields_data    =   json_encode(json_decode($mapping,true));
-
-      $request = array(
-          'url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/'.$data['_id'],
-          'port' => $this->elasticsearch_port,
-          'method' => 'PUT',
-          'postfields' => $postfields_data
-      );
-
-      $user = es_curl_request($request);
-       Log::info('finder entry in index........'.$data['_id']);
-       Log::info($user);
-
-       Log::info('done vendors of city ',array($city_id));
-
-    }
+    }while(!empty($indexdocs));
+    
   }
 
   public function pushBrandOutlets($index_name){
@@ -530,10 +535,8 @@ class GlobalPushController extends \BaseController
 
 
         $postdata =  get_elastic_autosuggest_brandoutlets_doc($data);
-        $postfields_data = json_encode($postdata);
-
-        $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);     //return $request;exit;
-        echo "<br>    ---  ".es_curl_request($request);
+        
+        $this->addToEsData([$postdata]);
 
       }
     }
@@ -542,7 +545,6 @@ class GlobalPushController extends \BaseController
   public function pushcategorylocations($index_name){
 
     Log::info('in categorylocations.......');
-
 
     foreach ($this->citylist as $city) {
 
@@ -556,32 +558,33 @@ class GlobalPushController extends \BaseController
           ->with('cities')
           ->get();
 
-      foreach ($categorytags as $cat) {
-        foreach ($locationtags as $loc) {
-          $loc = $loc->toArray();
-          $cluster = '';
-          $string = '';
-          switch ($cat['name']) {
-            case 'yoga':
-              $string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
-              break;
-            case 'zumba':
-              $string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
-              break;
-            case 'dance':
-              $string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
-              break;
-            default:
-              $string = ucwords($cat['name']).' in '.ucwords($loc['name']);
-              break;                              }
-Log::info("location".$loc['name']);
-          $postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['cities'][0]['name'], $cluster);
-          $postfields_data = json_encode($postdata);
-
-          $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);     //return $request;exit;
-          echo "<br>    ---  ".es_curl_request($request);
+    
+        foreach ($categorytags as $cat) {
+          foreach ($locationtags as $loc) {
+            $loc = $loc->toArray();
+            $cluster = '';
+            $string = '';
+            switch ($cat['name']) {
+              case 'yoga':
+                $string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
+                break;
+              case 'zumba':
+                $string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
+                break;
+              case 'dance':
+                $string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
+                break;
+              default:
+                $string = ucwords($cat['name']).' in '.ucwords($loc['name']);
+                break;                              }
+            Log::info("location ".$loc['name']);
+            // Log::info($loc);
+            $postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['cities'][0]['name'], $cluster);
+            
+            $this->addToEsData([$postdata]);
+            
+          }
         }
-      }
 
     }
 
@@ -858,31 +861,25 @@ Log::info("location".$loc['name']);
           ->whereNotIn('_id', array(22,30))
           //->whereIn('_id',array(32))
           ->get(array('_id','name','offering_header','slug','status','offerings'));
-
+          
           foreach ($categorytag_offerings as $cat) {
               $catprioroff = isset($this->amenitiesrank[strtolower($cat['name'])]) ? $this->amenitiesrank[strtolower($cat['name'])] : null;
               $offerings = $cat['offerings'];
             foreach ($offerings as $off) {
                 foreach ($locationtags as $loc) {
+                    Log::info($loc);
                 switch (strtolower($cat['name'])) {
                 case 'gyms':
                 $cluster = '';
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
                 $string = ucwords($cat['name']).' with '.ucwords($off['name']).' in '.ucwords($loc['name']);
-                $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
-                $postfields_data = json_encode($postdata);
-                $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
                 break;
 
               case 'yoga':
                 $cluster = '';
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
                 $string = ucwords($off['name']).'- '.ucwords($cat['name']).' classes in '.ucwords($loc['name']);
-                $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
-                $postfields_data = json_encode($postdata);
-                $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                
                 break;
 
               case 'zumba':
@@ -893,7 +890,7 @@ Log::info("location".$loc['name']);
                   $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
                   $postfields_data = json_encode($postdata);
                   $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                  echo "<br> ---  ".es_curl_request($request);
+                  Log::info( "<br> ---  ".es_curl_request($request));
                 }
                 break;
 
@@ -902,73 +899,57 @@ Log::info("location".$loc['name']);
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
                 //$string = ucwords($cat['name']).' in '.ucwords($loc['name']).' with '.ucwords($off['name']);
                 $string = ucwords($off['name']).' - '.ucwords($cat['name']).' in '.ucwords($loc['name']);
-                $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
-                $postfields_data = json_encode($postdata);
-                $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                
                 break;
 
               case 'dance':
                 $cluster = '';
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
                 $string = ucwords($off['name']).' - '.ucwords($cat['name']).' classes in '.ucwords($loc['name']);
-                $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
-                $postfields_data = json_encode($postdata);
-                $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                
                 break;
 
               case 'fitness studios':
                 $cluster = '';
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
                 $string = ucwords($cat['name']).' with '.ucwords($off['name']).' in '.ucwords($loc['name']);
-                $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
-                $postfields_data = json_encode($postdata);
-                $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                
                 break;
 
               case 'crossfit':
                 $cluster = '';
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
                 $string = ucwords($cat['name']).' with '.ucwords($off['name']).' in '.ucwords($loc['name']);
-                $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
-                $postfields_data = json_encode($postdata);
-                $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                
                 break;
 
               case 'pilates':
                 $cluster = '';
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
                 $string = ucwords($off['name']).' - '.ucwords($cat['name']).' in '.ucwords($loc['name']);
-                $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
-                $postfields_data = json_encode($postdata);
-                $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                
                 break;
 
               case 'mma & kickboxing':
                 $cluster = '';
                 $offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
                 $string = ucwords($cat['name']).' '.ucwords($off['name']).' in '.ucwords($loc['name']);
-                $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
-                $postfields_data = json_encode($postdata);
-                $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                
                 break;
 
               default:
                 $cluster = '';
                 $offeringrank =  0;
                 $string = ucwords($cat['name']).' in '.ucwords($loc['name']).' with '.ucwords($off['name']);
-                $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
-                $postfields_data = json_encode($postdata);
-                $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-                echo "<br> ---  ".es_curl_request($request);
+                
                 break;
+
             }
-          }
+            $postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);
+            
+            $this->addToEsData([$postdata]);
+        }
+    
         }
       }
     }
@@ -1023,7 +1004,7 @@ Log::info("location".$loc['name']);
             $postdata = get_elastic_autosuggest_catcity_doc($cat, $cityname, $string);
             $postfields_data = json_encode($postdata);
             $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-            echo "<br> ---  ".es_curl_request($request);
+            $this->addToEsData([$postdata]);
             break;
 
           case 'zumba':
@@ -1031,7 +1012,7 @@ Log::info("location".$loc['name']);
             $postdata = get_elastic_autosuggest_catcity_doc($cat, $cityname, $string);
             $postfields_data = json_encode($postdata);
             $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-            echo "<br> ---  ".es_curl_request($request);
+            $this->addToEsData([$postdata]);
             break;
 
           default:
@@ -1039,7 +1020,7 @@ Log::info("location".$loc['name']);
             $postdata = get_elastic_autosuggest_catcity_doc($cat, $cityname, $string);
             $postfields_data = json_encode($postdata);
             $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-            echo "<br> ---  ".es_curl_request($request);
+            $this->addToEsData([$postdata]);
             break;
         }
       }
@@ -1573,13 +1554,37 @@ Log::info("location".$loc['name']);
       foreach ($locations as $loc) {
         $string = 'All Fitness options in '.ucwords($loc['name']);
         $postdata = get_elastic_autosuggest_allfitness_doc($loc, $cityname, $string);
-        $postfields_data = json_encode($postdata);
-        $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
-        echo "<br> ---  ".es_curl_request($request);
+        
+        $this->addToEsData([$postdata]);
       }
     }
 
     Log::info("done allfittnesslocation.......");
 
   }
+
+    public function addToEsData($data = null, $push_to_es = false) {
+        
+        if(!empty($data)){
+            
+            $this->es_data = array_merge($this->es_data, $data);
+            
+        }
+
+        if((count($this->es_data) && $push_to_es) || count($this->es_data) >= 500){
+
+            for($i = 0; count($this->es_data) > 0; $i++){
+                $post_string = "";
+                foreach($this->es_data as $x){
+                    $post_string = $post_string.json_encode(["index"=>new stdClass()])."\n".json_encode($x)."\n";
+                }
+                $request = array('url' => $this->elasticsearch_url_build.($this->index_name).'/autosuggestor/_bulk', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $post_string);     //return $request;exit;
+                Log::info($this->i++);
+                es_curl_request($request);
+                Log::info('es_curl_request($request)');
+                $this->es_data = [];
+            }
+        }
+
+    }
 }

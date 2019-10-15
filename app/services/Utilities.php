@@ -10076,25 +10076,41 @@ Class Utilities {
 		//customOpenPopup('gold-fit-rewards');
 	}
 
-    public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name){
+    public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name, $finder = null){
 		$orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
-				$slot['order_summary']['header'] = $orderSummary['header']." \n\nPay Day Sale\n\nBook Workout Sessions And Get 100% Instant Cashback. Use Code: FIT100";
+                
+                $slot['order_summary']['header'] = $orderSummary['header']." \n\nThe Big Fitness Sale\n\nGet 40% Off On Workout Sessions. Use Code: BIG40";
+
+                if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
+                    $slot['order_summary']['header'] = $orderSummary['header'];
+                
+
+                }else if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+
+                    $slot['order_summary']['header'] = $orderSummary['header'];
+                }
 		}
 		return $slotsdata;
     }
     
-    public function orderSummarySlots($slotsdata, $service_name, $vendor_name){
+    public function orderSummarySlots($slotsdata, $service_name, $vendor_name, $finder = null){
         $orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
-                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nPay Day Sale\n\nBook Workout Sessions And Get 100% Instant Cashback. Use Code: FIT100"; 
+                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nThe Big Fitness Sale\n\nGet 40% Off On Workout Sessions. Use Code: BIG40"; 
+
+                    if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
+                        $sd['order_summary']['header'] = $orderSummary['header'];
+                    }else if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+                        $sd['order_summary']['header'] = $orderSummary['header'];
+                    }
                 }
             }
 		}
@@ -10661,4 +10677,68 @@ Class Utilities {
 
         return $result;
     }
+    
+    public function mfpBranding($data, $source){
+		try{
+			if($source == "serviceDetailv1"){
+                $data['service']['price'] = "₹ ".$data['service']['amount'];
+                
+                if(!empty($data['service']['easy_cancellation'])){
+                    unset($data['service']['easy_cancellation']);
+                }
+
+				if(!empty($data['service']['slots'])){
+					$slot = array();
+					foreach($data['service']['slots'] as $k => $v){
+						Log::info('price',[$v['price']]);
+
+						$v['price'] = "₹ ".$v['price_only'];
+
+						unset($v['image']);
+
+						array_push($slot, $v);
+					}
+
+					$data['service']['slots'] = $slot;
+				}
+			}
+
+			if($source == "getschedulebyfinderservice"){
+				if(!empty($data['slots'])){
+					$slot1 = array();
+					foreach($data['slots'] as $k1 => $v1){
+						Log::info('price',[$v1['price']]);
+
+						$v1['price'] = "₹ ".$v1['price_only'];
+
+						unset($v1['image']);
+
+						array_push($slot1, $v1);
+					}
+
+					$data['slots'] = $slot1;
+				}
+            }
+            
+            if($source == "finderReviewData"){
+                if(!empty($data)){
+                    $data['optional'] = true;
+                }
+            }
+
+            if($source == "booktrialdetail"){
+                if(!empty($data)){
+                    $data['cancel_enable'] = false;
+                    $data['fit_code'] = false;
+
+                    unset($data['fitcode_message']);
+                    unset($data['fitcode_button_text']);
+                }
+            }
+			
+			return $data;
+		}catch(\Exception $e){
+			Log::info('error occured::::::::', [$e]);
+		}
+	}
 }

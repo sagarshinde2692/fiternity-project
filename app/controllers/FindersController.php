@@ -1399,7 +1399,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY",
+								'text1'=> "50% off + Extra 20% Off On Memberships. Last Few Hours Left. Buy Now!",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1411,7 +1411,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY",
+								'text1'=> "50% off + Extra 20% Off On Memberships. Last Few Hours Left. Buy Now!",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1423,7 +1423,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 20% Off On Memberships & Session Packs, Use code: PAYDAY",
+								'text1'=> "50% off + Extra 20% Off On Memberships. Last Few Hours Left. Buy Now!",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1437,6 +1437,10 @@ class FindersController extends \BaseController {
 					
                 }else if(!empty($response['vendor_stripe_data']['text'])){
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
+				}
+				
+				if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+                    $response['vendor_stripe_data'] = "no-patti";
                 }
 
                 if(empty($response['vendor_stripe_data']['text1'])){
@@ -3892,25 +3896,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Last Few Hours Left. Buy Now!";
             }else{	
-				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nLast Few Hours Left. Buy Now!";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Last Few Hours Left. Buy Now!";
             }else{	
-				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nLast Few Hours Left. Buy Now!";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY<br><br>- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20<br><br>- Get 40% Off On Workout Sessions. Use Code : BIG40 <br><br>Last Few Hours Left. Buy Now!";
             }else{	
-				$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY\n\n- Get 100% Instant Cashback On Workout Sessions. Use Code : FIT100 ";
+				$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20\n\n- Get 40% Off On Workout Sessions. Use Code : BIG40 \n\nLast Few Hours Left. Buy Now!";
             }
 			
 		}
@@ -3923,9 +3927,9 @@ class FindersController extends \BaseController {
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 							if($this->device_type == 'android'){
-								$line = "<u>Pay Day Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY";
+								$line = "<u>The Big Fitness Sale</u><br><br>- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20 <br><br>Last Few Hours Left. Buy Now!";
 							}else{	
-								$line = "\nPay Day Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code : PAYDAY";
+								$line = "\nThe Big Fitness Sale\n\n- Get 50% off + Extra 20% Off On Memberships & Session Packs. Use Code: BIG20 \n\nLast Few Hours Left. Buy Now!";
 							}
 							
 							break;
@@ -3937,6 +3941,10 @@ class FindersController extends \BaseController {
 		
 		$corporate_discount_branding = $this->utilities->corporate_discount_branding();
 		if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+			$line = "";
+		}
+
+		if(in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id'))){
 			$line = "";
 		}
 
@@ -5302,81 +5310,81 @@ class FindersController extends \BaseController {
 					"callback_header" => "Renewal request for ".$finderData['finder']['title']
 				];
 			}
-			$finderData['total_photos_count'] = count($finder['photos']);
+            $finderData['total_photos_count'] = count($finder['photos']);
+            
+            try{
+                $this->orderRatecards($finderData, 'app');
+            }catch(Exception $e){
+                Log::info("Error while sorting ratecard", [$e]);
+            }
+    
+            // $workout_ratecard_arr = array();
+            // foreach($finderData['finder']['services'] as $service){
+            // 	foreach($service['ratecard'] as $ratecard){
+            // 		if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+            // 		Log::info("ratecard_id :::", [$ratecard['_id']]);
+            // 			array_push($workout_ratecard_arr, 1);
+            // 		}
+            // 	}
+            // }
+    
+            // Log::info("workout_ratecard_arr ::", [$workout_ratecard_arr]);
+            // Log::info("count workout_ratecard_arr ::", [count($workout_ratecard_arr)]);
+            
+            // if(count($workout_ratecard_arr) == 0){
+            // 	Log::info("no workout ratecard");
+            // 	$finderData['call_for_action_button'] = "";
+            // 	$finderData['finder']['pay_per_session'] = false;
+            // }
+    
+            // commented on 9th August - Akhil
+            if(!empty($customer_id)){
+                $this->addCreditPoints($finderData['finder']['services'], $customer_id);
+            }
+            //adding static data for hanman fitness
+            // if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
+            // 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
+            // }
+            //Log::info('finder',[$finderData['finder']]);
+            $allowSession = false;
+            $allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
+            foreach($finderData['finder']['services'] as &$service){
+                foreach($service['ratecard'] as &$ratecard){
+                    if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+                        $price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+                        Log::info("Price onepass ::",[$price]);
+                        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+                        
+                        $_allowSession = false;
+                        if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+                            if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price<Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finderData['finder'])) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])) {
+                                $_allowSession = $allowSession['allow_session'];
+                            }
+                        }
+                        if($_allowSession){
+                            unset($ratecard['button_color']);
+                            unset($ratecard['pps_know_more']);
+                            unset($ratecard['pps_title']);
+                            unset($ratecard['remarks']);
+                            unset($ratecard['remarks_imp']);
+                            unset($ratecard['price_text']);
+    
+                            unset($finderData['fit_ex']);
+    
+                            $ratecard['price'] = $ratecard['special_price'] = "0";
+                            $ratecard['start_price_text'] = Config::get('app.onepass_free_string');
+                            $ratecard['skip_share_detail'] = true;
+                        }
+                    }
+                }
+            }
+    
+            $this->photosOrderFloor($finderData['finder']);
 
 		}else{
 
 			$finderData['status'] = 404;
 		}
-
-		try{
-			$this->orderRatecards($finderData, 'app');
-		}catch(Exception $e){
-			Log::info("Error while sorting ratecard", [$e]);
-		}
-
-		// $workout_ratecard_arr = array();
-		// foreach($finderData['finder']['services'] as $service){
-		// 	foreach($service['ratecard'] as $ratecard){
-		// 		if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
-		// 		Log::info("ratecard_id :::", [$ratecard['_id']]);
-		// 			array_push($workout_ratecard_arr, 1);
-		// 		}
-		// 	}
-		// }
-
-		// Log::info("workout_ratecard_arr ::", [$workout_ratecard_arr]);
-		// Log::info("count workout_ratecard_arr ::", [count($workout_ratecard_arr)]);
-		
-		// if(count($workout_ratecard_arr) == 0){
-		// 	Log::info("no workout ratecard");
-		// 	$finderData['call_for_action_button'] = "";
-		// 	$finderData['finder']['pay_per_session'] = false;
-		// }
-
-		// commented on 9th August - Akhil
-		if(!empty($customer_id)){
-			$this->addCreditPoints($finderData['finder']['services'], $customer_id);
-		}
-		//adding static data for hanman fitness
-		// if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
-		// 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
-		// }
-		//Log::info('finder',[$finderData['finder']]);
-		$allowSession = false;
-		$allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
-		foreach($finderData['finder']['services'] as &$service){
-			foreach($service['ratecard'] as &$ratecard){
-				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
-					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-					Log::info("Price onepass ::",[$price]);
-					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-					
-					$_allowSession = false;
-					if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-						if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price<Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finderData['finder'])) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])) {
-							$_allowSession = $allowSession['allow_session'];
-						}
-					}
-					if($_allowSession){
-						unset($ratecard['button_color']);
-						unset($ratecard['pps_know_more']);
-						unset($ratecard['pps_title']);
-						unset($ratecard['remarks']);
-						unset($ratecard['remarks_imp']);
-						unset($ratecard['price_text']);
-
-						unset($finderData['fit_ex']);
-
-						$ratecard['price'] = $ratecard['special_price'] = "0";
-						$ratecard['start_price_text'] = Config::get('app.onepass_free_string');
-						$ratecard['skip_share_detail'] = true;
-					}
-				}
-			}
-		}
-
-		$this->photosOrderFloor($finderData['finder']);
 
 		return Response::json($finderData,$finderData['status']);
 
@@ -5441,14 +5449,18 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-                            $ratecard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
+                            $ratecard['remarks'] = "Get 40% Off On Workout Sessions, Use Code: BIG40";
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
-                            //     $ratecard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
+                            //     $ratecard['remarks'] = "Get 40% Off On Workout Sessions, Use Code: BIG40";
                             // }
 						}
 						
 						$corporate_discount_branding = $this->utilities->corporate_discount_branding();
 						if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+							unset($ratecard['remarks']);
+						}
+
+						if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
 							unset($ratecard['remarks']);
 						}
 
@@ -7000,7 +7012,7 @@ class FindersController extends \BaseController {
 		$finder = Finder::active()->where('_id', intval($finder_id))
 				->with(array('category'=>function($query){$query->select('_id', 'detail_rating','detail_ratings_images');}))
 				->with(array('location'=>function($query){$query->select('_id','name');}))
-				->first(array('title','category_id', 'category','location_id'));
+				->first(array('title','category_id', 'category','location_id', 'flags'));
 
 		if(!empty($_GET['service_name'])){
 			$finder['service_name'] = ucwords(trim(urldecode($_GET['service_name'])));
@@ -7024,6 +7036,11 @@ class FindersController extends \BaseController {
 				'tag' => ['Membership', 'Trial', 'Workout-session'],
 				'header' => 'What is your review based on',
 			];
+		}
+
+
+		if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
+			$review_data = $this->utilities->mfpBranding($review_data, 'finderReviewData');
 		}
 
 		return $review_data;
@@ -8345,7 +8362,7 @@ class FindersController extends \BaseController {
     
     public function orderRatecards(&$data, $source='web'){
         $serviceRatecards = $source=='web' ? 'serviceratecard' : 'ratecard';
-        $duration_session_pack = [1=>1, 30=>7, 90=>20, 180=>75, 360=>120, 720=>500];
+        $duration_session_pack = [1=>1, 30=>7, 90=>20, 180=>75, 360=>120, 720=>500, 1080=>750];
         
         function compareDuration($a, $b){
             return getDurationDay($a) >= getDurationDay($b);
@@ -8429,10 +8446,10 @@ class FindersController extends \BaseController {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
 					}
 					else if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
-						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Pay Day Sale \n\n 50% off + Extra 20% Off On Memberships & Session Packs \n Use Code: PAYDAY");
+						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n The Big Fitness Sale \n\n 50% off + Extra 20% Off On Memberships & Session Packs \n Use Code: BIG20");
 					}
                 }else{
-                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Pay Day Sale \n\n Book Workout Sessions And Get 100% Instant Cashback. Use Code: PPS100");
+                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n The Big Fitness Sale \n\n Get 40% Off On Workout Sessions. Use Code: BIG40");
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
 					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // }
@@ -8685,14 +8702,19 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
+			$rateCard['remarks'] = "Get 40% Off On Workout Sessions, Use Code: BIG40";
 			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
-			// 	$rateCard['remarks'] = "Get 100% Instant Cashback, Use Code: FIT100";
+			// 	$rateCard['remarks'] = "Get 40% Off On Workout Sessions, Use Code: BIG40";
 			// }
 			$rateCard['remarks_imp'] = true;
 
 			$corporate_discount_branding = $this->utilities->corporate_discount_branding();
 			if(!empty($corporate_discount_branding) && $corporate_discount_branding){
+				unset($rateCard['remarks']);
+				unset($rateCard['remarks_imp']);
+			}
+
+			if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
 				unset($rateCard['remarks']);
 				unset($rateCard['remarks_imp']);
 			}

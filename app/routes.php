@@ -155,7 +155,7 @@ Route::get('landingcrushlocationclusterwise/{location_cluster}', 'HomeController
 Route::get('landinganytimefitnessfinders/', 'HomeController@landingAnytimeFitnessFinders');
 Route::get('landinganytimefitnessfinders/{cityid}', 'HomeController@landingAnytimeFitnessFindersCityWise');
 
-Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
+
 
 // Power house gym
 Route::get('landingpowerhousefinders/', 'HomeController@landingPowerhouseFinders');
@@ -182,7 +182,6 @@ Route::get('categorytagofferings/{city?}', 'HomeController@getCategorytagsOfferi
 
 
 Route::get('getcapturedetail/{captureid}', 'CaptureController@getCaptureDetail');
-Route::get('booktrialdetail/{captureid}/{type?}', 'SchedulebooktrialsController@booktrialdetail');
 
 Route::post('feedbackfromcustomer', 'SchedulebooktrialsController@feedbackFromCustomer');
 
@@ -302,6 +301,12 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 });
 
+Route::get('booktrialdetail/{captureid}/{type?}', 'SchedulebooktrialsController@booktrialdetail');
+
+Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
+
+Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
+
 
 Route::post('walletTransactionnew', array('uses' => 'OrderController@debitWalletTransaction'));
 /******************** CUSTOMERS SECTION END HERE ********************/
@@ -335,8 +340,6 @@ Route::post('reliancecustomerupdate',['uses' => 'HomeController@reliancecustomer
 ##############################################################################
 /******************** ORDERS SECTION START HERE ***********************/
 Route::get('couponcodeusedforhealthytiffinbyphoneno/{phoneno}',  array('as' => 'customer.couponcodeusedforhealthytiffinbyphoneno','uses' => 'OrderController@couponCodeUsedForHealthyTiffinByPhoneno'));
-
-Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
 
 // Route::post('checkcouponcode',  array('as' => 'orders.couponcode','uses' => 'OrderController@couponCode'));
 
@@ -1410,3 +1413,4 @@ Route::post('passtab', 'PassController@passTab');
 Route::get('passCashback', 'DebugController@passCashback');
 
 Route::get('healthobject', 'RelianceController@buildHealthObjectStructure');
+Route::get('renewalOnepass', 'DebugController@renewalOnepass');

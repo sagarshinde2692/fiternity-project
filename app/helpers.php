@@ -4708,6 +4708,19 @@ if (!function_exists('curl_call_get')) {
         
     }
 }
+if (!function_exists('customerEmailFromToken')) {
+    function customerEmailFromToken()
+    {
+        $utilities = new Utilities();
+        $customer = $utilities->getCustomerFromToken();
+
+        if(empty($customer)){
+            return;
+        }
+        return $customer['email'];
+        
+    }
+}
 
 if (!function_exists(('setPassToToken'))){
     function setPassToToken($customer, &$data){

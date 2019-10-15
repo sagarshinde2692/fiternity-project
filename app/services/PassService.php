@@ -141,7 +141,7 @@ class PassService {
                 }
             }
 
-            $passDetails['cashback'] = '(Additional FLAT INR 500 Off)';
+            $passDetails['cashback'] = '(Additional 15% Off)';
             unset($passDetails['extra_info']);
 
             if($pass['unlimited_access']) {
@@ -506,6 +506,7 @@ class PassService {
 
         if(!empty($order['status'])){
             $block_communication = true;
+            $block_success_transactions = true;
         }
 
         $wallet_update = $this->updateWallet($order);
@@ -537,7 +538,11 @@ class PassService {
 
         $success_data = $this->getSuccessData($order);
 
-        $this->giveCashbackOnOrderSuccess($order);
+        if(empty($block_success_transactions)){
+            $this->giveCashbackOnOrderSuccess($order);
+        }
+
+        \Queue::connection('redis')->push('PassController@afterTransQueued', array('data'=>$order),Config::get('app.queue'));
 
         return ['status'=>200, 'data'=>$success_data, 'order'=>$order];
 
@@ -1155,7 +1160,7 @@ class PassService {
        
         if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['web_message'] = $success['web_message'];
-
+            $success_template['subline_1'] = "You can start booking from ".date('D, d M Y', strtotime($order['start_date']));
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
                 $success_template['offer_success_msg'] = "Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass";
             }
@@ -1177,6 +1182,7 @@ class PassService {
             if(!empty($profile_completed)){
                 unset($success_template['personalize']);
             }
+            unset($success_template['subline_1']);
 
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
                 $success_template['subline'] .= 'Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
@@ -1540,7 +1546,7 @@ class PassService {
             ],
             [
                'field' => '',
-               'value' => 'Use code: FIVE00 to get additional FLAT INR 500 off',
+               'value' => 'Use Code: BIG15 To Get Additional 15% Off',
             ]
         ];
 

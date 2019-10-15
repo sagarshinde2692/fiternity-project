@@ -956,7 +956,7 @@ class ServiceController extends \BaseController {
                             $str = '';
 						
                             if(empty($finder['flags']['monsoon_campaign_pps'])){
-                                $str = " (100% Cashback)";  
+                                $str = "";  
                             }
 
                             $corporate_discount_branding = $this->utilities->corporate_discount_branding();
@@ -1224,7 +1224,7 @@ class ServiceController extends \BaseController {
 				if(!empty($allowSession['allow_session']) && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
-                    $str = " (100% Cashback)";
+                    $str = "";
 				
                     $corporate_discount_branding = $this->utilities->corporate_discount_branding();
                     if(!empty($corporate_discount_branding) && $corporate_discount_branding){
@@ -1395,7 +1395,7 @@ class ServiceController extends \BaseController {
                         $sc['free_trial_available'] = false;
                     }
 					
-					$str = " (100% Cashback)";
+					$str = "";
 					if(((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])) || (!empty($sc['extended_validity']))){
 						
 						$str = "";
@@ -1487,6 +1487,25 @@ class ServiceController extends \BaseController {
 			// 		$this->addCreditPoints($slot, $customer_id, $workout_amount, 'data');
 			//  	}
 			// }
+
+			if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
+                $data = $this->utilities->mfpBranding($data, 'getschedulebyfinderservice');
+            }
+            
+            if(!empty($finder) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+
+				if(!empty($data['schedules'])){
+                    foreach($data['schedules'] as &$slt){
+                        $slt['cost'] = "₹ ".$slt['price_int'];
+					}
+				}
+
+				if(!empty($data['slots'])){
+                    foreach($data['slots'] as &$slot){
+                        $slot['price'] = "₹ ".$slot['price_only'];
+					}
+				}
+			}
 
             return Response::json($data,200);
         }
@@ -1934,7 +1953,7 @@ class ServiceController extends \BaseController {
 
 			$str = '';
             if(empty($finder['flags']['monsoon_campaign_pps'])){
-                $str =" (100% Cashback)";
+                $str ="";
 			}
 			
 			$corporate_discount_branding = $this->utilities->corporate_discount_branding();
@@ -2331,6 +2350,7 @@ class ServiceController extends \BaseController {
 			}
 			// $service_details['next_session'] = "No sessions available";
 		}
+		$finder = $service_details['finder'];
 		unset($service_details['finder']);
 		unset($service_details['workout_session_ratecard']);
 		if(isset($service_details['session_unavailable']) && $service_details['session_unavailable']){
@@ -2352,6 +2372,8 @@ class ServiceController extends \BaseController {
 		
 		$data['service'] = $service_details;
 
+		$finder['flags'] = $data['service']['finder_flags'];
+
 		$data['bookmark'] = false;
 		if($service_details['servicecategory_id'] != 65){
 			$data['share_message_email'] = $data['share_message_text'] = "Check-out ".$service_details['title']." in ".$service_details['location']['name']." on Fitternity, India's biggest fitness discovery and booking platform. Pay-per-session available here - https://www.fitternity.com/".$finder_slug . " Download app to book -". Config::get('app.download_app_link');
@@ -2367,8 +2389,24 @@ class ServiceController extends \BaseController {
 			$data['service'] = $this->utilities->orderSummaryService($data['service']);
 		}
 		if(!empty($data['service']['slots'] && in_array($this->device_type, ['android', 'ios']))){
-			$data['service']['slots'] = $this->utilities->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name']);
+			$data['service']['slots'] = $this->utilities->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name'], $finder);
 		}
+
+
+		if(!empty($data['service']['finder_flags']['mfp']) && $data['service']['finder_flags']['mfp']){
+            $data = $this->utilities->mfpBranding($data, 'serviceDetailv1');
+        }
+        
+        if(!empty($finder) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+			$data['service']['price'] = "₹ ".$data['service']['amount'];
+
+			if(!empty($data['service']['slots'])){
+				foreach($data['service']['slots'] as &$sl){
+					$sl['price'] = "₹ ".$sl['price_only'];
+				}
+			}
+		}
+
 		return Response::json(array('status'=>200, 'data'=> $data));
 
 	}
