@@ -2141,7 +2141,7 @@ class PassService {
         // }
 
         $upcoming['contact_us'] = Config::get('pass.before_purchase_tab.footer');
-        if(!empty($data['post_trial_initail_status']) && strtolower($data['post_trial_initail_status']) == 'interested'  && !empty($data['post_trial_status']) && strtolower($data['post_trial_status']) == 'attended' && !empty($data['post_trial_status_updated_by_unlocksession'])){
+        if(!empty($data['post_trial_initail_status']) && strtolower($data['post_trial_initail_status']) == 'interested'  && !empty($data['post_trial_status']) && strtolower($data['post_trial_status']) == 'attended'){
 
             $upcoming['header'] = "Session Activated";
 
