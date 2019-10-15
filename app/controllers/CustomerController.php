@@ -152,9 +152,9 @@ class CustomerController extends \BaseController {
 
 			if($type=='upcoming') {
 
-				$trial['show_details'] = true;
+				$trial['showdetails'] = true;
 				if(!empty($trial['pass_order_id'])){
-					$trial['show_details'] = false;
+					$trial['showdetails'] = false;
 				}
 				$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 				$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
