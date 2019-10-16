@@ -2002,7 +2002,7 @@ class HomeController extends BaseController {
                 if(isset($item['type']) && in_array($item['type'],["memberships","workout-session","booktrials"]) && $key == "address" && isset($item['finder_lat']) && isset($item['finder_lon']) && !isset($_GET['device_type'])){
                     $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value'],'lat'=>$item['finder_lat'],'lon'=>$item['finder_lon']];
                 }else{
-                    Log::info('position::::::::::::::::::::', [$value]);
+                    
                     $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
                 }
                 
