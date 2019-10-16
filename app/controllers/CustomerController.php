@@ -4325,9 +4325,15 @@ class CustomerController extends \BaseController {
 		$passOrder = null;
 		//  commented on 9th Aug - Akhil
 		if(!empty($customeremail)) {
-			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)/*->where('end_date','>=',new MongoDate())*/->orderBy('_id', 'desc')->first();
+			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
 			if(!empty($passOrder)) {
 				$passPurchased = true;
+			}
+			if(empty($passPurchased)){
+				$passOrderCount = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->orderBy('_id', 'desc')->count();
+				if(!empty($passOrderCount)){
+					$passPurchased= true;
+				}
 			}
 			// $this->flexipassHome($order, $result);
 			// if(empty($order)) {
@@ -4360,7 +4366,7 @@ class CustomerController extends \BaseController {
 		// }
 
 		
-		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
+		if($passPurchased /*&& !empty($passOrder['pass']['pass_type'])*/) {
 			// $result['onepass_post'] = Config::get('pass.home.after_purchase'.$passOrder['pass']['pass_type']);
 			$result['onepass_post'] = $this->passService->homePostPassPurchaseData($passOrder['customer_id'], false);
 			unset($result['campaigns']);
