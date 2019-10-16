@@ -1434,10 +1434,6 @@ class ServiceController extends \BaseController {
 						$sc['cost'] .= $str;
 					}
 					
-					// $sc['onepass_booking_block'] = true;
-					// if(!empty($allowSession['order_id']) && !empty($allowSession['profile_incomplete'])){
-					// 	$sc['onepass_booking_block'] = true;
-					// }
 					if(!empty($sc['free_trial_available']) && $sc['free_trial_available']){
 						$sc['free_session_coupon'] = 'FREE';
 					}
@@ -2123,7 +2119,6 @@ class ServiceController extends \BaseController {
 		$allowSession['allow_session'] = false;
 		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
 			$allowSession = $this->passService->allowSession($service_details['amount'], $customer_id, $date, $service_details['finder_id'], true);
-			Log::info('profile completed data:::::', [$allowSession]);
 			// if(!empty($allowSession['allow_session'])) {
 			// 	$allowSession = $allowSession['allow_session'];
 			// }
@@ -2135,9 +2130,7 @@ class ServiceController extends \BaseController {
 		if(!empty($allowSession['allow_session']) && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $service_details['finder_flags']])) && (!empty($service_details['flags']['classpass_available']) && $service_details['flags']['classpass_available'])){
 			
 			$service_details['price'] = Config::get('app.onepass_free_string');
-			// if(!empty($allowSession['profile_incomplete'])){
-			// 	$service_details['onepass_booking_block'] = true;
-			// }
+			
 		}
 
 		$des = 'You can cancel this session 1 hour prior to your session time.';
@@ -2149,8 +2142,7 @@ class ServiceController extends \BaseController {
 			"description" => $des
 		);
 
-		$service_details['onepass_booking_block'] = false;
-		if(!empty($customer_id)){
+		if(!empty($customer_id) && !empty($allowSession['allow_session']) ){
 			$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
 			if(empty($profile_completed)){
 				$service_details['onepass_booking_block'] = true;
@@ -2795,21 +2787,17 @@ class ServiceController extends \BaseController {
 			return;
 		}
 
-		if(!empty($service['slots']) /*&& !empty($allowSession['allow_session'])*/ && empty($profile_completed)){
+		if(!empty($service['slots']) && empty($profile_completed)){
 	
 			foreach($service['slots'] as &$value){
 
 				if(!empty($value['data'])){
 					foreach($value['data'] as &$value_data){
-						// if($value_data['price']< Config::get('pass.price_upper_limit')){
-							$value_data['onepass_booking_block'] = true;
-						// }
+						$value_data['onepass_booking_block'] = true;
 					}
 				}
 				else{
-					// if($value['price']<  Config::get('pass.price_upper_limit')){
-						$value['onepass_booking_block'] = true;
-					// }
+					$value['onepass_booking_block'] = true;
 				}
 			}
 			

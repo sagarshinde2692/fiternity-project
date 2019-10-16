@@ -1071,6 +1071,7 @@ class HomeController extends BaseController {
                 }
 
                 Log::info('indfo::::', [$this->device_type, $this->app_version]);
+                $profile_completed = true;
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 
                     $finder_category = !empty($item['servicecategory_id']) ? ($item['servicecategory_id'] ==5 ? 'gym' : 'studio'): 'gym / studio';
@@ -1085,6 +1086,9 @@ class HomeController extends BaseController {
 
                     if(!empty($item['pass_order_id'])){
                         $steps =  Config::get('pass.booking_using_pass_success_message');
+                    } else {
+							$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
+						}
                     }
                 }
 
@@ -1159,6 +1163,7 @@ class HomeController extends BaseController {
                     }
 
                     $response['steps'] = $steps;
+                    $response['onepass_booking_block'] = empty($profile_completed) ? true: false;
                 }
 
                 if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
