@@ -973,9 +973,7 @@ class ServiceController extends \BaseController {
                             
 						}
 
-						$rsh['onepass_booking_block'] = false;
-						$nrsh['onepass_booking_block'] = false;
-						if(!empty($customer_id)){
+						if(!empty($customer_id) && !empty($allowSession['allow_session'])){
 							$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
 							if(empty($profile_completed)){
 								$rsh['onepass_booking_block'] = true;
@@ -1237,10 +1235,7 @@ class ServiceController extends \BaseController {
                     $service['non_peak']['price'] .= $str;
 				}
 
-				$service['non_peak']['onepass_booking_block'] = false;
-
-				if(!empty($customer_id)){
-					Log::info('customer_id:::: FIRST', [$customer_id]);
+				if(!empty($customer_id)&& !empty($allowSession['allow_session'])){
 					$profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
 					if(empty($profile_completed)){
 						$service['non_peak']['onepass_booking_block'] = true;
@@ -2795,6 +2790,10 @@ class ServiceController extends \BaseController {
 	}
 
 	public function addDisableBooking(&$service, $profile_completed, $allowSession){
+
+		if(empty($allowSession['allow_session'])){
+			return;
+		}
 
 		if(!empty($service['slots']) /*&& !empty($allowSession['allow_session'])*/ && empty($profile_completed)){
 	
