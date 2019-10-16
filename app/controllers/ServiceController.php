@@ -946,11 +946,13 @@ class ServiceController extends \BaseController {
 							if($rsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
 								$rsh['price'] = Config::get('app.onepass_free_string');
 								unset($rsh['title']);
+								unset($rsh['image']);
 							}
 							
 							if($nrsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
 								unset($nrsh['title']);
+								unset($rsh['image']);
 							}
 							
 						}else if(empty($finder['flags']['monsoon_campaign_pps'])){
