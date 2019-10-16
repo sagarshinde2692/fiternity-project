@@ -945,10 +945,12 @@ class ServiceController extends \BaseController {
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
 							if($rsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
 								$rsh['price'] = Config::get('app.onepass_free_string');
+								unset($rsh['title']);
 							}
 							
 							if($nrsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
+								unset($nrsh['title']);
 							}
 							
 						}else if(empty($finder['flags']['monsoon_campaign_pps'])){
@@ -1223,6 +1225,7 @@ class ServiceController extends \BaseController {
 				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 				if(!empty($allowSession['allow_session']) && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
+					unset($service['non_peak']['text']);
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $str = "";
 				
