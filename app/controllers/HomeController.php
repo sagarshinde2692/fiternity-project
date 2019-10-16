@@ -1163,8 +1163,9 @@ class HomeController extends BaseController {
                     }
 
                     $response['steps'] = $steps;
-                    $response['onepass_booking_block'] = empty($profile_completed) ? true: false;
                 }
+
+                $response['onepass_booking_block'] = empty($profile_completed) ? true: false;
 
                 if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
                     $response['streak']['header'] = '';
