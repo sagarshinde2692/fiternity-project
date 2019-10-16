@@ -2087,41 +2087,17 @@ class PassService {
             'unlock_text' => 'UNLOCK SESSION',
             'unlock_url' => Config::get('app.url').'/unlocksession/'.$data['_id'],
             'cancel_text' => 'CANCEL SESSION',
-            'cancel_url' => Config::get('app.url').'/canceltrial/'.$data['_id']
+            'cancel_url' => Config::get('app.url').'/canceltrial/'.$data['_id'],
+            'cancel_message' => 'Are you sure you want to cancel your session at '. ucwords($data['finder_name']),
+            'success_message' => 'Are you sure you have reached the fitness center and want to unlock your session?'
         ];
-        //$upcoming['header_text'] = "Session Starts In";
+
         $minutes30 = 60*30;
         $hour2 = 60 * 60 *2;
         $scheduleDateTime 				=	\Carbon::parse($data['schedule_date_time']);
         $scheduleDateTime = strtotime($scheduleDateTime);
 
         $time_diff = $scheduleDateTime - strtotime('now');
-        // if(
-        //     !(
-        //         (
-        //             $data['finder_category_id'] == 5 
-        //             && 
-        //             (
-        //                 ($time_diff > 0 && $time_diff <= $hour2) 
-        //                 || 
-        //                 ($time_diff <=0 && $time_diff >= - $hour2)
-        //             )
-        //         ) 
-        //         ||
-        //         (
-        //             $data['finder_category_id'] != 5 
-        //             && 
-        //             (
-        //                 ($time_diff > 0 && $time_diff <= $minutes30) 
-        //                 || 
-        //                 ($time_diff <=0 && $time_diff >= - $minutes30)
-        //             )
-        //         )
-        //     )
-        // ){
-        //     unset($upcoming['footer']['unlock_text']);
-        //     unset($upcoming['footer']['unlock_url']);
-        // }
 
         $upcoming['contact_us'] = Config::get('pass.before_purchase_tab.footer');
         if(!empty($data['post_trial_initail_status']) && strtolower($data['post_trial_initail_status']) == 'interested'  && !empty($data['post_trial_status']) && strtolower($data['post_trial_status']) == 'attended'){
