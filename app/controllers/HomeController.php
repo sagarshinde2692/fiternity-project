@@ -1070,8 +1070,7 @@ class HomeController extends BaseController {
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
                 }
 
-                Log::info('indfo::::', [$this->device_type, $this->app_version]);
-                
+
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 
                     $finder_category = !empty($item['servicecategory_id']) ? ($item['servicecategory_id'] ==5 ? 'gym' : 'studio'): 'gym / studio';
@@ -1163,8 +1162,8 @@ class HomeController extends BaseController {
                     $response['steps'] = $steps;
                 }
 
-                if($item['type']=='workout-session' && empty($item['pass_order_id'])){
-
+                if(!empty($item['type']) && $item['type']=='workout-session' && empty($item['pass_order_id'])){
+                    
                     $profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
                     $response['onepass_booking_block'] = empty($profile_completed) ? true: false;
                 }
