@@ -7639,10 +7639,12 @@ class CustomerController extends \BaseController {
 						$response['button_text']['unlock'] = [
 							'text' => $upcoming_booking['footer']['unlock_text'],
 							'url' => $upcoming_booking['footer']['unlock_url']."?from=notification_before10min",
+							'unlock_message' => $upcoming_booking['footer']['unlock_message']
 						];
 
 						$response['sub_header'] = "Activate Your Session";//$upcoming_booking['footer']['unlock_text'];
 						$response['footer'] = "NOTE :  You can access your active session screen from the homescreen ticker as well.";
+						$response['button_text']['cant_make']['cancel_message'] = $upcoming_booking['footer']['cancel_message'];
 					}
 					else {
 						$response['sub_header'] = $upcoming_booking['header'];

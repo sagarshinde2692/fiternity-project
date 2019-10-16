@@ -976,7 +976,7 @@ return [
             'cancel_text' => 'CANCEL SESSION',
             'cancel_url' => Config::get('app.url').'/canceltrial/'.'trial_id',
             'cancel_message' => 'Are you sure you want to cancel your session at finder_name',
-            'success_message' => 'Are you sure you have reached the finder_name and want to unlock your session?'
+            'unlock_message' => 'Are you sure you have reached the finder_name and want to unlock your session?'
         ],
         'contact_us' => [
             'contact_text' => 'Need Help? Contact your Personal Concierge',
