@@ -955,11 +955,43 @@ return [
     ],
 
     'upcoming_booking' => [
+        'header' => "Upcoming Session",
+        'workout' => [
+            'icon' => '',
+            'header' => '',
+            'text' => ''
+        ],
+        'finder' => [
+            'header' => '',
+            'text' => '',
+            'address' => ''
+        ],
+        'direction' => 'Get Direction',
+        'lat' => '',
+        'lon' => '',
+        'footer' => [
+            'text' => 'Tap on UNLOCK SESSION button within vendor_type premises to activate your session.',
+            'unlock_text' => 'UNLOCK SESSION',
+            'unlock_url' => Config::get('app.url').'/unlocksession/'.'trial_id',
+            'cancel_text' => 'CANCEL SESSION',
+            'cancel_url' => Config::get('app.url').'/canceltrial/'.'trial_id',
+            'cancel_message' => 'Are you sure you want to cancel your session at finder_name',
+            'success_message' => 'Are you sure you have reached the finder_name and want to unlock your session?'
+        ],
+        'contact_us' => [
+            'contact_text' => 'Need Help? Contact your Personal Concierge',
+            'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+            'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
+        ],
+        "remarks" => "Show this screen at the finder_name to access your workout.",
+
+    ],
+
+    'upcoming_config_booking' => [
         'header' => "Session Activated",
         "image" => "https://b.fitn.in/passes/check_circle.png",
         "title" => "service_name",
         "text" => "finder_name",
-        "remarks" => "Show this screen at the finder_name to access your workout.",
         "session_data" => []
     ],
 

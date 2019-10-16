@@ -2058,9 +2058,10 @@ class PassService {
         if(empty($data)){
             return;
         }
-        $upcoming = [];
+
+        Log::info('upcoming:::', []);
+        $upcoming = Config::get('pass.upcoming_booking');
         
-        $upcoming['header'] = "Upcoming Session";
         $upcoming['_id'] = $data['_id'];
 
         $icons = $this->utilities->getServiceCategoriesIcon()[0];
@@ -2082,15 +2083,12 @@ class PassService {
         $upcoming['lon'] = $data['finder_lon'];
 
         $vendor_type = $data['finder_category_id'] == 5 ? 'gym' : 'studio';
-        $upcoming['footer'] = [
-            'text' => 'Tap on UNLOCK SESSION button within '.$vendor_type.' premises to activate your session.',
-            'unlock_text' => 'UNLOCK SESSION',
-            'unlock_url' => Config::get('app.url').'/unlocksession/'.$data['_id'],
-            'cancel_text' => 'CANCEL SESSION',
-            'cancel_url' => Config::get('app.url').'/canceltrial/'.$data['_id'],
-            'cancel_message' => 'Are you sure you want to cancel your session at '. ucwords($data['finder_name']),
-            'success_message' => 'Are you sure you have reached the fitness center and want to unlock your session?'
-        ];
+        $replace_by_value = ['vendor_type' => $vendor_type, 'trial_id'=> $data['_id'], 'finder_name'=> ucwords($data['finder_name'])];
+
+        foreach($upcoming['footer'] as &$value){
+            $value = strtr($value, $replace_by_value);
+        }
+        $upcoming['remarks'] = strtr($upcoming['remarks'] , $replace_by_value);
 
         $minutes30 = 60*30;
         $hour2 = 60 * 60 *2;
@@ -2099,7 +2097,6 @@ class PassService {
 
         $time_diff = $scheduleDateTime - strtotime('now');
 
-        $upcoming['contact_us'] = Config::get('pass.before_purchase_tab.footer');
         if(!empty($data['post_trial_initail_status']) && strtolower($data['post_trial_initail_status']) == 'interested'  && !empty($data['post_trial_status']) && strtolower($data['post_trial_status']) == 'attended'){
 
             $upcoming['header'] = "Session Activated";
@@ -2118,17 +2115,13 @@ class PassService {
                 $upcoming['user_photo'] = $customer->onepass['photo']['url'];
             }
 
-            
-            $upcoming_config = Config::get('pass.upcoming_booking');
-            $upcoming['remarks'] = $upcoming_config['remarks'];
-            unset($$upcoming_config['remarks']);
-            
             $upcoming['time_diff'] = -1;
             if(!empty($from) && $from =='pass_tab'){
+                $upcoming_config = Config::get('pass.upcoming_config_booking');
+                unset($$upcoming['header']);
                 $upcoming['header_text'] = "Session Activated";
                 $upcoming_config['title'] = ucwords($data['service_name']);
                 $upcoming_config['text'] = ucwords($data['finder_name']);
-                unset($$upcoming['header']);
                 $upcoming_config['session_data'] = $upcoming;
                 $upcoming = $upcoming_config;
             }
