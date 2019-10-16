@@ -1432,8 +1432,8 @@ class PassService {
         }
         $wallet = Wallet::active()->where('customer_id', $data['logged_in_customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
         if(!empty($wallet)){
-            $data['fitcash'] = !empty($data['amount'] - $wallet['balance']) ? $wallet['balance'] : $data['amount']; 
-            $data['amount'] = !empty($data['amount'] - $data['fitcash']) ? ($data['amount'] - $data['fitcash']) : 0;
+            $data['fitcash'] = $data['amount'] - $wallet['balance'] > 0 ? $wallet['balance'] : $data['amount']; 
+            $data['amount'] = $data['amount'] - $data['fitcash'] > 0 ? ($data['amount'] - $data['fitcash']) : 0;
             $data['wallet_id'] = $wallet['_id'];
             $data['cashback_detail']['amount_deducted_from_wallet'] = $data['fitcash'];
             // $data['rp_description'] = $data['fitcash'].' Rs Fitcash Applied.';
