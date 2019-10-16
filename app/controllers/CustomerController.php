@@ -4329,6 +4329,7 @@ class CustomerController extends \BaseController {
 			if(!empty($passOrder)) {
 				$passPurchased = true;
 			}
+
 			if(empty($passPurchased)){
 				$passOrderCount = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->orderBy('_id', 'desc')->count();
 				if(!empty($passOrderCount)){
@@ -4365,10 +4366,10 @@ class CustomerController extends \BaseController {
 		// 	$this->sessionPackRemoveExtraFields($result['session_packs']);
 		// }
 
-		
+		Log::info('pass purchased dstatus:::', [$passPurchased]);
 		if($passPurchased /*&& !empty($passOrder['pass']['pass_type'])*/) {
 			// $result['onepass_post'] = Config::get('pass.home.after_purchase'.$passOrder['pass']['pass_type']);
-			$result['onepass_post'] = $this->passService->homePostPassPurchaseData($passOrder['customer_id'], false);
+			$result['onepass_post'] = $this->passService->homePostPassPurchaseData($customer_id, false);
 			unset($result['campaigns']);
 		}
 		else {
