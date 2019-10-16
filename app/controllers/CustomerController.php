@@ -4366,7 +4366,7 @@ class CustomerController extends \BaseController {
 		// 	$this->sessionPackRemoveExtraFields($result['session_packs']);
 		// }
 
-		Log::info('pass purchased dstatus:::', [$passPurchased]);
+		
 		if($passPurchased /*&& !empty($passOrder['pass']['pass_type'])*/) {
 			// $result['onepass_post'] = Config::get('pass.home.after_purchase'.$passOrder['pass']['pass_type']);
 			$result['onepass_post'] = $this->passService->homePostPassPurchaseData($customer_id, false);
