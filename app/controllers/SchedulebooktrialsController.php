@@ -8819,7 +8819,7 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 if($distance_in_meters > $max_unlock_distance && $booktrial->unlock_trial_count < 3){
                     $pass_further =true;
-                    $message =  "You need to be within the ".$finder_category_name." premises to activate your session.";
+                    $message =  "We are unable to verify your location around ".ucwords($booktrial->finder_name).". Please be within the gym premises to unlock your session.";
                 }
             }
         }
@@ -8888,7 +8888,7 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($pass_further) && $booktrial->unlock_trial_count ==2){
                 return Response::json([
                     'status' =>200,
-                    "message" => "Still facing the issue? Proceed without Unlock & enjoy your session",
+                    "message" => "We are still having trouble detecting your location. For now, you can proceed without unlocking & enjoy your session.",
                     "button_text" => "Proceed"
                 ],200);
             }
