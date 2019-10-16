@@ -1443,7 +1443,11 @@ class ServiceController extends \BaseController {
 			//  	}
 			// }
 
-			if(!empty($finder) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+			if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
+                $data = $this->utilities->mfpBranding($data, 'getschedulebyfinderservice');
+            }
+            
+            if(!empty($finder) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
 
 				if(!empty($data['schedules'])){
                     foreach($data['schedules'] as &$slt){
@@ -2304,6 +2308,8 @@ class ServiceController extends \BaseController {
 		
 		$data['service'] = $service_details;
 
+		$finder['flags'] = $data['service']['finder_flags'];
+
 		$data['bookmark'] = false;
 		if($service_details['servicecategory_id'] != 65){
 			$data['share_message_email'] = $data['share_message_text'] = "Check-out ".$service_details['title']." in ".$service_details['location']['name']." on Fitternity, India's biggest fitness discovery and booking platform. Pay-per-session available here - https://www.fitternity.com/".$finder_slug . " Download app to book -". Config::get('app.download_app_link');
@@ -2322,7 +2328,12 @@ class ServiceController extends \BaseController {
 			$data['service']['slots'] = $this->utilities->orderSummarySlots($data['service']['slots'], $data['service']['name'], $data['service']['finder_name'], $finder);
 		}
 
-		if(!empty($finder) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+
+		if(!empty($data['service']['finder_flags']['mfp']) && $data['service']['finder_flags']['mfp']){
+            $data = $this->utilities->mfpBranding($data, 'serviceDetailv1');
+        }
+        
+        if(!empty($finder) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
 			$data['service']['price'] = "₹ ".$data['service']['amount'];
 
 			if(!empty($data['service']['slots'])){

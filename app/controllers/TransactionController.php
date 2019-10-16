@@ -1535,7 +1535,7 @@ class TransactionController extends \BaseController {
                 }
             }
     
-            if(empty($data['session_payment']) && empty($data['session_pack_discount'])){
+            if(empty($data['session_payment']) && empty($data['session_pack_discount']) && empty($order['ratecard_flags']['hide_mfp_quantity'])){
                 
                 if(in_array($order['type'], ['booktrials', 'workout-session'])){
                     $resp['data']["quantity_details"] = [
@@ -6201,7 +6201,7 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'Get 50% Off + Extra 20% Off, Use Code: BIG20','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'50% off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5','position'=>$position++];
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
@@ -6217,7 +6217,7 @@ class TransactionController extends \BaseController {
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
 
-            if(in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
+            if(!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp'] || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
         }
@@ -6626,25 +6626,25 @@ class TransactionController extends \BaseController {
         
         $os_version = intval(Request::header('Os-Version'));
         
-        if($os_version >= 9 && $this->device_type == 'android'){
-            $payment_options['wallet']['options'] = [
-                    [
-                            'title' => 'Paytm',
-                            // 'subtitle' => 'Paytm',
-                            'value' => 'paytm'
-                    ],
-                    [
-                            'title' => 'Mobikwik',
-                            // 'subtitle' => 'Mobikwik',
-                            'value' => 'mobikwik'
-                    ],
-                    [
-                            'title' => 'PayU',
-                            // 'subtitle' => 'PayU',
-                            'value' => 'payu'
-                    ]
-            ];
-        }
+        // if($os_version >= 9 && $this->device_type == 'android'){
+        //     $payment_options['wallet']['options'] = [
+        //             [
+        //                     'title' => 'Paytm',
+        //                     // 'subtitle' => 'Paytm',
+        //                     'value' => 'paytm'
+        //             ],
+        //             [
+        //                     'title' => 'Mobikwik',
+        //                     // 'subtitle' => 'Mobikwik',
+        //                     'value' => 'mobikwik'
+        //             ],
+        //             [
+        //                     'title' => 'PayU',
+        //                     // 'subtitle' => 'PayU',
+        //                     'value' => 'payu'
+        //             ]
+        //     ];
+        // }
         
         if(!empty($data['pay_later'])){
             
@@ -6658,12 +6658,22 @@ class TransactionController extends \BaseController {
         }else{
             
             if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount']) && empty($order['finder_flags']['monsoon_campaign_pps'])){
-                $payment_modes[] = array(
-                    'title' => 'Online Payment',
-                    'subtitle' => 'Transact online with netbanking, card and wallet',
-                    'value' => 'paymentgateway',
-                    'payment_options'=>$payment_options
-                );
+                
+                if(!empty($order['finder_flags']['mfp']) && $order['finder_flags']['mfp']){
+                    $payment_modes[] = array(
+                        'title' => 'Online Payment',
+                        'subtitle' => 'Transact online with netbanking, card and wallet',
+                        'value' => 'paymentgateway',
+                        'payment_options'=>$payment_options
+                    );
+                }else{
+                    $payment_modes[] = array(
+                        'title' => 'Online Payment (100% Cashback)',
+                        'subtitle' => 'Transact online with netbanking, card and wallet',
+                        'value' => 'paymentgateway',
+                        'payment_options'=>$payment_options
+                    );
+                }
             }else{
                 $payment_modes[] = array(
                     'title' => 'Online Payment',
