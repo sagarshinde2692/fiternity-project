@@ -4325,7 +4325,7 @@ class CustomerController extends \BaseController {
 		$passOrder = null;
 		//  commented on 9th Aug - Akhil
 		if(!empty($customeremail)) {
-			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)/*->where('end_date','>=',new MongoDate())*/->orderBy('_id', 'desc')->first();
 			if(!empty($passOrder)) {
 				$passPurchased = true;
 			}
