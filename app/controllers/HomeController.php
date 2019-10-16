@@ -1073,7 +1073,7 @@ class HomeController extends BaseController {
                 Log::info('indfo::::', [$this->device_type, $this->app_version]);
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 
-                    $finder_category = !empty($item['finder_category_id']) ? $item['finder_category_id'] ==5 ? 'gym' : 'studio': 'gym / studio';
+                    $finder_category = !empty($item['servicecategory_id']) ? ($item['servicecategory_id'] ==5 ? 'gym' : 'studio'): 'gym / studio';
 
                     $steps = Config::get('paypersession.pps_booking_success_message');
 
@@ -1593,7 +1593,7 @@ class HomeController extends BaseController {
 
             $position = 0;
 
-            $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
+            // $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
             
             if(isset($item['extended_validity']) && $item['extended_validity']){ 
                 $booking_details_data["validity"] = ['field'=>'VALIDITY','value'=>(!empty($item['ratecard_flags']['unlimited_validity']) ? "Unlimited Validity" :  $serviceDurArr[1]),'position'=>$position++];
@@ -1711,38 +1711,38 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Free Via Fitternity";
             }
 
-            if(isset($item['code']) && $item['code'] != ""){
-                $booking_details_data['booking_id']['value'] = $item['code'];
-            }
+            // if(isset($item['code']) && $item['code'] != ""){
+            //     $booking_details_data['booking_id']['value'] = $item['code'];
+            // }
 
-            if(in_array($type,["booktrialfree"])){
+            // if(in_array($type,["booktrialfree"])){
 
-                if(isset($item['code']) && $item['code'] != ""){
-                    $booking_details_data['booking_id']['value'] = $item['code'].' (Share it at Gym/Studio to get Fitcode)';
-                }
+            //     if(isset($item['code']) && $item['code'] != ""){
+            //         $booking_details_data['booking_id']['value'] = $item['code'].' (Share it at Gym/Studio to get Fitcode)';
+            //     }
 
-            }
+            // }
 
-            if(in_array($type, ["booktrial","workoutsession","workout-session","booktrials"])){
+            // if(in_array($type, ["booktrial","workoutsession","workout-session","booktrials"])){
 
-                if(isset($item['booktrial_id']) && $item['booktrial_id'] != ""){
+            //     if(isset($item['booktrial_id']) && $item['booktrial_id'] != ""){
 
-                    $order_booktrial = Booktrial::customerValidation(customerEmailFromToken())->find(intval($item['booktrial_id']));
+            //         $order_booktrial = Booktrial::customerValidation(customerEmailFromToken())->find(intval($item['booktrial_id']));
 
-                    if(isset($order_booktrial['code'])){
+            //         if(isset($order_booktrial['code'])){
                         
-                        $booking_details_data['booking_id']['value'] = $order_booktrial['code'];
+            //             $booking_details_data['booking_id']['value'] = $order_booktrial['code'];
 
-                        if(in_array($type, ["booktrial","booktrials"])){
+            //             if(in_array($type, ["booktrial","booktrials"])){
 
-                            $booking_details_data['booking_id']['value'] = $order_booktrial['code'].' (Share it at Gym/Studio to get Fitcode)';
-                        }
+            //                 $booking_details_data['booking_id']['value'] = $order_booktrial['code'].' (Share it at Gym/Studio to get Fitcode)';
+            //             }
                     
-                    }
+            //         }
 
-                }
+            //     }
 
-            }
+            // }
 
             if(isset($item['type']) && $item['type'] == 'memberships'){
 
@@ -2002,6 +2002,7 @@ class HomeController extends BaseController {
                 if(isset($item['type']) && in_array($item['type'],["memberships","workout-session","booktrials"]) && $key == "address" && isset($item['finder_lat']) && isset($item['finder_lon']) && !isset($_GET['device_type'])){
                     $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value'],'lat'=>$item['finder_lat'],'lon'=>$item['finder_lon']];
                 }else{
+                    Log::info('position::::::::::::::::::::', [$value]);
                     $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
                 }
                 
