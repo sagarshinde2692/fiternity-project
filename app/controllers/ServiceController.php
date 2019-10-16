@@ -945,14 +945,10 @@ class ServiceController extends \BaseController {
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
 							if($rsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
 								$rsh['price'] = Config::get('app.onepass_free_string');
-								unset($rsh['title']);
-								unset($rsh['image']);
 							}
 							
 							if($nrsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
-								unset($nrsh['title']);
-								unset($rsh['image']);
 							}
 							
 						}else if(empty($finder['flags']['monsoon_campaign_pps'])){
@@ -1122,7 +1118,10 @@ class ServiceController extends \BaseController {
                             (
                                 (isset($item['flags']['disable_dynamic_pricing']) && empty($item['flags']['disable_dynamic_pricing'])) 
                                 || 
-                                (isset($finder['flags']['disable_dynamic_pricing']) && empty($finder['flags']['disable_dynamic_pricing'])))
+								(isset($finder['flags']['disable_dynamic_pricing']) && empty($finder['flags']['disable_dynamic_pricing']))
+							)
+							&& 
+							empty($allowSession['allow_session'])
                             ){
 
 							$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
@@ -1227,7 +1226,6 @@ class ServiceController extends \BaseController {
 				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 				if(!empty($allowSession['allow_session']) && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
-					unset($service['non_peak']['text']);
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $str = "";
 				
