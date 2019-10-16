@@ -959,6 +959,7 @@ return [
         "image" => "https://b.fitn.in/passes/check_circle.png",
         "title" => "service_name",
         "text" => "finder_name",
+        "remarks" => "Show this screen to Vendor to get in gym / studio",
         "session_data" => []
     ],
 

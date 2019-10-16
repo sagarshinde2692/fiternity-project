@@ -2145,6 +2145,8 @@ class PassService {
             if(!empty($from) && $from =='pass_tab'){
                 $upcoming['header_text'] = "Session Activated";
                 $upcoming_config = Config::get('pass.upcoming_booking');
+                $upcoming['remarks'] = $upcoming_config['remarks'];
+                unset($$upcoming_config['remarks']);
                 $upcoming_config['title'] = ucwords($data['service_name']);
                 $upcoming_config['text'] = ucwords($data['finder_name']);
                 unset($$upcoming['header']);
