@@ -371,10 +371,8 @@ class PassService {
                 }
             }
             else if(!empty($order) && empty($data['coupon_code'])){
-                unset($order->coupon_discount_percent);
-                unset($order->coupon_discount_amount);
-                unset($order->coupon_description);
-                unset($order->coupon_code);
+                $keys = ['coupon_discount_percent', 'coupon_discount_amount', 'coupon_description', 'coupon_code'];
+                $order->unset($keys);
             }
 
             $hash = getHash($data);
