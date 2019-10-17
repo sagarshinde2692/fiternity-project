@@ -201,6 +201,10 @@ class TransactionController extends \BaseController {
         if(!empty($_SERVER['REQUEST_URI'])){
             Log::info($_SERVER['REQUEST_URI']);
         }
+        
+        if(!empty(Request::header('Origin'))){
+            $data['origin_url'] = Request::header('Origin');
+        }
         Log::info('------------transactionCapture---------------',$data);
 
         if(!empty($data['customer_quantity']) && is_string($data['customer_quantity'])){
@@ -619,7 +623,7 @@ class TransactionController extends \BaseController {
                 Log::info('$data["total_sessions_used"]: ', [$data['total_sessions_used']]);
             	if(isset($data['total_sessions_used']))
             	{
-            		if(intval($data['total_sessions'])>intval($data['total_sessions_used']))
+            		if((intval($data['total_sessions'])==-1) || (intval($data['total_sessions'])>intval($data['total_sessions_used'])))
             		{
 	            		$data['total_sessions_used'] = intval($data['total_sessions_used']);
                         $data['total_sessions'] = intval($data['total_sessions']);
@@ -683,33 +687,73 @@ class TransactionController extends \BaseController {
                         $cust->third_party_details=$data['third_party_details'];
                         $cust->third_party_acronym=$acronym;
                         $cust->save();
+                        $createWorkoutRes = null;
+                        if(!empty($acronym) && $acronym=='abg') {
+                            $createWorkoutRes = $this->utilities->createWorkoutSession($order->_id, true);
                         
-                        $createWorkoutRes = $this->utilities->createWorkoutSession($order->_id, true);
-                        $booktrialData = json_decode($createWorkoutRes->getContent(), true);
-                        if($booktrialData['status']==200){
+                            $booktrialData = json_decode($createWorkoutRes->getContent(), true);
+                            if($booktrialData['status']==200){
 
-                            $usedSessionsCount = (intval($data['total_sessions_used'])+1);
+                                $usedSessionsCount = (intval($data['total_sessions_used'])+1);
 
-                            $updatedOrder = Order::findOrFail($order->_id);
-                            $updatedOrder->update(["total_sessions_used" => $usedSessionsCount]);
+                                $updatedOrder = Order::findOrFail($order->_id);
+                                $updatedOrder->update(["total_sessions_used" => $usedSessionsCount]);
 
-                            $updatedCust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
-                            $updatedCust->total_sessions_used = $usedSessionsCount;
-                            $tpdtls = $updatedCust->third_party_details;
-                            $tpdtls[$acronym]['third_party_used_sessions'] = $usedSessionsCount;
-                            $updatedCust->third_party_details = $tpdtls;
-                            $updatedCust->save();
+                                $updatedCust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
+                                $updatedCust->total_sessions_used = $usedSessionsCount;
+                                $tpdtls = $updatedCust->third_party_details;
+                                $tpdtls[$acronym]['third_party_used_sessions'] = $usedSessionsCount;
+                                $updatedCust->third_party_details = $tpdtls;
+                                $updatedCust->save();
 
-                            $this->utilities->financeUpdate($order);
+                                $this->utilities->financeUpdate($order);
 
-	            		    return Response::json([
-                                'status'=>200,
-                                "message"=>"Successfully Generated and maintained Workout session.",
-                                'booktrial_id' => $booktrialData['booktrialid']
-                            ]);
+                                return Response::json([
+                                    'status'=>200,
+                                    "message"=>"Successfully Generated and maintained Workout session.",
+                                    'booktrial_id' => $booktrialData['booktrialid']
+                                ]);
+                            }
+                            else {
+                                return Response::json(['status'=>$booktrialData['status'],"message"=>$booktrialData['message']]);
+                            }
                         }
                         else {
-                            return Response::json(['status'=>$booktrialData['status'],"message"=>$booktrialData['message']]);
+                            $this->utilities->financeUpdate($order);
+
+                            $result['firstname'] = trim(strtolower($data['customer_name']));
+                            $result['lastname'] = "";
+                            $result['phone'] = $data['customer_phone'];
+                            $result['email'] = strtolower($data['customer_email']);
+                            $result['orderid'] = $order['_id'];
+                            $result['productinfo'] = strtolower($order['productinfo']);
+                            $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($order['service_name']));
+                            $result['finder_name'] = strtolower($order['finder_name']);
+                            $result['type'] = $order['type'];
+                            if(isset($order['type']) && ($order['type'] == 'workout-session')){
+                                $result['session_payment'] = true;
+                            }
+                            if(isset($order['convinience_fee'])){
+                                $result['convinience_fee_charged'] = true;
+                                $result['convinience_fee'] = $order['convinience_fee'];
+                            }
+                            if(isset($order['cashback_detail']) && isset($order['cashback_detail']['amount_deducted_from_wallet'])){
+                                $result['wallet_amount'] = $order['cashback_detail']['amount_deducted_from_wallet'];
+                            }
+                            if(!empty($order['ratecard_id'])){
+                                $result['ratecard_id'] = $order['ratecard_id'];
+                            }
+                            if(isset($order['full_payment_wallet'])){
+                                $result['full_payment_wallet'] = $order['full_payment_wallet'];
+                            }
+
+                            $resp   =   array(
+                                'status' => 200,
+                                'data' => $result,
+                                'message' => "Tmp Order Generated Sucessfully",
+                            );
+
+                            return Response::json($resp);
                         }
             		}
             		else {
@@ -1491,7 +1535,7 @@ class TransactionController extends \BaseController {
                 }
             }
     
-            if(empty($data['session_payment']) && empty($data['session_pack_discount'])){
+            if(empty($data['session_payment']) && empty($data['session_pack_discount']) && empty($order['ratecard_flags']['hide_mfp_quantity'])){
                 
                 if(in_array($order['type'], ['booktrials', 'workout-session'])){
                     $resp['data']["quantity_details"] = [
@@ -6157,7 +6201,7 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'Get 50% Off + Extra 20% Off, Use Code: BIG20','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'50% off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5','position'=>$position++];
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
@@ -6173,7 +6217,7 @@ class TransactionController extends \BaseController {
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
 
-            if(in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
+            if(!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp'] || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
         }
@@ -6582,25 +6626,25 @@ class TransactionController extends \BaseController {
         
         $os_version = intval(Request::header('Os-Version'));
         
-        if($os_version >= 9 && $this->device_type == 'android'){
-            $payment_options['wallet']['options'] = [
-                    [
-                            'title' => 'Paytm',
-                            // 'subtitle' => 'Paytm',
-                            'value' => 'paytm'
-                    ],
-                    [
-                            'title' => 'Mobikwik',
-                            // 'subtitle' => 'Mobikwik',
-                            'value' => 'mobikwik'
-                    ],
-                    [
-                            'title' => 'PayU',
-                            // 'subtitle' => 'PayU',
-                            'value' => 'payu'
-                    ]
-            ];
-        }
+        // if($os_version >= 9 && $this->device_type == 'android'){
+        //     $payment_options['wallet']['options'] = [
+        //             [
+        //                     'title' => 'Paytm',
+        //                     // 'subtitle' => 'Paytm',
+        //                     'value' => 'paytm'
+        //             ],
+        //             [
+        //                     'title' => 'Mobikwik',
+        //                     // 'subtitle' => 'Mobikwik',
+        //                     'value' => 'mobikwik'
+        //             ],
+        //             [
+        //                     'title' => 'PayU',
+        //                     // 'subtitle' => 'PayU',
+        //                     'value' => 'payu'
+        //             ]
+        //     ];
+        // }
         
         if(!empty($data['pay_later'])){
             
@@ -6614,12 +6658,22 @@ class TransactionController extends \BaseController {
         }else{
             
             if(isset($order['type']) && $order['type'] == 'workout-session' && isset($order['customer_quantity']) && $order['customer_quantity'] == 1 && isset($order['amount']) && $order['amount'] > 0 && !isset($order['coupon_discount_amount']) && empty($order['finder_flags']['monsoon_campaign_pps'])){
-                $payment_modes[] = array(
-                    'title' => 'Online Payment',
-                    'subtitle' => 'Transact online with netbanking, card and wallet',
-                    'value' => 'paymentgateway',
-                    'payment_options'=>$payment_options
-                );
+                
+                if(!empty($order['finder_flags']['mfp']) && $order['finder_flags']['mfp']){
+                    $payment_modes[] = array(
+                        'title' => 'Online Payment',
+                        'subtitle' => 'Transact online with netbanking, card and wallet',
+                        'value' => 'paymentgateway',
+                        'payment_options'=>$payment_options
+                    );
+                }else{
+                    $payment_modes[] = array(
+                        'title' => 'Online Payment (100% Cashback)',
+                        'subtitle' => 'Transact online with netbanking, card and wallet',
+                        'value' => 'paymentgateway',
+                        'payment_options'=>$payment_options
+                    );
+                }
             }else{
                 $payment_modes[] = array(
                     'title' => 'Online Payment',
@@ -8632,15 +8686,12 @@ class TransactionController extends \BaseController {
     					'txnid'=>$order['txnid'],
     					'amount'=>(int)$val["transactionValue"],
     					'status' => 'success',
-    					'hash'=> $val["hash"]
+                        'hash'=> $val["hash"],
+                        'orderId'=>$order['_id']
+                        
     			];
     			if($website == "1"){
-    				$url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
-    				if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
-    					$url = Config::get('app.website')."/paymentsuccesstrial?". http_build_query($success_data, '', '&');
-    				}
-    				Log::info(http_build_query($success_data, '', '&'));
-    				Log::info($url);
+    				$url = $this->getAmazonPaySuccessUrl($order, $success_data);
     				return Redirect::to($url);
     			}else{
     				Log::info(" info success data ".print_r($success_data,true));
@@ -8729,15 +8780,11 @@ class TransactionController extends \BaseController {
     					'txnid'=>$val['sellerOrderId'],
     					'amount'=>(int)$val["orderTotalAmount"],
     					'status' => 'success',
-    					'hash'=> $val["hash"]
+                        'hash'=> $val["hash"],
+                        'orderId'=>$order['_id']
     			];
     			if($website == "1"){
-    				$url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
-    				if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
-    					$url = Config::get('app.website')."/paymentsuccesstrial?". http_build_query($success_data, '', '&');
-    				}
-    				Log::info(http_build_query($success_data, '', '&'));
-    				Log::info($url);
+    				$url = $this->getAmazonPaySuccessUrl($order, $success_data);
     				return Redirect::to($url);
     			}else{
     				$paymentSuccess = $this->fitweb->paymentSuccess($success_data);
@@ -10019,6 +10066,21 @@ class TransactionController extends \BaseController {
         }
 
         return $first_session_free;
+    }
+
+    public function getAmazonPaySuccessUrl($order, $success_data){
+        
+        $origin = !empty($order['origin_url']) ? $order['origin_url'] : Config::get('app.website');
+        $base_url = $origin."/paymentsuccess";
+        
+        if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
+            $base_url = $origin."/paymentsuccesstrial";
+        }else if($order['type'] == "events"){
+            $base_url = $origin."/eventpaymentsuccess";
+        }
+        
+        Log::info(http_build_query($success_data, '', '&'));
+        return $base_url."?". http_build_query($success_data, '', '&');
     }
 
 }

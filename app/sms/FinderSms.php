@@ -320,7 +320,11 @@ Class FinderSms extends VersionNextSms{
 		// 	$to = array('9619240452', '9920150108'); //Nilesh's number ('9096794779') added, later changed (Hemant called) - Aditya Birla
 		// }
 		// else if(!empty($data['third_party_details'])){
-		if(!Config::get('app.vendor_communication') && !empty($data['third_party_details'])){
+
+		if(!Config::get('app.vendor_communication') && !empty($data['third_party_details']['ekn']) && $label=='ClockDayVendor') {
+			$to = ['9755979216', '9619240452'];
+        }
+		else if(!Config::get('app.vendor_communication') && !empty($data['third_party_details'])){
 			$to = array('9619240452');
 		}
 		else if(!Config::get('app.vendor_communication')){

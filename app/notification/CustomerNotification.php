@@ -348,6 +348,13 @@ Class CustomerNotification extends Notification{
 
 	public function common($label,$data,$notif_type,$notif_object,$delay = 0){
 
+		try{
+			$ekincareCust = !empty($data['third_party_details']['ekn']);
+			if($ekincareCust){
+				return;
+			}
+		} catch(\Exception $e) { }
+
 		$template = \Template::where('label',$label)->first();
 		// $device_type = $data['device_type'];
 

@@ -38,7 +38,7 @@ class GlobalPushController extends \BaseController
     appending date to rolling builds for new index
     */
     $timestamp =  date('Y-m-d');
-    $index_name = $this->index_name = $this->name.$timestamp.'-'.random_numbers(3);
+    $index_name = $this->index_name = $this->name.$timestamp.'-'.date('H-i-s');
 
     /*
    creating new index appended with timestamp
@@ -461,6 +461,7 @@ class GlobalPushController extends \BaseController
         ->whereNotIn('_id', Config::get('app.hide_from_search'))
         ->where('city_id', $city_id)
         ->where('flags.state', '!=', 'closed')
+        ->where('flags.mfp', '!=', true)
         ->whereNotIn('categorytags',[37])
         ->with(array('country'=>function($query){$query->select('name');}))
         ->with(array('city'=>function($query){$query->select('name');}))

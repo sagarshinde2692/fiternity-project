@@ -85,7 +85,18 @@ class PassService {
                 }
             }
 
-            $passDetails['cashback'] = '(Additional 15% Off)';
+            $passDetails['text'] = '(Additional 15% Off)';
+
+            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 90){
+                $passDetails['text'] = "(Additional 15% off \nor 3 Weeks Extension)";
+            }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 180){
+                $passDetails['text'] = "(Additional 15% off \nor 1.5 Months Extension)";
+            }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 360){
+                $passDetails['text'] = "(Additional 15% off \nor 3 Months Extension)";
+            }
+
+            unset($passDetails['cashback']);
+
             unset($passDetails['extra_info']);
 
             if($pass['unlimited_access']) {
@@ -286,6 +297,15 @@ class PassService {
                         // if(strtolower($data["coupon_code"]) == 'fit2018'){
                         //     $data['routed_order'] = "1";
                         // }
+
+                        if(!empty($couponCheck['flags']['extension_percent'])){
+                            $data['duration_more'] = round(($pass['duration'] * $couponCheck['flags']['extension_percent']) / 100);
+
+                            $data['duration_total'] = $pass['duration'] + $data['duration_more'];
+
+                            $data['end_date'] = new \MongoDate(strtotime('midnight', strtotime('+'.$data['duration_total'].' days', (!empty($data['preferred_starting_date']))?strtotime($data['preferred_starting_date']):time())));
+                        }
+
                     }
                 }
             }
@@ -425,6 +445,7 @@ class PassService {
 
         if(!empty($order['status'])){
             $block_communication = true;
+            $block_success_transactions = true;
         }
 
         $wallet_update = $this->updateWallet($order);
@@ -456,7 +477,11 @@ class PassService {
 
         $success_data = $this->getSuccessData($order);
 
-        $this->giveCashbackOnOrderSuccess($order);
+        if(empty($block_success_transactions)){
+            $this->giveCashbackOnOrderSuccess($order);
+        }
+
+        \Queue::connection('redis')->push('PassController@afterTransQueued', array('data'=>$order),Config::get('app.queue'));
 
         return ['status'=>200, 'data'=>$success_data, 'order'=>$order];
 
@@ -1416,7 +1441,9 @@ class PassService {
 
     function getBookingDetails($data){
 
+        $pass_type_ori = $data['pass']['pass_type'];
         $pass_type = ucwords($data['pass']['pass_type']);
+        $pass_duration = $data['pass']['duration'];
         $duration_field = $data['pass']['pass_type'] == 'red' ? 'Duration' : 'No of Sessions';
         
 
@@ -1432,12 +1459,20 @@ class PassService {
             [
                'field' => 'START DATE',
                'value' => date('l, j M Y',strtotime($data['start_date'])),
-            ],
-            [
-               'field' => '',
-               'value' => 'Use Code: BIG15 To Get Additional 15% Off',
             ]
         ];
+
+        if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [90,180,360])){
+            $resp[] = [
+                   'field' => '',
+                   'value' => 'Use Code: MORE25 To Get Free Extension or Use Code: BIG15 To Get Additional 15% Off',
+            ];
+        }else {
+            $resp[] = [
+                'field' => '',
+                'value' => 'Get 30% Off + Extra 15% Off Use Code: BIG15',
+            ];
+        }
 
         return $resp;
     }

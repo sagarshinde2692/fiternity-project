@@ -56,7 +56,7 @@ return array(
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://beta.fitn.in',
 	// 'admin_url' => 'http://adminstage.fitn.in',
-	// 'website' => 'http://apistage.fitn.in:1122',
+	// 'website' => 'http://apistage.fitn.in:1133',
 	// 'sidekiq_url' => 'http://kick.fitn.in/',
 	// 'queue' => 'booktrial',
 	// 'vendor_communication' => false,
@@ -68,13 +68,15 @@ return array(
 	// 'website_deeplink' =>'https://ftrnty.com',
 	// 'mobikwik_sandbox'=>true,
 	// 'paytm_sandbox'=>true,
+	// 'paypal_sandbox'=>true,
 	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
-	// 'razorPayKey' => 'rzp_test_6TKjLnXzpuVIds',
 	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
+	// 'razorpay' => [ 'key_id' => 'rzp_test_6TKjLnXzpuVIds', 'secret_key' => 'rK7FwR1a4coHHLCuhSSLz8P5', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
+	// 'razorPayKey' => 'rzp_test_6TKjLnXzpuVIds',
 	// 'razorPaySecret' => 'rK7FwR1a4coHHLCuhSSLz8P5',
 	// "webhook_secret_key"=>"qwepoifghtyvb",
 	// "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
-	// 'paypal_sandbox'=>true,
+	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-stage.cloudfunctions.net/',
 
 	//live
 	'new_search_url' =>'http://c1.fitternity.com/',	
@@ -1037,7 +1039,7 @@ return array(
     
 	'non_flexi_service_cat'=>[111, 65, 5],
 	
-	'camp_excluded_vendor_id'=>[579, 1233, 1260, 1261, 1262, 1874, 2105, 9171, 9178, 5742, 10675],
+	'camp_excluded_vendor_id'=>[579, 1233, 1260, 1261, 1262, 1874, 2105, 9171, 9178, 5742, 10675, 1935, 9423, 9481, 9600, 9932, 9954, 10674, 10970, 11021, 11223, 12208, 13094, 13898, 13968, 14102, 14107, 14622, 14626, 14627, 15431, 15775, 15980, 16062, 16251, 16449, 16450, 16562, 16636, 16644],
     
     'tab_session_pack_vendor_ids'=>[1490,424,1935,9423,9481,9932,9954,10970,11021,11223,12208,13968,14102,15431,15775,15980,16251]
     

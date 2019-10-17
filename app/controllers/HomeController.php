@@ -1076,6 +1076,10 @@ class HomeController extends BaseController {
                     $subline .= '</p>';
                 }
 
+                if(!empty($item['finder_flags']['mfp']) && $item['finder_flags']['mfp']){
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' ';  
+                }
+
                 $streak_items = [];
 
                 foreach(Config::get('app.streak_data') as $value){
@@ -1095,7 +1099,7 @@ class HomeController extends BaseController {
                         $subline = $subline.' Session activation also helps you earn cashback into your Fitternity Wallet.';
                     }
                 }
-
+                
                 $response = [
                     'status'=>200,
                     'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
@@ -1107,6 +1111,10 @@ class HomeController extends BaseController {
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
+
+                if(!empty($item['finder_flags']['mfp']) && $item['finder_flags']['mfp']){
+                    unset($response['streak']);
+                }
                 
                 if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
                     $response['streak']['header'] = '';
