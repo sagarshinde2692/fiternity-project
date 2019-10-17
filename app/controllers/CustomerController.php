@@ -3923,14 +3923,14 @@ class CustomerController extends \BaseController {
 								}
 
 								$data_new['header_text'] = "Session Starts In";
-								unset($data_new['header']);
 								if(!empty($data_new['footer']['subscription_description'])){
 									$data_new['schedule_date_time_text'] ="Session Activated";
 									$data_new['time_diff'] =-1;
-									$data_new['header_text']  = "Session Activated";
+									$data_new['header_text']  = $data_new['header'];//"Session Activated";
 									//unset($data_new['block_screen']);
 									unset($data_new['activation_url']);
 								}
+								unset($data_new['header']);
 
 								$upcoming_new[] = $data_new;
 							}

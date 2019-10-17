@@ -2155,8 +2155,8 @@ class PassService {
             $upcoming['time_diff'] = -1;
             if(!empty($from) && $from =='pass_tab'){
                 $upcoming_config = Config::get('pass.upcoming_config_booking');
-                unset($$upcoming['header']);
-                $upcoming['header_text'] = "Session Activated";
+                $upcoming['header_text'] = $upcoming['header'];//"Session Activated";
+                unset($upcoming['header']);
                 $upcoming_config['title'] = ucwords($data['service_name']);
                 $upcoming_config['text'] = ucwords($data['finder_name']);
                 $upcoming_config['session_data'] = $upcoming;
