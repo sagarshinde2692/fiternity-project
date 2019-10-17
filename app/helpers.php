@@ -2683,23 +2683,6 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                             $data['cart_id']=$customer['cart_id'];
 
                         setPassToToken($customer, $data);
-                        // if(!empty($passOrder)){
-                        //     $data['pass']=1;
-                        //     $data['pass_start_date']=(!empty($passOrder['start_date']))?strtotime($passOrder['start_date']):null;
-                        //     $data['pass_expiry_date']=(!empty($passOrder['end_date']))?strtotime($passOrder['end_date']):null;
-                        //     $data['pass_type']=$passOrder['pass']['pass_type'];
-                        //     $data['pass_sessions_total']=null;
-                        //     if(!empty($passOrder['onepass_sessions_total'])) {
-                        //         $data['pass_sessions_total']=$passOrder['onepass_sessions_total']-1;
-                        //     }
-                        //     $data['pass_sessions_used']=(!!$passOrder['onepass_sessions_used'])?$passOrder['onepass_sessions_used']:0;
-                        //     $data['pass_city_id'] = !empty($passOrder['pass_city_id']) ? $passOrder['pass_city_id'] : null;
-                        //     $data['pass_city_name'] = !empty($passOrder['pass_city_name']) ? $passOrder['pass_city_name'] : null;
-                        //     $data['pass_order_id']=(!!$passOrder['_id'])?$passOrder['_id']: null;
-                        //     if($data['pass_type'] =='hybrid'){
-                        //         $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
-                        //     }
-                        // }
                     }
 
                     		
@@ -4744,6 +4727,23 @@ if (!function_exists(('setPassToToken'))){
                 $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
             }
         }
+    }
+}
+
+if(!function_exists(('onepassPhase2AppCheck'))){
+    function onepassPhase2AppCheck($order){
+
+        if(in_array($order['customer_source'], ['website']) || !empty($order['third_party_details'])){
+            return true;
+        }
+
+        $app_version = !empty(Request::header('App-Version'))? Request::header('App-Version') : null;
+        $device_type = !empty(Request::header('Device-Type'))? Request::header('Device-Type'): null;
+
+        if(!empty($app_version) && !empty($device_type) && (($device_type =='ios' && $app_version >= '5.2.4') || ($device_type =='android' && $app_version >= '5.31'))){
+            return true;
+        }
+        return false;
     }
 }
 
