@@ -1071,7 +1071,8 @@ class HomeController extends BaseController {
                 }
 
 
-                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
+                $app_version_phase2_check = onepassPhase2AppVersionCheck();
+                if($app_version_phase2_check){
 
                     $finder_category = !empty($item['servicecategory_id']) ? ($item['servicecategory_id'] ==5 ? 'gym' : 'studio'): 'gym / studio';
 
@@ -1121,7 +1122,7 @@ class HomeController extends BaseController {
                 }
 
                 $steps_count = 0;
-                if((($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')) && !empty($item['corporate_id']) && empty($item['external_reliance'])){
+                if($app_version_phase2_check && !empty($item['corporate_id']) && empty($item['external_reliance'])){
 
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
 

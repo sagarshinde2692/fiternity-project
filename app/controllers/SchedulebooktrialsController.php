@@ -3701,7 +3701,7 @@ class SchedulebooktrialsController extends \BaseController {
               $booktrialdata['booking_for_others'] = $data['booking_for_others'];
             }
 
-            if(onepassPhase2AppCheck($data)){
+            if(empty(onepassPhase2AppCheck($data))){
                 $booktrialdata['vendor_code'] = random_numbers(5);
             }
 
@@ -4391,7 +4391,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrial->toArray());
             }
 
-            if(!isset($booktrial['vendor_code']) && !empty(onepassPhase2AppCheck($booktrial))){
+            if(!isset($booktrial['vendor_code']) && empty(onepassPhase2AppCheck($booktrial))){
                 array_set($booktrialdata,'vendor_code',random_numbers(5));
             }
 
@@ -7846,7 +7846,7 @@ class SchedulebooktrialsController extends \BaseController {
     public function sessionStatusCapture($status, $booktrial_id,$qrcode=false){
         
         $booktrial = Booktrial::find(intval($booktrial_id));
-
+        $app_version_phase2_check = onepassPhase2AppVersionCheck();
         if(!$booktrial){
             return Response::json(array('status'=>400, 'message'=>'Workout Session not found'), 200);
         }
@@ -8020,7 +8020,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "will be added into your steps counter post verifying your attendance from gym/studio.";    
                 }
 
-                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31') && empty($booktrial['vendor_code'])){
+                if($app_version_phase2_check && empty($booktrial['vendor_code'])){
 
                     if(empty($booktrial['pass_order_id']) || !empty($booktrial['corporate_id'])) {
                         $response['sub_header_2'] .= "\nAwesome !\nWe are glad you enjoyed your workout.";
@@ -8081,7 +8081,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "Sorry, cancellation is available only ".$cancel_preior_time." prior to your session time.\n\nKeep booking workouts to get closer to your steps milestone.";
                 }
 
-                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')  && empty($booktrial['vendor_code'])){
+                if($app_version_phase2_check && empty($booktrial['vendor_code'])){
                     $response['sub_header_2'] = "Don't worry! Rebook the session and continue with your workout journey.";
                 }
 
@@ -8121,7 +8121,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
                 }
 
-                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31') && empty($booktrial['vendor_code'])){
+                if($app_version_phase2_check && empty($booktrial['vendor_code'])){
                     $response['sub_header_2'] ="Don't worry! You can rebook the session for later and continue with your fitness journey.";
                 }
                 if(!empty($booktrial->pass_order_id)){
@@ -8175,7 +8175,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['activate']['sub_header_2'] = 'Punch your subscription code on the kiosk/tab available at the center to activate your session';
                 }
 
-                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31') && empty($booktrial['vendor_code'])){
+                if($app_version_phase2_check && empty($booktrial['vendor_code'])){
                     $response['activate'] = [
                         'sub_header_1' =>'UNLOCK YOUR SESSION',
                         'sub_header_2' =>'Navigate to upcoming session ticker on your homescreen to unlock this session at '.$booktrial['finder_name']
