@@ -7644,6 +7644,7 @@ class CustomerController extends \BaseController {
 						$response['sub_header'] = "Activate Your Session";//$upcoming_booking['footer']['unlock_text'];
 						$response['footer'] = "NOTE :  You can access your active session screen from the homescreen ticker as well.";
 						//$response['button_text']['cant_make']['cancel_message'] = $upcoming_booking['footer']['cancel_message'];
+						unset($response['activation_success']);
 					}
 					else {
 						$response['activation_success'] = [
@@ -7656,7 +7657,6 @@ class CustomerController extends \BaseController {
 						$response['block'] = false;
 					}
 	
-					unset($response['activation_success']);
 					unset($response['button_text']['activate']);
 					unset($response['button_text']['activate']['cancel_text']);
 					unset($response['button_text']['activate']['cancel']);
