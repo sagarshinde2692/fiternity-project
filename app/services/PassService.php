@@ -1918,6 +1918,9 @@ class PassService {
             if(!empty($customerData['onepass']['photo']['url'])){
                 $profile['image'] = $customerData['onepass']['photo']['url'];
             }
+            else{
+                $profile = Config::get('pass.customer_no_image');
+            }
 
             if(!empty($interest) && $interest !=''){
                 $profile['text'] = $interest;
@@ -2150,6 +2153,9 @@ class PassService {
             
             if(!empty($customer->onepass['photo']['url'])){
                 $upcoming['user_photo'] = $customer->onepass['photo']['url'];
+            }
+            else{
+                $upcoming['user_photo']  = Config::get('pass.customer_no_image');
             }
 
             $upcoming['time_diff'] = -1;

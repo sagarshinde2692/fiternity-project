@@ -1034,5 +1034,6 @@ return [
             "Show your activated session screen with your photo at the finder_category to enjoy the session.\n",
             "unlock session and earn steps_count steps.\n"
         ] 
-    ]
+        ],
+    'customer_no_image' => 'https://b.fitn.in/customer_photo/no_image_available.png'
 ];
