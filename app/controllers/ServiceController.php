@@ -1394,6 +1394,7 @@ class ServiceController extends \BaseController {
                     }
 					
 					$str = "";
+					Log::info('free trial available::::::::::::::::::::::', [$sc['free_trial_available']]);
 					if(((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])) || (!empty($sc['extended_validity']))){
 						
 						$str = "";
