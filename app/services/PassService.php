@@ -2173,7 +2173,7 @@ class PassService {
                 unset($upcoming['footer']['cancel_text']);
                 unset($upcoming['footer']['cancel_url']);
             }
-            unset($upcomig['remarks']);
+            unset($upcoming['remarks']);
         }
 
         return $upcoming;
