@@ -7649,9 +7649,9 @@ class CustomerController extends \BaseController {
 					else {
 						$response['activation_success'] = [
 							'header'=>	ucwords($data['service_name'])." at ".ucwords($data['finder_name'])."\n\n 00hrs : 00min: 00sec",
-							'sub_header_1' => $upcoming_booking['header'],
-							'image'=> $upcoming_booking['user_photo'],
-							'sub_header_2'=>$upcoming_booking['remarks']
+							'sub_header_1' => 'SESSION ACTIVATED',//$upcoming_booking['header'],
+							'image'=> 'https://b.fitn.in/paypersession/happy_face_icon-2.png',
+							'sub_header_2'=>"\n\n".$upcoming_booking['remarks']
 						];
 						unset($response['button_text']);
 						$response['block'] = false;
