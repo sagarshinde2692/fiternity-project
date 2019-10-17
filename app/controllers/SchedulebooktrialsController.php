@@ -8754,7 +8754,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial_id = (int) $booktrial_id;
 
-        $response = Response::json(array('status' => 400,'message' =>'Sorry! Cannot locate your booking'),200);
+        $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
 
         $jwt_token = Request::header('Authorization');
         $decoded = customerTokenDecode($jwt_token);
@@ -8826,15 +8826,14 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(!empty($booktrial) && empty($booktrial->post_trial_status) && (empty($pass_further) || $booktrial->unlock_trial_count ==3 || (!empty($data['from'])&& $data['from'] =='mark_customer_attanance'))){
 
+            Log::info('inside post trial status::: ture');
             if(empty($booktrial->pass_order_id) && empty($booktrial->vefify_fitcode_using_unlock)){
                 if($booktrial->unlock_trial_count<3 && (empty($distance_in_meters) || !empty($distance_in_meters) && $distance_in_meters <= $max_unlock_distance)){
                     $vefify_fitcode_using_unlock = json_decode(json_encode($this->verifyFitCode($booktrial->_id, $booktrial->vendor_code, $booktrial)->getData()));
-                    $booktrial->vefify_fitcode_using_unlock = $vefify_fitcode_using_unlock;
-                    Log::info('vefify_fitcode_usin_unlock ::::::::', [$vefify_fitcode_using_unlock, $booktrial->vendor_code, $booktrial->type]);
+                    
                 }
                 else{
-                    $lost_fitcode_using_unlock = $result = json_decode(json_encode($this->lostFitCode($booktrial->_id, $booktrial)->getData()));
-                    $booktrial->lost_fitcode_using_unlock = $lost_fitcode_using_unlock;
+                    $lost_fitcode_using_unlock = json_decode(json_encode($this->lostFitCode($booktrial->_id, $booktrial)->getData()));
                 }
             }
 
@@ -8869,6 +8868,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $data_new['header_text'] = "Session Activated";
 
+            
             if(!empty($_GET['from']) && $_GET['from']=='notification_before10min') {
                 
                 $session_activate= $data_new;
@@ -8894,6 +8894,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
             return Response::json(["status"=>200, "message"=>$message, "button_text"=> "Try Again"], 200);
         }
+        
 
         return Response::json($response,200);
     }
