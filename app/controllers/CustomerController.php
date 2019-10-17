@@ -4115,19 +4115,19 @@ class CustomerController extends \BaseController {
 			}
             //removing fields from search
             
-            if(!empty($result['health']['steps'])){
+            if(!empty($result['health']['steps']) && $customerRec['email']!='ut.mehrotra@gmail.com'){
                 unset($result['health']['steps']);
 			}
 
 			//disable reliance section 05-sept-2019 below
-			if(empty($customerRec['external_reliance']) || !$customerRec['external_reliance']) {
+			if((empty($customerRec['external_reliance']) || !$customerRec['external_reliance']) && $customerRec['email']!='ut.mehrotra@gmail.com') {
 				unset($result['health']);
 				unset($result['is_health_rewad_shown']);
 			}
-			if(!empty($result['non_reliance'])) {
+			if(!empty($result['non_reliance']) && $customerRec['email']!='ut.mehrotra@gmail.com') {
 				unset($result['non_reliance']);
 			}
-			if(!empty($result['health_popup'])) {
+			if(!empty($result['health_popup']) && $customerRec['email']!='ut.mehrotra@gmail.com') {
 				unset($result['health_popup']);
 			}
             //disable reliance section 05-sept-2019 above
