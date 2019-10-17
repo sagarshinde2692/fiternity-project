@@ -443,7 +443,7 @@ return [
             "header_img"  => "https://b.fitn.in/passes/app-home/onepass_header.png",
             "header_new_img" => "http://b.fitn.in/passes/onepass-app.png",
             "header_sub_text" => "FOR EVERYTHING HEALTH AND FITNESS",
-            "text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming polls across India",
+            "text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
             "passes" => [
                 [
                     "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
@@ -591,7 +591,7 @@ return [
             "header_img"  => "https://b.fitn.in/passes/app-home/onepass_header.png",
             "header_new_img" => "http://b.fitn.in/passes/onepass-app.png",
             "header_sub_text" => "FOR EVERYTHING HEALTH AND FITNESS",
-            "text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming polls across India",
+            "text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
             "passes" => [
                 [
                     "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
@@ -733,7 +733,7 @@ return [
             "success_image" => "https://b.fitn.in/passes/check_circle.png",
             "text" => "Awesome !\nYour OnePass is now personalized as per your interests. Checkout the OnePass section for our top recommendations of studios and classes matching your preferences.",
             "text_pps" => "Awesome !\nYour session booking is now personalized basis your interest.\nContinue to book your session and experience the all new Unlock feature to activate the session at the studio.",
-            "skip_text" => "Skip for now",
+            "skip_text" => "SKIP FOR NOW",
             "interests" => [
                 "header" => "Enjoy your OnePass Subscription!",
                 "header_pps" => "Enjoy your session Subscription!",
@@ -755,7 +755,7 @@ return [
             "header_img" =>  "https://b.fitn.in/passes/onepass-app.png", //"https://b.fitn.in/onepass/onepss_background_logo.png",
             "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
             "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
-            "header_sub_text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming polls across India",
+            "header_sub_text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
         ],
         "passes" => [
             [
