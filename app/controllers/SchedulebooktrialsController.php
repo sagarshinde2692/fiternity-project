@@ -8885,7 +8885,7 @@ class SchedulebooktrialsController extends \BaseController {
             $data_new = array_only($data_new, ['icon','title', 'time_diff', 'time_diff_text', 'schedule_date_time', 'current_time', 'schedule_date_time_text', 'payment_done', 'order_id', 'trial_id', 'header', 'workout', 'finder', 'footer', 'user_photo', '_id', 'header_text', 'session_activated', 'contact_us', 'time_diff', 'remarks']);
             
 
-            $data_new['header_text'] = "Session Activated";
+            $data_new['header_text'] = $data_new['header']; //"Session Activated";
 
             
             if(!empty($_GET['from']) && $_GET['from']=='notification_before10min') {
