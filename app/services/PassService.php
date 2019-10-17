@@ -370,7 +370,7 @@ class PassService {
                     }
                 }
             }
-            else{
+            else if(!empty($order) && empty($data['coupon_code'])){
                 unset($order->coupon_discount_percent);
                 unset($order->coupon_discount_amount);
                 unset($order->coupon_description);
