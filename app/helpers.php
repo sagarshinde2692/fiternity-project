@@ -4736,7 +4736,9 @@ if(!function_exists(('onepassPhase2AppCheck'))){
         if(!empty($order['third_party_details'])){
             return false;
         }
-        return onepassPhase2AppVersionCheck();
+        $response = onepassPhase2AppVersionCheck();
+        Log::info('response data:::', [$response]);
+        return $response;
     }
 }
 
@@ -4749,7 +4751,7 @@ if(!function_exists(('onepassPhase2AppVersionCheck'))){
         if(!empty($app_version) && !empty($device_type) && (($device_type =='ios' && $app_version < '5.2.4') || ($device_type =='android' && $app_version < '5.31'))){
             return false;
         }
-        
+
         return true;
     }
 }

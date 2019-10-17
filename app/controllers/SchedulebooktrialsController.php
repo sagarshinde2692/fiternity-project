@@ -3702,6 +3702,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             if(empty(onepassPhase2AppCheck($data))){
+                Log::info('not empty onepass phase2 app check otr web');
                 $booktrialdata['vendor_code'] = random_numbers(5);
             }
 
