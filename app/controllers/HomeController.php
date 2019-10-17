@@ -2140,10 +2140,10 @@ class HomeController extends BaseController {
                             }
                         }
 
-                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/sms).\nGet ".$session_total." sessions for free worth Rs. ".$session_amount;
+                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/SMS).\nGet ".$session_total." sessions for free worth Rs. ".$session_amount;
 
                         if($reward['reward_type'] == "swimming_sessions"){
-                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/sms).\nGet ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
+                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/SMS).\nGet ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
                         }
                         
                     }
