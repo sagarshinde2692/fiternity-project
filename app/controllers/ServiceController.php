@@ -1389,12 +1389,12 @@ class ServiceController extends \BaseController {
 				
 				foreach($data['schedules'] as &$sc){
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-                    if((!empty($_GET['init_source']) && $_GET['init_source'] == 'pps') || (!empty($onepassHoldCustomer) && $onepassHoldCustomer && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))))){
+					
+                    if((!empty($_GET['init_source']) && $_GET['init_source'] == 'pps') || (!empty($onepassHoldCustomer) && $onepassHoldCustomer && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)))) && $type!='trialschedules'){
                         $sc['free_trial_available'] = false;
                     }
 					
 					$str = "";
-					Log::info('free trial available::::::::::::::::::::::', [$sc['free_trial_available']]);
 					if(((!empty($this->device_type) && in_array($this->device_type, ['ios', 'android'])) && !empty($sc['free_trial_available']) && empty($data['trial_booked'])) || (!empty($sc['extended_validity']))){
 						
 						$str = "";
