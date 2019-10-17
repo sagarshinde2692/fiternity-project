@@ -8006,7 +8006,13 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
                     // $response['sub_header_1'] = "Awesome !\n";
-                    (empty($booktrial['pass_order_id']) || !empty($booktrial['corporate_id'])) ?  $response['sub_header_2'] .= "\nAwesome !\nWe are glad you enjoyed your workout." : $response['sub_header_2'] = "\nAwesome !\nWe are glad you enjoyed your workout.";
+                    if(empty($booktrial['pass_order_id']) || !empty($booktrial['corporate_id'])) {
+                        $response['sub_header_2'] .= "\nAwesome !\nWe are glad you enjoyed your workout.";
+                    } 
+                    else{
+                        $response['sub_header_2'] = "\nAwesome !\nWe are glad you enjoyed your workout."; 
+                        $response['sub_header_1']='';
+                    }
                     $response['image'] = "https://b.fitn.in/paypersession/happy_face_icon-2.png";
                 }
                 Log::info("removing n+2 communication");
