@@ -10554,6 +10554,8 @@ Class Utilities {
         if(empty($pass_order_id)){
             unset($resp['header']);
             unset($resp['header_pps']);
+            $resp['title'] = $resp['title_pps'];
+            unset($resp['title_pps']);
             $resp['text'] = $resp['text_pps'];
             unset($resp['text_pps']);
             $resp['interests']['header'] = $resp['interests']['header_pps'];
@@ -10562,6 +10564,7 @@ Class Utilities {
         else {
             unset($resp['header_pps']);
             unset($resp['text_pps']);
+            unset($resp['title_pps']);
             unset($resp['interests']['header_pps']);
         }
         if(!empty($data['interests']) && !empty($resp['interests']['data'])){

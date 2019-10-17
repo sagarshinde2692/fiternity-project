@@ -725,6 +725,8 @@ return [
             "subheader" => "Select at least 3"
         ],
         "personlized_profile" => [
+            "title" => "Personalize OnePass",
+            "title_pps" => "Personalize Session",
             "header" => "Enjoy your OnePass Subscription!",
             "header_pps" => "Enjoy your session Subscription!\n",
             "url" => "",
