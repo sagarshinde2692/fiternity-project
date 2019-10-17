@@ -2657,6 +2657,19 @@ class SchedulebooktrialsController extends \BaseController {
             $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();
         }
 
+        if(!empty($data['third_party_details']) && !empty($data['third_party_acronym']) && $data['third_party_acronym']!='abg') {
+            $updatedOrder = Order::findOrFail($orderid);
+            $usedSessionsCount = (intval($updatedOrder['total_sessions_used'])+1);
+            $updatedOrder->update(["total_sessions_used" => $usedSessionsCount]);
+
+            $updatedCust=Customer::where("_id",intval($customer_id))->first();
+            $updatedCust->total_sessions_used = $usedSessionsCount;
+            $tpdtls = $updatedCust->third_party_details;
+            $tpdtls[$data['third_party_acronym']]['third_party_used_sessions'] = $usedSessionsCount;
+            $updatedCust->third_party_details = $tpdtls;
+            $updatedCust->save();
+        }
+
         $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Session Booked Sucessfully", 'code' => $code);        
         Log::info(" info ".print_r("AAAYA",true));
         return Response::json($resp,200);
@@ -5262,12 +5275,12 @@ class SchedulebooktrialsController extends \BaseController {
                 $this->findersms->cancelBookTrial($emaildata);
                 $this->customersms->cancelBookTrial($emaildata);
             }
-            else{
+            else {
                 if(empty($booktrial['studio_extended_validity_order_id']) || !empty($booktrial['studio_extended_session'])){
                     $this->findermailer->cancelBookTrial($emaildata);
                     $this->findersms->cancelBookTrial($emaildata);
                 }
-                if(isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip'){
+                if((isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip') && (empty($booktrial['third_party_details']['ekn']))){
                     if(!isset($booktrial['third_party_details'])){
                         if(empty($booktrial['multifit']) || !$booktrial['multifit']){
                             $this->customermailer->cancelBookTrial($emaildata);

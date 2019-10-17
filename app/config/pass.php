@@ -101,7 +101,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off + Additional 15% Off On OnePass, Use Code: BIG15\nLast Few Hours Left. Buy Now!", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Extra 15% Off (Code: BIG15) or Free 3 Months Extension (Code: MORE25)\nOffer Expires On 21st October", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% off + Additional 15% Off On OnePass, Use Code: BIG15\nLast Few Hours Left. Buy Now!", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Extra 15% Off (Code: BIG15)\nOffer Expires On 21st October", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -161,10 +161,17 @@ return [
         "red"=>[
             "<ul>
                 <li>Discount of upto 30% off is pre-applied on MRP</li>
-                <li>Code: BIG15 will give the user Additional 15% off</li>
-                <li>Additional 15% instant discount is upto INR 1500 </li>
-                <li>Discount varies across different types of pass</li>
-                <li>The offer cannot be clubbed with any other existing offer</li>
+                <li>Free Extension using code MORE25 is applicable as follows:
+                    <br>a) Get 3 month extension on purchase of 1 year OnePass Red
+                    <br>b) Get 1.5 months (45 days) extension on purchase of  6 months OnePass Red
+                    <br>c) Get 3 weeks (22 days) extension on purchase of 3 months OnePass Red</li>
+                <li> The code MORE25 is not applicable on 15 days and 1 month OnePass Red</li>
+                <li> The code MORE25 is not applicable on OnePass Black</li>
+                <li> Code: BIG15 will give the user Additional 15% off upto INR 1500  </li>
+                <li> Discount varies across different types of pass</li>
+                <li> You can avail only 1 offer at the time of transaction</li>
+                <li> This cannot be clubbed with any other existing offer</li>
+                <li> The offer ends on 21st October post which code MORE25 and BIG15 are invalid</li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -196,10 +203,17 @@ return [
         "black" =>[
             "<ul>
                 <li>Discount of upto 30% off is pre-applied on MRP</li>
-                <li>Code: BIG15 will give the user Additional 15% off</li>
-                <li>Additional 15% instant discount is upto INR 1500 </li>
-                <li>Discount varies across different types of pass</li>
-                <li>The offer cannot be clubbed with any other existing offer</li>
+                <li>Free Extension using code MORE25 is applicable as follows:
+                    <br>a) Get 3 month extension on purchase of 1 year OnePass Red
+                    <br>b) Get 1.5 months (45 days) extension on purchase of  6 months OnePass Red
+                    <br>c) Get 3 weeks (22 days) extension on purchase of 3 months OnePass Red</li>
+                <li> The code MORE25 is not applicable on 15 days and 1 month OnePass Red</li>
+                <li> The code MORE25 is not applicable on OnePass Black</li>
+                <li> Code: BIG15 will give the user Additional 15% off upto INR 1500  </li>
+                <li> Discount varies across different types of pass</li>
+                <li> You can avail only 1 offer at the time of transaction</li>
+                <li> This cannot be clubbed with any other existing offer</li>
+                <li> The offer ends on 21st October post which code MORE25 and BIG15 are invalid</li>
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
@@ -230,10 +244,17 @@ return [
         "default"=>[
             "<ul>
                 <li>Discount of upto 30% off is pre-applied on MRP</li>
-                <li>Code: BIG15 will give the user Additional 15% off</li>
-                <li>Additional 15% instant discount is upto INR 1500 </li>
-                <li>Discount varies across different types of pass</li>
-                <li>The offer cannot be clubbed with any other existing offer</li>
+                <li>Free Extension using code MORE25 is applicable as follows:
+                    <br>a) Get 3 month extension on purchase of 1 year OnePass Red
+                    <br>b) Get 1.5 months (45 days) extension on purchase of  6 months OnePass Red
+                    <br>c) Get 3 weeks (22 days) extension on purchase of 3 months OnePass Red</li>
+                <li> The code MORE25 is not applicable on 15 days and 1 month OnePass Red</li>
+                <li> The code MORE25 is not applicable on OnePass Black</li>
+                <li> Code: BIG15 will give the user Additional 15% off upto INR 1500  </li>
+                <li> Discount varies across different types of pass</li>
+                <li> You can avail only 1 offer at the time of transaction</li>
+                <li> This cannot be clubbed with any other existing offer</li>
+                <li> The offer ends on 21st October post which code MORE25 and BIG15 are invalid</li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -468,7 +489,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "Get 30% Off + Additional 15% Off",
+                "text" => "30% Off + Get Extra 15% Off OR Free 3 Months Extension",
                 "button_text" => "Know More"
             ],
         ],

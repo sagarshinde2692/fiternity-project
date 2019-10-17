@@ -10083,7 +10083,7 @@ Class Utilities {
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
                 
-                $slot['order_summary']['header'] = $orderSummary['header']." \n\nThe Big Fitness Sale\n\nGet 40% Off On Workout Sessions. Use Code: BIG40";
+                $slot['order_summary']['header'] = $orderSummary['header']." \n\nGet Fit Go Sale\n\nGet 50% Off On Workout Sessions. Use Code: PPS";
 
                 if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
                     $slot['order_summary']['header'] = $orderSummary['header'];
@@ -10104,7 +10104,7 @@ Class Utilities {
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
-                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nThe Big Fitness Sale\n\nGet 40% Off On Workout Sessions. Use Code: BIG40"; 
+                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nGet Fit Go Sale\n\nGet 50% Off On Workout Sessions. Use Code: PPS";
 
                     if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
                         $sd['order_summary']['header'] = $orderSummary['header'];
@@ -10683,8 +10683,8 @@ Class Utilities {
     
     public function mfpBranding($data, $source){
 		try{
-			if($source == "serviceDetailv1"){
-                $data['service']['price'] = "₹ ".$data['service']['amount'];
+			if($source == "serviceDetailv1"){  
+                $data['service']['price'] = $this->getMfpPrice($data['service']['price'], $data['service']['amount']);
                 
                 if(!empty($data['service']['easy_cancellation'])){
                     unset($data['service']['easy_cancellation']);
@@ -10694,8 +10694,8 @@ Class Utilities {
 					$slot = array();
 					foreach($data['service']['slots'] as $k => $v){
 						Log::info('price',[$v['price']]);
-
-						$v['price'] = "₹ ".$v['price_only'];
+                            
+                        $v['price'] = $this->getMfpPrice($v['price'], $v['price_only']);
 
 						unset($v['image']);
 
@@ -10711,8 +10711,8 @@ Class Utilities {
 					$slot1 = array();
 					foreach($data['slots'] as $k1 => $v1){
 						Log::info('price',[$v1['price']]);
-
-						$v1['price'] = "₹ ".$v1['price_only'];
+                        
+                            $v1['price'] = $this->getMfpPrice($v1['price'], $v1['price_only']);
 
 						unset($v1['image']);
 
@@ -10743,5 +10743,9 @@ Class Utilities {
 		}catch(\Exception $e){
 			Log::info('error occured::::::::', [$e]);
 		}
-	}
+    }
+    
+    public function getMfpPrice($price_text, $original_price){
+        return $price_text == Config::get('app.onepass_free_string') ? Config::get('app.onepass_free_string') : "₹ ".$original_price;
+    }
 }

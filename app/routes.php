@@ -1413,4 +1413,6 @@ Route::post('passtab', 'PassController@passTab');
 Route::get('passCashback', 'DebugController@passCashback');
 
 Route::get('healthobject', 'RelianceController@buildHealthObjectStructure');
+Route::post('tpcancelsession', 'SchedulebooktrialsController@tpcancelsession');
+Route::post('decryptqrcode', 'ThirdPartyController@decryptQRCode');
 Route::get('renewalOnepass', 'DebugController@renewalOnepass');
