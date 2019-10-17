@@ -4391,7 +4391,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrial->toArray());
             }
 
-            if(!isset($booktrial['vendor_code']) && (onepassPhase2AppCheck($booktrial))){
+            if(!isset($booktrial['vendor_code']) && !empty(onepassPhase2AppCheck($booktrial))){
                 array_set($booktrialdata,'vendor_code',random_numbers(5));
             }
 
