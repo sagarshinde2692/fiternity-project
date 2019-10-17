@@ -7849,6 +7849,7 @@ class SchedulebooktrialsController extends \BaseController {
     public function sessionStatusCapture($status, $booktrial_id,$qrcode=false){
         
         $booktrial = Booktrial::find(intval($booktrial_id));
+        
         if(!$booktrial){
             return Response::json(array('status'=>400, 'message'=>'Workout Session not found'), 200);
         }
@@ -8023,7 +8024,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
-
+                    
                     if(empty($booktrial['pass_order_id']) || !empty($booktrial['corporate_id'])) {
                         $response['sub_header_2'] .= "\nAwesome !\nWe are glad you enjoyed your workout.";
                     } 

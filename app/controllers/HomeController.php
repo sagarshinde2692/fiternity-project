@@ -1121,7 +1121,7 @@ class HomeController extends BaseController {
                 }
 
                 $steps_count = 0;
-                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31') && !empty($item['corporate_id']) && empty($item['external_reliance'])){
+                if((($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')) && !empty($item['corporate_id']) && empty($item['external_reliance'])){
 
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
 
