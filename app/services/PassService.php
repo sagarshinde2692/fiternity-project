@@ -2136,7 +2136,7 @@ class PassService {
             $upcoming['header'] = "Session Activated";
 
             if(!empty($this->device_type) && $this->device_type=='ios' && !empty($this->app_version) && $this->app_version=='5.2.4'){
-                $upcoming['header'] ="SESSION ACTIVATED\n\n".$upcomig['remarks'];
+                $upcoming['header'] ="SESSION ACTIVATED\n\n".$upcoming['remarks'];
             }
 
             unset($upcoming['footer']);
