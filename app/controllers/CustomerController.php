@@ -7584,7 +7584,6 @@ class CustomerController extends \BaseController {
 	public function getBlockScreenData($label, $data){
 
 		$response = [];
-		$app_version_phase2_check = onepassPhase2AppVersionCheck();
 		switch ($label) {
 			case 'activate_session':
 			case 'n-10m':
@@ -7630,7 +7629,7 @@ class CustomerController extends \BaseController {
 					];
 					Booktrial::where('_id', $data['_id'])->update(['kiosk_block_shown'=>true]);
 				}
-				if($app_version_phase2_check && empty($data['vendor_code']))
+				if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31'))
 				{
 					$upcoming_booking = $this->passService->upcomingPassBooking(null, $data, $data['customer_id']);
 					Log::info('upcoming booking:::', [$upcoming_booking]);
@@ -8572,8 +8571,7 @@ class CustomerController extends \BaseController {
 			if(count($invalid_data)>0) return ['status' => 400,'message' =>"Invalid Data"];
 			$un_updated=[];$not_located=[];$already_attended=[];$attended=[];$not_attended=[];
 
-			$app_version_check_phas2 = onepassPhase2AppVersionCheck();
-			if($app_version_check_phas2){
+			if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 				Log::info('iside calling unlock session:::');
 				$data['from']='mark_customer_attanance';
 				$unlock_session_response = [];

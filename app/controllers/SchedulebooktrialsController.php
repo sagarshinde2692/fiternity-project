@@ -2389,10 +2389,6 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-            if(empty(onepassPhase2AppCheck($order))){
-                Log::info('not empty onepass phase2 app check otr web');
-                $booktrialdata['vendor_code'] = random_numbers(5);
-            }
             //give fitcash+ for first workout session
             $give_fitcash_plus = false;
 
@@ -7851,7 +7847,6 @@ class SchedulebooktrialsController extends \BaseController {
     public function sessionStatusCapture($status, $booktrial_id,$qrcode=false){
         
         $booktrial = Booktrial::find(intval($booktrial_id));
-        $app_version_phase2_check = onepassPhase2AppVersionCheck();
         if(!$booktrial){
             return Response::json(array('status'=>400, 'message'=>'Workout Session not found'), 200);
         }
@@ -8025,7 +8020,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "will be added into your steps counter post verifying your attendance from gym/studio.";    
                 }
 
-                if($app_version_phase2_check && empty($booktrial['vendor_code'])){
+                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 
                     if(empty($booktrial['pass_order_id']) || !empty($booktrial['corporate_id'])) {
                         $response['sub_header_2'] .= "\nAwesome !\nWe are glad you enjoyed your workout.";
@@ -8086,7 +8081,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "Sorry, cancellation is available only ".$cancel_preior_time." prior to your session time.\n\nKeep booking workouts to get closer to your steps milestone.";
                 }
 
-                if($app_version_phase2_check && empty($booktrial['vendor_code'])){
+                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
                     $response['sub_header_2'] = "Don't worry! Rebook the session and continue with your workout journey.";
                 }
 
@@ -8126,7 +8121,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
                 }
 
-                if($app_version_phase2_check && empty($booktrial['vendor_code'])){
+                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
                     $response['sub_header_2'] ="Don't worry! You can rebook the session for later and continue with your fitness journey.";
                 }
                 if(!empty($booktrial->pass_order_id)){
@@ -8180,7 +8175,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['activate']['sub_header_2'] = 'Punch your subscription code on the kiosk/tab available at the center to activate your session';
                 }
 
-                if($app_version_phase2_check && empty($booktrial['vendor_code'])){
+                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
                     $response['activate'] = [
                         'sub_header_1' =>'UNLOCK YOUR SESSION',
                         'sub_header_2' =>'Navigate to upcoming session ticker on your homescreen to unlock this session at '.$booktrial['finder_name']
