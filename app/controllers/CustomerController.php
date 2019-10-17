@@ -3952,32 +3952,6 @@ class CustomerController extends \BaseController {
 					
 					// $upcoming = array_filter($upcoming);
 
-					if($this->app_version > '4.4.3'){
-						
-						foreach($upcoming as $x){
-
-
-
-							if(isset($x['block_screen'])){
-
-								if( (isset($x['block_screen']) && $x['block_screen']['type'] == 'activate_session')){
-									array_push($activate, $x);
-								}else if(isset($x['block_screen']) && $x['block_screen']['type'] == 'review'){
-									array_push($review, $x);
-								}else{
-									array_push($let_us_know, $x);
-								}
-							}else if(isset($x['activation_url'])){
-								array_push($future, $x);
-							}else{
-								array_push($no_block, $x);
-							}
-						}
-
-						$upcoming = array_merge($activate, $let_us_know, $review, $future, $no_block);
-
-					}
-
 					if(!empty($this->device_type) && !empty($this->app_version) && ($this->device_type =='android' && $this->app_version >= '5.31') || ($this->device_type =='ios' && $this->app_version >= '5.2.4')){
 						$upcoming= [];
 						$unlocked = [];
@@ -4004,7 +3978,31 @@ class CustomerController extends \BaseController {
 						}
 
 						$upcoming_new = array_merge($unlocked, $activate_new, $let_us_know_new, $review_new, $future_new, $no_block_new);
-						//$upcoming_new = $this->orderBooking($upcoming_new);
+					}
+					else if($this->app_version > '4.4.3'){
+						
+						foreach($upcoming as $x){
+
+
+
+							if(isset($x['block_screen'])){
+
+								if( (isset($x['block_screen']) && $x['block_screen']['type'] == 'activate_session')){
+									array_push($activate, $x);
+								}else if(isset($x['block_screen']) && $x['block_screen']['type'] == 'review'){
+									array_push($review, $x);
+								}else{
+									array_push($let_us_know, $x);
+								}
+							}else if(isset($x['activation_url'])){
+								array_push($future, $x);
+							}else{
+								array_push($no_block, $x);
+							}
+						}
+
+						$upcoming = array_merge($activate, $let_us_know, $review, $future, $no_block);
+
 					}
 
 				}
@@ -11083,20 +11081,4 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function orderBooking($data){
-		$activated_session = [];
-		$not_activated_session = [];
-
-		foreach($data as $key=>$value){
-			if(!empty($value['post_trial_status_updated_by_unlocksession'])){
-				unset($value['post_trial_status_updated_by_unlocksession']);
-				 array_push($activated_session, $value);
-			}else{
-				array_push($not_activated_session, $value);
-			}
-		}
-
-		$data_prepa = array_merge($activated_session, $not_activated_session);
-		return $data_prepa;
-	}
 }
