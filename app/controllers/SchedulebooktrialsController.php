@@ -3501,7 +3501,7 @@ class SchedulebooktrialsController extends \BaseController {
             $schedule_date_time = Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
             $code = random_numbers(5);
-            
+            $vendor_code = random_numbers(5);
             $device_id = (isset($data['device_id']) && $data['device_id'] != '') ? $data['device_id'] : "";
             $premium_session = (isset($data['premium_session']) && $data['premium_session'] != '') ? (bool)$data['premium_session'] : false;
             $reminder_need_status = isset($data['reminder_need_status']) ? $data['reminder_need_status'] : '';
@@ -3602,6 +3602,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'going_status'        =>      1,
                 'going_status_txt'    =>      'going',
                 'code'                =>      $code,
+                'vendor_code'         =>      $vendor_code,
                 'device_id'           =>      $device_id,
                 'booktrial_type'      =>      'auto',
                 'booktrial_actions'   =>      'call to confirm trial',
@@ -3699,10 +3700,6 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($data['booking_for_others']) && $data['booking_for_others'] != ""){
               $booktrialdata['booking_for_others'] = $data['booking_for_others'];
-            }
-
-            if(onepassPhase2AppCheck($data)){
-                $booktrialdata['vendor_code'] = random_numbers(5);
             }
 
             $addUpdateDevice = $this->utilities->addUpdateDevice($customer_id);
@@ -4391,10 +4388,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrial->toArray());
             }
 
-            if(!isset($booktrial['vendor_code']) && !empty(onepassPhase2AppCheck($booktrial))){
+            if(!isset($booktrial['vendor_code'])){
                 array_set($booktrialdata,'vendor_code',random_numbers(5));
             }
-
+            
             if(isset($schedule_date) && isset($old_schedule_date)){
                 if($schedule_date != $old_schedule_date){
                     $booktrialdata['pre_trial_vendor_confirmation'] = (isset($finderid) && in_array($finderid, Config::get('app.trial_auto_confirm_finder_ids'))) ? 'confirmed' : 'yet_to_connect';

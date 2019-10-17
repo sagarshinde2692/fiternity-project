@@ -4730,21 +4730,4 @@ if (!function_exists(('setPassToToken'))){
     }
 }
 
-if(!function_exists(('onepassPhase2AppCheck'))){
-    function onepassPhase2AppCheck($order){
-
-        if(in_array($order['customer_source'], ['website']) || !empty($order['third_party_details'])){
-            return true;
-        }
-
-        $app_version = !empty(Request::header('App-Version'))? Request::header('App-Version') : null;
-        $device_type = !empty(Request::header('Device-Type'))? Request::header('Device-Type'): null;
-
-        if(!empty($app_version) && !empty($device_type) && (($device_type =='ios' && $app_version >= '5.2.4') || ($device_type =='android' && $app_version >= '5.31'))){
-            return true;
-        }
-        return false;
-    }
-}
-
 ?>
