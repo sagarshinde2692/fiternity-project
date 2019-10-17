@@ -8312,7 +8312,13 @@ class SchedulebooktrialsController extends \BaseController {
             
             $response['sub_header_1'] = '';
             unset($response['milestones']);
-            $response['description'] = '';
+
+            if($this->device_type =='ios' && $status =='lost'){
+                $response['description'] = $response['sub_header_2'] ;
+                $response['sub_header_2'] = '';
+            }else {
+                $response['description'] = '';
+            }
         }
 
         return Response::json($response);
