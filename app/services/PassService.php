@@ -2135,6 +2135,9 @@ class PassService {
 
             $upcoming['header'] = "Session Activated";
 
+            if(!empty($this->device_type) && $this->device_type=='ios' && !empty($this->app_version) && $this->app_version=='5.2.4'){
+                $upcomig['header'] ="SESSION ACTIVATED\n\n".$upcomig['remarks'];
+            }
 
             unset($upcoming['footer']);
             unset($upcoming['direction']);
@@ -2170,6 +2173,7 @@ class PassService {
                 unset($upcoming['footer']['cancel_text']);
                 unset($upcoming['footer']['cancel_url']);
             }
+            unset($upcomig['remarks']);
         }
 
         return $upcoming;
