@@ -1994,7 +1994,6 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $code						       =	random_numbers(5);
-            $vendor_code                       =    random_numbers(5);
             $device_id					       = 	(!empty($data['device_id']) && $data['device_id'] != '') ? $data['device_id'] : "";
             $premium_session 			       =	(!empty($data['premium_session'])) ? (boolean) $data['premium_session'] : false;
             $reminder_need_status 		       =	(!empty($data['reminder_need_status'])) ? $data['reminder_need_status'] : '';
@@ -2117,7 +2116,6 @@ class SchedulebooktrialsController extends \BaseController {
                 'going_status'                  =>      1,
                 'going_status_txt'              =>      'going',
                 'code'                          =>      $code,
-                'vendor_code'                   =>      $vendor_code,
                 'device_id'                     =>      $device_id,
                 'booktrial_type'                =>      'auto',
                 'booktrial_actions'             =>      'call to confirm trial',
@@ -2391,6 +2389,10 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
+            if(empty(onepassPhase2AppCheck($order))){
+                Log::info('not empty onepass phase2 app check otr web');
+                $booktrialdata['vendor_code'] = random_numbers(5);
+            }
             //give fitcash+ for first workout session
             $give_fitcash_plus = false;
 
