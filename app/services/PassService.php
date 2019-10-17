@@ -371,10 +371,10 @@ class PassService {
                 }
             }
             else{
-                unset($order['coupon_discount_percent']);
-                unset($order['coupon_discount_amount']);
-                unset($order['coupon_description']);
-                unset($order['coupon_code']);
+                unset($order->coupon_discount_percent);
+                unset($order->coupon_discount_amount);
+                unset($order->coupon_description);
+                unset($order->coupon_code);
             }
 
             $hash = getHash($data);
