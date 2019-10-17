@@ -4733,7 +4733,7 @@ if (!function_exists(('setPassToToken'))){
 if(!function_exists(('onepassPhase2AppCheck'))){
     function onepassPhase2AppCheck($order){
 
-        if(in_array($order['customer_source'], ['website']) || !empty($order['third_party_details'])){
+        if(!empty($order['third_party_details'])){
             return true;
         }
 
