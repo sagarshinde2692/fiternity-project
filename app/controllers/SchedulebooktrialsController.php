@@ -8895,7 +8895,6 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json(["status"=>200, "message"=>$message, "button_text"=> "Try Again"], 200);
         }
         
-
         return Response::json($response,200);
     }
 
