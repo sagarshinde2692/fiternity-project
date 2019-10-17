@@ -7646,8 +7646,12 @@ class CustomerController extends \BaseController {
 						//$response['button_text']['cant_make']['cancel_message'] = $upcoming_booking['footer']['cancel_message'];
 					}
 					else {
-						$response['sub_header'] = $upcoming_booking['header'];
-						$response['footer'] = "NOTE :  You can access your active session screen from the homescreen ticker as well.";
+						$response['activation_success'] = [
+							'header'=>	ucwords($data['service_name'])." at ".ucwords($data['finder_name'])."\n\n 00hrs : 00min: 00sec",
+							'sub_header_1' => $upcoming_booking['header'],
+							'image'=> $upcoming_booking['user_photo'],
+							'sub_header_2'=>$upcoming_booking['remarks']
+						];
 						unset($response['button_text']);
 						$response['block'] = false;
 					}
