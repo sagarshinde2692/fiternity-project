@@ -1222,8 +1222,7 @@ class HomeController extends BaseController {
                     $response['subline'] = 'Your payment for '.$service_name.' session at '.$finder_name.' for '.$schedule_date.' at '.$schedule_slot.' is successful. Keep booking, reach milestones & earn rewards';
                 }
                 
-                if(!empty($item['pass_order_id'])){
-                    Log::info('pas order ::::::::::::::::::::::::::', [$item['pass_order_id']]);
+                if(!empty($item['pass_order_id']) && (($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31'))){
                     unset($response['feedback']);
                     unset($response['conclusion']);
                 }
