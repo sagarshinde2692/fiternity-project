@@ -1048,9 +1048,10 @@ Class CustomerMailer extends Mailer {
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
 			return "";
 		}
-
-		if(!empty($data['multifit'])){
-			$message_data['fromemail'] = 'info@multifit.co.in';
+		if(Config::get('app.env') != 'stage'){
+			if(!empty($data['multifit'])){
+				$message_data['fromemail'] = 'info@multifit.co.in';
+			}
 		}
 
 		// if(!empty($data['pass_type'])){

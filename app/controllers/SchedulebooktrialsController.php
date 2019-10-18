@@ -5542,8 +5542,8 @@ class SchedulebooktrialsController extends \BaseController {
         Order::$withoutAppends=true;
 
 
-        $device_type = !empty($_GET['Device-Type']) ? $_GET['Device-Type'] : null;
-        $app_version = !empty($_GET['App-Version']) ? $_GET['App-Version'] : null;
+        $device_type = !empty($_GET['device_type']) ? $_GET['device_type'] : null;
+        $app_version = !empty($_GET['app_version']) ? $_GET['app_version'] : null;
         
         if(isset($_REQUEST['type'])){
             $type = $_REQUEST['type'];
@@ -5650,7 +5650,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$cancel_enable = true;
 		}
         
-        if($booktrial['type'] == 'workout-session' && (($booktrial['finder_category_id'] == 5 && $time_diff > $minutes15) || ($booktrial['finder_category_id'] != 5 && $time_diff > $hour1))){
+        if($booktrial['type'] == 'workout-session' && (($booktrial['servicecategory_id'] == 65 && $time_diff > $minutes15) || ($booktrial['servicecategory_id'] != 5 && $time_diff > $hour1))){
 			$cancel_enable = true;
         }
 
@@ -5730,10 +5730,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';
             }
 
-            if(empty($booktrial['pass_order_id'])){
+            //if(empty($booktrial['pass_order_id'])){
                 $booktrial['fitcode_button_text'] = 'Enter Fitcode';
                 $booktrial['vendor_code'] = "0000";
-            }
+            //}
 
             // else{
             //     unset($booktrial['code']);
@@ -8024,7 +8024,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
-                    
+
                     if(empty($booktrial['pass_order_id']) || !empty($booktrial['corporate_id'])) {
                         $response['sub_header_2'] .= "\nAwesome !\nWe are glad you enjoyed your workout.";
                     } 
