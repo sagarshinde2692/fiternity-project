@@ -297,13 +297,15 @@ Route::group(array('before' => 'validatetoken'), function() {
     
     Route::post('passcapture', 'PassController@passCapture');
     
+    /******************** AUTHENTICATION ENFORCED FOR SECURITY START HERE ***********************/
+    Route::get('booktrialdetail/{captureid}/{type?}', 'SchedulebooktrialsController@booktrialdetail');
+    
+    Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
+    
+    Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
+    /******************** AUTHENTICATION ENFORCED FOR SECURITY END HERE ***********************/
+
 });
-
-Route::get('booktrialdetail/{captureid}/{type?}', 'SchedulebooktrialsController@booktrialdetail');
-
-Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
-
-Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
 
 
 Route::post('walletTransactionnew', array('uses' => 'OrderController@debitWalletTransaction'));
