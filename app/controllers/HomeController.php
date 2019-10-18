@@ -1165,7 +1165,7 @@ class HomeController extends BaseController {
                 if(!empty($item['type']) && $item['type']=='workout-session' && empty($item['pass_order_id'])){
                     
                     $profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
-                    empty($profile_completed) ? $response['personalize'] =  'personalize': null;
+                    empty($profile_completed) ? $response['personalize'] =  'Personalize your session': null;
                 }
                 if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
                     $response['streak']['header'] = '';

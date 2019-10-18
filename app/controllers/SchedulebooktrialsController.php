@@ -3012,9 +3012,9 @@ class SchedulebooktrialsController extends \BaseController {
                 }
                 else {
                     $send_communication["customer_sms_before10Min"] = $this->customersms->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
-                    if(empty($booktrialdata['pass_order_id'])){
-                        $send_communication["customer_email_before10Min"] = $this->customermailer->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
-                    }
+                    // if(empty($booktrialdata['pass_order_id'])){
+                    //     $send_communication["customer_email_before10Min"] = $this->customermailer->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
+                    // }
                 }
                 
                 // $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
