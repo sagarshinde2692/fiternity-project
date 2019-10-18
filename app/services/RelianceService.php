@@ -1995,19 +1995,19 @@ Class RelianceService {
                 }
         
                 //disable reliance section 05-sept-2019 below
-                if(empty($customerRec['external_reliance']) || !$customerRec['external_reliance']) {
-                    unset($result['health']);
-                    unset($result['is_health_rewad_shown']);
-                    if(!empty($result['health_popup'])) {
-                    unset($result['health_popup']);
-                    }
-                }
-                if(empty($customerRec['corporate_id']) && !empty($result['non_reliance'])) {
-                    unset($result['non_reliance']);
-                }
-                if(empty($customerRec['corporate_id']) && (!empty($result['health_popup']))) {
-                    unset($result['health_popup']);
-                }
+                // if(empty($customerRec['external_reliance']) || !$customerRec['external_reliance']) {
+                //     unset($result['health']);
+                //     unset($result['is_health_rewad_shown']);
+                //     if(!empty($result['health_popup'])) {
+                //     unset($result['health_popup']);
+                //     }
+                // }
+                // if(empty($customerRec['corporate_id']) && !empty($result['non_reliance'])) {
+                //     unset($result['non_reliance']);
+                // }
+                // if(empty($customerRec['corporate_id']) && (!empty($result['health_popup']))) {
+                //     unset($result['health_popup']);
+                // }
                         //disable reliance section 05-sept-2019 above
             }
     

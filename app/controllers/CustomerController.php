@@ -4214,12 +4214,12 @@ class CustomerController extends \BaseController {
 			}
             //removing fields from search
             
-            if(!empty($result['health']['steps']) && $customerRec['email']!='ut.mehrotra@gmail.com'){
+            if(!empty($result['health']['steps'])){
                 unset($result['health']['steps']);
 			}
 
 			//disable reliance section 05-sept-2019 below
-			if((empty($customerRec['external_reliance']) || !$customerRec['external_reliance']) && $customerRec['email']!='ut.mehrotra@gmail.com') {
+			if((empty($customerRec['external_reliance']) || !$customerRec['external_reliance'])) {
 				unset($result['health']);
 				unset($result['is_health_rewad_shown']);
 				if(!empty($result['health_popup'])) {
