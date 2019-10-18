@@ -1433,8 +1433,10 @@ Class CustomerSms extends VersionNextSms{
 			}
 		}
 
-		if(!empty($data['multifit']) && $label != 'Generic-Otp-Customer'){
-			$sender = 'MULTIF';
+		if(Config::get('app.env') != 'stage'){
+			if(!empty($data['multifit']) && $label != 'Generic-Otp-Customer'){
+				$sender = 'MULTIF';
+			}
 		}
 
 		if(!empty($data['event_type']) && $data['event_type']=='TOI' && !empty($data['sender'])){
