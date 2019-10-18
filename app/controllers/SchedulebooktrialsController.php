@@ -5650,7 +5650,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$cancel_enable = true;
 		}
         
-        if($booktrial['type'] == 'workout-session' && (($booktrial['finder_category_id'] == 5 && $time_diff > $minutes15) || ($booktrial['finder_category_id'] != 5 && $time_diff > $hour1))){
+        if($booktrial['type'] == 'workout-session' && (($booktrial['servicecategory_id'] == 65 && $time_diff > $minutes15) || ($booktrial['servicecategory_id'] != 5 && $time_diff > $hour1))){
 			$cancel_enable = true;
         }
 
@@ -5711,12 +5711,12 @@ class SchedulebooktrialsController extends \BaseController {
         if(!empty($device_type) && !empty($app_version) && ($device_type =='android' && $app_version < '5.31') || ($device_type =='ios' && $app_version < '5.2.4')){
 
             $booktrial['lost_code'] = false;
-            
+        
             if(isset($booktrial['schedule_date_time']) && time() >= strtotime($booktrial['schedule_date_time'])){
                 $booktrial['lost_code'] = true;
             }
 
-            if($booktrial['type'] == 'workout-session' && empty($booktrial['pass_order_id'])){
+            if($booktrial['type'] == 'workout-session'){
                 if(!isset($booktrial['extended_validity_order_id'])){
                     $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
 
@@ -5725,20 +5725,43 @@ class SchedulebooktrialsController extends \BaseController {
                 else {
                     $booktrial['fitcode_message'] = 'Punch the code to mark your attendance.';
                 }
-            }else if(empty($booktrial['pass_order_id'])){
+            }else{
 
                 $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';
             }
 
-            if(empty($booktrial['pass_order_id'])){
-                $booktrial['fitcode_button_text'] = 'Enter Fitcode';
-                $booktrial['vendor_code'] = "0000";
-            }
-
-            // else{
-            //     unset($booktrial['code']);
-            //     unset($booktrial['vendor_code']);
+            $booktrial['fitcode_button_text'] = 'Enter Fitcode';
+            $booktrial['vendor_code'] = "0000";
+            
+            // $booktrial['lost_code'] = false;
+            
+            // if(isset($booktrial['schedule_date_time']) && time() >= strtotime($booktrial['schedule_date_time'])){
+            //     $booktrial['lost_code'] = true;
             // }
+
+            // if($booktrial['type'] == 'workout-session' && empty($booktrial['pass_order_id'])){
+            //     if(!isset($booktrial['extended_validity_order_id'])){
+            //         $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
+
+            //         $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
+            //     }
+            //     else {
+            //         $booktrial['fitcode_message'] = 'Punch the code to mark your attendance.';
+            //     }
+            // }else if(empty($booktrial['pass_order_id'])){
+
+            //     $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';
+            // }
+
+            // //if(empty($booktrial['pass_order_id'])){
+            //     $booktrial['fitcode_button_text'] = 'Enter Fitcode';
+            //     $booktrial['vendor_code'] = "0000";
+            // //}
+
+            // // else{
+            // //     unset($booktrial['code']);
+            // //     unset($booktrial['vendor_code']);
+            // // }
         }
         else{
             unset($booktrial['code']);
@@ -8024,7 +8047,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
-                    
+
                     if(empty($booktrial['pass_order_id']) || !empty($booktrial['corporate_id'])) {
                         $response['sub_header_2'] .= "\nAwesome !\nWe are glad you enjoyed your workout.";
                     } 
