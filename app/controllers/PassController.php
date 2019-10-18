@@ -15,7 +15,7 @@ class PassController extends \BaseController {
     }
 
     public function listPasses($pass_type=null){
-
+        $data = Input::all();
         $jwt_token = Request::header('Authorization');
         $device = Request::header('Device-Type');
         $version = Request::header('App-Version');
@@ -24,7 +24,11 @@ class PassController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
         }
-        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version);
+        $source = null;
+        if(!empty($data['source']) && $data['source']=='sodexo') {
+            $source = $data['source'];
+        }
+        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $source);
         if(empty($passes)) {
             return [
                 "status" => 400,

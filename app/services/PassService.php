@@ -26,9 +26,9 @@ class PassService {
 
     }
 
-    public function listPasses($customerId, $pass_type=null, $device=null, $version=null){
+    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $source=null){
         
-        $passList = Pass::where('status', '1')->where('pass_type', '!=', 'hybrid');
+        $passList = Pass::where('status', '1');
 
         if(!Config::get('app.debug')) {
             $trialPurchased =$this->checkTrialPassUsedByCustomer($customerId);
@@ -40,12 +40,13 @@ class PassService {
         if(!empty($trialPurchased['status']) && $trialPurchased['status']) {
             $passList = $passList->where('type','!=', 'trial');
         }
-        
-        if(!empty($pass_type)) {
-            $passList = $passList->whereIn('show_on_front', [null, true])->where('pass_type', $pass_type);
-        }
 
-        $passList = $passList->whereIn('show_on_front', [null, true])->where('pass_type', '!=', 'hybrid')->orderBy('duration')->get();
+        if(!empty($source)) {
+            $passList = $passList->where('corporate', $source)->orderBy('duration')->get();
+        }
+        else {
+            $passList = $passList->whereIn('show_on_front', [null, true])->where('pass_type', '!=', 'hybrid')->where('pass_type', $pass_type)->orderBy('duration')->get();
+        }
         
         $response = Config::get('pass.list');
         foreach($passList as &$pass) {
@@ -99,9 +100,9 @@ class PassService {
 
             unset($passDetails['extra_info']);
 
-            if($pass['unlimited_access']) {
-                $passDetails['price'] = 'Rs. '.$pass['price'];
-                $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
+            $passDetails['price'] = 'Rs. '.$pass['price'];
+            $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
+            if(($pass['pass_type']=='red') || ($pass['pass_type']=='hybrid' && $pass['branding']=='red')) {
                 if(!empty($device) && in_array($device, ['android', 'ios'])) {
                     $response['app_passes'][0]['offerings']['ratecards'][] = $passDetails;
                 }
@@ -109,8 +110,6 @@ class PassService {
                     $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
                 }
             } else{
-                $passDetails['price'] = 'Rs. '.$pass['price'];
-                $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
                 if(!empty($device) && in_array($device, ['android', 'ios'])) {
                     $response['app_passes'][1]['offerings']['ratecards'][] = $passDetails;
                 }
@@ -121,8 +120,8 @@ class PassService {
         }
         if(!empty($device) && in_array($device, ['android', 'ios'])) {
             $response['passes'] = $response['app_passes'];
-            unset($response['app_passes']);
         }
+        unset($response['app_passes']);
         // $passConfig = Config::get('pass');
         // $passCount = Order::active()->where('type', 'pass')->count();
         // if($passCount>=$passConfig['total_available']) {
