@@ -1919,7 +1919,7 @@ class PassService {
                 $profile['image'] = $customerData['onepass']['photo']['url'];
             }
             else{
-                $profile = Config::get('pass.customer_no_image');
+                $profile['image'] = Config::get('pass.customer_no_image');
             }
 
             if(!empty($interest) && $interest !=''){
