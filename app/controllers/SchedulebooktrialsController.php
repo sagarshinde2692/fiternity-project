@@ -5710,6 +5710,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(!empty($device_type) && !empty($app_version) && ($device_type =='android' && $app_version < '5.31') || ($device_type =='ios' && $app_version < '5.2.4')){
 
+            Log::info('device type::::::', [$device_type]);
             $booktrial['lost_code'] = false;
         
             if(isset($booktrial['schedule_date_time']) && time() >= strtotime($booktrial['schedule_date_time'])){
@@ -5732,7 +5733,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial['fitcode_button_text'] = 'Enter Fitcode';
             $booktrial['vendor_code'] = "0000";
-            
+
             // $booktrial['lost_code'] = false;
             
             // if(isset($booktrial['schedule_date_time']) && time() >= strtotime($booktrial['schedule_date_time'])){
