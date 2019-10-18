@@ -7737,11 +7737,11 @@ class CustomerController extends \BaseController {
 				
 				
 				$prior_time = '1 hour';
-				if(!empty($data['service_category_id']) && $data['service_category_id'] == 65){
+				if(!empty($data['servicecategory_id']) && $data['servicecategory_id'] == 65){
 					$prior_time = '15 minutes';
 				}
 
-                $one_hour_before = date('g:i a', strtotime($prior_time,strtotime($data['schedule_date_time'])));
+                $one_hour_before = date('g:i a', strtotime('- '.$prior_time,strtotime($data['schedule_date_time'])));
 				$response['sub_header_2'] = "Your ".$data['service_name']." session at ".$data['finder_name']." is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?\n\nCancellation window for this session is available upto ".$prior_time." prior to the session time";
 				if(empty($data['pass_order_id'])){
 					$response['sub_header_2'] .= " (Cancel before ".$one_hour_before.")\nCancellation post the window will be chargeable " ;
