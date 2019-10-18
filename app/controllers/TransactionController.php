@@ -10040,9 +10040,13 @@ class TransactionController extends \BaseController {
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
         $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using Onepass ".ucfirst($data['pass_type']);
 
+        $des = 'You can cancel this session 1 hour prior to your session time.';
+		if($data['finder_category_id'] == 5){
+			$des = 'You can cancel this session 15 min prior to your session time.';
+		}
         $easy_cancellation = array(
             "header" => "Easy Cancelletion: ",
-            "description" => "You can cancel this session 1 hour prior to your session time."
+            "description" => $des
         );
 
         $passBookingDetails['onepass_details'] = $onepass_details;

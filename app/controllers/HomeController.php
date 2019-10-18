@@ -1059,15 +1059,34 @@ class HomeController extends BaseController {
             if(isset($item['type']) && $item['type']=='workout-session' && $device_type && $app_version && in_array($device_type, ['android', 'ios']) && $app_version > '4.4.3'){
 
                 $header = "BOOKING SUCCESSFUL!";
-
-                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there. FitCode helps you mark your attendance that let\'s you earn cashbacks.'."<br><br>Keep booking sessions at ".$item['finder_name']." without buying a membership and earn rewards on your every workout";  
+                
+                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there. FitCode helps you mark your attendance that let\'s you earn cashbacks.'."<br><br>Keep booking sessions at ".$item['finder_name']." without buying a membership and earn rewards on your every workout";
 
                 if(!empty($item['coupon_flags']['cashback_100_per'])){
                     $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
                 }
 
                 if(!empty($item['pass_order_id'])){
-                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there.';
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
+                }
+
+
+                if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
+
+                    $finder_category = !empty($item['servicecategory_id']) ? ($item['servicecategory_id'] ==5 ? 'gym' : 'studio'): 'gym / studio';
+
+                    $steps = Config::get('paypersession.pps_booking_success_message');
+
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
+
+                    if(!empty($item['first_session_free'])){
+                        $steps = Config::get('paypersession.trial_booking_success_message');
+                    }
+
+                    if(!empty($item['pass_order_id'])){
+                        $steps =  Config::get('pass.booking_using_pass_success_message');
+                    }
+
                 }
 
                 if(isset($item['pay_later']) && $item['pay_later']){
@@ -1094,9 +1113,27 @@ class HomeController extends BaseController {
                 ];
 
                 if(!empty($item['corporate_id']) && empty($item['external_reliance'])){
-                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps.';
-                    if(empty($item['pass_order_id'])){
-                        $subline = $subline.' Session activation also helps you earn cashback into your Fitternity Wallet.';
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps. Session activation also helps you earn cashback into your Fitternity Wallet.';
+
+                    if(!empty($item['pass_order_id'])){
+                        $subline  = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there and earn '.$this->relianceService->getStepsByServiceCategory($item['servicecategory_id']).' steps.';
+                    }
+                }
+
+                $steps_count = 0;
+                if((($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')) && !empty($item['corporate_id']) && empty($item['external_reliance'])){
+
+                    $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
+
+                    $steps = Config::get('paypersession.pps_booking_success_message_corporate');
+                    $steps_count = $this->relianceService->getStepsByServiceCategory($item['servicecategory_id']);
+
+                    if(!empty($item['first_session_free'])){
+                        $steps = Config::get('paypersession.trial_booking_success_message_corporate');
+                    }
+                    
+                    if(!empty($item['pass_order_id'])){
+                        $steps = Config::get('pass.booking_using_pass_success_message_corporate');
                     }
                 }
                 
@@ -1116,6 +1153,20 @@ class HomeController extends BaseController {
                     unset($response['streak']);
                 }
                 
+                if(!empty($steps)){
+
+                    foreach($steps['data'] as &$value){
+                        $value = strtr($value, ['finder_category'=> $finder_category, 'steps_count'=> $steps_count]);
+                    }
+
+                    $response['steps'] = $steps;
+                }
+
+                if(!empty($item['type']) && $item['type']=='workout-session' && empty($item['pass_order_id'])){
+                    
+                    $profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $customer_id);
+                    empty($profile_completed) ? $response['personalize'] =  'personalize': null;
+                }
                 if((isset($item['extended_validity_order_id']) || isset($item['pass_order_id'])) && (($device_type=='android' && $app_version <= '5.17') || ($device_type=='ios' && $app_version <= '5.1.4'))){
                     $response['streak']['header'] = '';
                     $response['streak']['items'] = [];
@@ -1145,12 +1196,12 @@ class HomeController extends BaseController {
                 }
                 
                 
-                if(!empty($item['loyalty_registration']) && $this->utilities->sendLoyaltyCommunication($item)){
-                    $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
-                    $cashback_type_map = Config::get('app.cashback_type_map');
-                    $response['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 2;
-                    $response['fitsquad_sub_type'] = !empty($item['finder_flags']['cashback_type']) ?  $cashback_type_map[strval($item['finder_flags']['cashback_type'])] : null;
-                }
+                // if(empty($item['pass_order_id']) && !empty($item['loyalty_registration']) && $this->utilities->sendLoyaltyCommunication($item)){
+                //     $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
+                //     $cashback_type_map = Config::get('app.cashback_type_map');
+                //     $response['fitsquad_type'] = !empty($item['finder_flags']['reward_type']) ?  $item['finder_flags']['reward_type'] : 2;
+                //     $response['fitsquad_sub_type'] = !empty($item['finder_flags']['cashback_type']) ?  $cashback_type_map[strval($item['finder_flags']['cashback_type'])] : null;
+                // }
                 
                 if(!empty($item['qrcodepayment'])){
                     unset($response['subline']);
@@ -1171,6 +1222,11 @@ class HomeController extends BaseController {
                     $response['subline'] = 'Your payment for '.$service_name.' session at '.$finder_name.' for '.$schedule_date.' at '.$schedule_slot.' is successful. Keep booking, reach milestones & earn rewards';
                 }
                 
+                if(!empty($item['pass_order_id'])){
+                    Log::info('pas order ::::::::::::::::::::::::::', [$item['pass_order_id']]);
+                    unset($response['feedback']);
+                    unset($response['conclusion']);
+                }
             
                 $response['branch_obj'] = $this->utilities->branchIOData($itemData);
 
@@ -1543,7 +1599,7 @@ class HomeController extends BaseController {
 
             $position = 0;
 
-            $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
+            // $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
             
             if(isset($item['extended_validity']) && $item['extended_validity']){ 
                 $booking_details_data["validity"] = ['field'=>'VALIDITY','value'=>(!empty($item['ratecard_flags']['unlimited_validity']) ? "Unlimited Validity" :  $serviceDurArr[1]),'position'=>$position++];
@@ -1661,38 +1717,38 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Free Via Fitternity";
             }
 
-            if(isset($item['code']) && $item['code'] != ""){
-                $booking_details_data['booking_id']['value'] = $item['code'];
-            }
+            // if(isset($item['code']) && $item['code'] != ""){
+            //     $booking_details_data['booking_id']['value'] = $item['code'];
+            // }
 
-            if(in_array($type,["booktrialfree"])){
+            // if(in_array($type,["booktrialfree"])){
 
-                if(isset($item['code']) && $item['code'] != ""){
-                    $booking_details_data['booking_id']['value'] = $item['code'].' (Share it at Gym/Studio to get Fitcode)';
-                }
+            //     if(isset($item['code']) && $item['code'] != ""){
+            //         $booking_details_data['booking_id']['value'] = $item['code'].' (Share it at Gym/Studio to get Fitcode)';
+            //     }
 
-            }
+            // }
 
-            if(in_array($type, ["booktrial","workoutsession","workout-session","booktrials"])){
+            // if(in_array($type, ["booktrial","workoutsession","workout-session","booktrials"])){
 
-                if(isset($item['booktrial_id']) && $item['booktrial_id'] != ""){
+            //     if(isset($item['booktrial_id']) && $item['booktrial_id'] != ""){
 
-                    $order_booktrial = Booktrial::customerValidation(customerEmailFromToken())->find(intval($item['booktrial_id']));
+            //         $order_booktrial = Booktrial::customerValidation(customerEmailFromToken())->find(intval($item['booktrial_id']));
 
-                    if(isset($order_booktrial['code'])){
+            //         if(isset($order_booktrial['code'])){
                         
-                        $booking_details_data['booking_id']['value'] = $order_booktrial['code'];
+            //             $booking_details_data['booking_id']['value'] = $order_booktrial['code'];
 
-                        if(in_array($type, ["booktrial","booktrials"])){
+            //             if(in_array($type, ["booktrial","booktrials"])){
 
-                            $booking_details_data['booking_id']['value'] = $order_booktrial['code'].' (Share it at Gym/Studio to get Fitcode)';
-                        }
+            //                 $booking_details_data['booking_id']['value'] = $order_booktrial['code'].' (Share it at Gym/Studio to get Fitcode)';
+            //             }
                     
-                    }
+            //         }
 
-                }
+            //     }
 
-            }
+            // }
 
             if(isset($item['type']) && $item['type'] == 'memberships'){
 
@@ -2084,10 +2140,10 @@ class HomeController extends BaseController {
                             }
                         }
 
-                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/sms).\nGet ".$session_total." sessions for free worth Rs. ".$session_amount;
+                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/SMS).\nGet ".$session_total." sessions for free worth Rs. ".$session_amount;
 
                         if($reward['reward_type'] == "swimming_sessions"){
-                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/sms).\nGet ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
+                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/SMS).\nGet ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
                         }
                         
                     }

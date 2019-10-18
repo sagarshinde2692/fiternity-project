@@ -1917,4 +1917,105 @@ Class RelianceService {
         return $res;
     }
 
+    function getCustomerDetails($customerId) {
+        if(empty($customerId)) {
+            return null;
+        }
+        Customer::$withoutAppends = true;
+        return Customer::active()->where('_id', $customerId)->first();
+    }
+
+    function getHealthObject($customerDetails, $custInfo, $data, $deviceType, $appVersion) {
+        if(!empty($customerDetails['corporate_id'])) {
+            $result = [];
+            $customer_id = $custInfo->customer->_id;
+    
+            if(!empty($custInfo) && !empty($appVersion) && !empty($deviceType)){
+                
+                $reliance_customer = $this->getCorporateId($custInfo, $customer_id);
+                $customeremail = $custInfo->customer->email;
+                $corporate_id  = $reliance_customer['corporate_id'];
+                $external_reliance = $reliance_customer['external_reliance'];
+
+                $result['health_popup'] = Config::get('health_config.health_popup');
+                
+                Customer::$withoutAppends = true;
+                if(!empty($customer_id) && !empty($corporate_id) && empty($external_reliance) && $corporate_id == 1) {
+                    if(empty($customerRec)) {
+                        $customerRec = Customer::active()->where('email', $customeremail)->first();
+                    }
+                    try{
+                        if(empty($customerRec->reliance_city) && empty($customerRec->reliance_city_home) && (!empty($data['city']))) {
+                        Customer::where('_id', $customerRec->_id)->update(['reliance_city_home'=> $data['city']]);
+                        }
+                    } catch(Exception $e) {
+                        Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+                    }
+                    $result['health_popup'] = Config::get('health_config.health_popup');
+                    if(!empty($customerRec) && empty($customerRec->dob_updated_by_reliance)) {
+                        $result['dob_popup'] = Config::get('health_config.dob_popup');
+                    }
+
+                    // if(!empty($this->device_type) && !empty($this->app_version) && $this->device_type=='ios' && $this->app_version>= '5.2.1'){
+                        $result['health'] = $this->buildHealthObjectStructure($customer_id, $corporate_id, $deviceType, $data['city'], $appVersion, $customerRec);	
+                    // }
+                    // else{
+                    // 	$result['health'] = $this->buildHealthObject($customer_id, $corporate_id, $this->device_type, $data['city'], (float)$_GET['app_version'], null, $jwt_token );
+                    // }
+                    $result['is_health_rewad_shown'] = true;
+                }
+                else if(!empty($customer_id)){
+                    $customerRec = Customer::active()->where('email', $customeremail)->first();
+                    try{
+                        if(empty($customerRec->reliance_city) && empty($customerRec->reliance_city_home) && (!empty($data['city']))) {
+                        Customer::where('_id', $customerRec->_id)->update(['reliance_city_home'=> $data['city']]);
+                        }
+                    } catch(Exception $e) {
+                        Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+                    }
+                    $result['non_reliance'] = ($deviceType=='android' && ($appVersion)>5.26)?Config::get('health_config.non_reliance_android'):Config::get('health_config.non_reliance');
+                    // if(!empty($this->device_type) && !empty($this->app_version) && $this->device_type=='ios' && $this->app_version>= '5.2.1'){
+                        $result['health'] = $this->buildHealthObjectStructure($customer_id, $corporate_id, $deviceType, $data['city'], $appVersion, $customerRec);	
+                    // }
+                    // else{
+                    // 	$result['health'] = $this->buildHealthObject($customer_id, $corporate_id, $this->device_type, $data['city'], (float)$_GET['app_version'], null, $jwt_token);
+                    // }
+                    
+                    if(!empty($customerRec) && empty($customerRec->dob_updated_by_reliance)) {
+                        $result['dob_popup'] = Config::get('health_config.dob_popup');
+                    }
+                    if($deviceType== 'android' && !empty($corporate_id)){
+                        unset($result['non_reliance']);
+                    }
+                }
+                //removing fields from search
+                    
+                if(!empty($result['health']['steps'])){
+                    unset($result['health']['steps']);
+                }
+        
+                //disable reliance section 05-sept-2019 below
+                if(empty($customerRec['external_reliance']) || !$customerRec['external_reliance']) {
+                    unset($result['health']);
+                    unset($result['is_health_rewad_shown']);
+                    if(!empty($result['health_popup'])) {
+                    unset($result['health_popup']);
+                    }
+                }
+                if(empty($customerRec['corporate_id']) && !empty($result['non_reliance'])) {
+                    unset($result['non_reliance']);
+                }
+                if(empty($customerRec['corporate_id']) && (!empty($result['health_popup']))) {
+                    unset($result['health_popup']);
+                }
+                        //disable reliance section 05-sept-2019 above
+            }
+    
+            // $healthObject = $this->relianceService->buildHealthObjectStructure($custInfo->customer->_id, $customerDetails['corporate_id'], $deviceType, $data['city'], $appVersion, $customerDetails);
+
+            return $result;
+
+        }
+        return null;
+    }
 }   

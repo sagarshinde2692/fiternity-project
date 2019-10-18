@@ -5,6 +5,7 @@ $success_page_template = Config::get('successPage');
 // $black_pass = 'https://b.fitn.in/global/classpass/mobile/back%20card%20-%20website.png';
 $red_pass = 'https://b.fitn.in/passes/cards/onepass-red.png';
 $black_pass = 'https://b.fitn.in/passes/cards/onepass-black.png';
+
 return [
     'price_upper_limit' => 1001,
     'list' => [
@@ -35,6 +36,11 @@ return [
                     'text' => 'Terms & Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
+                ],
+                'local_pass' => [
+                    'header' => 'Onepass Red city_name',
+                    'description' => 'description of red pass',
+                    'button_text' => 'buy'
                 ]
             ],
             [
@@ -99,6 +105,11 @@ return [
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
+                ],
+                'local_pass' => [
+                    'header' => 'Onepass Red city_name',
+                    'description' => 'description of red pass',
+                    'button_text' => 'buy'
                 ]
             ],
             [
@@ -143,7 +154,7 @@ return [
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
         ],
-        'subheader' => 'duration_text PASS FOR usage_text',
+        'subheader' => 'duration_text PASS FOR usage_text'
     ],
     "total_available" => 300,
     "terms"=>[
@@ -337,7 +348,7 @@ return [
     'success'=>[
         'image' => 'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
         "header" => "Your ___type pass is active",
-        'subline'=>'Hi __customer_name, your __pass_name for __pass_duration is now confirmed. We have also sent you a confirmation Email and SMS.',
+        'subline'=>"Congratulations __customer_name! \n Your __pass_name for __pass_duration is now confirmed. A confirmation email and sms has been sent to you.",
         'subline_1'=>'Booking starts from 5th of September 2019.',
         "pass" => [
             // "text" => "(__usage_remark) __end_date",
@@ -352,18 +363,24 @@ return [
         'info'=>[
             'header'=>'Things to keep in mind',
             'data'=>[
+                'Personalize your OnePass for top recommendations basis your interests.',
+                'Book a session at any of the 12,000+ gyms or studios of your choice.',
+                'Activate/Unlock  your session at the gym/studio premises.',
+                'Flash your active booking screen at the gym/studio and enjoy your workout.',
+                'Onepass bookings can only be done through the app.',
                 'Download the app & get started.',
-                'Book classes at any gym/studio near you of your choice.',
-                'Not loving it? easy cancellation available.',
             ],
             'app_data'=>[
-                'Book your sessions through the App.',
-                'Book classes at any gym/studio near you of your choice.',
-                'Not loving it? easy cancellation available.',
+                'Personalize your OnePass for top recommendations basis your interests.',
+                'Book a session at any of the 12,000+ gyms or studios of your choice.',
+                'Activate/Unlock  your session at the gym/studio premises.',
+                'Flash your active booking screen at the gym/studio and enjoy your workout.',
+                'Onepass bookings can only be done through the app.'
             ]
         ],
         "conclusion" => $success_page_template['conclusion'],
-        "feedback" => $success_page_template["feedback"]
+        "feedback" => $success_page_template["feedback"],
+        "personalize" => "PERSONALIZE YOUR ONEPASS"
     ],
     'pass_image_silver' => $red_pass,
     'pass_image_gold' => $black_pass,
@@ -447,7 +464,7 @@ return [
             "header_img"  => "https://b.fitn.in/passes/app-home/onepass_header.png",
             "header_new_img" => "http://b.fitn.in/passes/onepass-app.png",
             "header_sub_text" => "FOR EVERYTHING HEALTH AND FITNESS",
-            "text"  => "Enjoy limitless access across Fitternity's 12,000+ fitness classes, gyms and sports facilities across India",
+            "text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
             "passes" => [
                 [
                     "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
@@ -474,7 +491,7 @@ return [
                 "index" => 0,
                 "text" => "30% Off + Get Extra 15% Off OR Free 3 Months Extension",
                 "button_text" => "Know More"
-            ]
+            ],
         ],
         "after_purchase" => [
             "red" => [
@@ -496,7 +513,7 @@ return [
                         'no_last_order' => true,
                         'contact_text' => 'Need Help? Contact your Personal Concierge',
                         'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-                        'contact_no' => '+917400062849'
+                        'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
                     ],
                     'section2' => [
                     'text' => 'Your Onepass Red will expire after remaining_text',
@@ -539,7 +556,7 @@ return [
                         'no_last_order' => true,
                         'contact_text' => 'Need Help? Contact your Personal Concierge',
                         'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
-                        'contact_no' => '+917400062849'
+                        'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
                     ],
                     'section2' => [
                         'text' => 'Your Onepass Black will expire after remaining_text',
@@ -587,5 +604,436 @@ return [
             "desc_subheader" => "Limited Workouts"
         ]
             
-    ]
+    ],
+
+    "passtab" => [
+        "before_purchase" => [
+            "logo"  => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
+            "header_img"  => "https://b.fitn.in/passes/app-home/onepass_header.png",
+            "header_new_img" => "http://b.fitn.in/passes/onepass-app.png",
+            "header_sub_text" => "FOR EVERYTHING HEALTH AND FITNESS",
+            "text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
+            "passes" => [
+                [
+                    "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",
+                    "header1" => "ONEPASS",
+                    "header1_color" => "#000000",
+                    "header2" => "RED",
+                    "header2_color" => "#d50000",
+                    "subheader" => "UNLIMITED ACCESS",
+                    "desc_header" => "Limitless Workouts",
+                    //"desc_subheader" => "With Expiry" 
+                ],
+                [
+                    "image" => "https://b.fitn.in/passes/app-home/op_black_thumb.png",
+                    "header1" => "ONEPASS",
+                    "header1_color" => "#000000",
+                    "header2" => "BLACK",
+                    "header2_color" => "#000000",
+                    "subheader" => "UNLIMITED VALIDITY",
+                    "desc_header" => "No Expiry",
+                    //"desc_subheader" => "Limited Workouts"
+                ]
+            ],
+            "footer" => [
+                "index" => 0,
+                "text" => "Get 30% off on OnePass. Buy your OnePass before prices go up!",
+                "button_text" => "Know More"
+            ]
+        ],
+        "after_purchase" => [
+            "red" => [
+                "pass_image"  => "https://b.fitn.in/passes/cards/onepass-red.png",
+                "name"  => "",
+                "header" => "UNLIMITED USAGE",
+                "subheader" => "", // duration or sessions
+                "top_right_button_text" => "BOOK >",
+                "left_text"  => "UPCOMING: ",
+                "left_value"  => 0,
+                "right_text"  => "COMPLETED: ",
+                "right_value"  => 0,
+
+                'footer' => [
+                    'section1' => [
+                        'button1_text' => 'REPEAT LAST BOOKING',
+                        // 'button1_subtext' => '',
+                        'button2_text' => 'VIEW ALL BOOKINGS',
+                        'no_last_order' => true,
+                        'contact_text' => 'Need Help? Contact your Personal Concierge',
+                        'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+                        'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
+                    ],
+                    'section2' => [
+                        'text' => 'Your Onepass Red will expire after remaining_text',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW NOW',
+                        'index' => 0
+                    ],
+                    'section3' => [
+                        'text' => 'Your Onepass Red has expired',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW',
+                        'index' => 0
+                    ]
+                ],
+                'pass_expired' => false,
+                'tnc_text' => 'View T&C',
+                "terms" => "<h2>Terms and Conditions</h2>
+                            <ul>
+                                <li>OnePass bookings will start from 5th September 2019</li>
+                                <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facility</li>
+                                <li></li>
+                                <li>The cashback received via any OnePass transaction can be only be redeemed to upgrade your OnePass</li>
+                            </ul>"
+            ],
+            "black" => [
+                "pass_image"  => "https://b.fitn.in/passes/cards/onepass-black.png",
+                "name"  => "",
+                "header" => "UNLIMITED VALIDITY",
+                "subheader" => "", // duration or sessions
+                "top_right_button_text" => "BOOK >",
+                "left_text"  => "UPCOMING: ",
+                "left_value"  => "0",
+                "right_text"  => "COMPLETED: ",
+                "right_value"  => "0",
+                'footer' => [
+                    'section1' => [
+                        'button1_text' => 'REPEAT LAST BOOKING',
+                        // 'button1_subtext' => '',
+                        'button2_text' => 'VIEW ALL BOOKINGS',
+                        'no_last_order' => true,
+                        'contact_text' => 'Need Help? Contact your Personal Concierge',
+                        'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+                        'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
+                    ],
+                    'section2' => [
+                        'text' => 'Your Onepass Black will expire after remaining_text',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW NOW',
+                        'index' => 1
+                    ],
+                    'section3' => [
+                        'text' => 'Your Onepass Black has expired',
+                        'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                        'button_text' => 'RENEW',
+                        'index' => 1
+                    ]
+                ],
+                'pass_expired' => false,
+                'tnc_text' => 'View T&C',
+                "terms" => "<h2>Terms and Conditions</h2>
+                            <ul>
+                                <li>OnePass bookings will start from 5th September 2019</li>
+                                <li>Incase you find a fitness/sports facility which is not yet part of the OnePass network - We will work to on-board the center within 1-15 working days of your request given alignment of standard terms between Fitternity & the facility</li>
+                                <li>Incase you're not enjoying OnePass - You can take a refund (No Questions asked). You pro-rata based un-utilized amount will be converted to Fitcash on Fitternity(1 Rupee = 1 Fitcash) and can be used to buy any other service/membership on Fitternity. 5% of your initial payment for OnePass upto a maximum of Rs 500 will be deducted to process this transition from OnePass to Fitcash</li>
+                                <li>The cashback received via any OnePass transaction can be only be redeemed to upgrade your OnePass</li>
+                            </ul>"
+            ]
+        ]
+    ],
+
+    "pass_profile" =>[
+        "booking_text" =>"Personalize your OnePass booking experience by sharing few details. This helps us to offer you top recommendations basis your interests.",
+        "booking_text_pps" =>"Personalize your session booking experience by sharing few details. This helps us to offer you top recommendations basis your interests.",
+        "title" => "Personalize OnePass",
+        "title_pps" => "Personalize Session",
+        "address_details" => [
+            "header" => "Share your preferred location to help you with curated list of top gyms/classes near you.",
+            "home_subtext" => "We will use this address to send you vouchers and gifts.",
+        ],
+        "interests" => [
+            "header" => "Tell Us About Your Favorite/Preferred Fitness Forms",
+            "subheader" => "Select at least 3"
+        ],
+        "personlized_profile" => [
+            "title" => "Personalize OnePass",
+            "title_pps" => "Personalize Session",
+            "header" => "Enjoy your OnePass Subscription!",
+            "header_pps" => "Enjoy your session Subscription!\n",
+            "url" => "",
+            "success_image" => "https://b.fitn.in/passes/check_circle.png",
+            "text" => "Awesome !\nYour OnePass is now personalized as per your interests. Checkout the OnePass section for our top recommendations of studios and classes matching your preferences.",
+            "text_pps" => "Awesome !\nYour session booking is now personalized basis your interest.\nContinue to book your session and experience the all new Unlock feature to activate the session at the studio.",
+            "skip_text" => "SKIP FOR NOW",
+            "interests" => [
+                "header" => "Enjoy your OnePass Subscription!",
+                "header_pps" => "Enjoy your session Subscription!",
+                "data" => [
+                    [
+                        '_id'=>0,
+                        'slug'=>'', 
+                        'name'=> 'Explore All', 
+                        'image'=> 'https://b.fitn.in/iconsv1/all_category_icon.png'
+                    ]
+    
+                ]
+            ]
+        ]
+    ],
+    
+    "before_purchase_tab" => [
+        "headerview" =>[
+            "header_img" =>  "https://b.fitn.in/passes/onepass-app.png", //"https://b.fitn.in/onepass/onepss_background_logo.png",
+            "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
+            "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
+            "header_sub_text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
+        ],
+        "passes" => [
+            [
+                "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",//"https://b.fitn.in/onepass/OnePass_Red_3x.png",
+                "header1" => "ONEPASS",
+                "header1_color" => "#000000",
+                "header2" => "RED",
+                "header2_color" => "#d50000",
+                "subheader" => "UNLIMITED ACCESS",
+                "desc_header" => "Limitless Workouts",
+                //"desc_subheader" => "With Expiry" 
+            ],
+            [
+                "image" => "https://b.fitn.in/passes/app-home/op_black_thumb.png",//"https://b.fitn.in/onepass/OnePass_Black_3x.png",
+                "header1" => "ONEPASS",
+                "header1_color" => "#000000",
+                "header2" => "BLACK",
+                "header2_color" => "#000000",
+                "subheader" => "UNLIMITED VALIDITY",
+                "desc_header" => "No Expiry",
+                //"desc_subheader" => "Limited Workouts"
+            ]
+        ],
+
+        'why_pass' => [
+            'header' => 'How it Works',//'Why Go For OnePass?',
+            'data' => [
+                [
+                    'header' => 'Select a Fitness Center & Slot',
+                    'text' => 'Easy search & filter by name, activity, location',
+                    'image' => 'https://b.fitn.in/global/onepass/icon-1.png'
+                ],
+                [
+                    'header' => 'Book & go workout',
+                    'text' => 'Reach the fitness centre & flash your booking to unlock your session',
+                    'image' => 'https://b.fitn.in/global/onepass/icon-2.png'
+                ],
+                [
+                    'header' => 'Make the best workout regime',
+                    'text' => 'Go to your favourite place multiple times or mix it up',
+                    'image' => 'https://b.fitn.in/global/onepass/icon-3.png'
+                ]
+            ]
+        ],
+
+        "near_by" =>[
+            "icon" => "https://b.fitn.in/onepass/Dumbell_3x.png",
+            "header" => "Over 12,000+ fitness classes,\n gyms & sports venues",
+        ],
+
+        "offers" => [
+            "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+            "header" => "Exciting OnePass Offers",
+            "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
+            "text" => "Get 30% off on OnePass. Buy your OnePass before prices go up!",
+        ],
+
+        'faq' => [
+            "icon" => "https://b.fitn.in/onepass/FAQ_3x.png",
+            'header' => 'Frequently Asked Questions',
+            'title' => 'FAQ Title',
+            'url' => $apiUrl.'/passfaq'
+        ],
+
+        'tnc' => [
+            'icon' => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
+            'header' => 'Terms and Conditions',
+            'title' => '',
+            'url' => $apiUrl.'/passtermscondition'
+        ],
+
+        'footer' => [
+            'contact_text' => 'Need Help? Contact your Personal Concierge',
+            'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+            'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
+        ]
+    ],
+
+    "after_purchase_tab" => [
+        "red" => [
+            "pass_image"  => "https://b.fitn.in/passes/cards/onepass-red.png",//"https://b.fitn.in/onepass/OnePass_Red_3x.png",
+            "name"  => "",
+            "header" => "UNLIMITED USAGE",
+            "subheader" => "", // duration or sessions
+            "top_right_button_text" => "BOOK >",
+            "left_text"  => "UPCOMING: ",
+            "left_value"  => 0,
+            "right_text"  => "COMPLETED: ",
+            "right_value"  => 0,
+
+            'footer' => [
+                'section1' => [
+                    'button1_text' => 'REPEAT LAST BOOKING',
+                    // 'button1_subtext' => '',
+                    'button2_text' => 'VIEW ALL BOOKINGS',
+                    'no_last_order' => true,
+                    'contact_text' => 'Need Help? Contact your Personal Concierge',
+                    'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+                    'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
+                ],
+                'section2' => [
+                    'text' => 'Your Onepass Red will expire after remaining_text',
+                    'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                    'button_text' => 'RENEW NOW',
+                    'index' => 0
+                ],
+                'section3' => [
+                    'text' => 'Your Onepass Red has expired',
+                    'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                    'button_text' => 'RENEW',
+                    'index' => 0
+                ]
+            ],
+            'pass_expired' => false,
+        ],
+        "black" => [
+            "pass_image"  => "https://b.fitn.in/passes/cards/onepass-black.png",//"https://b.fitn.in/onepass/OnePass_Black_3x.png",
+            "name"  => "",
+            "header" => "UNLIMITED VALIDITY",
+            "subheader" => "", // duration or sessions
+            "top_right_button_text" => "BOOK >",
+            "left_text"  => "UPCOMING: ",
+            "left_value"  => "0",
+            "right_text"  => "COMPLETED: ",
+            "right_value"  => "0",
+            'footer' => [
+                'section1' => [
+                    'button1_text' => 'REPEAT LAST BOOKING',
+                    // 'button1_subtext' => '',
+                    'button2_text' => 'VIEW ALL BOOKINGS',
+                    'no_last_order' => true,
+                    'contact_text' => 'Need Help? Contact your Personal Concierge',
+                    'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+                    'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
+                ],
+                'section2' => [
+                    'text' => 'Your Onepass Black will expire after remaining_text',
+                    'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                    'button_text' => 'RENEW NOW',
+                    'index' => 1
+                ],
+                'section3' => [
+                    'text' => 'Your Onepass Black has expired',
+                    'subtext' => 'Upto 50% Off + Additional 20% Off On Onepass',
+                    'button_text' => 'RENEW',
+                    'index' => 1
+                ]
+            ],
+            'pass_expired' => false
+        ]
+    ],
+
+    "book_now" => [
+        "header" => "Upcoming Session",
+        "image" => "https://b.fitn.in/onepass/Clock_Icon.png",
+        "text" => "You don’t have any upcoming booking. Start booking to make the most of your OnePass Subscription!",
+        "button_text" => "BOOK NOW"
+    ],
+
+    "cancel_onepass" => [
+        'text' => "Not Satisfied with Onepass",
+        'button_text' => 'Cancel OnePass',
+        'contact_no' => \Config::get('app.contact_us_customer_number_onepass'),
+        'display_contact_no' => \Config::get('app.display_contact_us_customer_number_onepass'),
+        'email' => \Config::get('app.contact_us_customer_email_onepass'),
+        'email_text' => "You can also write to us on"
+    ],
+
+    'local_pass_fields' => [
+        'why_local_pass' => [
+            'header' => 'WHY GO FOR A PASS',
+            'text' => 'LIMITLESS WORKOUTS, LIMITLESS CHOICES, LIMITLESS VALIDITY, LIMITLESS YOU',
+            'data' => [
+                'OnePass Red give you Unlimited Access',
+                'OnePass Red gives you Membership Privileges',
+                'Onepass Red gives you the option to workout Anytime, Anywhere'
+            ]
+        ],
+        'local_pass_offerings' => [
+            'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across city_centers_count fitness classes, gyms and sports facilities across city_name. \n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
+            'button_text' => 'Checkout Gyms/Studios',
+            'ratecards' => []
+        ],
+        'local_pass_remarks' => [
+            'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional FLAT INR 500 Off", // need content
+            'text' => 'Terms and Conditions',
+            "title" =>'Terms and Conditions',
+            'url' => $apiUrl.'/passtermscondition?type=unlimited'
+        ]
+    ],
+
+    'city_centers_count' => [
+        'pune' => 1000,
+        'mumbai' => 1500,
+        'delhi' => 2000,
+        'faridabad' => 800,
+        'bangalore' =>1200,
+        'hydrabad' => 1000
+    ],
+
+    'upcoming_booking' => [
+        'header' => "Upcoming Session",
+        'workout' => [
+            'icon' => '',
+            'header' => '',
+            'text' => ''
+        ],
+        'finder' => [
+            'header' => '',
+            'text' => '',
+            'address' => ''
+        ],
+        'direction' => 'Get Direction',
+        'lat' => '',
+        'lon' => '',
+        'footer' => [
+            'text' => 'Tap on UNLOCK SESSION button within vendor_type premises to activate your session.',
+            'unlock_text' => 'UNLOCK SESSION',
+            'unlock_url' => Config::get('app.url').'/unlocksession/'.'trial_id',
+            'cancel_text' => 'CANCEL SESSION',
+            'cancel_url' => Config::get('app.url').'/canceltrial/'.'trial_id',
+            'cancel_message' => 'Are you sure you want to cancel your session at finder_name',
+            'unlock_message' => 'Are you sure you have reached the finder_name and want to unlock your session?'
+        ],
+        'contact_us' => [
+            'contact_text' => 'Need Help? Contact your Personal Concierge',
+            'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
+            'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
+        ],
+        "remarks" => "Show this screen at the finder_name to access your workout.",
+
+    ],
+
+    'upcoming_config_booking' => [
+        'header' => "Session Activated",
+        "image" => "https://b.fitn.in/passes/check_circle.png",
+        "title" => "service_name",
+        "text" => "finder_name",
+        "session_data" => []
+    ],
+
+    'booking_using_pass_success_message' => [
+        'header' => 'Steps to unlock your Session',
+        'data' => [
+            "Navigate to Upcoming Session section in the Onepass Tab.\n",
+            "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.\n",
+            "Show your activated session screen with your photo at the finder_category to enjoy the session.\n"
+        ] 
+    ],
+    'booking_using_pass_success_message_corporate' => [
+        'header' => 'Steps to unlock your Session',
+        'data' => [
+            "Navigate to Upcoming Session section in the Onepass Tab.\n",
+            "Tap on UNLOCK SESSION button within the finder_category premises to activate your session.\n",
+            "Show your activated session screen with your photo at the finder_category to enjoy the session.\n",
+            "unlock session and earn steps_count steps.\n"
+        ] 
+        ],
+    'customer_no_image' => 'https://b.fitn.in/customer_photo/no_image_available.png'
 ];

@@ -9644,7 +9644,7 @@ Class Utilities {
 		}
 
 		//Log::info('geo coordinates of :::::::::::;', [$customer_geo, $finder_geo]); // need to update distance limit by 500 metere
-		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 2000 ? true : false;
+		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= Config::get('app.checkin_checkout_max_distance_in_meters') ? true : false;
 		//Log::info('distance status', [$distanceStatus]);
 		if($distanceStatus){
 			// $oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
@@ -10216,8 +10216,11 @@ Class Utilities {
 		    'time_tag' => 'later-today',
             'date' => date('d-m-y')
         ];
+        if(!empty($input['onepass_available'])){
+            $near_by_workout_request['onepass_available'] = true; 
+        }
         Log::info('payload:::::::::', [$near_by_workout_request]);
-		$workout = geoLocationWorkoutSession($near_by_workout_request, $source);
+        $workout = geoLocationWorkoutSession($near_by_workout_request, $source);
 		$result=[
 			'header'=> 'Workouts near me',
 			'data'=>[]
@@ -10338,12 +10341,269 @@ Class Utilities {
         return $resp;
     }
 
+    public function onePassCustomerAddImage($image, $customer_id, $customer){
+
+        if ($image->getError()) {
+
+            return array('status' => 400, 'message' => 'Please upload jpg/jpeg/png image formats with max. size of 10 MB');
+
+        }
+
+        $data = [
+            "input"=>$image,
+            "upload_path"=>Config::get('app.aws.customer_photo.path').$customer_id.'/',
+            "local_directory"=>public_path().'/customer_photo/'.$customer_id,
+            "file_name"=>$customer_id.'-'.time().'.'.$image->getClientOriginalExtension()
+            // "resize"=>["height" => 200,"strategy" => "portrait"],
+        ];
+
+        $upload_resp = $this->uploadFileToS3Kraken($data);
+
+        Log::info($upload_resp);
+
+        if(!$upload_resp || empty($upload_resp['success'])){
+            return array('status'=>400, 'message'=>'Error');
+        }
+
+        $customer_photo = ['url'=>str_replace("s3.ap-southeast-1.amazonaws.com/", "", $upload_resp['kraked_url']), 'date'=> new \MongoDate()];
+
+        return array('status'=>200, 'customer_photo'=>$customer_photo);
+    }
+
+    public function updateAddressAndIntereste($customer, $data){
+        $onepass = !empty($customer->onepass) ?  $customer->onepass: [];
+        
+        //$onepass['profile_completed'] = $data['profile_completed'];
+
+        if(!empty($data['customer_photo'])){
+            $onepass['photo'] = $data['customer_photo'];
+        }
+
+        if(!empty($data['interests'])){
+            $onepass['interests'] = $data['interests'];
+        }
+
+        if(!empty($data['gender'])){
+            $onepass['gender'] = strtolower($data['gender']);
+            $customer->gender = strtolower($data['gender']);
+        }
+
+        if(!empty($data['address_details'])){
+
+            if(!empty($data['address_details']['home_address'])){
+                $customer->address =  $data['address_details']['home_address'];
+                $onepass['home_address'] = $data['address_details']['home_address'];
+                if(!empty($data['address_details']['home_lat']) && !empty($data['address_details']['home_lon'])){
+                    $onepass['home_lat'] = $data['address_details']['home_lat'];
+                    $onepass['home_lon'] = $data['address_details']['home_lon'];
+                }
+            }
+            
+            if(!empty($data['address_details']['work_address'])){
+                $onepass['work_address'] =  $data['address_details']['work_address'];
+                if(!empty($data['address_details']['work_lat']) && !empty($data['address_details']['work_lon'])){
+                    $onepass['work_lat'] = $data['address_details']['work_lat'];
+                    $onepass['work_lon'] = $data['address_details']['work_lon'];
+                }
+            }
+
+            if(!empty($data['address_details']['home_landmark'])){
+                $customer->address_landmark =  $data['address_details']['home_landmark'];
+                $onepass['home_landmark'] = $data['address_details']['home_landmark'];
+            }
+            
+            if(!empty($data['address_details']['work_landmark'])){
+                $onepass['work_landmark'] =  $data['address_details']['work_landmark'];
+            }
+
+            if(!empty($data['address_details']['home_city'])){
+                $onepass['home_city'] =  $data['address_details']['home_city'];
+            }
+            if(!empty($data['address_details']['work_city'])){
+                $onepass['work_city'] =  $data['address_details']['work_city'];
+            }
+        }
+        $customer->onepass = $onepass;
+        return $customer;
+    }
+
+    public function getParentServicesCategoryList(){
+        $category_ids = [65, 5, 19, 1, 123, 3, 4, 2, 114, 86];
+        return \Servicecategory::active()->where('parent_id', 0)->whereIn('_id', $category_ids)->get(['slug', 'name']);
+    }
+
     function getOrdinalNumber($number) {
         $ends = array('th','st','nd','rd','th','th','th','th','th','th');
         if ((($number % 100) >= 11) && (($number%100) <= 13))
             return $number. 'th';
         else
             return $number. $ends[$number % 10];
+    }
+
+    public function formatOnepassCustomerDataResponse($resp, $pass_order_id){
+        
+        $onepassProfileConfig = Config::get('pass.pass_profile');
+        $resp['booking_text'] = !empty($pass_order_id)? $onepassProfileConfig['booking_text']:$onepassProfileConfig['booking_text_pps'];
+        $resp['title'] = !empty($pass_order_id)? $onepassProfileConfig['title']:$onepassProfileConfig['title_pps'];
+
+        if(!empty($resp['photo'])){
+			$resp['url'] = $resp['photo']['url'];
+			unset($resp['photo']);
+        }
+        
+        if(empty($resp['service_categories'])){
+            $resp['service_categories'] = $this->getParentServicesCategoryList();
+        }
+
+        foreach($resp['service_categories'] as &$value){
+            if((!empty($resp['interests'])) && (in_array($value['_id'], $resp['interests']))){
+                $value['selected'] = true;
+            }
+            else{
+                $value['selected'] = false;
+            }
+        }
+        $resp['interests'] = $onepassProfileConfig['interests'];
+        $resp['interests']['data'] = $resp['service_categories'];
+        $resp['address_details'] = $onepassProfileConfig['address_details'];
+        
+        unset($resp['service_categories']);
+		
+		
+		if(!empty($resp['home_address'])){
+			$resp['address_details']['home_address'] = $resp['home_address'];
+            unset($resp['home_address']);
+		}
+
+        if(!empty($resp['home_landmark'])){
+            $resp['address_details']['home_landmark'] = $resp['home_landmark'];
+            unset($resp['home_landmark']);
+        }
+
+        if(!empty($resp['home_lat']) && !empty($resp['home_lon'])){
+            $resp['address_details']['home_lat'] = $resp['home_lat'];
+            $resp['address_details']['home_lon'] = $resp['home_lon'];
+            unset($resp['home_lat']);
+            unset($resp['home_lon']);
+        }
+
+		if(!empty($resp['work_address'])){
+
+			$resp['address_details']['work_address'] = $resp['work_address'];
+            unset($resp['work_address']);
+        }
+
+        if(!empty($resp['work_landmark'])){
+            $resp['address_details']['work_landmark'] = $resp['work_landmark'];
+            unset($resp['work_landmark']);
+        }
+        
+        if(!empty($resp['work_lat']) && !empty($resp['work_lon'])){
+            $resp['address_details']['work_lat'] = $resp['work_lat'];
+            $resp['address_details']['work_lon'] = $resp['work_lon'];
+            unset($resp['work_lat']);
+            unset($resp['work_lon']);
+        }
+
+        if(!empty($resp['home_city'])){
+            $resp['address_details']['home_city'] = $resp['home_city'];
+            unset($resp['home_city']);
+        }
+
+        if(!empty($resp['work_city'])){
+            $resp['address_details']['work_city'] = $resp['work_city'];
+            unset($resp['work_city']);
+        }
+
+        return $resp;
+    }
+
+    public function checkOnepassProfileCompleted($customer=null, $customer_id=null){
+
+        if(empty($customer)){
+            $customer = Customer::active()->where('_id', $customer_id)->first();
+        }
+
+        if(empty($customer->onepass)){
+            return false; 
+        }
+
+        $required_keys = ['photo', 'gender', 'home_address', 'interests'];
+
+        $profileKeys = array_keys($customer->onepass);
+        $status = true;
+
+        foreach($required_keys as $key=>$value){
+
+            if(!in_array($value, $profileKeys)){
+                $status = false;
+                break;
+            }
+            //$status = true;
+        }
+
+        return $status;
+    }
+
+    public function personlizedProfileData($data, $pass_order_id){
+        
+        $resp = Config::get('pass.pass_profile.personlized_profile');
+
+        $resp['url'] = $data['photo']['url'];
+
+        if(empty($pass_order_id)){
+            unset($resp['header']);
+            unset($resp['header_pps']);
+            $resp['title'] = $resp['title_pps'];
+            unset($resp['title_pps']);
+            $resp['text'] = $resp['text_pps'];
+            unset($resp['text_pps']);
+            $resp['interests']['header'] = $resp['interests']['header_pps'];
+            unset($resp['interests']['header_pps']);
+        }
+        else {
+            unset($resp['header_pps']);
+            unset($resp['text_pps']);
+            unset($resp['title_pps']);
+            unset($resp['interests']['header_pps']);
+        }
+        if(!empty($data['interests']) && !empty($resp['interests']['data'])){
+            $resp['interests']['data'] = array_merge($this->personlizedServiceCategoryList($data['interests']), $resp['interests']['data']);
+        }
+
+        return $resp;
+    }
+
+    public function personlizedServiceCategoryList($service_categegory_ids){
+        try{
+            $servicecategories	 = 	\Servicecategory::active()->whereIn('_id', $service_categegory_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->orderBy('name')->get(array('_id','name','slug'));
+        } catch(\Exception $e){
+            $servicecategories= [];
+            Log::info('error occured while fatching service categories::::::::::', [$e]);
+        }
+        
+        $icons = $this->getServiceCategoriesIcon()[0];
+
+		if(count($servicecategories) > 0){
+            $base_url  = Config::get('app.service_icon_base_url');
+            $base_url_extention  = Config::get('app.service_icon_base_url_extention');
+			foreach($servicecategories as &$category){
+				$category['image'] = !empty($icons[$category['name']]) ? $icons[$category['name']]['icon']: $base_url.$category['slug'].$base_url_extention;
+                if($category['slug'] == 'martial-arts'){
+					$category['name'] = 'MMA & Kick-boxing';
+				}
+			}
+        }
+		return is_array($servicecategories) ? $servicecategories : $servicecategories->toArray();
+    }
+
+    public function getServiceCategoriesIcon(){
+        return \Ordervariables::where('name', 'service_categories')->lists('service_categories');
+    }
+
+    public function getCityId($city_name){
+        $city_id = \City::where('name', $city_name)->lists('_id');
+        return $city_id[0];
     }
 
     public function forcedOnOnepass($finder) {
@@ -10362,6 +10622,65 @@ Class Utilities {
         $send_communication = $this->sendPromotionalNotification($promoData);
     }
 
+    public function getVendorNearMe($data){
+        $near_by_vendor_request = [
+            "offset" => 0,
+            "limit" => 9,
+            "radius" => "2km",
+            "category"=> "",
+            "lat"=> !empty($data['lat']) ? $data['lat']: "",
+            "lon"=>!empty($data['lon']) ? $data['lon']: "",
+            "city"=>!empty($data['city']) ? strtolower($data['city']) : null,
+            "keys"=>[
+                "average_rating",
+                "slug",
+                "name",
+                "categorytags",
+                "category",
+                "vendor_slug",
+                "vendor_name",
+                "overlayimage",
+                "total_slots",
+                "next_slot",
+                "id",
+                "contact",
+                "coverimage",
+                "location",
+                "multiaddress"
+            ]
+        ];
+
+        $near_by_vendor_request['pass'] = true;
+        $near_by_vendor_request['time_tag'] = 'later-today';
+        $near_by_vendor_request['date'] = date('d-m-y');
+
+        // if(!empty($data['selected_region'])){
+        //     $near_by_vendor_request['region'] = $data['selected_region'];
+        // }
+
+        if(!empty($data['onepass_available'])){
+            $near_by_vendor_request['onepass_available'] = $data['onepass_available'];
+        }
+
+        $workout = geoLocationFinder($near_by_vendor_request, 'customerhome');
+
+        $result=[
+            'header'=> 'Trending near me',
+            'data'=>[]
+        ];
+        if(!empty($workout['finder'])){
+            $result['data'] = $workout['finder'];
+        }
+        if(empty($data['lat']) && empty($data['lon'])){
+            $result['header'] = "Trending in ".ucwords($data['city']);
+        }
+        if(!empty($data['selected_region'])){
+            $result['header'] = "Trending in ".ucwords($data['selected_region']);
+        }
+
+        return $result;
+    }
+    
     public function mfpBranding($data, $source){
 		try{
 			if($source == "serviceDetailv1"){  

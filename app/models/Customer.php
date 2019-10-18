@@ -11,7 +11,7 @@ class Customer extends  \Basemodel {
 
 	protected $collection = "customers";
 	protected $dates = array('last_visited','birthday');
-	protected $appends = array('uber_trial','ttt_trial',"loyaltyvoucher_category","is_health_shown");
+	protected $appends = array('uber_trial','ttt_trial',"loyaltyvoucher_category","is_health_shown", "category_interested");
 
 	public static $withoutAppends = false;
 
@@ -137,6 +137,17 @@ class Customer extends  \Basemodel {
         if(!empty($this->corporate_id)){
             return true;
         }
-    }
+	}
+	
+	public function getCategoryInterestedAttribute(){
+		$category_interested = [];
+		if(is_array($this->finder_category_interested)){
+			$reviews = Findercategory::wherein('_id', array_map('intval', $this->finder_category_interested))->get();
+			foreach ($reviews as $key => $item) {
+				array_push($category_interested, $item['name']);
+			}
+		}
+		return $category_interested;
+	}
 
 }

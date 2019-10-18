@@ -2635,7 +2635,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer = Customer::find($customer_id);
                         $customer = array_except($customer->toArray(), array('password'));
                         
-                        $passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+                        //$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
 
 
                         $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
@@ -2682,21 +2682,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         if(!empty($customer['cart_id']))
                             $data['cart_id']=$customer['cart_id'];
 
-                        if(!empty($passOrder)){
-                            $data['pass']=1;
-                            $data['pass_start_date']=(!empty($passOrder['start_date']))?strtotime($passOrder['start_date']):null;
-                            $data['pass_expiry_date']=(!empty($passOrder['end_date']))?strtotime($passOrder['end_date']):null;
-                            $data['pass_type']=$passOrder['pass']['pass_type'];
-                            $data['pass_sessions_total']=null;
-                            if(!empty($passOrder['onepass_sessions_total'])) {
-                                $data['pass_sessions_total']=$passOrder['onepass_sessions_total']-1;
-                            }
-                            $data['pass_sessions_used']=(!!$passOrder['onepass_sessions_used'])?$passOrder['onepass_sessions_used']:0;
-                            $data['pass_order_id']=(!!$passOrder['_id'])?$passOrder['_id']: null;
-                            if($data['pass_type'] =='hybrid'){
-                                $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
-                            }
-                        }
+                        setPassToToken($customer, $data);
                     }
 
                     		
@@ -4510,8 +4496,10 @@ if (!function_exists('setNewToken')) {
         Log::info('gettype($customer_data)');
         $pass_data = [];
         if(!empty($pass)){
+            
             $totalSessions = (!empty($pass['onepass_sessions_total']))?($pass['onepass_sessions_total']-1):null;
-            $pass_data = ['pass'=>1, 'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 'pass_type' => $pass['pass']['pass_type'], 'pass_sessions_total'=>$totalSessions, 'pass_sessions_used'=>$pass['onepass_sessions_used'],'pass_order_id'=>$pass['_id']];
+            
+            $pass_data = ['pass'=>1, 'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 'pass_type' => $pass['pass']['pass_type'], 'pass_sessions_total'=>$totalSessions, 'pass_sessions_used'=>$pass['onepass_sessions_used'],'pass_order_id'=>$pass['_id'], 'pass_city_id' => (!empty($pass['pass_city_id']) ? $pass['pass_city_id'] : null), 'pass_city_name' => (!empty($pass['pass_city_name']) ? $pass['pass_city_name'] : null)];
 
             if($pass_data['pass_type'] =='hybrid'){
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
@@ -4526,6 +4514,8 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass_type']);
             unset($customer_data['pass_sessions_total']);
             unset($customer_data['pass_sessions_used']);
+            unset($customer_data['pass_city_id']);
+            unset($customer_data['pass_city_name']);
             unset($customer_data['pass_sessions_monthly_total']);
             unset($customer_data['pass_sessions_monthly_used']);
             unset($customer_data['pass_order_id']);
@@ -4616,6 +4606,9 @@ if (!function_exists(('geoLocationWorkoutSession'))){
             "time_tag"=> $request['time_tag'],
             'date'=> $request['date']
         ];
+        if(!empty($request['onepass_available'])){
+            $payload['onepass_available'] = true;
+        }
 
         $url = Config::get('app.new_search_url')."/search/paypersession";
 
@@ -4712,5 +4705,29 @@ if (!function_exists('customerEmailFromToken')) {
     }
 }
 
+if (!function_exists(('setPassToToken'))){
+    function setPassToToken($customer, &$data){
+        $passOrder = $passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer['_id'])->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+
+        if(!empty($passOrder)){
+            $data['pass']=1;
+            $data['pass_start_date']=(!empty($passOrder['start_date']))?strtotime($passOrder['start_date']):null;
+            $data['pass_expiry_date']=(!empty($passOrder['end_date']))?strtotime($passOrder['end_date']):null;
+            $data['pass_type']=$passOrder['pass']['pass_type'];
+            $data['pass_sessions_total']=null;
+            if(!empty($passOrder['onepass_sessions_total'])) {
+                $data['pass_sessions_total']=$passOrder['onepass_sessions_total']-1;
+            }
+            $data['pass_sessions_used']=(!!$passOrder['onepass_sessions_used'])?$passOrder['onepass_sessions_used']:0;
+            $data['pass_city_id'] = !empty($passOrder['pass_city_id']) ? $passOrder['pass_city_id'] : null;
+            $data['pass_city_name'] = !empty($passOrder['pass_city_name']) ? $passOrder['pass_city_name'] : null;
+            $data['pass_order_id']=(!!$passOrder['_id'])?$passOrder['_id']: null;
+            if($data['pass_type'] =='hybrid'){
+                $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
+                $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
+            }
+        }
+    }
+}
 
 ?>
