@@ -5710,30 +5710,6 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(!empty($device_type) && !empty($app_version) && ($device_type =='android' && $app_version < '5.31') || ($device_type =='ios' && $app_version < '5.2.4')){
 
-            Log::info('device type::::::', [$device_type]);
-            // $booktrial['lost_code'] = false;
-        
-            // if(isset($booktrial['schedule_date_time']) && time() >= strtotime($booktrial['schedule_date_time'])){
-            //     $booktrial['lost_code'] = true;
-            // }
-
-            // if($booktrial['type'] == 'workout-session'){
-            //     if(!isset($booktrial['extended_validity_order_id'])){
-            //         $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
-
-            //         $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
-            //     }
-            //     else {
-            //         $booktrial['fitcode_message'] = 'Punch the code to mark your attendance.';
-            //     }
-            // }else{
-
-            //     $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';
-            // }
-
-            // $booktrial['fitcode_button_text'] = 'Enter Fitcode';
-            // $booktrial['vendor_code'] = "0000";
-
             $booktrial['lost_code'] = false;
             
             if(isset($booktrial['schedule_date_time']) && time() >= strtotime($booktrial['schedule_date_time'])){
