@@ -10909,7 +10909,6 @@ class CustomerController extends \BaseController {
 		$customer = Customer::find($customer_id);
 		$pass_order_id = Order::active()->where('type', 'pass')->where('customer_id', $customer->id)->where('end_date', '>', new MongoDate(time()))->lists('_id');
 
-		Log::info('pass order id', [$customer->id, $pass_order_id]);
 		$resp = [
 			'name' => $customer->name
 		];
