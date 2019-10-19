@@ -806,7 +806,7 @@ class PassService {
                 if($passOrder['pass']['pass_type']=='black'){
                     $sessionsUsed = $passOrder['onepass_sessions_used'];
                     $sessionsTotal = $passOrder['onepass_sessions_total']-1;
-                    if($sessionsTotal > $sessionsUsed) {
+                    if($sessionsTotal >= $sessionsUsed) {
                         $canBook = true;
                     }
                 }
