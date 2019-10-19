@@ -10963,7 +10963,7 @@ class CustomerController extends \BaseController {
 			$resp['profile_data']['skip_text'] = 'CONTINUE WITH BOOKING';
 		}
 
-		if(empty($data['ratecard_id'])){
+		if(empty($data['ratecard_id']) && !empty($pass_order_id)){
 			unset($resp['booking_text']);	
 		}
 
