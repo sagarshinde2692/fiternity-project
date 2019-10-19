@@ -1430,7 +1430,7 @@ class ServiceController extends \BaseController {
 						$str = '';
 					}
                     
-                    if(!empty($allowSession['allow_session']) && (!empty($sc['price_int'])  && (!empty($type) && $type!='trialschedules') && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))) && (!empty($sc['flags']['classpass_available']) && $sc['flags']['classpass_available'])){
+                    if(!empty($allowSession['allow_session']) && (!empty($sc['price_int']) /* && (!empty($type) && $type!='trialschedules')*/ && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))) && (!empty($sc['flags']['classpass_available']) && $sc['flags']['classpass_available'])){
 						$sc['cost'] = Config::get('app.onepass_free_string');
 					}else{
 						$sc['cost'] .= $str;
