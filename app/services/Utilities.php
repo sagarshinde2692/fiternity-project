@@ -10083,7 +10083,7 @@ Class Utilities {
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
                 
-                $slot['order_summary']['header'] = $orderSummary['header']." \n\nGet Fit Go Sale\n\nGet 50% Off On Workout Sessions. Use Code: PPS";
+                $slot['order_summary']['header'] = $orderSummary['header']."";
 
                 if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
                     $slot['order_summary']['header'] = $orderSummary['header'];
@@ -10104,7 +10104,7 @@ Class Utilities {
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
-                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nGet Fit Go Sale\n\nGet 50% Off On Workout Sessions. Use Code: PPS";
+                    $sd['order_summary']['header'] = $orderSummary['header']."";
 
                     if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
                         $sd['order_summary']['header'] = $orderSummary['header'];
