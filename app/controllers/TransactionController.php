@@ -2590,7 +2590,7 @@ class TransactionController extends \BaseController {
                             $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
                             array_set($data, 'reward_type', $value->reward_type);
 
-                            if($data['reward_type'] == "mixed" && $data['ratecard_amount'] > 8000 && ($data['type'] == 'memberships' || $type['type'] == 'membership') && empty($data['extended_validity_order_id']) && empty($data['studio_extended_validity_order_id']) ){
+                            if($data['reward_type'] == "mixed" && $order['ratecard_amount'] > 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity_order_id']) && empty($order['studio_extended_validity_order_id']) ){
                                 array_set($data, 'diwali_mixed_reward', true);
                             }
 
