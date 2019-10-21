@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Extra 15% Off (Code: BIG15)\nOffer Expires On 21st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-30th October", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -825,7 +825,7 @@ return [
             "icon" => "https://b.fitn.in/onepass/discount_3x.png",
             "header" => "Exciting OnePass Offers",
             "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
-            "text" => "Get 30% off on OnePass. Buy your OnePass before prices go up!",
+            "text" => "30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000",
         ],
 
         'faq' => [
