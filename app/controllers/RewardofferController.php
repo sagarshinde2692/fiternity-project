@@ -1108,6 +1108,36 @@ class RewardofferController extends BaseController {
 			}
             
         }
+
+        if($amount > 8000 && in_array($ratecard['type'],["membership"])){
+            $rewardObj = $this->getMixedReward();
+            $mixedreward_content = MixedRewardContent::where('flags.type', 'membership')->first();
+
+            if(!empty($mixedreward_content)){
+                if($rewardObj && $mixedreward_content){
+                    
+					$rewards = [];
+
+					$rewardObjData = $rewardObj->toArray();
+
+                    $this->unsetRewardObjFields($rewardObjData);
+
+					
+					$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+
+					foreach($rewards_snapfitness_contents as &$content){
+						$content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
+					}
+
+                    list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
+
+                    list($rewardObjData) = $this->rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData);
+
+                    $rewards[] = $rewardObjData;
+				}
+			}
+        }
+
         if(empty($mixedreward_content)){
            
             if(!empty($finder['flags']['reward_type']) && in_array($finder['flags']['reward_type'], Config::get('app.no_instant_reward_types')) && !empty($this->vendor_token)){
