@@ -101,7 +101,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Extra 15% Off (Code: BIG15) or Free 3 Months Extension (Code: MORE25)\nOffer Expires On 21st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Extra 15% Off (Code: BIG15) or Free 3 Months Extension (Code: MORE25)\nLast Few Hours Left. Buy Now!", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Extra 15% Off (Code: BIG15)\nOffer Expires On 21st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Extra 15% Off (Code: BIG15)\nLast Few Hours Left. Buy Now!", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -171,7 +171,6 @@ return [
                 <li> Discount varies across different types of pass</li>
                 <li> You can avail only 1 offer at the time of transaction</li>
                 <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 21st October post which code MORE25 and BIG15 are invalid</li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -213,7 +212,6 @@ return [
                 <li> Discount varies across different types of pass</li>
                 <li> You can avail only 1 offer at the time of transaction</li>
                 <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 21st October post which code MORE25 and BIG15 are invalid</li>
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
@@ -254,7 +252,6 @@ return [
                 <li> Discount varies across different types of pass</li>
                 <li> You can avail only 1 offer at the time of transaction</li>
                 <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 21st October post which code MORE25 and BIG15 are invalid</li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>

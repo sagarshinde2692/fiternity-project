@@ -1576,12 +1576,12 @@ class PassService {
         if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [90,180,360])){
             $resp[] = [
                    'field' => '',
-                   'value' => 'Use Code: MORE25 To Get Free Extension or Use Code: BIG15 To Get Additional 15% Off',
+                   'value' => "Use Code: MORE25 To Get Free Extension or Use Code: BIG15 To Get Additional 15% Off\n\nLast Few Hours Left. Buy Now!",
             ];
         }else {
             $resp[] = [
                 'field' => '',
-                'value' => 'Get 30% Off + Extra 15% Off Use Code: BIG15',
+                'value' => "Get 30% Off + Extra 15% Off Use Code: BIG15\n\nLast Few Hours Left. Buy Now!",
             ];
         }
 

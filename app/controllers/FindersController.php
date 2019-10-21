@@ -1399,7 +1399,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "50% off + Extra 15% On Memberships. Addnl 5% Off For New Users | 15th-21st October",
+								'text1'=> "50% off + Extra 15% On Memberships. Addnl 5% Off For New Users | Last Few Hours Left. Buy Now!",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1411,7 +1411,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 15% On Memberships. Addnl 5% Off For New Users | 15th-21st October",
+								'text1'=> "50% off + Extra 15% On Memberships. Addnl 5% Off For New Users | Last Few Hours Left. Buy Now!",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1423,7 +1423,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "50% off + Extra 15% On Memberships. Addnl 5% Off For New Users | 15th-21st October",
+								'text1'=> "50% off + Extra 15% On Memberships. Addnl 5% Off For New Users | Last Few Hours Left. Buy Now!",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3896,25 +3896,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
+				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Last Few Hours Left. Buy Now!";
             }else{	
-				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
+				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nLast Few Hours Left. Buy Now!";
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
+				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Last Few Hours Left. Buy Now!";
             }else{	
-				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
+				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nLast Few Hours Left. Buy Now!";
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
+				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Last Few Hours Left. Buy Now!";
             }else{	
-				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
+				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nLast Few Hours Left. Buy Now!";
             }
 			
 		}
@@ -3927,9 +3927,9 @@ class FindersController extends \BaseController {
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 							if($this->device_type == 'android'){
-								$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5 <br><br>Offer Valid 15th-21st October";
+								$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5 <br><br>Last Few Hours Left. Buy Now!";
 							}else{	
-								$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5 \n\nOffer Valid 15th-21st October";
+								$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5 \n\nLast Few Hours Left. Buy Now!";
 							}
 							
 							break;
