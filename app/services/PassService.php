@@ -1453,6 +1453,10 @@ class PassService {
             $emailSent = $data['communication']['email'];
         }
 
+        if(!empty($order['diwali_mixed_reward'])){
+            $sms->diwaliMixedReward($pass_data);
+        }
+
         return array(
             'sms' => $smsSent,
             'email' => $emailSent
