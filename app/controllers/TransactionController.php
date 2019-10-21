@@ -3136,7 +3136,7 @@ class TransactionController extends \BaseController {
             }
 
             if(!empty($order['diwali_mixed_reward'])){
-                $this->customersms->diwaliMixedReward($$order->toArray());
+                $this->customersms->diwaliMixedReward($order->toArray());
             }
 
             Log::info("successCommon returned");
