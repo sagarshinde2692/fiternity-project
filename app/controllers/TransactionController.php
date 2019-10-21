@@ -6209,10 +6209,10 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($extended_validity_order_id) && empty($studio_extended_validity_order_id)){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 20% Off On Memberships + First Hand Access To Exclusive Marvel Fitness Merchandise + Gift Vouchers From Myntra, The Label Life, EaseMyTrip & More\nUse Code: FITDVLI",'position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 20% Off On Memberships\nUse Code: FITDVLI",'position'=>$position++];
 
             if($data['ratecard_amount'] > 8000){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 20% Off On Memberships\nUse Code: FITDVLI",'position'=>$position++];
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 20% Off On Memberships + First Hand Access To Exclusive Marvel Fitness Merchandise + Gift Vouchers From Myntra, The Label Life, EaseMyTrip & More\nUse Code: FITDVLI",'position'=>$position++];
             }
         }
 
