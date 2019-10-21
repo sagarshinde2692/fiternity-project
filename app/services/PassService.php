@@ -141,14 +141,10 @@ class PassService {
                 }
             }
 
-            $passDetails['text'] = '(Additional 15% Off)';
+            $passDetails['text'] = "(Additional 20% Off + \n Fitaka Diwali Hamper worth INR 9000)";
 
-            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 90){
-                $passDetails['text'] = "(Additional 15% off \nor 3 Weeks Extension)";
-            }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 180){
-                $passDetails['text'] = "(Additional 15% off \nor 1.5 Months Extension)";
-            }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 360){
-                $passDetails['text'] = "(Additional 15% off \nor 3 Months Extension)";
+            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15){
+                $passDetails['text'] = "(Additional 20% Off)";
             }
 
             unset($passDetails['cashback']);
@@ -291,6 +287,11 @@ class PassService {
         
         $data['order_id'] = $data['_id'];
         $data['orderid'] = $data['_id'];
+
+        $rewardinfo = $this->addRewardInfo($data);
+        if(!empty($rewardinfo)){
+            array_push($data, $rewardinfo);
+        }
         
         if(!empty($data['pass']['payment_gateway']) && $data['pass']['payment_gateway'] == 'payu'){
             
@@ -1201,6 +1202,14 @@ class PassService {
             //     $item = $utilities->bullet()." ".$item;
             // }
             unset($success_template['info']['app_data']);
+            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
+                $success_template['subline'] .= 'Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
+            }
+
+            if(!empty($order['diwali_mixed_reward'])){
+                $success_template['subline'] .= "\nCongratulations on your purchase. Your Fitaka Diwali Hamper will reach your inbox soon. Happy Fitwali Diwali";
+            }
+            
             $profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $order['customer_id']);
 
             if(!empty($profile_completed)){
@@ -1573,15 +1582,15 @@ class PassService {
             ]
         ];
 
-        if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [90,180,360])){
+        if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
             $resp[] = [
                    'field' => '',
-                   'value' => 'Use Code: MORE25 To Get Free Extension or Use Code: BIG15 To Get Additional 15% Off',
+                   'value' => "Get 30% Off + Additional 20% Off. Use Code: DVLIPASS\n22nd-30th October",
             ];
         }else {
             $resp[] = [
                 'field' => '',
-                'value' => 'Get 30% Off + Extra 15% Off Use Code: BIG15',
+                'value' => "Get 30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Puma, Myntra, O2 Spa, HealthifyMe, Epigamia  Use Code: DVLIPASS\n22nd-30th October",
             ];
         }
 
@@ -2356,6 +2365,24 @@ class PassService {
                 $end_date = strtotime('+30 days', $start_date);
             }
             $data['monthly_total_sessions_used'] = $monthly_total_sessions_used;
+        }
+    }
+
+    public function addRewardInfo($data = null){
+        try{
+            $rewardinfo = array();
+            if(!empty($data['pass'])){
+                $pass = $data['pass'];
+
+                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15)){
+                    $rewardinfo['diwali_mixed_reward'] = true;
+                }
+
+            }
+            return $rewardinfo;
+
+        }catch (Exception $e) {
+            Log::info('Error : '.$e->getMessage());
         }
     }
 }

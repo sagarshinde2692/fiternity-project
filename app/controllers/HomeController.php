@@ -1070,6 +1070,10 @@ class HomeController extends BaseController {
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
                 }
 
+                if(!empty($item['diwali_mixed_reward'])){
+                    $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family ";
+                }
+
 
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 

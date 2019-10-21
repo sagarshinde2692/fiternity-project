@@ -2590,6 +2590,10 @@ class TransactionController extends \BaseController {
                             $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
                             array_set($data, 'reward_type', $value->reward_type);
 
+                            if($data['reward_type'] == "mixed" && $data['ratecard_amount'] > 8000 && ($data['type'] == 'memberships' || $type['type'] == 'membership') && empty($data['extended_validity_order_id']) && empty($data['studio_extended_validity_order_id']) ){
+                                array_set($data, 'diwali_mixed_reward', true);
+                            }
+
                             $reward_type = $value->reward_type;
 
                         }
@@ -3129,6 +3133,10 @@ class TransactionController extends \BaseController {
                 Log::info('inside schudling complementary pass purchase redis id:', [$complementry_pass_purchase]);
 
                 $order->update(['schedule_complementry_pass_purchase_redis_id'=>$complementry_pass_purchase]);
+            }
+
+            if(!empty($order['diwali_mixed_reward'])){
+                $this->customersms->diwaliMixedReward($$order->toArray());
             }
 
             Log::info("successCommon returned");
@@ -6200,8 +6208,12 @@ class TransactionController extends \BaseController {
             unset($booking_details_data['service_duration']);  
         }
 
-        if(!empty($data['type']) && $data['type'] == 'memberships'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'50% off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5','position'=>$position++];
+        if(!empty($data['type']) && $data['type'] == 'memberships' && empty($extended_validity_order_id) && empty($studio_extended_validity_order_id)){
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 20% Off On Memberships + First Hand Access To Exclusive Marvel Fitness Merchandise + Gift Vouchers From Myntra, The Label Life, EaseMyTrip & More\nUse Code: FITDVLI",'position'=>$position++];
+
+            if($data['ratecard_amount'] > 8000){
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 20% Off On Memberships\nUse Code: FITDVLI",'position'=>$position++];
+            }
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
