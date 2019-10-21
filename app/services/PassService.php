@@ -290,7 +290,7 @@ class PassService {
 
         $rewardinfo = $this->addRewardInfo($data);
         if(!empty($rewardinfo)){
-            array_push($data, $rewardinfo);
+            $data = array_merge($data, $rewardinfo);
         }
         
         if(!empty($data['pass']['payment_gateway']) && $data['pass']['payment_gateway'] == 'payu'){
