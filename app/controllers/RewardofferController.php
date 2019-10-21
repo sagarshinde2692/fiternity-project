@@ -1247,7 +1247,7 @@ class RewardofferController extends BaseController {
         $amount = $cutl_amount;
 
         if($amount < 50000 || !isset($_GET['device_type'])){   
-            
+            $diwali_mix = true;
             $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
             if(isset($data['order_id']) && $data['order_id'] != ""){
@@ -1333,7 +1333,7 @@ class RewardofferController extends BaseController {
         if(!empty($finder['_id']) && $finder['_id'] == 11230 && $duration_day == 360){
             $cashback = null;
         }
-        if(!empty($gold_mixed) || !empty($no_instant_rewards)){
+        if(!empty($gold_mixed) || !empty($no_instant_rewards) || !empty($diwali_mix)){
             $cashback = null;
         }
         
