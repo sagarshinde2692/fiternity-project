@@ -3884,7 +3884,40 @@ class FindersController extends \BaseController {
 
 	public function getFinderOneLiner($data) {
 
-        $line = null;
+		$line = null;
+		
+		foreach($data['finder']['services'] as &$service){
+			foreach($service['ratecard'] as &$ratecard){
+				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+
+					if($this->device_type == 'android'){
+						$android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI <br><br>On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD <br><br>Offer Valid 22nd - 30th October";
+
+						$op_android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI <br><br>Offer Valid 22nd - 30th October";
+					}else{	
+						$ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI \n\nOn Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD \n\nOffer Valid 22nd - 30th October";
+
+						$op_ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI \n\nOffer Valid 22nd - 30th October";
+					}
+
+					if($price > 8000){
+						if($this->device_type == 'android'){
+							$android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI <br><br>On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD <br><br>Offer Valid 22nd - 30th October";
+
+							$op_android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI <br><br>Offer Valid 22nd - 30th October";
+						}else{	
+							$ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI \n\nOn Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD \n\nOffer Valid 22nd - 30th October";
+
+							$op_ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI \n\nOffer Valid 22nd - 30th October";
+						}
+						
+						break;
+					}
+				}
+			}
+		}
+
         if(!empty($data['finder']['brand_id']) && ($data['finder']['brand_id']==88)){
 			if($this->device_type == 'android'){
 				$line = "<u>Membership Plus - ".ucwords($data['finder']['title'])."</u><br><br>Lowest price Multifit membership + 6 Months All Access OnePass";
@@ -3896,25 +3929,25 @@ class FindersController extends \BaseController {
 
             
 			if($this->device_type == 'android'){
-				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
+				$line = $android_line;
             }else{	
-				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
+				$line = $ios_line;
             }
             
         }else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
 
             if($this->device_type == 'android'){
-				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
+				$line = $android_line;
             }else{	
-				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
+				$line = $ios_line;
             }
         
         }else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
 			if($this->device_type == 'android'){
-				$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5<br><br>- Get 50% Off On Workout Sessions, Use Code : PPS <br><br>Offer Valid 15th-21st October";
+				$line = $android_line;
             }else{	
-				$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5\n\n- Get 50% Off On Workout Sessions, Use Code : PPS \n\nOffer Valid 15th-21st October";
+				$line = $ios_line;
             }
 			
 		}
@@ -3927,9 +3960,9 @@ class FindersController extends \BaseController {
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 							if($this->device_type == 'android'){
-								$line = "<u>Get Fit Go Sale</u><br><br>- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5 <br><br>Offer Valid 15th-21st October";
+								$line = $op_android_line;
 							}else{	
-								$line = "\nGet Fit Go Sale\n\n- 50% Off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5 \n\nOffer Valid 15th-21st October";
+								$line = $op_ios_line;
 							}
 							
 							break;
@@ -8449,10 +8482,10 @@ class FindersController extends \BaseController {
 
 					if(in_array($rc['type'], ['membership'])){
 
-						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFitwali Diwali With Fitternity \n50% off + Additional 20% Off On Memberships \nUse Code: FITDVLI");
-
 						if($price > 8000){
 							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFitwali Diwali With Fitternity \n50% off + Additional 20% Off On Memberships + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, EaseMyTrip, HealthifyMe & More \nUse Code: FITDVLI");
+						}else{
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFitwali Diwali With Fitternity \n50% off + Additional 20% Off On Memberships \nUse Code: FITDVLI");
 						}
 
 						if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
