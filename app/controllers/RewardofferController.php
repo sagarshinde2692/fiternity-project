@@ -1125,10 +1125,6 @@ class RewardofferController extends BaseController {
 					
 					$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
-					foreach($rewards_snapfitness_contents as &$content){
-						$content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
-					}
-
                     list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
 
                     list($rewardObjData) = $this->rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData);
