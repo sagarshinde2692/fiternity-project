@@ -3886,11 +3886,12 @@ class FindersController extends \BaseController {
 
 		$line = null;
 		
+		$pricemore = false;
 		foreach($data['finder']['services'] as &$service){
 			foreach($service['ratecard'] as &$ratecard){
 				if($ratecard['type'] == 'membership'){
 					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-					$pricemore = false;
+					
 					if($this->device_type == 'android'){
 						$android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI <br><br>- On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD <br><br>Offer Valid 22nd - 31st October";
 
