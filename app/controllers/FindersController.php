@@ -5412,7 +5412,9 @@ class FindersController extends \BaseController {
                 }
             }
     
-            $this->photosOrderFloor($finderData['finder']);
+			$this->photosOrderFloor($finderData['finder']);
+			
+			$finderData['finder']['finder_one_line'] = $this->getFinderOneLiner($finderData);
 
 		}else{
 
