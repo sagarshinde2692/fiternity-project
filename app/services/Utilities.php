@@ -10748,4 +10748,30 @@ Class Utilities {
     public function getMfpPrice($price_text, $original_price){
         return $price_text == Config::get('app.onepass_free_string') ? Config::get('app.onepass_free_string') : "₹ ".$original_price;
     }
+
+    public function getVoucherDetail($data = null){
+        Log::info("getVoucherDetail");
+        $type = $data['type'];
+        $customer_id = $data['customer_id'];
+        $customer = Customer::find($customer_id);
+        $query = \VoucherCategory::active()->where('flags.diwali_mix_reward', true);
+
+        if(!empty($type) && $type == "pass"){
+            $query->where('flags.type', $type);
+        }else if(!empty($type) && $type == "membership"){
+            $query->where('flags.type', $type);
+        }
+
+        $voucher_categories = $query->get();
+        $vouchers_arr = array(); 
+        $fin_vouchers_arr = array(); 
+        if(!empty($voucher_categories)){
+            foreach($voucher_categories as $voucher_category){
+                $vouchers_arr= $this->assignVoucher($customer, $voucher_category);
+                $fin_vouchers_arr[$voucher_category['name']] = !empty($vouchers_arr) ? $vouchers_arr->toArray() : array();
+            }
+        }
+
+        return $fin_vouchers_arr;
+    }
 }
