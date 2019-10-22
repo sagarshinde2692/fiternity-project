@@ -2590,7 +2590,7 @@ class TransactionController extends \BaseController {
                             $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
                             array_set($data, 'reward_type', $value->reward_type);
 
-                            if($data['reward_type'] == "mixed" && $order['ratecard_amount'] > 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity_order_id']) && empty($order['studio_extended_validity_order_id']) ){
+                            if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity_order_id']) && empty($order['studio_extended_validity_order_id']) ){
                                 array_set($data, 'diwali_mixed_reward', true);
                             }
 
@@ -6213,7 +6213,7 @@ class TransactionController extends \BaseController {
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($extended_validity_order_id) && empty($studio_extended_validity_order_id)){
             $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 20% Off On Memberships\nUse Code: FITDVLI",'position'=>$position++];
 
-            if($data['ratecard_amount'] > 8000){
+            if($data['ratecard_amount'] >= 8000){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 20% Off On Memberships + First Hand Access To Exclusive Marvel Fitness Merchandise + Gift Vouchers From Myntra, The Label Life, EaseMyTrip & More\nUse Code: FITDVLI",'position'=>$position++];
             }
         }

@@ -1109,7 +1109,7 @@ class RewardofferController extends BaseController {
             
         }
 
-        if($amount > 8000 && in_array($ratecard['type'],["membership"]) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+        if($amount >= 8000 && in_array($ratecard['type'],["membership"]) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
             $rewardObj = $this->getMixedReward();
             $mixedreward_content = MixedRewardContent::where('flags.type', 'membership')->first();
 
