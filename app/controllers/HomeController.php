@@ -1885,6 +1885,10 @@ class HomeController extends BaseController {
                     
                 // }
 
+                if(!empty($item['diwali_mixed_reward'])){
+                    $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family ";
+                }
+
                 if(isset($item['extended_validity']) && $item['extended_validity']){  
                     $header = "Session Pack Confirmed";
                     $duration = "unlimited validity";
