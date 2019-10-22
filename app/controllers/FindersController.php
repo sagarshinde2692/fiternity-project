@@ -3917,9 +3917,9 @@ class FindersController extends \BaseController {
 						break;
 					}
 				}
-				if($pricemore){
-					break;
-				}
+			}
+			if($pricemore){
+				break;
 			}
 		}
 
