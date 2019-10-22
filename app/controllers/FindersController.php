@@ -3888,7 +3888,7 @@ class FindersController extends \BaseController {
 		
 		foreach($data['finder']['services'] as &$service){
 			foreach($service['ratecard'] as &$ratecard){
-				if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+				if($ratecard['type'] == 'membership'){
 					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 
 					if($this->device_type == 'android'){
