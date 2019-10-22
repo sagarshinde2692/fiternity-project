@@ -1070,6 +1070,10 @@ class HomeController extends BaseController {
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
                 }
 
+                if(!empty($item['diwali_mixed_reward'])){
+                    $subline .= "<br><br> Congratulations on celebrating a Fitwali Diwali with Fitternity. Your Fitaka Diwali Hamper will reach your inbox soon.";
+                }
+
 
                 if(($this->device_type =='ios' && $this->app_version >= '5.2.4') || ($this->device_type =='android' && $this->app_version >= '5.31')){
 
@@ -1880,6 +1884,10 @@ class HomeController extends BaseController {
                 //     $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by using it on any transaction on Fitternity for yourself as well as friends & family. Book multiple workout sessions, buy session packs, memberships & more using this cashback without any restriction on usage.";
                     
                 // }
+
+                if(!empty($item['diwali_mixed_reward'])){
+                    $subline .= "<br><br> Congratulations on celebrating a Fitwali Diwali with Fitternity. Your Fitaka Diwali Hamper will reach your inbox soon. ";
+                }
 
                 if(isset($item['extended_validity']) && $item['extended_validity']){  
                     $header = "Session Pack Confirmed";
