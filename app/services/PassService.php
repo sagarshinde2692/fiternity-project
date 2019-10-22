@@ -1592,12 +1592,12 @@ class PassService {
         if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
             $resp[] = [
                    'field' => '',
-                   'value' => "Get 30% Off + Additional 20% Off. Use Code: DVLIPASS\n22nd-30th October",
+                   'value' => "Get 30% Off + Additional 20% Off. Use Code: DVLIPASS\n22nd-31st October",
             ];
         }else {
             $resp[] = [
                 'field' => '',
-                'value' => "Get 30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Puma, Myntra, O2 Spa, HealthifyMe, Epigamia  Use Code: DVLIPASS\n22nd-30th October",
+                'value' => "Get 30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Puma, Myntra, O2 Spa, HealthifyMe, Lenskart  Use Code: DVLIPASS\n22nd-31st October",
             ];
         }
 
