@@ -1066,7 +1066,8 @@ class PassService {
             // );
             $success_template['pass']['type'] = '';//strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
-            $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
+            // $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
+            $success_template['pass']['pass_type'] =  ($order['pass']['pass_type']!='hybrid')?$order['pass']['pass_type']:$order['pass']['branding'];
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
                 [
