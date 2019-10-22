@@ -1071,7 +1071,7 @@ class HomeController extends BaseController {
                 }
 
                 if(!empty($item['diwali_mixed_reward'])){
-                    $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family ";
+                    $subline .= "<br><br> Congratulations on celebrating a Fitwali Diwali with Fitternity. Your Fitaka Diwali Hamper will reach your inbox soon.";
                 }
 
 
@@ -1886,7 +1886,7 @@ class HomeController extends BaseController {
                 // }
 
                 if(!empty($item['diwali_mixed_reward'])){
-                    $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family ";
+                    $subline .= "<br><br> Congratulations on celebrating a Fitwali Diwali with Fitternity. Your Fitaka Diwali Hamper will reach your inbox soon. ";
                 }
 
                 if(isset($item['extended_validity']) && $item['extended_validity']){  
