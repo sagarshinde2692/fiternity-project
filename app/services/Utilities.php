@@ -6446,6 +6446,14 @@ Class Utilities {
             $new_voucher->flags = $voucher_category['flags'];
         }
 
+        if(!empty($voucher_category['note'])){
+            $new_voucher->note = $voucher_category['note'];
+        }
+
+        if(!empty($voucher_category['title'])){
+            $new_voucher->title = $voucher_category['title'];
+        }
+
         $new_voucher->update();
         try{
             $this->remaningVoucherNotification($voucher_category);
@@ -7641,6 +7649,14 @@ Class Utilities {
 
         if(isset($voucher_category['link'])){
             $voucher_data['link'] = $voucher_category['link'];
+        }
+
+        if(isset($voucher_category['note'])){
+            $voucher_data['note'] = $voucher_category['note'];
+        }
+
+        if(isset($voucher_category['title'])){
+            $voucher_data['title'] = $voucher_category['title'];
         }
 
         if(!empty($voucher_category['flags']['diet_plan'])){
@@ -10758,17 +10774,22 @@ Class Utilities {
 
         if(!empty($type) && $type == "pass"){
             $query->where('flags.type', $type);
-        }else if(!empty($type) && $type == "membership"){
+            $amount = "9000";
+        }else if(!empty($type) && ($type == "membership" || $type == "memberships")){
             $query->where('flags.type', $type);
+            $amount = "6500";
         }
 
         $voucher_categories = $query->get();
         $vouchers_arr = array(); 
-        $fin_vouchers_arr = array(); 
+        $fin_vouchers_arr = array();
+        $fin_vouchers_arr['total_hamper_amount'] = $amount;
+        $fin_vouchers_arr['customer_email'] = $customer['email'];
+        $fin_vouchers_arr['customer_name'] = $customer['name'];
         if(!empty($voucher_categories)){
             foreach($voucher_categories as $voucher_category){
                 $vouchers_arr= $this->assignVoucher($customer, $voucher_category);
-                $fin_vouchers_arr[$voucher_category['name']] = !empty($vouchers_arr) ? $vouchers_arr->toArray() : array();
+                $fin_vouchers_arr[$voucher_category['name']] = !empty($vouchers_arr) ? $vouchers_arr : array();
             }
         }
 

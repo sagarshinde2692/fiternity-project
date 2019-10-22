@@ -1456,8 +1456,7 @@ class PassService {
         if(!empty($data['diwali_mixed_reward'])){
             Log::info("diwali_mixed_reward");
             $hamper_data = $utilities->getVoucherDetail($pass_data);
-            print_r($hamper_data);
-            exit();
+            $mail->diwaliMixedReward($hamper_data);
             $sms->diwaliMixedReward($pass_data);
         }
 

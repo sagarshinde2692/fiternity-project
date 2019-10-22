@@ -3136,6 +3136,8 @@ class TransactionController extends \BaseController {
             }
 
             if(!empty($order['diwali_mixed_reward'])){
+                $hamper_data = $this->utilities->getVoucherDetail($order->toArray());
+                $this->customermailer->diwaliMixedReward($hamper_data);
                 $this->customersms->diwaliMixedReward($order->toArray());
             }
 

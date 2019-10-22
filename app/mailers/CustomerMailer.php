@@ -1034,7 +1034,19 @@ Class CustomerMailer extends Mailer {
         if(in_array($data['finder_id'], $allMultifitFinderId) && !empty($data["customer_source"]) && $data["customer_source"] == "kiosk"){
             return true;
         }
-    }
+	}
+	
+	public function diwaliMixedReward($data){
+		$label = 'DiwaliMixedReward-Customer';
+		
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => '',
+		);
+		// print_r($data);
+		// exit();
+		return $this->common($label,$data,$message_data);
+	}
     
     protected function common($label,$data,$message_data,$delay = 0){
 
