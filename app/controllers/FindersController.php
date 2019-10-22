@@ -3890,7 +3890,7 @@ class FindersController extends \BaseController {
 			foreach($service['ratecard'] as &$ratecard){
 				if($ratecard['type'] == 'membership'){
 					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-
+					$pricemore = false;
 					if($this->device_type == 'android'){
 						$android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI <br><br>- On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD <br><br>Offer Valid 22nd - 31st October";
 
@@ -3902,6 +3902,7 @@ class FindersController extends \BaseController {
 					}
 
 					if($price > 8000){
+						$pricemore = true;
 						if($this->device_type == 'android'){
 							$android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI <br><br>- On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD <br><br>Offer Valid 22nd - 31st October";
 
@@ -3914,6 +3915,9 @@ class FindersController extends \BaseController {
 						
 						break;
 					}
+				}
+				if($pricemore){
+					break;
 				}
 			}
 		}
