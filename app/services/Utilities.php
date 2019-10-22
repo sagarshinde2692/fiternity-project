@@ -10776,7 +10776,7 @@ Class Utilities {
             $query->where('flags.type', $type);
             $amount = "9000";
         }else if(!empty($type) && ($type == "membership" || $type == "memberships")){
-            $query->where('flags.type', $type);
+            $query->where('flags.type', "membership");
             $amount = "6500";
         }
 
