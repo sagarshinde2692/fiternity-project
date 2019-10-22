@@ -6390,6 +6390,15 @@ Class Utilities {
                 ->orderBy('_id', 'asc')
                 ->first();
 
+        if(!empty($voucher_category->flags['diwali_mix_reward'])){
+            $already_assigned_voucher = \LoyaltyVoucher::
+                where('milestone', $voucher_category->milestone)
+                ->where('selected_voucher', $voucher_category->_id)
+                ->where('customer_id', $customer['_id'])
+                ->orderBy('_id', 'asc')
+                ->first();
+        }
+
         if($already_assigned_voucher){
             // Log::info("already_assigned_voucher");
             return $already_assigned_voucher;
