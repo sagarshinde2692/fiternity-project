@@ -3892,22 +3892,22 @@ class FindersController extends \BaseController {
 					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 
 					if($this->device_type == 'android'){
-						$android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI <br><br>On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD <br><br>Offer Valid 22nd - 31st October";
+						$android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI <br><br>- On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD <br><br>Offer Valid 22nd - 31st October";
 
 						$op_android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI <br><br>Offer Valid 22nd - 31st October";
 					}else{	
-						$ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI \n\nOn Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD \n\nOffer Valid 22nd - 31st October";
+						$ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI \n\n- On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD \n\nOffer Valid 22nd - 31st October";
 
 						$op_ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 20% Off. Use Code: FITDVLI \n\nOffer Valid 22nd - 31st October";
 					}
 
 					if($price > 8000){
 						if($this->device_type == 'android'){
-							$android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI <br><br>On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD <br><br>Offer Valid 22nd - 31st October";
+							$android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI <br><br>- On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD <br><br>Offer Valid 22nd - 31st October";
 
 							$op_android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI <br><br>Offer Valid 22nd - 31st October";
 						}else{	
-							$ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI \n\nOn Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD \n\nOffer Valid 22nd - 31st October";
+							$ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI \n\n- On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD \n\nOffer Valid 22nd - 31st October";
 
 							$op_ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI \n\nOffer Valid 22nd - 31st October";
 						}
