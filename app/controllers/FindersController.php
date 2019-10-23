@@ -1393,7 +1393,7 @@ class FindersController extends \BaseController {
                     $response['show_timer'] = true;
                 }
 
-                if(empty($response['vendor_stripe_data']['text']) ){
+                if(empty($response['vendor_stripe_data']['text']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
                     
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
@@ -1436,9 +1436,9 @@ class FindersController extends \BaseController {
                     $response['vendor_stripe_data']['text1'] = $response['vendor_stripe_data']['text'];
 				}
 				
-				if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
-                    $response['vendor_stripe_data'] = "no-patti";
-                }
+				// if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+                //     $response['vendor_stripe_data'] = "no-patti";
+                // }
 
                 if(empty($response['vendor_stripe_data']['text1'])){
                     $response['vendor_stripe_data'] = "no-patti";
