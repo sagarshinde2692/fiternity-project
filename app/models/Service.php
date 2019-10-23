@@ -412,18 +412,16 @@ class Service extends \Basemodel{
 				   //unset($value['remarks']);
 				}
 
-				if($finder->brand_id==88){
-					if(!empty($value['combo_pass_id'])) {
-						$pass 	= 	Pass::where('pass_id', $value['combo_pass_id'])->first();
-						$value['pass_details'] = [
-							'pass_id' => $pass['pass_id'],
-							'pass_type' => ($pass['pass_type']=='hybrid')?$pass['branding']:$pass['pass_type'],
-							'duration' => $pass['duration'],
-							'duration_text' => $pass['duration_text'],
-							'total_sessions' => $pass['total_sessions'],
-							'total_sessions_text' => $pass['total_sessions_text']
-						];
-					}
+				if(!empty($value['combo_pass_id'])) {
+					$pass 	= 	Pass::where('pass_id', $value['combo_pass_id'])->first();
+					$value['pass_details'] = [
+						'pass_id' => $pass['pass_id'],
+						'pass_type' => ($pass['pass_type']=='hybrid')?$pass['branding']:$pass['pass_type'],
+						'duration' => $pass['duration'],
+						'duration_text' => $pass['duration_text'],
+						'total_sessions' => $pass['total_sessions'],
+						'total_sessions_text' => $pass['total_sessions_text']
+					];
 					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && ($value['flags']['onepass_attachment_type']=='membership_plus')) ) {
 						$value['membership_plus'] = true;
 						$value['title'] = 'Membership Plus';

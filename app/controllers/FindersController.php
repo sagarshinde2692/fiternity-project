@@ -3924,7 +3924,7 @@ class FindersController extends \BaseController {
 			}
 		}
 
-        if(!empty($data['finder']['brand_id']) && ($data['finder']['brand_id']==88)){
+        if(!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], [88, 135])){
 			if($this->device_type == 'android'){
 				$line = "<u>Membership Plus - ".ucwords($data['finder']['title'])."</u><br><br>Lowest price Multifit membership + 6 Months All Access OnePass";
             }else{	
@@ -8486,7 +8486,7 @@ class FindersController extends \BaseController {
 				if(in_array($rc['type'], ['membership', 'extended validity', 'studio_extended_validity'])){
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
 					
-					if(!empty($finder['brand_id']) && $finder['brand_id']==88) {
+					if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [88, 135])) {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
 					}
 
