@@ -3884,6 +3884,10 @@ class FindersController extends \BaseController {
 		$line = null;
 		
 		$pricemore = false;
+		$android_line = "";
+		$ios_line = "";
+		$op_android_line = "";
+		$op_ios_line = "";
 		foreach($data['finder']['services'] as &$service){
 			foreach($service['ratecard'] as &$ratecard){
 				if($ratecard['type'] == 'membership'){
@@ -4086,12 +4090,14 @@ class FindersController extends \BaseController {
 
 
 		$customer_email = null;
+		$customer_id = null;
 		if(in_array($tslug, Config::get('app.test_vendors'))){
 			$jwt_token = Request::header('Authorization');
 			if($jwt_token){
 				$decoded = $this->customerTokenDecode($jwt_token);
 				if($decoded){
 					$customer_email = $decoded->customer->email;
+					$customer_id = $decoded->customer->_id;
 				}
 				if(!in_array($customer_email, Config::get('app.test_page_users'))){
 
