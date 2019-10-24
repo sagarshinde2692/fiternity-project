@@ -300,7 +300,7 @@ class PassService {
         $data['order_id'] = $data['_id'];
         $data['orderid'] = $data['_id'];
 
-        if(empty($data['customer_source']) || empty($data['customer_source']!='sodexo')){
+        if(empty($data['customer_source']) || $data['customer_source']!='sodexo'){
             $rewardinfo = $this->addRewardInfo($data);
 		}
         if(!empty($rewardinfo)){
@@ -1434,6 +1434,7 @@ class PassService {
             "customer_name" => $data['customer_name'],
             "customer_phone" => $data['customer_phone'],
             "customer_email" => $data['customer_email'],
+            "customer_source" => $data['customer_source'],
             "type" => $data['type'],
             "customer_email" => $data['customer_email'],
             "customer_id" => $data['customer_id'],
