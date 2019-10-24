@@ -3230,7 +3230,7 @@ if (!function_exists(('isNotInoperationalDate'))){
             return false;
         }
 
-        if( in_array($date, $partially_inoperational_dates) && !in_array($servicecategory_id, [5]) && !in_array($findercategory_id, [47])){
+        if( in_array($date, $partially_inoperational_dates) && !in_array($servicecategory_id, [65]) && !in_array($findercategory_id, [47])){
             return false;
         }
         
