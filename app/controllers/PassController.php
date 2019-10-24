@@ -15,7 +15,6 @@ class PassController extends \BaseController {
     }
 
     public function listPasses($pass_type=null){
-        $data = Input::all();
         $jwt_token = Request::header('Authorization');
         $device = Request::header('Device-Type');
         $version = Request::header('App-Version');
@@ -38,8 +37,8 @@ class PassController extends \BaseController {
             $city = strtolower($input['city']);
         }
         
-        if(!empty($data['source'])) {
-            $source = $data['source'];
+        if(!empty($input['source'])) {
+            $source = $input['source'];
         }
 
         $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source);
