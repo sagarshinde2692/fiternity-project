@@ -31,7 +31,7 @@ class PassService {
         $this->device_id = !empty(Request::header('Device-Id'))? Request::header('Device-Id'): null;
     }
 
-    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null){
+    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null, $source=null){
         
         $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('pass_type', '!=', 'hybrid');
 
@@ -96,12 +96,17 @@ class PassService {
         if(!empty($trialPurchased['status']) && $trialPurchased['status']) {
             $passList = $passList->where('type','!=', 'trial');
         }
-        
-        if(!empty($pass_type)) {
-            $passList = $passList->whereIn('show_on_front', [null, true])->where('pass_type', $pass_type);
-        }
 
-        $passList = $passList->whereIn('show_on_front', [null, true])->where('pass_type', '!=', 'hybrid')->orderBy('duration')->get();
+        if(!empty($source)) {
+            $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('corporate', $source)->orderBy('duration')->get();
+        }
+        else {
+            $passList = $passList->whereIn('show_on_front', [null, true])->where('pass_type', '!=', 'hybrid')->where('corporate', 'exists', false);
+            if(!empty($pass_type)) {
+                $passList = $passList->where('pass_type', $pass_type);
+            }
+            $passList = $passList->orderBy('duration')->get();
+        }
         
 
         foreach($passList as &$pass) {
@@ -147,13 +152,17 @@ class PassService {
                 $passDetails['text'] = "(Additional 20% Off)";
             }
 
+            if(!empty($source) && $source=='sodexo') {
+                $passDetails['text'] = "(".$pass['total_sessions']." sessions pass)";
+            }
+
             unset($passDetails['cashback']);
 
             unset($passDetails['extra_info']);
 
-            if($pass['unlimited_access']) {
-                $passDetails['price'] = 'Rs. '.$pass['price'];
-                $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
+            $passDetails['price'] = 'Rs. '.$pass['price'];
+            $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
+            if(($pass['pass_type']=='red') || ($pass['pass_type']=='hybrid' && $pass['branding']=='red')) {
                 if(!empty($device) && in_array($device, ['android', 'ios'])) {
                     $response['app_passes'][0]['offerings']['ratecards'][] = $passDetails;
                 }
@@ -161,8 +170,6 @@ class PassService {
                     $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
                 }
             } else{
-                $passDetails['price'] = 'Rs. '.$pass['price'];
-                $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
                 if(!empty($device) && in_array($device, ['android', 'ios'])) {
                     $response['app_passes'][1]['offerings']['ratecards'][] = $passDetails;
                 }
@@ -173,8 +180,8 @@ class PassService {
         }
         if(!empty($device) && in_array($device, ['android', 'ios'])) {
             $response['passes'] = $response['app_passes'];
-            unset($response['app_passes']);
         }
+        unset($response['app_passes']);
         // $passConfig = Config::get('pass');
         // $passCount = Order::active()->where('type', 'pass')->count();
         // if($passCount>=$passConfig['total_available']) {
@@ -203,7 +210,12 @@ class PassService {
             }
 
         }
-        $data['customer_source'] = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
+        if(!empty($data['customer_source']) && $data['customer_source']=='sodexo'){
+            $data['customer_source'] = 'sodexo';
+        }
+        else {
+            $data['customer_source'] = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
+        }
         
         $data['type'] = "pass";
         $data['status'] = "0";
@@ -288,7 +300,9 @@ class PassService {
         $data['order_id'] = $data['_id'];
         $data['orderid'] = $data['_id'];
 
-        $rewardinfo = $this->addRewardInfo($data);
+        if(empty($data['customer_source']) || $data['customer_source']!='sodexo'){
+            $rewardinfo = $this->addRewardInfo($data);
+		}
         if(!empty($rewardinfo)){
             $data = array_merge($data, $rewardinfo);
         }
@@ -544,6 +558,7 @@ class PassService {
 
         if(empty($order['amount']) && empty($order['status'])){
             $order->status ='1';
+            $order->onepass_sessions_total = (!empty($order['pass']['classes']))?$order['pass']['classes']:-1;
             $order->update();
         }
         
@@ -1169,7 +1184,8 @@ class PassService {
             // );
             $success_template['pass']['type'] = '';//strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
-            $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
+            // $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
+            $success_template['pass']['pass_type'] =  ($order['pass']['pass_type']!='hybrid')?$order['pass']['pass_type']:$order['pass']['branding'];
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
                 [
@@ -1418,6 +1434,7 @@ class PassService {
             "customer_name" => $data['customer_name'],
             "customer_phone" => $data['customer_phone'],
             "customer_email" => $data['customer_email'],
+            "customer_source" => $data['customer_source'],
             "type" => $data['type'],
             "customer_email" => $data['customer_email'],
             "customer_id" => $data['customer_id'],
@@ -2358,11 +2375,17 @@ class PassService {
     public function addMonthlyBookingCounter(&$data){
 
         if($data['pass']['pass_type']== 'hybrid'){
-            $months_count = (int) ($data['pass']['duration']/30);
+            $actual_month_count = ($data['pass']['duration']/30);
+            $months_count = ceil($actual_month_count);
             $monthly_total_sessions_used= [];
             $start_date = strtotime(date('Y-m-d H:i:s', $data['start_date']->sec));
             //$end_date = strtotime('+30 days', $start_date);
-            $end_date = strtotime('+30 days', $start_date);
+            if($actual_month_count<1) {
+                $end_date = $data['end_date']->sec;
+            }
+            else {
+                $end_date = strtotime('+30 days', $start_date);
+            }
             for($i=0; $i< $months_count; $i++){
 
                 

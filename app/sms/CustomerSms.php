@@ -304,7 +304,7 @@ Class CustomerSms extends VersionNextSms{
 			Log::info('sending pass purchase sms::::::::::::::::::::');
 			$label = 'Pass-Purchase-Customer';
 			
-			if($data['pass']['pass_type'] =='hybrid'){
+			if(($data['pass']['pass_type'] =='hybrid') && (empty($data['customer_source']) || $data['customer_source']!='sodexo')){
 				$data['pass']['pass_type'] = $data['pass']['branding'];
 				if(empty($data['onepass_attachment_type']) || in_array($data['onepass_attachment_type'], ['complementary', 'membership_plus'])){
 					return;
@@ -1404,6 +1404,10 @@ Class CustomerSms extends VersionNextSms{
 	public function diwaliMixedReward($data){
 		$label = 'DiwaliMixedReward-Customer';
 		
+		if(!empty($data['customer_source']) && empty($data['customer_source']=='sodexo')){
+			return;
+		}
+
 		$to = $data['customer_phone'];
 		
 		return $this->common($label,$to,$data);
