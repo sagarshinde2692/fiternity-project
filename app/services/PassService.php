@@ -558,6 +558,7 @@ class PassService {
 
         if(empty($order['amount']) && empty($order['status'])){
             $order->status ='1';
+            $order->onepass_sessions_total = (!empty($order['pass']['classes']))?$order['pass']['classes']:-1;
             $order->update();
         }
         
@@ -2373,11 +2374,17 @@ class PassService {
     public function addMonthlyBookingCounter(&$data){
 
         if($data['pass']['pass_type']== 'hybrid'){
-            $months_count = (int) ($data['pass']['duration']/30);
+            $actual_month_count = ($data['pass']['duration']/30);
+            $months_count = ceil($actual_month_count);
             $monthly_total_sessions_used= [];
             $start_date = strtotime(date('Y-m-d H:i:s', $data['start_date']->sec));
             //$end_date = strtotime('+30 days', $start_date);
-            $end_date = strtotime('+30 days', $start_date);
+            if($actual_month_count<1) {
+                $end_date = $data['end_date']->sec;
+            }
+            else {
+                $end_date = strtotime('+30 days', $start_date);
+            }
             for($i=0; $i< $months_count; $i++){
 
                 
