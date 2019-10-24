@@ -182,7 +182,7 @@ Class CustomerMailer extends Mailer {
 		}
 		
 		if(!empty($data['type']) && ($data['type']=='pass')){
-			if($data['pass']['pass_type'] =='hybrid'){
+			if(($data['pass']['pass_type'] =='hybrid') && (empty($data['customer_source']) || $data['customer_source']!='sodexo')){
 				$data['pass']['pass_type'] = $data['pass']['branding'];
 				if(empty($data['onepass_attachment_type']) || in_array($data['onepass_attachment_type'], ['complementary', 'membership_plus'])){
 					return;
