@@ -3223,15 +3223,16 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null){
 
-        $inoperational_dates = ['2019-09-12'];
+        $inoperational_dates = ['2019-10-27', '2019-10-28'];
+        $partially_inoperational_dates = ['2019-10-26'];
 
-        if( in_array($date, $inoperational_dates) && in_array($city_id, [1, 2])){
+        if( in_array($date, $inoperational_dates) ){
             return false;
         }
 
-        // if( in_array($date, $inoperational_dates) && in_array($city_id, [3,5]) && !in_array($findercategory_id, [5])){
-        //     return false;
-        // }
+        if( in_array($date, $partially_inoperational_dates) && !in_array($findercategory_id, [5, 47])){
+            return false;
+        }
         
         return true;
 
