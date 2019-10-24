@@ -19,7 +19,7 @@ App::before(function($request)
         if(!empty(Input::all())){
             Log::info("API Hit" , Input::all());
         }else if(!empty(Input::json()->all())){
-            Log::info("API Hit" , Input::json()->all());
+            Log::info("API Hit json" , Input::json()->all());
         }
         Log::info(apache_request_headers());
     }catch(Exception $e){

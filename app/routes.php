@@ -295,8 +295,10 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::post('reportareview', array('as' => 'finderdetails.reportareview','uses' => 'FindersController@reportReview'));
     
-    Route::post('passcapture', 'PassController@passCapture');
-    
+	Route::post('passcapture', 'PassController@passCapture');
+	
+	Route::get('customer/getstepprofile/{city?}',  array('as' => 'customer.getstepprofile','uses' => 'CustomerController@getStepProfile'));
+
 });
 
 Route::get('booktrialdetail/{captureid}/{type?}', 'SchedulebooktrialsController@booktrialdetail');
@@ -1310,6 +1312,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('markcheckin/{finder_id}', 'CustomerController@markCheckin');
 
 	Route::post('uploadreceiptloyalty', 'CustomerController@uploadReceiptLoyalty');
+	Route::post('onepasscustomerupdate', 'CustomerController@onePassCustomerUpdate');
 
 });
 
@@ -1404,7 +1407,12 @@ Route::get('testOnePassUser', 'DebugController@testOnePassUser');
 Route::get('homepostpasspurchase', 'PassController@homePostPassPurchaseData');
 Route::get('dynamicOnepassEMailSms', 'DebugController@dynamicOnepassEMailSms');
 Route::get('addFlagClasspassAvalible', 'DebugController@addFlagClasspassAvalible');
+Route::get('localpassratecard', 'PassController@localPassRatecards');
+Route::post('unlocksession/{trial_id}','SchedulebooktrialsController@unlockSession');
+Route::post('passtab', 'PassController@passTab');
 Route::get('passCashback', 'DebugController@passCashback');
+
+Route::get('healthobject', 'RelianceController@buildHealthObjectStructure');
 Route::post('tpcancelsession', 'SchedulebooktrialsController@tpcancelsession');
 Route::post('decryptqrcode', 'ThirdPartyController@decryptQRCode');
 Route::get('renewalOnepass', 'DebugController@renewalOnepass');

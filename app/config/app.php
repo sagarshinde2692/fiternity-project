@@ -109,12 +109,12 @@ return array(
 	],
 
 	'pass_payment_options' => [
-		[
-				'title' => 'PayU',
-				// 'subtitle' => 'PayU',
-				'value' => 'payu'
-		]
-	],
+        [
+                'title' => 'PayU',
+                // 'subtitle' => 'PayU',
+                'value' => 'payu'
+        ]
+    ],
 
 	'razorPayURL' =>'https://api.razorpay.com/v1/plans',
 	
@@ -458,14 +458,20 @@ return array(
             'path'							=> 'membership-receipts/',
             'url'							=> 'http://d3oorwrq3wx4ad.cloudfront.net/membership-receipts/',
         ),
+        'customer_photo'=>array(
+            'path'							=> 'customer_photo/',
+            'url'							=> 'http://d3oorwrq3wx4ad.cloudfront.net/customer_photo/',
+        ),
 	),
 
 	'customer_care_number' => '+919699998838',
 	'contact_us_vendor_email' => 'business@fitternity.com',
 	'contact_us_customer_email' => 'support@fitternity.com',
+	'contact_us_customer_email_onepass' => 'onepass@fitternity.com',
 	'contact_us_vendor_number' => '+919699998838',
 	'contact_us_customer_number' => '+912261094444',
 	'contact_us_customer_number_onepass' => '+917400062849',
+	'display_contact_us_customer_number_onepass' => '+91 74000 62849',
 	'followup_fitness_concierge' => 'Rachel',
 	'followup_customer_number' => '+917400062843',
 	'renewal_fitness_concierge' => 'David',
@@ -1039,8 +1045,11 @@ return array(
     
 	'non_flexi_service_cat'=>[111, 65, 5],
 	
-	'camp_excluded_vendor_id'=>[579, 1233, 1260, 1261, 1262, 1874, 2105, 9171, 9178, 5742, 10675, 1935, 9423, 9481, 9600, 9932, 9954, 10674, 10970, 11021, 11223, 12208, 13094, 13898, 13968, 14102, 14107, 14622, 14626, 14627, 15431, 15775, 15980, 16062, 16251, 16449, 16450, 16562, 16636, 16644],
+	'camp_excluded_vendor_id'=>[1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644,579,1233,1260,1261,1262,1874,2105,9171,9178,5742,10675],
     
-    'tab_session_pack_vendor_ids'=>[1490,424,1935,9423,9481,9932,9954,10970,11021,11223,12208,13968,14102,15431,15775,15980,16251]
+	'tab_session_pack_vendor_ids'=>[1490,424,1935,9423,9481,9932,9954,10970,11021,11223,12208,13968,14102,15431,15775,15980,16251],
+	"service_icon_base_url" => "http://b.fitn.in/iconsv1/",
+	"service_icon_base_url_extention" => ".png",
+	"checkin_checkout_max_distance_in_meters" => 2000
     
 );

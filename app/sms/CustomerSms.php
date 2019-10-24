@@ -1400,6 +1400,14 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 		
 	}
+
+	public function diwaliMixedReward($data){
+		$label = 'DiwaliMixedReward-Customer';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);
+	}
 	
 	public function common($label,$to,$data,$delay = 0){
 
@@ -1433,8 +1441,10 @@ Class CustomerSms extends VersionNextSms{
 			}
 		}
 
-		if(!empty($data['multifit']) && $label != 'Generic-Otp-Customer'){
-			$sender = 'MULTIF';
+		if(Config::get('app.env') != 'stage'){
+			if(!empty($data['multifit']) && $label != 'Generic-Otp-Customer'){
+				$sender = 'MULTIF';
+			}
 		}
 
 		if(!empty($data['event_type']) && $data['event_type']=='TOI' && !empty($data['sender'])){

@@ -280,6 +280,9 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['customer_name']
 		);
 
+		if(!empty(Config::get('app.debug'))){
+			$message_data['user_email'] = ['kailashbajya@fitternity.com', 'akhilkulkarni@fitternity.com'];
+		}
 		return $this->common($label,$data,$message_data);
 	}
 
@@ -1031,7 +1034,19 @@ Class CustomerMailer extends Mailer {
         if(in_array($data['finder_id'], $allMultifitFinderId) && !empty($data["customer_source"]) && $data["customer_source"] == "kiosk"){
             return true;
         }
-    }
+	}
+	
+	public function diwaliMixedReward($data){
+		$label = 'DiwaliMixedReward-Customer';
+		
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => '',
+		);
+		// print_r($data);
+		// exit();
+		return $this->common($label,$data,$message_data);
+	}
     
     protected function common($label,$data,$message_data,$delay = 0){
 
@@ -1045,9 +1060,10 @@ Class CustomerMailer extends Mailer {
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
 			return "";
 		}
-
-		if(!empty($data['multifit'])){
-			$message_data['fromemail'] = 'info@multifit.co.in';
+		if(Config::get('app.env') != 'stage'){
+			if(!empty($data['multifit'])){
+				$message_data['fromemail'] = 'info@multifit.co.in';
+			}
 		}
 
 		// if(!empty($data['pass_type'])){
