@@ -8825,7 +8825,7 @@ class SchedulebooktrialsController extends \BaseController {
         if(!empty($booktrial)){
 
             $time_check = abs(strtotime($booktrial['schedule_date_time']) - strtotime('now') )   <=  $time_in_seconds ? true : false;
-            $time_check_end = abs(strtotime(date('d-m-Y', $booktrial['schedule_date_time']).' '.$booktrial['schedule_slot_end_time']) - strtotime('now') )   <=  $time_in_seconds ? true : false;
+            $time_check_end = abs(strtotime(date('d-m-Y', strtotime($booktrial['schedule_date_time'])).' '.$booktrial['schedule_slot_end_time']) - strtotime('now') )   <=  $time_in_seconds ? true : false;
             $time_check = $time_check || $time_check_end;
             Log::info('time check::', [strtotime($booktrial['schedule_date_time']), strtotime('now') , abs(strtotime($booktrial['schedule_date_time']) - strtotime('now') ), $time_in_seconds, $time_check]);
         }
