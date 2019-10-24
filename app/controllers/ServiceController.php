@@ -2396,7 +2396,9 @@ class ServiceController extends \BaseController {
 
 			if(!empty($data['service']['slots'])){
 				foreach($data['service']['slots'] as &$sl){
-					$sl['price'] = "₹ ".$sl['price_only'];
+                    if(!empty($sl['price_only'])){
+                        $sl['price'] = "₹ ".$sl['price_only'];
+                    }
 				}
 			}
 		}
