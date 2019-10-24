@@ -210,7 +210,12 @@ class PassService {
             }
 
         }
-        $data['customer_source'] = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
+        if(!empty($data['customer_source']) && $data['customer_source']=='sodexo'){
+            $data['customer_source'] = 'sodexo';
+        }
+        else {
+            $data['customer_source'] = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
+        }
         
         $data['type'] = "pass";
         $data['status'] = "0";
@@ -295,7 +300,9 @@ class PassService {
         $data['order_id'] = $data['_id'];
         $data['orderid'] = $data['_id'];
 
-        $rewardinfo = $this->addRewardInfo($data);
+        if(empty($data['customer_source']) || empty($data['customer_source']!='sodexo')){
+            $rewardinfo = $this->addRewardInfo($data);
+		}
         if(!empty($rewardinfo)){
             $data = array_merge($data, $rewardinfo);
         }

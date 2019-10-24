@@ -1039,6 +1039,10 @@ Class CustomerMailer extends Mailer {
 	public function diwaliMixedReward($data){
 		$label = 'DiwaliMixedReward-Customer';
 		
+		if(!empty($data['customer_source']) && empty($data['customer_source']=='sodexo')){
+			return;
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => '',

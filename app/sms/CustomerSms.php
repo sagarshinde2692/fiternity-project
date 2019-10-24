@@ -1404,6 +1404,10 @@ Class CustomerSms extends VersionNextSms{
 	public function diwaliMixedReward($data){
 		$label = 'DiwaliMixedReward-Customer';
 		
+		if(!empty($data['customer_source']) && empty($data['customer_source']=='sodexo')){
+			return;
+		}
+
 		$to = $data['customer_phone'];
 		
 		return $this->common($label,$to,$data);
