@@ -3221,7 +3221,7 @@ if (!function_exists(('getRegId'))){
 }
 
 if (!function_exists(('isNotInoperationalDate'))){
-    function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null){
+    function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null, $servicecategory_id=null){
 
         $inoperational_dates = ['2019-10-27', '2019-10-28'];
         $partially_inoperational_dates = ['2019-10-26'];
@@ -3230,7 +3230,7 @@ if (!function_exists(('isNotInoperationalDate'))){
             return false;
         }
 
-        if( in_array($date, $partially_inoperational_dates) && !in_array($findercategory_id, [5, 47])){
+        if( in_array($date, $partially_inoperational_dates) && !in_array($servicecategory_id, [5]) && !in_array($findercategory_id, [47])){
             return false;
         }
         

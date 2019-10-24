@@ -1015,7 +1015,7 @@ class ServiceController extends \BaseController {
 							$dontShow=true;
 					}
     
-					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id, empty($ratecard_price) ? true : false, $ratecard['type'])||(isset($dontShow)&&$dontShow)){
+					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id, empty($ratecard_price) ? true : false, $ratecard['type'], $service['servicecategory_id'])||(isset($dontShow)&&$dontShow)){
 						continue;
 					}
 
