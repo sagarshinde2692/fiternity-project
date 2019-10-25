@@ -3116,11 +3116,14 @@ class SchedulebooktrialsController extends \BaseController {
                 $this->findersms->trialAlert($booktrialdata);                
             }
 
-            $sch_date = date('Y-m-d',strtotime($booktrialdata['schedule_date']));
-            if(in_array($sch_date, Config::get('app.occasion_dates'))){
-                Log::info("schedule_date----------------------------");
-                $this->customersms->occasionDaySms($booktrialdata);
-            }
+            try{
+                $sch_date = date('Y-m-d',strtotime($booktrialdata['schedule_date']));
+                if(in_array($sch_date, Config::get('app.occasion_dates'))){
+                    $this->customersms->occasionDaySms($booktrialdata);
+                }
+            }catch(Exception $e){
+                Log::info("occasionDaySms error");
+            } 
 
         }catch(\Exception $exception){
 
