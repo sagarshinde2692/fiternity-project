@@ -146,10 +146,10 @@ class PassService {
                 }
             }
 
-            $passDetails['text'] = "(Additional 20% Off + \n Fitaka Diwali Hamper worth INR 9000)";
+            $passDetails['text'] = "(Additional 25% Off + \n Fitaka Diwali Hamper worth INR 9000)";
 
             if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15){
-                $passDetails['text'] = "(Additional 20% Off)";
+                $passDetails['text'] = "(Additional 25% Off)";
             }
 
             if(!empty($source) && $source=='sodexo') {
@@ -1613,12 +1613,12 @@ class PassService {
         if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
             $resp[] = [
                    'field' => '',
-                   'value' => "Get 30% Off + Additional 20% Off. Use Code: DVLIPASS\n22nd-31st October",
+                   'value' => "Get 30% Off + Additional 25% Off. Use Code: DVLIPASS\n22nd-31st October",
             ];
         }else {
             $resp[] = [
                 'field' => '',
-                'value' => "Get 30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Puma, Myntra, O2 Spa, HealthifyMe, Lenskart  Use Code: DVLIPASS\n22nd-31st October",
+                'value' => "Get 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Puma, Myntra, O2 Spa, HealthifyMe, Lenskart  Use Code: DVLIPASS\n22nd-31st October",
             ];
         }
 

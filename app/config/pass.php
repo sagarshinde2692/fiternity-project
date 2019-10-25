@@ -101,7 +101,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -161,8 +161,8 @@ return [
         "red"=>[
             "<ul>
                 <li> Discount of upto 30% is pre-applied on MRP</li>
-                <li> Code: DVLIPASS will give the user Additional 20% off</li>
-                <li> Additional 20% off is upto INR 2000 </li>
+                <li> Code: DVLIPASS will give the user Additional 25% off</li>
+                <li> Additional 25% off is upto INR 2000 </li>
                 <li> Discount varies across different types of pass</li>
                 <li> This cannot be clubbed with any other existing offer</li>
                 <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
@@ -201,8 +201,8 @@ return [
         "black" =>[
             "<ul>
                 <li> Discount of upto 30% is pre-applied on MRP</li>
-                <li> Code: DVLIPASS will give the user Additional 20% off</li>
-                <li> Additional 20% off is upto INR 2000 </li>
+                <li> Code: DVLIPASS will give the user Additional 25% off</li>
+                <li> Additional 25% off is upto INR 2000 </li>
                 <li> Discount varies across different types of pass</li>
                 <li> This cannot be clubbed with any other existing offer</li>
                 <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
@@ -240,8 +240,8 @@ return [
         "default"=>[
             "<ul>
                 <li> Discount of upto 30% is pre-applied on MRP</li>
-                <li> Code: DVLIPASS will give the user Additional 20% off</li>
-                <li> Additional 20% off is upto INR 2000 </li>
+                <li> Code: DVLIPASS will give the user Additional 25% off</li>
+                <li> Additional 25% off is upto INR 2000 </li>
                 <li> Discount varies across different types of pass</li>
                 <li> This cannot be clubbed with any other existing offer</li>
                 <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
@@ -483,7 +483,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000",
+                "text" => "30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000",
                 "button_text" => "Know More"
             ],
         ],
@@ -631,7 +631,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000",
+                "text" => "30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000",
                 "button_text" => "Know More"
             ]
         ],
@@ -825,7 +825,7 @@ return [
             "icon" => "https://b.fitn.in/onepass/discount_3x.png",
             "header" => "Exciting OnePass Offers",
             "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
-            "text" => "30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000",
+            "text" => "30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000",
         ],
 
         'faq' => [
@@ -955,7 +955,7 @@ return [
             'ratecards' => []
         ],
         'local_pass_remarks' => [
-            'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 20% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
+            'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
             'text' => 'Terms and Conditions',
             "title" =>'Terms and Conditions',
             'url' => $apiUrl.'/passtermscondition?type=unlimited'
