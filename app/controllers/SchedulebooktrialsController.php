@@ -3116,7 +3116,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $this->findersms->trialAlert($booktrialdata);                
             }
 
-            if(in_array($schedule_date, Config::get('app.occasion_dates'))){
+            if(in_array($booktrialdata['schedule_date'], Config::get('app.occasion_dates'))){
                 $this->customersms->occasionDaySms($booktrialdata);
             }
 
