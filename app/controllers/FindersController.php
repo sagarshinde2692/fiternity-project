@@ -8493,9 +8493,9 @@ class FindersController extends \BaseController {
 					if(in_array($rc['type'], ['membership'])){
 
 						if($price >= 8000){
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFitwali Diwali With Fitternity \n50% off + Additional 25% Off On Memberships + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, EaseMyTrip, HealthifyMe & More \nUse Code: FITDVLI");
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFitwali Diwali With Fitternity \n\n50% off + Additional 25% Off On Memberships + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, EaseMyTrip, HealthifyMe & More \n\nUse Code: FITDVLI");
 						}else{
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFitwali Diwali With Fitternity \n50% off + Additional 25% Off On Memberships \nUse Code: FITDVLI");
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFitwali Diwali With Fitternity \n\n50% off + Additional 25% Off On Memberships \n\nUse Code: FITDVLI");
 						}
 
 						if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
