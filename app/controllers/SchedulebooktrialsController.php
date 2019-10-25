@@ -3116,6 +3116,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $this->findersms->trialAlert($booktrialdata);                
             }
 
+            if(in_array($schedule_date, Config::get('app.occasion_dates'))){
+                $this->customersms->occasionDaySms($booktrialdata);
+            }
+
         }catch(\Exception $exception){
 
             Log::error($exception);
