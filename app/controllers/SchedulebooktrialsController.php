@@ -2752,6 +2752,13 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
+            Log::info("schedule_date----------------------------",[$booktrialdata['schedule_date']]);
+            Log::info("schedule_date----------------------------",[Config::get('app.occasion_dates')]);
+            if(in_array($booktrialdata['schedule_date'], Config::get('app.occasion_dates'))){
+                Log::info("schedule_date----------------------------");
+                $this->customersms->occasionDaySms($booktrialdata);
+            }
+
             $currentDateTime 			       =	\Carbon\Carbon::now();
             $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
 
@@ -3114,10 +3121,6 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['cancel_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/vendor/cancel';
                 $this->findermailer->trialAlert($booktrialdata);                
                 $this->findersms->trialAlert($booktrialdata);                
-            }
-
-            if(in_array($booktrialdata['schedule_date'], Config::get('app.occasion_dates'))){
-                $this->customersms->occasionDaySms($booktrialdata);
             }
 
         }catch(\Exception $exception){
