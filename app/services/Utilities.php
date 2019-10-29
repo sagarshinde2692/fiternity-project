@@ -10294,11 +10294,6 @@ Class Utilities {
                 $pass = true;
             }
             
-            if(Config::get('app.env') == 'stage'){
-                if($customer_email == "ankitamamnia@fitternity.com"){
-                    $pass = true;
-                }
-            }
         }
         Log::info("pass header",[$pass]);
         return $pass;
