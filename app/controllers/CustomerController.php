@@ -9668,7 +9668,9 @@ class CustomerController extends \BaseController {
 		$fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year',$customer['loyalty']['start_date']->sec));
 		$current_date = date('Y-m-d');
 
-		if($fitsquad_expiery_date < $current_date){
+		$fitsquad_expired = $this->utilities->checkFitsquadExpired($customer);
+
+		if(!empty($fitsquad_expired)){
 			$post_register['milestones']['footer'] = "Your Fitsquad has been expired";
 		}else{
 			$post_register['milestones']['footer'] = strtr($post_register['milestones']['footer'], ['$last_date'=>date('d M Y', strtotime('+1 year',$customer['loyalty']['start_date']->sec))]);
@@ -9831,7 +9833,7 @@ class CustomerController extends \BaseController {
 
 							!isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
 
-							if($fitsquad_expiery_date < $current_date){
+							if(!empty($fitsquad_expired)){
 								$post_reward_data_template['claim_enabled'] = false;
 							}
 
