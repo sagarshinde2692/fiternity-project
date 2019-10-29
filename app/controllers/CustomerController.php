@@ -9116,8 +9116,9 @@ class CustomerController extends \BaseController {
                     if(empty($milestones[$voucher_category['milestone']-1]['claimed'])){
     					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
 						$milestones[$voucher_category['milestone']-1]['claimed'] = true; */
-						
-                        $voucherAttached = $voucherAttached->toArray();
+						if (!is_array($voucherAttached)){
+							$voucherAttached = $voucherAttached->toArray();
+						}
 						$voucherAttached['claimed_date_time'] = new \MongoDate();                  
 						// if(!empty($customer->corporate_id)) {
                         // 	$milestones[$voucher_category['milestone']]['voucher'] = !empty($milestones[$voucher_category['milestone']]['voucher']) ? $milestones[$voucher_category['milestone']]['voucher'] : [];
@@ -9937,7 +9938,7 @@ class CustomerController extends \BaseController {
 
         try{
 			Log::info("voucherCommunication customermailer");
-			if(!empty($data['flags']['instant_manual_redemption'])){
+			if(!empty($data['resp']['flags']['instant_manual_redemption'])){
 				$this->customersms->externalVoucher($data);
 			}else{
 				$this->customermailer->externalVoucher($data);

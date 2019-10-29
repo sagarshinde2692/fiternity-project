@@ -7691,22 +7691,21 @@ Class Utilities {
 
     public function assignInstantManualVoucher($customer, $voucher_category){
 
-        $new_voucher = new stdClass();
-        $new_voucher->voucher_category = $voucher_category['_id'];
-        $new_voucher->description = $voucher_category['description'];
-        $new_voucher->milestone = $voucher_category['milestone'];
-        $new_voucher->customer_id = $customer['_id'];
-        $new_voucher->name = $voucher_category['name'];
-        $new_voucher->code = $voucher_category['name'];
-        $new_voucher->image = $voucher_category['image'];
-        $new_voucher->terms = $voucher_category['terms'];
-        $new_voucher->amount = $voucher_category['amount'];
-        $new_voucher->claim_date = new \MongoDate();
-        $new_voucher->selected_voucher = $voucher_category['_id'];
-        $new_voucher->milestone = !empty($voucher_category['milestone']) ? $voucher_category['milestone'] : null;
+        $new_voucher['voucher_category'] = $voucher_category['_id'];
+        $new_voucher['description'] = $voucher_category['description'];
+        $new_voucher['milestone'] = $voucher_category['milestone'];
+        $new_voucher['customer_id'] = $customer['_id'];
+        $new_voucher['name'] = $voucher_category['name'];
+        $new_voucher['code'] = $voucher_category['name'];
+        $new_voucher['image'] = $voucher_category['image'];
+        $new_voucher['terms'] = $voucher_category['terms'];
+        $new_voucher['amount'] = $voucher_category['amount'];
+        $new_voucher['claim_date'] = new \MongoDate();
+        $new_voucher['selected_voucher'] = $voucher_category['_id'];
+        $new_voucher['milestone'] = !empty($voucher_category['milestone']) ? $voucher_category['milestone'] : null;
         
         if(isset($voucher_category['flags'])){
-            $new_voucher->flags = $voucher_category['flags'];
+            $new_voucher['flags'] = $voucher_category['flags'];
         }
         
         return $new_voucher;
