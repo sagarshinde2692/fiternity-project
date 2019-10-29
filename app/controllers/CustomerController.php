@@ -9665,9 +9665,6 @@ class CustomerController extends \BaseController {
             $post_register['milestones']['subheader'] = "You have completed all your milestones";
         }
 
-		$fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year',$customer['loyalty']['start_date']->sec));
-		$current_date = date('Y-m-d');
-
 		$fitsquad_expired = $this->utilities->checkFitsquadExpired($customer);
 
 		if(!empty($fitsquad_expired)){
