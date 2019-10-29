@@ -9734,6 +9734,8 @@ class CustomerController extends \BaseController {
 						$post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $claimed_voucher);
 						if(empty($instant_manual_redemption)){
 							$post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$claimed_voucher['_id']."?milestone=".$milestone['milestone']."&index=".$key;
+						}else{
+							$post_reward_data_template['claim_url'] = "";
 						}
                         $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $claimed_voucher);
                         $post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $claimed_voucher);
