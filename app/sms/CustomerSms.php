@@ -1421,6 +1421,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 	
+	public function externalVoucher($data){
+
+		$label = 'ExternalVoucher-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+	}
+	
 	public function common($label,$to,$data,$delay = 0){
 
 		try{

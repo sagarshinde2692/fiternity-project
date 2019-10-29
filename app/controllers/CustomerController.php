@@ -9101,8 +9101,11 @@ class CustomerController extends \BaseController {
     					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
     
 					} */
-					
-					$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
+					if(!empty($voucher_category['flags']['instant_manual_redemption'])){
+						$voucherAttached = $this->utilities->assignInstantManualVoucher($customer, $voucher_category);
+					}else{
+						$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
+					}
 					// Log::info('before adding fitcash-> voucher_catageory', $voucher_category);
 					// Log::info('before adding fitcash-> customer_id', $customer_id);	
 					
@@ -9124,8 +9127,14 @@ class CustomerController extends \BaseController {
 						// 	$customer->corporate_rewards = $corporate_rewards;
 						// }
 						// else {
-							$milestones[$voucher_category['milestone']-1]['voucher'] = !empty($milestones[$voucher_category['milestone']-1]['voucher']) ? $milestones[$voucher_category['milestone']-1]['voucher'] : [];
-							array_push($milestones[$voucher_category['milestone']-1]['voucher'], $voucherAttached); 
+							if(!empty($voucher_category['flags']['instant_manual_redemption'])){
+								$milestones[$voucher_category['milestone']-1]['claim_voucher'] = !empty($milestones[$voucher_category['milestone']-1]['claim_voucher']) ? $milestones[$voucher_category['milestone']-1]['claim_voucher'] : [];
+								array_push($milestones[$voucher_category['milestone']-1]['claim_voucher'], $voucherAttached);
+							}else{
+								$milestones[$voucher_category['milestone']-1]['voucher'] = !empty($milestones[$voucher_category['milestone']-1]['voucher']) ? $milestones[$voucher_category['milestone']-1]['voucher'] : [];
+								array_push($milestones[$voucher_category['milestone']-1]['voucher'], $voucherAttached);
+							}
+
 							$loyalty = $customer->loyalty;
 							$loyalty['milestones'] = $milestones;
 							$customer->loyalty = $loyalty;
@@ -9169,9 +9178,14 @@ class CustomerController extends \BaseController {
             if(!empty($voucher_category['email_text'])){
                 $resp['voucher_data']['email_text']= $voucher_category['email_text'];
             }
-            $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
+			$resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
+			
+			if(!empty($voucher_category['flags'])){
+				$resp['voucher_data']['flags'] = $voucherAttached['flags'];
+			}
+
             if(!empty($communication)){
-				$redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],),Config::get('app.queue'));
+				$redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],'customer_phone' => $customer['contact_no'],),Config::get('app.queue'));
             }
 
             return $resp;
@@ -9923,7 +9937,12 @@ class CustomerController extends \BaseController {
 
         try{
 			Log::info("voucherCommunication customermailer");
-            $this->customermailer->externalVoucher($data);
+			if(!empty($data['flags']['instant_manual_redemption'])){
+				$this->customersms->externalVoucher($data);
+			}else{
+				$this->customermailer->externalVoucher($data);
+			}
+            
         }catch(Exception $e){
             Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);            
         }
