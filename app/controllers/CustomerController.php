@@ -9743,14 +9743,12 @@ class CustomerController extends \BaseController {
                         $post_reward_data_template['button_title'] = "View";
 
                         if(in_array($this->device_type, ['ios']) || in_array($this->device_type, ['android']) && $this->app_version >= 5.12){
-
-							if(!empty($instant_manual_redemption)){
-								$post_reward_data_template['claim_message'] = "will get back to you post validating your check-in data";
-							}else{
-								unset($post_reward_data_template['claim_message']);
-							}
-                            
-                        }
+							unset($post_reward_data_template['claim_message']);
+						}
+						
+						if(!empty($instant_manual_redemption)){
+							$post_reward_data_template['block_message'] = "will get back to you post validating your check-in data";
+						}
 
                         $post_reward_template['data'][] = $post_reward_data_template;
 
