@@ -9706,31 +9706,48 @@ class CustomerController extends \BaseController {
             
             $post_reward_template['_id'] = $key;
             // return $milestone_no;
-            $claimed_vouchers = [];
+			$claimed_vouchers = [];
+			$manual_claimed_vouchers = [];
             $milestone_claim_count = 1;
             if(!empty($voucher_categories_map[$milestone['milestone']])){
                 
                 $claimed_vouchers =  !empty($customer_milestones[$milestone['milestone']-1]['voucher']) ? $customer_milestones[$milestone['milestone']-1]['voucher'] : [];
+				$manual_claimed_vouchers =  !empty($customer_milestones[$milestone['milestone']-1]['claim_voucher']) ? $customer_milestones[$milestone['milestone']-1]['claim_voucher'] : [];
+				
+				$claimed_vouchers = array_merge($claimed_vouchers, $manual_claimed_vouchers);
+
                 $claimed_voucher_categories = [];
                 
                 if(!empty($claimed_vouchers)){
 
                     foreach($claimed_vouchers as $key => $claimed_voucher){
                         $claimed_voucher = (array)$claimed_voucher;
-                        
+						$instant_manual_redemption = false;
+						if(!empty($claimed_voucher['flags']['instant_manual_redemption'])){
+							$instant_manual_redemption = true;
+						}
+
                         unset($claimed_voucher['flags']);
                         $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
                         $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $claimed_voucher);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $claimed_voucher);
-                        $post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $claimed_voucher);
-                        $post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$claimed_voucher['_id']."?milestone=".$milestone['milestone']."&index=".$key;
+						$post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $claimed_voucher);
+						if(empty($instant_manual_redemption)){
+							$post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$claimed_voucher['_id']."?milestone=".$milestone['milestone']."&index=".$key;
+						}
                         $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $claimed_voucher);
                         $post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $claimed_voucher);
                         $post_reward_data_template['claim_enabled'] = true;
                         $post_reward_data_template['button_title'] = "View";
 
                         if(in_array($this->device_type, ['ios']) || in_array($this->device_type, ['android']) && $this->app_version >= 5.12){
-                            unset($post_reward_data_template['claim_message']);
+
+							if(!empty($instant_manual_redemption)){
+								$post_reward_data_template['claim_message'] = "will get back to you post validating your check-in data";
+							}else{
+								unset($post_reward_data_template['claim_message']);
+							}
+                            
                         }
 
                         $post_reward_template['data'][] = $post_reward_data_template;
