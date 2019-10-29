@@ -412,6 +412,10 @@ class Service extends \Basemodel{
 				   //unset($value['remarks']);
 				}
 
+				if(empty($value['flags']['onepass_attachment_type'])) {
+					unset($value['combo_pass_id']);
+				}
+
 				if(!empty($value['flags']['onepass_attachment_type']) && !empty($value['combo_pass_id'])) {
 					$pass 	= 	Pass::where('pass_id', $value['combo_pass_id'])->first();
 					$value['pass_details'] = [
