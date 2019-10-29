@@ -9665,8 +9665,15 @@ class CustomerController extends \BaseController {
             $post_register['milestones']['subheader'] = "You have completed all your milestones";
         }
 
+		$fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year',$customer['loyalty']['start_date']->sec));
+		$current_date = date('Y-m-d');
 
-        $post_register['milestones']['footer'] = strtr($post_register['milestones']['footer'], ['$last_date'=>date('d M Y', strtotime('+1 year',$customer['loyalty']['start_date']->sec))]);
+		if($fitsquad_expiery_date < $current_date){
+			$post_register['milestones']['footer'] = "Your Fitsquad has been expired";
+		}else{
+			$post_register['milestones']['footer'] = strtr($post_register['milestones']['footer'], ['$last_date'=>date('d M Y', strtotime('+1 year',$customer['loyalty']['start_date']->sec))]);
+		}
+
         if($checkins){
             unset($post_register['past_check_in']['subheader']);
             $post_register['past_check_in']['header'] = Config::get('loyalty_screens.past_check_in_header_text');
@@ -9822,7 +9829,11 @@ class CustomerController extends \BaseController {
 
                             }
 
-                            !isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
+							!isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
+
+							if($fitsquad_expiery_date < $current_date){
+								$post_reward_data_template['claim_enabled'] = false;
+							}
 
                         }else{
                             $post_reward_data_template['claim_enabled'] = false;
