@@ -3121,7 +3121,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(!empty($order['combo_pass_id'])){
+            if(!empty($order['combo_pass_id']) && !empty($order['ratecard_flags']['onepass_attachment_type'])){
                 $complementry_pass_purchase = Queue::connection('redis')->push(
                     'PassController@passCaptureAuto', 
                     array(
@@ -4680,7 +4680,7 @@ class TransactionController extends \BaseController {
         $data['duration_type'] = (isset($ratecard['duration_type'])) ? $ratecard['duration_type'] : "";
         $data['validity'] = (isset($ratecard['validity'])) ? $ratecard['validity'] : "";
         $data['validity_type'] = (isset($ratecard['validity_type'])) ? $ratecard['validity_type'] : "";
-        if((isset($ratecard['combo_pass_id']))) {
+        if(!empty($ratecard['flags']['onepass_attachment_type']) && (isset($ratecard['combo_pass_id']))) {
             $data['combo_pass_id'] = $ratecard['combo_pass_id'];
         }
 
@@ -4945,7 +4945,7 @@ class TransactionController extends \BaseController {
             
         // }
 
-        if(!empty($ratecard['combo_pass_id'])){
+        if(!empty($ratecard['flags']['onepass_attachment_type']) && !empty($ratecard['combo_pass_id'])){
             $data['combo_pass_id'] = $ratecard['combo_pass_id'];
         }
 
