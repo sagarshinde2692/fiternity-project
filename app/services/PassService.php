@@ -1052,7 +1052,7 @@ class PassService {
         if(!empty($data['order_id'])) {
             $data['order_id'] = intval($data['order_id']);
         }
-        $order = Order::where('status', '0')->where('pass.payment_gateway', 'payu')->where('_id', $data['order_id'])->first();
+        $order = Order::where('status', '0')->where('_id', $data['order_id'])->first();
         
         if(empty($order)){
             return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
