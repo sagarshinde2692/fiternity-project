@@ -1078,7 +1078,7 @@ class PaymentGatewayController extends \BaseController {
 		Log::info("execute paymet res :::   ", [Response::json($response)]);
 		
 		if(!empty($txnid)) {
-			$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','schedule_date','type'])->toArray();
+			$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','schedule_date','type', 'device_type'])->toArray();
 		}
 
 		if($response['status'] == 200){
@@ -1098,7 +1098,7 @@ class PaymentGatewayController extends \BaseController {
 					
 					// Order::where('txnid', $txnid)->update(['parent_payment_id_paypal' => $parent_payment_id, "payment_id_paypal" => $payment_id]);
 					if(empty($order)) {
-						$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','schedule_date','type'])->toArray();
+						$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','schedule_date','type', 'device_type'])->toArray();
 					}
 					$fin_arr = array(
 						"order_id" => $order['_id'],
