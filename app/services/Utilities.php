@@ -7702,6 +7702,7 @@ Class Utilities {
         $new_voucher['amount'] = $voucher_category['amount'];
         $new_voucher['claim_date'] = new \MongoDate();
         $new_voucher['selected_voucher'] = $voucher_category['_id'];
+        $new_voucher['claim_voucher'] = true;
         $new_voucher['milestone'] = !empty($voucher_category['milestone']) ? $voucher_category['milestone'] : null;
         
         if(isset($voucher_category['flags'])){

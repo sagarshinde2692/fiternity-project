@@ -114,37 +114,46 @@ Route::filter('csrf', function()
 
 Route::filter('validatetoken',function(){
 
-    $data = Request::header('Authorization');
-
-    if(isset($data) && !empty($data)){
-        $jwt_token  =   $data;
-        $jwt_key    =   Config::get('app.jwt.key');
-        $jwt_alg    =   Config::get('app.jwt.alg');
-
-        try{
-            if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
-                return Response::json(array('status' => 400,'message' => 'User logged out'),400);
-            }
-            $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-            if(!empty($decoded)){
-                $GLOBALS['decoded_token'] = $decoded;
-            }
-        }catch(DomainException $e){
-            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
-        }catch(ExpiredException $e){
-            JWT::$leeway = (86400*565);
-
-            $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-            // Log::info("Yes4");
-            // return $decoded;
-            // return Response::json(array('status' => 400,'message' => 'Token expired'),400);
-        }catch(SignatureInvalidException $e){
-            return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
-        }catch(Exception $e){
+    if(isset($_GET['apikey'])){
+        $apikey = "askjbLKNknsdnksd9";
+        $get_apikey = $_GET['apikey'];
+        if($apikey != $get_apikey){
             return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
         }
     }else{
-        return Response::json(array('status' => 400,'message' => 'Empty token or token should be string'),400);
+
+        $data = Request::header('Authorization');
+
+        if(isset($data) && !empty($data)){
+            $jwt_token  =   $data;
+            $jwt_key    =   Config::get('app.jwt.key');
+            $jwt_alg    =   Config::get('app.jwt.alg');
+
+            try{
+                if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
+                    return Response::json(array('status' => 400,'message' => 'User logged out'),400);
+                }
+                $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+                if(!empty($decoded)){
+                    $GLOBALS['decoded_token'] = $decoded;
+                }
+            }catch(DomainException $e){
+                return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+            }catch(ExpiredException $e){
+                JWT::$leeway = (86400*565);
+
+                $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+                // Log::info("Yes4");
+                // return $decoded;
+                // return Response::json(array('status' => 400,'message' => 'Token expired'),400);
+            }catch(SignatureInvalidException $e){
+                return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
+            }catch(Exception $e){
+                return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+            }
+        }else{
+            return Response::json(array('status' => 400,'message' => 'Empty token or token should be string'),400);
+        }
     }
 
 });

@@ -9065,8 +9065,7 @@ class CustomerController extends \BaseController {
 		
 	}
 
-	public function claimExternalCoupon($_id=null){
-
+	public function claimExternalCoupon($_id=null, $customer_id=null, $key=null){
 		$data = Input::json()->all();
 		
 		if(!$_id){
@@ -9074,11 +9073,14 @@ class CustomerController extends \BaseController {
 		}
 		
 		$jwt_token = Request::header('Authorization');
-		if(!empty($jwt_token)){
+		if(!empty($jwt_token) || !empty($customer_id)){
+			
+			if(empty($customer_id)){
+				$decoded = decode_customer_token($jwt_token);
+				$customer_id = $decoded->customer->_id;
+			}
 
-			$decoded = decode_customer_token($jwt_token);
-			$customer_id = $decoded->customer->_id;
-			$customer = Customer::find($customer_id);
+			$customer = Customer::find((int)$customer_id);
 			$milestones = $this->getCustomerMilestones($customer);
 
 
@@ -9101,7 +9103,7 @@ class CustomerController extends \BaseController {
     					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
     
 					} */
-					if(!empty($voucher_category['flags']['instant_manual_redemption'])){
+					if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
 						$voucherAttached = $this->utilities->assignInstantManualVoucher($customer, $voucher_category);
 					}else{
 						$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
@@ -9128,7 +9130,7 @@ class CustomerController extends \BaseController {
 						// 	$customer->corporate_rewards = $corporate_rewards;
 						// }
 						// else {
-							if(!empty($voucher_category['flags']['instant_manual_redemption'])){
+							if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
 								$milestones[$voucher_category['milestone']-1]['claim_voucher'] = !empty($milestones[$voucher_category['milestone']-1]['claim_voucher']) ? $milestones[$voucher_category['milestone']-1]['claim_voucher'] : [];
 								array_push($milestones[$voucher_category['milestone']-1]['claim_voucher'], $voucherAttached);
 							}else{
@@ -9183,6 +9185,10 @@ class CustomerController extends \BaseController {
 			
 			if(!empty($voucher_category['flags'])){
 				$resp['voucher_data']['flags'] = $voucherAttached['flags'];
+			}
+
+			if(!empty($key)){
+				$resp['voucher_data']['key'] = $key;
 			}
 
             if(!empty($communication)){
@@ -9723,7 +9729,7 @@ class CustomerController extends \BaseController {
                     foreach($claimed_vouchers as $key => $claimed_voucher){
                         $claimed_voucher = (array)$claimed_voucher;
 						$instant_manual_redemption = false;
-						if(!empty($claimed_voucher['flags']['instant_manual_redemption'])){
+						if(!empty($claimed_voucher['flags']['instant_manual_redemption']) && !empty($claimed_voucher['claim_voucher'])){
 							$instant_manual_redemption = true;
 						}
 
@@ -9955,7 +9961,7 @@ class CustomerController extends \BaseController {
 
         try{
 			Log::info("voucherCommunication customermailer");
-			if(!empty($data['resp']['flags']['instant_manual_redemption'])){
+			if(!empty($data['resp']['flags']['instant_manual_redemption']) && empty($data['resp']['key'])){
 				$this->customersms->externalVoucher($data);
 			}else{
 				$this->customermailer->externalVoucher($data);
