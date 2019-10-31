@@ -8815,9 +8815,16 @@ class FindersController extends \BaseController {
 						];
 
 						if(!empty($attach_pass_template['title'])){
-							$attach_pass_template['title']= strtr($attach_pass_template['title'], $temp_data);
+							$attach_pass_template['title'] = strtr($attach_pass_template['title'], $temp_data);
+							$ratecard['remarks'] = $attach_pass_template['title'];
+							unset($attach_pass_template['title']);
 						}
 
+						if(!empty($attach_pass_template['background_color'])){
+							$ratecard['background_color'] = $attach_pass_template['background_color'];
+							unset($attach_pass_template['background_color']);
+						}
+						
 						$attach_pass_template['header'] = strtr($attach_pass_template['header'], $temp_data);
 						$attach_pass_template['subheader'] = strtr($attach_pass_template['subheader'], $temp_data);
 
@@ -8831,6 +8838,8 @@ class FindersController extends \BaseController {
 						}
 
 						$ratecard['attached_pass_template'] = $attach_pass_template;
+						unset($ratecard['validity']);
+						unset($ratecard['validity_type']);
 					}
 				}
 			}
