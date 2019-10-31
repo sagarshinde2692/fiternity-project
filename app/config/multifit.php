@@ -28,7 +28,7 @@ return array(
                 ]
             ],
             "remarks" => [
-                "Your Complimentary OnePass RED gives you access to a total of pass_details_total_sessions",
+                "&bull; Your Complimentary OnePass RED gives you access to a total of pass_details_total_sessions",
             ]
             
         ],
@@ -40,7 +40,7 @@ return array(
             "data" => [
                 [
                     "title" => "Why upgrade to Membership Plus?",
-                    "text" => "By upgrading to Membership Plus you can enjoy access to mulitple fitness activities like swimming at 5-star hotels, MMA, dance, yoga classes and more across India"
+                    "text" => "By upgrading to <b>Membership Plus</b> you can enjoy access to mulitple fitness activities like swimming at 5-star hotels, MMA, dance, yoga classes and more across India"
                 ],
                 [
                     "title" => "What is OnePass RED?",
@@ -48,8 +48,8 @@ return array(
                 ]
             ],
             "remarks" => [
-                "Your Membership Plus OnePass RED will be valid for pass_details_duration_text and will give you access to a total of pass_details_total_sessions.",
-                "Membership Plus OnePass RED can be used to book a maximum of pass_details_monthly_total_sessions_text in a month."
+                "&bull; Your Membership Plus <b>OnePass RED</b> will be valid for pass_details_duration_text and will give you access to a total of pass_details_total_sessions.",
+                "&bull; Membership Plus OnePass RED can be used to book a maximum of pass_details_monthly_total_sessions_text in a month."
             ]
         ],
     
@@ -62,7 +62,7 @@ return array(
             "data" => [
                 [
                     "title" => "What you get in Membership Plus?",
-                    "text" => "With Membership Plus, you get pass_details_duration_text all access OnePass RED along with your membership_duration_text membership"
+                    "text" => "With <b>Membership Plus</b>, you get pass_details_duration_text all access OnePass RED along with your membership_duration_text membership"
                 ],
                 [
                     "title" => "What is OnePass RED?",
@@ -70,8 +70,8 @@ return array(
                 ]
             ],
             "remarks" => [
-                "Your Membership Plus OnePass RED will be valid for pass_details_duration_text and will give you access to a total of pass_details_total_sessions.",
-                "Membership Plus OnePass RED can be used to book a maximum of pass_details_monthly_total_sessions_text in a month."
+                "&bull; Your Membership Plus <b>OnePass RED<b> will be valid for pass_details_duration_text and will give you access to a total of pass_details_total_sessions.",
+                "&bull; Membership Plus OnePass RED can be used to book a maximum of pass_details_monthly_total_sessions_text in a month."
             ]
         ]
     ]
