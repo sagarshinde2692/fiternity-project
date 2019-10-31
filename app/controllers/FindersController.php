@@ -8799,7 +8799,7 @@ class FindersController extends \BaseController {
 			foreach($finder['finder']['services'] as &$service){
 				foreach($service['ratecard'] as &$ratecard){
 					if(!empty($ratecard['flags']['onepass_attachment_type'])){
-						Log::info('attachemebnt:::', [$ratecard['flags']['onepass_attachment_type']]);
+						Log::info('attachemebnt:::', [$ratecard['flags']['onepass_attachment_type'], $service['service_name']]);
 						$attach_pass_template = $template[$ratecard['flags']['onepass_attachment_type']];
 
 						if(empty($attach_pass_template)){
@@ -8807,7 +8807,7 @@ class FindersController extends \BaseController {
 						}
 						
 						$temp_data = [ 
-							'service_name' => $service['name'],
+							'service_name' => $service['service_name'],
 							'vendor_name'=> $finder['finder']['title'],
 							'pass_details_duration_text' => $ratecard['pass_details']['duration_text'],
 							'membership_duration_text' => $ratecard['validity']." ".ucwords($ratecard['validity_type']),
