@@ -1109,7 +1109,7 @@ class PaymentGatewayController extends \BaseController {
 						"error_Message" => "",
 						"service_name" => $order['service_name'],
 						"amount" => $order['amount_customer'],
-						"finder_id" => $order['finder_id'],
+						"finder_id" => (!empty($order['finder_id']))?$order['finder_id']:0,
 						"schedule_date" => (empty($order['schedule_date']))? "" : $order['schedule_date'],
 						"type" => $order['type'],
 						"parent_payment_id_paypal" => $parent_payment_id,
