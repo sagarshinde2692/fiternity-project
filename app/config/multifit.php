@@ -56,7 +56,8 @@ return array(
         ],
     
         "membership_plus" => [
-            "title" => "OnePass RED gives you access to muliple gyms & fitness centres along with your vendor_name membership",
+            "title" => "membership_duration_text service_name Membership + pass_details_duration_text pass_details_total_sessions All Access OnePass Red",
+            "extra_info" => "OnePass RED gives you access to muliple gyms & fitness centres along with your vendor_name membership",
             "background_color" => "#facaa3",
             "header" => "Membership Plus - vendor_name",
             "subheader" => "Lowest price vendor_name membership + pass_details_duration_text All Access OnePass",
