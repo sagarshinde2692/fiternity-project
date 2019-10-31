@@ -374,6 +374,11 @@ Class CustomerReward {
                                 }
                             }
                         }
+
+                        if(!empty($data['diwali_mixed_reward'])){
+                            $mixedreward_content = \MixedRewardContent::where('flags.type', 'membership')->first();
+                        }
+
                         if(!empty($mixedreward_content)){
 							$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 

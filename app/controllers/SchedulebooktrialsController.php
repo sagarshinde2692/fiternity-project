@@ -3116,6 +3116,15 @@ class SchedulebooktrialsController extends \BaseController {
                 $this->findersms->trialAlert($booktrialdata);                
             }
 
+            try{
+                $sch_date = date('Y-m-d',strtotime($booktrialdata['schedule_date']));
+                if(in_array($sch_date, Config::get('app.occasion_dates'))){
+                    $this->customersms->occasionDaySms($booktrialdata);
+                }
+            }catch(Exception $e){
+                Log::info("occasionDaySms error");
+            } 
+
         }catch(\Exception $exception){
 
             Log::error($exception);
@@ -8825,6 +8834,8 @@ class SchedulebooktrialsController extends \BaseController {
         if(!empty($booktrial)){
 
             $time_check = abs(strtotime($booktrial['schedule_date_time']) - strtotime('now') )   <=  $time_in_seconds ? true : false;
+            $time_check_end = abs(strtotime(date('d-m-Y', strtotime($booktrial['schedule_date_time'])).' '.$booktrial['schedule_slot_end_time']) - strtotime('now') )   <=  $time_in_seconds ? true : false;
+            $time_check = $time_check || $time_check_end;
             Log::info('time check::', [strtotime($booktrial['schedule_date_time']), strtotime('now') , abs(strtotime($booktrial['schedule_date_time']) - strtotime('now') ), $time_in_seconds, $time_check]);
         }
 

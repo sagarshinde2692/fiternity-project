@@ -2590,6 +2590,10 @@ class TransactionController extends \BaseController {
                             $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
                             array_set($data, 'reward_type', $value->reward_type);
 
+                            if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity_order_id']) && empty($order['studio_extended_validity_order_id']) ){
+                                array_set($data, 'diwali_mixed_reward', true);
+                            }
+
                             $reward_type = $value->reward_type;
 
                         }
@@ -3117,7 +3121,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(!empty($order['combo_pass_id'])){
+            if(!empty($order['combo_pass_id']) && !empty($order['ratecard_flags']['onepass_attachment_type'])){
                 $complementry_pass_purchase = Queue::connection('redis')->push(
                     'PassController@passCaptureAuto', 
                     array(
@@ -3129,6 +3133,12 @@ class TransactionController extends \BaseController {
                 Log::info('inside schudling complementary pass purchase redis id:', [$complementry_pass_purchase]);
 
                 $order->update(['schedule_complementry_pass_purchase_redis_id'=>$complementry_pass_purchase]);
+            }
+
+            if(!empty($order['diwali_mixed_reward'])){
+                $hamper_data = $this->utilities->getVoucherDetail($order->toArray());
+                $this->customermailer->diwaliMixedReward($hamper_data);
+                $this->customersms->diwaliMixedReward($order->toArray());
             }
 
             Log::info("successCommon returned");
@@ -4670,7 +4680,7 @@ class TransactionController extends \BaseController {
         $data['duration_type'] = (isset($ratecard['duration_type'])) ? $ratecard['duration_type'] : "";
         $data['validity'] = (isset($ratecard['validity'])) ? $ratecard['validity'] : "";
         $data['validity_type'] = (isset($ratecard['validity_type'])) ? $ratecard['validity_type'] : "";
-        if((isset($ratecard['combo_pass_id']))) {
+        if(!empty($ratecard['flags']['onepass_attachment_type']) && (isset($ratecard['combo_pass_id']))) {
             $data['combo_pass_id'] = $ratecard['combo_pass_id'];
         }
 
@@ -4935,7 +4945,7 @@ class TransactionController extends \BaseController {
             
         // }
 
-        if(!empty($ratecard['combo_pass_id'])){
+        if(!empty($ratecard['flags']['onepass_attachment_type']) && !empty($ratecard['combo_pass_id'])){
             $data['combo_pass_id'] = $ratecard['combo_pass_id'];
         }
 
@@ -6200,8 +6210,12 @@ class TransactionController extends \BaseController {
             unset($booking_details_data['service_duration']);  
         }
 
-        if(!empty($data['type']) && $data['type'] == 'memberships'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'50% off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5','position'=>$position++];
+        if(!empty($data['type']) && $data['type'] == 'memberships' && empty($extended_validity_order_id) && empty($studio_extended_validity_order_id)){
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 25% Off On Memberships\nUse Code: FITDVLI",'position'=>$position++];
+
+            if($data['ratecard_amount'] >= 8000){
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 25% Off On Memberships + First Hand Access To Exclusive Marvel Fitness Merchandise + Gift Vouchers From Myntra, The Label Life, EaseMyTrip & More\nUse Code: FITDVLI",'position'=>$position++];
+            }
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
@@ -8080,7 +8094,7 @@ class TransactionController extends \BaseController {
                     'value' => 'Rs. '.(string)$data['amount_payable']
                 ];
                 $result['finder_name'] = "ONEPASS";
-                $result['finder_location'] = strtoupper($pass['pass_type']);
+                $result['finder_location'] = (!empty($pass['pass_type']) && $pass['pass_type']!='hybrid')?strtoupper($pass['pass_type']):strtoupper($pass['branding']);
             }
 
         }else{

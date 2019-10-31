@@ -31,7 +31,7 @@ class PassService {
         $this->device_id = !empty(Request::header('Device-Id'))? Request::header('Device-Id'): null;
     }
 
-    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null){
+    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null, $source=null){
         
         $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('pass_type', '!=', 'hybrid');
 
@@ -96,12 +96,17 @@ class PassService {
         if(!empty($trialPurchased['status']) && $trialPurchased['status']) {
             $passList = $passList->where('type','!=', 'trial');
         }
-        
-        if(!empty($pass_type)) {
-            $passList = $passList->whereIn('show_on_front', [null, true])->where('pass_type', $pass_type);
-        }
 
-        $passList = $passList->whereIn('show_on_front', [null, true])->where('pass_type', '!=', 'hybrid')->orderBy('duration')->get();
+        if(!empty($source)) {
+            $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('corporate', $source)->orderBy('duration')->get();
+        }
+        else {
+            $passList = $passList->whereIn('show_on_front', [null, true])->where('pass_type', '!=', 'hybrid')->where('corporate', 'exists', false);
+            if(!empty($pass_type)) {
+                $passList = $passList->where('pass_type', $pass_type);
+            }
+            $passList = $passList->orderBy('duration')->get();
+        }
         
 
         foreach($passList as &$pass) {
@@ -141,23 +146,23 @@ class PassService {
                 }
             }
 
-            $passDetails['text'] = '(Additional 15% Off)';
+            $passDetails['text'] = "(Additional 25% Off + \n Fitaka Diwali Hamper worth INR 9000)";
 
-            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 90){
-                $passDetails['text'] = "(Additional 15% off \nor 3 Weeks Extension)";
-            }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 180){
-                $passDetails['text'] = "(Additional 15% off \nor 1.5 Months Extension)";
-            }else if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 360){
-                $passDetails['text'] = "(Additional 15% off \nor 3 Months Extension)";
+            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15){
+                $passDetails['text'] = "(Additional 25% Off)";
+            }
+
+            if(!empty($source) && $source=='sodexo') {
+                $passDetails['text'] = "(".$pass['total_sessions']." sessions pass)";
             }
 
             unset($passDetails['cashback']);
 
             unset($passDetails['extra_info']);
 
-            if($pass['unlimited_access']) {
-                $passDetails['price'] = 'Rs. '.$pass['price'];
-                $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
+            $passDetails['price'] = 'Rs. '.$pass['price'];
+            $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
+            if(($pass['pass_type']=='red') || ($pass['pass_type']=='hybrid' && $pass['branding']=='red')) {
                 if(!empty($device) && in_array($device, ['android', 'ios'])) {
                     $response['app_passes'][0]['offerings']['ratecards'][] = $passDetails;
                 }
@@ -165,8 +170,6 @@ class PassService {
                     $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
                 }
             } else{
-                $passDetails['price'] = 'Rs. '.$pass['price'];
-                $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
                 if(!empty($device) && in_array($device, ['android', 'ios'])) {
                     $response['app_passes'][1]['offerings']['ratecards'][] = $passDetails;
                 }
@@ -177,8 +180,8 @@ class PassService {
         }
         if(!empty($device) && in_array($device, ['android', 'ios'])) {
             $response['passes'] = $response['app_passes'];
-            unset($response['app_passes']);
         }
+        unset($response['app_passes']);
         // $passConfig = Config::get('pass');
         // $passCount = Order::active()->where('type', 'pass')->count();
         // if($passCount>=$passConfig['total_available']) {
@@ -207,7 +210,12 @@ class PassService {
             }
 
         }
-        $data['customer_source'] = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
+        if(!empty($data['customer_source']) && $data['customer_source']=='sodexo'){
+            $data['customer_source'] = 'sodexo';
+        }
+        else {
+            $data['customer_source'] = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
+        }
         
         $data['type'] = "pass";
         $data['status'] = "0";
@@ -291,6 +299,13 @@ class PassService {
         
         $data['order_id'] = $data['_id'];
         $data['orderid'] = $data['_id'];
+
+        if(empty($data['customer_source']) || $data['customer_source']!='sodexo'){
+            $rewardinfo = $this->addRewardInfo($data);
+		}
+        if(!empty($rewardinfo)){
+            $data = array_merge($data, $rewardinfo);
+        }
         
         if(!empty($data['pass']['payment_gateway']) && $data['pass']['payment_gateway'] == 'payu'){
             
@@ -543,6 +558,7 @@ class PassService {
 
         if(empty($order['amount']) && empty($order['status'])){
             $order->status ='1';
+            $order->onepass_sessions_total = (!empty($order['pass']['classes']))?$order['pass']['classes']:-1;
             $order->update();
         }
         
@@ -1168,7 +1184,8 @@ class PassService {
             // );
             $success_template['pass']['type'] = '';//strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
-            $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
+            // $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
+            $success_template['pass']['pass_type'] =  ($order['pass']['pass_type']!='hybrid')?$order['pass']['pass_type']:$order['pass']['branding'];
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
                 [
@@ -1188,6 +1205,10 @@ class PassService {
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
                 $success_template['offer_success_msg'] = "Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass";
             }
+
+            if(!empty($order['diwali_mixed_reward'])){
+                $success_template['offer_success_msg'] = "Congratulations on your purchase. Your Fitaka Diwali Hamper will reach your inbox soon. Happy Fitwali Diwali";
+            }
         }
 
 
@@ -1201,6 +1222,14 @@ class PassService {
             //     $item = $utilities->bullet()." ".$item;
             // }
             unset($success_template['info']['app_data']);
+            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
+                $success_template['subline'] .= 'Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
+            }
+
+            if(!empty($order['diwali_mixed_reward'])){
+                $success_template['subline'] .= "\nCongratulations on your purchase. Your Fitaka Diwali Hamper will reach your inbox soon. Happy Fitwali Diwali";
+            }
+            
             $profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $order['customer_id']);
 
             if(!empty($profile_completed)){
@@ -1405,6 +1434,7 @@ class PassService {
             "customer_name" => $data['customer_name'],
             "customer_phone" => $data['customer_phone'],
             "customer_email" => $data['customer_email'],
+            "customer_source" => $data['customer_source'],
             "type" => $data['type'],
             "customer_email" => $data['customer_email'],
             "customer_id" => $data['customer_id'],
@@ -1442,6 +1472,13 @@ class PassService {
         }
         else{
             $emailSent = $data['communication']['email'];
+        }
+
+        if(!empty($data['diwali_mixed_reward'])){
+            Log::info("diwali_mixed_reward");
+            $hamper_data = $utilities->getVoucherDetail($pass_data);
+            $mail->diwaliMixedReward($hamper_data);
+            $sms->diwaliMixedReward($pass_data);
         }
 
         return array(
@@ -1573,15 +1610,15 @@ class PassService {
             ]
         ];
 
-        if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [90,180,360])){
+        if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
             $resp[] = [
                    'field' => '',
-                   'value' => 'Use Code: MORE25 To Get Free Extension or Use Code: BIG15 To Get Additional 15% Off',
+                   'value' => "Get 30% Off + Additional 25% Off. Use Code: DVLIPASS\n22nd-31st October",
             ];
         }else {
             $resp[] = [
                 'field' => '',
-                'value' => 'Get 30% Off + Extra 15% Off Use Code: BIG15',
+                'value' => "Get 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Puma, Myntra, O2 Spa, HealthifyMe, Lenskart  Use Code: DVLIPASS\n22nd-31st October",
             ];
         }
 
@@ -2338,11 +2375,17 @@ class PassService {
     public function addMonthlyBookingCounter(&$data){
 
         if($data['pass']['pass_type']== 'hybrid'){
-            $months_count = (int) ($data['pass']['duration']/30);
+            $actual_month_count = ($data['pass']['duration']/30);
+            $months_count = ceil($actual_month_count);
             $monthly_total_sessions_used= [];
             $start_date = strtotime(date('Y-m-d H:i:s', $data['start_date']->sec));
             //$end_date = strtotime('+30 days', $start_date);
-            $end_date = strtotime('+30 days', $start_date);
+            if($actual_month_count<1) {
+                $end_date = $data['end_date']->sec;
+            }
+            else {
+                $end_date = strtotime('+30 days', $start_date);
+            }
             for($i=0; $i< $months_count; $i++){
 
                 
@@ -2356,6 +2399,25 @@ class PassService {
                 $end_date = strtotime('+30 days', $start_date);
             }
             $data['monthly_total_sessions_used'] = $monthly_total_sessions_used;
+        }
+    }
+
+    public function addRewardInfo($data = null){
+        try{
+            $rewardinfo = array();
+            if(!empty($data['pass'])){
+                $pass = $data['pass'];
+
+                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15)){
+                    $rewardinfo['diwali_mixed_reward'] = true;
+                    $rewardinfo['reward_ids'] = [79];
+                }
+
+            }
+            return $rewardinfo;
+
+        }catch (Exception $e) {
+            Log::info('Error : '.$e->getMessage());
         }
     }
 }

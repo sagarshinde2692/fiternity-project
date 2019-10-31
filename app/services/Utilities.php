@@ -6390,6 +6390,15 @@ Class Utilities {
                 ->orderBy('_id', 'asc')
                 ->first();
 
+        if(!empty($voucher_category->flags['diwali_mix_reward'])){
+            $already_assigned_voucher = \LoyaltyVoucher::
+                where('milestone', $voucher_category->milestone)
+                ->where('selected_voucher', $voucher_category->_id)
+                ->where('customer_id', $customer['_id'])
+                ->orderBy('_id', 'asc')
+                ->first();
+        }
+
         if($already_assigned_voucher){
             // Log::info("already_assigned_voucher");
             return $already_assigned_voucher;
@@ -6444,6 +6453,14 @@ Class Utilities {
 
         if(isset($voucher_category['flags'])){
             $new_voucher->flags = $voucher_category['flags'];
+        }
+
+        if(!empty($voucher_category['note'])){
+            $new_voucher->note = $voucher_category['note'];
+        }
+
+        if(!empty($voucher_category['title'])){
+            $new_voucher->title = $voucher_category['title'];
         }
 
         $new_voucher->update();
@@ -7641,6 +7658,14 @@ Class Utilities {
 
         if(isset($voucher_category['link'])){
             $voucher_data['link'] = $voucher_category['link'];
+        }
+
+        if(isset($voucher_category['note'])){
+            $voucher_data['note'] = $voucher_category['note'];
+        }
+
+        if(isset($voucher_category['title'])){
+            $voucher_data['title'] = $voucher_category['title'];
         }
 
         if(!empty($voucher_category['flags']['diet_plan'])){
@@ -10083,7 +10108,7 @@ Class Utilities {
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
                 
-                $slot['order_summary']['header'] = $orderSummary['header']." \n\nGet Fit Go Sale\n\nGet 50% Off On Workout Sessions. Use Code: PPS";
+                $slot['order_summary']['header'] = $orderSummary['header']."";
 
                 if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
                     $slot['order_summary']['header'] = $orderSummary['header'];
@@ -10104,7 +10129,7 @@ Class Utilities {
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
-                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nGet Fit Go Sale\n\nGet 50% Off On Workout Sessions. Use Code: PPS";
+                    $sd['order_summary']['header'] = $orderSummary['header']."";
 
                     if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
                         $sd['order_summary']['header'] = $orderSummary['header'];
@@ -10747,5 +10772,36 @@ Class Utilities {
     
     public function getMfpPrice($price_text, $original_price){
         return $price_text == Config::get('app.onepass_free_string') ? Config::get('app.onepass_free_string') : "₹ ".$original_price;
+    }
+
+    public function getVoucherDetail($data = null){
+        Log::info("getVoucherDetail");
+        $type = $data['type'];
+        $customer_id = $data['customer_id'];
+        $customer = Customer::find($customer_id);
+        $query = \VoucherCategory::active()->where('flags.diwali_mix_reward', true);
+
+        if(!empty($type) && $type == "pass"){
+            $query->where('flags.type', $type);
+            $amount = "9000";
+        }else if(!empty($type) && ($type == "membership" || $type == "memberships")){
+            $query->where('flags.type', "membership");
+            $amount = "6500";
+        }
+
+        $voucher_categories = $query->get();
+        $vouchers_arr = array(); 
+        $fin_vouchers_arr = array();
+        $fin_vouchers_arr['total_hamper_amount'] = $amount;
+        $fin_vouchers_arr['customer_email'] = $customer['email'];
+        $fin_vouchers_arr['customer_name'] = $customer['name'];
+        if(!empty($voucher_categories)){
+            foreach($voucher_categories as $voucher_category){
+                $vouchers_arr= $this->assignVoucher($customer, $voucher_category);
+                $fin_vouchers_arr[$voucher_category['name']] = !empty($vouchers_arr) ? $vouchers_arr : array();
+            }
+        }
+
+        return $fin_vouchers_arr;
     }
 }

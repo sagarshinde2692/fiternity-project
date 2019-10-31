@@ -101,7 +101,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Extra 15% Off (Code: BIG15) or Free 3 Months Extension (Code: MORE25)\nOffer Expires On 21st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Extra 15% Off (Code: BIG15)\nOffer Expires On 21st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -160,18 +160,16 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
-                <li>Discount of upto 30% off is pre-applied on MRP</li>
-                <li>Free Extension using code MORE25 is applicable as follows:
-                    <br>a) Get 3 month extension on purchase of 1 year OnePass Red
-                    <br>b) Get 1.5 months (45 days) extension on purchase of  6 months OnePass Red
-                    <br>c) Get 3 weeks (22 days) extension on purchase of 3 months OnePass Red</li>
-                <li> The code MORE25 is not applicable on 15 days and 1 month OnePass Red</li>
-                <li> The code MORE25 is not applicable on OnePass Black</li>
-                <li> Code: BIG15 will give the user Additional 15% off upto INR 1500  </li>
+                <li> Discount of upto 30% is pre-applied on MRP</li>
+                <li> Code: DVLIPASS will give the user Additional 25% off</li>
+                <li> Additional 25% off is upto INR 2000 </li>
                 <li> Discount varies across different types of pass</li>
-                <li> You can avail only 1 offer at the time of transaction</li>
                 <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 21st October post which code MORE25 and BIG15 are invalid</li>
+                <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
+                <li> Customer's address will be communicated to Fitternity on call by personal concierge</li>
+                <li> The Fitness Merchandise will be delivered to customer's address by 30th Nov 2019</li>
+                <li> Exclusive Marvel Fitness Merchandise for Membership includes Avengers Gym Bag and Shaker </li>
+                <li> The Fitaka Diwali Hamper will not be available on OnePass Red -15 Days Trial Pass </li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -179,8 +177,7 @@ return [
                 <li>Cashback receivable on the trial subscription of OnePass Red will be added in the Fitternity wallet in the form of FitCash after deducting GST fees.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
                 <li>At select fitness centers available on the OnePass program, users have limited access to work out at the following locations (Applicable to both OnePass Black & OnePass Red Subscription) - </li>
-                <br/> - F45 Training in Juhu  - 8 sessions per month.
-                <br/> - F45 Training in Bandra One BKC - 8 sessions per month.</li>
+                <br/> - F45 Training in Juhu  - 8 sessions per month.</li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on the attendance of workout sessions.</li>
                 <li>In the case of session cancellation or unfulfillment from the service provider’s end, OnePass Red user will get an additional day.</li>
@@ -202,24 +199,21 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li>Discount of upto 30% off is pre-applied on MRP</li>
-                <li>Free Extension using code MORE25 is applicable as follows:
-                    <br>a) Get 3 month extension on purchase of 1 year OnePass Red
-                    <br>b) Get 1.5 months (45 days) extension on purchase of  6 months OnePass Red
-                    <br>c) Get 3 weeks (22 days) extension on purchase of 3 months OnePass Red</li>
-                <li> The code MORE25 is not applicable on 15 days and 1 month OnePass Red</li>
-                <li> The code MORE25 is not applicable on OnePass Black</li>
-                <li> Code: BIG15 will give the user Additional 15% off upto INR 1500  </li>
+                <li> Discount of upto 30% is pre-applied on MRP</li>
+                <li> Code: DVLIPASS will give the user Additional 25% off</li>
+                <li> Additional 25% off is upto INR 2000 </li>
                 <li> Discount varies across different types of pass</li>
-                <li> You can avail only 1 offer at the time of transaction</li>
                 <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 21st October post which code MORE25 and BIG15 are invalid</li>
+                <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
+                <li> Customer's address will be communicated to Fitternity on call by personal concierge</li>
+                <li> The Fitness Merchandise will be delivered to customer's address by 30th Nov 2019</li>
+                <li> Exclusive Marvel Fitness Merchandise for Membership includes Avengers Gym Bag and Shaker </li>
+                <li> The Fitaka Diwali Hamper will not be available on OnePass Red -15 Days Trial Pass </li>
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
                 <li>At select fitness centers available on the OnePass program, users have limited access to work out at the following locations (Applicable to both OnePass Black & OnePass Red Subscription) - </li>
-                <br/> - F45 Training in Juhu  - 8 sessions per month.
-                <br/> - F45 Training in Bandra One BKC - 8 sessions per month.</li>
+                <br/> - F45 Training in Juhu  - 8 sessions per month.</li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on attendance of workout sessions.</li>
                 <li>In case if a customer does not attend the session, the session cannot be reversed or re-booked for the same day.</li>
@@ -243,18 +237,16 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li>Discount of upto 30% off is pre-applied on MRP</li>
-                <li>Free Extension using code MORE25 is applicable as follows:
-                    <br>a) Get 3 month extension on purchase of 1 year OnePass Red
-                    <br>b) Get 1.5 months (45 days) extension on purchase of  6 months OnePass Red
-                    <br>c) Get 3 weeks (22 days) extension on purchase of 3 months OnePass Red</li>
-                <li> The code MORE25 is not applicable on 15 days and 1 month OnePass Red</li>
-                <li> The code MORE25 is not applicable on OnePass Black</li>
-                <li> Code: BIG15 will give the user Additional 15% off upto INR 1500  </li>
+                <li> Discount of upto 30% is pre-applied on MRP</li>
+                <li> Code: DVLIPASS will give the user Additional 25% off</li>
+                <li> Additional 25% off is upto INR 2000 </li>
                 <li> Discount varies across different types of pass</li>
-                <li> You can avail only 1 offer at the time of transaction</li>
                 <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 21st October post which code MORE25 and BIG15 are invalid</li>
+                <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
+                <li> Customer's address will be communicated to Fitternity on call by personal concierge</li>
+                <li> The Fitness Merchandise will be delivered to customer's address by 30th Nov 2019</li>
+                <li> Exclusive Marvel Fitness Merchandise for Membership includes Avengers Gym Bag and Shaker </li>
+                <li> The Fitaka Diwali Hamper will not be available on OnePass Red -15 Days Trial Pass </li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -264,8 +256,7 @@ return [
                 <li>In case of session cancellation or unfulfillment from the service provider’s end, the OnePass Black user will get the session back as well as an additional session.</li>	
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
                 <li>At select fitness centers available on the OnePass program, users have limited access to work out at the following locations (Applicable to both OnePass Black & OnePass Red Subscription) - </li>
-                <br/> - F45 Training in Juhu  - 8 sessions per month.
-                <br/> - F45 Training in Bandra One BKC - 8 sessions per month.</li>
+                <br/> - F45 Training in Juhu  - 8 sessions per month.</li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on the attendance of workout sessions.</li>
                 <li>In the case of session cancellation or unfulfillment from the service provider’s end, OnePass Red user will get an additional day.</li>
@@ -489,7 +480,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "30% Off + Get Extra 15% Off OR Free 3 Months Extension",
+                "text" => "30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000",
                 "button_text" => "Know More"
             ],
         ],
@@ -637,7 +628,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "Get 30% off on OnePass. Buy your OnePass before prices go up!",
+                "text" => "30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000",
                 "button_text" => "Know More"
             ]
         ],
@@ -831,7 +822,7 @@ return [
             "icon" => "https://b.fitn.in/onepass/discount_3x.png",
             "header" => "Exciting OnePass Offers",
             "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
-            "text" => "Get 30% off on OnePass. Buy your OnePass before prices go up!",
+            "text" => "30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000",
         ],
 
         'faq' => [
@@ -961,7 +952,7 @@ return [
             'ratecards' => []
         ],
         'local_pass_remarks' => [
-            'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional FLAT INR 500 Off", // need content
+            'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
             'text' => 'Terms and Conditions',
             "title" =>'Terms and Conditions',
             'url' => $apiUrl.'/passtermscondition?type=unlimited'

@@ -1015,7 +1015,7 @@ class ServiceController extends \BaseController {
 							$dontShow=true;
 					}
     
-					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id, empty($ratecard_price) ? true : false, $ratecard['type'])||(isset($dontShow)&&$dontShow)){
+					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id, empty($ratecard_price) ? true : false, $ratecard['type'], $service['servicecategory_id'])||(isset($dontShow)&&$dontShow)){
 						continue;
 					}
 
@@ -2396,7 +2396,9 @@ class ServiceController extends \BaseController {
 
 			if(!empty($data['service']['slots'])){
 				foreach($data['service']['slots'] as &$sl){
-					$sl['price'] = "₹ ".$sl['price_only'];
+                    if(!empty($sl['price_only'])){
+                        $sl['price'] = "₹ ".$sl['price_only'];
+                    }
 				}
 			}
 		}
