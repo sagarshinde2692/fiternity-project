@@ -8815,14 +8815,14 @@ class FindersController extends \BaseController {
 							'pass_details_monthly_total_sessions_text' => !empty($ratecard['pass_details']['monthly_total_sessions_text']) ? $ratecard['pass_details']['monthly_total_sessions_text'] : '4 sessions'
 						];
 
-						if(!empty($attach_pass_template['title']) && empty($ratecard['remarks'])){
-							$attach_pass_template['title'] = strtr($attach_pass_template['title'], $temp_data);
-							$ratecard['remarks'] = $attach_pass_template['title'];
-							unset($attach_pass_template['title']);
-						}
-						else if(!empty($attach_pass_template['title'])){
-							unset($attach_pass_template['title']);
-						}
+						// if(!empty($attach_pass_template['title']) && empty($ratecard['remarks'])){
+						// 	$attach_pass_template['title'] = strtr($attach_pass_template['title'], $temp_data);
+						// 	$ratecard['remarks'] = $attach_pass_template['title'];
+						// 	unset($attach_pass_template['title']);
+						// }
+						// else if(!empty($attach_pass_template['title'])){
+						// 	unset($attach_pass_template['title']);
+						// }
 
 						if(!empty($attach_pass_template['extra_info'])){
 							$ratecard['extra_info'] = strtr($attach_pass_template['extra_info'], $temp_data);

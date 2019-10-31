@@ -14,7 +14,7 @@ return array(
 
     "attached_pass" => [
         "complementary" => [
-            "title" =>"membership_duration_text service_name Membership+ Complimentary pass_details_duration_text All Access Onepass Red",
+            //"title" =>"membership_duration_text service_name Membership+ Complimentary pass_details_duration_text All Access Onepass Red",
             "header" => "membership_duration_text menbership at vendor_name",
             "subheader" => "Complimentary pass_details_duration_text Trial OnePass RED",
             "image" => "https://b.fitn.in/global/onepass/OnePass.png",
@@ -35,7 +35,7 @@ return array(
         ],
     
         "upgrade" => [
-            "title" => "Your Existing Membership + pass_details_duration_text pass_details_total_sessions All Access OnePass Red",
+            //"title" => "Your Existing Membership + pass_details_duration_text pass_details_total_sessions All Access OnePass Red",
             "header" => "Upgrade To Membership Plus",
             "subheader" => "vendor_name membership + pass_details_duration_text All Access OnePass",
             "image" => "https://b.fitn.in/global/onepass/OnePass.png",
@@ -56,7 +56,7 @@ return array(
         ],
     
         "membership_plus" => [
-            "title" => "membership_duration_text service_name Membership + pass_details_duration_text pass_details_total_sessions All Access OnePass Red",
+            //"title" => "membership_duration_text service_name Membership + pass_details_duration_text pass_details_total_sessions All Access OnePass Red",
             "extra_info" => "OnePass RED gives you access to muliple gyms & fitness centres along with your vendor_name membership",
             "extra_info_text_color" => "#d43b25",
             "background_color" => "#facaa3",
