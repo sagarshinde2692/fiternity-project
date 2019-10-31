@@ -1090,6 +1090,13 @@ class PassService {
             return $wallet_update;
         }
 
+        if(!empty($data['parent_payment_id_paypal'])) {
+            $order->parent_payment_id_paypal = $data['parent_payment_id_paypal'];
+        }
+        if(!empty($data['payment_id_paypal'])) {
+            $order->payment_id_paypal = $data['payment_id_paypal'];
+        }
+
         $order->status = '1';
         $order->onepass_sessions_total = (!empty($order->pass['classes']))?$order->pass['classes']:-1;
         $communication = $this->passPurchaseCommunication($order);
