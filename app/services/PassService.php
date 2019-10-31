@@ -640,7 +640,7 @@ class PassService {
             'title' => 'Wallet',
             'subtitle' => 'Transact online with Wallets',
             'value'=>'wallet',
-            'options'=>(!empty($order['customer_email']) && in_array($order['customer_email'], ['akhilkulkarni@fitternity.com']))?Config::get('app.pass_payment_options_wallets_test'):Config::get('app.pass_payment_options')
+            'options'=>(!empty($order['customer_email']) && in_array($order['customer_email'], ['akhilkulkarni@fitternity.com', 'ss@relianceada.com']))?Config::get('app.pass_payment_options_wallets_test'):Config::get('app.pass_payment_options')
         ];
 
         $payment_modes[] = array(
