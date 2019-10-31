@@ -5358,7 +5358,13 @@ class FindersController extends \BaseController {
             }catch(Exception $e){
                 Log::info("Error while sorting ratecard", [$e]);
             }
-    
+	
+			try{
+                $this->addAttachedPassDescription($finderData, 'app');
+            }catch(Exception $e){
+                Log::info("Error while sorting ratecard", [$e]);
+			}
+			
             // $workout_ratecard_arr = array();
             // foreach($finderData['finder']['services'] as $service){
             // 	foreach($service['ratecard'] as $ratecard){
@@ -8784,6 +8790,52 @@ class FindersController extends \BaseController {
 				}
 			}
 		}
+	}
+
+	public function addAttachedPassDescription(&$finder){
+		
+		if(!empty($finder['finder']['services'])){
+			$template = Config::get('multifit.attached_pass');
+			foreach($finder['finder']['services'] as &$service){
+				foreach($service['ratecard'] as &$ratecard){
+					if(!empty($ratecard['flags']['onepass_attachment_type'])){
+						Log::info('attachemebnt:::', [$ratecard['flags']['onepass_attachment_type']]);
+						$attach_pass_template = $template[$ratecard['flags']['onepass_attachment_type']];
+
+						if(empty($attach_pass_template)){
+							continue;
+						}
+						
+						$temp_data = [ 
+							'vendor_name'=> $finder['finder']['title'],
+							'pass_details_duration_text' => $ratecard['pass_details']['duration_text'],
+							'membership_duration_text' => $ratecard['validity']." ".ucwords($ratecard['validity_type']),
+							'pass_details_total_sessions' => $ratecard['pass_details']['total_sessions_text'],
+							'pass_details_monthly_total_sessions_text' => !empty($ratecard['pass_details']['monthly_total_sessions_text']) ? $ratecard['pass_details']['monthly_total_sessions_text'] : '4 sessions'
+						];
+
+						if(!empty($attach_pass_template['title'])){
+							$attach_pass_template['title']= strtr($attach_pass_template['title'], $temp_data);
+						}
+
+						$attach_pass_template['header'] = strtr($attach_pass_template['header'], $temp_data);
+						$attach_pass_template['subheader'] = strtr($attach_pass_template['subheader'], $temp_data);
+
+						foreach($attach_pass_template['data'] as &$value){
+							$value['title'] = strtr($value['title'], $temp_data);
+							$value['text'] = strtr($value['text'], $temp_data);
+						}
+
+						foreach($attach_pass_template['remarks'] as &$remarks_value){
+							$remarks_value = strtr($remarks_value, $temp_data);
+						}
+
+						$ratecard['attached_pass_template'] = $attach_pass_template;
+					}
+				}
+			}
+		}
+
 	}
 
 }
