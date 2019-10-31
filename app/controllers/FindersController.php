@@ -8838,8 +8838,8 @@ class FindersController extends \BaseController {
 						}
 
 						$ratecard['attached_pass_template'] = $attach_pass_template;
-						unset($ratecard['validity']);
-						unset($ratecard['validity_type']);
+						$ratecard['validity'] = 0;
+						$ratecard['validity_type'] = '';
 					}
 				}
 			}
