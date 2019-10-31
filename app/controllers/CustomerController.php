@@ -10289,12 +10289,12 @@ class CustomerController extends \BaseController {
 
 		if ($validator->fails())
 		{
-			return Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'),$this->error_status);
+			return Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'), 200);
 		}
 
 		if(empty($finder_id))
 		{
-			return Response::json(array('status' => 400,'message' => 'Vendor is Empty.'),'Vendor is Empty');
+			return Response::json(array('status' => 400,'message' => 'Vendor is Empty.'), 200);
 		}
 		
 		$finder_id = (int) $finder_id;
