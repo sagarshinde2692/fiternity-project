@@ -622,7 +622,7 @@ class PassService {
         return $finalList;
     }
 
-    function getPaymentModes($data){
+    function getPaymentModes($data, $order = null){
         
         $utilities = new Utilities();
 
@@ -640,7 +640,7 @@ class PassService {
             'title' => 'Wallet',
             'subtitle' => 'Transact online with Wallets',
             'value'=>'wallet',
-            'options'=>Config::get('app.pass_payment_options')
+            'options'=>(!empty($order['customer_email']) && in_array($order['customer_email'], ['akhilkulkarni@fitternity.com', 'ss@relianceada.com']))?Config::get('app.pass_payment_options_wallets_test'):Config::get('app.pass_payment_options')
         ];
 
         $payment_modes[] = array(
@@ -1043,6 +1043,10 @@ class PassService {
             'verify_hash'=>'required'
         ];
 
+        if(!empty($data['payment_id_paypal']) && empty($data['verify_hash'])) {
+            $data['verify_hash'] = true;
+        }
+
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {
@@ -1052,7 +1056,7 @@ class PassService {
         if(!empty($data['order_id'])) {
             $data['order_id'] = intval($data['order_id']);
         }
-        $order = Order::where('status', '0')->where('pass.payment_gateway', 'payu')->where('_id', $data['order_id'])->first();
+        $order = Order::where('status', '0')->where('_id', $data['order_id'])->first();
         
         if(empty($order)){
             return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
@@ -1090,11 +1094,19 @@ class PassService {
             return $wallet_update;
         }
 
+        if(!empty($data['parent_payment_id_paypal'])) {
+            $order->parent_payment_id_paypal = $data['parent_payment_id_paypal'];
+        }
+        if(!empty($data['payment_id_paypal'])) {
+            $order->payment_id_paypal = $data['payment_id_paypal'];
+        }
+
         $order->status = '1';
         $order->onepass_sessions_total = (!empty($order->pass['classes']))?$order->pass['classes']:-1;
         $communication = $this->passPurchaseCommunication($order);
         $order->communication = $communication;
         $order->update();
+
         return ['status'=>200, 'message'=>'Transaction successful'];
 
     

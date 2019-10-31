@@ -2498,8 +2498,13 @@ class TransactionController extends \BaseController {
         if(!empty($order)&&!empty($order['type'])&&$order['type']=='giftcoupon')
         	return $this->giftCouponSuccess();
         
-        if(!empty($order)&&!empty($order['type'])&&$order['type']=='pass')
-        	return $this->passService->passSuccessPayU($data);
+        if(!empty($order)&&!empty($order['type'])&&$order['type']=='pass') {
+            $passResp = $this->passService->passSuccessPayU($data);
+            if(!empty($data['payment_id_paypal'])) {
+                return Response::json($passResp,200);
+            }
+            return $passResp;
+        }
 
         //If Already Status Successfull Just Send Response
         if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
