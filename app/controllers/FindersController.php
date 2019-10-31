@@ -8807,6 +8807,7 @@ class FindersController extends \BaseController {
 						}
 						
 						$temp_data = [ 
+							'service_name' => $service['name'],
 							'vendor_name'=> $finder['finder']['title'],
 							'pass_details_duration_text' => $ratecard['pass_details']['duration_text'],
 							'membership_duration_text' => $ratecard['validity']." ".ucwords($ratecard['validity_type']),
@@ -8814,9 +8815,12 @@ class FindersController extends \BaseController {
 							'pass_details_monthly_total_sessions_text' => !empty($ratecard['pass_details']['monthly_total_sessions_text']) ? $ratecard['pass_details']['monthly_total_sessions_text'] : '4 sessions'
 						];
 
-						if(!empty($attach_pass_template['title'])){
+						if(!empty($attach_pass_template['title']) && empty($ratecard['remarks'])){
 							$attach_pass_template['title'] = strtr($attach_pass_template['title'], $temp_data);
 							$ratecard['remarks'] = $attach_pass_template['title'];
+							unset($attach_pass_template['title']);
+						}
+						else if(!empty($attach_pass_template['title'])){
 							unset($attach_pass_template['title']);
 						}
 
@@ -8838,8 +8842,6 @@ class FindersController extends \BaseController {
 						}
 
 						$ratecard['attached_pass_template'] = $attach_pass_template;
-						$ratecard['validity'] = 0;
-						$ratecard['validity_type'] = '';
 					}
 				}
 			}

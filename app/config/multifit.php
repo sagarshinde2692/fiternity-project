@@ -14,6 +14,7 @@ return array(
 
     "attached_pass" => [
         "complementary" => [
+            "title" =>"membership_duration_text service_name Membership+ Complimentary pass_details_duration_text All Access Onepass Red",
             "header" => "membership_duration_text menbership at vendor_name",
             "subheader" => "Complimentary pass_details_duration_text Trial OnePass RED",
             "image" => "",
@@ -34,6 +35,7 @@ return array(
         ],
     
         "upgrade" => [
+            "title" => "Your Existing Membership + pass_details_duration_text pass_details_total_sessions All Access OnePass Red",
             "header" => "Upgrade To Membership Plus",
             "subheader" => "vendor_name membership + pass_details_duration_text All Access OnePass",
             "image" => "",
