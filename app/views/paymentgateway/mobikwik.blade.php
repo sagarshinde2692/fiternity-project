@@ -16,7 +16,13 @@
 		response();
 
 		function response(){
-
+			if(!!mobikwik) {
+				console.log('mobikwik exists');
+				mobikwik.onResponse(document.getElementById('response').value);
+			}
+			else {
+				console.log('mobikwik does not exist');
+			}
 			return document.getElementById('response').value;
 		}
 
