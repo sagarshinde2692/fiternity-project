@@ -6215,7 +6215,7 @@ class TransactionController extends \BaseController {
             unset($booking_details_data['service_duration']);  
         }
 
-        if(!empty($data['type']) && $data['type'] == 'memberships' && empty($extended_validity_order_id) && empty($studio_extended_validity_order_id)){
+        if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
             $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships \nUse Code: BURN20",'position'=>$position++];
 
             // if($data['ratecard_amount'] >= 8000){
