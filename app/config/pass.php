@@ -818,7 +818,7 @@ return [
             "icon" => "https://b.fitn.in/onepass/discount_3x.png",
             "header" => "Exciting OnePass Offers",
             "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
-            "text" => "30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000",
+            "text" => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal",
         ],
 
         'faq' => [
