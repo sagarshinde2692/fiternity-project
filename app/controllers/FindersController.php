@@ -8827,6 +8827,11 @@ class FindersController extends \BaseController {
 						if(!empty($attach_pass_template['extra_info'])){
 							$ratecard['extra_info'] = strtr($attach_pass_template['extra_info'], $temp_data);
 							unset($attach_pass_template['extra_info']);
+
+							if(!empty($attach_pass_template['extra_info_text_color'])){
+								$ratecard['extra_info_text_color'] = $attach_pass_template['extra_info_text_color'];
+								unset($attach_pass_template['extra_info_text_color']);
+							}
 						}
 
 						if(!empty($attach_pass_template['background_color'])){
