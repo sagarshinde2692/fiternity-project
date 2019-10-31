@@ -159,40 +159,37 @@ return [
     "total_available" => 300,
     "terms"=>[
         "red"=>[
-            "
-            <ul style='list-style-type:none;'>
-                <li><b>Sweat The Sweets Sale</b></li>
-                <li>Offer Valid From 1-5 November</li>
-            </ul>
-            <ul>
-                <li><b>A. On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b></li>
-                <li>How does it work?</li>
-                <li>Discount of upto 30% is pre-applied on MRP</li>
-                <li>Flat 20% off using code: SWEAT20 is applicable without any cap on the discount value</li>
-                <li>Get 50% instant cashback of upto INR 700 on a new users first transaction on PayPal</li>
-                <li>Discount varies across different types of pass</li>
-                <li>This cannot be clubbed with any other existing offer</li>
-                <li>The offer ends on 5th November post which code SWEAT20 is invalid</li>
-            </ul>
-            <ul>
-                <li><b>A. Exclusive PayPal Cashback Offer</b></li>
-                <li>How does it work?</li>
-                <li>Get 50% instant cashback upto INR 700 on making payment via PayPal</li>
-                <li>Min purchase value should be INR 50</li>
-                <li>Offer is applicable on new users only</li>
-                <li>Instant cashback will be credited in the users PayPal wallet</li>
-                <li>This offer is applicable along with Fitternity's promotional offers</li>
-                <li>This offer expires on 18th November 2019</li>
-                <li>Instant Cashback received expires within 60 days</li>
-            </ul>
-            <ul>
+            "<ul>
+                <li><b>Sweat The Sweets Sale</b><br>Offer Valid From 1-5 November</li>
+                <li>
+                    <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
+                    How does it work?<br>
+                    - Discount of upto 30% is pre-applied on MRP<br>
+                    - Flat 20% off using code: SWEAT20 is applicable without any cap on the discount value<br>
+                    - Get 50% instant cashback of upto INR 700 on a new users first transaction on PayPal<br>
+                    - Discount varies across different types of pass<br>
+                    - This cannot be clubbed with any other existing offer<br>
+                    - The offer ends on 5th November post which code SWEAT20 is invalid<br>
+                </li>
+                <li>
+                    <b>Exclusive PayPal Cashback Offer</b><br>
+                    How does it work?<br>
+                    - Get 50% instant cashback upto INR 700 on making payment via PayPal<br>
+                    - Min purchase value should be INR 50<br>
+                    - Offer is applicable on new users only<br>
+                    - Instant cashback will be credited in the users PayPal wallet<br>
+                    - This offer is applicable along with Fitternity's promotional offers<br>
+                    - This offer expires on 18th November 2019<br>
+                    - Instant Cashback received expires within 60 days<br>
+                </li>
+
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
                 <li>In case if a customer does not attend the session, the session cannot be reversed or re-booked for the same day.</li>
                 <li>Cashback receivable on the trial subscription of OnePass Red will be added in the Fitternity wallet in the form of FitCash after deducting GST fees.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
-                <li>At select fitness centers available on the OnePass program, users have limited access to work out at the following locations (Applicable to both OnePass Black & OnePass Red Subscription) - </li>
+                <li>At select fitness centers available on the OnePass program, users have limited access to work out at the following locations (Applicable to both OnePass Black & OnePass Red Subscription)
                 <br/> - F45 Training in Juhu  - 8 sessions per month.</li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on the attendance of workout sessions.</li>
@@ -215,6 +212,29 @@ return [
         ],
         "black" =>[
             "<ul>
+                <li><b>Sweat The Sweets Sale</b><br>Offer Valid From 1-5 November</li>
+                <li>
+                    <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
+                    How does it work?<br>
+                    - Discount of upto 30% is pre-applied on MRP<br>
+                    - Flat 20% off using code: SWEAT20 is applicable without any cap on the discount value<br>
+                    - Get 50% instant cashback of upto INR 700 on a new users first transaction on PayPal<br>
+                    - Discount varies across different types of pass<br>
+                    - This cannot be clubbed with any other existing offer<br>
+                    - The offer ends on 5th November post which code SWEAT20 is invalid<br>
+                </li>
+                <li>
+                    <b>Exclusive PayPal Cashback Offer</b><br>
+                    How does it work?<br>
+                    - Get 50% instant cashback upto INR 700 on making payment via PayPal<br>
+                    - Min purchase value should be INR 50<br>
+                    - Offer is applicable on new users only<br>
+                    - Instant cashback will be credited in the users PayPal wallet<br>
+                    - This offer is applicable along with Fitternity's promotional offers<br>
+                    - This offer expires on 18th November 2019<br>
+                    - Instant Cashback received expires within 60 days<br>
+                </li>
+
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
@@ -243,6 +263,29 @@ return [
         ],
         "default"=>[
             "<ul>
+                <li><b>Sweat The Sweets Sale</b><br>Offer Valid From 1-5 November</li>
+                <li>
+                    <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
+                    How does it work?<br>
+                    - Discount of upto 30% is pre-applied on MRP<br>
+                    - Flat 20% off using code: SWEAT20 is applicable without any cap on the discount value<br>
+                    - Get 50% instant cashback of upto INR 700 on a new users first transaction on PayPal<br>
+                    - Discount varies across different types of pass<br>
+                    - This cannot be clubbed with any other existing offer<br>
+                    - The offer ends on 5th November post which code SWEAT20 is invalid<br>
+                </li>
+                <li>
+                    <b>Exclusive PayPal Cashback Offer</b><br>
+                    How does it work?<br>
+                    - Get 50% instant cashback upto INR 700 on making payment via PayPal<br>
+                    - Min purchase value should be INR 50<br>
+                    - Offer is applicable on new users only<br>
+                    - Instant cashback will be credited in the users PayPal wallet<br>
+                    - This offer is applicable along with Fitternity's promotional offers<br>
+                    - This offer expires on 18th November 2019<br>
+                    - Instant Cashback received expires within 60 days<br>
+                </li>
+
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
