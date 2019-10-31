@@ -8490,7 +8490,7 @@ class FindersController extends \BaseController {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
 					}
 
-					if(in_array($rc['type'], ['membership'])){
+					if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
 
 						// if($price >= 8000){
 						// 	$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nSweat The Sweets Sale \n\nFLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships \n\nUse Code: BURN20");
