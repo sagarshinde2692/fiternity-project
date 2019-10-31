@@ -1043,6 +1043,10 @@ class PassService {
             'verify_hash'=>'required'
         ];
 
+        if(!empty($data['payment_id_paypal']) && empty($data['verify_hash'])) {
+            $data['verify_hash'] = true;
+        }
+
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {
@@ -1102,6 +1106,11 @@ class PassService {
         $communication = $this->passPurchaseCommunication($order);
         $order->communication = $communication;
         $order->update();
+
+        if(!empty($data['payment_id_paypal'])) {
+            return Response::json(['status'=>200, 'message'=>'Transaction successful'],200);
+        }
+
         return ['status'=>200, 'message'=>'Transaction successful'];
 
     
