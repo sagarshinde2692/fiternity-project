@@ -1399,7 +1399,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships <br> Use Code: BURN20 <br> 1-5 Nov",
+								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships. Use Code: BURN20 <br> 1-5 Nov",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1411,7 +1411,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships <br> Use Code: BURN20 <br> 1-5 Nov",
+								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships. Use Code: BURN20 <br> 1-5 Nov",
                                 'text_color'=> '$fff',
                             ];
 
@@ -1420,7 +1420,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships <br> Use Code: BURN20 <br> 1-5 Nov",
+								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships. Use Code: BURN20 <br> 1-5 Nov",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',

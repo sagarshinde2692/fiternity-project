@@ -6616,7 +6616,7 @@ class TransactionController extends \BaseController {
                 'options'=>[
                         [
                                 'title' => 'Paypal',
-                                'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
+                                'subtitle' => 'Get 50% Instant Cashback Upto INR 700 (New Users Only)',
                                 'value' => 'paypal'
                         ],
                         [

@@ -101,7 +101,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\n1-5 Nov\n\nBuy Now To Save More! Start At Your Convenience", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\n1-5 Nov", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\n1-5 Nov\n\nBuy Now To Save More! Start At Your Convenience", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\n1-5 Nov", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
