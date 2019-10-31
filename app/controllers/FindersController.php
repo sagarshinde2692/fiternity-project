@@ -8793,11 +8793,19 @@ class FindersController extends \BaseController {
 	}
 
 	public function addAttachedPassDescription(&$finder){
-		
+		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+
+		$attach_pass_template = false;
 		if(!empty($finder['finder']['services'])){
-			$template = Config::get('multifit.attached_pass');
+			$template = Config::get('pass.attached_pass');
 			foreach($finder['finder']['services'] as &$service){
 				foreach($service['ratecard'] as &$ratecard){
+
+					if(!empty($onepassHoldCustomer) && !empty($ratecard['combo_pass_id'])){
+						unset($ratecard);
+						continue;
+					}
+
 					if(!empty($ratecard['flags']['onepass_attachment_type'])){
 						Log::info('attachemebnt:::', [$ratecard['flags']['onepass_attachment_type'], $service['service_name']]);
 						$attach_pass_template = $template[$ratecard['flags']['onepass_attachment_type']];
@@ -8805,7 +8813,9 @@ class FindersController extends \BaseController {
 						if(empty($attach_pass_template)){
 							continue;
 						}
-						
+
+						$attach_pass_template = true;
+
 						$temp_data = [ 
 							'service_name' => $service['service_name'],
 							'vendor_name'=> $finder['finder']['title'],
@@ -8854,6 +8864,10 @@ class FindersController extends \BaseController {
 						$ratecard['attached_pass_template'] = $attach_pass_template;
 					}
 				}
+			}
+			
+			if(!empty($attach_pass_template)){
+				$finder['attached_pass_summary'] = Config::get('pass.attached_pass_summary');
 			}
 		}
 

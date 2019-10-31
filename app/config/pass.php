@@ -1025,6 +1025,81 @@ return [
             "Show your activated session screen with your photo at the finder_category to enjoy the session.\n",
             "unlock session and earn steps_count steps.\n"
         ] 
+    ],
+    'customer_no_image' => 'https://b.fitn.in/customer_photo/no_image_available.png',
+
+    "attached_pass" => [
+        "complementary" => [
+            //"title" =>"membership_duration_text service_name Membership+ Complimentary pass_details_duration_text All Access Onepass Red",
+            "header" => "membership_duration_text menbership at vendor_name",
+            "subheader" => "Complimentary pass_details_duration_text Trial OnePass RED",
+            "image" => "https://b.fitn.in/global/onepass/OnePass.png",
+            "data" => [
+                [
+                    "title" => "What you get in this Membership?",
+                    "text" => "Lowest price vendor_name membership + pass_details_duration_text All Access Trial OnePass RED"
+                ],
+                [
+                    "title" => "What is OnePass RED?",
+                    "text" => "OnePass RED is Fitternity's exclusive offering which gives you limitless access to 12,000+ fitness classes, gyms and sports facilities across India"
+                ]
+            ],
+            "remarks" => [
+                "&bull; Your Complimentary OnePass RED gives you access to a total of pass_details_total_sessions",
+            ]
+            
         ],
-    'customer_no_image' => 'https://b.fitn.in/customer_photo/no_image_available.png'
+    
+        "upgrade" => [
+            //"title" => "Your Existing Membership + pass_details_duration_text pass_details_total_sessions All Access OnePass Red",
+            "header" => "Upgrade To Membership Plus",
+            "subheader" => "vendor_name membership + pass_details_duration_text All Access OnePass",
+            "image" => "https://b.fitn.in/global/onepass/OnePass.png",
+            "data" => [
+                [
+                    "title" => "Why upgrade to Membership Plus?",
+                    "text" => "By upgrading to <b>Membership Plus</b> you can enjoy access to mulitple fitness activities like swimming at 5-star hotels, MMA, dance, yoga classes and more across India"
+                ],
+                [
+                    "title" => "What is OnePass RED?",
+                    "text" => "OnePass RED is Fitternity's exclusive offering which gives you limitless access to 12,000+ fitness classes, gyms and sports facilities across India"
+                ]
+            ],
+            "remarks" => [
+                "&bull; Your Membership Plus <b>OnePass RED</b> will be valid for pass_details_duration_text and will give you access to a total of pass_details_total_sessions.",
+                "&bull; Membership Plus OnePass RED can be used to book a maximum of pass_details_monthly_total_sessions_text in a month."
+            ]
+        ],
+    
+        "membership_plus" => [
+            //"title" => "membership_duration_text service_name Membership + pass_details_duration_text pass_details_total_sessions All Access OnePass Red",
+            "extra_info" => "OnePass RED gives you access to muliple gyms & fitness centres along with your vendor_name membership",
+            "extra_info_text_color" => "#d43b25",
+            "background_color" => "#facaa3",
+            "header" => "Membership Plus - vendor_name",
+            "subheader" => "Lowest price vendor_name membership + pass_details_duration_text All Access OnePass",
+            "image" => "https://b.fitn.in/global/onepass/OnePass.png",
+            "data" => [
+                [
+                    "title" => "What you get in Membership Plus?",
+                    "text" => "With <b>Membership Plus</b>, you get pass_details_duration_text all access OnePass RED along with your membership_duration_text membership"
+                ],
+                [
+                    "title" => "What is OnePass RED?",
+                    "text" => "OnePass RED is Fitternity's exclusive offering which gives you limitless access to 12,000+ fitness classes, gyms and sports facilities across India"
+                ]
+            ],
+            "remarks" => [
+                "&bull; Your Membership Plus <b>OnePass RED<b> will be valid for pass_details_duration_text and will give you access to a total of pass_details_total_sessions.",
+                "&bull; Membership Plus OnePass RED can be used to book a maximum of pass_details_monthly_total_sessions_text in a month."
+            ]
+        ]
+    ],
+
+    "attached_pass_summary" => [
+        "image" => "https://b.fitn.in/global/Homepage-branding-2018/onepass-logo-new-1_1.png",
+        "description" => "A Fitternity exclusive pass that gives you membership privileges and unlimited access at Multifit Wellness and other 12,000+ fitness centers in India\nPS: OnePass is the only fitness membership that will never expire",
+        "button_text" => "GET IT NOW"
+    ]
+
 ];
