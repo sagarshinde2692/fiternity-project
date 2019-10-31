@@ -1107,10 +1107,6 @@ class PassService {
         $order->communication = $communication;
         $order->update();
 
-        if(!empty($data['payment_id_paypal'])) {
-            return Response::json(['status'=>200, 'message'=>'Transaction successful'],200);
-        }
-
         return ['status'=>200, 'message'=>'Transaction successful'];
 
     
