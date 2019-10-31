@@ -622,7 +622,7 @@ class PassService {
         return $finalList;
     }
 
-    function getPaymentModes($data){
+    function getPaymentModes($data, $order = null){
         
         $utilities = new Utilities();
 
@@ -640,7 +640,7 @@ class PassService {
             'title' => 'Wallet',
             'subtitle' => 'Transact online with Wallets',
             'value'=>'wallet',
-            'options'=>Config::get('app.pass_payment_options')
+            'options'=>(!empty($order['customer_email']) && in_array($order['customer_email'], ['akhilkulkarni@fitternity.com']))?Config::get('app.pass_payment_options_wallets_test'):Config::get('app.pass_payment_options')
         ];
 
         $payment_modes[] = array(
