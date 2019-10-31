@@ -101,7 +101,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\n1-5 Nov\n\nBuy Now To Save More! Start At Your Convenience", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\n1-5 Nov\n\nBuy Now To Save More! Start At Your Convenience", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -159,17 +159,33 @@ return [
     "total_available" => 300,
     "terms"=>[
         "red"=>[
-            "<ul>
-                <li> Discount of upto 30% is pre-applied on MRP</li>
-                <li> Code: DVLIPASS will give the user Additional 25% off</li>
-                <li> Additional 25% off is upto INR 2000 </li>
-                <li> Discount varies across different types of pass</li>
-                <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
-                <li> Customer's address will be communicated to Fitternity on call by personal concierge</li>
-                <li> The Fitness Merchandise will be delivered to customer's address by 30th Nov 2019</li>
-                <li> Exclusive Marvel Fitness Merchandise for Membership includes Avengers Gym Bag and Shaker </li>
-                <li> The Fitaka Diwali Hamper will not be available on OnePass Red -15 Days Trial Pass </li>
+            "
+            <ul style='list-style-type:none;'>
+                <li><b>Sweat The Sweets Sale</b></li>
+                <li>Offer Valid From 1-5 November</li>
+            </ul>
+            <ul>
+                <li><b>A. On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b></li>
+                <li>How does it work?</li>
+                <li>Discount of upto 30% is pre-applied on MRP</li>
+                <li>Flat 20% off using code: SWEAT20 is applicable without any cap on the discount value</li>
+                <li>Get 50% instant cashback of upto INR 700 on a new users first transaction on PayPal</li>
+                <li>Discount varies across different types of pass</li>
+                <li>This cannot be clubbed with any other existing offer</li>
+                <li>The offer ends on 5th November post which code SWEAT20 is invalid</li>
+            </ul>
+            <ul>
+                <li><b>A. Exclusive PayPal Cashback Offer</b></li>
+                <li>How does it work?</li>
+                <li>Get 50% instant cashback upto INR 700 on making payment via PayPal</li>
+                <li>Min purchase value should be INR 50</li>
+                <li>Offer is applicable on new users only</li>
+                <li>Instant cashback will be credited in the users PayPal wallet</li>
+                <li>This offer is applicable along with Fitternity's promotional offers</li>
+                <li>This offer expires on 18th November 2019</li>
+                <li>Instant Cashback received expires within 60 days</li>
+            </ul>
+            <ul>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -199,16 +215,6 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li> Discount of upto 30% is pre-applied on MRP</li>
-                <li> Code: DVLIPASS will give the user Additional 25% off</li>
-                <li> Additional 25% off is upto INR 2000 </li>
-                <li> Discount varies across different types of pass</li>
-                <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
-                <li> Customer's address will be communicated to Fitternity on call by personal concierge</li>
-                <li> The Fitness Merchandise will be delivered to customer's address by 30th Nov 2019</li>
-                <li> Exclusive Marvel Fitness Merchandise for Membership includes Avengers Gym Bag and Shaker </li>
-                <li> The Fitaka Diwali Hamper will not be available on OnePass Red -15 Days Trial Pass </li>
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
@@ -237,16 +243,6 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li> Discount of upto 30% is pre-applied on MRP</li>
-                <li> Code: DVLIPASS will give the user Additional 25% off</li>
-                <li> Additional 25% off is upto INR 2000 </li>
-                <li> Discount varies across different types of pass</li>
-                <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
-                <li> Customer's address will be communicated to Fitternity on call by personal concierge</li>
-                <li> The Fitness Merchandise will be delivered to customer's address by 30th Nov 2019</li>
-                <li> Exclusive Marvel Fitness Merchandise for Membership includes Avengers Gym Bag and Shaker </li>
-                <li> The Fitaka Diwali Hamper will not be available on OnePass Red -15 Days Trial Pass </li>
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass Red user will have access to book 1 session a day.</li>
@@ -480,7 +476,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000",
+                "text" => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal",
                 "button_text" => "Know More"
             ],
         ],
@@ -628,7 +624,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000",
+                "text" => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal",
                 "button_text" => "Know More"
             ]
         ],
@@ -952,7 +948,7 @@ return [
             'ratecards' => []
         ],
         'local_pass_remarks' => [
-            'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
+            'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more!", // need content
             'text' => 'Terms and Conditions',
             "title" =>'Terms and Conditions',
             'url' => $apiUrl.'/passtermscondition?type=unlimited'

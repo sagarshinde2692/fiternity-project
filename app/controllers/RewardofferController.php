@@ -1109,30 +1109,30 @@ class RewardofferController extends BaseController {
             
         }
 
-        if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
-            $rewardObj = $this->getMixedReward();
-            $mixedreward_content = MixedRewardContent::where('flags.type', 'membership')->first();
+        // if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
+        //     $rewardObj = $this->getMixedReward();
+        //     $mixedreward_content = MixedRewardContent::where('flags.type', 'membership')->first();
 
-            if(!empty($mixedreward_content)){
-                if($rewardObj && $mixedreward_content){
+        //     if(!empty($mixedreward_content)){
+        //         if($rewardObj && $mixedreward_content){
                     
-					$rewards = [];
+		// 			$rewards = [];
 
-					$rewardObjData = $rewardObj->toArray();
+		// 			$rewardObjData = $rewardObj->toArray();
 
-                    $this->unsetRewardObjFields($rewardObjData);
+        //             $this->unsetRewardObjFields($rewardObjData);
 
 					
-					$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+		// 			$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
-                    list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
+        //             list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
 
-                    list($rewardObjData) = $this->rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData);
+        //             list($rewardObjData) = $this->rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData);
 
-                    $rewards[] = $rewardObjData;
-				}
-			}
-        }
+        //             $rewards[] = $rewardObjData;
+		// 		}
+		// 	}
+        // }
 
         if(empty($mixedreward_content)){
            
@@ -1247,7 +1247,6 @@ class RewardofferController extends BaseController {
         $amount = $cutl_amount;
 
         if($amount < 50000 || !isset($_GET['device_type'])){   
-            $diwali_mix = true;
             $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
             if(isset($data['order_id']) && $data['order_id'] != ""){
@@ -1333,7 +1332,7 @@ class RewardofferController extends BaseController {
         if(!empty($finder['_id']) && $finder['_id'] == 11230 && $duration_day == 360){
             $cashback = null;
         }
-        if(!empty($gold_mixed) || !empty($no_instant_rewards) || !empty($diwali_mix)){
+        if(!empty($gold_mixed) || !empty($no_instant_rewards)){
             $cashback = null;
         }
         

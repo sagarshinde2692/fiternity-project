@@ -1399,7 +1399,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "Get 50% off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 6,500 On Memberships, Use Code: FITDVLI <br>22nd - 31st October",
+								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships <br> Use Code: BURN20 <br> 1-5 Nov",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1411,7 +1411,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "Get 50% off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 6,500 On Memberships, Use Code: FITDVLI <br>22nd - 31st October",
+								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships <br> Use Code: BURN20 <br> 1-5 Nov",
                                 'text_color'=> '$fff',
                             ];
 
@@ -1420,7 +1420,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "Get 50% off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 6,500 On Memberships, Use Code: FITDVLI <br>22nd - 31st October",
+								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships <br> Use Code: BURN20 <br> 1-5 Nov",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3883,46 +3883,46 @@ class FindersController extends \BaseController {
 
 		$line = null;
 		
-		$pricemore = false;
+		// $pricemore = false;
 		$android_line = "";
 		$ios_line = "";
 		$op_android_line = "";
 		$op_ios_line = "";
-		foreach($data['finder']['services'] as &$service){
-			foreach($service['ratecard'] as &$ratecard){
-				if($ratecard['type'] == 'membership'){
-					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+		// foreach($data['finder']['services'] as &$service){
+		// 	foreach($service['ratecard'] as &$ratecard){
+		// 		if($ratecard['type'] == 'membership'){
+		// 			$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 					
 					if($this->device_type == 'android'){
-						$android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 25% Off. Use Code: FITDVLI <br><br>- On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD <br><br>Offer Valid 22nd - 31st October";
+						$android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 <br><br>Offer Valid From 1-5 November";
 
-						$op_android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 25% Off. Use Code: FITDVLI <br><br>Offer Valid 22nd - 31st October";
+						$op_android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>Offer Valid From 1-5 November";
 					}else{	
-						$ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 25% Off. Use Code: FITDVLI \n\n- On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD \n\nOffer Valid 22nd - 31st October";
+						$ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 \n\nOffer Valid From 1-5 November";
 
-						$op_ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 25% Off. Use Code: FITDVLI \n\nOffer Valid 22nd - 31st October";
+						$op_ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\nOffer Valid From 1-5 November";
 					}
 
-					if($price >= 8000){
-						$pricemore = true;
-						if($this->device_type == 'android'){
-							$android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI <br><br>- On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD <br><br>Offer Valid 22nd - 31st October";
+		// 			if($price >= 8000){
+		// 				$pricemore = true;
+		// 				if($this->device_type == 'android'){
+		// 					$android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 <br><br>Offer Valid From 1-5 November";
 
-							$op_android_line = "<u>Fitwali Diwali With Fitternity</u><br><br>- On Memberships: 50% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI <br><br>Offer Valid 22nd - 31st October";
-						}else{	
-							$ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI \n\n- On Pay-Per-Session: 50% Off On Workout Sessions, Use Code : PFWD \n\nOffer Valid 22nd - 31st October";
+		// 					$op_android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>Offer Valid From 1-5 November";
+		// 				}else{	
+		// 					$ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 \n\nOffer Valid From 1-5 November";
 
-							$op_ios_line = "\nFitwali Diwali With Fitternity\n\n- On Memberships: 50% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, HealthifyMe, EaseMyTrip & More. Use Code: FITDVLI \n\nOffer Valid 22nd - 31st October";
-						}
+		// 					$op_ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\nOffer Valid From 1-5 November";
+		// 				}
 						
-						break;
-					}
-				}
-			}
-			if($pricemore){
-				break;
-			}
-		}
+		// 				break;
+		// 			}
+		// 		}
+		// 	}
+		// 	if($pricemore){
+		// 		break;
+		// 	}
+		// }
 
         if(!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], [88, 135])){
 			if($this->device_type == 'android'){
@@ -5492,9 +5492,9 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-                            $ratecard['remarks'] = "Get 50% Off On Workout Sessions, Use Code: PFWD";
+                            $ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: FIT100";
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
-                            //     $ratecard['remarks'] = "Get 50% Off On Workout Sessions, Use Code: PFWD";
+                            //     $ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: FIT100";
                             // }
 						}
 						
@@ -8492,11 +8492,11 @@ class FindersController extends \BaseController {
 
 					if(in_array($rc['type'], ['membership'])){
 
-						if($price >= 8000){
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFitwali Diwali With Fitternity \n\n50% off + Additional 25% Off On Memberships + Fitaka Diwali Hamper Worth INR 6,500 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Myntra, EaseMyTrip, HealthifyMe & More \n\nUse Code: FITDVLI");
-						}else{
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFitwali Diwali With Fitternity \n\n50% off + Additional 25% Off On Memberships \n\nUse Code: FITDVLI");
-						}
+						// if($price >= 8000){
+						// 	$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nSweat The Sweets Sale \n\nFLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships \n\nUse Code: BURN20");
+						// }else{
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nSweat The Sweets Sale \n\nFLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships \n\nUse Code: BURN20");
+						// }
 
 						if(empty($finder['flags']['monsoon_flash_discount_disabled'])){
 							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."");
@@ -8756,9 +8756,9 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			$rateCard['remarks'] = "Get 50% Off On Workout Sessions, Use Code: PFWD";
+			$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: FIT100";
 			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
-			// 	$rateCard['remarks'] = "Get 50% Off On Workout Sessions, Use Code: PFWD";
+			// 	$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: FIT100";
 			// }
 			$rateCard['remarks_imp'] = true;
 

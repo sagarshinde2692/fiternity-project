@@ -804,8 +804,8 @@ Class CustomerReward {
                         $amount_paid = $amount_paid - $order['convinience_fee'];
                     }
 
-                    if($amount_paid > 1000){
-                        $amount_paid = 1000;
+                    if($amount_paid > 250){
+                        $amount_paid = 250;
                     }
 
                 }else{
@@ -869,7 +869,7 @@ Class CustomerReward {
                             $sms_data['customer_phone'] = $order['customer_phone'];
                     
                             // $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$cashback_amount." Fitcash has been added in your Fitternity wallet.Valid for 14 days from booking time. For quick assistance call ".Config::get('app.contact_us_customer_number');
-                            $sms_data['message'] = "Congratulations on receiving your instant cashback of".$cashback_amount." as Fitcash. Book multiple workout sessions using this cashback on Fitternity App for yourself as well as your friends & family.\nValidity: 14 days\nHappy working out!";
+                            $sms_data['message'] = "Congratulations on receiving your instant cashback of".$cashback_amount." as Fitcash. Book multiple workout sessions using this cashback on Fitternity App for yourself as well as your friends & family without any restriction on spend value.\nValidity: 14 days\nHappy working out!";
                     
                             $customersms->custom($sms_data);
                         }

@@ -146,11 +146,11 @@ class PassService {
                 }
             }
 
-            $passDetails['text'] = "(Additional 25% Off + \n Fitaka Diwali Hamper worth INR 9000)";
+            $passDetails['text'] = "(FLAT 20% Off + \n Additional INR 700 Cashback Via PayPal)";
 
-            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15){
-                $passDetails['text'] = "(Additional 25% Off)";
-            }
+            // if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15){
+            //     $passDetails['text'] = "(Additional 25% Off)";
+            // }
 
             if(!empty($source) && $source=='sodexo') {
                 $passDetails['text'] = "(".$pass['total_sessions']." sessions pass)";
@@ -1622,17 +1622,17 @@ class PassService {
             ]
         ];
 
-        if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
-            $resp[] = [
-                   'field' => '',
-                   'value' => "Get 30% Off + Additional 25% Off. Use Code: DVLIPASS\n22nd-31st October",
-            ];
-        }else {
+        // if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
+        //     $resp[] = [
+        //            'field' => '',
+        //            'value' => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20\n1-5 Nov",
+        //     ];
+        // }else {
             $resp[] = [
                 'field' => '',
-                'value' => "Get 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000 With Exclusive Marvel Fitness Merchandise & Gift Vouchers From Puma, Myntra, O2 Spa, HealthifyMe, Lenskart  Use Code: DVLIPASS\n22nd-31st October",
+                'value' => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20\n1-5 Nov",
             ];
-        }
+        // }
 
         return $resp;
     }
@@ -2420,10 +2420,10 @@ class PassService {
             if(!empty($data['pass'])){
                 $pass = $data['pass'];
 
-                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15)){
-                    $rewardinfo['diwali_mixed_reward'] = true;
-                    $rewardinfo['reward_ids'] = [79];
-                }
+                // if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15)){
+                //     $rewardinfo['diwali_mixed_reward'] = true;
+                //     $rewardinfo['reward_ids'] = [79];
+                // }
 
             }
             return $rewardinfo;

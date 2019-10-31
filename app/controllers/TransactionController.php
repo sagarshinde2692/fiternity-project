@@ -2595,9 +2595,9 @@ class TransactionController extends \BaseController {
                             $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
                             array_set($data, 'reward_type', $value->reward_type);
 
-                            if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity_order_id']) && empty($order['studio_extended_validity_order_id']) ){
-                                array_set($data, 'diwali_mixed_reward', true);
-                            }
+                            // if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity_order_id']) && empty($order['studio_extended_validity_order_id']) ){
+                            //     array_set($data, 'diwali_mixed_reward', true);
+                            // }
 
                             $reward_type = $value->reward_type;
 
@@ -3140,11 +3140,11 @@ class TransactionController extends \BaseController {
                 $order->update(['schedule_complementry_pass_purchase_redis_id'=>$complementry_pass_purchase]);
             }
 
-            if(!empty($order['diwali_mixed_reward'])){
-                $hamper_data = $this->utilities->getVoucherDetail($order->toArray());
-                $this->customermailer->diwaliMixedReward($hamper_data);
-                $this->customersms->diwaliMixedReward($order->toArray());
-            }
+            // if(!empty($order['diwali_mixed_reward'])){
+            //     $hamper_data = $this->utilities->getVoucherDetail($order->toArray());
+            //     $this->customermailer->diwaliMixedReward($hamper_data);
+            //     $this->customersms->diwaliMixedReward($order->toArray());
+            // }
 
             Log::info("successCommon returned");
             Log::info($order['_id']);
@@ -6216,16 +6216,16 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($extended_validity_order_id) && empty($studio_extended_validity_order_id)){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 25% Off On Memberships\nUse Code: FITDVLI",'position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships \nUse Code: BURN20",'position'=>$position++];
 
-            if($data['ratecard_amount'] >= 8000){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 25% Off On Memberships + First Hand Access To Exclusive Marvel Fitness Merchandise + Gift Vouchers From Myntra, The Label Life, EaseMyTrip & More\nUse Code: FITDVLI",'position'=>$position++];
-            }
+            // if($data['ratecard_amount'] >= 8000){
+            //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships \nUse Code: BURN20",'position'=>$position++];
+            // }
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase','position'=>$position++];
 
             $first_session_free = $this->firstSessionFree($data);
             if(!empty($first_session_free) && $first_session_free){
@@ -6236,7 +6236,7 @@ class TransactionController extends \BaseController {
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
 
-            if(!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp'] || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
+            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
         }
