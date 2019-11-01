@@ -9697,13 +9697,13 @@ class CustomerController extends \BaseController {
             $post_register['milestones']['subheader'] = "You have completed all your milestones";
         }
 
-		$fitsquad_expired = $this->utilities->checkFitsquadExpired($customer);
+		// $fitsquad_expired = $this->utilities->checkFitsquadExpired($customer);
 
-		if(!empty($fitsquad_expired)){
-			$post_register['milestones']['footer'] = "Your Fitsquad has been expired";
-		}else{
+		// if(!empty($fitsquad_expired)){
+		// 	$post_register['milestones']['footer'] = "Your Fitsquad has been expired";
+		// }else{
 			$post_register['milestones']['footer'] = strtr($post_register['milestones']['footer'], ['$last_date'=>date('d M Y', strtotime('+1 year',$customer['loyalty']['start_date']->sec))]);
-		}
+		// }
 
         if($checkins){
             unset($post_register['past_check_in']['subheader']);
@@ -9879,9 +9879,9 @@ class CustomerController extends \BaseController {
 
 							!isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
 
-							if(!empty($fitsquad_expired)){
-								$post_reward_data_template['claim_enabled'] = false;
-							}
+							// if(!empty($fitsquad_expired)){
+							// 	$post_reward_data_template['claim_enabled'] = false;
+							// }
 
                         }else{
                             $post_reward_data_template['claim_enabled'] = false;

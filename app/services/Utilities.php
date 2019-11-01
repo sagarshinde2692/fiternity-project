@@ -10823,17 +10823,17 @@ Class Utilities {
         return $fin_vouchers_arr;
     }
 
-    public function checkFitsquadExpired($customer = null){
+    // public function checkFitsquadExpired($customer = null){
 
-        $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year',$customer['loyalty']['start_date']->sec));
-        $current_date = date('Y-m-d');
+    //     $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year',$customer['loyalty']['start_date']->sec));
+    //     $current_date = date('Y-m-d');
         
-        $fitsquad_expired = false;
+    //     $fitsquad_expired = false;
 
-        if($fitsquad_expiery_date < $current_date){
-            $fitsquad_expired = true;
-        }
+    //     if($fitsquad_expiery_date < $current_date){
+    //         $fitsquad_expired = true;
+    //     }
 
-        return $fitsquad_expired;
-    }
+    //     return $fitsquad_expired;
+    // }
 }
