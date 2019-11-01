@@ -568,7 +568,7 @@ if(!function_exists('ifCityPresent')){
                 break;		
             case "calcutta":
             case "kolkata":
-                $send_city = "jaipur";
+                $send_city = "kolkata";
                 $ifcity = true;
                 break;
         };
