@@ -9191,8 +9191,19 @@ class CustomerController extends \BaseController {
 				$resp['voucher_data']['key'] = $key;
 			}
 
+			if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
+				
+				$resp['voucher_data']['header'] = "VOUCHER SELECTED";
+				$resp['voucher_data']['sub_header'] = "You have selected ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : "");
+				unset($resp['voucher_data']['coupon_title']);
+				$resp['voucher_data']['coupon_text'] = "Under Verification";
+				unset($resp['voucher_data']['terms_text']);
+				unset($resp['voucher_data']['terms_detailed_text']);
+				unset($resp['voucher_data']['coupon_subtext']);
+			}
+
             if(!empty($communication)){
-				$redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],'customer_phone' => $customer['contact_no'],),Config::get('app.queue'));
+				$redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],'customer_phone' => $customer['contact_no'],'voucher_name' => strtoupper($voucherAttached['name']), 'milestone' => $voucherAttached['milestone']),Config::get('app.queue'));
             }
 
             return $resp;
@@ -9753,7 +9764,7 @@ class CustomerController extends \BaseController {
 						}
 						
 						if(!empty($instant_manual_redemption)){
-							$post_reward_data_template['block_message'] = "will get back to you post validating your check-in data";
+							$post_reward_data_template['block_message'] = "Thank you for selecting the reward. Your check-in data is under verification. ";
 						}
 
                         $post_reward_template['data'][] = $post_reward_data_template;
