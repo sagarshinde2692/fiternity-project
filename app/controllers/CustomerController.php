@@ -10353,12 +10353,12 @@ class CustomerController extends \BaseController {
 
 		if ($validator->fails())
 		{
-			return Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'),$this->error_status);
+			return Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'), 200);
 		}
 
 		if(empty($finder_id))
 		{
-			return Response::json(array('status' => 400,'message' => 'Vendor is Empty.'),'Vendor is Empty');
+			return Response::json(array('status' => 400,'message' => 'Vendor is Empty.'), 200);
 		}
 		
 		$finder_id = (int) $finder_id;
@@ -10973,7 +10973,6 @@ class CustomerController extends \BaseController {
 		$customer = Customer::find($customer_id);
 		$pass_order_id = Order::active()->where('type', 'pass')->where('customer_id', $customer->id)->where('end_date', '>', new MongoDate(time()))->lists('_id');
 
-		Log::info('pass order id', [$customer->id, $pass_order_id]);
 		$resp = [
 			'name' => $customer->name
 		];
@@ -11028,7 +11027,7 @@ class CustomerController extends \BaseController {
 			$resp['profile_data']['skip_text'] = 'CONTINUE WITH BOOKING';
 		}
 
-		if(empty($data['ratecard_id'])){
+		if(empty($data['ratecard_id']) && !empty($pass_order_id)){
 			unset($resp['booking_text']);	
 		}
 

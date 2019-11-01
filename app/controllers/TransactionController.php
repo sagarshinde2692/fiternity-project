@@ -2498,8 +2498,13 @@ class TransactionController extends \BaseController {
         if(!empty($order)&&!empty($order['type'])&&$order['type']=='giftcoupon')
         	return $this->giftCouponSuccess();
         
-        if(!empty($order)&&!empty($order['type'])&&$order['type']=='pass')
-        	return $this->passService->passSuccessPayU($data);
+        if(!empty($order)&&!empty($order['type'])&&$order['type']=='pass') {
+            $passResp = $this->passService->passSuccessPayU($data);
+            if(!empty($data['payment_id_paypal'])) {
+                return Response::json($passResp,200);
+            }
+            return $passResp;
+        }
 
         //If Already Status Successfull Just Send Response
         if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
@@ -3121,7 +3126,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(!empty($order['combo_pass_id'])){
+            if(!empty($order['combo_pass_id']) && !empty($order['ratecard_flags']['onepass_attachment_type'])){
                 $complementry_pass_purchase = Queue::connection('redis')->push(
                     'PassController@passCaptureAuto', 
                     array(
@@ -4680,7 +4685,7 @@ class TransactionController extends \BaseController {
         $data['duration_type'] = (isset($ratecard['duration_type'])) ? $ratecard['duration_type'] : "";
         $data['validity'] = (isset($ratecard['validity'])) ? $ratecard['validity'] : "";
         $data['validity_type'] = (isset($ratecard['validity_type'])) ? $ratecard['validity_type'] : "";
-        if((isset($ratecard['combo_pass_id']))) {
+        if(!empty($ratecard['flags']['onepass_attachment_type']) && (isset($ratecard['combo_pass_id']))) {
             $data['combo_pass_id'] = $ratecard['combo_pass_id'];
         }
 
@@ -4945,7 +4950,7 @@ class TransactionController extends \BaseController {
             
         // }
 
-        if(!empty($ratecard['combo_pass_id'])){
+        if(!empty($ratecard['flags']['onepass_attachment_type']) && !empty($ratecard['combo_pass_id'])){
             $data['combo_pass_id'] = $ratecard['combo_pass_id'];
         }
 
@@ -6682,7 +6687,7 @@ class TransactionController extends \BaseController {
                     );
                 }else{
                     $payment_modes[] = array(
-                        'title' => 'Online Payment (100% Cashback)',
+                        'title' => 'Online Payment',
                         'subtitle' => 'Transact online with netbanking, card and wallet',
                         'value' => 'paymentgateway',
                         'payment_options'=>$payment_options

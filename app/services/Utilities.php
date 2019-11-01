@@ -9662,12 +9662,12 @@ Class Utilities {
 
 		if ($validator->fails())
 		{
-			return \Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'), 400);
+			return \Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'), 200);
 		}
 
 		if(empty($finder_id))
 		{
-			return \Response::json(array('status' => 400,'message' => 'Vendor is Empty.'),400);
+			return \Response::json(array('status' => 400,'message' => 'Vendor is Empty.'),200);
 		}
 		Log::info('in mark checkin utilities', [$data]);
 		$finder_id = (int) $finder_id;

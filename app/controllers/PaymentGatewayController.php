@@ -1077,6 +1077,10 @@ class PaymentGatewayController extends \BaseController {
 		// exit();
 		Log::info("execute paymet res :::   ", [Response::json($response)]);
 		
+		if(!empty($txnid)) {
+			$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','schedule_date','type', 'device_type'])->toArray();
+		}
+
 		if($response['status'] == 200){
 			Log::info("200");
 
@@ -1093,8 +1097,9 @@ class PaymentGatewayController extends \BaseController {
 					Log::info("payment id :: ",[$payment_id]);
 					
 					// Order::where('txnid', $txnid)->update(['parent_payment_id_paypal' => $parent_payment_id, "payment_id_paypal" => $payment_id]);
-
-					$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','schedule_date','type'])->toArray();
+					if(empty($order)) {
+						$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','schedule_date','type', 'device_type'])->toArray();
+					}
 					$fin_arr = array(
 						"order_id" => $order['_id'],
 						"status" => "success",
@@ -1104,7 +1109,7 @@ class PaymentGatewayController extends \BaseController {
 						"error_Message" => "",
 						"service_name" => $order['service_name'],
 						"amount" => $order['amount_customer'],
-						"finder_id" => $order['finder_id'],
+						"finder_id" => (!empty($order['finder_id']))?$order['finder_id']:0,
 						"schedule_date" => (empty($order['schedule_date']))? "" : $order['schedule_date'],
 						"type" => $order['type'],
 						"parent_payment_id_paypal" => $parent_payment_id,
@@ -1122,7 +1127,7 @@ class PaymentGatewayController extends \BaseController {
 					$res = json_decode(json_encode($res_obj->getData()),true);
 					if($res['status'] == 200){
 						Log::info("db updated");
-						if($app_device == 'android' || $app_device == 'ios'){
+						if($order['device_type'] == 'android' || $order['device_type'] == 'ios'){
 							return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=200');
 						}
 
@@ -1165,7 +1170,7 @@ class PaymentGatewayController extends \BaseController {
 		// 	return Redirect::to(Config::get('app.website')."/paymentfailure");
 		// }
 
-		if($app_device == 'android' || $app_device == 'ios'){
+		if(!empty($order['device_type']) && ($order['device_type'] == 'android' || $order['device_type'] == 'ios')){
 			return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=400&message=fail');
 		}
 		return Redirect::to(Config::get('app.website')."/paymentfailure");
