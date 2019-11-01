@@ -3140,11 +3140,11 @@ class TransactionController extends \BaseController {
                 $order->update(['schedule_complementry_pass_purchase_redis_id'=>$complementry_pass_purchase]);
             }
 
-            // if(!empty($order['diwali_mixed_reward'])){
-            //     $hamper_data = $this->utilities->getVoucherDetail($order->toArray());
-            //     $this->customermailer->diwaliMixedReward($hamper_data);
-            //     $this->customersms->diwaliMixedReward($order->toArray());
-            // }
+            if(!empty($order['diwali_mixed_reward'])){
+                $hamper_data = $this->utilities->getVoucherDetail($order->toArray());
+                $this->customermailer->diwaliMixedReward($hamper_data);
+                $this->customersms->diwaliMixedReward($order->toArray());
+            }
 
             Log::info("successCommon returned");
             Log::info($order['_id']);
