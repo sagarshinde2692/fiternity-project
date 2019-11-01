@@ -1090,7 +1090,7 @@ return [
                 ]
             ],
             "remarks" => [
-                "&bull; Your Membership Plus <b>OnePass RED<b> will be valid for pass_details_duration_text and will give you access to a total of pass_details_total_sessions.",
+                "&bull; Your Membership Plus <b>OnePass RED</b> will be valid for pass_details_duration_text and will give you access to a total of pass_details_total_sessions.",
                 "&bull; Membership Plus OnePass RED can be used to book a maximum of pass_details_monthly_total_sessions_text in a month."
             ]
         ]
