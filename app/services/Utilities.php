@@ -10408,7 +10408,7 @@ Class Utilities {
             $onepass['interests'] = $data['interests'];
         }
 
-        if(!empty($data['gender'])){
+        if(!empty($data['gender']) && $data['gender'] != ' '){
             $onepass['gender'] = strtolower($data['gender']);
             $customer->gender = strtolower($data['gender']);
         }
