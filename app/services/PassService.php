@@ -2421,8 +2421,11 @@ class PassService {
                 $pass = $data['pass'];
 
                 if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15)){
-                    $rewardinfo['diwali_mixed_reward'] = true;
-                    $rewardinfo['reward_ids'] = [79];
+
+                    if(empty($data['membership_order_id'])){
+                        $rewardinfo['diwali_mixed_reward'] = true;
+                        $rewardinfo['reward_ids'] = [79];
+                    }
                 }
 
             }
