@@ -1099,6 +1099,7 @@ return [
     "attached_pass_summary" => [
         "image" => "https://b.fitn.in/global/Homepage-branding-2018/onepass-logo-new-1_1.png",
         "description" => "A Fitternity exclusive pass that gives you membership privileges and unlimited access at Multifit Wellness and other 12,000+ fitness centers in India\nPS: OnePass is the only fitness membership that will never expire",
+        "text" => "Limitless Workouts | Limitless Validity",
         "button_text" => "GET IT NOW"
     ]
 
