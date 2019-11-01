@@ -483,6 +483,7 @@ if(!function_exists('getmy_city')){
                 break;	
 			case "jaipur":
                 return "jaipur";
+                break;
 			case "calcutta":
 			case "kolkata":
                 return "kolkata";
