@@ -195,12 +195,12 @@ Class CustomerMailer extends Mailer {
 		if(!empty($data['combo_pass_id'])){
 			
 			$data['pass'] = \Pass::where('pass_id', (int)$data['combo_pass_id'])->first();
-			if(empty($data['ratecard_flags']['onepass_attachment_type']) || in_array($data['ratecard_flags']['onepass_attachment_type'], ['complementary', 'membership_plus']))
-                $label = "Membership-Plus-Hybrid-Pass-Purchase";
+			if(empty($data['ratecard_flags']['onepass_attachment_type']) || in_array($data['ratecard_flags']['onepass_attachment_type'], ['complementary', 'membership_plus'])){
+				$label = "Membership-Plus-Hybrid-Pass-Purchase";
                 if(!empty($data['multifit'])){
                     $label = "Membership-Plus-Hybrid-Pass-Purchase-Multifit";
                 }
-			else {
+			}else {
 				return;
 			}
 		}
