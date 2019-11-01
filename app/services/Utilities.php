@@ -10426,7 +10426,7 @@ Class Utilities {
             $onepass['interests'] = $data['interests'];
         }
 
-        if(!empty($data['gender'])){
+        if(!empty($data['gender']) && $data['gender'] != ' '){
             $onepass['gender'] = strtolower($data['gender']);
             $customer->gender = strtolower($data['gender']);
         }
@@ -10571,7 +10571,16 @@ Class Utilities {
             return false; 
         }
 
-        $required_keys = ['photo', 'gender', 'home_address', 'interests'];
+        if(Request::header('Device-Type')){
+            $device_type = Request::header('Device-Type');
+        }
+
+        if(!empty($device_type) && $device_type== 'ios'){
+            $required_keys = ['photo', 'home_address', 'interests'];
+        }
+        else{
+            $required_keys = ['photo', 'gender', 'home_address', 'interests'];
+        }
 
         $profileKeys = array_keys($customer->onepass);
         $status = true;
