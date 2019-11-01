@@ -101,7 +101,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\nLast Few Hours Left. Buy Now!", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\nLast Few Hours Left. Buy Now!", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -165,7 +165,6 @@ return [
                 <li> Additional 25% off is upto INR 2000 </li>
                 <li> Discount varies across different types of pass</li>
                 <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
                 <li> Customer's address will be communicated to Fitternity on call by personal concierge</li>
                 <li> The Fitness Merchandise will be delivered to customer's address by 30th Nov 2019</li>
                 <li> Exclusive Marvel Fitness Merchandise for Membership includes Avengers Gym Bag and Shaker </li>
@@ -204,7 +203,6 @@ return [
                 <li> Additional 25% off is upto INR 2000 </li>
                 <li> Discount varies across different types of pass</li>
                 <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
                 <li> Customer's address will be communicated to Fitternity on call by personal concierge</li>
                 <li> The Fitness Merchandise will be delivered to customer's address by 30th Nov 2019</li>
                 <li> Exclusive Marvel Fitness Merchandise for Membership includes Avengers Gym Bag and Shaker </li>
@@ -242,7 +240,6 @@ return [
                 <li> Additional 25% off is upto INR 2000 </li>
                 <li> Discount varies across different types of pass</li>
                 <li> This cannot be clubbed with any other existing offer</li>
-                <li> The offer ends on 31st October post which code DVLIPASS is invalid</li>
                 <li> Customer's address will be communicated to Fitternity on call by personal concierge</li>
                 <li> The Fitness Merchandise will be delivered to customer's address by 30th Nov 2019</li>
                 <li> Exclusive Marvel Fitness Merchandise for Membership includes Avengers Gym Bag and Shaker </li>
@@ -952,7 +949,7 @@ return [
             'ratecards' => []
         ],
         'local_pass_remarks' => [
-            'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\n22nd-31st October", // need content
+            'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nGet 30% Off + Additional 25% Off + Fitaka Diwali Hamper Worth INR 9,000. Use Code: DVLIPASS\nLast Few Hours Left. Buy Now!", // need content
             'text' => 'Terms and Conditions',
             "title" =>'Terms and Conditions',
             'url' => $apiUrl.'/passtermscondition?type=unlimited'
