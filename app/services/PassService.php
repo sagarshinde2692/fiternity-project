@@ -1961,7 +1961,7 @@ class PassService {
             ];
 
             if(!empty($customerData['onepass']['gender']) || !empty($customerData['gender'])){
-                $profile['gender'] = !empty($customerData['onepass']['gender']) ? $customerData['onepass']['gender'] : $customerData['gender'];
+                !empty($customerData['onepass']['gender']) ? $profile['gender'] = $customerData['onepass']['gender'] : (!empty($customerData['gender']) && $customerData['gender'] != ' ' ? $profile['gender'] = $customerData['gender']: null);
             }
 
             if(!empty($customerData['onepass']['photo']['url'])){
