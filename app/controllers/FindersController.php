@@ -8795,14 +8795,15 @@ class FindersController extends \BaseController {
 	public function addAttachedPassDescription(&$finder){
 		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 
-		$attach_pass_template = false;
+		$attach_pass_template_status = false;
 		if(!empty($finder['finder']['services'])){
 			$template = Config::get('pass.attached_pass');
 			foreach($finder['finder']['services'] as &$service){
-				foreach($service['ratecard'] as &$ratecard){
+				foreach($service['ratecard'] as $key => &$ratecard){
 
 					if(!empty($onepassHoldCustomer) && !empty($ratecard['combo_pass_id'])){
-						unset($ratecard);
+						unset($service['ratecard'][$key]);
+						$service['ratecard'] = array_values($service['ratecard']);
 						continue;
 					}
 
@@ -8814,7 +8815,7 @@ class FindersController extends \BaseController {
 							continue;
 						}
 
-						$attach_pass_template = true;
+						empty($attach_pass_template_status) ? $attach_pass_template_status = true: null;
 
 						$temp_data = [ 
 							'service_name' => $service['service_name'],
@@ -8865,8 +8866,8 @@ class FindersController extends \BaseController {
 					}
 				}
 			}
-			
-			if(!empty($attach_pass_template)){
+
+			if(!empty($attach_pass_template_status)){
 				$finder['attached_pass_summary'] = Config::get('pass.attached_pass_summary');
 			}
 		}
