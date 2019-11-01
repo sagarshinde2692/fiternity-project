@@ -4564,7 +4564,7 @@ if (!function_exists('isExternalCity')) {
 
     function isExternalCity($city){
         
-        return !in_array($city, ['mumbai','delhi','hyderabad','bangalore','gurgaon','noida','pune','chandigarh','jaipur']);
+        return !in_array($city, ['mumbai','delhi','hyderabad','bangalore','gurgaon','noida','pune','chandigarh','jaipur','kolkata']);
     
     }
 
