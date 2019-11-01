@@ -8868,7 +8868,7 @@ class FindersController extends \BaseController {
 			}
 
 			if(!empty($attach_pass_template_status)){
-				$finder['attached_pass_summary'] = Config::get('pass.attached_pass_summary');
+				$finder['finder']['attached_pass_summary'] = Config::get('pass.attached_pass_summary');
 			}
 		}
 
