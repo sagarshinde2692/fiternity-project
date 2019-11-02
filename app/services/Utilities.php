@@ -8240,6 +8240,7 @@ Class Utilities {
         $filter['brand_version'] = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
         $filter['reward_type'] = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
         $filter['cashback_type'] = !empty($customer->loyalty['cashback_type']) ? $customer->loyalty['cashback_type'] : null;
+        $filter['fitternity_grid_id'] = !empty($customer->loyalty['fitternity_grid_id']) ? $customer->loyalty['fitternity_grid_id'] : null;
         return $filter;
     }
 
@@ -8292,6 +8293,9 @@ Class Utilities {
                 }
             }
 
+            if(isset($filter['fitternity_grid_id'])){
+                $match['$match']['fitternity_grid_id'] = $filter['fitternity_grid_id'];
+            }
 
             // print_r($match);
             // exit();
