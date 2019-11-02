@@ -8299,15 +8299,14 @@ Class Utilities {
                         $match['$match']['brand_version'] = 1;
                     }
                 }
-
-                if(!empty($filter['fitternity_grid_id'])){
-                    $match['$match']['fitternity_grid_id'] = $filter['fitternity_grid_id'];
-                }else {
-                    Log::info('fitternity grid id:::::::::::::: does not exists');
-                    $match['$match']['fitternity_grid_id'] = ['$exists' => false];
-                }
             }
 
+            if(!empty($filter['fitternity_grid_id'])){
+                $match['$match']['fitternity_grid_id'] = $filter['fitternity_grid_id'];
+            }else {
+                Log::info('fitternity grid id:::::::::::::: does not exists');
+                $match['$match']['fitternity_grid_id'] = ['$exists' => false];
+            }
 
             // print_r($match);
             // exit();
