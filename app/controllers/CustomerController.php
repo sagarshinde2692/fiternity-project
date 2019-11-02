@@ -8867,7 +8867,7 @@ class CustomerController extends \BaseController {
 			else {
 				$customer = Customer::active()->where('_id', $customer->_id)->where('loyalty', 'exists', true)->first();
 			}
-			if(!empty($customer)){
+			if(!empty($customer) && !empty($customer->loyalty)){
 				$fitternity_grid_id = null;
 			}
             $filter = $this->utilities->getMilestoneFilterData($customer, $isReward, $fitternity_grid_id); //passing fitternity_grid_id =>1, in order to display new rewards on preLoyaltyregisterPage
