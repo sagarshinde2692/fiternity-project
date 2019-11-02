@@ -6687,7 +6687,7 @@ class TransactionController extends \BaseController {
                     );
                 }else{
                     $payment_modes[] = array(
-                        'title' => 'Online Payment (100% Cashback)',
+                        'title' => 'Online Payment',
                         'subtitle' => 'Transact online with netbanking, card and wallet',
                         'value' => 'paymentgateway',
                         'payment_options'=>$payment_options

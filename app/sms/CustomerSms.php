@@ -1404,7 +1404,7 @@ Class CustomerSms extends VersionNextSms{
 	public function diwaliMixedReward($data){
 		$label = 'DiwaliMixedReward-Customer';
 		
-		if(!empty($data['customer_source']) && empty($data['customer_source']=='sodexo')){
+		if(!empty($data['customer_source']) && $data['customer_source']=='sodexo'){
 			return;
 		}
 
@@ -1418,6 +1418,15 @@ Class CustomerSms extends VersionNextSms{
 		
 		$to = $data['customer_phone'];
 		
+		return $this->common($label,$to,$data);
+	}
+	
+	public function externalVoucher($data){
+
+		$label = 'ExternalVoucher-Customer';
+		
+		$to = $data['customer_phone'];
+
 		return $this->common($label,$to,$data);
 	}
 	

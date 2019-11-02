@@ -1306,7 +1306,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('listcheckins', 'CustomerController@listCheckins');
 
-	Route::get('claimexternalcoupon/{_id}', 'CustomerController@claimExternalCoupon');
+	Route::get('claimexternalcoupon/{_id}/{customer_id?}/{key?}', 'CustomerController@claimExternalCoupon');
 	Route::get('claimexternalcouponrewards/{_id}', 'CustomerController@claimExternalCouponRewards');
 
 	Route::get('markcheckin/{finder_id}', 'CustomerController@markCheckin');

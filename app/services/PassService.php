@@ -822,7 +822,7 @@ class PassService {
                 if($passOrder['pass']['pass_type']=='black'){
                     $sessionsUsed = $passOrder['onepass_sessions_used'];
                     $sessionsTotal = $passOrder['onepass_sessions_total']-1;
-                    if($sessionsTotal >= $sessionsUsed) {
+                    if($sessionsTotal > $sessionsUsed) {
                         $canBook = true;
                     }
                 }
@@ -1961,7 +1961,7 @@ class PassService {
             ];
 
             if(!empty($customerData['onepass']['gender']) || !empty($customerData['gender'])){
-                $profile['gender'] = !empty($customerData['onepass']['gender']) ? $customerData['onepass']['gender'] : $customerData['gender'];
+                !empty($customerData['onepass']['gender']) ? $profile['gender'] = $customerData['onepass']['gender'] : (!empty($customerData['gender']) && $customerData['gender'] != ' ' ? $profile['gender'] = $customerData['gender']: null);
             }
 
             if(!empty($customerData['onepass']['photo']['url'])){
@@ -2421,8 +2421,11 @@ class PassService {
                 $pass = $data['pass'];
 
                 // if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15)){
-                //     $rewardinfo['diwali_mixed_reward'] = true;
-                //     $rewardinfo['reward_ids'] = [79];
+
+                //     if(empty($data['membership_order_id'])){
+                //         $rewardinfo['diwali_mixed_reward'] = true;
+                //         $rewardinfo['reward_ids'] = [79];
+                //     }
                 // }
 
             }

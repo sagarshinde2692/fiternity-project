@@ -7689,6 +7689,29 @@ Class Utilities {
 
     }
 
+    public function assignInstantManualVoucher($customer, $voucher_category){
+
+        $new_voucher['voucher_category'] = $voucher_category['_id'];
+        $new_voucher['description'] = $voucher_category['description'];
+        $new_voucher['milestone'] = $voucher_category['milestone'];
+        $new_voucher['customer_id'] = $customer['_id'];
+        $new_voucher['name'] = $voucher_category['name'];
+        $new_voucher['code'] = $voucher_category['name'];
+        $new_voucher['image'] = $voucher_category['image'];
+        $new_voucher['terms'] = $voucher_category['terms'];
+        $new_voucher['amount'] = $voucher_category['amount'];
+        $new_voucher['claim_date'] = new \MongoDate();
+        $new_voucher['selected_voucher'] = $voucher_category['_id'];
+        $new_voucher['claim_voucher'] = true;
+        $new_voucher['milestone'] = !empty($voucher_category['milestone']) ? $voucher_category['milestone'] : null;
+        
+        if(isset($voucher_category['flags'])){
+            $new_voucher['flags'] = $voucher_category['flags'];
+        }
+        
+        return $new_voucher;
+    }
+
     public function generateSwimmingCouponCode($data, $workout_session_flag=null){
 
         $coupon = [
@@ -9639,12 +9662,12 @@ Class Utilities {
 
 		if ($validator->fails())
 		{
-			return \Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'), 400);
+			return \Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'), 200);
 		}
 
 		if(empty($finder_id))
 		{
-			return \Response::json(array('status' => 400,'message' => 'Vendor is Empty.'),400);
+			return \Response::json(array('status' => 400,'message' => 'Vendor is Empty.'),200);
 		}
 		Log::info('in mark checkin utilities', [$data]);
 		$finder_id = (int) $finder_id;
@@ -10294,11 +10317,6 @@ Class Utilities {
                 $pass = true;
             }
             
-            if(Config::get('app.env') == 'stage'){
-                if($customer_email == "ankitamamnia@fitternity.com"){
-                    $pass = true;
-                }
-            }
         }
         Log::info("pass header",[$pass]);
         return $pass;
@@ -10408,7 +10426,7 @@ Class Utilities {
             $onepass['interests'] = $data['interests'];
         }
 
-        if(!empty($data['gender'])){
+        if(!empty($data['gender']) && $data['gender'] != ' '){
             $onepass['gender'] = strtolower($data['gender']);
             $customer->gender = strtolower($data['gender']);
         }
@@ -10553,7 +10571,16 @@ Class Utilities {
             return false; 
         }
 
-        $required_keys = ['photo', 'gender', 'home_address', 'interests'];
+        if(Request::header('Device-Type')){
+            $device_type = Request::header('Device-Type');
+        }
+
+        if(!empty($device_type) && $device_type== 'ios'){
+            $required_keys = ['photo', 'home_address', 'interests'];
+        }
+        else{
+            $required_keys = ['photo', 'gender', 'home_address', 'interests'];
+        }
 
         $profileKeys = array_keys($customer->onepass);
         $status = true;
@@ -10804,4 +10831,18 @@ Class Utilities {
 
         return $fin_vouchers_arr;
     }
+
+    // public function checkFitsquadExpired($customer = null){
+
+    //     $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year',$customer['loyalty']['start_date']->sec));
+    //     $current_date = date('Y-m-d');
+        
+    //     $fitsquad_expired = false;
+
+    //     if($fitsquad_expiery_date < $current_date){
+    //         $fitsquad_expired = true;
+    //     }
+
+    //     return $fitsquad_expired;
+    // }
 }

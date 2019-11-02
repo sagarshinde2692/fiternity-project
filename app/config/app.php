@@ -109,6 +109,26 @@ return array(
 	],
 
 	'pass_payment_options' => [
+		[
+			'title' => 'Paypal',
+			'subtitle' => 'Get 50% Instant Cashback Upto INR 700 (New Users Only)',
+			'value' => 'paypal'
+		],
+		[
+				'title' => 'Paytm',
+				// 'subtitle' => 'Paytm',
+				'value' => 'paytm'
+		],
+		// [
+		// 		'title' => 'AmazonPay',
+		// 		// 'subtitle' => 'AmazonPay',
+		// 		'value' => 'amazonpay'
+		// ],
+		[
+				'title' => 'Mobikwik',
+				// 'subtitle' => 'Mobikwik',
+				'value' => 'mobikwik'
+		],
         [
                 'title' => 'PayU',
                 // 'subtitle' => 'PayU',
@@ -119,7 +139,7 @@ return array(
 	'pass_payment_options_wallets_test' => [
 		[
 			'title' => 'Paypal',
-			'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
+			'subtitle' => 'Get 50% Instant Cashback Upto INR 700 (New Users Only)',
 			'value' => 'paypal'
 		],
 		[
@@ -498,6 +518,7 @@ return array(
 	'contact_us_customer_email_onepass' => 'onepass@fitternity.com',
 	'contact_us_vendor_number' => '+919699998838',
 	'contact_us_customer_number' => '+912261094444',
+	'contact_us_customer_number_pps' => "+918879886083",
 	'contact_us_customer_number_onepass' => '+917400062849',
 	'display_contact_us_customer_number_onepass' => '+91 74000 62849',
 	'followup_fitness_concierge' => 'Rachel',
