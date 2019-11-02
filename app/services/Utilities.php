@@ -7279,7 +7279,7 @@ Class Utilities {
                 if(!empty($data['type']) && $data['type'] == 'workout-session' && ( empty($data['finder_flags']['reward_type']) || (!empty($data['finder_flags']['reward_type']) && $data['finder_flags']['reward_type'] != 1)) ){
                     if(empty($customer['loyalty'])){
                         $loyalty['reward_type'] = 2;
-                        $loyalty['fitternity_grid_id'] = 1;
+                        //$loyalty['fitternity_grid_id'] = 1;
                         $dontUpdateLoyalty = false;
                         Log::info("dontUpdateLoyalty 2, first fitternity grid setting:::::::::::::::::::::::::",[$dontUpdateLoyalty]);
                     }
@@ -7319,15 +7319,15 @@ Class Utilities {
                             $dontUpdateLoyalty = false;
                             Log::info("dontUpdateLoyalty 3",[$dontUpdateLoyalty]);
                         }
-                        else if(empty($loyalty['reward_type']) || ($loyalty['reward_type']==2 && empty($loyalty['cashback_type']))){
-                            $loyalty['fitternity_grid_id'] = 1;
-                            Log::info("second fitternity grid setting:::::::::::::::::::::::");
-                        }
+                        // else if(empty($loyalty['reward_type']) || ($loyalty['reward_type']==2 && empty($loyalty['cashback_type']))){
+                        //     $loyalty['fitternity_grid_id'] = 1;
+                        //     Log::info("second fitternity grid setting:::::::::::::::::::::::");
+                        // }
                     }
-                    else if(empty($loyalty['reward_type']) || ($loyalty['reward_type']==2 && empty($loyalty['cashback_type']))){
-                        $loyalty['fitternity_grid_id'] = 1;
-                        Log::info("third fitternity grid setting:::::::::::::::::::::");
-                    }
+                    // else if(empty($loyalty['reward_type']) || ($loyalty['reward_type']==2 && empty($loyalty['cashback_type']))){
+                    //     $loyalty['fitternity_grid_id'] = 1;
+                    //     Log::info("third fitternity grid setting:::::::::::::::::::::");
+                    // }
                     // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
                     // Log::info("type",[$data['type']]);
                     // $dontUpdateLoyalty = true;
@@ -7357,6 +7357,7 @@ Class Utilities {
 
                 $loyalty['updated_at'] = new \MongoDate();
 
+                $this->checkForFittenityGrid($loyalty);
                 $update_data = [
                     'loyalty'=>$loyalty 
                 ];
@@ -10860,4 +10861,11 @@ Class Utilities {
 
     //     return $fitsquad_expired;
     // }
+
+    public function checkForFittenityGrid(&$loyalty){
+        if(empty($loyalty['brand_loyalty']) && empty($loyalty['cashback_type']) && (empty($loyalty['reward_type']) || $loyalty['reward_type']==2)){
+            $loyalty['fitternity_grid_id'] = 1;
+        }
+        return;
+    }
 }
