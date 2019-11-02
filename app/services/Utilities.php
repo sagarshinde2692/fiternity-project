@@ -7279,6 +7279,7 @@ Class Utilities {
                 if(!empty($data['type']) && $data['type'] == 'workout-session' && ( empty($data['finder_flags']['reward_type']) || (!empty($data['finder_flags']['reward_type']) && $data['finder_flags']['reward_type'] != 1)) ){
                     if(empty($customer['loyalty'])){
                         $loyalty['reward_type'] = 2;
+                        $loyalty['fitternity_grid_id'] = 1;
                         $dontUpdateLoyalty = false;
                         Log::info("dontUpdateLoyalty 2",[$dontUpdateLoyalty]);
                     }
