@@ -7319,7 +7319,7 @@ Class Utilities {
                             $dontUpdateLoyalty = false;
                             Log::info("dontUpdateLoyalty 3",[$dontUpdateLoyalty]);
                         }
-                        else if(empty($loyalty['reward_type'] || $loyalty['reward_type']==2 && empty($loyalty['cashback_type']))){
+                        else if(empty($loyalty['reward_type']) || ($loyalty['reward_type']==2 && empty($loyalty['cashback_type']))){
                             $loyalty['fitternity_grid_id'] = 1;
                         }
                     }
