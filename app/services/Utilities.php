@@ -8234,7 +8234,7 @@ Class Utilities {
     
     }
 
-    public function getMilestoneFilterData($customer, $includeCorporate=false){
+    public function getMilestoneFilterData($customer, $includeCorporate=false, $fitternity_grid_id=null){
         $filter = [];
         if($includeCorporate) {
             $filter['corporate_id'] = !empty($customer->corporate_id) ? $customer->corporate_id : null;
@@ -8246,7 +8246,7 @@ Class Utilities {
         $filter['brand_version'] = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
         $filter['reward_type'] = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
         $filter['cashback_type'] = !empty($customer->loyalty['cashback_type']) ? $customer->loyalty['cashback_type'] : null;
-        $filter['fitternity_grid_id'] = !empty($customer->loyalty['fitternity_grid_id']) ? $customer->loyalty['fitternity_grid_id'] : null;
+        $filter['fitternity_grid_id'] = !empty($customer->loyalty['fitternity_grid_id']) ? $customer->loyalty['fitternity_grid_id'] : $fitternity_grid_id;
         return $filter;
     }
 
