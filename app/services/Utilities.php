@@ -8293,8 +8293,10 @@ Class Utilities {
                 }
             }
 
-            if(isset($filter['fitternity_grid_id'])){
+            if(!empty($filter['fitternity_grid_id'])){
                 $match['$match']['fitternity_grid_id'] = $filter['fitternity_grid_id'];
+            }else {
+                $match['$match']['fitternity_grid_id'] = ['$exists' => false];
             }
 
             // print_r($match);
