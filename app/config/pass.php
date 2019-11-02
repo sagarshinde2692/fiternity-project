@@ -101,7 +101,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\n1-5 Nov", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\n3-8 Nov", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\n1-5 Nov", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\n3-8 Nov", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -160,7 +160,7 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Offer Valid From 1-5 November</li>
+                <li><b>Sweat The Sweets Sale</b><br>Offer Valid From 3-8 November</li>
                 <li>
                     <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
                     How does it work?<br>
@@ -169,7 +169,7 @@ return [
                     - Get 50% instant cashback of upto INR 700 on a new users first transaction on PayPal<br>
                     - Discount varies across different types of pass<br>
                     - This cannot be clubbed with any other existing offer<br>
-                    - The offer ends on 5th November post which code SWEAT20 is invalid<br>
+                    - The offer ends on 8th November post which code SWEAT20 is invalid<br>
                 </li>
                 <li>
                     <b>Exclusive PayPal Cashback Offer</b><br>
@@ -212,7 +212,7 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Offer Valid From 1-5 November</li>
+                <li><b>Sweat The Sweets Sale</b><br>Offer Valid From 3-8 November</li>
                 <li>
                     <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
                     How does it work?<br>
@@ -221,7 +221,7 @@ return [
                     - Get 50% instant cashback of upto INR 700 on a new users first transaction on PayPal<br>
                     - Discount varies across different types of pass<br>
                     - This cannot be clubbed with any other existing offer<br>
-                    - The offer ends on 5th November post which code SWEAT20 is invalid<br>
+                    - The offer ends on 8th November post which code SWEAT20 is invalid<br>
                 </li>
                 <li>
                     <b>Exclusive PayPal Cashback Offer</b><br>
@@ -263,7 +263,7 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Offer Valid From 1-5 November</li>
+                <li><b>Sweat The Sweets Sale</b><br>Offer Valid From 3-8 November</li>
                 <li>
                     <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
                     How does it work?<br>
@@ -272,7 +272,7 @@ return [
                     - Get 50% instant cashback of upto INR 700 on a new users first transaction on PayPal<br>
                     - Discount varies across different types of pass<br>
                     - This cannot be clubbed with any other existing offer<br>
-                    - The offer ends on 5th November post which code SWEAT20 is invalid<br>
+                    - The offer ends on 8th November post which code SWEAT20 is invalid<br>
                 </li>
                 <li>
                     <b>Exclusive PayPal Cashback Offer</b><br>

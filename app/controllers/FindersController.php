@@ -1399,7 +1399,7 @@ class FindersController extends \BaseController {
                         if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
 								
-								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships. Use Code: BURN20 <br> 1-5 Nov",
+								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships. Use Code: BURN20 <br> 3-8 Nov",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -1411,7 +1411,7 @@ class FindersController extends \BaseController {
                         }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships. Use Code: BURN20 <br> 1-5 Nov",
+								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships. Use Code: BURN20 <br> 3-8 Nov",
                                 'text_color'=> '$fff',
                             ];
 
@@ -1420,7 +1420,7 @@ class FindersController extends \BaseController {
                         }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
                             $response['vendor_stripe_data']	= [
                             
-								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships. Use Code: BURN20 <br> 1-5 Nov",
+								'text1'=> "FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships. Use Code: BURN20 <br> 3-8 Nov",
                                 'text3'=>"",
                                 'background-color'=> "",
                                 'text_color'=> '$fff',
@@ -3894,25 +3894,25 @@ class FindersController extends \BaseController {
 		// 			$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 					
 					if($this->device_type == 'android'){
-						$android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 <br><br>Offer Valid From 1-5 November";
+						$android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 <br><br>Offer Valid From 3-8 November";
 
-						$op_android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>Offer Valid From 1-5 November";
+						$op_android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>Offer Valid From 3-8 November";
 					}else{	
-						$ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 \n\nOffer Valid From 1-5 November";
+						$ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 \n\nOffer Valid From 3-8 November";
 
-						$op_ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\nOffer Valid From 1-5 November";
+						$op_ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\nOffer Valid From 3-8 November";
 					}
 
 		// 			if($price >= 8000){
 		// 				$pricemore = true;
 		// 				if($this->device_type == 'android'){
-		// 					$android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 <br><br>Offer Valid From 1-5 November";
+		// 					$android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 <br><br>Offer Valid From 3-8 November";
 
-		// 					$op_android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>Offer Valid From 1-5 November";
+		// 					$op_android_line = "<u>Sweat The Sweets Sale</u><br><br>- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 <br><br>Offer Valid From 3-8 November";
 		// 				}else{	
-		// 					$ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 \n\nOffer Valid From 1-5 November";
+		// 					$ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : FIT100 \n\nOffer Valid From 3-8 November";
 
-		// 					$op_ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\nOffer Valid From 1-5 November";
+		// 					$op_ios_line = "\nSweat The Sweets Sale\n\n- On Memberships: FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships, Use Code: BURN20 \n\nOffer Valid From 3-8 November";
 		// 				}
 						
 		// 				break;
