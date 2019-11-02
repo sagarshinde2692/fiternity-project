@@ -7323,7 +7323,9 @@ Class Utilities {
                             $loyalty['fitternity_grid_id'] = 1;
                         }
                     }
-                    
+                    else if(empty($loyalty['reward_type']) || ($loyalty['reward_type']==2 && empty($loyalty['cashback_type']))){
+                        $loyalty['fitternity_grid_id'] = 1;
+                    }
                     // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
                     // Log::info("type",[$data['type']]);
                     // $dontUpdateLoyalty = true;
