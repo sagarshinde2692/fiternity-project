@@ -1127,7 +1127,7 @@ class PaymentGatewayController extends \BaseController {
 					$res = json_decode(json_encode($res_obj->getData()),true);
 					if($res['status'] == 200){
 						Log::info("db updated");
-						if($order['device_type'] == 'android' || $order['device_type'] == 'ios'){
+						if(!empty($order['device_type']) && ($order['device_type'] == 'android' || $order['device_type'] == 'ios')){
 							return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=200');
 						}
 
