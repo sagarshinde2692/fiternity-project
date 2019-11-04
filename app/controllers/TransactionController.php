@@ -6221,6 +6221,10 @@ class TransactionController extends \BaseController {
             // if($data['ratecard_amount'] >= 8000){
             //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships \nUse Code: BURN20",'position'=>$position++];
             // }
+
+            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled'])){
+				['field'=>'','value'=>"",'position'=>$position++];
+			}
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
@@ -6239,6 +6243,10 @@ class TransactionController extends \BaseController {
             if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
+
+            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled'])){
+				$booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
+			}
         }
         
         $booking_details_all = [];

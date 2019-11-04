@@ -5492,10 +5492,14 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-                            $ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: FIT100";
+							$ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: FIT100";				
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
                             //     $ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: FIT100";
                             // }
+						}
+
+						if(!empty($finder['flags']['monsoon_flash_discount_disabled'])){
+							unset($ratecard['remarks']);
 						}
 						
 						$corporate_discount_branding = $this->utilities->corporate_discount_branding();
@@ -8759,6 +8763,11 @@ class FindersController extends \BaseController {
 			// 	$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: FIT100";
 			// }
 			$rateCard['remarks_imp'] = true;
+
+			if(!empty($finder['flags']['monsoon_campaign_pps'])){
+				unset($rateCard['remarks']);
+				unset($rateCard['remarks_imp']);
+			}
 
 			$corporate_discount_branding = $this->utilities->corporate_discount_branding();
 			if(!empty($corporate_discount_branding) && $corporate_discount_branding){
