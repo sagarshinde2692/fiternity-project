@@ -6222,8 +6222,10 @@ class TransactionController extends \BaseController {
             //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships \nUse Code: BURN20",'position'=>$position++];
             // }
 
+            
             if(!empty($data['finder_flags']['monsoon_flash_discount_disabled'])){
-				['field'=>'','value'=>"",'position'=>$position++];
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
+                
 			}
         }
 
