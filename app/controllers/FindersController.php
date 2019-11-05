@@ -495,8 +495,15 @@ class FindersController extends \BaseController {
 
 				$finderarr['services'] = $this->sortNoMembershipServices($finderarr['services'], 'finderdetail');
 				
-
-				
+				$passCatIdArr = [];
+				$pass_service_categories = [];
+				// $pass_service_categories = array_where($finderarr['services'], function($key, $value) use ($category_slug){
+				foreach($finderarr['services'] as $value) {
+					if((!empty($value['flags']['classpass_available'])) && $value['flags']['classpass_available'] && !in_array($value['category']['_id'], $passCatIdArr)) {
+						array_push($pass_service_categories, ['_id' => $value['category']['_id'], 'slug' => $value['category']['slug'], 'name' => $value['category']['name']]); 
+						array_push($passCatIdArr, $value['category']['_id']);
+					}
+				}
 				
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings', 'flags','location_id','slug','location', 'inoperational_dates']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
@@ -505,6 +512,7 @@ class FindersController extends \BaseController {
 				array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
+				array_set($finder, 'pass_service_categories', pluck($pass_service_categories, array('_id', 'name', 'slug') ));
 				
 			   //return $finderarr['services'];
 
