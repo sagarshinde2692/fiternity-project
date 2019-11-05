@@ -9085,6 +9085,12 @@ class CustomerController extends \BaseController {
 			}
 
 			$customer = Customer::find((int)$customer_id);
+			$fitsquad_expired = $this->utilities->checkFitsquadExpired($customer);
+
+			if(!empty($fitsquad_expired['claim_expired'])){
+				return Response::json(array('status' => 400, 'message' => 'Cannot claim reward. Your Fitsquad program has been expired.'));
+			}
+
 			$milestones = $this->getCustomerMilestones($customer);
 
 
