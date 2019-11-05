@@ -10864,7 +10864,7 @@ Class Utilities {
             $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year', $customer['loyalty']['start_date']->sec));
             $current_date = date('Y-m-d');
 
-            if(strtotime('+15 days',$fitsquad_expiery_date) < strtotime($current_date)){
+            if(strtotime('+15 days', strtotime($fitsquad_expiery_date)) < strtotime($current_date)){
                 $fitsquad_claim_expired = [ 'status' => true, "message"=> "Your Fitsquad program has been expired."];
             }
 
