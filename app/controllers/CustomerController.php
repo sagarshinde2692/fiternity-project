@@ -9087,8 +9087,8 @@ class CustomerController extends \BaseController {
 			$customer = Customer::find((int)$customer_id);
 			$fitsquad_expired = $this->utilities->checkFitsquadExpired($customer);
 
-			if(!empty($fitsquad_expired['claim_expired'])){
-				return Response::json(array('status' => 400, 'message' => 'Cannot claim reward. Your Fitsquad program has been expired.'));
+			if(!empty($fitsquad_expired['claim_expired']['status'])){
+				return Response::json(array('status' => 400, 'message' => 'Cannot claim reward. '.$fitsquad_expired['claim_expired']['message']));
 			}
 
 			$milestones = $this->getCustomerMilestones($customer);
@@ -9709,8 +9709,8 @@ class CustomerController extends \BaseController {
 
 		$fitsquad_expired = $this->utilities->checkFitsquadExpired($customer);
 
-		if(!empty($fitsquad_expired['checkin_expired'])){
-			$post_register['milestones']['footer'] = "Your Fitsquad has been expired";
+		if(!empty($fitsquad_expired['checkin_expired']['status'])){
+			$post_register['milestones']['footer'] = $fitsquad_expired['checkin_expired']['message'];
 		}else{
 			$post_register['milestones']['footer'] = strtr($post_register['milestones']['footer'], ['$last_date'=>date('d M Y', strtotime('+1 year',$customer['loyalty']['start_date']->sec))]);
 		}
@@ -9889,7 +9889,7 @@ class CustomerController extends \BaseController {
 
 							!isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
 
-							if(!empty($fitsquad_expired['claim_expired'])){
+							if(!empty($fitsquad_expired['claim_expired']['status'])){
 								$post_reward_data_template['claim_enabled'] = false;
 							}
 

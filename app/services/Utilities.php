@@ -6568,6 +6568,10 @@ Class Utilities {
 			}
             $customer_id = $data['customer_id'];
             $customer = Customer::where('_id', $customer_id)->where('loyalty.start_date', 'exists', true)->first(['loyalty']);
+            $fitsquad_expired = $this->checkFitsquadExpired($customer);
+            if(!empty($fitsquad_expired['checkin_expired']['status'])){
+				return ['status' => 400, 'message' => $fitsquad_expired['checkin_expired']['message']];
+            }
             $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
             $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
             $brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
@@ -9605,8 +9609,8 @@ Class Utilities {
 
         $fitsquad_expired = $this->checkFitsquadExpired($customer);
         //if(!empty($customer['loyalty']['start_date']) && strtotime('midnight', strtotime('+1 year',$customer['loyalty']['start_date']->sec)) < strtotime('today')){
-        if(!empty($fitsquad_expired['checkin_expired'])){
-            return $this->checkinCheckoutFailureMsg("Your Fitsquad program has been expired.");
+        if(!empty($fitsquad_expired['checkin_expired']['status'])){
+            return $this->checkinCheckoutFailureMsg($fitsquad_expired['checkin_expired']['message']);
         }
 
 		if(count($checkins)>0)
@@ -10853,19 +10857,19 @@ Class Utilities {
 
     public function checkFitsquadExpired($customer = null){
 
-        $fitsquad_claim_expired = false;
-        $fitsquad_checkin_expired = false;
+        $fitsquad_claim_expired = ['status' => false, "message"=>''];
+        $fitsquad_checkin_expired = ['status' => false, "message"=>''];
         
         if(!empty($customer['loyalty']['start_date']->sec)){
             $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year', $customer['loyalty']['start_date']->sec));
             $current_date = date('Y-m-d');
 
             if(strtotime('+15 days',$fitsquad_expiery_date) < strtotime($current_date)){
-                $fitsquad_claim_expired = true;
+                $fitsquad_claim_expired = [ 'status' => true, "message"=> "Your Fitsquad program has been expired."];
             }
 
             if($fitsquad_expiery_date < $current_date){
-                $fitsquad_checkin_expired = true;
+                $fitsquad_checkin_expired = [ 'status' => true, "message" => "Your Fitsquad program has been expired."];
             }
         }
 
