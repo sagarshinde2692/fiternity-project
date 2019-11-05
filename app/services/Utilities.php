@@ -10848,19 +10848,26 @@ Class Utilities {
         return $fin_vouchers_arr;
     }
 
-    // public function checkFitsquadExpired($customer = null){
+    public function checkFitsquadExpired($customer = null){
 
-    //     $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year',$customer['loyalty']['start_date']->sec));
-    //     $current_date = date('Y-m-d');
+        $fitsquad_claim_expired = false;
+        $fitsquad_checkin_expired = false;
         
-    //     $fitsquad_expired = false;
+        if(!empty($customer['loyalty']['start_date']->sec)){
+            $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year', $customer['loyalty']['start_date']->sec));
+            $current_date = date('Y-m-d');
 
-    //     if($fitsquad_expiery_date < $current_date){
-    //         $fitsquad_expired = true;
-    //     }
+            if(strtotime('+15 days',$fitsquad_expiery_date) < strtotime($current_date)){
+                $fitsquad_claim_expired = true;
+            }
 
-    //     return $fitsquad_expired;
-    // }
+            if($fitsquad_expiery_date < $current_date){
+                $fitsquad_checkin_expired = true;
+            }
+        }
+
+        return ['claim_expired'=> $fitsquad_claim_expired, 'checkin_expired'=> $fitsquad_checkin_expired];
+    }
 
     public function checkForFittenityGrid(&$loyalty){
         if(empty($loyalty['brand_loyalty']) && empty($loyalty['cashback_type']) && (empty($loyalty['reward_type']) || $loyalty['reward_type']==2)){
