@@ -160,7 +160,7 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left!</li>
+                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left, Buy Now</li>
                 <li>
                     <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
                     How does it work?<br>
@@ -212,7 +212,7 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left!</li>
+                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left, Buy Now</li>
                 <li>
                     <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
                     How does it work?<br>
@@ -263,7 +263,7 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left!</li>
+                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left, Buy Now</li>
                 <li>
                     <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
                     How does it work?<br>

@@ -1630,7 +1630,7 @@ class PassService {
         // }else {
             $resp[] = [
                 'field' => '',
-                'value' => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20\nLast Few Hours Left!",
+                'value' => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20\nLast Few Hours Left, Buy Now",
             ];
         // }
 
