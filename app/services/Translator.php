@@ -987,12 +987,6 @@ public static function translate_searchresultsv2($es_searchresult_response){
 			}
 		}
 
-        if(empty($es_searchresult_response['aggregations'])){
-        
-            return Response::json(['status'=>400], 400);
-        
-        }
-
 		$aggs = $es_searchresult_response['aggregations'];
 
 
