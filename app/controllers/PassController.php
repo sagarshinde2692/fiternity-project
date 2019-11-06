@@ -209,7 +209,13 @@ class PassController extends \BaseController {
 
 		if(!empty($customeremail)) {
             $customer = Customer::where('_id', $customer_id)->first();
-			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where(function ($query) { 
+                $query->orWhere(function($query1) {
+                    $query1->where('end_date','>=',new MongoDate())->where('pass.pass_type','=','red');
+                })->orWhere(function($query1) {
+                    $query1->where('pass.pass_type','=','black');
+                });
+            })->orderBy('_id', 'desc')->first();
 			if(!empty($passOrder)) {
 				$passPurchased = true;
 			}
