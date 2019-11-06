@@ -101,7 +101,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\nLast few hours left", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\nLast Few Hours Left!", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\nLast few hours left", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\nLast Few Hours Left!", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -160,7 +160,7 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Last few hours left</li>
+                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left!</li>
                 <li>
                     <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
                     How does it work?<br>
@@ -212,7 +212,7 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Last few hours left</li>
+                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left!</li>
                 <li>
                     <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
                     How does it work?<br>
@@ -263,7 +263,7 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Last few hours left</li>
+                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left!</li>
                 <li>
                     <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
                     How does it work?<br>

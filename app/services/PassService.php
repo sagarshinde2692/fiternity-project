@@ -1625,12 +1625,12 @@ class PassService {
         // if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
         //     $resp[] = [
         //            'field' => '',
-        //            'value' => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20\nLast few hours left",
+        //            'value' => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20\nLast Few Hours Left!",
         //     ];
         // }else {
             $resp[] = [
                 'field' => '',
-                'value' => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20\nLast few hours left",
+                'value' => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20\nLast Few Hours Left!",
             ];
         // }
 
