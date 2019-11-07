@@ -6636,7 +6636,7 @@ Class Utilities {
                 }
             }
 
-            $data['distance'] = (!empty($data['lat']) && !empty($data['lon']) && !empty($data['finder_lat']) && !empty($data['finder_lon'])) ?$this->$this->distanceCalculationOfCheckinsCheckouts(
+            $data['distance'] = (!empty($data['lat']) && !empty($data['lon']) && !empty($data['finder_lat']) && !empty($data['finder_lon'])) ?$this->distanceCalculationOfCheckinsCheckouts(
                 [
                     'lat'=> $data['lat'], 
                     'lon'=> $data['lon']
