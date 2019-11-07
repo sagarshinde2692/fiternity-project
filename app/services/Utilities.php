@@ -6619,12 +6619,12 @@ Class Utilities {
             }
 
             if(!empty($data['finder_id'])){
-                $finder_lat_lon = Finder::where('_id', $data['finder_id'])->get(['lat', 'lon']);
+                $finder_lat_lon = Finder::where('_id', $data['finder_id'])->select('lat', 'lon')->first();
 
                 Log::info('finder lat lon', [$finder_lat_lon]);
-                if(!empty($finder_lat_lon['0']['lat']) && !empty($finder_lat_lon['0']['lat'])){
-                    $data['finder_lat'] = $finder_lat_lon[0]['lat'];
-                    $data['finder_lon'] = $finder_lat_lon[0]['lon'];
+                if(!empty($finder_lat_lon['lat']) && !empty($finder_lat_lon['lat'])){
+                    $data['finder_lat'] = $finder_lat_lon['lat'];
+                    $data['finder_lon'] = $finder_lat_lon['lon'];
                     
                     $data['finder_geometry'] = [
                         "type" => "Point",
