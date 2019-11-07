@@ -6608,8 +6608,43 @@ Class Utilities {
             if(Request::header('App-Version')){
                 $checkin->app_version = Request::header('App-Version');
             }
-            
-            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon','receipt', 'booktrial_id'];
+            if(!empty($data['lat']) && !empty($data['lon'])){
+                $data['geometry'] = [
+                    "type" => "Point",
+                    "coordinates" => [ 
+                        $data['lon'], 
+                        $data['lat'] 
+                    ]
+                ];
+            }
+
+            if(!empty($data['finder_id'])){
+                $finder_lat_lon = Finder::where('_id', $data['finder_id'])->get(['lat', 'lon']);
+
+                $data['finder_lat'] = $finder_lat_lon['lat'];
+                $data['finder_lon'] = $finder_lat_lon['lon'];
+                
+                $data['finder_geometry'] = [
+                    "type" => "Point",
+                    "coordinates" => [ 
+                        $finder_lat_lon['lon'], 
+                        $finder_lat_lon['lat'] 
+                    ]
+                ];
+            }
+
+            $data['distance'] = (!empty($data['lat']) && !empty($data['lon']) && !empty($data['finder_lat']) && !empty($data['finder_lon'])) ?$this->$this->distanceCalculationOfCheckinsCheckouts(
+                [
+                    'lat'=> $data['lat'], 
+                    'lon'=> $data['lon']
+                ], 
+                [
+                    'lat'=> $data['finder_lat'], 
+                    'lon'=> $data['finder_lon']
+                ]
+            ) : 0;
+
+            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon','receipt', 'booktrial_id', 'finder_lat', 'finder_lon', 'geometry', 'finder_geometry'];
 
             foreach($fields as $field){
                 if(isset($data[$field])){
