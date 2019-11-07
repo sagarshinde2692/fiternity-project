@@ -1107,6 +1107,12 @@ class PassService {
         $order->communication = $communication;
         $order->update();
 
+        try{
+            $this->giveCashbackOnOrderSuccess($order);
+        }catch (Exception $e) {
+            Log::info('Error : '.$e->getMessage());
+        }
+
         return ['status'=>200, 'message'=>'Transaction successful'];
 
     
