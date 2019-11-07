@@ -3263,6 +3263,12 @@ Class CustomerReward {
                 $resp['coupon_discount_percent'] = $coupon['discount_percent'];
             }
 
+            if($discount_amount == 0 && !empty($coupon['flags']['not_applicable']) && $coupon['flags']['not_applicable']){
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon Not Applicable");
+
+                return $resp;
+            }
+
         }else{
 
             $applyCustomerCoupn = false;

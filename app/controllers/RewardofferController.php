@@ -1109,30 +1109,39 @@ class RewardofferController extends BaseController {
             
         }
 
-        // if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
-        //     $rewardObj = $this->getMixedReward();
-        //     $mixedreward_content = MixedRewardContent::where('flags.type', 'membership')->first();
+        $no_rewards = false;
+        $diwali_mixed_reward = false;
+        if(!empty($finder['_id']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
+            Log::info("camp applicable");
+            if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
+                Log::info("fitbox applicable");
+                $diwali_mixed_reward = true;
+                $rewardObj = $this->getMixedReward();
+                $mixedreward_content = MixedRewardContent::where('flags.type', 'membership')->first();
+    
+                if(!empty($mixedreward_content)){
+                    if($rewardObj && $mixedreward_content){
+                        
+                        $rewards = [];
+    
+                        $rewardObjData = $rewardObj->toArray();
+    
+                        $this->unsetRewardObjFields($rewardObjData);
 
-        //     if(!empty($mixedreward_content)){
-        //         if($rewardObj && $mixedreward_content){
-                    
-		// 			$rewards = [];
-
-		// 			$rewardObjData = $rewardObj->toArray();
-
-        //             $this->unsetRewardObjFields($rewardObjData);
-
-					
-		// 			$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
-
-        //             list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
-
-        //             list($rewardObjData) = $this->rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData);
-
-        //             $rewards[] = $rewardObjData;
-		// 		}
-		// 	}
-        // }
+                        $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+    
+                        list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
+    
+                        list($rewardObjData) = $this->rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData);
+    
+                        $rewards[] = $rewardObjData;
+                    }
+                }
+            }else{
+                Log::info("fitbox not applicable");
+                $no_rewards = true;
+            }
+        }
 
         if(empty($mixedreward_content)){
            
@@ -1316,6 +1325,7 @@ class RewardofferController extends BaseController {
         }
 
         if(isset($data['ratecard_id']) && gettype($data['ratecard_id']) == 'integer' && in_array($data['ratecard_id'], [103151,103152,103153,103154,103155,103156,103157,103158])){
+            Log::info("first");
             $rewards = [];
             $cashback = null;
         }
@@ -1332,8 +1342,13 @@ class RewardofferController extends BaseController {
         if(!empty($finder['_id']) && $finder['_id'] == 11230 && $duration_day == 360){
             $cashback = null;
         }
-        if(!empty($gold_mixed) || !empty($no_instant_rewards)){
+        if(!empty($gold_mixed) || !empty($no_instant_rewards) || !empty($diwali_mixed_reward)){
             $cashback = null;
+        }
+
+        if(!empty($no_rewards)){
+            $rewards = [];
+            $cashback = null; 
         }
         
         $upgradeMembership = $this->addUpgradeMembership($data, $ratecard);
