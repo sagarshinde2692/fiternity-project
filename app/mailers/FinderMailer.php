@@ -1006,6 +1006,7 @@ Class FinderMailer extends Mailer {
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
 						'priyankapatel@fitternity.com',
+						'anoliadhia@fitternity.com',
 						'shreyasjadhav@fitternity.com' 
 					];
 					break;
@@ -1016,6 +1017,7 @@ Class FinderMailer extends Mailer {
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
 						'priyankapatel@fitternity.com',
+						'anoliadhia@fitternity.com',
 						'shreyasjadhav@fitternity.com' 
 					];
 					break;
@@ -1024,6 +1026,7 @@ Class FinderMailer extends Mailer {
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
 						'priyankapatel@fitternity.com',
+						'anoliadhia@fitternity.com',
 						'shreyasjadhav@fitternity.com' 
 					];
 					break;
