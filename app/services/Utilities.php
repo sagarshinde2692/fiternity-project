@@ -6644,7 +6644,7 @@ Class Utilities {
                 ]
             ) : 0;
 
-            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon','receipt', 'booktrial_id', 'finder_lat', 'finder_lon', 'geometry', 'finder_geometry'];
+            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon','receipt', 'booktrial_id', 'finder_lat', 'finder_lon', 'geometry', 'finder_geometry', 'distance'];
 
             foreach($fields as $field){
                 if(isset($data[$field])){
