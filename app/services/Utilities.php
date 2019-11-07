@@ -6622,15 +6622,15 @@ Class Utilities {
                 $finder_lat_lon = Finder::where('_id', $data['finder_id'])->select('lat', 'lon')->first();
 
                 Log::info('finder lat lon', [$finder_lat_lon]);
-                if(!empty($finder_lat_lon['lat']) && !empty($finder_lat_lon['lat'])){
-                    $data['finder_lat'] = $finder_lat_lon['lat'];
-                    $data['finder_lon'] = $finder_lat_lon['lon'];
+                if(!empty($finder_lat_lon->lat) && !empty($finder_lat_lon->lat)){
+                    $data['finder_lat'] = $finder_lat_lon->lat;
+                    $data['finder_lon'] = $finder_lat_lon->lon;
                     
                     $data['finder_geometry'] = [
                         "type" => "Point",
                         "coordinates" => [ 
-                            $finder_lat_lon['lon'], 
-                            $finder_lat_lon['lat'] 
+                            $data['finder_lon'], 
+                            $data['finder_lat'] 
                         ]
                     ];
                 }
