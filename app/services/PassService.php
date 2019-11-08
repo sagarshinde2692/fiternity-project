@@ -1227,6 +1227,9 @@ class PassService {
         if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['web_message'] = $success['web_message'];
             $success_template['subline_1'] = "You can start booking from ".date('D, d M Y', strtotime($order['start_date']));
+
+            $success_template['offer_success_msg'] = "";
+            
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
                 $success_template['offer_success_msg'] = "Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass";
             }
