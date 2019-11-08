@@ -1407,7 +1407,7 @@ class FindersController extends \BaseController {
 					$vendor_stripe_line = "Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships <br> 9-15 Nov";
 
 				}else{
-					foreach($data['finder']['services'] as &$service){
+					foreach($response['finder']['services'] as &$service){
 						foreach($service['ratecard'] as &$ratecard){
 							if($ratecard['type'] == 'membership'){
 								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
