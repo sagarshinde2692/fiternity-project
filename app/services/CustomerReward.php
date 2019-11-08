@@ -2941,24 +2941,24 @@ Class CustomerReward {
                             if((!empty($embedded_value) || $embedded_value == 0) && preg_match($y['values'], $embedded_value)){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'gt'){
+                        }else if($y['operator'] == 'gt'){
                             if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value > $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'gte'){
+                        }else if($y['operator'] == 'gte'){
                             if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value >= $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'lt'){
+                        }else if($y['operator'] == 'lt'){
                             if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value < $y['values']){
                                 Log::info("chk");
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'lte'){
+                        }else if($y['operator'] == 'lte'){
                             if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value <= $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'eq'){
+                        }else if($y['operator'] == 'eq'){
                             if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value == $y['values']){
                                 $discount_max_overridable = true;
                             }
@@ -3165,25 +3165,25 @@ Class CustomerReward {
                             if((!empty($embedded_value) || $embedded_value == 0) && preg_match($y['values'], $embedded_value)){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'gt'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value > $yc['values']){
+                        }else if($y['operator'] == 'gt'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value > $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'gte'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value >= $yc['values']){
+                        }else if($y['operator'] == 'gte'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value >= $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'lt'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value < $yc['values']){
+                        }else if($y['operator'] == 'lt'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value < $y['values']){
                                 Log::info("chk");
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'lte'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value <= $yc['values']){
+                        }else if($y['operator'] == 'lte'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value <= $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'eq'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value == $yc['values']){
+                        }else if($y['operator'] == 'eq'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value == $y['values']){
                                 $discount_max_overridable = true;
                             }
                         }
