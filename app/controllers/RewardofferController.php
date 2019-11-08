@@ -1111,7 +1111,7 @@ class RewardofferController extends BaseController {
 
         $no_rewards = false;
         $fitbox_mixed_reward = false;
-        if(!empty($finder['_id']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
+        // if(!empty($finder['_id']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
             Log::info("camp applicable");
             if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
                 Log::info("fitbox applicable");
@@ -1139,9 +1139,11 @@ class RewardofferController extends BaseController {
                 }
             }else{
                 Log::info("fitbox not applicable");
-                $no_rewards = true;
+                if(!(!empty($finder['_id']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']))){
+                    $no_rewards = true;
+                }
             }
-        }
+        // }
 
         if(empty($mixedreward_content)){
            
