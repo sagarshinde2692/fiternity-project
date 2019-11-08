@@ -1408,7 +1408,7 @@ class FindersController extends \BaseController {
 
 				}else{
 					foreach($response['finder']['services'] as &$service){
-						foreach($service['ratecard'] as &$ratecard){
+						foreach($service['serviceratecard'] as &$ratecard){
 							if($ratecard['type'] == 'membership'){
 								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 
