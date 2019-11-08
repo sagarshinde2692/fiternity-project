@@ -1112,7 +1112,7 @@ class PassService {
         $order->update();
 
         try{
-            $this->giveCashbackOnOrderSuccess($order);
+            $this->giveCashbackOnOrderSuccess($order->toArray());
         }catch (Exception $e) {
             Log::info('Error : '.$e->getMessage());
         }
@@ -2405,7 +2405,7 @@ class PassService {
                         $sms_data['customer_phone'] = $order['customer_phone'];
                         $sms_data['amount'] = $cashback_amount_after_gst;
 
-                        $customersms->fitboxMixedReward($order->toArray());
+                        $customersms->fitboxMixedReward($order);
                     }
                 }
             }
