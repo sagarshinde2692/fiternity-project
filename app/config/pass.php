@@ -101,7 +101,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\nLast Few Hours Left!", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nExtra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500. \n9-15 Nov\nBuy Now To Save More! Start At Your Convenience", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nFLAT 20% Off On Lowest Prices (No Restrictions) + INR 700 Cashback Via PayPal. Use Code: SWEAT20\nBuy Now To Save More! Start At Your Convenience\nLast Few Hours Left!", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nExtra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500. \n9-15 Nov\nBuy Now To Save More! Start At Your Convenience", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -160,26 +160,33 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left, Buy Now</li>
+                <li><b>Oh My Fitness Sale</b><br>Offer Valid From 9 -15 November</li>
                 <li>
-                    <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
+                    <b>On OnePass: 
+                    <br>I) Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 Filled With Products From Yoga Bar, To Be Healthy, Fab Box, Butternut Co, Mr. Makhana With Specially Curated Healthy Recipes And Diet Plans</b><br>
                     How does it work?<br>
                     - Discount of upto 30% is pre-applied on MRP<br>
-                    - Flat 20% off using code: SWEAT20 is applicable without any cap on the discount value<br>
-                    - Get 50% instant cashback of upto INR 700 on a new users first transaction on PayPal<br>
-                    - Discount varies across different types of pass<br>
-                    - This cannot be clubbed with any other existing offer<br>
-                    - The offer ends on 8th November post which code SWEAT20 is invalid<br>
+                    - Extra 20% off using code: OHFIT is upto INR 3,500<br>
+                    - Coupon code: OHFIT will be applicable only on OnePass Red (3,6,12 months) and OnePass Black<br>
+                    - The handpicked healthy food hamper will reach your doorstep by 7th December<br><br>
+                    <b>II) Instant Cashback of upto INR 2,000</b><br>
+                    How does it work?<br>
+                    - Discount of upto 30% is pre-applied on MRP<br>
+                    - Instant Cashback of INR 1,000 is available on OnePass Red 15 days<br>
+                    - Instant Cashback on INR 2,000 is available on OnePass Red 1 month<br>
+                    - The Instant Cashback will be added to your Fitternity account as FitCash (1 FitCash = INR 1)<br>
+                    - The FitCash received can be utilized only to upgrade your OnePass<br>
+                    - The FitCash will be valid for 15 days after expiry of your OnePass<br>
                 </li>
                 <li>
                     <b>Exclusive PayPal Cashback Offer</b><br>
                     How does it work?<br>
-                    - Get 50% instant cashback upto INR 700 on making payment via PayPal<br>
+                    - Get 50% instant cashback upto INR 300 on making payment via PayPal<br>
                     - Min purchase value should be INR 50<br>
                     - Offer is applicable on new users only<br>
                     - Instant cashback will be credited in the users PayPal wallet<br>
                     - This offer is applicable along with Fitternity's promotional offers<br>
-                    - This offer expires on 18th November 2019<br>
+                    - This offer expires on 15th November 2019<br>
                     - Instant Cashback received expires within 60 days<br>
                 </li>
 
@@ -212,26 +219,33 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left, Buy Now</li>
+                <li><b>Oh My Fitness Sale</b><br>Offer Valid From 9 -15 November</li>
                 <li>
-                    <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
+                    <b>On OnePass: 
+                    <br>I) Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 Filled With Products From Yoga Bar, To Be Healthy, Fab Box, Butternut Co, Mr. Makhana With Specially Curated Healthy Recipes And Diet Plans</b><br>
                     How does it work?<br>
                     - Discount of upto 30% is pre-applied on MRP<br>
-                    - Flat 20% off using code: SWEAT20 is applicable without any cap on the discount value<br>
-                    - Get 50% instant cashback of upto INR 700 on a new users first transaction on PayPal<br>
-                    - Discount varies across different types of pass<br>
-                    - This cannot be clubbed with any other existing offer<br>
-                    - The offer ends on 8th November post which code SWEAT20 is invalid<br>
+                    - Extra 20% off using code: OHFIT is upto INR 3,500<br>
+                    - Coupon code: OHFIT will be applicable only on OnePass Red (3,6,12 months) and OnePass Black<br>
+                    - The handpicked healthy food hamper will reach your doorstep by 7th December<br><br>
+                    <b>II) Instant Cashback of upto INR 2,000</b><br>
+                    How does it work?<br>
+                    - Discount of upto 30% is pre-applied on MRP<br>
+                    - Instant Cashback of INR 1,000 is available on OnePass Red 15 days<br>
+                    - Instant Cashback on INR 2,000 is available on OnePass Red 1 month<br>
+                    - The Instant Cashback will be added to your Fitternity account as FitCash (1 FitCash = INR 1)<br>
+                    - The FitCash received can be utilized only to upgrade your OnePass<br>
+                    - The FitCash will be valid for 15 days after expiry of your OnePass<br>
                 </li>
                 <li>
                     <b>Exclusive PayPal Cashback Offer</b><br>
                     How does it work?<br>
-                    - Get 50% instant cashback upto INR 700 on making payment via PayPal<br>
+                    - Get 50% instant cashback upto INR 300 on making payment via PayPal<br>
                     - Min purchase value should be INR 50<br>
                     - Offer is applicable on new users only<br>
                     - Instant cashback will be credited in the users PayPal wallet<br>
                     - This offer is applicable along with Fitternity's promotional offers<br>
-                    - This offer expires on 18th November 2019<br>
+                    - This offer expires on 15th November 2019<br>
                     - Instant Cashback received expires within 60 days<br>
                 </li>
 
@@ -263,26 +277,33 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li><b>Sweat The Sweets Sale</b><br>Last Few Hours Left, Buy Now</li>
+                <li><b>Oh My Fitness Sale</b><br>Offer Valid From 9 -15 November</li>
                 <li>
-                    <b>On OnePass: FLAT 20% On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal. Use Code: SWEAT20</b><br>
+                    <b>On OnePass: 
+                    <br>I) Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 Filled With Products From Yoga Bar, To Be Healthy, Fab Box, Butternut Co, Mr. Makhana With Specially Curated Healthy Recipes And Diet Plans</b><br>
                     How does it work?<br>
                     - Discount of upto 30% is pre-applied on MRP<br>
-                    - Flat 20% off using code: SWEAT20 is applicable without any cap on the discount value<br>
-                    - Get 50% instant cashback of upto INR 700 on a new users first transaction on PayPal<br>
-                    - Discount varies across different types of pass<br>
-                    - This cannot be clubbed with any other existing offer<br>
-                    - The offer ends on 8th November post which code SWEAT20 is invalid<br>
+                    - Extra 20% off using code: OHFIT is upto INR 3,500<br>
+                    - Coupon code: OHFIT will be applicable only on OnePass Red (3,6,12 months) and OnePass Black<br>
+                    - The handpicked healthy food hamper will reach your doorstep by 7th December<br><br>
+                    <b>II) Instant Cashback of upto INR 2,000</b><br>
+                    How does it work?<br>
+                    - Discount of upto 30% is pre-applied on MRP<br>
+                    - Instant Cashback of INR 1,000 is available on OnePass Red 15 days<br>
+                    - Instant Cashback on INR 2,000 is available on OnePass Red 1 month<br>
+                    - The Instant Cashback will be added to your Fitternity account as FitCash (1 FitCash = INR 1)<br>
+                    - The FitCash received can be utilized only to upgrade your OnePass<br>
+                    - The FitCash will be valid for 15 days after expiry of your OnePass<br>
                 </li>
                 <li>
                     <b>Exclusive PayPal Cashback Offer</b><br>
                     How does it work?<br>
-                    - Get 50% instant cashback upto INR 700 on making payment via PayPal<br>
+                    - Get 50% instant cashback upto INR 300 on making payment via PayPal<br>
                     - Min purchase value should be INR 50<br>
                     - Offer is applicable on new users only<br>
                     - Instant cashback will be credited in the users PayPal wallet<br>
                     - This offer is applicable along with Fitternity's promotional offers<br>
-                    - This offer expires on 18th November 2019<br>
+                    - This offer expires on 15th November 2019<br>
                     - Instant Cashback received expires within 60 days<br>
                 </li>
 
@@ -519,7 +540,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal",
+                "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
                 "button_text" => "Know More"
             ],
         ],
@@ -667,7 +688,7 @@ return [
             ],
             "footer" => [
                 "index" => 0,
-                "text" => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal",
+                "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
                 "button_text" => "Know More"
             ]
         ],
@@ -861,7 +882,7 @@ return [
             "icon" => "https://b.fitn.in/onepass/discount_3x.png",
             "header" => "Exciting OnePass Offers",
             "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
-            "text" => "FLAT 20% Off On Lowest Prices (No Restrictions) + Additional INR 700 Cashback Via PayPal",
+            "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
         ],
 
         'faq' => [

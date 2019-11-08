@@ -1421,6 +1421,18 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 	
+	public function fitboxMixedReward($data){
+		$label = 'FitboxMixedReward-Customer';
+		
+		if(!empty($data['customer_source']) && $data['customer_source']=='sodexo'){
+			return;
+		}
+
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);
+	}
+
 	public function externalVoucher($data){
 
 		$label = 'ExternalVoucher-Customer';

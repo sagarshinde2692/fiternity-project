@@ -1110,14 +1110,14 @@ class RewardofferController extends BaseController {
         }
 
         $no_rewards = false;
-        $diwali_mixed_reward = false;
+        $fitbox_mixed_reward = false;
         if(!empty($finder['_id']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
             Log::info("camp applicable");
             if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
                 Log::info("fitbox applicable");
-                $diwali_mixed_reward = true;
+                $fitbox_mixed_reward = true;
                 $rewardObj = $this->getMixedReward();
-                $mixedreward_content = MixedRewardContent::where('flags.type', 'membership')->first();
+                $mixedreward_content = MixedRewardContent::where('flags.type', 'fitbox')->first();
     
                 if(!empty($mixedreward_content)){
                     if($rewardObj && $mixedreward_content){
@@ -1342,7 +1342,7 @@ class RewardofferController extends BaseController {
         if(!empty($finder['_id']) && $finder['_id'] == 11230 && $duration_day == 360){
             $cashback = null;
         }
-        if(!empty($gold_mixed) || !empty($no_instant_rewards) || !empty($diwali_mixed_reward)){
+        if(!empty($gold_mixed) || !empty($no_instant_rewards) || !empty($fitbox_mixed_reward)){
             $cashback = null;
         }
 

@@ -379,6 +379,10 @@ Class CustomerReward {
                             $mixedreward_content = \MixedRewardContent::where('flags.type', 'membership')->first();
                         }
 
+                        if(!empty($data['fitbox_mixed_reward'])){
+                            $mixedreward_content = \MixedRewardContent::where('flags.type', 'fitbox')->first();
+                        }
+
                         if(!empty($mixedreward_content)){
 							$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
