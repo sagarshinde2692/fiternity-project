@@ -2367,12 +2367,12 @@ class PassService {
             }
 
             if(!empty($order['pass']['flags']['cashback'])){
-                $cashback_amount_after_gst = $cashback_amount = $order['pass']['flags']['cashback'];
+                $cashback_amount = $order['pass']['flags']['cashback'];
 
-                // $cashback_amount_after_gst = 0;
-                // if($cashback_amount != 0){
-                //     $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
-                // }
+                $cashback_amount_after_gst = 0;
+                if($cashback_amount != 0){
+                    $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
+                }
 
                 $utilities = new Utilities();
                 
