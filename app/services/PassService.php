@@ -2402,7 +2402,7 @@ class PassService {
                         $sms_data['customer_phone'] = $order['customer_phone'];
                         $sms_data['amount'] = $cashback_amount_after_gst;
 
-                        $customersms->fitboxMixedReward($order);
+                        $customersms->fitboxMixedReward($order->toArray());
                     }
                 }
             }
