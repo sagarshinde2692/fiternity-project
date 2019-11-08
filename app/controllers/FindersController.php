@@ -5541,16 +5541,12 @@ class FindersController extends \BaseController {
                             // }
 						}
 
-						if(!empty($finder['flags']['monsoon_flash_discount_disabled'])){
+						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')))){
 							unset($ratecard['remarks']);
 						}
 						
 						$corporate_discount_branding = $this->utilities->corporate_discount_branding();
 						if(!empty($corporate_discount_branding) && $corporate_discount_branding){
-							unset($ratecard['remarks']);
-						}
-
-						if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
 							unset($ratecard['remarks']);
 						}
 
@@ -8818,7 +8814,7 @@ class FindersController extends \BaseController {
 				unset($rateCard['remarks_imp']);
 			}
 
-			if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+			if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')))){
 				unset($rateCard['remarks']);
 				unset($rateCard['remarks_imp']);
 			}
