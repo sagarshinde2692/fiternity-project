@@ -1663,7 +1663,7 @@ class PassService {
                    'field' => '',
                    'value' => "Instant Cashback Worth INR 1000 (No Code Required)",
             ];
-        }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
+        }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [30])){
             $resp[] = [
                    'field' => '',
                    'value' => "Instant Cashback Worth INR 2000 (No Code Required)",
