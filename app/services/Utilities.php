@@ -6608,8 +6608,45 @@ Class Utilities {
             if(Request::header('App-Version')){
                 $checkin->app_version = Request::header('App-Version');
             }
-            
-            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon','receipt', 'booktrial_id'];
+            if(!empty($data['lat']) && !empty($data['lon'])){
+                $data['geometry'] = [
+                    "type" => "Point",
+                    "coordinates" => [ 
+                        $data['lon'], 
+                        $data['lat'] 
+                    ]
+                ];
+            }
+
+            if(!empty($data['finder_id'])){
+                $finder_lat_lon = Finder::where('_id', $data['finder_id'])->select('lat', 'lon')->first();
+
+                if(!empty($finder_lat_lon->lat) && !empty($finder_lat_lon->lat)){
+                    $data['finder_lat'] = floatval($finder_lat_lon->lat);
+                    $data['finder_lon'] = floatval($finder_lat_lon->lon);
+                    
+                    $data['finder_geometry'] = [
+                        "type" => "Point",
+                        "coordinates" => [ 
+                            $data['finder_lon'], 
+                            $data['finder_lat'] 
+                        ]
+                    ];
+                }
+            }
+
+            $data['distance'] = (!empty($data['lat']) && !empty($data['lon']) && !empty($data['finder_lat']) && !empty($data['finder_lon'])) ?$this->distanceCalculationOfCheckinsCheckouts(
+                [
+                    'lat'=> $data['lat'], 
+                    'lon'=> $data['lon']
+                ], 
+                [
+                    'lat'=> $data['finder_lat'], 
+                    'lon'=> $data['finder_lon']
+                ]
+            ) : 0;
+
+            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon','receipt', 'booktrial_id', 'finder_lat', 'finder_lon', 'geometry', 'finder_geometry', 'distance'];
 
             foreach($fields as $field){
                 if(isset($data[$field])){
