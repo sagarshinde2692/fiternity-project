@@ -2942,24 +2942,24 @@ Class CustomerReward {
                                 $discount_max_overridable = true;
                             }
                         }else if($yc['operator'] == 'gt'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value > $yc['values']){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value > $y['values']){
                                 $discount_max_overridable = true;
                             }
                         }else if($yc['operator'] == 'gte'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value >= $yc['values']){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value >= $y['values']){
                                 $discount_max_overridable = true;
                             }
                         }else if($yc['operator'] == 'lt'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value < $yc['values']){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value < $y['values']){
                                 Log::info("chk");
                                 $discount_max_overridable = true;
                             }
                         }else if($yc['operator'] == 'lte'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value <= $yc['values']){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value <= $y['values']){
                                 $discount_max_overridable = true;
                             }
                         }else if($yc['operator'] == 'eq'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value == $yc['values']){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value == $y['values']){
                                 $discount_max_overridable = true;
                             }
                         }
