@@ -1237,7 +1237,7 @@ class PassService {
 
             if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
                 $success_template['offer_success_msg'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 1000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
-            }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
+            }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [30])){
                 $success_template['offer_success_msg'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 2000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
             }
 
@@ -1277,7 +1277,7 @@ class PassService {
 
             if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
                 $success_template['subline'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 1000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
-            }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
+            }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [30])){
                 $success_template['subline'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 2000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
             }
 
