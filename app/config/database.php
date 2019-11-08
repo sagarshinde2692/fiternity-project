@@ -71,7 +71,7 @@ return array(
 			'database' => 'fitadmin', 
 		    'username' => $username, 
 		    'password' => $password, 
-			'options' => $options
+			// 'options' => $options
 			// 'options' => [
 			// 		'db' => 'admin' // sets the authentication database required by mongo 3
 			// 	]
@@ -84,7 +84,7 @@ return array(
 			'database' => 'fitapi', 
 			'username' => $username, 
 			'password' => $password, 
-			'options' => $options
+			// 'options' => $options
 			// 'options' => [
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]
@@ -97,7 +97,7 @@ return array(
 			'database' => 'fitcheckins', 
 			'username' => $username, 
 			'password' => $password, 
-			'options' => $options
+			// 'options' => $options
 			// 'options' => [
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]
