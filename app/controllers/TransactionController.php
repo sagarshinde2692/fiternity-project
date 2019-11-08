@@ -6231,7 +6231,7 @@ class TransactionController extends \BaseController {
             }
 
             
-            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')) || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)){
+            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0)){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
                 
 			}
