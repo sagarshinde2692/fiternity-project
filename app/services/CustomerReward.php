@@ -2510,7 +2510,7 @@ Class CustomerReward {
                                 }
                             
                             }else if($condition['operator'] == 'nin'){
-                                if(!empty($embedded_value) && in_array($embedded_value, $condition['values'])){
+                                if(isset($embedded_value)  && in_array($embedded_value, $condition['values'])){
                                     $and_condition = false;
                                     break;
 
