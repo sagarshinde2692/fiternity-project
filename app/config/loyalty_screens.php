@@ -176,8 +176,7 @@ return array(
             ]
         ],
         "reward_pay" => [
-            "transaction" => "required", 
-            "amount" => "reward_amount",
+            "transaction" => "required",
             "header" => "please do a transaction of amount reward_amount",
             "text" => "this is text",
             "url" => Config::get('app.base_url').'/capture',
@@ -188,6 +187,14 @@ return array(
                 "customer_phone" => "customer_phone",
                 "amount" => "reward_amount"
             ]
+        ]
+    ],
+
+    "reward_pay_detail" => [
+        [
+            "status" => false,
+            "milestone_no" => 3,
+            "amount" => 299
         ]
     ]
 );
