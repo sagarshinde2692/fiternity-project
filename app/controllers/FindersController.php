@@ -1404,7 +1404,7 @@ class FindersController extends \BaseController {
 				$pricemore = false;
 				$vendor_stripe_line = "";
 				if(isset($response['finder']['flags']['monsoon_flash_discount_per']) && $response['finder']['flags']['monsoon_flash_discount_per'] == 0){
-					$vendor_stripe_line = "Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships <br> 9-15 Nov";
+					$vendor_stripe_line = "Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships <br> 9-12 Nov";
 
 				}else{
 					foreach($response['finder']['services'] as &$service){
@@ -1412,12 +1412,12 @@ class FindersController extends \BaseController {
 							if($ratecard['type'] == 'membership'){
 								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 
-								$vendor_stripe_line = "Extra 15% Off On Lowest Prices | Use Code: FITME15 <br> 9-15 Nov";
+								$vendor_stripe_line = "Extra 15% Off On Lowest Prices | Use Code: FITME15 <br> 9-12 Nov";
 			
 								if($price >= 8000){
 									$pricemore = true;
 									
-									$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br> 9-15 Nov";
+									$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br> 9-12 Nov";
 								}
 							}
 						}
@@ -3933,25 +3933,25 @@ class FindersController extends \BaseController {
 						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						
 						if($this->device_type == 'android'){
-							$android_line = "<u>Oh My Fitness Sale</u><br><br>- On Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100 <br><br>Offer Valid From 9-15 November";
+							$android_line = "<u>Oh My Fitness Sale</u><br><br>- On Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100 <br><br>Offer Valid From 9-12 November";
 	
-							$op_android_line = "<u>Oh My Fitness Sale</u><br><br>- On Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15 <br><br>Offer Valid From 9-15 November";
+							$op_android_line = "<u>Oh My Fitness Sale</u><br><br>- On Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15 <br><br>Offer Valid From 9-12 November";
 						}else{	
-							$ios_line = "\nOh My Fitness Sale\n\n- On Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100 \n\nOffer Valid From 9-15 November";
+							$ios_line = "\nOh My Fitness Sale\n\n- On Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100 \n\nOffer Valid From 9-12 November";
 	
-							$op_ios_line = "\nOh My Fitness Sale\n\n- On Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15 \n\nOffer Valid From 9-15 November";
+							$op_ios_line = "\nOh My Fitness Sale\n\n- On Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15 \n\nOffer Valid From 9-12 November";
 						}
 	
 						if($price >= 8000){
 							$pricemore = true;
 							if($this->device_type == 'android'){
-								$android_line = "<u>Oh My Fitness Sale</u><br><br>- On Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : OMF100 <br><br>Offer Valid From 9-15 November";
+								$android_line = "<u>Oh My Fitness Sale</u><br><br>- On Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : OMF100 <br><br>Offer Valid From 9-12 November";
 	
-								$op_android_line = "<u>Oh My Fitness Sale</u><br><br>- On Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15 <br><br>Offer Valid From 9-15 November";
+								$op_android_line = "<u>Oh My Fitness Sale</u><br><br>- On Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15 <br><br>Offer Valid From 9-12 November";
 							}else{	
-								$ios_line = "\nOh My Fitness Sale\n\n- On Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100 \n\nOffer Valid From 9-15 November";
+								$ios_line = "\nOh My Fitness Sale\n\n- On Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100 \n\nOffer Valid From 9-12 November";
 	
-								$op_ios_line = "\nOh My Fitness Sale\n\n- On Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15 \n\nOffer Valid From 9-15 November";
+								$op_ios_line = "\nOh My Fitness Sale\n\n- On Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15 \n\nOffer Valid From 9-12 November";
 							}
 							
 							break;
