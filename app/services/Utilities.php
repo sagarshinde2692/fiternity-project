@@ -10882,4 +10882,10 @@ Class Utilities {
 
     //     return $fitsquad_expired;
     // }
+
+    public function checkRequriredDataForClaimingReward($voucher){
+        if(!empty($voucher['required_info'])){
+            
+        }
+    }
 }
