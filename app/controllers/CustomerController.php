@@ -9787,7 +9787,7 @@ class CustomerController extends \BaseController {
                         if(in_array($vc['name'], $claimed_voucher_categories)){
                             continue;
                         }
-                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description']);
+                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description', 'required_info']);
                         $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
                         $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);

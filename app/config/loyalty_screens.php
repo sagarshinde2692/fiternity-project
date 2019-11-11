@@ -181,7 +181,7 @@ return array(
             "text" => "this is text",
             "url" => Config::get('app.url').'/capture',
             "data" => [
-                "type" => "grid_reward",
+                "type" => "reward_pay",
                 "customer_id" => "customer_id",
                 "customer_email" => "customer_email",
                 "customer_phone" => "customer_phone",
