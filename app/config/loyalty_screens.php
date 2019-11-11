@@ -179,7 +179,7 @@ return array(
             "transaction" => "required",
             "header" => "please do a transaction of amount reward_amount",
             "text" => "this is text",
-            "url" => Config::get('app.base_url').'/capture',
+            "url" => Config::get('app.url').'/capture',
             "data" => [
                 "type" => "grid_reward",
                 "customer_id" => "customer_id",

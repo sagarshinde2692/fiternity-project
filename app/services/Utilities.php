@@ -10906,7 +10906,7 @@ Class Utilities {
                     $reward_amount_data['data']['customer_id'] = $customer['_id'];
                     !empty($customer['email']) ? $reward_amount_data['data']['customer_email'] = $customer['email'] : $reward_amount_data['data']['customer_email'] = null;
                     !empty($customer['contact_no']) ? $reward_amount_data['data']['customer_phone'] = $customer['contact_no'] : $reward_amount_data['data']['contact_no'] = null;
-                    $reward_amount_data = $value['amount'];
+                    $reward_amount_data['data']['amount'] = $value['amount'];
         
                     $post_reward_data_template['reward_pay'] = $reward_amount_data;
                 }
