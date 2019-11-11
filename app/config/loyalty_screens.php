@@ -151,6 +151,44 @@ return array(
         "https://b.fitn.in/external-vouchers1/cleartrip.png",
         "https://b.fitn.in/external-vouchers1/o2.png",
         "https://b.fitn.in/external-vouchers1/book%20my%20show.png",
+    ],
+
+    "reward_pay_block_message" => "Plese do a transaction of reward_amount-/ Rs.", 
+
+    "voucher_required_info" => [
+        "address" => [
+            "address" => "required",
+            "data" => [
+                "header" => "Please Enter Your Number",
+                "text" => "We will user this address to deliver you rewards and hemper"
+            ]
+        ],
+        "size" => [
+            "size" => "required",
+            "data" => [
+                "header" => "Please select size of  reward_type",
+                "text" => "dvjkndfjkvndf jfghfj hjjhhjh.",
+                "data" => [
+                    "40" => "S", 
+                    "42" => "L",
+                    "46" => "XL"
+                ]
+            ]
+        ],
+        "reward_pay" => [
+            "transaction" => "required", 
+            "amount" => "reward_amount",
+            "header" => "please do a transaction of amount reward_amount",
+            "text" => "this is text",
+            "url" => Config::get('app.base_url').'/capture',
+            "data" => [
+                "type" => "grid_reward",
+                "customer_id" => "customer_id",
+                "customer_email" => "customer_email",
+                "customer_phone" => "customer_phone",
+                "amount" => "reward_amount"
+            ]
+        ]
     ]
 );
 ?>

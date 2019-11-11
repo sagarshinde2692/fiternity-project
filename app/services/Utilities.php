@@ -10883,9 +10883,27 @@ Class Utilities {
     //     return $fitsquad_expired;
     // }
 
-    public function checkRequriredDataForClaimingReward($voucher){
+    public function checkRequriredDataForClaimingReward(&$post_reward_data_template, $customer, $voucher, $milestone){
+
+        $voucher_required_info = Config::get('loyalty_screens.voucher_required_info');
+
         if(!empty($voucher['required_info'])){
-            
+            foreach($voucher['required_info'] as $key=>$value){
+                !empty($voucher_required_info[$value]) ? $required_data[] = $voucher_required_info[$value]: null;
+            }
+            $post_reward_data_template['required_info'] = $required_data;
+        }
+
+        if(!empty($customer['loyalty']['reward_pay']) && empty($customer['loyalty']['reward_pay']['status']) && !empty($customer['loyalty']['reward_pay']['amount'])){
+
+            $post_reward_data_template['block_message'] = strtr(Config::get('loyalty_screens.reward_pay_block_message'), $milestone);
+            $reward_amount_data = $voucher_required_info['reward_pay'];
+            $reward_amount_data['data']['customer_id'] = $customer['_id'];
+            !empty($customer['email']) ? $reward_amount_data['data']['customer_email'] = $customer['email'] : $reward_amount_data['data']['customer_email'] = null;
+            !empty($customer['contact_no']) ? $reward_amount_data['data']['customer_phone'] = $customer['contact_no'] : $reward_amount_data['data']['contact_no'] = null;
+            $reward_amount_data = $customer['loyalty']['reward_pay']['amount'];
+
+            $post_reward_data_template['reward_pay'] = $reward_amount_data;
         }
     }
 }

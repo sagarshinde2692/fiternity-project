@@ -9875,6 +9875,7 @@ class CustomerController extends \BaseController {
                                 
                                 }
 
+								$this->utilities->checkRequriredDataForClaimingReward($post_reward_data_template, $customer, $vc, $milestone);
                             }
 
 							!isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
