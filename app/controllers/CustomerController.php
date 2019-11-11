@@ -9113,7 +9113,10 @@ class CustomerController extends \BaseController {
 					
                     if(!$voucherAttached){
                         return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (2).'));
-                    }
+					}
+					if(!empty($voucherAttached['sold'])){
+						return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Reward is already sold out.'));
+					}
                     /* return
                     if(empty($milestones[$voucher_category['milestone']-1]['claimed'])){
     					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
