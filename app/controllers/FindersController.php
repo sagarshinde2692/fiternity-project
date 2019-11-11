@@ -7884,7 +7884,8 @@ class FindersController extends \BaseController {
 					'text'=>"Checkout Rewards",
 					// "image"=>'https://b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
 					//'image' => 'https://b.fitn.in/global/Homepage-branding-2018/srp/Edited%20Fitsquad%20Grid%20%281%29.jpg'
-					'image'=> 'https://b.fitn.in/global/fitsquad-225.jpg'
+					// 'image'=> 'https://b.fitn.in/global/fitsquad-225.jpg'
+					"image"=> "https://b.fitn.in/global/firsquad_grid_new.png"
 				];
 
 				$data['checkout_summary'] = [
@@ -7896,7 +7897,8 @@ class FindersController extends \BaseController {
 						'text' => 'Checkout Rewards',
 						// 'image' => 'https://b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
 						//'image' => 'https://b.fitn.in/global/Homepage-branding-2018/srp/Edited%20Fitsquad%20Grid%20%281%29.jpg'
-						'image' => 'https://b.fitn.in/global/fitsquad-225.jpg'
+						// 'image' => 'https://b.fitn.in/global/fitsquad-225.jpg'
+						"image"=> "https://b.fitn.in/global/firsquad_grid_new.png"
 					],
 					'know_more' => true
 				];
