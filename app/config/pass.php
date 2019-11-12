@@ -101,7 +101,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nExtra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500. \n9-15 Nov\nBuy Now To Save More! Start At Your Convenience", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nExtra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500. \nLast Few Hours Left!\nBuy Now To Save More! Start At Your Convenience", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -140,7 +140,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nExtra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500. \n9-15 Nov\nBuy Now To Save More! Start At Your Convenience", // need content
+                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more! \n\nExtra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500. \nLast Few Hours Left!\nBuy Now To Save More! Start At Your Convenience", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
@@ -160,7 +160,7 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
-                <li><b>Oh My Fitness Sale</b><br>Offer Valid From 9 -15 November</li>
+                <li><b>Oh My Fitness Sale</b><br>Last Few Hours Left, Buy Now</li>
                 <li>
                     <b>On OnePass: 
                     <br>I) Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 Filled With Products From Yoga Bar, To Be Healthy, Fab Box, Butternut Co, Mr. Makhana With Specially Curated Healthy Recipes And Diet Plans</b><br>
@@ -219,7 +219,7 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li><b>Oh My Fitness Sale</b><br>Offer Valid From 9 -15 November</li>
+                <li><b>Oh My Fitness Sale</b><br>Last Few Hours Left, Buy Now</li>
                 <li>
                     <b>On OnePass: 
                     <br>I) Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 Filled With Products From Yoga Bar, To Be Healthy, Fab Box, Butternut Co, Mr. Makhana With Specially Curated Healthy Recipes And Diet Plans</b><br>
@@ -277,7 +277,7 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li><b>Oh My Fitness Sale</b><br>Offer Valid From 9 -15 November</li>
+                <li><b>Oh My Fitness Sale</b><br>Last Few Hours Left, Buy Now</li>
                 <li>
                     <b>On OnePass: 
                     <br>I) Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 Filled With Products From Yoga Bar, To Be Healthy, Fab Box, Butternut Co, Mr. Makhana With Specially Curated Healthy Recipes And Diet Plans</b><br>
