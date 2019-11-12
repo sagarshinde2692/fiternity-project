@@ -1674,7 +1674,7 @@ class PassService {
         }else {
             $resp[] = [
                 'field' => '',
-                'value' => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500. Use Code: OHFIT. 9-12 Nov",
+                'value' => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500. Use Code: OHFIT. Last Few Hours Left!",
             ];
         }
 
