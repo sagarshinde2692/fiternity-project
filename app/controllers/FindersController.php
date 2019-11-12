@@ -1403,10 +1403,10 @@ class FindersController extends \BaseController {
 				
 				$pricemore = false;
 				$vendor_stripe_line = "";
-				if(isset($response['finder']['flags']['monsoon_flash_discount_per']) && $response['finder']['flags']['monsoon_flash_discount_per'] == 0){
-					$vendor_stripe_line = "Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships <br> Last Few Hours Left!";
+				// if(isset($response['finder']['flags']['monsoon_flash_discount_per']) && $response['finder']['flags']['monsoon_flash_discount_per'] == 0){
+				// 	$vendor_stripe_line = "Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships <br> Last Few Hours Left!";
 
-				}else{
+				// }else{
 					foreach($response['finder']['services'] as &$service){
 						foreach($service['serviceratecard'] as &$ratecard){
 							if($ratecard['type'] == 'membership'){
@@ -1425,7 +1425,7 @@ class FindersController extends \BaseController {
 							break;
 						}
 					}
-				}
+				// }
 
                 if(empty($response['vendor_stripe_data']['text']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
@@ -3922,11 +3922,11 @@ class FindersController extends \BaseController {
 		$ios_line = "";
 		$op_android_line = "";
 		$op_ios_line = "";
-		if(isset($data['finder']['flags']['monsoon_flash_discount_per']) && $data['finder']['flags']['monsoon_flash_discount_per'] == 0){
-			$android_line = $op_android_line = "<u>Oh My Fitness Sale</u><br><br>- Get A Handpicked Healthy Food Hamper Worth INR 2,500 With Your Membership";
+		// if(isset($data['finder']['flags']['monsoon_flash_discount_per']) && $data['finder']['flags']['monsoon_flash_discount_per'] == 0){
+		// 	$android_line = $op_android_line = "<u>Oh My Fitness Sale</u><br><br>- Get A Handpicked Healthy Food Hamper Worth INR 2,500 With Your Membership";
 
-			$ios_line = $op_ios_line = "\nOh My Fitness Sale\n\n- Get A Handpicked Healthy Food Hamper Worth INR 2,500 With Your Membership";
-		}else{
+		// 	$ios_line = $op_ios_line = "\nOh My Fitness Sale\n\n- Get A Handpicked Healthy Food Hamper Worth INR 2,500 With Your Membership";
+		// }else{
 			foreach($data['finder']['services'] as &$service){
 				foreach($service['ratecard'] as &$ratecard){
 					if($ratecard['type'] == 'membership'){
@@ -3962,7 +3962,7 @@ class FindersController extends \BaseController {
 					break;
 				}
 			}
-		}
+		// }
 		
 
         if(!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], [88, 135])){
@@ -8535,7 +8535,8 @@ class FindersController extends \BaseController {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
 					}else if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
 
-						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)){
+						if(!empty($finder['flags']['monsoon_flash_discount_disabled'])){
+							// || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)
 							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."");
 						}else{
 							if($price >= 8000){
