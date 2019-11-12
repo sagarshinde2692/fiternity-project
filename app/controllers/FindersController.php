@@ -5466,7 +5466,16 @@ class FindersController extends \BaseController {
 			$this->photosOrderFloor($finderData['finder']);
 			
 			if($this->utilities->isIntegratedVendor($finderData['finder'])) {
-				$finderData['finder']['finder_one_line'] = $this->getFinderOneLiner($finderData);
+				$isAnyServiceIntegrated = false;
+				foreach($finderData['finder']['services'] as $serv){
+					$isAnyServiceIntegrated = isServiceIntegrated($serv);
+					if($isAnyServiceIntegrated) {
+						break;
+					}
+				}
+				if($isAnyServiceIntegrated) {
+					$finderData['finder']['finder_one_line'] = $this->getFinderOneLiner($finderData);
+				}
 			}
 
 		}else{
