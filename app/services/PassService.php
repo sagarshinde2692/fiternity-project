@@ -156,7 +156,7 @@ class PassService {
                 $passDetails['text'] = "(Instant Cashback Worth INR 2000 \n (No Code Required))";
             }
 
-            if(!empty($source) && $source=='sodexo') {
+            if(!empty($source) && in_array($source, ['sodexo', 'thelabellife'])) {
                 $passDetails['text'] = "(".$pass['total_sessions']." sessions pass)";
             }
 
@@ -214,8 +214,8 @@ class PassService {
             }
 
         }
-        if(!empty($data['customer_source']) && $data['customer_source']=='sodexo'){
-            $data['customer_source'] = 'sodexo';
+        if(!empty($data['customer_source']) && in_array($data['customer_source'], ['sodexo', 'thelabellife'])){
+            // $data['customer_source'] = 'sodexo';
         }
         else {
             $data['customer_source'] = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : "website" ;
@@ -304,7 +304,7 @@ class PassService {
         $data['order_id'] = $data['_id'];
         $data['orderid'] = $data['_id'];
 
-        if(empty($data['customer_source']) || $data['customer_source']!='sodexo'){
+        if(empty($data['customer_source']) || !in_array($data['customer_source'], ['sodexo', 'thelabellife'])){
             $rewardinfo = $this->addRewardInfo($data);
 		}
         if(!empty($rewardinfo)){
