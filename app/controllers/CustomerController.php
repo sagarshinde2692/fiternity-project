@@ -9807,6 +9807,8 @@ class CustomerController extends \BaseController {
                             if(!empty($vc['sold'])){
 								$post_reward_data_template['claim_enabled'] = false;
 								$post_reward_data_template['button_title'] = "Sold Out";
+								unset($post_reward_data_template['terms']);
+								unset($post_reward_data_template['coupon_description']);
 							}else {
 								$post_reward_data_template['claim_enabled'] = true;
 							}
