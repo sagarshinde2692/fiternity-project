@@ -5476,6 +5476,9 @@ class FindersController extends \BaseController {
 				if($isAnyServiceIntegrated) {
 					$finderData['finder']['finder_one_line'] = $this->getFinderOneLiner($finderData);
 				}
+				else if(!empty($finderData['finder']['finder_one_line'])) {
+					unset($finderData['finder']['finder_one_line']);
+				}
 			}
 
 		}else{
