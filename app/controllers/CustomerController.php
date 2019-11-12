@@ -8889,7 +8889,6 @@ class CustomerController extends \BaseController {
 			}
 
 			$voucher_categories_map[$vc['_id']] = $vc['vouchers'];
-			
             if(!$post ){
                 $voucher_categories_map[$vc['_id']][0]['max_amount'] = $vc['amount'];
             }
