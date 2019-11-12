@@ -8881,7 +8881,15 @@ class CustomerController extends \BaseController {
         $voucher_categories_map = [];
 	
         foreach($voucher_categories['result'] as $vc){
-            $voucher_categories_map[$vc['_id']] = $vc['vouchers'];
+
+			foreach($vc['vouchers'] as $key=>$value){
+				if(!empty($value['sold'])){
+					unset($vc['vouchers'][$key]);
+				}
+			}
+
+			$voucher_categories_map[$vc['_id']] = $vc['vouchers'];
+			
             if(!$post ){
                 $voucher_categories_map[$vc['_id']][0]['max_amount'] = $vc['amount'];
             }
