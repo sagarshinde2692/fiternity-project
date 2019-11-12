@@ -2599,6 +2599,10 @@ class TransactionController extends \BaseController {
                             //     array_set($data, 'diwali_mixed_reward', true);
                             // }
 
+                            if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                                    array_set($data, 'fitbox_mixed_reward', true);
+                                }
+
                             $reward_type = $value->reward_type;
 
                         }
@@ -3144,6 +3148,10 @@ class TransactionController extends \BaseController {
                 $hamper_data = $this->utilities->getVoucherDetail($order->toArray());
                 $this->customermailer->diwaliMixedReward($hamper_data);
                 $this->customersms->diwaliMixedReward($order->toArray());
+            }
+
+            if(!empty($order['fitbox_mixed_reward'])){
+                $this->customersms->fitboxMixedReward($order->toArray());
             }
 
             Log::info("successCommon returned");
@@ -6216,14 +6224,14 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships \nUse Code: BURN20",'position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices | Use Code: FITME15",'position'=>$position++];
 
-            // if($data['ratecard_amount'] >= 8000){
-            //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices + Additional INR 700 Cashback Via PayPal On Memberships \nUse Code: BURN20",'position'=>$position++];
-            // }
+            if($data['ratecard_amount'] >= 8000){
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15",'position'=>$position++];
+            }
 
             
-            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled'])){
+            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0)){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
                 
 			}
@@ -6231,7 +6239,7 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: OMF100','position'=>$position++];
 
             $first_session_free = $this->firstSessionFree($data);
             if(!empty($first_session_free) && $first_session_free){
@@ -6242,13 +6250,9 @@ class TransactionController extends \BaseController {
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
 
-            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')))){
+            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled']) ||(isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
-
-            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled'])){
-				$booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
-			}
         }
         
         $booking_details_all = [];
@@ -6626,7 +6630,7 @@ class TransactionController extends \BaseController {
                 'options'=>[
                         [
                                 'title' => 'Paypal',
-                                'subtitle' => 'Get 50% Instant Cashback Upto INR 700 (New Users Only)',
+                                'subtitle' => 'Get 50% Instant Cashback Upto INR 300 (New Users Only)',
                                 'value' => 'paypal'
                         ],
                         [
