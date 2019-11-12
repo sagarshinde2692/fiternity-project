@@ -8882,9 +8882,11 @@ class CustomerController extends \BaseController {
 	
         foreach($voucher_categories['result'] as $vc){
 
-			foreach($vc['vouchers'] as $key=>$value){
-				if(!empty($value['sold'])){
-					unset($vc['vouchers'][$key]);
+			if(!$post ){
+				foreach($vc['vouchers'] as $key=>$value){
+					if(!empty($value['sold'])){
+						unset($vc['vouchers'][$key]);
+					}
 				}
 			}
 
