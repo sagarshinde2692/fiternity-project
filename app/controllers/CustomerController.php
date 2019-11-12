@@ -8884,7 +8884,7 @@ class CustomerController extends \BaseController {
 
 			if(!$post ){
 				foreach($vc['vouchers'] as $key=>$value){
-					if(!empty($value['sold'])){
+					if(!empty($value['sold_out'])){
 						unset($vc['vouchers'][$key]);
 					}
 				}
@@ -9123,7 +9123,7 @@ class CustomerController extends \BaseController {
                     if(!$voucherAttached){
                         return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (2).'));
 					}
-					if(!empty($voucherAttached['sold'])){
+					if(!empty($voucherAttached['sold_out'])){
 						return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Reward is already sold out.'));
 					}
                     /* return
@@ -9799,7 +9799,7 @@ class CustomerController extends \BaseController {
                         if(in_array($vc['name'], $claimed_voucher_categories)){
                             continue;
                         }
-                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description', 'sold']);
+                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description', 'sold_out']);
                         $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
                         $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
@@ -9813,7 +9813,7 @@ class CustomerController extends \BaseController {
 						}
                         if($milestone_no >= $milestone['milestone'] ){
 
-                            if(!empty($vc['sold'])){
+                            if(!empty($vc['sold_out'])){
 								$post_reward_data_template['claim_enabled'] = false;
 								$post_reward_data_template['button_title'] = "Sold Out";
 								unset($post_reward_data_template['terms']);
@@ -9904,7 +9904,7 @@ class CustomerController extends \BaseController {
 
                         }else{
 							$post_reward_data_template['claim_enabled'] = false;
-							if(!empty($vc['sold'])){
+							if(!empty($vc['sold_out'])){
 								$post_reward_data_template['button_title'] = "Sold Out";
 								unset($post_reward_data_template['terms']);
 								unset($post_reward_data_template['coupon_description']);
