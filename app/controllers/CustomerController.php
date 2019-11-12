@@ -8881,7 +8881,16 @@ class CustomerController extends \BaseController {
         $voucher_categories_map = [];
 	
         foreach($voucher_categories['result'] as $vc){
-            $voucher_categories_map[$vc['_id']] = $vc['vouchers'];
+
+			if(!$post ){
+				foreach($vc['vouchers'] as $key=>$value){
+					if(!empty($value['sold'])){
+						unset($vc['vouchers'][$key]);
+					}
+				}
+			}
+
+			$voucher_categories_map[$vc['_id']] = $vc['vouchers'];
             if(!$post ){
                 $voucher_categories_map[$vc['_id']][0]['max_amount'] = $vc['amount'];
             }
@@ -9113,7 +9122,10 @@ class CustomerController extends \BaseController {
 					
                     if(!$voucherAttached){
                         return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (2).'));
-                    }
+					}
+					if(!empty($voucherAttached['sold'])){
+						return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Reward is already sold out.'));
+					}
                     /* return
                     if(empty($milestones[$voucher_category['milestone']-1]['claimed'])){
     					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
@@ -9755,9 +9767,9 @@ class CustomerController extends \BaseController {
 							$post_reward_data_template['claim_url'] = "";
 						}
                         $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $claimed_voucher);
-                        $post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $claimed_voucher);
-                        $post_reward_data_template['claim_enabled'] = true;
-                        $post_reward_data_template['button_title'] = "View";
+						$post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $claimed_voucher);
+						$post_reward_data_template['claim_enabled'] = true;
+						$post_reward_data_template['button_title'] = "View";
 
                         if(in_array($this->device_type, ['ios']) || in_array($this->device_type, ['android']) && $this->app_version >= 5.12){
 							unset($post_reward_data_template['claim_message']);
@@ -9787,7 +9799,7 @@ class CustomerController extends \BaseController {
                         if(in_array($vc['name'], $claimed_voucher_categories)){
                             continue;
                         }
-                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description']);
+                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description', 'sold']);
                         $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
                         $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
@@ -9801,7 +9813,14 @@ class CustomerController extends \BaseController {
 						}
                         if($milestone_no >= $milestone['milestone'] ){
 
-                            $post_reward_data_template['claim_enabled'] = true;
+                            if(!empty($vc['sold'])){
+								$post_reward_data_template['claim_enabled'] = false;
+								$post_reward_data_template['button_title'] = "Sold Out";
+								unset($post_reward_data_template['terms']);
+								unset($post_reward_data_template['coupon_description']);
+							}else {
+								$post_reward_data_template['claim_enabled'] = true;
+							}
 
                             if(empty($customer_milestones[$milestone['milestone']-1]['verified'])){
 
@@ -9884,7 +9903,12 @@ class CustomerController extends \BaseController {
 							// }
 
                         }else{
-                            $post_reward_data_template['claim_enabled'] = false;
+							$post_reward_data_template['claim_enabled'] = false;
+							if(!empty($vc['sold'])){
+								$post_reward_data_template['button_title'] = "Sold Out";
+								unset($post_reward_data_template['terms']);
+								unset($post_reward_data_template['coupon_description']);
+							}
                         } 
                         // return $post_reward_data_template;
                         $post_reward_template['data'][] = $post_reward_data_template;
