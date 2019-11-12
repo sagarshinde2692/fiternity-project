@@ -158,23 +158,21 @@ return array(
     "voucher_required_info" => [
         "address" => [
             "address" => "required",
-            "data" => [
-                "header" => "Please Enter Your Number",
-                "text" => "We will user this address to deliver you rewards and hemper"
-            ]
+            "header" => "Please Enter Your Number",
+            "text" => "We will user this address to deliver you rewards and hemper",
         ],
+
         "size" => [
             "size" => "required",
+            "header" => "Please select size of  reward_type",
+            "text" => "dvjkndfjkvndf jfghfj hjjhhjh.",
             "data" => [
-                "header" => "Please select size of  reward_type",
-                "text" => "dvjkndfjkvndf jfghfj hjjhhjh.",
-                "data" => [
-                    "40" => "S", 
-                    "42" => "L",
-                    "46" => "XL"
-                ]
+                "40" => "S", 
+                "42" => "L",
+                "46" => "XL"
             ]
         ],
+
         "reward_pay" => [
             "transaction" => "required",
             "header" => "please do a transaction of amount reward_amount",
