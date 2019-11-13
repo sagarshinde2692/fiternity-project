@@ -851,6 +851,13 @@ class FindersController extends \BaseController {
 									}
 								}
 
+								if($finder['_id']==13791) {
+									foreach($service['serviceratecard'] as &$rateCard) {
+										if(!empty($rateCard) && $rateCard['type']=='workout session') {
+											$rateCard['remarks'] = "Exclusive Launch Offer: Buy One Get One On Workout Session (For first-time users only)";
+										}
+									}
+								}
 							}
 
 							if((isset($finderarr['membership']) && $finderarr['membership'] == 'disable') || isset($service['membership']) && $service['membership'] == 'disable'){
@@ -4404,6 +4411,16 @@ class FindersController extends \BaseController {
 
 						}// trialschedules
 
+					}
+				}
+
+				if($finderarr['_id']==13791) {
+					foreach($finderarr['services'] as &$service) {
+						foreach($service['serviceratecard'] as &$ratecard) {
+							if(!empty($ratecard) && $ratecard['type']=='workout session') {
+								$ratecard['remarks'] = "Exclusive Launch Offer: Buy One Get One On Workout Session (For first-time users only)";
+							}
+						}
 					}
 				}
 				$cult_Ids = array();
