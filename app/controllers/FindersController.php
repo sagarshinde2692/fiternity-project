@@ -8833,7 +8833,9 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100";
+			if($finder['_id']!=13791) {
+				$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100";
+			}
 			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
 			// 	$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100";
 			// }
