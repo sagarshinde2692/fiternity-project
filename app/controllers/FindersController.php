@@ -855,6 +855,7 @@ class FindersController extends \BaseController {
 									foreach($service['serviceratecard'] as &$rateCard) {
 										if(!empty($rateCard) && $rateCard['type']=='workout session') {
 											$rateCard['remarks'] = "Exclusive Launch Offer: Buy One Get One On Workout Session (For first-time users only)";
+											$rateCard['remarks_imp'] = true;
 										}
 									}
 								}
@@ -4419,6 +4420,7 @@ class FindersController extends \BaseController {
 						foreach($service['serviceratecard'] as &$ratecard) {
 							if(!empty($ratecard) && $ratecard['type']=='workout session') {
 								$ratecard['remarks'] = "Exclusive Launch Offer: Buy One Get One On Workout Session (For first-time users only)";
+								$ratecard['remarks_imp'] = true;
 							}
 						}
 					}
