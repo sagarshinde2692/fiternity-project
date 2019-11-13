@@ -105,6 +105,10 @@ class PassService {
             if(!empty($pass_type)) {
                 $passList = $passList->where('pass_type', $pass_type);
             }
+            if(!empty($city)) {
+                $city = getmy_city($city);
+                $passList = $passList->where('cities', $city);
+            }
             $passList = $passList->orderBy('duration')->get();
         }
         
