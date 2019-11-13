@@ -4417,16 +4417,6 @@ class FindersController extends \BaseController {
 					}
 				}
 
-				if($finderarr['_id']==13791) {
-					foreach($finderarr['services'] as &$service) {
-						foreach($service['serviceratecard'] as &$ratecard) {
-							if(!empty($ratecard) && $ratecard['type']=='workout session') {
-								$ratecard['remarks'] = "Exclusive Launch Offer: Buy One Get One On Workout Session (For first-time users only)";
-								$ratecard['remarks_imp'] = true;
-							}
-						}
-					}
-				}
 				$cult_Ids = array();
 				// || in_array($finderarr['_id'], $cult_Ids)
 				if((isset($finderarr['category_id']) && $finderarr['category_id'] == 41) ){
@@ -5496,6 +5486,16 @@ class FindersController extends \BaseController {
 				}
 				if($isAnyServiceIntegrated) {
 					$finderData['finder']['finder_one_line'] = $this->getFinderOneLiner($finderData);
+					if($finderData['finder']['_id']==13791) {
+						foreach($finderData['finder']['services'] as &$service) {
+							foreach($service['ratecard'] as &$ratecard) {
+								if(!empty($ratecard) && $ratecard['type']=='workout session') {
+									$ratecard['remarks'] = "Exclusive Launch Offer: Buy One Get One On Workout Session (For first-time users only)";
+									$ratecard['remarks_imp'] = true;
+								}
+							}
+						}
+					}
 				}
 				else if(!empty($finderData['finder']['finder_one_line'])) {
 					unset($finderData['finder']['finder_one_line']);
