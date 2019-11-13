@@ -869,7 +869,9 @@ class FindersController extends \BaseController {
 							if(isset($finder['pay_per_session']) && $finder['pay_per_session'] && isset($service['trial']) && $service['trial'] != 'disable'){
 								foreach($service['serviceratecard'] as &$ratecard){
 									if($ratecard['type']=='workout session'){
-										$this->addRemarkToraecardweb($ratecard, $service, $finder);
+										if($finder['_id']!=13791) {
+											$this->addRemarkToraecardweb($ratecard, $service, $finder);
+										}
 										$service['pay_per_session'] = true;
 										$pay_per_session = true;
 									
@@ -8833,9 +8835,7 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			if($finder['_id']!=13791) {
-				$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100";
-			}
+			$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100";
 			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
 			// 	$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: OMF100";
 			// }
