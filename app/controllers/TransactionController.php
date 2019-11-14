@@ -9911,7 +9911,7 @@ class TransactionController extends \BaseController {
                     Booktrial::where('_id',(int)$booktrial_id)->update($data);
                 }
                 
-            }else{
+            }else if(isset($service_flag['bulk_purchase_b2c_pps']['commission'])){
 
                 $service = array();
                 Service::$withoutAppends = true;
