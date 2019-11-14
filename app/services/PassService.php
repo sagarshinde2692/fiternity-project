@@ -2366,7 +2366,7 @@ class PassService {
                 }
             }
 
-            if(!empty($order['pass']['flags']['cashback'])){
+            if(!empty($order['pass']['flags']['cashback']) && empty($order['coupon_flags']['no_cashback'])){
                 $cashback_amount = $order['pass']['flags']['cashback'];
 
                 $cashback_amount_after_gst = 0;
