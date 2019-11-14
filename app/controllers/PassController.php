@@ -41,7 +41,7 @@ class PassController extends \BaseController {
             $source = $input['source'];
         }
         
-        if(empty($input['city'])) {
+        if(empty($input['city']) || !empty($source)) {
             $city = 'mumbai';
         }
 
