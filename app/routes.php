@@ -1416,3 +1416,4 @@ Route::get('healthobject', 'RelianceController@buildHealthObjectStructure');
 Route::post('tpcancelsession', 'SchedulebooktrialsController@tpcancelsession');
 Route::post('decryptqrcode', 'ThirdPartyController@decryptQRCode');
 Route::get('renewalOnepass', 'DebugController@renewalOnepass');
+Route::get('removePassOrders/{email}', 'DebugController@removePassOrders');
