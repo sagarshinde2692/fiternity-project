@@ -2335,10 +2335,10 @@ class PassService {
                     $cashback_amount = 2000;
                 }
 
-                $cashback_amount_after_gst = 0;
-                if($cashback_amount != 0){
-                    $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
-                }
+                $cashback_amount_after_gst = $cashback_amount;
+                // if($cashback_amount != 0){
+                //     $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
+                // }
 
                 $utilities = new Utilities();
                 
@@ -2377,10 +2377,10 @@ class PassService {
             if(!empty($order['pass']['flags']['cashback']) && empty($order['coupon_flags']['no_cashback'])){
                 $cashback_amount = $order['pass']['flags']['cashback'];
 
-                $cashback_amount_after_gst = 0;
-                if($cashback_amount != 0){
-                    $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
-                }
+                $cashback_amount_after_gst = $cashback_amount;
+                // if($cashback_amount != 0){
+                //     $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
+                // }
 
                 $utilities = new Utilities();
                 
