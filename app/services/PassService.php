@@ -2386,35 +2386,35 @@ class PassService {
                 
                 if($cashback_amount_after_gst > 0){
 
-                    $walletData = array(
-                        "order_id"=>$order['_id'],
-                        "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
-                        "amount"=> intval($cashback_amount_after_gst),
-                        "amount_fitcash" => 0,
-                        "amount_fitcash_plus" => intval($cashback_amount_after_gst),
-                        "type"=>"CASHBACK",
-                        "entry"=>"credit",
-                        "order_type"=>["pass"],
-                        "description"=> "INR ".$cashback_amount_after_gst." Cashback on buying OnePass , Expires On : ".date('d-m-Y',time()+(86400*15)),
-                        "validity"=>time()+(86400*15),
-                        "duplicate_allowed" => true,
-                    );
+                    // $walletData = array(
+                    //     "order_id"=>$order['_id'],
+                    //     "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
+                    //     "amount"=> intval($cashback_amount_after_gst),
+                    //     "amount_fitcash" => 0,
+                    //     "amount_fitcash_plus" => intval($cashback_amount_after_gst),
+                    //     "type"=>"CASHBACK",
+                    //     "entry"=>"credit",
+                    //     "order_type"=>["pass"],
+                    //     "description"=> "INR ".$cashback_amount_after_gst." Cashback on buying OnePass , Expires On : ".date('d-m-Y',time()+(86400*15)),
+                    //     "validity"=>time()+(86400*15),
+                    //     "duplicate_allowed" => true,
+                    // );
 
-                    $walletTransaction = $utilities->walletTransaction($walletData);
+                    // $walletTransaction = $utilities->walletTransaction($walletData);
                     
-                    if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
+                    // if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
                         
-                        Order::where('_id', $order['_id'])->update(['cashback_added' => true]);
+                    //     Order::where('_id', $order['_id'])->update(['cashback_added' => true]);
 
-                        $customersms = new CustomerSms();
+                    //     $customersms = new CustomerSms();
 
-                        $sms_data = [];
+                    //     $sms_data = [];
 
-                        $sms_data['customer_phone'] = $order['customer_phone'];
-                        $sms_data['amount'] = $cashback_amount_after_gst;
+                    //     $sms_data['customer_phone'] = $order['customer_phone'];
+                    //     $sms_data['amount'] = $cashback_amount_after_gst;
 
-                        $customersms->fitboxMixedReward($order);
-                    }
+                    //     $customersms->fitboxMixedReward($order);
+                    // }
                 }
             }
         }catch (Exception $e) {

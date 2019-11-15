@@ -10911,7 +10911,10 @@ Class Utilities {
                 $return_arr['purchase_summary_value'] = "purchase_summary_value2";
                 return $return_arr;
                 break;
+            case "gurgaon":
+            case "noida":
             case "delhi":
+            case "faridabad":
             case "bangalore":
                 if(!empty($pass)){
                     $return_arr['text'] = "";
@@ -10926,8 +10929,6 @@ Class Utilities {
                 return $return_arr;
                 break;
             case "hyderabad":
-            case "gurgaon":
-            case "noida":
             case "pune":
             case "chandigarh":
             case "jaipur":
