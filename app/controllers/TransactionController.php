@@ -2599,9 +2599,9 @@ class TransactionController extends \BaseController {
                             //     array_set($data, 'diwali_mixed_reward', true);
                             // }
 
-                            if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
-                                    array_set($data, 'fitbox_mixed_reward', true);
-                                }
+                            // if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                            //         array_set($data, 'fitbox_mixed_reward', true);
+                            //     }
 
                             $reward_type = $value->reward_type;
 
@@ -6226,9 +6226,9 @@ class TransactionController extends \BaseController {
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
             $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices | Use Code: FITME15",'position'=>$position++];
 
-            if($data['ratecard_amount'] >= 8000){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15",'position'=>$position++];
-            }
+            // if($data['ratecard_amount'] >= 8000){
+            //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15",'position'=>$position++];
+            // }
 
             
             if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
