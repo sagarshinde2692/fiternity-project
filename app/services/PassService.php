@@ -188,7 +188,7 @@ class PassService {
         unset($response['app_passes']);
 
         $agrs1 = array('city' => $city);
-        $brandingData1 = $utilities->getBranding($agrs1);
+        $brandingData1 = $utilities->getPassBranding($agrs1);
         if(!empty($brandingData1['red_remarks_header'])){
             $response['passes'][0]['remarks']['header'] .= $brandingData1['red_remarks_header'];
         }
