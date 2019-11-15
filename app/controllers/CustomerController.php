@@ -8859,8 +8859,8 @@ class CustomerController extends \BaseController {
 		$isReward = !empty($input['isReward']) && ($input['isReward']!=false && $input['isReward']!="false");
 
 		$customer = $this->utilities->getCustomerFromTokenAsObject();
-		// $fitternity_grid_id=1;
-		$fitternity_grid_id=null;
+		// $grid_id=1;
+		$grid_id=null;
         if(!empty($customer->_id)){
 			if(isset($customer->corporate_id)){
 				$customer = Customer::active()->where('_id', $customer->_id)->where('corporate_id', 1)->first();	
@@ -8869,9 +8869,9 @@ class CustomerController extends \BaseController {
 				$customer = Customer::active()->where('_id', $customer->_id)->where('loyalty', 'exists', true)->first();
 			}
 			if(!empty($customer) && !empty($customer->loyalty)){
-				$fitternity_grid_id = null;
+				$grid_id = null;
 			}
-            $filter = $this->utilities->getMilestoneFilterData($customer, $isReward, $fitternity_grid_id); //passing fitternity_grid_id =>1, in order to display new rewards on preLoyaltyregisterPage
+            $filter = $this->utilities->getMilestoneFilterData($customer, $isReward, $grid_id); //passing grid_id =>1, in order to display new rewards on preLoyaltyregisterPage
 
 			if($customer && !empty($customer['loyalty'])){
 				$post = true;
@@ -10251,7 +10251,7 @@ class CustomerController extends \BaseController {
 				$loyalty['cashback_type'] = $order['finder_flags']['cashback_type'];
 			}
 			// if(!empty($loyalty['reward_type']) && $loyalty['reward_type']==2 && empty($loyalty['cashback_type'])){
-			// 	$loyalty['fitternity_grid_id'] = 1;
+			// 	$loyalty['grid_id'] = 1;
 			// }
 			$this->checkForFittenityGrid($loyalty); 
 			return $loyalty;

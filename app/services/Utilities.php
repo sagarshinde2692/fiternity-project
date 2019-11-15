@@ -7283,7 +7283,7 @@ Class Utilities {
                 if(!empty($data['type']) && $data['type'] == 'workout-session' && ( empty($data['finder_flags']['reward_type']) || (!empty($data['finder_flags']['reward_type']) && $data['finder_flags']['reward_type'] != 1)) ){
                     if(empty($customer['loyalty'])){
                         $loyalty['reward_type'] = 2;
-                        //$loyalty['fitternity_grid_id'] = 1;
+                        //$loyalty['grid_id'] = 1;
                         $dontUpdateLoyalty = false;
                         Log::info("dontUpdateLoyalty 2, first fitternity grid setting:::::::::::::::::::::::::",[$dontUpdateLoyalty]);
                     }
@@ -7324,12 +7324,12 @@ Class Utilities {
                             Log::info("dontUpdateLoyalty 3",[$dontUpdateLoyalty]);
                         }
                         // else if(empty($loyalty['reward_type']) || ($loyalty['reward_type']==2 && empty($loyalty['cashback_type']))){
-                        //     $loyalty['fitternity_grid_id'] = 1;
+                        //     $loyalty['grid_id'] = 1;
                         //     Log::info("second fitternity grid setting:::::::::::::::::::::::");
                         // }
                     }
                     // else if(empty($loyalty['reward_type']) || ($loyalty['reward_type']==2 && empty($loyalty['cashback_type']))){
-                    //     $loyalty['fitternity_grid_id'] = 1;
+                    //     $loyalty['grid_id'] = 1;
                     //     Log::info("third fitternity grid setting:::::::::::::::::::::");
                     // }
                     // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
@@ -8241,7 +8241,7 @@ Class Utilities {
     
     }
 
-    public function getMilestoneFilterData($customer, $includeCorporate=false, $fitternity_grid_id=null){
+    public function getMilestoneFilterData($customer, $includeCorporate=false, $grid_id=null){
         $filter = [];
         if($includeCorporate) {
             $filter['corporate_id'] = !empty($customer->corporate_id) ? $customer->corporate_id : null;
@@ -8253,7 +8253,7 @@ Class Utilities {
         $filter['brand_version'] = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
         $filter['reward_type'] = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
         $filter['cashback_type'] = !empty($customer->loyalty['cashback_type']) ? $customer->loyalty['cashback_type'] : null;
-        $filter['fitternity_grid_id'] = !empty($customer->loyalty['fitternity_grid_id']) ? $customer->loyalty['fitternity_grid_id'] : $fitternity_grid_id;
+        $filter['grid_id'] = !empty($customer->loyalty['grid_id']) ? $customer->loyalty['grid_id'] : $grid_id;
         return $filter;
     }
 
@@ -8306,11 +8306,11 @@ Class Utilities {
                 }
             }
 
-            if(!empty($filter['fitternity_grid_id'])){
-                $match['$match']['fitternity_grid_id'] = $filter['fitternity_grid_id'];
+            if(!empty($filter['grid_id'])){
+                $match['$match']['grid_id'] = $filter['grid_id'];
             }else {
                 Log::info('fitternity grid id:::::::::::::: does not exists');
-                $match['$match']['fitternity_grid_id'] = ['$exists' => false];
+                $match['$match']['grid_id'] = ['$exists' => false];
             }
 
             // print_r($match);
@@ -10878,7 +10878,7 @@ Class Utilities {
 
     public function checkForFittenityGrid(&$loyalty){
         if(empty($loyalty['brand_loyalty']) && empty($loyalty['cashback_type']) && (empty($loyalty['reward_type']) || $loyalty['reward_type']==2)){
-            $loyalty['fitternity_grid_id'] = 1;
+            $loyalty['grid_id'] = 1;
         }
         return;
     }
