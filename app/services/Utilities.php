@@ -10882,4 +10882,69 @@ Class Utilities {
 
     //     return $fitsquad_expired;
     // }
+
+    public function getPassBranding($args = null){
+        $return_arr = array();
+
+        $city = !empty($args['city']) ? $args['city'] : null;
+        $pass = !empty($args['pass']) ? $args['pass'] : null;
+        
+        $city_name = getmy_city($city);
+        
+        switch($city_name){
+            case "mumbai":
+                if(!empty($pass)){
+                    $return_arr['text'] = "";
+                    if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
+                        if(!empty($pass['duration']) && $pass['duration'] == 15){
+                            $return_arr['text'] = "";
+                        }
+        
+                        if(!empty($pass['duration']) && $pass['duration'] == 30){
+                            $return_arr['text'] = "";
+                        }
+                    }
+                }
+                $return_arr['black_remarks_header'] = "";
+                $return_arr['red_remarks_header'] = "\nyolo2";
+                $return_arr['footer_text'] = "footer2";
+                $return_arr['purchase_summary_value'] = "purchase_summary_value2";
+                return $return_arr;
+                break;
+            case "delhi":
+            case "bangalore":
+                if(!empty($pass)){
+                    $return_arr['text'] = "";
+                    if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
+                        $return_arr['text'] = "Biggest Price Drop: \nFLAT 35% Off (offer pre-applied)";
+                    }
+                }
+                $return_arr['black_remarks_header'] = "";
+                $return_arr['red_remarks_header'] = "\nyolo1";
+                $return_arr['footer_text'] = "footer1";
+                $return_arr['purchase_summary_value'] = "purchase_summary_value1";
+                return $return_arr;
+                break;
+            case "hyderabad":
+            case "gurgaon":
+            case "noida":
+            case "pune":
+            case "chandigarh":
+            case "jaipur":
+            case "kolkata":
+                if(!empty($pass)){
+                    $return_arr['text'] = "";
+                    if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
+                        $return_arr['text'] = "Biggest Price Drop: \nFLAT 50% Off (offer pre-applied)";
+                    }
+                }
+                $return_arr['black_remarks_header'] = "";
+                $return_arr['red_remarks_header'] = "\nyolo";
+                $return_arr['footer_text'] = "footer";
+                $return_arr['purchase_summary_value'] = "purchase_summary_value";
+                return $return_arr;
+                break;
+            default: return $return_arr;
+        }
+    }
 }

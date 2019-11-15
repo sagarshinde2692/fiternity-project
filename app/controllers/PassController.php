@@ -238,6 +238,14 @@ class PassController extends \BaseController {
             }
 		}
 
+        if(!empty($result['onepass_pre']['offers'])){
+            $agrs1 = array('city' => $city);
+			$brandingData = $this->utilities->getPassBranding($agrs1);
+			if(!empty($brandingData['footer_text'])){
+				$result['onepass_pre']['offers']['text'] = $brandingData['footer_text'];
+			}
+        }
+
 		$response = Response::make($result);
 		return $response;
     }

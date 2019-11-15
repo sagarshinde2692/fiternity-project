@@ -4416,7 +4416,15 @@ class CustomerController extends \BaseController {
                 "footer"=>"Get 100% Instant Cashback on Workout Sessions"
             ];
         }
-        
+		
+		if(!empty($result['onepass_pre'])){
+			$agrs1 = array('city' => $city);
+			$brandingData = $this->utilities->getPassBranding($agrs1);
+			if(!empty($brandingData['footer_text'])){
+				$result['onepass_pre']['footer']['text'] = $brandingData['footer_text'];
+			}
+		}
+		
         $response = Response::make($result);
 		if(!empty($customeremail)){
 			$response = setNewToken($response, !empty($passOrder)?$passOrder:null, $rel_banner_shown);

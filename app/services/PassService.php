@@ -33,6 +33,8 @@ class PassService {
 
     public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null, $source=null){
         
+        $utilities = new Utilities();
+
         $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('pass_type', '!=', 'hybrid');
 
         $response = Config::get('pass.list');
@@ -146,14 +148,12 @@ class PassService {
                 }
             }
 
-            $passDetails['text'] = "(Extra 20% Off + \n Handpicked Healthy Food Hamper Worth INR 2,500)";
-
-            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15){
-                $passDetails['text'] = "(Instant Cashback Worth INR 1000 \n (No Code Required))";
-            }
-
-            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 30){
-                $passDetails['text'] = "(Instant Cashback Worth INR 2000 \n (No Code Required))";
+            $agrs = array('pass' => $pass, 'city' => $city);
+            $brandingData = $utilities->getPassBranding($agrs);
+            if(empty($brandingData['text'])){
+                unset($passDetails['text']);
+            }else{
+                $passDetails['text'] = $brandingData['text'];
             }
 
             if(!empty($source) && $source=='sodexo') {
@@ -186,6 +186,17 @@ class PassService {
             $response['passes'] = $response['app_passes'];
         }
         unset($response['app_passes']);
+
+        $agrs1 = array('city' => $city);
+        $brandingData1 = $utilities->getBranding($agrs1);
+        if(!empty($brandingData1['red_remarks_header'])){
+            $response['passes'][0]['remarks']['header'] .= $brandingData1['red_remarks_header'];
+        }
+
+        if(!empty($brandingData1['black_remarks_header'])){
+            $response['passes'][1]['remarks']['header'] .= $brandingData1['black_remarks_header'];
+        }
+
         // $passConfig = Config::get('pass');
         // $passCount = Order::active()->where('type', 'pass')->count();
         // if($passCount>=$passConfig['total_available']) {
@@ -1661,22 +1672,19 @@ class PassService {
             ]
         ];
 
-        if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
-            $resp[] = [
-                   'field' => '',
-                   'value' => "Instant Cashback Worth INR 1000 (No Code Required)",
-            ];
-        }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [30])){
-            $resp[] = [
-                   'field' => '',
-                   'value' => "Instant Cashback Worth INR 2000 (No Code Required)",
-            ];
-        }else {
-            $resp[] = [
-                'field' => '',
-                'value' => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500. Use Code: OHFIT. Last Few Hours Left!",
-            ];
+        if(!empty($data['customer_city'])){
+            $data['city'] = $data['customer_city'];
         }
+        $city = !empty($data['city']) ? $data['city'] : null;
+        
+        $agrs1 = array('city' => $city, 'pass' => $data['pass']);
+		$brandingData = $this->utilities->getPassBranding($agrs1);
+		if(!empty($brandingData['purchase_summary_value'])){
+			$resp[] = [
+                'field' => '',
+                'value' => $brandingData['purchase_summary_value'],
+            ];
+		}
 
         return $resp;
     }
