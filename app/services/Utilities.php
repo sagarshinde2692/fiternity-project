@@ -10994,6 +10994,7 @@ Class Utilities {
             case "chandigarh":
             case "jaipur":
             case "kolkata":
+            case "ahmedabad":
                 if(!empty($pass)){
                     $return_arr['text'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
