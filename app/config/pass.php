@@ -162,21 +162,21 @@ return [
             "<ul>
                 <li>A. On OnePass Memberships<br><br>
                     I) On OnePass Red: 15 Days & OnePass Red: 1 Month- Full 100% Cashback (No Code Needed)<br><br>
-                    How does it work?<br>
+                    How does it work?<br><br>
                     1) If you buy a OnePass Red: 15 days/1 month, you will get cashback worth the selling price of the pass (no code needed)<br>
                             -OnePass Red 15 days gives you FitCash worth INR 3000<br>
-                            -OnePass Red 1 month gives you FitCash worth INR 4500<br>
-                    2) The cashback will be added to your Fitternity account as FitCash (1 FitCash = INR 1)<br>
-                    3) The FitCash received can be utilized only to upgrade your OnePass<br>
+                            -OnePass Red 1 month gives you FitCash worth INR 4500<br><br>
+                    2) The cashback will be added to your Fitternity account as FitCash (1 FitCash = INR 1)<br><br>
+                    3) The FitCash received can be utilized only to upgrade your OnePass<br><br>
                     4) The validity of your FitCash is 105 days after your OnePass expires and is divided as follows<br>
                             -Expires Within 15 Days: FitCash worth INR 2000<br>
                             -Expires Within 60 Days: FitCash Worth INR 1500 (OnePass Red 1 Month) | FitCash Worth INR 1000 (OnePass Red 15 Days)<br>
-                            -Expires Within 105 Days: FitCash Worth INR 1000 (OnePass Red 1 Month)<br>
-                    5) The entire FitCash received can be used only for the upgrade to OnePass 12 months<br>
-                    6) Discount of upto 30% is pre-applied on MRP<br>
-                    7) The FitCash received will not be valid on upgrade to OnePass Red 15 Days<br>
-                    8) Discount varies across different types of pass<br>
-                    9) This cannot be clubbed with any other existing offer<br>
+                            -Expires Within 105 Days: FitCash Worth INR 1000 (OnePass Red 1 Month)<br><br>
+                    5) The entire FitCash received can be used only for the upgrade to OnePass 12 months<br><br>
+                    6) Discount of upto 30% is pre-applied on MRP<br><br>
+                    7) The FitCash received will not be valid on upgrade to OnePass Red 15 Days<br><br>
+                    8) Discount varies across different types of pass<br><br>
+                    9) This cannot be clubbed with any other existing offer<br><br>
                     10) The offer ends on 18 November<br><br><br>
                     II) If you buy OnePass Red: 3,6,12 months: FLAT 20% Off or FREE 3 Months Extension<br><br>
                     How does it work?<br><br>
