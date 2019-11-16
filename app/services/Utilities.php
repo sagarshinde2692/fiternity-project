@@ -10985,7 +10985,7 @@ Class Utilities {
                 if(!empty($pass)){
                     $return_arr['text'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
-                        $return_arr['text'] = "FLAT 50% Off";
+                        $return_arr['text'] = "Biggest Price Drop: \nFLAT 50% Off (offer pre-applied)";
                         $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 50% Off (No Code Needed) | 16-18 Nov";
                     }
                 }
