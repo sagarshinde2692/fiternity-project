@@ -9973,6 +9973,7 @@ class CustomerController extends \BaseController {
 			$pre_reward_template['images'] = $this->utilities->getVoucherImages($voucher_categories_map[$milestone['milestone']]);
 			if(!empty($grid_id) && !empty($pre_reward_milestone_contant[$pre_reward_template['title']])){
 				$pre_reward_template = array_merge($pre_reward_template, $pre_reward_milestone_contant[$pre_reward_template['title']]);
+				$pre_reward_template['sub_ttile'] = strtr($pre_reward_template['sub_ttile'], ["___count" => $pre_reward_template['count']]);
 			}
             $pre_register_check_ins_data[] = $pre_reward_template;
         }
