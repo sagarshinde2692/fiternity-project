@@ -10898,6 +10898,7 @@ Class Utilities {
                 array_push($image_new, $value);
             }
         }
+        array_splice($image_new, 6);
         return $image_new;
     }
 
