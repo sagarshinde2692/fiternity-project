@@ -40,6 +40,10 @@ class PassController extends \BaseController {
         if(!empty($input['source'])) {
             $source = $input['source'];
         }
+        
+        if(empty($input['city']) || !empty($source)) {
+            $city = 'mumbai';
+        }
 
         $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source);
         if(empty($passes)) {
