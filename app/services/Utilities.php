@@ -10902,6 +10902,10 @@ Class Utilities {
     }
 
     public function voucherImagebasedAppVersion($voucher){
-        Log::info('app version anded device type::::', [$this->device_type, Request::header('App-Version'), Request::header('Device-Type')]);
+        Log::info('app version anded device type::::', [$this->device_type,$this->app_version]);
+
+        if(!empty($this->device_type) && !empty($this->app_version) && (($this->device_type=='android' && $this->app_version > 5.31) || ($this->device_type=='ios' && $this->app_version > '5.2.6'))){
+            
+        }
     }
 }
