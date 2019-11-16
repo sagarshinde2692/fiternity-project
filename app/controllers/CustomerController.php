@@ -9758,7 +9758,8 @@ class CustomerController extends \BaseController {
 
                         unset($claimed_voucher['flags']);
                         $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
-                        $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $claimed_voucher);
+						// $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $claimed_voucher);
+                        $post_reward_data_template['logo'] = $this->utilities->voucherImagebasedAppVersion($claimed_voucher);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $claimed_voucher);
 						$post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $claimed_voucher);
 						if(empty($instant_manual_redemption)){
@@ -9799,10 +9800,11 @@ class CustomerController extends \BaseController {
                         if(in_array($vc['name'], $claimed_voucher_categories)){
                             continue;
                         }
-                        $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
+						$post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
+						$this->utilities->voucherImagebasedAppVersion($vc);
 						$post_reward_data_template['logo'] = $vc['image'];//strtr($post_reward_data_template['logo'], $vc);
 						
-                        $vc = array_only($vc, ['_id', 'terms', 'amount', 'description']);
+                        $vc = array_only($vc, ['_id', 'terms', 'amount', 'description', 'title']);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
                         $post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $vc);
                         $post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$post_reward_data_template['_id'];
@@ -9899,7 +9901,10 @@ class CustomerController extends \BaseController {
                         }else{
                             $post_reward_data_template['claim_enabled'] = false;
                         } 
-                        // return $post_reward_data_template;
+						// return $post_reward_data_template;
+						if(!empty($vc['title'])){
+							$post_reward_data_template['title'] = ucwords($vc['title']);
+						}
                         $post_reward_template['data'][] = $post_reward_data_template;
                         // return $milestone_no;
                     }

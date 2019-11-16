@@ -66,7 +66,7 @@ Class Utilities {
         
     $vendor_token = Request::header('Authorization-Vendor');
     $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
-
+    $this->app_version = Request::header('App-Version');
 
     if($vendor_token){
 
@@ -10886,18 +10886,22 @@ Class Utilities {
     public function getVoucherImages($voucher){
         $image = array_column($voucher, 'image');
 
-        Log::info('voucher data:::::::::', $image);
+        // Log::info('voucher data:::::::::', $image);
         $image_new = [];
         foreach($image as $key=>$value){
             if(is_array($value)){
-                if(!empty($value[0]['url'])){
-                    array_push($image_new, $value[0]['url']);
-                }
+                $temp = array_column($value, 'url');
+                Log::info('temp:::', $temp);
+                $image_new = array_merge($image_new, $temp);
             }
             else {
                 array_push($image_new, $value);
             }
         }
         return $image_new;
+    }
+
+    public function voucherImagebasedAppVersion($voucher){
+        Log::info('app version anded device type::::', [$this->device_type, Request::header('App-Version'), Request::header('Device-Type')]);
     }
 }
