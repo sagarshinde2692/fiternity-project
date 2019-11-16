@@ -8855,7 +8855,9 @@ class CustomerController extends \BaseController {
 		$jwt_token = Request::header('Authorization');
 
 		$customer = null;
-        $filter = [];
+        $filter = [
+			"grid_id" => 1
+		];
 		$isReward = !empty($input['isReward']) && ($input['isReward']!=false && $input['isReward']!="false");
 
 		$customer = $this->utilities->getCustomerFromTokenAsObject();

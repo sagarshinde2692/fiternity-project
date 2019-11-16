@@ -10884,10 +10884,19 @@ Class Utilities {
     }
 
     public function getVoucherImages($voucher){
-        if(!empty($voucher['images']) && is_array($voucher['image'])){
-            return $voucher['image'];
-        } else {
-            return array_column($voucher, 'image');
-        } 
-    }
+        $image = array_column($voucher, 'image');
+
+        Log::info('voucher data:::::::::', $image);
+        $image_new = [];
+        foreach($image as $key=>$value){
+            if(is_array($value)){
+                if(!empty($value[0]['url'])){
+                    array_push($image_new, $value[0]['url']);
+                }
+            }
+            else {
+                array_push($image_new, $value);
+            }
+        }
+        return $image_new;
 }
