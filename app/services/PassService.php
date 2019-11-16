@@ -1887,14 +1887,21 @@ class PassService {
                 
             }
 
-            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per']))){
+            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per'])) || (!empty($data['coupon_flags']['extension_percent']))){
 
                 if($payment_mode_type != 'pay_later'){
 
-                    $amount_summary[] = array(
-                        'field' => 'Coupon Discount',
-                        'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "100% Cashback"
-                    );
+                    if(!empty($data['coupon_flags']['extension_percent'])){
+                        $amount_summary[] = array(
+                            'field' => 'Coupon Discount',
+                            'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "Extension"
+                        );
+                    }else{
+                        $amount_summary[] = array(
+                            'field' => 'Coupon Discount',
+                            'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "100% Cashback"
+                        );
+                    }
                     $you_save += (!empty($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0);
                 }else{
                     $amount_final = $amount_final + $data['coupon_discount_amount'];
