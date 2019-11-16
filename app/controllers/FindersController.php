@@ -8575,9 +8575,9 @@ class FindersController extends \BaseController {
 							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."");
 						}else{
 							// if($price >= 8000){
-							// 	$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nSuper Saver Sale \n\nOn Gyms & Studio Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships \n\nUse Code: SUPER20");
+							// 	$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nSuper Saver Sale \n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships \n\nUse Code: SUPER20");
 							// }else{
-								$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nSuper Saver Sale \n\nOn Gyms & Studio Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships \n\nUse Code: FITME15");
+								$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nSuper Saver Sale \n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships \n\nUse Code: SUPER20");
 							// }
 						}
 					}
