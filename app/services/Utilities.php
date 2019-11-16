@@ -10942,22 +10942,28 @@ Class Utilities {
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
                             $return_arr['text'] = "FLAT 20% off or 22 days Extension";
                             $return_arr['purchase_summary_value'] = "Get FLAT 20% off (code: SUPERSAVER) or 22 days extension (code: EXTRA25) | 16-18 Nov";
-
-                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You have received an extention of 22 days.\nKindly feel free to reach out to us on +917400062849 for queries";
+                            
+                            if(!empty($coupon_flags) && $coupon_falgs['extension_percent']){
+                                $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You have received an extention of 22 days.\nKindly feel free to reach out to us on +917400062849 for queries";
+                            }
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 180){
                             $return_arr['text'] = "FLAT 20% off or 1.5 Month Extension";
                             $return_arr['purchase_summary_value'] = "Get FLAT 20% off (code: SUPERSAVER) or 1.5 month extension (code: EXTRA25) | 16-18 Nov";
 
-                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You have received an extention of 1.5 months.\nKindly feel free to reach out to us on +917400062849 for queries";
+                            if(!empty($coupon_flags) && $coupon_falgs['extension_percent']){
+                                $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You have received an extention of 1.5 months.\nKindly feel free to reach out to us on +917400062849 for queries";
+                            }
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 360){
                             $return_arr['text'] = "FLAT 20% off or 3 Months Extension";
                             $return_arr['purchase_summary_value'] = "Get FLAT 20% off (code: SUPERSAVER) or 3 months extension (code: EXTRA25) | 16-18 Nov";
 
-                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You have received an extention of 3 months.\nKindly feel free to reach out to us on +917400062849 for queries";
+                            if(!empty($coupon_flags) && $coupon_falgs['extension_percent']){
+                                $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You have received an extention of 3 months.\nKindly feel free to reach out to us on +917400062849 for queries";
+                            }
                         }
                     }
                 }

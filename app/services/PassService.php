@@ -1567,7 +1567,7 @@ class PassService {
             $customersms = new CustomerSms();
         
             $sms_data = [];
-            $sms_data['customer_phone'] = $order['customer_phone'];
+            $sms_data['customer_phone'] = $data['customer_phone'];
             $sms_data['message'] = $brandingData['msg_data'];
             
             $customersms->custom($sms_data);
