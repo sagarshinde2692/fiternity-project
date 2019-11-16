@@ -160,45 +160,38 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
-                <li>A. On OnePass Memberships<br><br>
-                    I) On OnePass Red: 15 Days & OnePass Red: 1 Month- Full 100% Cashback (No Code Needed)<br><br>
-                    How does it work?<br><br>
-                    1) If you buy a OnePass Red: 15 days/1 month, you will get cashback worth the selling price of the pass (no code needed)<br>
-                            -OnePass Red 15 days gives you FitCash worth INR 3000<br>
-                            -OnePass Red 1 month gives you FitCash worth INR 4500<br><br>
-                    2) The cashback will be added to your Fitternity account as FitCash (1 FitCash = INR 1)<br><br>
-                    3) The FitCash received can be utilized only to upgrade your OnePass<br><br>
-                    4) The validity of your FitCash is 105 days after your OnePass expires and is divided as follows<br>
-                            -Expires Within 15 Days: FitCash worth INR 2000<br>
-                            -Expires Within 60 Days: FitCash Worth INR 1500 (OnePass Red 1 Month) | FitCash Worth INR 1000 (OnePass Red 15 Days)<br>
-                            -Expires Within 105 Days: FitCash Worth INR 1000 (OnePass Red 1 Month)<br><br>
-                    5) The entire FitCash received can be used only for the upgrade to OnePass 12 months<br><br>
-                    6) Discount of upto 30% is pre-applied on MRP<br><br>
-                    7) The FitCash received will not be valid on upgrade to OnePass Red 15 Days<br><br>
-                    8) Discount varies across different types of pass<br><br>
-                    9) This cannot be clubbed with any other existing offer<br><br>
-                    10) The offer ends on 18 November<br><br><br>
-                    II) If you buy OnePass Red: 3,6,12 months: FLAT 20% Off or FREE 3 Months Extension<br><br>
-                    How does it work?<br><br>
-                    1) FLAT 20% off using code SUPERSAVER is applicable as follows:<br>
-                        -Discount of upto 30% is pre-applied on MRP<br>
-                        -Extra 20% off using code: SUPERSAVER is upto INR 3,500<br>
-                        - Coupon code is applicable only on OnePass Red (3,6,12 months)<br>
-                        -Discount varies across different types of pass<br>
-                        -You can avail only 1 offer at the time of transaction<br>
-                    -This cannot be clubbed with any other existing offer<br>
-                        -Offer ends on 18 November after which code SUPERSAVER will be invalid<br><br>
-                    2) Free Extension using code EXTRA25 is applicable as follows:<br>
-                        - Get 3-month extension on purchase of 1 year OnePass Red<br>
-                        - Get 1.5 months (45 days) extension on purchase of  6 months OnePass Red<br>
-                    - Get 3 weeks (22 days) extension on purchase of 3 months OnePass Red<br>
-                        - The code EXTRA25 is not applicable on 15 days and 1 month OnePass Red<br>
-                        -Discount varies across different types of pass<br>
-                        -You can avail only 1 offer at the time of transaction<br>
-                        -This cannot be clubbed with any other existing offer<br>
-                        -Offer ends on 18 November after which code EXTRA25 will be invalid<br><br><br>
-                    Note: No promotional code is applicable on OnePass Black
+                    <li>If the offer on OnePass is a Discount (with code)<br><br>
+                    - Discount of upto 30% is pre-applied on MRP<br>
+                    - Maximum discount offered is upto INR 3,000<br>
+                    - Coupon codes are applicable only on OnePass Red (3,6,12 months)<br>
+                    - Discount varies across different types of pass<br>
+                    - You can only avail one offer at a time<br>
+                    - This offer cannot be clubbed with any other existing offer
                 </li>
+                
+                <li>If the offer on OnePass is a Discount (without code)<br><br>
+                    - Discount of upto 50% is pre-applied on MRP<br>
+                    - Discount varies across different types of pass<br>
+                    - You can only avail one offer at a time<br>
+                    - This offer cannot be clubbed with any other existing offer
+                </li>
+                
+                <li>If the offer on OnePass is Cashback<br><br>
+                    - The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
+                    - The FitCash received as cashback is not applicable on purchase of 15-  day OnePass red.<br>
+                    - The validity of FitCash received as cashback is for 105 days only<br>
+                    - Discount varies across different types of pass<br>
+                    - This offer cannot be clubbed with any other existing offer<br>
+                    - The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts.
+                </li>
+                
+                <li>If the offer on OnePass is an Extension<br><br>
+                    - You get an additional 25% extension on your Onepass Red validity when the purchase is  OnePass Red 3,6 or 12 months.<br>
+                    - You can avail only one offer at the time.<br>
+                    - This cannot be clubbed with any other existing offer
+                <li>
+                
+                <li>Note: No promotional code is applicable on OnePass Black</li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -229,35 +222,38 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li><b>Oh My Fitness Sale</b><br>Last Few Hours Left, Buy Now</li>
-                <li>
-                    <b>On OnePass: 
-                    <br>I) Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 Filled With Products From Yoga Bar, To Be Healthy, Fab Box, Butternut Co, Mr. Makhana With Specially Curated Healthy Recipes And Diet Plans</b><br>
-                    How does it work?<br>
+                <li>If the offer on OnePass is a Discount (with code)<br><br>
                     - Discount of upto 30% is pre-applied on MRP<br>
-                    - Extra 20% off using code: OHFIT is upto INR 3,500<br>
-                    - Coupon code: OHFIT will be applicable only on OnePass Red (3,6,12 months) and OnePass Black<br>
-                    - The handpicked healthy food hamper will reach your doorstep by 7th December<br><br>
-                    <b>II) Instant Cashback of upto INR 2,000</b><br>
-                    How does it work?<br>
-                    - Discount of upto 30% is pre-applied on MRP<br>
-                    - Instant Cashback of INR 1,000 is available on OnePass Red 15 days<br>
-                    - Instant Cashback on INR 2,000 is available on OnePass Red 1 month<br>
-                    - The Instant Cashback will be added to your Fitternity account as FitCash (1 FitCash = INR 1)<br>
-                    - The FitCash received can be utilized only to upgrade your OnePass<br>
-                    - The FitCash will be valid for 15 days after expiry of your OnePass<br>
+                    - Maximum discount offered is upto INR 3,000<br>
+                    - Coupon codes are applicable only on OnePass Red (3,6,12 months)<br>
+                    - Discount varies across different types of pass<br>
+                    - You can only avail one offer at a time<br>
+                    - This offer cannot be clubbed with any other existing offer
                 </li>
+
+                <li>If the offer on OnePass is a Discount (without code)<br><br>
+                    - Discount of upto 50% is pre-applied on MRP<br>
+                    - Discount varies across different types of pass<br>
+                    - You can only avail one offer at a time<br>
+                    - This offer cannot be clubbed with any other existing offer
+                </li>
+
+                <li>If the offer on OnePass is Cashback<br><br>
+                    - The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
+                    - The FitCash received as cashback is not applicable on purchase of 15-  day OnePass red.<br>
+                    - The validity of FitCash received as cashback is for 105 days only<br>
+                    - Discount varies across different types of pass<br>
+                    - This offer cannot be clubbed with any other existing offer<br>
+                    - The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts.
+                </li>
+
+                <li>If the offer on OnePass is an Extension<br><br>
+                    - You get an additional 25% extension on your Onepass Red validity when the purchase is  OnePass Red 3,6 or 12 months.<br>
+                    - You can avail only one offer at the time.<br>
+                    - This cannot be clubbed with any other existing offer
                 <li>
-                    <b>Exclusive PayPal Cashback Offer</b><br>
-                    How does it work?<br>
-                    - Get 50% instant cashback upto INR 300 on making payment via PayPal<br>
-                    - Min purchase value should be INR 50<br>
-                    - Offer is applicable on new users only<br>
-                    - Instant cashback will be credited in the users PayPal wallet<br>
-                    - This offer is applicable along with Fitternity's promotional offers<br>
-                    - This offer expires on 15th November 2019<br>
-                    - Instant Cashback received expires within 60 days<br>
-                </li>
+
+                <li>Note: No promotional code is applicable on OnePass Black</li>
 
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -287,35 +283,38 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li><b>Oh My Fitness Sale</b><br>Last Few Hours Left, Buy Now</li>
-                <li>
-                    <b>On OnePass: 
-                    <br>I) Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 Filled With Products From Yoga Bar, To Be Healthy, Fab Box, Butternut Co, Mr. Makhana With Specially Curated Healthy Recipes And Diet Plans</b><br>
-                    How does it work?<br>
+                <li>If the offer on OnePass is a Discount (with code)<br><br>
                     - Discount of upto 30% is pre-applied on MRP<br>
-                    - Extra 20% off using code: OHFIT is upto INR 3,500<br>
-                    - Coupon code: OHFIT will be applicable only on OnePass Red (3,6,12 months) and OnePass Black<br>
-                    - The handpicked healthy food hamper will reach your doorstep by 7th December<br><br>
-                    <b>II) Instant Cashback of upto INR 2,000</b><br>
-                    How does it work?<br>
-                    - Discount of upto 30% is pre-applied on MRP<br>
-                    - Instant Cashback of INR 1,000 is available on OnePass Red 15 days<br>
-                    - Instant Cashback on INR 2,000 is available on OnePass Red 1 month<br>
-                    - The Instant Cashback will be added to your Fitternity account as FitCash (1 FitCash = INR 1)<br>
-                    - The FitCash received can be utilized only to upgrade your OnePass<br>
-                    - The FitCash will be valid for 15 days after expiry of your OnePass<br>
+                    - Maximum discount offered is upto INR 3,000<br>
+                    - Coupon codes are applicable only on OnePass Red (3,6,12 months)<br>
+                    - Discount varies across different types of pass<br>
+                    - You can only avail one offer at a time<br>
+                    - This offer cannot be clubbed with any other existing offer
                 </li>
+
+                <li>If the offer on OnePass is a Discount (without code)<br><br>
+                    - Discount of upto 50% is pre-applied on MRP<br>
+                    - Discount varies across different types of pass<br>
+                    - You can only avail one offer at a time<br>
+                    - This offer cannot be clubbed with any other existing offer
+                </li>
+
+                <li>If the offer on OnePass is Cashback<br><br>
+                    - The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
+                    - The FitCash received as cashback is not applicable on purchase of 15-  day OnePass red.<br>
+                    - The validity of FitCash received as cashback is for 105 days only<br>
+                    - Discount varies across different types of pass<br>
+                    - This offer cannot be clubbed with any other existing offer<br>
+                    - The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts.
+                </li>
+
+                <li>If the offer on OnePass is an Extension<br><br>
+                    - You get an additional 25% extension on your Onepass Red validity when the purchase is  OnePass Red 3,6 or 12 months.<br>
+                    - You can avail only one offer at the time.<br>
+                    - This cannot be clubbed with any other existing offer
                 <li>
-                    <b>Exclusive PayPal Cashback Offer</b><br>
-                    How does it work?<br>
-                    - Get 50% instant cashback upto INR 300 on making payment via PayPal<br>
-                    - Min purchase value should be INR 50<br>
-                    - Offer is applicable on new users only<br>
-                    - Instant cashback will be credited in the users PayPal wallet<br>
-                    - This offer is applicable along with Fitternity's promotional offers<br>
-                    - This offer expires on 15th November 2019<br>
-                    - Instant Cashback received expires within 60 days<br>
-                </li>
+
+                <li>Note: No promotional code is applicable on OnePass Black</li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
