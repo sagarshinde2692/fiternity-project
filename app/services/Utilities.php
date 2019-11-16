@@ -10969,12 +10969,12 @@ Class Utilities {
                     $return_arr['text'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
                         $return_arr['text'] = "Biggest Price Drop: \nFLAT 35% Off (offer pre-applied)";
+                        $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 35% Off (No Code Required) | 16-18 Nov";
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
                 $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop: FLAT 35% Off \nBuy Now To Save More! Start At Your Convenience \n16-18 Nov";
                 $return_arr['footer_text'] = "Biggest Price Drop: FLAT 35% Off";
-                $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 35% Off (No Code Required) | 16-18 Nov";
                 return $return_arr;
                 break;
             case "hyderabad":
@@ -10986,12 +10986,12 @@ Class Utilities {
                     $return_arr['text'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
                         $return_arr['text'] = "FLAT 50% Off";
+                        $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 50% Off (No Code Required) | 16-18 Nov";
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
                 $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop: FLAT 50% Off \nBuy Now To Save More! Start At Your Convenience \n16-18 Nov";
                 $return_arr['footer_text'] = "Biggest Price Drop: FLAT 50% Off ";
-                $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 50% Off (No Code Required) | 16-18 Nov";
                 return $return_arr;
                 break;
             default: return $return_arr;
