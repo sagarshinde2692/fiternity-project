@@ -116,7 +116,7 @@ return array(
             'enabled'=>false,
             'progress'=>0,
             'description' => 'Check-ins',
-            'amount'=>1600
+            'amount'=>16000
 
         ]
     ]
