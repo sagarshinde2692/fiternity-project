@@ -8230,6 +8230,15 @@ Class Utilities {
             $brand_milestones = $brand_milestones->first();
             
         }
+        else if(!empty($filter['grid_id'])){
+            $brand_milestones = FinderMilestone::where('grid_id', $filter['grid_id']);
+            
+            if(!empty($filter['reward_type'])){
+                $brand_milestones = $brand_milestones->where('reward_type', $filter['reward_type']);
+            }
+
+            $brand_milestones = $brand_milestones->first();
+        }
         
         if(empty($brand_milestones)){
 
