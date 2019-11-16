@@ -1553,6 +1553,26 @@ class PassService {
             $sms->fitboxMixedReward($pass_data);
         }
 
+        if(!empty($data['customer_city'])){
+            $data['city'] = $data['customer_city'];
+        }
+        $city = !empty($data['city']) ? $data['city'] : null;
+        $coupon_flags = !empty($data['coupon_flags']) ? $data['coupon_flags'] : null;
+        $device_type = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : null;
+        
+        $agrs = array('city' => $city, 'pass' => $data['pass'], 'coupon_flags' => $coupon_flags, 'device_type' => $device_type);
+        $utilities = new Utilities();    
+        $brandingData = $utilities->getPassBranding($agrs);
+        if(!empty($brandingData['msg_data'])){
+            $customersms = new CustomerSms();
+        
+            $sms_data = [];
+            $sms_data['customer_phone'] = $order['customer_phone'];
+            $sms_data['message'] = $brandingData['msg_data'];
+            
+            $customersms->custom($sms_data);
+        }
+
         return array(
             'sms' => $smsSent,
             'email' => $emailSent
