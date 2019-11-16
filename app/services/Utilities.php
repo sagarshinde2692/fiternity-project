@@ -10905,7 +10905,7 @@ Class Utilities {
                             $return_arr['text'] = "Full 100% Cashback (No Code Needed)";
                             $return_arr['purchase_summary_value'] = "Full 100% Cashback (No Code Needed) | 16-18 Nov";
 
-                            if(!empty($coupon_flags) && empty($coupon_flags['no_cashback'])){
+                            if(empty($coupon_flags['no_cashback'])){
                                 if(!empty($device_type)){
                                     if($device_type == 'android'){
                                         $return_arr['offer_success_msg'] = "<br>Congratulations on your OnePass purchase. You will receive full cashback worth INR 3000 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass<br>Kindly feel free to reach out to us on +917400062849 for queries";
@@ -10924,7 +10924,7 @@ Class Utilities {
                             $return_arr['text'] = "Full 100% Cashback (No Code Needed)";
                             $return_arr['purchase_summary_value'] = "Full 100% Cashback (No Code Needed) | 16-18 Nov";
 
-                            if(!empty($coupon_flags) && empty($coupon_flags['no_cashback'])){
+                            if(empty($coupon_flags['no_cashback'])){
                                 if(!empty($device_type)){
                                     if($device_type == 'android'){
                                         $return_arr['offer_success_msg'] = "<br>Congratulations on your OnePass purchase. You will receive full cashback worth INR 4500 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass<br>Kindly feel free to reach out to us on +917400062849 for queries";
