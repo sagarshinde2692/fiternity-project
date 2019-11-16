@@ -151,6 +151,29 @@ return array(
         "https://b.fitn.in/external-vouchers1/cleartrip.png",
         "https://b.fitn.in/external-vouchers1/o2.png",
         "https://b.fitn.in/external-vouchers1/book%20my%20show.png",
+    ],
+    
+    "milestones_constant" => [
+        "Milestone 1" => [
+            "header" => "Cool Marvel Merchandise & Exciting Vouchers",
+            "sub_header" => "Exclusive Marvel t-shirt or a gym bag along with exciting vouchers from The Man Company, Healthiyme, The Label Life & Ease My Trip",
+            "backgroud_color" => "#BEE1E3"
+        ],
+        "Milestone 2" => [
+            "header" => "Cool Marvel Merchandise & Exciting Vouchers",
+            "sub_header" => "Exclusive Marvel t-shirt or a gym bag along with exciting vouchers from The Man Company, Healthiyme, The Label Life & Ease My Trip",
+            "backgroud_color" => "#12A960" 
+        ],
+        "Milestone 3" => [
+            "header" => "Cool Marvel Merchandise & Exciting Vouchers",
+            "sub_header" => "Exclusive Marvel t-shirt or a gym bag along with exciting vouchers from The Man Company, Healthiyme, The Label Life & Ease My Trip",
+            "backgroud_color" => "#187CFF"
+        ],
+        "Milestone 4" => [
+            "header" => "Cool Marvel Merchandise & Exciting Vouchers",
+            "sub_header" => "Exclusive Marvel t-shirt or a gym bag along with exciting vouchers from The Man Company, Healthiyme, The Label Life & Ease My Trip",
+            "backgroud_color" => "#BA000"
+        ]
     ]
 );
 ?>
