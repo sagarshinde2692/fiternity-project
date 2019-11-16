@@ -10882,4 +10882,12 @@ Class Utilities {
         }
         return;
     }
+
+    public function getVoucherImages($voucher){
+        if(!empty($voucher['images']) && is_array($voucher['image'])){
+            return $voucher['image'];
+        } else {
+            return array_column($voucher, 'image');
+        } 
+    }
 }
