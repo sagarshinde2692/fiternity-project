@@ -1234,6 +1234,16 @@ class PassService {
 
         $pass_type_ori = $order['pass']['pass_type'];
         $pass_duration = $order['pass']['duration'];
+
+        if(!empty($order['customer_city'])){
+            $order['city'] = $order['customer_city'];
+        }
+        $city = !empty($order['city']) ? $order['city'] : null;
+        $coupon_flags = !empty($order['coupon_flags']) ? $order['coupon_flags'] : null;
+        $device_type = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : null;
+        
+        $agrs = array('city' => $city, 'pass' => $order['pass'], 'coupon_flags' => $coupon_flags, 'device_type' => $device_type);
+        $brandingData = $utilities->getPassBranding($agrs);
        
         if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['web_message'] = $success['web_message'];
@@ -1253,6 +1263,12 @@ class PassService {
                 $success_template['offer_success_msg'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 1000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
             }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [30]) && empty($order['coupon_flags']['no_cashback'])){
                 $success_template['offer_success_msg'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 2000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
+            }
+
+            if(empty($brandingData['offer_success_msg'])){
+                unset($success_template['offer_success_msg']);
+            }else{
+                $success_template['offer_success_msg'] = $brandingData['offer_success_msg'];
             }
 
             if(!empty($order['fitbox_mixed_reward'])){
@@ -1293,6 +1309,11 @@ class PassService {
                 $success_template['subline'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 1000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
             }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [30]) && empty($order['coupon_flags']['no_cashback'])){
                 $success_template['subline'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 2000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
+            }
+
+            
+            if(!empty($brandingData['offer_success_msg'])){
+                $success_template['subline'] .= $brandingData['offer_success_msg'];
             }
 
             if(!empty($order['fitbox_mixed_reward'])){
@@ -2319,6 +2340,15 @@ class PassService {
 
     public function giveCashbackOnOrderSuccess($order){
         try{
+
+            if(!empty($order['customer_city'])){
+                $order['city'] = $order['customer_city'];
+            }
+            $city = !empty($order['city']) ? $order['city'] : null;
+            $coupon_flags = !empty($order['coupon_flags']) ? $order['coupon_flags'] : null;
+            
+            $agrs = array('city' => $city, 'pass' => $order['pass'], 'coupon_flags' => $coupon_flags);
+            $brandingData = $utilities->getPassBranding($agrs);
             
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
 
@@ -2415,6 +2445,17 @@ class PassService {
 
                     //     $customersms->fitboxMixedReward($order);
                     // }
+
+                    if(!empty($brandingData['msg_data'])){
+                        $customersms = new CustomerSms();
+                    
+                        $sms_data = [];
+                        $sms_data['customer_phone'] = $order['customer_phone'];
+                        $sms_data['message'] = $brandingData['msg_data'];
+                        
+                        $customersms->custom($sms_data);
+                    }
+                    
                 }
             }
         }catch (Exception $e) {

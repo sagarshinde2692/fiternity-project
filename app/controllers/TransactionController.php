@@ -6224,10 +6224,10 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices | Use Code: FITME15",'position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"On Gyms & Studio Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: SUPER20",'position'=>$position++];
 
             // if($data['ratecard_amount'] >= 8000){
-            //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15",'position'=>$position++];
+            //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"On Gyms & Studio Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: SUPER20",'position'=>$position++];
             // }
 
             
@@ -6240,7 +6240,7 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: OMF100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: SS100','position'=>$position++];
 
             $first_session_free = $this->firstSessionFree($data);
             if(!empty($first_session_free) && $first_session_free){
