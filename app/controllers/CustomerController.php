@@ -9954,7 +9954,7 @@ class CustomerController extends \BaseController {
 
 
         $pre_register_check_ins_data = [];
-        $milestones = Config::get('loyalty_constants.milestones');
+        $milestones = empty($grid_id) ? Config::get('loyalty_constants.milestones') : Config::get('loyalty_constants.milestones_new');
 		$pre_reward_milestone_contant = Config::get('loyalty_screens.milestones_constant');
         
         foreach($milestones as $milestone){
