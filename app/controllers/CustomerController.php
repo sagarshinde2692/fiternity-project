@@ -9801,8 +9801,8 @@ class CustomerController extends \BaseController {
                             continue;
                         }
 						$post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
-						$this->utilities->voucherImagebasedAppVersion($vc);
-						$post_reward_data_template['logo'] = $vc['image'];//strtr($post_reward_data_template['logo'], $vc);
+						
+						$post_reward_data_template['logo'] = $this->utilities->voucherImagebasedAppVersion($vc);//strtr($post_reward_data_template['logo'], $vc);
 						
                         $vc = array_only($vc, ['_id', 'terms', 'amount', 'description', 'title']);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
