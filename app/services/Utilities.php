@@ -10902,8 +10902,8 @@ Class Utilities {
                     $return_arr['msg_data'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
-                            $return_arr['text'] = "Full 100% Cashback (No Code Required)";
-                            $return_arr['purchase_summary_value'] = "Full 100% Cashback (No Code Required) | 16-18 Nov";
+                            $return_arr['text'] = "Full 100% Cashback (No Code Needed)";
+                            $return_arr['purchase_summary_value'] = "Full 100% Cashback (No Code Needed) | 16-18 Nov";
 
                             if(!empty($coupon_flags) && empty($coupon_flags['no_cashback'])){
                                 if(!empty($device_type)){
@@ -10921,8 +10921,8 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Full 100% Cashback (No Code Required)";
-                            $return_arr['purchase_summary_value'] = "Full 100% Cashback (No Code Required) | 16-18 Nov";
+                            $return_arr['text'] = "Full 100% Cashback (No Code Needed)";
+                            $return_arr['purchase_summary_value'] = "Full 100% Cashback (No Code Needed) | 16-18 Nov";
 
                             if(!empty($coupon_flags) && empty($coupon_flags['no_cashback'])){
                                 if(!empty($device_type)){
@@ -10969,7 +10969,7 @@ Class Utilities {
                     $return_arr['text'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
                         $return_arr['text'] = "Biggest Price Drop: \nFLAT 35% Off (offer pre-applied)";
-                        $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 35% Off (No Code Required) | 16-18 Nov";
+                        $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 35% Off (No Code Needed) | 16-18 Nov";
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
@@ -10986,7 +10986,7 @@ Class Utilities {
                     $return_arr['text'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
                         $return_arr['text'] = "FLAT 50% Off";
-                        $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 50% Off (No Code Required) | 16-18 Nov";
+                        $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 50% Off (No Code Needed) | 16-18 Nov";
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
