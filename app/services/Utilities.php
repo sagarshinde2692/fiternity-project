@@ -10956,7 +10956,7 @@ Class Utilities {
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
-                $return_arr['red_remarks_header'] = "\nFull 100% Cashback On OnePass \nBuy Now To Save More! Start At Your Convenience \n16-18 Nov";
+                $return_arr['red_remarks_header'] = "\n\nFull 100% Cashback On OnePass \nBuy Now To Save More! Start At Your Convenience \n16-18 Nov";
                 $return_arr['footer_text'] = "Full 100% Cashback On OnePass";
                 return $return_arr;
                 break;
@@ -10972,7 +10972,7 @@ Class Utilities {
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
-                $return_arr['red_remarks_header'] = "\nBiggest Price Drop: FLAT 35% Off \nBuy Now To Save More! Start At Your Convenience \n16-18 Nov";
+                $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop: FLAT 35% Off \nBuy Now To Save More! Start At Your Convenience \n16-18 Nov";
                 $return_arr['footer_text'] = "Biggest Price Drop: FLAT 35% Off";
                 $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 35% Off (No Code Required) | 16-18 Nov";
                 return $return_arr;
@@ -10989,7 +10989,7 @@ Class Utilities {
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
-                $return_arr['red_remarks_header'] = "\nBiggest Price Drop: FLAT 50% Off \nBuy Now To Save More! Start At Your Convenience \n16-18 Nov";
+                $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop: FLAT 50% Off \nBuy Now To Save More! Start At Your Convenience \n16-18 Nov";
                 $return_arr['footer_text'] = "Biggest Price Drop: FLAT 50% Off ";
                 $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 50% Off (No Code Required) | 16-18 Nov";
                 return $return_arr;
