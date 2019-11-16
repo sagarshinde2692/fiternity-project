@@ -1243,6 +1243,7 @@ class PassService {
         $device_type = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : null;
         
         $agrs = array('city' => $city, 'pass' => $order['pass'], 'coupon_flags' => $coupon_flags, 'device_type' => $device_type);
+        $utilities = new Utilities();    
         $brandingData = $utilities->getPassBranding($agrs);
        
         if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
@@ -1257,12 +1258,6 @@ class PassService {
 
             if(!empty($order['diwali_mixed_reward'])){
                 $success_template['offer_success_msg'] = "Congratulations on your purchase. Your Fitaka Diwali Hamper will reach your inbox soon. Happy Fitwali Diwali";
-            }
-
-            if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15]) && empty($order['coupon_flags']['no_cashback'])){
-                $success_template['offer_success_msg'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 1000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
-            }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [30]) && empty($order['coupon_flags']['no_cashback'])){
-                $success_template['offer_success_msg'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 2000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
             }
 
             if(empty($brandingData['offer_success_msg'])){
@@ -1304,13 +1299,6 @@ class PassService {
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
                 $success_template['subline'] .= 'Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
             }
-
-            if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15]) && empty($order['coupon_flags']['no_cashback'])){
-                $success_template['subline'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 1000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
-            }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [30]) && empty($order['coupon_flags']['no_cashback'])){
-                $success_template['subline'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 2000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
-            }
-
             
             if(!empty($brandingData['offer_success_msg'])){
                 $success_template['subline'] .= $brandingData['offer_success_msg'];
