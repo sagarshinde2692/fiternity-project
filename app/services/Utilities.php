@@ -10899,4 +10899,5 @@ Class Utilities {
             }
         }
         return $image_new;
+    }
 }
