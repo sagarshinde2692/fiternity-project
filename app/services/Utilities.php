@@ -10974,8 +10974,7 @@ Class Utilities {
                 break;
             case "gurgaon":
             case "noida":
-            case "delhi":
-            case "faridabad":
+            case "delhi": 
             case "bangalore":
                 if(!empty($pass)){
                     $return_arr['text'] = "";
@@ -10995,6 +10994,7 @@ Class Utilities {
             case "jaipur":
             case "kolkata":
             case "ahmedabad":
+            case "faridabad":
                 if(!empty($pass)){
                     $return_arr['text'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
