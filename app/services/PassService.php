@@ -2336,6 +2336,7 @@ class PassService {
     public function giveCashbackOnOrderSuccess($order){
         try{
 
+            $utilities = new Utilities();
             if(!empty($order['customer_city'])){
                 $order['city'] = $order['customer_city'];
             }
