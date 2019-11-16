@@ -67,7 +67,7 @@ return array(
     ],
     'post_register' => [
         'header' => [
-            'logo' => 'https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png',
+            'logo' => "https://b.fitn.in/external-vouchers1/new_grid_images/new%20logo.png",//'https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png',
             'text' => 'Hi <b>$customer_name</b>,<br/><br/>$check_ins/$next_milestone_checkins check-ins completed. $milestone_text',
             'background_image' => 'https://b.fitn.in/loyalty/banner.jpg',
             'ratio' => 0.36,
