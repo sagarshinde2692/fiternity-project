@@ -10945,8 +10945,8 @@ Class Utilities {
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 180){
-                            $return_arr['text'] = "FLAT 20% off or 1 Month Extension";
-                            $return_arr['purchase_summary_value'] = "Get FLAT 20% off (code: SUPERSAVER) or 1 month extension (code: EXTRA25) | 16-18 Nov";
+                            $return_arr['text'] = "FLAT 20% off or 1.5 Month Extension";
+                            $return_arr['purchase_summary_value'] = "Get FLAT 20% off (code: SUPERSAVER) or 1.5 month extension (code: EXTRA25) | 16-18 Nov";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 360){
