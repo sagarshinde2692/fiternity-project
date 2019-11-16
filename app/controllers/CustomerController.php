@@ -9888,20 +9888,23 @@ class CustomerController extends \BaseController {
 
 									$orders = $orders_aggregate['result'];
 
-									$couple_membership_flag = false;
-									$loyalty_start_date = $customer['loyalty']['start_date']->sec;
-									$coupole_membership_order = Order::where('status','1')->where('customer_id', $customer['_id'])->where('couple_membership', true)->get(['start_date','end_date'])->toArray();
-									if(count($coupole_membership_order)> 0){
-										$membership_start_date = $coupole_membership_order[0]['start_date'];
-										$membership_end_date = $coupole_membership_order[0]['end_date'];
+                                    if(!(!empty($orders[0]) && !empty($orders[0]['booking_amount']) && $orders[0]['booking_amount'] >=$milestone['booking_amount'])){
 
-										if($loyalty_start_date >= strtotime($membership_start_date) &&  $loyalty_start_date <= strtotime($membership_end_date)){
-											$couple_membership_flag = true;
+										$couple_membership_flag = false;
+										$loyalty_start_date = $customer['loyalty']['start_date']->sec;
+										$coupole_membership_order = Order::where('status','1')->where('customer_id', $customer['_id'])->where('couple_membership', true)->get(['start_date','end_date'])->toArray();
+										if(count($coupole_membership_order)> 0){
+											$membership_start_date = $coupole_membership_order[0]['start_date'];
+											$membership_end_date = $coupole_membership_order[0]['end_date'];
+
+											if($loyalty_start_date >= strtotime($membership_start_date) &&  $loyalty_start_date <= strtotime($membership_end_date)){
+												$couple_membership_flag = true;
+											}
 										}
-									}
-									
-                                    if(!(!empty($orders[0]) && !empty($orders[0]['booking_amount']) && $orders[0]['booking_amount'] >=$milestone['booking_amount']) && empty($couple_membership_flag)){
-                                        $post_reward_data_template['block_message'] = strtr(Config::get('loyalty_screens.bookings_block_message'), $milestone);
+
+										if(empty($couple_membership_flag)){
+											$post_reward_data_template['block_message'] = strtr(Config::get('loyalty_screens.bookings_block_message'), $milestone);
+										}
                                     }
                                 
                                 }
