@@ -1244,9 +1244,7 @@ class PassService {
         
         $agrs = array('city' => $city, 'pass' => $order['pass'], 'coupon_flags' => $coupon_flags, 'device_type' => $device_type);
         $utilities = new Utilities();    
-        Log::info('agrs :::',[$agrs]);
         $brandingData = $utilities->getPassBranding($agrs);
-        Log::info('brandingData :::',[$brandingData]);
        
         if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['web_message'] = $success['web_message'];
