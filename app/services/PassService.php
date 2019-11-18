@@ -33,6 +33,8 @@ class PassService {
 
     public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null, $source=null){
         
+        $utilities = new Utilities();
+
         $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('pass_type', '!=', 'hybrid');
 
         $response = Config::get('pass.list');
@@ -105,6 +107,10 @@ class PassService {
             if(!empty($pass_type)) {
                 $passList = $passList->where('pass_type', $pass_type);
             }
+            if(!empty($city)) {
+                $city = getmy_city($city);
+                $passList = $passList->where('cities', $city);
+            }
             $passList = $passList->orderBy('duration')->get();
         }
         
@@ -120,7 +126,8 @@ class PassService {
                 'remarks' => (!empty($pass['type']) && $pass['type'] == 'subscription') ? "" : ucwords($pass['type']),
                 'type' => $pass['type'],
                 'min_start_date' => time(),
-                'max_start_date' => strtotime('31-12-2019')
+                'max_start_date' => strtotime('31-12-2019'),
+                'duration' => $pass['duration']
             ];
             if($pass['type']=='trial') {
                 $utilities = new Utilities();
@@ -146,14 +153,12 @@ class PassService {
                 }
             }
 
-            $passDetails['text'] = "(Extra 20% Off + \n Handpicked Healthy Food Hamper Worth INR 2,500)";
-
-            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 15){
-                $passDetails['text'] = "(Instant Cashback Worth INR 1000 \n (No Code Required))";
-            }
-
-            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && $pass['duration'] == 30){
-                $passDetails['text'] = "(Instant Cashback Worth INR 2000 \n (No Code Required))";
+            $agrs = array('pass' => $pass, 'city' => $city);
+            $brandingData = $utilities->getPassBranding($agrs);
+            if(empty($brandingData['text'])){
+                unset($passDetails['text']);
+            }else{
+                $passDetails['text'] = $brandingData['text'];
             }
 
             if(!empty($source) && $source=='sodexo') {
@@ -186,6 +191,17 @@ class PassService {
             $response['passes'] = $response['app_passes'];
         }
         unset($response['app_passes']);
+
+        $agrs1 = array('city' => $city);
+        $brandingData1 = $utilities->getPassBranding($agrs1);
+        if(!empty($brandingData1['red_remarks_header'])){
+            $response['passes'][0]['remarks']['header'] .= $brandingData1['red_remarks_header'];
+        }
+
+        if(!empty($brandingData1['black_remarks_header'])){
+            $response['passes'][1]['remarks']['header'] .= $brandingData1['black_remarks_header'];
+        }
+
         // $passConfig = Config::get('pass');
         // $passCount = Order::active()->where('type', 'pass')->count();
         // if($passCount>=$passConfig['total_available']) {
@@ -1223,6 +1239,17 @@ class PassService {
 
         $pass_type_ori = $order['pass']['pass_type'];
         $pass_duration = $order['pass']['duration'];
+
+        if(!empty($order['customer_city'])){
+            $order['city'] = $order['customer_city'];
+        }
+        $city = !empty($order['city']) ? $order['city'] : null;
+        $coupon_flags = !empty($order['coupon_flags']) ? $order['coupon_flags'] : null;
+        $device_type = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : null;
+        
+        $agrs = array('city' => $city, 'pass' => $order['pass'], 'coupon_flags' => $coupon_flags, 'device_type' => $device_type);
+        $utilities = new Utilities();    
+        $brandingData = $utilities->getPassBranding($agrs);
        
         if(!in_array(Request::header('Device-Type'), ["android", "ios"])){
             $success_template['web_message'] = $success['web_message'];
@@ -1238,10 +1265,10 @@ class PassService {
                 $success_template['offer_success_msg'] = "Congratulations on your purchase. Your Fitaka Diwali Hamper will reach your inbox soon. Happy Fitwali Diwali";
             }
 
-            if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
-                $success_template['offer_success_msg'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 1000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
-            }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [30])){
-                $success_template['offer_success_msg'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 2000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
+            if(empty($brandingData['offer_success_msg'])){
+                unset($success_template['offer_success_msg']);
+            }else{
+                $success_template['offer_success_msg'] = $brandingData['offer_success_msg'];
             }
 
             if(!empty($order['fitbox_mixed_reward'])){
@@ -1277,11 +1304,9 @@ class PassService {
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
                 $success_template['subline'] .= 'Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
             }
-
-            if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
-                $success_template['subline'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 1000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
-            }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [30])){
-                $success_template['subline'] .= "\nCongratulations on your OnePass purchase. You have received instant cashback worth INR 2000 as FitCash in your Fitternity account. Make the most of your FitCash to upgrade your OnePass\nValidity of FitCash: 15 Days After OnePass Expiry";
+            
+            if(!empty($brandingData['offer_success_msg'])){
+                $success_template['subline'] .= $brandingData['offer_success_msg'];
             }
 
             if(!empty($order['fitbox_mixed_reward'])){
@@ -1532,6 +1557,26 @@ class PassService {
             $sms->fitboxMixedReward($pass_data);
         }
 
+        if(!empty($data['customer_city'])){
+            $data['city'] = $data['customer_city'];
+        }
+        $city = !empty($data['city']) ? $data['city'] : null;
+        $coupon_flags = !empty($data['coupon_flags']) ? $data['coupon_flags'] : null;
+        $device_type = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : null;
+        
+        $agrs = array('city' => $city, 'pass' => $data['pass'], 'coupon_flags' => $coupon_flags, 'device_type' => $device_type);
+        $utilities = new Utilities();    
+        $brandingData = $utilities->getPassBranding($agrs);
+        if(!empty($brandingData['msg_data'])){
+            $customersms = new CustomerSms();
+        
+            $sms_data = [];
+            $sms_data['customer_phone'] = $data['customer_phone'];
+            $sms_data['message'] = $brandingData['msg_data'];
+            
+            $customersms->custom($sms_data);
+        }
+
         return array(
             'sms' => $smsSent,
             'email' => $emailSent
@@ -1661,22 +1706,19 @@ class PassService {
             ]
         ];
 
-        if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [15])){
-            $resp[] = [
-                   'field' => '',
-                   'value' => "Instant Cashback Worth INR 1000 (No Code Required)",
-            ];
-        }else if(!empty($pass_type_ori) && $pass_type_ori== 'red' && !empty($pass_duration) && in_array($pass_duration, [30])){
-            $resp[] = [
-                   'field' => '',
-                   'value' => "Instant Cashback Worth INR 2000 (No Code Required)",
-            ];
-        }else {
-            $resp[] = [
-                'field' => '',
-                'value' => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500. Use Code: OHFIT. 9-12 Nov",
-            ];
+        if(!empty($data['customer_city'])){
+            $data['city'] = $data['customer_city'];
         }
+        $city = !empty($data['city']) ? $data['city'] : null;
+        
+        $agrs1 = array('city' => $city, 'pass' => $data['pass']);
+		$brandingData = $this->utilities->getPassBranding($agrs1);
+		if(!empty($brandingData['purchase_summary_value'])){
+			$resp[] = [
+                'field' => '',
+                'value' => $brandingData['purchase_summary_value'],
+            ];
+		}
 
         return $resp;
     }
@@ -1858,14 +1900,21 @@ class PassService {
                 
             }
 
-            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per']))){
+            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per'])) || (!empty($data['coupon_flags']['extension_percent']))){
 
                 if($payment_mode_type != 'pay_later'){
 
-                    $amount_summary[] = array(
-                        'field' => 'Coupon Discount',
-                        'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "100% Cashback"
-                    );
+                    if(!empty($data['coupon_flags']['extension_percent'])){
+                        $amount_summary[] = array(
+                            'field' => 'Coupon Discount',
+                            'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "Extension"
+                        );
+                    }else{
+                        $amount_summary[] = array(
+                            'field' => 'Coupon Discount',
+                            'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "100% Cashback"
+                        );
+                    }
                     $you_save += (!empty($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0);
                 }else{
                     $amount_final = $amount_final + $data['coupon_discount_amount'];
@@ -2311,6 +2360,16 @@ class PassService {
 
     public function giveCashbackOnOrderSuccess($order){
         try{
+
+            $utilities = new Utilities();
+            if(!empty($order['customer_city'])){
+                $order['city'] = $order['customer_city'];
+            }
+            $city = !empty($order['city']) ? $order['city'] : null;
+            $coupon_flags = !empty($order['coupon_flags']) ? $order['coupon_flags'] : null;
+            
+            $agrs = array('city' => $city, 'pass' => $order['pass'], 'coupon_flags' => $coupon_flags);
+            $brandingData = $utilities->getPassBranding($agrs);
             
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
 
@@ -2327,10 +2386,10 @@ class PassService {
                     $cashback_amount = 2000;
                 }
 
-                $cashback_amount_after_gst = 0;
-                if($cashback_amount != 0){
-                    $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
-                }
+                $cashback_amount_after_gst = $cashback_amount;
+                // if($cashback_amount != 0){
+                //     $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
+                // }
 
                 $utilities = new Utilities();
                 
@@ -2366,47 +2425,58 @@ class PassService {
                 }
             }
 
-            if(!empty($order['pass']['flags']['cashback'])){
+            if(!empty($order['pass']['flags']['cashback']) && empty($order['coupon_flags']['no_cashback'])){
                 $cashback_amount = $order['pass']['flags']['cashback'];
 
-                $cashback_amount_after_gst = 0;
-                if($cashback_amount != 0){
-                    $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
-                }
+                $cashback_amount_after_gst = $cashback_amount;
+                // if($cashback_amount != 0){
+                //     $cashback_amount_after_gst = round(($cashback_amount * 82) / 100);
+                // }
 
                 $utilities = new Utilities();
                 
                 if($cashback_amount_after_gst > 0){
 
-                    $walletData = array(
-                        "order_id"=>$order['_id'],
-                        "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
-                        "amount"=> intval($cashback_amount_after_gst),
-                        "amount_fitcash" => 0,
-                        "amount_fitcash_plus" => intval($cashback_amount_after_gst),
-                        "type"=>"CASHBACK",
-                        "entry"=>"credit",
-                        "order_type"=>["pass"],
-                        "description"=> "INR ".$cashback_amount_after_gst." Cashback on buying OnePass , Expires On : ".date('d-m-Y',time()+(86400*15)),
-                        "validity"=>time()+(86400*15),
-                        "duplicate_allowed" => true,
-                    );
+                    // $walletData = array(
+                    //     "order_id"=>$order['_id'],
+                    //     "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
+                    //     "amount"=> intval($cashback_amount_after_gst),
+                    //     "amount_fitcash" => 0,
+                    //     "amount_fitcash_plus" => intval($cashback_amount_after_gst),
+                    //     "type"=>"CASHBACK",
+                    //     "entry"=>"credit",
+                    //     "order_type"=>["pass"],
+                    //     "description"=> "INR ".$cashback_amount_after_gst." Cashback on buying OnePass , Expires On : ".date('d-m-Y',time()+(86400*15)),
+                    //     "validity"=>time()+(86400*15),
+                    //     "duplicate_allowed" => true,
+                    // );
 
-                    $walletTransaction = $utilities->walletTransaction($walletData);
+                    // $walletTransaction = $utilities->walletTransaction($walletData);
                     
-                    if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
+                    // if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
                         
-                        Order::where('_id', $order['_id'])->update(['cashback_added' => true]);
+                    //     Order::where('_id', $order['_id'])->update(['cashback_added' => true]);
 
+                    //     $customersms = new CustomerSms();
+
+                    //     $sms_data = [];
+
+                    //     $sms_data['customer_phone'] = $order['customer_phone'];
+                    //     $sms_data['amount'] = $cashback_amount_after_gst;
+
+                    //     $customersms->fitboxMixedReward($order);
+                    // }
+
+                    if(!empty($brandingData['msg_data'])){
                         $customersms = new CustomerSms();
-
+                    
                         $sms_data = [];
-
                         $sms_data['customer_phone'] = $order['customer_phone'];
-                        $sms_data['amount'] = $cashback_amount_after_gst;
-
-                        $customersms->fitboxMixedReward($order);
+                        $sms_data['message'] = $brandingData['msg_data'];
+                        
+                        $customersms->custom($sms_data);
                     }
+                    
                 }
             }
         }catch (Exception $e) {
@@ -2510,11 +2580,11 @@ class PassService {
 
                 if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && in_array($pass['duration'], [15, 30]))){
 
-                    if(empty($data['membership_order_id'])){
-                        // $rewardinfo['diwali_mixed_reward'] = true;
-                        $rewardinfo['fitbox_mixed_reward'] = true;
-                        $rewardinfo['reward_ids'] = [79];
-                    }
+                    // if(empty($data['membership_order_id'])){
+                    //     // $rewardinfo['diwali_mixed_reward'] = true;
+                    //     $rewardinfo['fitbox_mixed_reward'] = true;
+                    //     $rewardinfo['reward_ids'] = [79];
+                    // }
                 }
 
             }

@@ -40,6 +40,10 @@ class PassController extends \BaseController {
         if(!empty($input['source'])) {
             $source = $input['source'];
         }
+        
+        if(empty($input['city']) || !empty($source)) {
+            $city = 'mumbai';
+        }
 
         $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source);
         if(empty($passes)) {
@@ -237,6 +241,14 @@ class PassController extends \BaseController {
                 $result['onepass_pre']['near_by']['near_by_vendor'] = $vendor_near_by['data'];
             }
 		}
+
+        if(!empty($result['onepass_pre']['offers'])){
+            $agrs1 = array('city' => $city);
+			$brandingData = $this->utilities->getPassBranding($agrs1);
+			if(!empty($brandingData['footer_text'])){
+				$result['onepass_pre']['offers']['text'] = $brandingData['footer_text'];
+			}
+        }
 
 		$response = Response::make($result);
 		return $response;

@@ -1109,43 +1109,44 @@ class RewardofferController extends BaseController {
             
         }
 
-        $no_rewards = false;
+        // $no_rewards = false;
         $fitbox_mixed_reward = false;
-        // if(!empty($finder['_id']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
-            Log::info("camp applicable");
-            if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
-                Log::info("fitbox applicable");
-                $fitbox_mixed_reward = true;
-                $rewardObj = $this->getMixedReward();
-                $mixedreward_content = MixedRewardContent::where('flags.type', 'fitbox')->first();
+        // // if(!empty($finder['_id']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
+        //     Log::info("camp applicable");
+        //     if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
+        //         Log::info("fitbox applicable");
+        //         $fitbox_mixed_reward = true;
+        //         $rewardObj = $this->getMixedReward();
+        //         $mixedreward_content = MixedRewardContent::where('flags.type', 'fitbox')->first();
     
-                if(!empty($mixedreward_content)){
-                    if($rewardObj && $mixedreward_content){
+        //         if(!empty($mixedreward_content)){
+        //             if($rewardObj && $mixedreward_content){
                         
-                        $rewards = [];
+        //                 $rewards = [];
     
-                        $rewardObjData = $rewardObj->toArray();
+        //                 $rewardObjData = $rewardObj->toArray();
     
-                        $this->unsetRewardObjFields($rewardObjData);
+        //                 $this->unsetRewardObjFields($rewardObjData);
 
-                        $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+        //                 $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
     
-                        list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
+        //                 list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
     
-                        list($rewardObjData) = $this->rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData);
+        //                 list($rewardObjData) = $this->rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData);
     
-                        $rewards[] = $rewardObjData;
-                    }
-                }
-            }else{
-                Log::info("fitbox not applicable");
-                if((!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($finder['flags']['monsoon_flash_discount_disabled']) || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)){
+        //                 $rewards[] = $rewardObjData;
+        //             }
+        //         }
+        //     }else{
+        //         Log::info("fitbox not applicable");
+        //         if((!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($finder['flags']['monsoon_flash_discount_disabled'])){
+        //             // || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)
 
-                }else{
-                    $no_rewards = true;
-                }
-            }
-        // }
+        //         }else{
+        //             $no_rewards = true;
+        //         }
+        //     }
+        // // }
 
         if(empty($mixedreward_content)){
            

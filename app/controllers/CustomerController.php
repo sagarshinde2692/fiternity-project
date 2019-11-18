@@ -4416,7 +4416,15 @@ class CustomerController extends \BaseController {
                 "footer"=>"Get 100% Instant Cashback on Workout Sessions"
             ];
         }
-        
+		
+		if(!empty($result['onepass_pre'])){
+			$agrs1 = array('city' => $city);
+			$brandingData = $this->utilities->getPassBranding($agrs1);
+			if(!empty($brandingData['footer_text'])){
+				$result['onepass_pre']['footer']['text'] = $brandingData['footer_text'];
+			}
+		}
+		
         $response = Response::make($result);
 		if(!empty($customeremail)){
 			$response = setNewToken($response, !empty($passOrder)?$passOrder:null, $rel_banner_shown);
@@ -4713,7 +4721,7 @@ class CustomerController extends \BaseController {
 		}
 
 		$current_version_android = 5.31;
-		$current_version_ios = '5.2.4';
+		$current_version_ios = '5.2.7';
 
 		$last_stable_version_android = 5.31;
 
@@ -8881,7 +8889,16 @@ class CustomerController extends \BaseController {
         $voucher_categories_map = [];
 	
         foreach($voucher_categories['result'] as $vc){
-            $voucher_categories_map[$vc['_id']] = $vc['vouchers'];
+
+			if(!$post ){
+				foreach($vc['vouchers'] as $key=>$value){
+					if(!empty($value['sold_out'])){
+						unset($vc['vouchers'][$key]);
+					}
+				}
+			}
+
+			$voucher_categories_map[$vc['_id']] = $vc['vouchers'];
             if(!$post ){
                 $voucher_categories_map[$vc['_id']][0]['max_amount'] = $vc['amount'];
             }
@@ -9113,7 +9130,10 @@ class CustomerController extends \BaseController {
 					
                     if(!$voucherAttached){
                         return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (2).'));
-                    }
+					}
+					if(!empty($voucherAttached['sold_out'])){
+						return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Reward is already sold out.'));
+					}
                     /* return
                     if(empty($milestones[$voucher_category['milestone']-1]['claimed'])){
     					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
@@ -9755,9 +9775,9 @@ class CustomerController extends \BaseController {
 							$post_reward_data_template['claim_url'] = "";
 						}
                         $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $claimed_voucher);
-                        $post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $claimed_voucher);
-                        $post_reward_data_template['claim_enabled'] = true;
-                        $post_reward_data_template['button_title'] = "View";
+						$post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $claimed_voucher);
+						$post_reward_data_template['claim_enabled'] = true;
+						$post_reward_data_template['button_title'] = "View";
 
                         if(in_array($this->device_type, ['ios']) || in_array($this->device_type, ['android']) && $this->app_version >= 5.12){
 							unset($post_reward_data_template['claim_message']);
@@ -9787,7 +9807,7 @@ class CustomerController extends \BaseController {
                         if(in_array($vc['name'], $claimed_voucher_categories)){
                             continue;
                         }
-                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description', 'required_info']);
+                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description', 'required_info', 'sold_out']);
                         $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
                         $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
@@ -9801,7 +9821,14 @@ class CustomerController extends \BaseController {
 						}
                         if($milestone_no >= $milestone['milestone'] ){
 
-                            $post_reward_data_template['claim_enabled'] = true;
+                            if(!empty($vc['sold_out'])){
+								$post_reward_data_template['claim_enabled'] = false;
+								$post_reward_data_template['button_title'] = "Sold Out";
+								unset($post_reward_data_template['terms']);
+								unset($post_reward_data_template['coupon_description']);
+							}else {
+								$post_reward_data_template['claim_enabled'] = true;
+							}
 
                             if(empty($customer_milestones[$milestone['milestone']-1]['verified'])){
 
@@ -9858,7 +9885,7 @@ class CustomerController extends \BaseController {
                                             '$group'=>[
                                                 '_id'=>null,
                                                 // 'bookings'=>['$sum'=>1],
-                                                'booking_amount'=>['$sum'=>'$amount_customer']
+												'booking_amount'=>['$sum'=>'$amount_customer']
                                             ]
 										];
 										$aggregate[] = $group;
@@ -9870,7 +9897,22 @@ class CustomerController extends \BaseController {
 									$orders = $orders_aggregate['result'];
 
                                     if(!(!empty($orders[0]) && !empty($orders[0]['booking_amount']) && $orders[0]['booking_amount'] >=$milestone['booking_amount'])){
-                                        $post_reward_data_template['block_message'] = strtr(Config::get('loyalty_screens.bookings_block_message'), $milestone);
+
+										$couple_membership_flag = false;
+										$loyalty_start_date = $customer['loyalty']['start_date']->sec;
+										$coupole_membership_order = Order::where('status','1')->where('customer_id', $customer['_id'])->where('couple_membership', true)->get(['start_date','end_date'])->toArray();
+										if(count($coupole_membership_order)> 0){
+											$membership_start_date = $coupole_membership_order[0]['start_date'];
+											$membership_end_date = $coupole_membership_order[0]['end_date'];
+
+											if($loyalty_start_date >= strtotime($membership_start_date) &&  $loyalty_start_date <= strtotime($membership_end_date)){
+												$couple_membership_flag = true;
+											}
+										}
+
+										if(empty($couple_membership_flag)){
+											$post_reward_data_template['block_message'] = strtr(Config::get('loyalty_screens.bookings_block_message'), $milestone);
+										}
                                     }
                                 
                                 }
@@ -9885,7 +9927,12 @@ class CustomerController extends \BaseController {
 							// }
 
                         }else{
-                            $post_reward_data_template['claim_enabled'] = false;
+							$post_reward_data_template['claim_enabled'] = false;
+							if(!empty($vc['sold_out'])){
+								$post_reward_data_template['button_title'] = "Sold Out";
+								unset($post_reward_data_template['terms']);
+								unset($post_reward_data_template['coupon_description']);
+							}
                         } 
                         // return $post_reward_data_template;
                         $post_reward_template['data'][] = $post_reward_data_template;
