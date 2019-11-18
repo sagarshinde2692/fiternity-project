@@ -1422,7 +1422,7 @@ class FindersController extends \BaseController {
 					// 		if($ratecard['type'] == 'membership'){
 					// 			$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 
-								$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 <br> 16-18 Nov";
+								$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 <br> Offer Ending Soon";
 			
 					// 			if($price >= 8000){
 					// 				$pricemore = true;
@@ -3943,25 +3943,25 @@ class FindersController extends \BaseController {
 			// 			$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						
 						if($this->device_type == 'android'){
-							$android_line = "<u>Super Saver Sale</u><br><br>16-18 Nov <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: SS100";
+							$android_line = "<u>Super Saver Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: SS100";
 	
-							$op_android_line = "<u>Super Saver Sale</u><br><br>16-18 Nov <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 ";
+							$op_android_line = "<u>Super Saver Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 ";
 						}else{	
-							$ios_line = "\nSuper Saver Sale\n\n16-18 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: SS100";
+							$ios_line = "\nSuper Saver Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: SS100";
 	
-							$op_ios_line = "\nSuper Saver Sale\n\n16-18 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20";
+							$op_ios_line = "\nSuper Saver Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20";
 						}
 	
 						// if($price >= 8000){
 						// 	$pricemore = true;
 						// 	if($this->device_type == 'android'){
-						// 		$android_line = "<u>Super Saver Sale</u><br><br>16-18 Nov <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: SS100";
+						// 		$android_line = "<u>Super Saver Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: SS100";
 		
-						// 		$op_android_line = "<u>Super Saver Sale</u><br><br>16-18 Nov <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 ";
+						// 		$op_android_line = "<u>Super Saver Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 ";
 						// 	}else{	
-						// 		$ios_line = "\nSuper Saver Sale\n\n16-18 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: SS100";
+						// 		$ios_line = "\nSuper Saver Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: SS100";
 		
-						// 		$op_ios_line = "\nSuper Saver Sale\n\n16-18 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20";
+						// 		$op_ios_line = "\nSuper Saver Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20";
 						// 	}
 							
 						// 	break;
