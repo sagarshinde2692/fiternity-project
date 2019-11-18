@@ -426,8 +426,8 @@ return array(
 
 	// Production
 	'es' =>array(
-		'url'		=> 			'ESAdmin:fitternity2020@13.234.226.35:8050',
-		'host'		=> 			'ESAdmin:fitternity2020@13.234.226.35',
+		'url'		=> 			'ESAdmin:fitternity2020@15.206.111.50:8050',
+		'host'		=> 			'ESAdmin:fitternity2020@15.206.111.50',
 		'port'		=>			8050,
 		'default_index' => 	'fitternity',
 		'default_type' 	=> 	'finder',
