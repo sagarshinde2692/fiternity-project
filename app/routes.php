@@ -295,6 +295,9 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::post('reportareview', array('as' => 'finderdetails.reportareview','uses' => 'FindersController@reportReview'));
     
+    Route::post('passcapture', 'PassController@passCapture');
+	
+	Route::get('customer/getstepprofile/{city?}',  array('as' => 'customer.getstepprofile','uses' => 'CustomerController@getStepProfile'));
     
     /******************** AUTHENTICATION ENFORCED FOR SECURITY START HERE ***********************/
     Route::get('booktrialdetail/{captureid}/{type?}', 'SchedulebooktrialsController@booktrialdetail');
@@ -303,9 +306,6 @@ Route::group(array('before' => 'validatetoken'), function() {
     
     Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
     /******************** AUTHENTICATION ENFORCED FOR SECURITY END HERE ***********************/
-	Route::post('passcapture', 'PassController@passCapture');
-	
-	Route::get('customer/getstepprofile/{city?}',  array('as' => 'customer.getstepprofile','uses' => 'CustomerController@getStepProfile'));
 
 });
 
