@@ -8,6 +8,7 @@ return array(
         "cover_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/cover%20image.jpg",
         'header' => [
             'image' => "https://b.fitn.in/external-vouchers1/new_grid_images/new%20logo.png", //'https://b.fitn.in/loyalty/FITSQUAD-APP-Cover%20image-DESIGN.jpg',
+            'background_image' => "https://b.fitn.in/external-vouchers1/new_grid_images/app/fitsquad_background.png",
             'ratio' => 1.23,
             'url'=> Config::get('loyalty_constants.register_url')
         ],
@@ -69,7 +70,7 @@ return array(
         'header' => [
             'logo' => "https://b.fitn.in/external-vouchers1/new_grid_images/new%20logo.png",//'https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png',
             'text' => 'Hi <b>$customer_name</b>,<br/><br/>$check_ins/$next_milestone_checkins check-ins completed. $milestone_text',
-            'background_image' => "https://b.fitn.in/external-vouchers1/new_grid_images/cover_image_post.png", // 'https://b.fitn.in/loyalty/banner.jpg',
+            'background_image' => "https://b.fitn.in/external-vouchers1/new_grid_images/app/fitsquad_background.png", // 'https://b.fitn.in/loyalty/banner.jpg',
             'ratio' => 0.36,
         ],
         'milestones' => [
