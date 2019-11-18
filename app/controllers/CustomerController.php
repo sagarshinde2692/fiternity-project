@@ -11196,8 +11196,7 @@ class CustomerController extends \BaseController {
 			'flat_buildig_name' => 'required',
 			'location' => 'required',
 			'landmark' => 'required',
-			'pincode' => 'required',
-
+			'pincode' => 'required'
 		];
 
 		$validator = Validator::make($data,$rules);
@@ -11208,15 +11207,22 @@ class CustomerController extends \BaseController {
 
 		$jwt_token = Request::header('Authorization');
 		$decodedToken = $this->customerTokenDecode($jwt_token);
+		
+		$reward_detial = [];
+		if(!empty($data['tshirt_size'])){
+			
+			$reward_detial['size'] = $data['tshirt_size'];
+			unset($data['tshirt_size']);
+		}
+
+		$reward_detial['address'] = $data;
 
 		try{
 			 $customer_id = $decodedToken->customer->_id;
 
 			$customer = Customer::where('_id', $customer_id)->first();
-			$customer->reward = [
-				'address' => $data
-			];
-			
+			$customer->reward = $reward_detial;
+
 			$customer->save();
 
 			return array(
