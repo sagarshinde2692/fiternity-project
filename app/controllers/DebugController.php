@@ -11846,5 +11846,26 @@ public function yes($msg){
 
 	}
 
+    public function removePassOrders($email){
+
+        $email = strtolower($email);
+
+        $rules = [
+            'email'  => 'required|in:firojmulani@fitternity.com,sailismart@fitternity.com'
+        ];
+
+        $validator = Validator::make(['email'=>$email], $rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }
+
+        Order::active()->where('customer_email', $email)->where('type', 'pass')->update(['status'=>'0', 'manual_flags.deactivated_order'=>time()]);
+
+        return "Success";
+
+
+    }
+
 }
 
