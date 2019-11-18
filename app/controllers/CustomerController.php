@@ -11188,8 +11188,8 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function updateRewardAddress(){
-		
+	public function updateRewardDetails(){
+
 		$data = Input::all();
 
 		$rules = [
@@ -11210,12 +11210,13 @@ class CustomerController extends \BaseController {
 		$decodedToken = $this->customerTokenDecode($jwt_token);
 
 		try{
-			$customer_id = $decodedToken->customer->_id;
+			 $customer_id = $decodedToken->customer->_id;
 
 			$customer = Customer::where('_id', $customer_id)->first();
 			$customer->reward = [
 				'address' => $data
 			];
+			
 			$customer->save();
 
 			return array(
