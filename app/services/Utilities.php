@@ -10890,13 +10890,6 @@ Class Utilities {
         if(!empty($voucher['required_info'])){
             foreach($voucher['required_info'] as $key=>$value){
 
-                if($value=='address'){
-                    $voucher_required_info[$value]['data'] = [
-                        "address" => !empty($customer['address']) ? $customer['address'] : [],
-                        "address_array" => !empty($customer['address_array']) ? $customer['address_array'] : [],
-                    ];
-                }
-
                 !empty($voucher_required_info[$value]) ? $required_data[] = $voucher_required_info[$value]: null;
             }
             $post_reward_data_template['required_info'] = $required_data;
