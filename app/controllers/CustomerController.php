@@ -11188,4 +11188,49 @@ class CustomerController extends \BaseController {
 		}
 	}
 
+	public function updateRewardAddress(){
+		
+		$data = Input::all();
+
+		$rules = [
+			'flat_buildig_name' => 'required',
+			'location' => 'required',
+			'landmark' => 'required',
+			'pincode' => 'required',
+
+		];
+
+		$validator = Validator::make($data,$rules);
+		
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),200);
+		}
+
+		$jwt_token = Request::header('Authorization');
+		$decodedToken = $this->customerTokenDecode($jwt_token);
+
+		try{
+			$customer_id = $decodedToken->customer->_id;
+
+			$customer = Customer::where('_id', $customer_id)->first();
+			$customer->reward = [
+				'address' => $data
+			];
+			$customer->save();
+
+			return array(
+				'status' => 200,
+				'message' => "Address Updated Successfully",
+				'data' => $data
+			);
+			
+		} catch(\Exception $e){
+			Log::info('error occured while saving reward addresss', [$e]);
+			return array(
+				'status' => 400,
+				'message' => "something went wrong. Please try again after a while."
+			);
+		}
+	}
+
 }

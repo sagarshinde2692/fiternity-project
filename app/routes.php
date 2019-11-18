@@ -1314,6 +1314,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::post('uploadreceiptloyalty', 'CustomerController@uploadReceiptLoyalty');
 	Route::post('onepasscustomerupdate', 'CustomerController@onePassCustomerUpdate');
 
+	Route::post('customer/reward/address', 'CustomerController@updateRewardAddress');
 });
 
 /******************  Loyalty API END HERE************************************************/
