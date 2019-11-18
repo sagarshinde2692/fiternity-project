@@ -412,18 +412,20 @@ class Service extends \Basemodel{
 				   //unset($value['remarks']);
 				}
 
-				if($finder->brand_id==88){
-					if(!empty($value['combo_pass_id'])) {
-						$pass 	= 	Pass::where('pass_id', $value['combo_pass_id'])->first();
-						$value['pass_details'] = [
-							'pass_id' => $pass['pass_id'],
-							'pass_type' => ($pass['pass_type']=='hybrid')?$pass['branding']:$pass['pass_type'],
-							'duration' => $pass['duration'],
-							'duration_text' => $pass['duration_text'],
-							'total_sessions' => $pass['total_sessions'],
-							'total_sessions_text' => $pass['total_sessions_text']
-						];
-					}
+				if(empty($value['flags']['onepass_attachment_type'])) {
+					unset($value['combo_pass_id']);
+				}
+
+				if(!empty($value['flags']['onepass_attachment_type']) && !empty($value['combo_pass_id'])) {
+					$pass 	= 	Pass::where('pass_id', $value['combo_pass_id'])->first();
+					$value['pass_details'] = [
+						'pass_id' => $pass['pass_id'],
+						'pass_type' => ($pass['pass_type']=='hybrid')?$pass['branding']:$pass['pass_type'],
+						'duration' => $pass['duration'],
+						'duration_text' => $pass['duration_text'],
+						'total_sessions' => $pass['total_sessions'],
+						'total_sessions_text' => $pass['total_sessions_text']
+					];
 					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && ($value['flags']['onepass_attachment_type']=='membership_plus')) ) {
 						$value['membership_plus'] = true;
 						$value['title'] = 'Membership Plus';
@@ -433,7 +435,7 @@ class Service extends \Basemodel{
 					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && ($value['flags']['onepass_attachment_type']=='upgrade')) ) {
 						$value['upgrade_membership'] = true;
 						$value['title'] = 'Upgrade your membership with OnePass';
-						$value['validity'] = 6;
+						// $value['validity'] = 6;
 						$value['validity_type'] = 'Months - upgrade your membership with OnePass';
 					}
 					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && ($value['flags']['onepass_attachment_type']=='complementary')) ) {
@@ -523,10 +525,10 @@ class Service extends \Basemodel{
 
                 if(isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
                     if(!empty($value['offers'][0]['remarks'])){
-                        $value['offers'][0]['remarks'] = "Get 50% Off On Workout Sessions, Use Code: PPS";
+                        $value['offers'][0]['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: SS100";
                         $value['remarks_imp'] =  true;
                     }else{
-                        $value['remarks'] =  "Get 50% Off On Workout Sessions, Use Code: PPS";
+                        $value['remarks'] =  "100% Instant Cashback On Booking Workout Sessions, Use Code: SS100";
                         $value['remarks_imp'] =  true;
                     }
                 }
@@ -551,6 +553,18 @@ class Service extends \Basemodel{
 				}else{
 					$value['campaign_offer'] =  "";
                     $value['campaign_color'] = "";
+				}
+
+				if($value["type"] == "workout session"){
+					$des = 'You can cancel this session 1 hour prior to your session time. The paid amount will be refunded to you in form of Fitcash.';
+					if(!empty($finder['category_id']) && $finder['category_id'] == 5){
+						$des = 'You can cancel this session 15 min prior to your session time. The paid amount will be refunded to you in form of Fitcash.';
+					}
+
+					$value['easy_cancellation'] = array(
+						"header" => "Easy Cancelletion: ",
+						"description" => $des
+					);
 				}
 				
 				unset($value['flags']['convinience_fee_applicable']);

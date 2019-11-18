@@ -2498,8 +2498,13 @@ class TransactionController extends \BaseController {
         if(!empty($order)&&!empty($order['type'])&&$order['type']=='giftcoupon')
         	return $this->giftCouponSuccess();
         
-        if(!empty($order)&&!empty($order['type'])&&$order['type']=='pass')
-        	return $this->passService->passSuccessPayU($data);
+        if(!empty($order)&&!empty($order['type'])&&$order['type']=='pass') {
+            $passResp = $this->passService->passSuccessPayU($data);
+            if(!empty($data['payment_id_paypal'])) {
+                return Response::json($passResp,200);
+            }
+            return $passResp;
+        }
 
         //If Already Status Successfull Just Send Response
         if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
@@ -2589,6 +2594,14 @@ class TransactionController extends \BaseController {
                             $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
                             $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
                             array_set($data, 'reward_type', $value->reward_type);
+
+                            // if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity_order_id']) && empty($order['studio_extended_validity_order_id']) ){
+                            //     array_set($data, 'diwali_mixed_reward', true);
+                            // }
+
+                            // if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                            //         array_set($data, 'fitbox_mixed_reward', true);
+                            //     }
 
                             $reward_type = $value->reward_type;
 
@@ -3117,7 +3130,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(!empty($order['combo_pass_id'])){
+            if(!empty($order['combo_pass_id']) && !empty($order['ratecard_flags']['onepass_attachment_type'])){
                 $complementry_pass_purchase = Queue::connection('redis')->push(
                     'PassController@passCaptureAuto', 
                     array(
@@ -3129,6 +3142,16 @@ class TransactionController extends \BaseController {
                 Log::info('inside schudling complementary pass purchase redis id:', [$complementry_pass_purchase]);
 
                 $order->update(['schedule_complementry_pass_purchase_redis_id'=>$complementry_pass_purchase]);
+            }
+
+            if(!empty($order['diwali_mixed_reward'])){
+                $hamper_data = $this->utilities->getVoucherDetail($order->toArray());
+                $this->customermailer->diwaliMixedReward($hamper_data);
+                $this->customersms->diwaliMixedReward($order->toArray());
+            }
+
+            if(!empty($order['fitbox_mixed_reward'])){
+                $this->customersms->fitboxMixedReward($order->toArray());
             }
 
             Log::info("successCommon returned");
@@ -4671,7 +4694,7 @@ class TransactionController extends \BaseController {
         $data['duration_type'] = (isset($ratecard['duration_type'])) ? $ratecard['duration_type'] : "";
         $data['validity'] = (isset($ratecard['validity'])) ? $ratecard['validity'] : "";
         $data['validity_type'] = (isset($ratecard['validity_type'])) ? $ratecard['validity_type'] : "";
-        if((isset($ratecard['combo_pass_id']))) {
+        if(!empty($ratecard['flags']['onepass_attachment_type']) && (isset($ratecard['combo_pass_id']))) {
             $data['combo_pass_id'] = $ratecard['combo_pass_id'];
         }
 
@@ -4936,7 +4959,7 @@ class TransactionController extends \BaseController {
             
         // }
 
-        if(!empty($ratecard['combo_pass_id'])){
+        if(!empty($ratecard['flags']['onepass_attachment_type']) && !empty($ratecard['combo_pass_id'])){
             $data['combo_pass_id'] = $ratecard['combo_pass_id'];
         }
 
@@ -6201,13 +6224,24 @@ class TransactionController extends \BaseController {
             unset($booking_details_data['service_duration']);  
         }
 
-        if(!empty($data['type']) && $data['type'] == 'memberships'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'50% off + Extra 15% Off On Memberships. Addnl 5% Off For New Users, Use Code: GO5','position'=>$position++];
+        if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"On Gyms & Studio Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: SUPER20",'position'=>$position++];
+
+            // if($data['ratecard_amount'] >= 8000){
+            //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"On Gyms & Studio Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: SUPER20",'position'=>$position++];
+            // }
+
+            
+            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
+                //  || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0)
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
+                
+			}
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: SS100','position'=>$position++];
 
             $first_session_free = $this->firstSessionFree($data);
             if(!empty($first_session_free) && $first_session_free){
@@ -6218,7 +6252,8 @@ class TransactionController extends \BaseController {
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
 
-            if(!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp'] || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
+            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled'])){
+                // ||(isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
         }
@@ -6432,6 +6467,7 @@ class TransactionController extends \BaseController {
                         'field' => 'Coupon Discount',
                         'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "100% Cashback"
                     );
+                    
                     $you_save += (!empty($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0);
                 }else{
                     $amount_final = $amount_final + $data['coupon_discount_amount'];
@@ -6598,7 +6634,7 @@ class TransactionController extends \BaseController {
                 'options'=>[
                         [
                                 'title' => 'Paypal',
-                                'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
+                                'subtitle' => 'Get 50% Instant Cashback Upto INR 300 (New Users Only)',
                                 'value' => 'paypal'
                         ],
                         [
@@ -6669,7 +6705,7 @@ class TransactionController extends \BaseController {
                     );
                 }else{
                     $payment_modes[] = array(
-                        'title' => 'Online Payment (100% Cashback)',
+                        'title' => 'Online Payment',
                         'subtitle' => 'Transact online with netbanking, card and wallet',
                         'value' => 'paymentgateway',
                         'payment_options'=>$payment_options
@@ -8081,7 +8117,7 @@ class TransactionController extends \BaseController {
                     'value' => 'Rs. '.(string)$data['amount_payable']
                 ];
                 $result['finder_name'] = "ONEPASS";
-                $result['finder_location'] = strtoupper($pass['pass_type']);
+                $result['finder_location'] = (!empty($pass['pass_type']) && $pass['pass_type']!='hybrid')?strtoupper($pass['pass_type']):strtoupper($pass['branding']);
             }
 
         }else{
@@ -9877,7 +9913,7 @@ class TransactionController extends \BaseController {
                     Booktrial::where('_id',(int)$booktrial_id)->update($data);
                 }
                 
-            }else{
+            }else if(isset($service_flag['bulk_purchase_b2c_pps']['commission'])){
 
                 $service = array();
                 Service::$withoutAppends = true;
@@ -10041,9 +10077,13 @@ class TransactionController extends \BaseController {
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
         $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using Onepass ".ucfirst($data['pass_type']);
 
+        $des = 'You can cancel this session 1 hour prior to your session time.';
+		if($data['finder_category_id'] == 5){
+			$des = 'You can cancel this session 15 min prior to your session time.';
+		}
         $easy_cancellation = array(
             "header" => "Easy Cancelletion: ",
-            "description" => "You can cancel this session 1 hour prior to your session time."
+            "description" => $des
         );
 
         $passBookingDetails['onepass_details'] = $onepass_details;

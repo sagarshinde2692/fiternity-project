@@ -1006,6 +1006,7 @@ Class FinderMailer extends Mailer {
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
 						'priyankapatel@fitternity.com',
+						'anoliadhia@fitternity.com',
 						'shreyasjadhav@fitternity.com' 
 					];
 					break;
@@ -1016,6 +1017,7 @@ Class FinderMailer extends Mailer {
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
 						'priyankapatel@fitternity.com',
+						'anoliadhia@fitternity.com',
 						'shreyasjadhav@fitternity.com' 
 					];
 					break;
@@ -1024,6 +1026,7 @@ Class FinderMailer extends Mailer {
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
 						'priyankapatel@fitternity.com',
+						'anoliadhia@fitternity.com',
 						'shreyasjadhav@fitternity.com' 
 					];
 					break;
@@ -1357,7 +1360,7 @@ Class FinderMailer extends Mailer {
 
 		if(!Config::get('app.vendor_communication')){
 
-			$message_data['user_email'] = array('dhruvsarawagi@fitternity.com', 'akhilkulkarni@fitternity.com', 'ankitamamnia@fitternity.com');
+			$message_data['user_email'] = array('dhruvsarawagi@fitternity.com', 'akhilkulkarni@fitternity.com', 'ankitamamnia@fitternity.com', 'sailismart@fitternity.com', 'firojmulani@fitternity.com');
 		}
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));

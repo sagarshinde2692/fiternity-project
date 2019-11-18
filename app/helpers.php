@@ -380,6 +380,19 @@ if(!function_exists('citywise_category')){
                 // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
 
+            $cat['kolkata'] = [
+                ["name" => "All Fitness Options","slug" => "fitness", "_id" => 0],
+                ["name" => "Gyms","slug" => "gyms","_id" => 5],
+                ["name" => "Fitness Studios","slug" => "fitness-studios", "_id" => 43],
+                ["name" => "Zumba","slug" => "zumba-classes","_id" => 12],
+                ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes", "_id" => 8],
+                ["name" => "Yoga","slug" => "yoga-classes", "_id" => 6],
+                ["name" => "Cross Functional Training","slug" => "functional-training","_id" => 35],
+                ["name" => "Aerobics","slug" => "aerobics"],
+                ["name" => "Dance","slug" => "dance-classes", "_id" => 7],
+                ["name" => "Luxury Hotels","slug" => "luxury-hotels", "_id" => 47],
+                ["name" => "Swimming","slug" => "swimming-pools", "_id" => 10]
+            ];
 
             $cat['all'] = [
                 ["name" => "All Fitness Options","slug" => "fitness", "_id" => 0],
@@ -470,6 +483,10 @@ if(!function_exists('getmy_city')){
                 break;	
 			case "jaipur":
                 return "jaipur";
+                break;
+			case "calcutta":
+			case "kolkata":
+                return "kolkata";
                 break;		
             default: return $city;
         };
@@ -548,7 +565,12 @@ if(!function_exists('ifCityPresent')){
             case "faridabad":
                 $send_city = "faridabad";
                 $ifcity = true;
-                break;		    
+                break;		
+            case "calcutta":
+            case "kolkata":
+                $send_city = "kolkata";
+                $ifcity = true;
+                break;
         };
         if($ifcity) {
             $bypass = false;
@@ -2635,7 +2657,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer = Customer::find($customer_id);
                         $customer = array_except($customer->toArray(), array('password'));
                         
-                        $passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+                        //$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
 
 
                         $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
@@ -2682,21 +2704,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         if(!empty($customer['cart_id']))
                             $data['cart_id']=$customer['cart_id'];
 
-                        if(!empty($passOrder)){
-                            $data['pass']=1;
-                            $data['pass_start_date']=(!empty($passOrder['start_date']))?strtotime($passOrder['start_date']):null;
-                            $data['pass_expiry_date']=(!empty($passOrder['end_date']))?strtotime($passOrder['end_date']):null;
-                            $data['pass_type']=$passOrder['pass']['pass_type'];
-                            $data['pass_sessions_total']=null;
-                            if(!empty($passOrder['onepass_sessions_total'])) {
-                                $data['pass_sessions_total']=$passOrder['onepass_sessions_total']-1;
-                            }
-                            $data['pass_sessions_used']=(!!$passOrder['onepass_sessions_used'])?$passOrder['onepass_sessions_used']:0;
-                            $data['pass_order_id']=(!!$passOrder['_id'])?$passOrder['_id']: null;
-                            if($data['pass_type'] =='hybrid'){
-                                $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
-                            }
-                        }
+                        setPassToToken($customer, $data);
                     }
 
                     		
@@ -3235,17 +3243,18 @@ if (!function_exists(('getRegId'))){
 }
 
 if (!function_exists(('isNotInoperationalDate'))){
-    function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null){
+    function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null, $servicecategory_id=null){
 
-        $inoperational_dates = ['2019-09-12'];
+        $inoperational_dates = ['2019-10-27', '2019-10-28'];
+        $partially_inoperational_dates = ['2019-10-26'];
 
-        if( in_array($date, $inoperational_dates) && in_array($city_id, [1, 2])){
+        if( in_array($date, $inoperational_dates) ){
             return false;
         }
 
-        // if( in_array($date, $inoperational_dates) && in_array($city_id, [3,5]) && !in_array($findercategory_id, [5])){
-        //     return false;
-        // }
+        if( in_array($date, $partially_inoperational_dates) && !in_array($servicecategory_id, [65]) && !in_array($findercategory_id, [47])){
+            return false;
+        }
         
         return true;
 
@@ -3986,6 +3995,9 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
             case 'faridabad':
                 $ids = [65, 1, 123, 2];
                 break;		    
+            case 'kolkata':
+                $ids = [65, 2, 1, 163, 5, 19, 85, 17, 123];
+                break;		    
             case 'all':
                 $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
                 break;
@@ -4510,8 +4522,10 @@ if (!function_exists('setNewToken')) {
         Log::info('gettype($customer_data)');
         $pass_data = [];
         if(!empty($pass)){
+            
             $totalSessions = (!empty($pass['onepass_sessions_total']))?($pass['onepass_sessions_total']-1):null;
-            $pass_data = ['pass'=>1, 'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 'pass_type' => $pass['pass']['pass_type'], 'pass_sessions_total'=>$totalSessions, 'pass_sessions_used'=>$pass['onepass_sessions_used'],'pass_order_id'=>$pass['_id']];
+            
+            $pass_data = ['pass'=>1, 'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 'pass_type' => $pass['pass']['pass_type'], 'pass_sessions_total'=>$totalSessions, 'pass_sessions_used'=>$pass['onepass_sessions_used'],'pass_order_id'=>$pass['_id'], 'pass_city_id' => (!empty($pass['pass_city_id']) ? $pass['pass_city_id'] : null), 'pass_city_name' => (!empty($pass['pass_city_name']) ? $pass['pass_city_name'] : null)];
 
             if($pass_data['pass_type'] =='hybrid'){
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
@@ -4526,6 +4540,8 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass_type']);
             unset($customer_data['pass_sessions_total']);
             unset($customer_data['pass_sessions_used']);
+            unset($customer_data['pass_city_id']);
+            unset($customer_data['pass_city_name']);
             unset($customer_data['pass_sessions_monthly_total']);
             unset($customer_data['pass_sessions_monthly_used']);
             unset($customer_data['pass_order_id']);
@@ -4548,7 +4564,7 @@ if (!function_exists('isExternalCity')) {
 
     function isExternalCity($city){
         
-        return !in_array($city, ['mumbai','delhi','hyderabad','bangalore','gurgaon','noida','pune','chandigarh','jaipur']);
+        return !in_array($city, ['mumbai','delhi','hyderabad','bangalore','gurgaon','noida','pune','chandigarh','jaipur','kolkata']);
     
     }
 
@@ -4616,6 +4632,9 @@ if (!function_exists(('geoLocationWorkoutSession'))){
             "time_tag"=> $request['time_tag'],
             'date'=> $request['date']
         ];
+        if(!empty($request['onepass_available'])){
+            $payload['onepass_available'] = true;
+        }
 
         $url = Config::get('app.new_search_url')."/search/paypersession";
 
@@ -4712,5 +4731,29 @@ if (!function_exists('customerEmailFromToken')) {
     }
 }
 
+if (!function_exists(('setPassToToken'))){
+    function setPassToToken($customer, &$data){
+        $passOrder = $passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer['_id'])->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+
+        if(!empty($passOrder)){
+            $data['pass']=1;
+            $data['pass_start_date']=(!empty($passOrder['start_date']))?strtotime($passOrder['start_date']):null;
+            $data['pass_expiry_date']=(!empty($passOrder['end_date']))?strtotime($passOrder['end_date']):null;
+            $data['pass_type']=$passOrder['pass']['pass_type'];
+            $data['pass_sessions_total']=null;
+            if(!empty($passOrder['onepass_sessions_total'])) {
+                $data['pass_sessions_total']=$passOrder['onepass_sessions_total']-1;
+            }
+            $data['pass_sessions_used']=(!!$passOrder['onepass_sessions_used'])?$passOrder['onepass_sessions_used']:0;
+            $data['pass_city_id'] = !empty($passOrder['pass_city_id']) ? $passOrder['pass_city_id'] : null;
+            $data['pass_city_name'] = !empty($passOrder['pass_city_name']) ? $passOrder['pass_city_name'] : null;
+            $data['pass_order_id']=(!!$passOrder['_id'])?$passOrder['_id']: null;
+            if($data['pass_type'] =='hybrid'){
+                $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
+                $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
+            }
+        }
+    }
+}
 
 ?>

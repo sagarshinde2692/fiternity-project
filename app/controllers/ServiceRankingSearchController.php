@@ -310,7 +310,7 @@ class ServiceRankingSearchController extends \BaseController {
     }
 
     public function searchviptrials(){
-
+        return;
       try{
 
         $data = Input::json()->all();

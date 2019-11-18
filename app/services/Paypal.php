@@ -154,6 +154,18 @@ Class Paypal {
 
     public function executePayment($paymentId, $payer_id, $uniqueId){
         try {
+            \Log::info('executePayment: ');
+            \Log::info('URI: ', [$this->base_uri.'v1/payments/payment/'.$paymentId.'/execute']);
+            \Log::info('payload: ', [[
+                'headers' =>
+                    [
+                        'Content-Type' => 'application/json',
+                        'Authorization' => 'Bearer '.$this->access_token.'',
+                        'PayPal-Client-Metadata-Id' => $uniqueId,
+                        'PayPal-Request-Id' => $uniqueId
+                    ],
+                'body' => $payer_id
+            ]]);
             $response = $this->client->request('POST', $this->base_uri.'v1/payments/payment/'.$paymentId.'/execute', [
                 'headers' =>
                     [

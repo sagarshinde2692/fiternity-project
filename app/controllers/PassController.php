@@ -15,7 +15,6 @@ class PassController extends \BaseController {
     }
 
     public function listPasses($pass_type=null){
-
         $jwt_token = Request::header('Authorization');
         $device = Request::header('Device-Type');
         $version = Request::header('App-Version');
@@ -24,7 +23,29 @@ class PassController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
         }
-        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version);
+
+        $input = Input::all();
+        $category = null;
+        $city = null;
+        $source = null;
+
+        if(!empty($input['category'])){
+            $category = $input['category'];
+        }
+
+        if(!empty($input['city'])){
+            $city = strtolower($input['city']);
+        }
+        
+        if(!empty($input['source'])) {
+            $source = $input['source'];
+        }
+        
+        if(empty($input['city']) || !empty($source)) {
+            $city = 'mumbai';
+        }
+
+        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source);
         if(empty($passes)) {
             return [
                 "status" => 400,
@@ -105,8 +126,23 @@ class PassController extends \BaseController {
         $response =  $this->passService->passSuccess($data);
         if(!empty($response['order'])){
             $response['data']['branch_obj'] = $this->utilities->branchIOData($response['order']);
+            //unset($response['order']);
+        }
+
+        if(!empty($response['order']) && (($this->device_type == 'ios' && $this->app_version >= '5.2.4') ||($this->device_type == 'android' && $this->app_version >= '5.31') )){
+
+            $token = createCustomerToken($response['order']['customer_id']);
+            unset($response['order']);
+            $response['token'] = $token;
+            $response = Response::make($response);
+            $response->headers->set('token', $token );
+            return $response;
+        }
+
+        if(!empty($response['order'])){
             unset($response['order']);
         }
+
         return $response;
 
     }
@@ -141,6 +177,83 @@ class PassController extends \BaseController {
         return [ 'status' => 200, 'data' => $this->passService->homePostPassPurchaseData($customer_id), 'message' => 'Success' ];
     }
 
+    public function passTab(){
+    
+        $input= Input::all();
+
+        // $rules= [
+        //     'city' => 'required',
+        // ];
+
+        // $validator = Validator::make($input,$rules);
+
+        // if ($validator->fails()) {
+        //     return Response::json(array('status' => 400,'message' => error_message($validator->errors())), 400);
+        // }
+        $city =  !empty($input['city'])? $input['city'] : 'mumbai' ;
+        $selected_region =  !empty($input['selected_region'])? $input['selected_region'] : null;
+
+        $coordinate = [
+            'lat' => !empty($input['lat']) ? $input['lat']: "",
+            'lon' => !empty($input['lon']) ? $input['lon'] : ""
+        ];
+        
+		$decoded = null;
+        $jwt_token = Request::header('Authorization');
+		if(!empty($jwt_token)){
+            $decoded = customerTokenDecode($jwt_token);
+            if(!empty($decoded)){
+                $customeremail = $decoded->customer->email;
+                $customer_id = $decoded->customer->_id;
+            }
+		}
+		
+		$passPurchased = false;
+		$passOrder = null;
+
+		if(!empty($customeremail)) {
+            $customer = Customer::where('_id', $customer_id)->first();
+			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where(function ($query) { 
+                $query->orWhere(function($query1) {
+                    $query1->where('end_date','>=',new MongoDate())->where('pass.pass_type','=','red');
+                })->orWhere(function($query1) {
+                    $query1->where('pass.pass_type','=','black');
+                });
+            })->orderBy('_id', 'desc')->first();
+			if(!empty($passOrder)) {
+				$passPurchased = true;
+			}
+		}
+		
+		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
+			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate, $customer);
+		}else {
+            $vendor_search = $coordinate;
+            $vendor_search['city'] = $city;
+            $vendor_search['selected_region'] = $selected_region;
+            $vendor_search['onepass_available'] = true;
+            $result['onepass_pre'] = Config::get('pass.before_purchase_tab');
+            //$pps_near_by = $this->passService->workoutSessionNearMe($city, $coordinate);
+            $vendor_near_by = $this->utilities->getVendorNearMe($vendor_search);
+            Log::info('near by vendors');
+            if(!empty(count($vendor_near_by['data']))){
+                $result['onepass_pre']['near_by']['subheader'] = $vendor_near_by['header'];
+                $result['onepass_pre']['near_by']['near_by_vendor'] = $vendor_near_by['data'];
+            }
+		}
+
+        if(!empty($result['onepass_pre']['offers'])){
+            $agrs1 = array('city' => $city);
+			$brandingData = $this->utilities->getPassBranding($agrs1);
+			if(!empty($brandingData['footer_text'])){
+				$result['onepass_pre']['offers']['text'] = $brandingData['footer_text'];
+			}
+        }
+
+		$response = Response::make($result);
+		return $response;
+    }
+    
     public function passCaptureAuto($job ,$input){
         if($job){
             $job->delete();
@@ -203,6 +316,35 @@ class PassController extends \BaseController {
         }
     }
 
+    public function localPassRatecards(){
+        $data = Input::all();
+
+        $rules= [
+            'city'=>'required'
+        ];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())), 400);
+        }
+        $type = 'red';
+        if(!empty($data['type'])){
+            $type= $data['type'];
+        }
+
+        $ratecards = $this->passService->localPassRatecards($type, $data['city']);
+
+        $resp = [ 'status' => 200, 'data' => $ratecards, 'message' => 'Success'];
+
+        if(empty(count($ratecards))){
+            $resp['message'] = "wo dont serve in ".$data['city']." as of now. ".$type. " pass";
+            $resp['status'] = 400;
+        }
+
+        return $resp;
+    }
+    
     public function passCaptureAutoForce(){
         $input = Input::all();
 

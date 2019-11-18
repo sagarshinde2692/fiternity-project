@@ -6390,6 +6390,15 @@ Class Utilities {
                 ->orderBy('_id', 'asc')
                 ->first();
 
+        if(!empty($voucher_category->flags['diwali_mix_reward'])){
+            $already_assigned_voucher = \LoyaltyVoucher::
+                where('milestone', $voucher_category->milestone)
+                ->where('selected_voucher', $voucher_category->_id)
+                ->where('customer_id', $customer['_id'])
+                ->orderBy('_id', 'asc')
+                ->first();
+        }
+
         if($already_assigned_voucher){
             // Log::info("already_assigned_voucher");
             return $already_assigned_voucher;
@@ -6444,6 +6453,14 @@ Class Utilities {
 
         if(isset($voucher_category['flags'])){
             $new_voucher->flags = $voucher_category['flags'];
+        }
+
+        if(!empty($voucher_category['note'])){
+            $new_voucher->note = $voucher_category['note'];
+        }
+
+        if(!empty($voucher_category['title'])){
+            $new_voucher->title = $voucher_category['title'];
         }
 
         $new_voucher->update();
@@ -6591,8 +6608,45 @@ Class Utilities {
             if(Request::header('App-Version')){
                 $checkin->app_version = Request::header('App-Version');
             }
-            
-            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon','receipt', 'booktrial_id'];
+            if(!empty($data['lat']) && !empty($data['lon'])){
+                $data['geometry'] = [
+                    "type" => "Point",
+                    "coordinates" => [ 
+                        $data['lon'], 
+                        $data['lat'] 
+                    ]
+                ];
+            }
+
+            if(!empty($data['finder_id'])){
+                $finder_lat_lon = Finder::where('_id', $data['finder_id'])->select('lat', 'lon')->first();
+
+                if(!empty($finder_lat_lon->lat) && !empty($finder_lat_lon->lat)){
+                    $data['finder_lat'] = floatval($finder_lat_lon->lat);
+                    $data['finder_lon'] = floatval($finder_lat_lon->lon);
+                    
+                    $data['finder_geometry'] = [
+                        "type" => "Point",
+                        "coordinates" => [ 
+                            $data['finder_lon'], 
+                            $data['finder_lat'] 
+                        ]
+                    ];
+                }
+            }
+
+            $data['distance'] = (!empty($data['lat']) && !empty($data['lon']) && !empty($data['finder_lat']) && !empty($data['finder_lon'])) ?$this->distanceCalculationOfCheckinsCheckouts(
+                [
+                    'lat'=> $data['lat'], 
+                    'lon'=> $data['lon']
+                ], 
+                [
+                    'lat'=> $data['finder_lat'], 
+                    'lon'=> $data['finder_lon']
+                ]
+            ) : 0;
+
+            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer', 'unverified','lat','lon','receipt', 'booktrial_id', 'finder_lat', 'finder_lon', 'geometry', 'finder_geometry', 'distance'];
 
             foreach($fields as $field){
                 if(isset($data[$field])){
@@ -7643,6 +7697,14 @@ Class Utilities {
             $voucher_data['link'] = $voucher_category['link'];
         }
 
+        if(isset($voucher_category['note'])){
+            $voucher_data['note'] = $voucher_category['note'];
+        }
+
+        if(isset($voucher_category['title'])){
+            $voucher_data['title'] = $voucher_category['title'];
+        }
+
         if(!empty($voucher_category['flags']['diet_plan'])){
         
             $diet_plan = $this->generateFreeDietPlanOrder(['customer_name'=>$customer->name, 'customer_email'=>$customer->email,'customer_phone'=>$customer->contact_no]);
@@ -7662,6 +7724,29 @@ Class Utilities {
         
         return $voucher = \LoyaltyVoucher::create($voucher_data);
 
+    }
+
+    public function assignInstantManualVoucher($customer, $voucher_category){
+
+        $new_voucher['voucher_category'] = $voucher_category['_id'];
+        $new_voucher['description'] = $voucher_category['description'];
+        $new_voucher['milestone'] = $voucher_category['milestone'];
+        $new_voucher['customer_id'] = $customer['_id'];
+        $new_voucher['name'] = $voucher_category['name'];
+        $new_voucher['code'] = $voucher_category['name'];
+        $new_voucher['image'] = $voucher_category['image'];
+        $new_voucher['terms'] = $voucher_category['terms'];
+        $new_voucher['amount'] = $voucher_category['amount'];
+        $new_voucher['claim_date'] = new \MongoDate();
+        $new_voucher['selected_voucher'] = $voucher_category['_id'];
+        $new_voucher['claim_voucher'] = true;
+        $new_voucher['milestone'] = !empty($voucher_category['milestone']) ? $voucher_category['milestone'] : null;
+        
+        if(isset($voucher_category['flags'])){
+            $new_voucher['flags'] = $voucher_category['flags'];
+        }
+        
+        return $new_voucher;
     }
 
     public function generateSwimmingCouponCode($data, $workout_session_flag=null){
@@ -9614,12 +9699,12 @@ Class Utilities {
 
 		if ($validator->fails())
 		{
-			return \Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'), 400);
+			return \Response::json(array('status' => 400,'message' => 'Not Able to find Your Location.'), 200);
 		}
 
 		if(empty($finder_id))
 		{
-			return \Response::json(array('status' => 400,'message' => 'Vendor is Empty.'),400);
+			return \Response::json(array('status' => 400,'message' => 'Vendor is Empty.'),200);
 		}
 		Log::info('in mark checkin utilities', [$data]);
 		$finder_id = (int) $finder_id;
@@ -9644,7 +9729,7 @@ Class Utilities {
 		}
 
 		//Log::info('geo coordinates of :::::::::::;', [$customer_geo, $finder_geo]); // need to update distance limit by 500 metere
-		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= 2000 ? true : false;
+		$distanceStatus  = $this->distanceCalculationOfCheckinsCheckouts($customer_geo, $finder_geo) <= Config::get('app.checkin_checkout_max_distance_in_meters') ? true : false;
 		//Log::info('distance status', [$distanceStatus]);
 		if($distanceStatus){
 			// $oprtionalDays = $this->checkForOperationalDayAndTime($finder_id);
@@ -10083,7 +10168,7 @@ Class Utilities {
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
                 
-                $slot['order_summary']['header'] = $orderSummary['header']." \n\nGet Fit Go Sale\n\nGet 50% Off On Workout Sessions. Use Code: PPS";
+                $slot['order_summary']['header'] = $orderSummary['header']."";
 
                 if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
                     $slot['order_summary']['header'] = $orderSummary['header'];
@@ -10104,7 +10189,7 @@ Class Utilities {
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
-                    $sd['order_summary']['header'] = $orderSummary['header']." \n\nGet Fit Go Sale\n\nGet 50% Off On Workout Sessions. Use Code: PPS";
+                    $sd['order_summary']['header'] = $orderSummary['header']."";
 
                     if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
                         $sd['order_summary']['header'] = $orderSummary['header'];
@@ -10216,8 +10301,11 @@ Class Utilities {
 		    'time_tag' => 'later-today',
             'date' => date('d-m-y')
         ];
+        if(!empty($input['onepass_available'])){
+            $near_by_workout_request['onepass_available'] = true; 
+        }
         Log::info('payload:::::::::', [$near_by_workout_request]);
-		$workout = geoLocationWorkoutSession($near_by_workout_request, $source);
+        $workout = geoLocationWorkoutSession($near_by_workout_request, $source);
 		$result=[
 			'header'=> 'Workouts near me',
 			'data'=>[]
@@ -10266,11 +10354,6 @@ Class Utilities {
                 $pass = true;
             }
             
-            if(Config::get('app.env') == 'stage'){
-                if($customer_email == "ankitamamnia@fitternity.com"){
-                    $pass = true;
-                }
-            }
         }
         Log::info("pass header",[$pass]);
         return $pass;
@@ -10338,12 +10421,278 @@ Class Utilities {
         return $resp;
     }
 
+    public function onePassCustomerAddImage($image, $customer_id, $customer){
+
+        if ($image->getError()) {
+
+            return array('status' => 400, 'message' => 'Please upload jpg/jpeg/png image formats with max. size of 10 MB');
+
+        }
+
+        $data = [
+            "input"=>$image,
+            "upload_path"=>Config::get('app.aws.customer_photo.path').$customer_id.'/',
+            "local_directory"=>public_path().'/customer_photo/'.$customer_id,
+            "file_name"=>$customer_id.'-'.time().'.'.$image->getClientOriginalExtension()
+            // "resize"=>["height" => 200,"strategy" => "portrait"],
+        ];
+
+        $upload_resp = $this->uploadFileToS3Kraken($data);
+
+        Log::info($upload_resp);
+
+        if(!$upload_resp || empty($upload_resp['success'])){
+            return array('status'=>400, 'message'=>'Error');
+        }
+
+        $customer_photo = ['url'=>str_replace("s3.ap-southeast-1.amazonaws.com/", "", $upload_resp['kraked_url']), 'date'=> new \MongoDate()];
+
+        return array('status'=>200, 'customer_photo'=>$customer_photo);
+    }
+
+    public function updateAddressAndIntereste($customer, $data){
+        $onepass = !empty($customer->onepass) ?  $customer->onepass: [];
+        
+        //$onepass['profile_completed'] = $data['profile_completed'];
+
+        if(!empty($data['customer_photo'])){
+            $onepass['photo'] = $data['customer_photo'];
+        }
+
+        if(!empty($data['interests'])){
+            $onepass['interests'] = $data['interests'];
+        }
+
+        if(!empty($data['gender']) && $data['gender'] != ' '){
+            $onepass['gender'] = strtolower($data['gender']);
+            $customer->gender = strtolower($data['gender']);
+        }
+
+        if(!empty($data['address_details'])){
+
+            if(!empty($data['address_details']['home_address'])){
+                $customer->address =  $data['address_details']['home_address'];
+                $onepass['home_address'] = $data['address_details']['home_address'];
+                if(!empty($data['address_details']['home_lat']) && !empty($data['address_details']['home_lon'])){
+                    $onepass['home_lat'] = $data['address_details']['home_lat'];
+                    $onepass['home_lon'] = $data['address_details']['home_lon'];
+                }
+            }
+            
+            if(!empty($data['address_details']['work_address'])){
+                $onepass['work_address'] =  $data['address_details']['work_address'];
+                if(!empty($data['address_details']['work_lat']) && !empty($data['address_details']['work_lon'])){
+                    $onepass['work_lat'] = $data['address_details']['work_lat'];
+                    $onepass['work_lon'] = $data['address_details']['work_lon'];
+                }
+            }
+
+            if(!empty($data['address_details']['home_landmark'])){
+                $customer->address_landmark =  $data['address_details']['home_landmark'];
+                $onepass['home_landmark'] = $data['address_details']['home_landmark'];
+            }
+            
+            if(!empty($data['address_details']['work_landmark'])){
+                $onepass['work_landmark'] =  $data['address_details']['work_landmark'];
+            }
+
+            if(!empty($data['address_details']['home_city'])){
+                $onepass['home_city'] =  $data['address_details']['home_city'];
+            }
+            if(!empty($data['address_details']['work_city'])){
+                $onepass['work_city'] =  $data['address_details']['work_city'];
+            }
+        }
+        $customer->onepass = $onepass;
+        return $customer;
+    }
+
+    public function getParentServicesCategoryList(){
+        $category_ids = [65, 5, 19, 1, 123, 3, 4, 2, 114, 86];
+        return \Servicecategory::active()->where('parent_id', 0)->whereIn('_id', $category_ids)->get(['slug', 'name']);
+    }
+
     function getOrdinalNumber($number) {
         $ends = array('th','st','nd','rd','th','th','th','th','th','th');
         if ((($number % 100) >= 11) && (($number%100) <= 13))
             return $number. 'th';
         else
             return $number. $ends[$number % 10];
+    }
+
+    public function formatOnepassCustomerDataResponse($resp, $pass_order_id){
+        
+        $onepassProfileConfig = Config::get('pass.pass_profile');
+        $resp['booking_text'] = !empty($pass_order_id)? $onepassProfileConfig['booking_text']:$onepassProfileConfig['booking_text_pps'];
+        $resp['title'] = !empty($pass_order_id)? $onepassProfileConfig['title']:$onepassProfileConfig['title_pps'];
+
+        if(!empty($resp['photo'])){
+			$resp['url'] = $resp['photo']['url'];
+			unset($resp['photo']);
+        }
+        
+        if(empty($resp['service_categories'])){
+            $resp['service_categories'] = $this->getParentServicesCategoryList();
+        }
+
+        foreach($resp['service_categories'] as &$value){
+            if((!empty($resp['interests'])) && (in_array($value['_id'], $resp['interests']))){
+                $value['selected'] = true;
+            }
+            else{
+                $value['selected'] = false;
+            }
+        }
+        $resp['interests'] = $onepassProfileConfig['interests'];
+        $resp['interests']['data'] = $resp['service_categories'];
+        $resp['address_details'] = $onepassProfileConfig['address_details'];
+        
+        unset($resp['service_categories']);
+		
+		
+		if(!empty($resp['home_address'])){
+			$resp['address_details']['home_address'] = $resp['home_address'];
+            unset($resp['home_address']);
+		}
+
+        if(!empty($resp['home_landmark'])){
+            $resp['address_details']['home_landmark'] = $resp['home_landmark'];
+            unset($resp['home_landmark']);
+        }
+
+        if(!empty($resp['home_lat']) && !empty($resp['home_lon'])){
+            $resp['address_details']['home_lat'] = $resp['home_lat'];
+            $resp['address_details']['home_lon'] = $resp['home_lon'];
+            unset($resp['home_lat']);
+            unset($resp['home_lon']);
+        }
+
+		if(!empty($resp['work_address'])){
+
+			$resp['address_details']['work_address'] = $resp['work_address'];
+            unset($resp['work_address']);
+        }
+
+        if(!empty($resp['work_landmark'])){
+            $resp['address_details']['work_landmark'] = $resp['work_landmark'];
+            unset($resp['work_landmark']);
+        }
+        
+        if(!empty($resp['work_lat']) && !empty($resp['work_lon'])){
+            $resp['address_details']['work_lat'] = $resp['work_lat'];
+            $resp['address_details']['work_lon'] = $resp['work_lon'];
+            unset($resp['work_lat']);
+            unset($resp['work_lon']);
+        }
+
+        if(!empty($resp['home_city'])){
+            $resp['address_details']['home_city'] = $resp['home_city'];
+            unset($resp['home_city']);
+        }
+
+        if(!empty($resp['work_city'])){
+            $resp['address_details']['work_city'] = $resp['work_city'];
+            unset($resp['work_city']);
+        }
+
+        return $resp;
+    }
+
+    public function checkOnepassProfileCompleted($customer=null, $customer_id=null){
+
+        if(empty($customer)){
+            $customer = Customer::active()->where('_id', $customer_id)->first();
+        }
+
+        if(empty($customer->onepass)){
+            return false; 
+        }
+
+        if(Request::header('Device-Type')){
+            $device_type = Request::header('Device-Type');
+        }
+
+        if(!empty($device_type) && $device_type== 'ios'){
+            $required_keys = ['photo', 'home_address', 'interests'];
+        }
+        else{
+            $required_keys = ['photo', 'gender', 'home_address', 'interests'];
+        }
+
+        $profileKeys = array_keys($customer->onepass);
+        $status = true;
+
+        foreach($required_keys as $key=>$value){
+
+            if(!in_array($value, $profileKeys)){
+                $status = false;
+                break;
+            }
+            //$status = true;
+        }
+
+        return $status;
+    }
+
+    public function personlizedProfileData($data, $pass_order_id){
+        
+        $resp = Config::get('pass.pass_profile.personlized_profile');
+
+        $resp['url'] = $data['photo']['url'];
+
+        if(empty($pass_order_id)){
+            unset($resp['header']);
+            unset($resp['header_pps']);
+            $resp['title'] = $resp['title_pps'];
+            unset($resp['title_pps']);
+            $resp['text'] = $resp['text_pps'];
+            unset($resp['text_pps']);
+            $resp['interests']['header'] = $resp['interests']['header_pps'];
+            unset($resp['interests']['header_pps']);
+        }
+        else {
+            unset($resp['header_pps']);
+            unset($resp['text_pps']);
+            unset($resp['title_pps']);
+            unset($resp['interests']['header_pps']);
+        }
+        if(!empty($data['interests']) && !empty($resp['interests']['data'])){
+            $resp['interests']['data'] = array_merge($this->personlizedServiceCategoryList($data['interests']), $resp['interests']['data']);
+        }
+
+        return $resp;
+    }
+
+    public function personlizedServiceCategoryList($service_categegory_ids){
+        try{
+            $servicecategories	 = 	\Servicecategory::active()->whereIn('_id', $service_categegory_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->orderBy('name')->get(array('_id','name','slug'));
+        } catch(\Exception $e){
+            $servicecategories= [];
+            Log::info('error occured while fatching service categories::::::::::', [$e]);
+        }
+        
+        $icons = $this->getServiceCategoriesIcon()[0];
+
+		if(count($servicecategories) > 0){
+            $base_url  = Config::get('app.service_icon_base_url');
+            $base_url_extention  = Config::get('app.service_icon_base_url_extention');
+			foreach($servicecategories as &$category){
+				$category['image'] = !empty($icons[$category['name']]) ? $icons[$category['name']]['icon']: $base_url.$category['slug'].$base_url_extention;
+                if($category['slug'] == 'martial-arts'){
+					$category['name'] = 'MMA & Kick-boxing';
+				}
+			}
+        }
+		return is_array($servicecategories) ? $servicecategories : $servicecategories->toArray();
+    }
+
+    public function getServiceCategoriesIcon(){
+        return \Ordervariables::where('name', 'service_categories')->lists('service_categories');
+    }
+
+    public function getCityId($city_name){
+        $city_id = \City::where('name', $city_name)->lists('_id');
+        return $city_id[0];
     }
 
     public function forcedOnOnepass($finder) {
@@ -10362,6 +10711,65 @@ Class Utilities {
         $send_communication = $this->sendPromotionalNotification($promoData);
     }
 
+    public function getVendorNearMe($data){
+        $near_by_vendor_request = [
+            "offset" => 0,
+            "limit" => 9,
+            "radius" => "2km",
+            "category"=> "",
+            "lat"=> !empty($data['lat']) ? $data['lat']: "",
+            "lon"=>!empty($data['lon']) ? $data['lon']: "",
+            "city"=>!empty($data['city']) ? strtolower($data['city']) : null,
+            "keys"=>[
+                "average_rating",
+                "slug",
+                "name",
+                "categorytags",
+                "category",
+                "vendor_slug",
+                "vendor_name",
+                "overlayimage",
+                "total_slots",
+                "next_slot",
+                "id",
+                "contact",
+                "coverimage",
+                "location",
+                "multiaddress"
+            ]
+        ];
+
+        $near_by_vendor_request['pass'] = true;
+        $near_by_vendor_request['time_tag'] = 'later-today';
+        $near_by_vendor_request['date'] = date('d-m-y');
+
+        // if(!empty($data['selected_region'])){
+        //     $near_by_vendor_request['region'] = $data['selected_region'];
+        // }
+
+        if(!empty($data['onepass_available'])){
+            $near_by_vendor_request['onepass_available'] = $data['onepass_available'];
+        }
+
+        $workout = geoLocationFinder($near_by_vendor_request, 'customerhome');
+
+        $result=[
+            'header'=> 'Trending near me',
+            'data'=>[]
+        ];
+        if(!empty($workout['finder'])){
+            $result['data'] = $workout['finder'];
+        }
+        if(empty($data['lat']) && empty($data['lon'])){
+            $result['header'] = "Trending in ".ucwords($data['city']);
+        }
+        if(!empty($data['selected_region'])){
+            $result['header'] = "Trending in ".ucwords($data['selected_region']);
+        }
+
+        return $result;
+    }
+    
     public function mfpBranding($data, $source){
 		try{
 			if($source == "serviceDetailv1"){  
@@ -10428,5 +10836,178 @@ Class Utilities {
     
     public function getMfpPrice($price_text, $original_price){
         return $price_text == Config::get('app.onepass_free_string') ? Config::get('app.onepass_free_string') : "₹ ".$original_price;
+    }
+
+    public function getVoucherDetail($data = null){
+        Log::info("getVoucherDetail");
+        $type = $data['type'];
+        $customer_id = $data['customer_id'];
+        $customer = Customer::find($customer_id);
+        $query = \VoucherCategory::active()->where('flags.diwali_mix_reward', true);
+
+        if(!empty($type) && $type == "pass"){
+            $query->where('flags.type', $type);
+            $amount = "9000";
+        }else if(!empty($type) && ($type == "membership" || $type == "memberships")){
+            $query->where('flags.type', "membership");
+            $amount = "6500";
+        }
+
+        $voucher_categories = $query->get();
+        $vouchers_arr = array(); 
+        $fin_vouchers_arr = array();
+        $fin_vouchers_arr['total_hamper_amount'] = $amount;
+        $fin_vouchers_arr['customer_email'] = $customer['email'];
+        $fin_vouchers_arr['customer_name'] = $customer['name'];
+        if(!empty($voucher_categories)){
+            foreach($voucher_categories as $voucher_category){
+                $vouchers_arr= $this->assignVoucher($customer, $voucher_category);
+                $fin_vouchers_arr[$voucher_category['name']] = !empty($vouchers_arr) ? $vouchers_arr : array();
+            }
+        }
+
+        return $fin_vouchers_arr;
+    }
+
+    // public function checkFitsquadExpired($customer = null){
+
+    //     $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year',$customer['loyalty']['start_date']->sec));
+    //     $current_date = date('Y-m-d');
+        
+    //     $fitsquad_expired = false;
+
+    //     if($fitsquad_expiery_date < $current_date){
+    //         $fitsquad_expired = true;
+    //     }
+
+    //     return $fitsquad_expired;
+    // }
+
+    public function getPassBranding($args = null){
+        $return_arr = array();
+
+        $city = !empty($args['city']) ? $args['city'] : null;
+        $pass = !empty($args['pass']) ? $args['pass'] : null;
+        $coupon_flags = !empty($args['coupon_flags']) ? $args['coupon_flags'] : null;
+        $device_type = !empty($args['device_type']) ? $args['device_type'] : null;
+        
+        $city_name = getmy_city($city);
+        
+        switch($city_name){
+            case "mumbai":
+                if(!empty($pass)){
+                    $return_arr['text'] = "";
+                    $return_arr['purchase_summary_value'] = "";
+                    $return_arr['offer_success_msg'] = "";
+                    $return_arr['msg_data'] = "";
+                    if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
+                        if(!empty($pass['duration']) && $pass['duration'] == 15){
+                            $return_arr['text'] = "Full 100% Cashback (No Code Needed)";
+                            $return_arr['purchase_summary_value'] = "Full 100% Cashback (No Code Needed) | 16-18 Nov";
+
+                            if(empty($coupon_flags['no_cashback'])){
+                                if(!empty($device_type)){
+                                    if($device_type == 'android'){
+                                        $return_arr['offer_success_msg'] = "<br>Congratulations on your OnePass purchase. You will receive full cashback worth INR 3000 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass<br>Kindly feel free to reach out to us on +917400062849 for queries";
+                                    }else if($device_type == 'ios'){
+                                        $return_arr['offer_success_msg'] = "\nCongratulations on your OnePass purchase. You will receive full cashback worth INR 3000 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass\nKindly feel free to reach out to us on +917400062849 for queries";
+                                    }else{
+                                        $return_arr['offer_success_msg'] = "Congratulations on your OnePass purchase. You will receive full cashback worth INR 3000 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass<br>Kindly feel free to reach out to us on +917400062849 for queries";
+                                    }
+                                }
+                            }
+
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full cashback worth INR 3000 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass\nKindly feel free to reach out to us on +917400062849 for queries";
+                        }
+        
+                        if(!empty($pass['duration']) && $pass['duration'] == 30){
+                            $return_arr['text'] = "Full 100% Cashback (No Code Needed)";
+                            $return_arr['purchase_summary_value'] = "Full 100% Cashback (No Code Needed) | 16-18 Nov";
+
+                            if(empty($coupon_flags['no_cashback'])){
+                                if(!empty($device_type)){
+                                    if($device_type == 'android'){
+                                        $return_arr['offer_success_msg'] = "Congratulations on your OnePass purchase. You will receive full cashback worth INR 4500 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass.Kindly feel free to reach out to us on +917400062849 for queries";
+                                    }else if($device_type == 'ios'){
+                                        $return_arr['offer_success_msg'] = "\nCongratulations on your OnePass purchase. You will receive full cashback worth INR 4500 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass.\nKindly feel free to reach out to us on +917400062849 for queries";
+                                    }else{
+                                        $return_arr['offer_success_msg'] = "Congratulations on your OnePass purchase. You will receive full cashback worth INR 4500 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass.Kindly feel free to reach out to us on +917400062849 for queries";
+                                    }
+                                }
+                            }
+
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full cashback worth INR 4500 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass\nKindly feel free to reach out to us on +917400062849 for queries";
+                        }
+
+                        if(!empty($pass['duration']) && $pass['duration'] == 90){
+                            $return_arr['text'] = "FLAT 20% off or 22 days Extension";
+                            $return_arr['purchase_summary_value'] = "Get FLAT 20% off (code: SUPERSAVER) or 22 days extension (code: EXTRA25) | 16-18 Nov";
+                            
+                            if(!empty($coupon_flags) && $coupon_flags['extension_percent']){
+                                $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You have received an extention of 22 days.\nKindly feel free to reach out to us on +917400062849 for queries";
+                            }
+                        }
+
+                        if(!empty($pass['duration']) && $pass['duration'] == 180){
+                            $return_arr['text'] = "FLAT 20% off or 1.5 Month Extension";
+                            $return_arr['purchase_summary_value'] = "Get FLAT 20% off (code: SUPERSAVER) or 1.5 month extension (code: EXTRA25) | 16-18 Nov";
+
+                            if(!empty($coupon_flags) && $coupon_flags['extension_percent']){
+                                $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You have received an extention of 1.5 months.\nKindly feel free to reach out to us on +917400062849 for queries";
+                            }
+                        }
+
+                        if(!empty($pass['duration']) && $pass['duration'] == 360){
+                            $return_arr['text'] = "FLAT 20% off or 3 Months Extension";
+                            $return_arr['purchase_summary_value'] = "Get FLAT 20% off (code: SUPERSAVER) or 3 months extension (code: EXTRA25) | 16-18 Nov";
+
+                            if(!empty($coupon_flags) && $coupon_flags['extension_percent']){
+                                $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You have received an extention of 3 months.\nKindly feel free to reach out to us on +917400062849 for queries";
+                            }
+                        }
+                    }
+                }
+                $return_arr['black_remarks_header'] = "";
+                $return_arr['red_remarks_header'] = "\n\nFull 100% Cashback On OnePass \nBuy Now To Save More! Start At Your Convenience \n16-18 Nov";
+                $return_arr['footer_text'] = "Full 100% Cashback On OnePass";
+                return $return_arr;
+                break;
+            case "gurgaon":
+            case "noida":
+            case "delhi": 
+            case "bangalore":
+                if(!empty($pass)){
+                    $return_arr['text'] = "";
+                    if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
+                        $return_arr['text'] = "Biggest Price Drop: \nFLAT 35% Off (offer pre-applied)";
+                        $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 35% Off (No Code Needed) | 16-18 Nov";
+                    }
+                }
+                $return_arr['black_remarks_header'] = "";
+                $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop: FLAT 35% Off \nBuy Now To Save More! Start At Your Convenience \n16-18 Nov";
+                $return_arr['footer_text'] = "Biggest Price Drop: FLAT 35% Off";
+                return $return_arr;
+                break;
+            case "hyderabad":
+            case "pune":
+            case "chandigarh":
+            case "jaipur":
+            case "kolkata":
+            case "ahmedabad":
+            case "faridabad":
+                if(!empty($pass)){
+                    $return_arr['text'] = "";
+                    if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
+                        $return_arr['text'] = "Biggest Price Drop: \nFLAT 50% Off (offer pre-applied)";
+                        $return_arr['purchase_summary_value'] = "Biggest Price Drop: FLAT 50% Off (No Code Needed) | 16-18 Nov";
+                    }
+                }
+                $return_arr['black_remarks_header'] = "";
+                $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop: FLAT 50% Off \nBuy Now To Save More! Start At Your Convenience \n16-18 Nov";
+                $return_arr['footer_text'] = "Biggest Price Drop: FLAT 50% Off ";
+                return $return_arr;
+                break;
+            default: return $return_arr;
+        }
     }
 }
