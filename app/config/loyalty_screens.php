@@ -179,7 +179,7 @@ return array(
         "Milestone 4" => [
             "header" => "Amazon Gift Card, Fitternity Fitcash or ONEPASS",
             "sub_title" => "___count Days",
-            "sub_header" => "Exclucive voucher from Amazon or earn Fitternity Fitcash or get access to unlimited workout options with Fitternity Onepass.",
+            "sub_header" => "Exclusive voucher from Amazon or earn Fitternity Fitcash or get access to unlimited workout options with Fitternity Onepass.",
             "backgroud_color" => "#BA000",
             "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_4_background.png"
         ]
