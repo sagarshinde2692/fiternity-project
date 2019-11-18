@@ -157,29 +157,29 @@ return array(
     "milestones_constant" => [
         "Milestone 1" => [
             "header" => "Cool Marvel Merchandise & Exciting Vouchers",
-            "sub_ttile" => "___count Days",
+            "sub_title" => "___count Days",
             "sub_header" => "Exclusive Marvel t-shirt or a gym bag along with exciting vouchers from The Man Company, Healthiyme, The Label Life & Ease My Trip",
             "backgroud_color" => "#BEE1E3",
             "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_1_background.png"
         ],
         "Milestone 2" => [
-            "header" => "Cool Marvel Merchandise & Exciting Vouchers",
-            "sub_ttile" => "___count Days",
-            "sub_header" => "Exclusive Marvel t-shirt or a gym bag along with exciting vouchers from The Man Company, Healthiyme, The Label Life & Ease My Trip",
+            "header" => "Exclusive Marvel Merchandise or Helathy Snacking hamper with  & Exicing Vouchers",
+            "sub_title" => "___count Days",
+            "sub_header" => "Exclusive Marvel t-shirt + shaker or get a curated healthy snacking hamper with protein bars, makhana, peanut butter, healthy cookies and more along with exiting voucher from O2 Spa, Fast & Up & Puma.",
             "backgroud_color" => "#12A960",
             "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_2__background.png"
         ],
         "Milestone 3" => [
-            "header" => "Cool Marvel Merchandise & Exciting Vouchers",
-            "sub_ttile" => "___count Days",
-            "sub_header" => "Exclusive Marvel t-shirt or a gym bag along with exciting vouchers from The Man Company, Healthiyme, The Label Life & Ease My Trip",
+            "header" => "Limited Edition Marvel Merchandise or Health Snacking Hamper.",
+            "sub_title" => "___count Days",
+            "sub_header" => "Limited edition MArvel t-shirt + shaker/get a curated healthy snacking hamper with protein bars, makhana, peanut butter, healthy cookies, muesli & much more",
             "backgroud_color" => "#187CFF",
             "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_3_background.png"
         ],
         "Milestone 4" => [
-            "header" => "Cool Marvel Merchandise & Exciting Vouchers",
-            "sub_ttile" => "___count Days",
-            "sub_header" => "Exclusive Marvel t-shirt or a gym bag along with exciting vouchers from The Man Company, Healthiyme, The Label Life & Ease My Trip",
+            "header" => "Amazon Gift Card, Fitternity Fitcash or ONEPASS",
+            "sub_title" => "___count Days",
+            "sub_header" => "Exclucive voucher from Amazon or earn Fitternity Fitcash or get access to unlimited workout options with Fitternity Onepass.",
             "backgroud_color" => "#BA000",
             "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_4_background.png"
         ]
