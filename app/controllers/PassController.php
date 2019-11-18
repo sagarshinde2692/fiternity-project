@@ -40,6 +40,10 @@ class PassController extends \BaseController {
         if(!empty($input['source'])) {
             $source = $input['source'];
         }
+        
+        if(empty($input['city']) || !empty($source)) {
+            $city = 'mumbai';
+        }
 
         $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source);
         if(empty($passes)) {
@@ -209,7 +213,13 @@ class PassController extends \BaseController {
 
 		if(!empty($customeremail)) {
             $customer = Customer::where('_id', $customer_id)->first();
-			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where('end_date','>=',new MongoDate())->orderBy('_id', 'desc')->first();
+			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->where(function ($query) { 
+                $query->orWhere(function($query1) {
+                    $query1->where('end_date','>=',new MongoDate())->where('pass.pass_type','=','red');
+                })->orWhere(function($query1) {
+                    $query1->where('pass.pass_type','=','black');
+                });
+            })->orderBy('_id', 'desc')->first();
 			if(!empty($passOrder)) {
 				$passPurchased = true;
 			}
@@ -231,6 +241,14 @@ class PassController extends \BaseController {
                 $result['onepass_pre']['near_by']['near_by_vendor'] = $vendor_near_by['data'];
             }
 		}
+
+        if(!empty($result['onepass_pre']['offers'])){
+            $agrs1 = array('city' => $city);
+			$brandingData = $this->utilities->getPassBranding($agrs1);
+			if(!empty($brandingData['footer_text'])){
+				$result['onepass_pre']['offers']['text'] = $brandingData['footer_text'];
+			}
+        }
 
 		$response = Response::make($result);
 		return $response;
