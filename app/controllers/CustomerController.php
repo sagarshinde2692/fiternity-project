@@ -4721,7 +4721,7 @@ class CustomerController extends \BaseController {
 		}
 
 		$current_version_android = 5.31;
-		$current_version_ios = '5.2.4';
+		$current_version_ios = '5.2.7';
 
 		$last_stable_version_android = 5.31;
 
