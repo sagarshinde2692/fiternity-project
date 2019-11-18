@@ -10892,8 +10892,8 @@ Class Utilities {
 
                 if($value=='address'){
                     $voucher_required_info[$value]['data'] = [
-                        "address" => !empty($customer['address']) ? $customer['address'] : '',
-                        "address_array" => !empty($customer['address_array']) ? $customer['address_array'] : []
+                        "address" => !empty($customer['address']) ? $customer['address'] : [],
+                        "address_array" => !empty($customer['address_array']) ? $customer['address_array'] : [],
                     ];
                 }
 
