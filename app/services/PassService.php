@@ -364,6 +364,7 @@ class PassService {
                     $customerreward = new CustomerReward();
                     $customer_id = !empty($data['customer_id']) ? $data['customer_id'] : null;
                     $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
+                    Log::info('customer id ,,,,, customer email:::::', [$customer_id, $customer_email]);
                     $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],$customer_id, null, null, null, null, $customer_email, $pass);
 
                     Log::info("couponCheck");
