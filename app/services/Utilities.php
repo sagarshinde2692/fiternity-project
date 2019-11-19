@@ -10894,11 +10894,11 @@ Class Utilities {
             //     !empty($voucher_required_info[$value]) ? $required_data[] = $voucher_required_info[$value]: null;
             // }
 
-            if(!empty($voucher['required_info']['address'])){
+            if(in_array('address', $voucher['required_info'])){
                 $required_data['address'] = $voucher_required_info['address'];
             }
 
-            if(!empty($voucher['required_info']['size'])){
+            if(in_array('size',$voucher['required_info'])){
                 $required_data['size'] = $voucher_required_info['size'];
             }
 
