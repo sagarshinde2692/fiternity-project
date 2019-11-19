@@ -10899,7 +10899,7 @@ Class Utilities {
             }
 
             if(!empty($voucher['required_info']['size'])){
-                $required_data['address'] = $voucher_required_info['size'];
+                $required_data['size'] = $voucher_required_info['size'];
             }
 
             $post_reward_data_template['required_info'] = $required_data;
