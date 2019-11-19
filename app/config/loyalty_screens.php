@@ -166,8 +166,7 @@ return array(
         ],
 
         "size" => [
-            "header" => "Please select size of  reward_type",
-            "text" => "dvjkndfjkvndf jfghfj hjjhhjh.",
+            "header" => "T-Shirt Size",
             "data" => ["S", "L", "XL"]
         ],
 
