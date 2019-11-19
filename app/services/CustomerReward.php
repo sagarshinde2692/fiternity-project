@@ -1747,7 +1747,6 @@ Class CustomerReward {
 
     public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null, $first_session_free = false, $corporate_discount_coupon = false){
 
-        Log::info('customer id ,,,,, customer email::::: coupon code check', [$customer_id, $customer_email]);
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
 
