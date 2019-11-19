@@ -3204,6 +3204,7 @@ class TransactionController extends \BaseController {
 
             $decoded = customerTokenDecode($jwt_token);
             $data['logged_in_customer_id'] = (int)$decoded->customer->_id;            
+            $data['logged_in_customer_email'] = $decoded->customer->email;            
         }
 
         $customer = Customer::find((int)$customer_id);
