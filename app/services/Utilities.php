@@ -10889,10 +10889,19 @@ Class Utilities {
 
         $required_data['header'] = $voucher_required_info['header'];
         if(!empty($voucher['required_info'])){
-            foreach($voucher['required_info'] as $key=>$value){
+            // foreach($voucher['required_info'] as $key=>$value){
 
-                !empty($voucher_required_info[$value]) ? $required_data[] = $voucher_required_info[$value]: null;
+            //     !empty($voucher_required_info[$value]) ? $required_data[] = $voucher_required_info[$value]: null;
+            // }
+
+            if(!empty($voucher['required_info']['address'])){
+                $required_data['address'] = $voucher_required_info['address'];
             }
+
+            if(!empty($voucher['required_info']['size'])){
+                $required_data['address'] = $voucher_required_info['size'];
+            }
+
             $post_reward_data_template['required_info'] = $required_data;
         }
 
