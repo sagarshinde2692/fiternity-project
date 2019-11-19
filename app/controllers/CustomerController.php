@@ -11193,9 +11193,11 @@ class CustomerController extends \BaseController {
 		$data = Input::all();
 
 		$rules = [
-			'flat_buildig_name' => 'required',
-			'location' => 'required',
-			'landmark' => 'required',
+			'name' => 'required',
+			'email' => 'required',
+			'contact_no' => 'required',
+			'address' => 'required',
+			'landmark' => 'string',
 			'pincode' => 'required'
 		];
 
