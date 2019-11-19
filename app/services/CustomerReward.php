@@ -2477,7 +2477,7 @@ Class CustomerReward {
                     $header = array('source'=>'multifit');
                 }
                 
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header, 'customer_id' => $customer_id];
                
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
