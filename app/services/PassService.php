@@ -362,7 +362,9 @@ class PassService {
                 $customerCoupon = Coupon::where('status', '1')->where('code', strtolower($data['coupon_code']))->where('type', 'pass')->where('start_date', '<=', new \MongoDate())->where('end_date', '>=', new \MongoDate())->first();
                 if(!empty($customerCoupon)) {
                     $customerreward = new CustomerReward();
-                    $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],null, null, null, null, null, null, $pass);
+                    $customer_id = !empty($data['customer_id']) ? $data['customer_id'] : null;
+                    $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
+                    $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],$customer_id, null, null, null, null, $customer_email, $pass);
 
                     Log::info("couponCheck");
                     Log::info($couponCheck);
