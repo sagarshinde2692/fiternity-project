@@ -156,23 +156,19 @@ return array(
     "reward_pay_block_message" => "Plese do a transaction of reward_amount-/ Rs.", 
 
     "voucher_required_info" => [
+        "header" => [
+            'header' => 'this is header',
+            'image' => "http://b.fitn.in/external-vouchers1/new_grid_images/gym%20bag.png"
+        ],
         "address" => [
-            "required" => true,
-            "type" => "address",
             "header" => "Please Enter Your Number",
             "text" => "We will user this address to deliver you rewards and hemper",
         ],
 
         "size" => [
-            "required" => true,
-            "type" => "size",
             "header" => "Please select size of  reward_type",
             "text" => "dvjkndfjkvndf jfghfj hjjhhjh.",
-            "data" => [
-                "40" => "S", 
-                "42" => "L",
-                "46" => "XL"
-            ]
+            "data" => ["S", "L", "XL"]
         ],
 
         "reward_pay" => [
