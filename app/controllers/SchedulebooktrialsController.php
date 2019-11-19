@@ -8825,7 +8825,7 @@ class SchedulebooktrialsController extends \BaseController {
         $finder_category_name = 'gym';
         $max_unlock_distance= Config::get('app.checkin_checkout_max_distance_in_meters');
 
-        if(!empty($booktrial->servicecategory_id) && $booktrial->servicecategory_id != 65){
+        if(!empty($booktrial->servicecategory_id) && !in_array([65, 123], $booktrial->servicecategory_id)){
             $time_in_seconds = 60* 60 * 1;
             $post_hour = '1 hr';
             $finder_category_name = 'studio';
