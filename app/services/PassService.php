@@ -843,7 +843,7 @@ class PassService {
             if($schedule_time>=strtotime($passOrder['start_date'])){
                 if($passOrder['pass']['pass_type']=='black'){
                     $sessionsUsed = $passOrder['onepass_sessions_used'];
-                    $sessionsTotal = $passOrder['onepass_sessions_total']-1;
+                    $sessionsTotal = $passOrder['onepass_sessions_total'];
                     if($sessionsTotal > $sessionsUsed) {
                         $canBook = true;
                     }
