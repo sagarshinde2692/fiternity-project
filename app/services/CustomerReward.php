@@ -211,7 +211,7 @@ Class CustomerReward {
                                 foreach ($content_data as $content_key => $content_value) {
 
                                     if(in_array($service_category_id,$content_value['category_id'])){
-
+                                        Log::info('product name ::::::', [$content_value['product']]);
                                         $reward['content'] = $content_value['product'];
                                         $reward['image'] = $content_value['image'];
 
