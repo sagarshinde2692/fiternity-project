@@ -226,6 +226,7 @@ Class CustomerReward {
                             }
                         }
 
+                        Log::info('reward content::::', [$reward]);
                         if(!$reward_data_flag && $amount >= 2000){
 
                             foreach ($fitness_kit_array as $data_key => $data_value) {
