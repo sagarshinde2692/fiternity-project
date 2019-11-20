@@ -1267,15 +1267,16 @@ class PassService {
                 $success_template['offer_success_msg'] = "Congratulations on your purchase. Your Fitaka Diwali Hamper will reach your inbox soon. Happy Fitwali Diwali";
             }
 
+            if(!empty($order['fitbox_mixed_reward'])){
+                $success_template['offer_success_msg'] .= "\nCongratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -> My Profile-> Type in the delivery address\nYour handpicked healthy food hamper worth INR 2,500 will reach your doorstep by 7th December. Kindly feel free to reach out to us on +917400062849 for queries ";
+            }
+
             if(empty($brandingData['offer_success_msg'])){
                 unset($success_template['offer_success_msg']);
             }else{
                 $success_template['offer_success_msg'] = $brandingData['offer_success_msg'];
             }
-
-            if(!empty($order['fitbox_mixed_reward'])){
-                $success_template['offer_success_msg'] .= "\nCongratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -> My Profile-> Type in the delivery address\nYour handpicked healthy food hamper worth INR 2,500 will reach your doorstep by 7th December. Kindly feel free to reach out to us on +917400062849 for queries ";
-            }
+            
         }
 
         if(in_array(Request::header('Device-Type'), ["android", "ios"])){
@@ -1307,12 +1308,12 @@ class PassService {
                 $success_template['subline'] .= 'Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
             }
             
-            if(!empty($brandingData['offer_success_msg'])){
-                $success_template['subline'] .= $brandingData['offer_success_msg'];
-            }
-
             if(!empty($order['fitbox_mixed_reward'])){
                 $success_template['subline'] .= "\nCongratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -> My Profile-> Type in the delivery address\nYour handpicked healthy food hamper worth INR 2,500 will reach your doorstep by 7th December. Kindly feel free to reach out to us on +917400062849 for queries ";
+            }
+
+            if(!empty($brandingData['offer_success_msg'])){
+                $success_template['subline'] .= $brandingData['offer_success_msg'];
             }
 
         }
@@ -1526,6 +1527,7 @@ class PassService {
             'pass' => $data['pass'],
             'code' => $data['code'],
             'start_date' => strtotime($data['start_date']),
+            'membership_order_id' => !empty($data['membership_order_id']) ? $data['membership_order_id'] : null,
         );
 
         if(!empty($data['onepass_attachment_type'])){
@@ -2580,13 +2582,14 @@ class PassService {
             if(!empty($data['pass'])){
                 $pass = $data['pass'];
 
-                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && in_array($pass['duration'], [15, 30]))){
+                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && in_array($pass['duration'], [15, 30]) || !empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['duration'], [15]))){
 
-                    // if(empty($data['membership_order_id'])){
-                    //     // $rewardinfo['diwali_mixed_reward'] = true;
-                    //     $rewardinfo['fitbox_mixed_reward'] = true;
-                    //     $rewardinfo['reward_ids'] = [79];
-                    // }
+                    if(empty($data['membership_order_id'])){
+                        // $rewardinfo['diwali_mixed_reward'] = true;
+                        // $rewardinfo['fitbox_mixed_reward'] = true;
+                        $rewardinfo['vk_bag_reward'] = true;
+                        $rewardinfo['reward_ids'] = [79];
+                    }
                 }
 
             }

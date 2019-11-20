@@ -6225,12 +6225,14 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"On Gyms & Studio Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: SUPER20",'position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 | 21-23 Nov",'position'=>$position++];
 
             // if($data['ratecard_amount'] >= 8000){
             //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"On Gyms & Studio Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: SUPER20",'position'=>$position++];
             // }
-
+            if(!empty($data['finder_flags']['monsoon_flash_discount']) && $data['finder_flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 25){
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 | 21-23 Nov",'position'=>$position++];
+            }
             
             if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
                 //  || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0)
@@ -6241,7 +6243,7 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: SS100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: CB100','position'=>$position++];
 
             $first_session_free = $this->firstSessionFree($data);
             if(!empty($first_session_free) && $first_session_free){
