@@ -10948,13 +10948,20 @@ Class Utilities {
         return array_unique($image_new);
     }
 
-    public function voucherImagebasedAppVersion(&$voucher){
+    public function voucherImagebasedAppVersion(&$voucher, $from=null){
 
         if(!empty($this->device_type) && !empty($this->app_version) && (($this->device_type=='android' && $this->app_version <= '5.31') || ($this->device_type=='ios' && $this->app_version <= '5.2.6'))){  
             Log::info('app version anded device type::::', [$this->device_type,$this->app_version]);
-            if(!empty($voucher['image']) && is_array($voucher['image'])){
+            if(empty($from) && !empty($voucher['image']) && is_array($voucher['image'])){
                 return !empty($voucher['image'][0]['url']) ? $voucher['image'][0]['url'] : "";
             }
+            else{
+                $voucher['header']['image'] = $voucher['header']['image_new']; 
+                unset($voucher['header']['image_new']); 
+            }
+        }
+        if(!empty($from)){
+            return;
         }
         $image = $voucher['image'];
 		unset($voucher['image']);

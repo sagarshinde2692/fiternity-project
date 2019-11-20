@@ -10090,7 +10090,7 @@ class CustomerController extends \BaseController {
         }
         
         // Cache::tags('loyalty')->put('pre_register', $pre_register, Config::get('cache.cache_time'));
-
+		$this->utilities->voucherImagebasedAppVersion($pre_register, 'pre_register');
         return ['pre_register'=>$pre_register];
     }
 
