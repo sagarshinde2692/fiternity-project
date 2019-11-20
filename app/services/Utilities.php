@@ -11137,5 +11137,6 @@ Class Utilities {
             unset($resp['voucher_data']['terms_detailed_text']);
             unset($resp['voucher_data']['coupon_subtext']);
         }
+        return $resp;
     }
 }
