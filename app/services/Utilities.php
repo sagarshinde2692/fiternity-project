@@ -10964,10 +10964,8 @@ Class Utilities {
                             $return_arr['text'] = "Flash Sale: FLAT 35% Off \n(No Code Needed)";
                             $return_arr['purchase_summary_value'] = "Flash Sale: Get FLAT 35% Off (No Code Needed) \n21-23 Nov";
 
-                            if(empty($coupon_flags['no_cashback'])){
-                                $return_arr['offer_success_msg'] = "\nCongratulations on your OnePass purchase. You will receive full cashback worth INR 3000 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass\nKindly feel free to reach out to us on +917400062849 for queries";
-                            }
-
+                            $return_arr['offer_success_msg'] = "";
+        
                             $return_arr['msg_data'] = "";
                         }
                     }
@@ -11010,9 +11008,7 @@ Class Utilities {
                             $return_arr['text'] = "Flash Sale: FLAT 50% Off \n(No Code Needed)";
                             $return_arr['purchase_summary_value'] = "Flash Sale: Get FLAT 50% Off (No Code Needed) \n21-23 Nov";
 
-                            if(empty($coupon_flags['no_cashback'])){
-                                $return_arr['offer_success_msg'] = "\nCongratulations on your OnePass purchase. You will receive full cashback worth INR 3000 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass\nKindly feel free to reach out to us on +917400062849 for queries";
-                            }
+                            $return_arr['offer_success_msg'] = "";
 
                             $return_arr['msg_data'] = "";
                         }
