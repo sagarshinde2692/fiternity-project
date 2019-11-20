@@ -9132,6 +9132,32 @@ class CustomerController extends \BaseController {
     					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
     
 					} */
+
+					$combo_vouchers =[];
+					if(!empty($voucher_category['flags']) && !empty($voucher_category['flags']['combo_vouchers_list'])){
+						$combo_voucher_list =$voucher_category['flags']['combo_vouchers_list'];
+						foreach($combo_voucher_list as $key=>$value){
+							$voucher = VoucherCategory::find($value);
+							if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
+								$combo_vouchers[$value] = $this->utilities->assignInstantManualVoucher($customer, $voucher_category);
+							}
+							else{
+								$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher);
+							}
+						}
+					}
+					if(count($combo_vouchers) > 0){
+						foreach($combo_vouchers as $key=>$value){
+							if(!$value){
+								$this->utilities->rollbackVouchers($customer, $combo_vouchers);
+								return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (6).'));
+							}
+						}
+						$flags= $voucher_category['flags'];
+						$flags['manual_redemption'] = true;
+						$voucher_category['flags'] = $flags;
+					}
+
 					if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
 						$voucherAttached = $this->utilities->assignInstantManualVoucher($customer, $voucher_category);
 					}else{
@@ -9185,7 +9211,10 @@ class CustomerController extends \BaseController {
                 
                 }
             }
+			/*
 
+				//	moved to utilities in function -> voucherClaimedResponse 
+				
             $resp =  [
                 'voucher_data'=>[
                     'header'=>"VOUCHER UNLOCKED",
@@ -9236,7 +9265,22 @@ class CustomerController extends \BaseController {
 
             if(!empty($communication)){
 				$redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],'customer_phone' => $customer['contact_no'],'voucher_name' => strtoupper($voucherAttached['name']), 'milestone' => $voucherAttached['milestone']),Config::get('app.queue'));
-            }
+			}
+			*/
+
+			$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key);
+            if(!empty($communication) && (empty($combo_vouchers) || (!empty($combo_vouchers) && count($combo_vouchers)== 0))){
+				$email = $this->voucherEmailReward($resp, $customer);
+				Log::info('email::::: of not combo reward::::', [$email]);
+			}else if(!empty($communication)) {
+
+				foreach($combo_vouchers as $key=>$value){
+					$formated_resp = $this->utilities->voucherClaimedResponseReward($value, $voucher_category);
+					$email = $this->voucherEmailReward($formated_resp, $customer);
+					Log::info('email:::::', [$email]);
+					
+				}
+			}
 
             return $resp;
 

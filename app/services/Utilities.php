@@ -11088,4 +11088,54 @@ Class Utilities {
             default: return $return_arr;
         }
     }
+
+    public function voucherClaimedResponse($voucherAttached, $voucher_category, $key){
+        $resp =  [
+            'voucher_data'=>[
+                'header'=>"VOUCHER UNLOCKED",
+                'sub_header'=>"You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : ""),
+                'coupon_title'=>(!empty($voucherAttached['description']) ? $voucherAttached['description'] : ""),
+                'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
+                'coupon_image'=>(!empty($voucherAttached['image']) ? $voucherAttached['image'] : ""),
+                'coupon_code'=>strtoupper($voucherAttached['code']),
+                'coupon_subtext'=>'(also sent via email/sms)',
+                'unlock'=>'UNLOCK VOUCHER',
+                'terms_text'=>'T & C applied.'
+            ]
+        ];
+        if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
+            $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
+            $resp['voucher_data']['header']= "REWARD UNLOCKED";
+            
+            if(isset($voucherAttached['link'])){
+                $resp['voucher_data']['sub_header']= "You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name'])."<br> Share your details & get your insurance policy activated. " : "");
+                $resp['voucher_data']['coupon_text']= $voucherAttached['link'];
+            }
+            
+        }
+
+        if(!empty($voucher_category['email_text'])){
+            $resp['voucher_data']['email_text']= $voucher_category['email_text'];
+        }
+        $resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
+        
+        if(!empty($voucher_category['flags'])){
+            $resp['voucher_data']['flags'] = $voucherAttached['flags'];
+        }
+
+        if(!empty($key)){
+            $resp['voucher_data']['key'] = $key;
+        }
+
+        if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
+            
+            $resp['voucher_data']['header'] = "VOUCHER SELECTED";
+            $resp['voucher_data']['sub_header'] = "You have selected ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : "");
+            unset($resp['voucher_data']['coupon_title']);
+            $resp['voucher_data']['coupon_text'] = "Under Verification";
+            unset($resp['voucher_data']['terms_text']);
+            unset($resp['voucher_data']['terms_detailed_text']);
+            unset($resp['voucher_data']['coupon_subtext']);
+        }
+    }
 }
