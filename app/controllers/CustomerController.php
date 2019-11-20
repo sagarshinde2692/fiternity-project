@@ -9268,14 +9268,26 @@ class CustomerController extends \BaseController {
 			}
 			*/
 
-			$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key);
+			if(!empty($communication) && (empty($combo_vouchers) || (!empty($combo_vouchers) && count($combo_vouchers)== 0))){
+				$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key);
+			}
+			else if(!empty($communication)){
+				foreach($combo_vouchers as $key=>$value){
+					$formated_resp = $this->utilities->voucherClaimedResponse($value, $voucher_category, $key);
+					$resp[] = $formated_resp;
+				}
+			}
+
             if(!empty($communication) && (empty($combo_vouchers) || (!empty($combo_vouchers) && count($combo_vouchers)== 0))){
+				$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key);
 				$email = $this->voucherEmailReward($resp, $customer);
 				Log::info('email::::: of not combo reward::::', [$email]);
 			}else if(!empty($communication)) {
-
+				$resp = [];
 				foreach($combo_vouchers as $key=>$value){
-					$formated_resp = $this->utilities->voucherClaimedResponseReward($value, $voucher_category);
+
+					$formated_resp = $this->utilities->voucherClaimedResponse($value, $voucher_category, $key);
+					$resp[] = $formated_resp;
 					$email = $this->voucherEmailReward($formated_resp, $customer);
 					Log::info('email:::::', [$email]);
 					
