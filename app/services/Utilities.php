@@ -10948,7 +10948,7 @@ Class Utilities {
         return array_unique($image_new);
     }
 
-    public function voucherImagebasedAppVersion($voucher){
+    public function voucherImagebasedAppVersion(&$voucher){
 
         if(!empty($this->device_type) && !empty($this->app_version) && (($this->device_type=='android' && $this->app_version <= '5.31') || ($this->device_type=='ios' && $this->app_version <= '5.2.6'))){  
             Log::info('app version anded device type::::', [$this->device_type,$this->app_version]);
@@ -10956,7 +10956,9 @@ Class Utilities {
                 return !empty($voucher['image'][0]['url']) ? $voucher['image'][0]['url'] : "";
             }
         }
-        return $voucher['image'];
+        $image = $voucher['image'];
+		unset($voucher['image']);
+        return $image;
     }
 
     public function getPassBranding($args = null){
