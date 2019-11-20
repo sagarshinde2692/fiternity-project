@@ -7,11 +7,16 @@ return array(
     'pre_register' => [
         "cover_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/cover%20image.jpg",
         'header' => [
-            'image' => "https://b.fitn.in/external-vouchers1/new_grid_images/new%20logo.png", //'https://b.fitn.in/loyalty/FITSQUAD-APP-Cover%20image-DESIGN.jpg',
+            'image' =>  'https://b.fitn.in/loyalty/FITSQUAD-APP-Cover%20image-DESIGN.jpg',
+            'image_new' => "https://b.fitn.in/external-vouchers1/new_grid_images/new%20logo.png",
             'background_image' => "https://b.fitn.in/external-vouchers1/new_grid_images/app/fitsquad_background.png",
             'ratio' => 1.23,
-            'url'=> Config::get('loyalty_constants.register_url')
-        ],
+            'url'=> Config::get('loyalty_constants.register_url'),
+            'title' => 'GET REWARD FOR EVERY WORKOUT',
+            'sub_title' => 'BURN MORE. EARN MORE',
+            'button_text' => 'JOIN THE CLUB',
+            'text' => 'workout and earn rewards worth ₹ 32,000'
+         ],
 
         'partners' => [
             'header' => "<b>GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <font color='#f8a81b'>10, 30, 75, 150 & 225</font> WORKOUTS</b>",
