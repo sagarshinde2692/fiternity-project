@@ -9293,7 +9293,9 @@ class CustomerController extends \BaseController {
 				}else if(empty($communication) && !empty($combo_vouchers)) {
 					$resp= [];
 					foreach($combo_vouchers as $key=>$value){
-						$resp[] = $this->utilities->voucherClaimedResponse($value, $voucher_category, $key);
+						
+						$formated_resp= $this->utilities->voucherClaimedResponse($value, $voucher_category, $key);
+						$resp[]  = $formated_resp['voucher_data'];
 					}
 				}else {
 					$resp = $resp['voucher_data'];
