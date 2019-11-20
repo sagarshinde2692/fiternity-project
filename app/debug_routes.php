@@ -2748,3 +2748,5 @@ Route::get('hyperLocal', 'DebugController@hyperLocal');
 Route::get('fitnessForce','TransactionController@fitnessForce');
 Route::post('combopasscreateforce', 'PassController@passCaptureAutoForce');
 Route::get('hyperLocalList', 'DebugController@hyperLocalList');
+
+Route::get('one-pass-bulk-city-update','DebugController@one_pass_city_update');

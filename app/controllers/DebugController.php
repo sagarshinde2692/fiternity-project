@@ -11867,5 +11867,60 @@ public function yes($msg){
 
     }
 
+    public function one_pass_city_update(){
+
+    	$order_city = Order::select('_id','city','customer_city','type')->where('type','=','pass')
+					->where('finder_city','exists',false)
+					->where(function($query){
+						$query->orwhere('city','exists',true)
+						->orwhere('customer_city','exists',true);
+					})->orderBy('_id','desc')
+					->get();
+
+		$normalize_city = [];
+
+		$order_city_chunk = array_chunk(@$order_city->toArray(), 100);
+		
+		foreach ($order_city_chunk as $key => $chunk_value) {
+			$normalize_data = [];
+			foreach ($chunk_value as $key => $value) {
+
+				if(!empty($value['city']) && !is_array($value['city'])){
+
+					$cityData = get_masterdata_from_cache(getmy_city($value['city']));
+
+				}elseif (!empty($value['customer_city']) && !is_array($value['customer_city'])) {
+
+					$cityData = get_masterdata_from_cache(getmy_city($value['customer_city']));
+
+				}
+
+				$normalize_city['_id'] = $value['_id'];
+
+				$normalize_city['finder_city'] = $cityData['slug'];
+				$normalize_city['city_id'] = $cityData['_id'];
+				$normalize_city['city_name'] = $cityData['slug'];
+				$normalize_city['city_slug'] = $cityData['slug'];
+
+				array_push($normalize_data, [
+                    "q"=>['_id'=>$normalize_city['_id']],
+                    "u"=>[
+                        '$set'=>[
+                            'finder_city'=>$normalize_city['finder_city'], 
+                            'city_id'=>$normalize_city['city_id'],
+                            'city_name'=>$normalize_city['city_name'],
+                            'city_slug'=>$normalize_city['city_slug']
+                        ]
+                    ],
+                    'multi' => false
+                ]);
+			}
+
+			$update = $this->batchUpdate('mongodb', 'orders', $normalize_data);
+		}
+
+        return $update;
+    }
+
 }
 

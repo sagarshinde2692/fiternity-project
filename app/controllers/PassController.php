@@ -73,7 +73,8 @@ class PassController extends \BaseController {
             'customer_phone'=>'required',
         ];
 
-        
+        $data = $this->passService->preProcessCityData($data);
+
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {

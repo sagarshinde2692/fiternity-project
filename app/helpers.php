@@ -4756,4 +4756,18 @@ if (!function_exists(('setPassToToken'))){
     }
 }
 
+if(!function_exists('get_masterdata_from_cache')){
+
+    function get_masterdata_from_cache($slug){
+
+        $city_cache = Cache::tags('masterdata')->has('city-'.$slug) ? Cache::tags('masterdata')->get('city-'.$slug) : '';
+
+        if($city_cache){
+            return $city_cache;
+        }
+        
+        return City::where('slug',$slug)->first();
+    }
+}
+
 ?>
