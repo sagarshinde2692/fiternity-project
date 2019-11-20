@@ -3946,7 +3946,7 @@ class FindersController extends \BaseController {
 			// 			$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						
 						if($this->device_type == 'android'){
-							if(!empty($data['flags']['monsoon_flash_discount']) && $data['flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['flags']['monsoon_flash_discount_per']) && $data['flags']['monsoon_flash_discount_per'] == 25){
+							if(!empty($data['finder']['flags']['monsoon_flash_discount']) && $data['finder']['flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['finder']['flags']['monsoon_flash_discount_per']) && $data['finder']['flags']['monsoon_flash_discount_per'] == 25){
 								$android_line = "<u>Now Or Never Sale</u><br><br>21-23 Nov <br><br>- On Memberships: FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 	
 								$op_android_line = "<u>Now Or Never Sale</u><br><br>21-23 Nov <br><br>- On Memberships: FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5";
@@ -3957,7 +3957,7 @@ class FindersController extends \BaseController {
 							}
 							
 						}else{
-							if(!empty($data['flags']['monsoon_flash_discount']) && $data['flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['flags']['monsoon_flash_discount_per']) && $data['flags']['monsoon_flash_discount_per'] == 25){	
+							if(!empty($data['finder']['flags']['monsoon_flash_discount']) && $data['finder']['flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['finder']['flags']['monsoon_flash_discount_per']) && $data['finder']['flags']['monsoon_flash_discount_per'] == 25){	
 								$ios_line = "\nNow Or Never Sale\n\n21-23 Nov \n\n- On Memberships: FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 		
 								$op_ios_line = "\nNow Or Never Sale\n\n21-23 Nov \n\n- On Memberships: FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5";
