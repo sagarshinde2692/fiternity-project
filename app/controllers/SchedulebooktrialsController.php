@@ -2176,6 +2176,10 @@ class SchedulebooktrialsController extends \BaseController {
             );
 
 
+            if(!empty($order['logged_in_customer_email'])) {
+                $booktrialdata['logged_in_customer_email'] = $order['logged_in_customer_email'];
+            }
+            
             if(!empty($order['pass_order_id'])) {
                 $booktrialdata['pass_order_id'] = $order['pass_order_id'];
             }
@@ -3698,6 +3702,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $logged_in_customer = customerTokenDecode($this->authorization);
                 $logged_in_customer_id = $logged_in_customer->customer->_id;
                 $booktrialdata["logged_in_customer_id"] = $logged_in_customer_id;
+                $booktrialdata["logged_in_customer_email"] = $logged_in_customer->customer->email;
             }
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
