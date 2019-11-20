@@ -1408,11 +1408,6 @@ class FindersController extends \BaseController {
 				}
 				
                 $vendor_stripe_line = "";
-                if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
-					$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br>Last Few Hours Left!";
-                    $response['show_timer'] = true;
-				}
-				
 				$pricemore = false;
 				
 				// if(isset($response['finder']['flags']['monsoon_flash_discount_per']) && $response['finder']['flags']['monsoon_flash_discount_per'] == 0){
@@ -1423,7 +1418,10 @@ class FindersController extends \BaseController {
 					// 	foreach($service['serviceratecard'] as &$ratecard){
 					// 		if($ratecard['type'] == 'membership'){
 					// 			$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-							if(!empty($finder['flags']['monsoon_flash_discount']) && $finder['flags']['monsoon_flash_discount'] == 'without_cap' && !empty($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 25){
+							if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
+								$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br>Last Few Hours Left!";
+								$response['show_timer'] = true;
+							}else if(!empty($finder['flags']['monsoon_flash_discount']) && $finder['flags']['monsoon_flash_discount'] == 'without_cap' && !empty($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 25){
 								$vendor_stripe_line = "FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5<br>21-23 Nov";
 							}else{
 								$vendor_stripe_line = "FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5<br>21-23 Nov";
