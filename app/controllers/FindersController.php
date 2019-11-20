@@ -5614,7 +5614,7 @@ class FindersController extends \BaseController {
                             // }
 						}
 
-						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')))){
+						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88)){
 							unset($ratecard['remarks']);
 						}
 						
@@ -8896,7 +8896,7 @@ class FindersController extends \BaseController {
 				unset($rateCard['remarks_imp']);
 			}
 
-			if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')))){
+			if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88)){
 				unset($rateCard['remarks']);
 				unset($rateCard['remarks_imp']);
 			}
