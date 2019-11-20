@@ -7704,7 +7704,6 @@ Class Utilities {
             'milestone'=>$voucher_category['milestone'],
             'expiry_date'=>date('Y-m-d H:i:s',strtotime('+1 month')),
             'code'=>$voucher_category['name'],
-            'flags' => $voucher_category['flags']
         ];
 
         if(isset($voucher_category['link'])){
