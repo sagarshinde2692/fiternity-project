@@ -1421,8 +1421,11 @@ class FindersController extends \BaseController {
 					// 	foreach($service['serviceratecard'] as &$ratecard){
 					// 		if($ratecard['type'] == 'membership'){
 					// 			$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-
-								$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 <br> Offer Ending Soon";
+							if(!empty($finder['flags']['monsoon_flash_discount']) && $finder['flags']['monsoon_flash_discount'] == 'without_cap' && !empty($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 25){
+								$vendor_stripe_line = "FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5<br>21-23 Nov";
+							}else{
+								$vendor_stripe_line = "FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5<br>21-23 Nov";
+							}
 			
 					// 			if($price >= 8000){
 					// 				$pricemore = true;
@@ -3933,9 +3936,9 @@ class FindersController extends \BaseController {
 		$op_android_line = "";
 		$op_ios_line = "";
 		// if(isset($data['finder']['flags']['monsoon_flash_discount_per']) && $data['finder']['flags']['monsoon_flash_discount_per'] == 0){
-		// 	$android_line = $op_android_line = "<u>Super Saver Sale</u><br><br>- Get A Handpicked Healthy Food Hamper Worth INR 2,500 With Your Membership";
+		// 	$android_line = $op_android_line = "<u>Now Or Never Sale</u><br><br>- Get A Handpicked Healthy Food Hamper Worth INR 2,500 With Your Membership";
 
-		// 	$ios_line = $op_ios_line = "\nSuper Saver Sale\n\n- Get A Handpicked Healthy Food Hamper Worth INR 2,500 With Your Membership";
+		// 	$ios_line = $op_ios_line = "\nNow Or Never Sale\n\n- Get A Handpicked Healthy Food Hamper Worth INR 2,500 With Your Membership";
 		// }else{
 			// foreach($data['finder']['services'] as &$service){
 			// 	foreach($service['ratecard'] as &$ratecard){
@@ -3943,25 +3946,38 @@ class FindersController extends \BaseController {
 			// 			$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						
 						if($this->device_type == 'android'){
-							$android_line = "<u>Super Saver Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: CB100";
+							if(!empty($data['flags']['monsoon_flash_discount']) && $data['flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['flags']['monsoon_flash_discount_per']) && $data['flags']['monsoon_flash_discount_per'] == 25){
+								$android_line = "<u>Now Or Never Sale</u><br><br>21-23 Nov <br><br>- On Memberships: FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 	
-							$op_android_line = "<u>Super Saver Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 ";
-						}else{	
-							$ios_line = "\nSuper Saver Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: CB100";
+								$op_android_line = "<u>Now Or Never Sale</u><br><br>21-23 Nov <br><br>- On Memberships: FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5";
+							}else{
+								$android_line = "<u>Now Or Never Sale</u><br><br>21-23 Nov <br><br>- On Memberships: FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 	
-							$op_ios_line = "\nSuper Saver Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20";
+								$op_android_line = "<u>Now Or Never Sale</u><br><br>21-23 Nov <br><br>- On Memberships: FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5";
+							}
+							
+						}else{
+							if(!empty($data['flags']['monsoon_flash_discount']) && $data['flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['flags']['monsoon_flash_discount_per']) && $data['flags']['monsoon_flash_discount_per'] == 25){	
+								$ios_line = "\nNow Or Never Sale\n\n21-23 Nov \n\n- On Memberships: FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
+		
+								$op_ios_line = "\nNow Or Never Sale\n\n21-23 Nov \n\n- On Memberships: FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5";
+							}else{
+								$ios_line = "\nNow Or Never Sale\n\n21-23 Nov \n\n- On Memberships: FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
+		
+								$op_ios_line = "\nNow Or Never Sale\n\n21-23 Nov \n\n- On Memberships: FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5";
+							}
 						}
 	
 						// if($price >= 8000){
 						// 	$pricemore = true;
 						// 	if($this->device_type == 'android'){
-						// 		$android_line = "<u>Super Saver Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: CB100";
+						// 		$android_line = "<u>Now Or Never Sale</u><br><br>21-23 Nov <br><br>- On Memberships: FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 		
-						// 		$op_android_line = "<u>Super Saver Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 ";
+						// 		$op_android_line = "<u>Now Or Never Sale</u><br><br>21-23 Nov <br><br>- On Memberships: FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5 ";
 						// 	}else{	
-						// 		$ios_line = "\nSuper Saver Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code: CB100";
+						// 		$ios_line = "\nNow Or Never Sale\n\n21-23 Nov \n\n- On Memberships: FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 		
-						// 		$op_ios_line = "\nSuper Saver Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: SUPER20";
+						// 		$op_ios_line = "\nNow Or Never Sale\n\n21-23 Nov \n\n- On Memberships: FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code:  MEMX5";
 						// 	}
 							
 						// 	break;
@@ -8577,7 +8593,13 @@ class FindersController extends \BaseController {
 							// if($price >= 8000){
 							// 	$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nSuper Saver Sale \n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships \n\nUse Code: SUPER20");
 							// }else{
-								$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nSuper Saver Sale \n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships \n\nUse Code: SUPER20");
+
+								if(!empty($finder['flags']['monsoon_flash_discount']) && $finder['flags']['monsoon_flash_discount'] == 'without_cap' && !empty($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 25){
+									$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 \n\n21-23 Nov");
+								}else{
+									$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 \n\n21-23 Nov");
+								}
+								
 							// }
 						}
 					}
