@@ -2615,12 +2615,14 @@ class CustomerController extends \BaseController {
 
 			if(!empty($customer[0]['address']) && is_array($customer[0]['address']) && empty($customer[0]['reward'])){
 				$customer[0]['reward'] = [
-					'name' => !empty($customer[0]['name']) ? $customer[0]['name'] : null,
-					'email' => !empty($customer[0]['email']) ? $customer[0]['email'] : null,
-					'contact_no' => !empty($customer[0]['contact_no']) ? $customer[0]['contact_no'] : null,
-					'address' => !empty($customer[0]['address']['line1']) ? $customer[0]['address']['line1'] : null,
-					'landmark' => !empty($customer[0]['address']['line2']) ? $customer[0]['address']['line2'] : null,
-					'pincode' => !empty($customer[0]['address']['line3']) ? $customer[0]['address']['line3'] :null
+					'address' => [
+						'name' => !empty($customer[0]['name']) ? $customer[0]['name'] : null,
+						'email' => !empty($customer[0]['email']) ? $customer[0]['email'] : null,
+						'contact_no' => !empty($customer[0]['contact_no']) ? $customer[0]['contact_no'] : null,
+						'address' => !empty($customer[0]['address']['line1']) ? $customer[0]['address']['line1'] : null,
+						'landmark' => !empty($customer[0]['address']['line2']) ? $customer[0]['address']['line2'] : null,
+						'pincode' => !empty($customer[0]['address']['line3']) ? $customer[0]['address']['line3'] :null
+					]
 				];
 			}
 
