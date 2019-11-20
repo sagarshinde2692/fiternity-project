@@ -9096,6 +9096,8 @@ class CustomerController extends \BaseController {
 		}
 		
 		$jwt_token = Request::header('Authorization');
+
+		$new_fitsquad = newFitsquadCompatabilityVersion();
 		if(!empty($jwt_token) || !empty($customer_id)){
 			
 			if(empty($customer_id)){
@@ -9121,7 +9123,7 @@ class CustomerController extends \BaseController {
 
 				$voucherAttached = $milestones[intval($_GET['milestone']) - 1]['voucher'][(int)$_GET['index']];
 				
-				$combo_vouchers = $this->utilities->getComboVouchers($voucherAttached, $customer);
+				!empty($new_fitsquad) ? $combo_vouchers = $this->utilities->getComboVouchers($voucherAttached, $customer) : null;
             }else{
 
                 $voucher_category = VoucherCategory::find($_id);
@@ -9284,8 +9286,6 @@ class CustomerController extends \BaseController {
 					
 				}
 			}
-
-			$new_fitsquad = newFitsquadCompatabilityVersion();
 
 			if($new_fitsquad){
 				if(!empty($resp1)){
