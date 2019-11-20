@@ -1405,14 +1405,16 @@ class FindersController extends \BaseController {
                     $this->orderRatecards($response);
                 }catch(Exception $e){
                     Log::info("Error while sorting ratecard");
-                }
-                
+				}
+				
+                $vendor_stripe_line = "";
                 if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
+					$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br>Last Few Hours Left!";
                     $response['show_timer'] = true;
 				}
 				
 				$pricemore = false;
-				$vendor_stripe_line = "";
+				
 				// if(isset($response['finder']['flags']['monsoon_flash_discount_per']) && $response['finder']['flags']['monsoon_flash_discount_per'] == 0){
 				// 	$vendor_stripe_line = "Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships <br> Last Few Hours Left!";
 
