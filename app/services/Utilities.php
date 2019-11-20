@@ -10904,7 +10904,7 @@ Class Utilities {
 
                         $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -> My Profile-> Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
-                        $return_arr['offer_success_msg'] = "\nCongratulations on purchasing your OnePass. \nWe request you to go to www.fitternity.com -&gt; My Profile-&gt; Type in the delivery address \nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. \nKindly feel free to reach out to us on +917400062849 for queries";
+                        $return_arr['offer_success_msg'] = "\nCongratulations on purchasing your OnePass. \nWe request you to go to www.fitternity.com -> My Profile-> Type in the delivery address \nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. \nKindly feel free to reach out to us on +917400062849 for queries";
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
                             $return_arr['text'] = "Full 100% Cashback \n(No Code Needed)";
