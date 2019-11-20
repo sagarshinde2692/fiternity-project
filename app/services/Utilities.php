@@ -10899,7 +10899,7 @@ Class Utilities {
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
-                        $return_arr['text'] = "FLAT 15% off + \nSpecial Edition Virat Kohli-Puma Gym Bag Worth INR 1500";
+                        $return_arr['text'] = "FLAT 15% off + \nSpecial Edition Virat Kohli-Puma Gym Bag Worth INR 1500 \n(Use Code: VK15)";
                         $return_arr['purchase_summary_value'] = "Get FLAT 15% Off + Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500, Use Code: VK15 | 21-23 Nov";
 
                         $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -> My Profile-> Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
