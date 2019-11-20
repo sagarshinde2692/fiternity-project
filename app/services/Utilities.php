@@ -10956,9 +10956,12 @@ Class Utilities {
                 return !empty($voucher['image'][0]['url']) ? $voucher['image'][0]['url'] : "";
             }
             else{
-                $voucher['header']['image'] = $voucher['header']['image_new']; 
+                // $voucher['header']['image'] = $voucher['header']['image_new']; 
                 unset($voucher['header']['image_new']); 
             }
+        } else{
+                $voucher['header']['image'] = $voucher['header']['image_new']; 
+                unset($voucher['header']['image_new']); 
         }
         if(!empty($from)){
             return;
