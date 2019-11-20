@@ -9299,6 +9299,11 @@ class CustomerController extends \BaseController {
 				}else {
 					$resp = $resp['voucher_data'];
 				}
+				
+				$resp = array(
+					'status'=>200, 
+					'data'=>$resp
+				);
 
 			}
 
