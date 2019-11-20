@@ -10902,7 +10902,7 @@ Class Utilities {
                         $return_arr['text'] = "FLAT 15% off + \nSpecial Edition Virat Kohli-Puma Gym Bag Worth INR 1500 (Use Code: VK15)";
                         $return_arr['purchase_summary_value'] = "Get FLAT 15% Off + Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500, Use Code: VK15 | 21-23 Nov";
 
-                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -> My Profile-> Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com - My Profile- Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
                         $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
@@ -10934,7 +10934,7 @@ Class Utilities {
                             $return_arr['text'] = "Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500";
                             $return_arr['purchase_summary_value'] = "Get Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 | 21-23 Nov";
 
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -&gt; My Profile-&gt; Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com - My Profile- Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
                             $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
@@ -10956,7 +10956,7 @@ Class Utilities {
                         $return_arr['text'] = "Flash Sale: FLAT 35% off (No Code Needed) + \nSpecial Edition Virat Kohli-Puma Gym Bag Worth INR 1500";
                         $return_arr['purchase_summary_value'] = "Get FLAT 35% Off (No Code Needed) + Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 \n21-23 Nov";
 
-                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -&gt; My Profile-&gt; Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com - My Profile- Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
                         $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
@@ -10977,7 +10977,7 @@ Class Utilities {
 
                             $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -&gt; My Profile-&gt; Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com - My Profile- Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
@@ -11000,7 +11000,7 @@ Class Utilities {
                         $return_arr['text'] = "Flash Sale: FLAT 50% off (No Code Needed) + \nSpecial Edition Virat Kohli-Puma Gym Bag Worth INR 1500";
                         $return_arr['purchase_summary_value'] = "Get FLAT 50% Off (No Code Needed) + Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 \n21-23 Nov";
 
-                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -&gt; My Profile-&gt; Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com - My Profile- Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
                         $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
@@ -11021,7 +11021,7 @@ Class Utilities {
 
                             $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -&gt; My Profile-&gt; Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com - My Profile- Type in the delivery address\nYour Special Edition Virat Kohli-Puma Gym Bag Worth INR 1500 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
