@@ -9136,16 +9136,16 @@ class CustomerController extends \BaseController {
     
 					} */
 
-					$combo_vouchers = [];
+					$combo_vouchers =[];
 					if(!empty($voucher_category['flags']) && !empty($voucher_category['flags']['combo_vouchers_list'])){
 						$combo_voucher_list =$voucher_category['flags']['combo_vouchers_list'];
 						foreach($combo_voucher_list as $key=>$value){
-							$voucher = \VoucherCategory::find($value);
+							$voucher = VoucherCategory::find($value);
 							if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
-								$combo_vouchers[$value] = $this->assignInstantManualVoucher($customer, $voucher_category);
+								$combo_vouchers[$value] = $this->utilities->assignInstantManualVoucher($customer, $voucher_category);
 							}
 							else{
-								$combo_vouchers[$value] = $this->assignVoucher($customer, $voucher);
+								$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher);
 							}
 						}
 					}
@@ -9293,7 +9293,7 @@ class CustomerController extends \BaseController {
 				}else if(empty($communication) && !empty($combo_vouchers)) {
 					$resp= [];
 					foreach($combo_vouchers as $key=>$value){
-						
+
 						$formated_resp= $this->utilities->voucherClaimedResponse($value, $voucher_category, $key);
 						$resp[]  = $formated_resp['voucher_data'];
 					}
