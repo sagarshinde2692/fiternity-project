@@ -9149,7 +9149,6 @@ class CustomerController extends \BaseController {
 							}
 						}
 					}
-
 					if(count($combo_vouchers) > 0){
 						foreach($combo_vouchers as $key=>$value){
 							if(!$value){
