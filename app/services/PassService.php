@@ -1527,6 +1527,7 @@ class PassService {
             'pass' => $data['pass'],
             'code' => $data['code'],
             'start_date' => strtotime($data['start_date']),
+            'membership_order_id' => !empty($data['membership_order_id']) ? $data['membership_order_id'] : null,
         );
 
         if(!empty($data['onepass_attachment_type'])){
