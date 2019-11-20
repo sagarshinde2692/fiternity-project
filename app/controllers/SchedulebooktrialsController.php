@@ -2311,6 +2311,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['ratecard_flags'] = $order['ratecard_flags'];
             }
 
+            if(!empty($order['brand_id'])){
+                $booktrialdata['brand_id'] = $order['brand_id'];
+            }
+
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
             if($is_tab_active){

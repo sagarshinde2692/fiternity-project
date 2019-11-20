@@ -3990,8 +3990,46 @@ class FindersController extends \BaseController {
 			// }
 		// }
 		
+		$m_pricemore = false;
+		$m_android_line = "";
+		$m_ios_line = "";
+		if(!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], [88])){
+			
+			foreach($data['finder']['services'] as &$service){
+				foreach($service['ratecard'] as &$ratecard){
+					if($ratecard['type'] == 'membership'){
+						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+						
+						if($this->device_type == 'android'){
+							$m_android_line = "On Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15";
+						}else{	
+							$m_ios_line = "\nOn Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15";
+						}
+	
+						if($price >= 8000){
+							$m_pricemore = true;
+							if($this->device_type == 'android'){
+								$m_android_line = "On Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15";
+							}else{	
+								$m_ios_line = "\nOn Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15";
+							}
+							break;
+						}
+					}
+				}
+				if($m_pricemore){
+					break;
+				}
+			}
+		}
 
-        if(!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], [88, 135])){
+        if(!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], [88])){
+			if($this->device_type == 'android'){
+				$line = $m_android_line;
+            }else{	
+				$line = $m_ios_line;
+            }
+		}else if(!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], [135])){
 			if($this->device_type == 'android'){
 				$line = "<u>Membership Plus - ".ucwords($data['finder']['title'])."</u><br><br>Lowest price Multifit membership + 6 Months All Access OnePass";
             }else{	
@@ -4028,19 +4066,21 @@ class FindersController extends \BaseController {
         
 		
 		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && (empty($data['finder']['brand_id']) || ($data['finder']['brand_id']!=88) || ($data['finder']['brand_id']!=135))){
-			foreach($data['finder']['services'] as &$service){
-				foreach($service['ratecard'] as &$ratecard){
-					if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
-						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
-							if($this->device_type == 'android'){
-								$line = $op_android_line;
-							}else{	
-								$line = $op_ios_line;
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			if((!empty($data['finder']['brand_id']) && $data['finder']['brand_id'] != 88) || (!empty($data['finder']['brand_id']) && $data['finder']['brand_id']!=135) || empty($data['finder']['brand_id'])){
+				foreach($data['finder']['services'] as &$service){
+					foreach($service['ratecard'] as &$ratecard){
+						if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+							$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+							if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
+								if($this->device_type == 'android'){
+									$line = $op_android_line;
+								}else{	
+									$line = $op_ios_line;
+								}
+								
+								break;
 							}
-							
-							break;
 						}
 					}
 				}
@@ -5592,7 +5632,7 @@ class FindersController extends \BaseController {
                             // }
 						}
 
-						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')))){
+						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88)){
 							unset($ratecard['remarks']);
 						}
 						
@@ -8582,7 +8622,13 @@ class FindersController extends \BaseController {
 				if(in_array($rc['type'], ['membership', 'extended validity', 'studio_extended_validity'])){
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
 					
-					if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [88, 135])) {
+					if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [88])) {
+						if($price >= 8000){
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nExtra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships \n\nUse Code: FITME15");
+						}else{
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nExtra 15% Off On Lowest Prices \n\nUse Code: FITME15");
+						}
+					}else if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [135])) {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
 					}else if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
 
@@ -8874,7 +8920,7 @@ class FindersController extends \BaseController {
 				unset($rateCard['remarks_imp']);
 			}
 
-			if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')))){
+			if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88)){
 				unset($rateCard['remarks']);
 				unset($rateCard['remarks_imp']);
 			}

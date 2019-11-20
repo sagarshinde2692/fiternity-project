@@ -2599,9 +2599,12 @@ class TransactionController extends \BaseController {
                             //     array_set($data, 'diwali_mixed_reward', true);
                             // }
 
-                            // if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
-                            //         array_set($data, 'fitbox_mixed_reward', true);
-                            //     }
+                            if(!empty($order['brand_id']) && $order['brand_id'] == 88){
+                                if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                                    array_set($data, 'fitbox_mixed_reward', true);
+                                    array_set($data, 'multifit_fitbox_mixed_reward', true);
+                                }
+                            }
 
                             $reward_type = $value->reward_type;
 
@@ -5034,6 +5037,7 @@ class TransactionController extends \BaseController {
         $finder_category_slug                  =    (isset($finder['category']['slug']) && $finder['category']['slug'] != '') ? $finder['category']['slug'] : "";
         $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
         $finder_notes                        =    (isset($finder['notes']) && $finder['notes'] != '') ? $finder['notes'] : "";
+        $brand_id                        =    (!empty($finder['brand_id'])) ? $finder['brand_id'] : 0;
         
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
@@ -5062,6 +5066,10 @@ class TransactionController extends \BaseController {
         $data['finder_notes'] = $finder_notes;
         $data['trial'] = !empty($finder['trial']) ? $finder['trial'] : 'auto';
 
+        if(!empty($brand_id)){
+            $data['brand_id'] = $brand_id;
+        }
+        
         return array('status' => 200,'data' =>$data);
     }
 
@@ -6227,11 +6235,20 @@ class TransactionController extends \BaseController {
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
             $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 | 21-23 Nov",'position'=>$position++];
 
+
             // if($data['ratecard_amount'] >= 8000){
             //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"On Gyms & Studio Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: SUPER20",'position'=>$position++];
             // }
             if(!empty($data['finder_flags']['monsoon_flash_discount']) && $data['finder_flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 25){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 | 21-23 Nov",'position'=>$position++];
+            }
+
+            if(!empty($data['brand_id']) && $data['brand_id']== 88){
+                if($data['ratecard_amount'] >= 8000){
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15",'position'=>$position++];
+                }else{
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices | Use Code: FITME15",'position'=>$position++];
+                }
             }
             
             if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
@@ -6254,7 +6271,7 @@ class TransactionController extends \BaseController {
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
 
-            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled'])){
+            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled']) || (!empty($data['brand_id']) && $data['brand_id'] == 88)){
                 // ||(isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
