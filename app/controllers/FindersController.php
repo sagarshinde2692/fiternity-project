@@ -4050,19 +4050,21 @@ class FindersController extends \BaseController {
         
 		
 		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && (empty($data['finder']['brand_id']) || ($data['finder']['brand_id']!=88) || ($data['finder']['brand_id']!=135))){
-			foreach($data['finder']['services'] as &$service){
-				foreach($service['ratecard'] as &$ratecard){
-					if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
-						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-						if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
-							if($this->device_type == 'android'){
-								$line = $op_android_line;
-							}else{	
-								$line = $op_ios_line;
+		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
+			if(empty($data['finder']['brand_id']) || ($data['finder']['brand_id']!=88) || ($data['finder']['brand_id']!=135)){
+				foreach($data['finder']['services'] as &$service){
+					foreach($service['ratecard'] as &$ratecard){
+						if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+							$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+							if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
+								if($this->device_type == 'android'){
+									$line = $op_android_line;
+								}else{	
+									$line = $op_ios_line;
+								}
+								
+								break;
 							}
-							
-							break;
 						}
 					}
 				}
