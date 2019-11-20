@@ -162,30 +162,30 @@ return array(
     
     "milestones_constant" => [
         "Milestone 1" => [
-            "header" => "Cool Marvel Merchandise & Exciting Vouchers",
+            "header" => "Cool Marvel starter kit with exciting vouchers",
             "sub_title" => "___count Days",
-            "sub_header" => "Exclusive Marvel t-shirt or a gym bag along with exciting vouchers from The Man Company, Healthiyme, The Label Life & Ease My Trip",
+            "sub_header" => "Exclusive Marvel t-shirt or a gym bag along with exciting vouchers from The Man Company, Healthifyme ,The Label Life & Ease My Trip",
             "backgroud_color" => "#BEE1E3",
             "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_1_background.png"
         ],
         "Milestone 2" => [
-            "header" => "Exclusive Marvel Merchandise or Helathy Snacking hamper with  & Exicing Vouchers",
+            "header" => "Exclusive Marvel merchandise/ healthy snacking hamper & exciting vouchers",
             "sub_title" => "___count Days",
-            "sub_header" => "Exclusive Marvel t-shirt + shaker or get a curated healthy snacking hamper with protein bars, makhana, peanut butter, healthy cookies and more along with exiting voucher from O2 Spa, Fast & Up & Puma.",
+            "sub_header" => "Exclusive Marvel t-shirt + shaker or Get a curated healthy snacking hamper with protein bars, makhana, peanut butter, healthy cookies and more along with exciting vouchers from O2 Spa, Fast & Up & Puma",
             "backgroud_color" => "#12A960",
             "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_2__background.png"
         ],
         "Milestone 3" => [
-            "header" => "Limited Edition Marvel Merchandise or Health Snacking Hamper.",
+            "header" => "Limited edition Marvel merchandise/ healthy snacking hamper",
             "sub_title" => "___count Days",
-            "sub_header" => "Limited edition MArvel t-shirt + shaker/get a curated healthy snacking hamper with protein bars, makhana, peanut butter, healthy cookies, muesli & much more",
+            "sub_header" => "Limited edition Marvel t-shirt + shaker or Get a curated healthy snacking hamper with protein bars, makhana, peanut butter, healthy cookies, muesli & much more",
             "backgroud_color" => "#187CFF",
             "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_3_background.png"
         ],
         "Milestone 4" => [
             "header" => "Amazon Gift Card, Fitternity Fitcash or ONEPASS",
             "sub_title" => "___count Days",
-            "sub_header" => "Exclusive voucher from Amazon or earn Fitternity Fitcash or get access to unlimited workout options with Fitternity Onepass.",
+            "sub_header" => "Exclucive voucher from Amazon or Earn Fitternity Fitcash or Get access to unlimited workout options with Fitternity Onepass",
             "backgroud_color" => "#BA000",
             "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_4_background.png"
         ]
