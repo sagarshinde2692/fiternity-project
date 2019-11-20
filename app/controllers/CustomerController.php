@@ -9119,8 +9119,9 @@ class CustomerController extends \BaseController {
 			        return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (4).'));
                 }
 
-                $voucherAttached = $milestones[intval($_GET['milestone']) - 1]['voucher'][(int)$_GET['index']];
-
+				$voucherAttached = $milestones[intval($_GET['milestone']) - 1]['voucher'][(int)$_GET['index']];
+				
+				$combo_vouchers = $this->utilities->getComboVouchers($voucherAttached, $customer);
             }else{
 
                 $voucher_category = VoucherCategory::find($_id);
@@ -9133,19 +9134,20 @@ class CustomerController extends \BaseController {
     
 					} */
 
-					$combo_vouchers =[];
+					$combo_vouchers = [];
 					if(!empty($voucher_category['flags']) && !empty($voucher_category['flags']['combo_vouchers_list'])){
 						$combo_voucher_list =$voucher_category['flags']['combo_vouchers_list'];
 						foreach($combo_voucher_list as $key=>$value){
-							$voucher = VoucherCategory::find($value);
+							$voucher = \VoucherCategory::find($value);
 							if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
-								$combo_vouchers[$value] = $this->utilities->assignInstantManualVoucher($customer, $voucher_category);
+								$combo_vouchers[$value] = $this->assignInstantManualVoucher($customer, $voucher_category);
 							}
 							else{
-								$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher);
+								$combo_vouchers[$value] = $this->assignVoucher($customer, $voucher);
 							}
 						}
 					}
+
 					if(count($combo_vouchers) > 0){
 						foreach($combo_vouchers as $key=>$value){
 							if(!$value){
@@ -9268,30 +9270,35 @@ class CustomerController extends \BaseController {
 			}
 			*/
 
-			if(!empty($communication) && (empty($combo_vouchers) || (!empty($combo_vouchers) && count($combo_vouchers)== 0))){
-				$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key);
-			}
-			else if(!empty($communication)){
-				foreach($combo_vouchers as $key=>$value){
-					$formated_resp = $this->utilities->voucherClaimedResponse($value, $voucher_category, $key);
-					$resp[] = $formated_resp;
-				}
-			}
-
+			$voucher_category = !empty($voucher_category) ? $voucher_category : null;
+			$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key);
             if(!empty($communication) && (empty($combo_vouchers) || (!empty($combo_vouchers) && count($combo_vouchers)== 0))){
-				$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key);
 				$email = $this->voucherEmailReward($resp, $customer);
 				Log::info('email::::: of not combo reward::::', [$email]);
 			}else if(!empty($communication)) {
-				$resp = [];
 				foreach($combo_vouchers as $key=>$value){
-
 					$formated_resp = $this->utilities->voucherClaimedResponse($value, $voucher_category, $key);
-					$resp[] = $formated_resp;
+					$resp1[] = $formated_resp['voucher_data'];
 					$email = $this->voucherEmailReward($formated_resp, $customer);
 					Log::info('email:::::', [$email]);
 					
 				}
+			}
+
+			$new_fitsquad = newFitsquadCompatabilityVersion();
+
+			if($new_fitsquad){
+				if(!empty($resp1)){
+					$resp = $resp1;
+				}else if(empty($communication) && !empty($combo_vouchers)) {
+					$resp= [];
+					foreach($combo_vouchers as $key=>$value){
+						$resp[] = $this->utilities->voucherClaimedResponse($value, $voucher_category, $key);
+					}
+				}else {
+					$resp = $resp['voucher_data'];
+				}
+
 			}
 
             return $resp;

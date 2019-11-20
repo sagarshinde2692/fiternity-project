@@ -7704,6 +7704,7 @@ Class Utilities {
             'milestone'=>$voucher_category['milestone'],
             'expiry_date'=>date('Y-m-d H:i:s',strtotime('+1 month')),
             'code'=>$voucher_category['name'],
+            'flags' => $voucher_category['flags']
         ];
 
         if(isset($voucher_category['link'])){
@@ -10959,7 +10960,7 @@ Class Utilities {
                 // $voucher['header']['image'] = $voucher['header']['image_new']; 
                 unset($voucher['header']['image_new']); 
             }
-        } else{
+        }else if(!empty($from)){
                 $voucher['header']['image'] = $voucher['header']['image_new']; 
                 unset($voucher['header']['image_new']); 
         }
@@ -11148,5 +11149,17 @@ Class Utilities {
             unset($resp['voucher_data']['coupon_subtext']);
         }
         return $resp;
+    }
+
+    public function getComboVouchers($voucher_attached, $customer){
+        $combo_vouchers = [];
+        $voucher_category = \VoucherCategory::where('_id', $voucher_attached['voucher_category'])->select('flags')->first();
+        if(!empty($voucher_category->flags) && !empty($voucher_category->flags['combo_vouchers_list'])){
+            $combo_voucher_list =$voucher_category->flags['combo_vouchers_list'];
+            foreach($combo_voucher_list as $key=>$value){
+                $combo_vouchers[$value] = \LoyaltyVoucher::active()->where('voucher_category', $value)->where('customer_id', $customer['id'])->first();
+            }
+        }
+        return $combo_vouchers;
     }
 }

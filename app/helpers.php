@@ -4756,4 +4756,16 @@ if (!function_exists(('setPassToToken'))){
     }
 }
 
+if (!function_exists(('newFitsquadCompatabilityVersion'))){
+    function newFitsquadCompatabilityVersion(){
+        $app_version = Request::header('App-Version');
+        $device_type = Request::header('Device-Type');
+
+        if(!empty($device_type) && !empty($app_version) && (($device_type=='android' && $app_version <= '5.31') || ($device_type=='ios' && $app_version <= '5.2.7'))){
+            return false;
+        }
+
+        return true;
+    }
+}
 ?>
