@@ -5301,11 +5301,11 @@ class SchedulebooktrialsController extends \BaseController {
                     $this->findersms->cancelBookTrial($emaildata);
                 }
                 if((isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip') && (empty($booktrial['third_party_details']['ekn']))){
-                    if(!isset($booktrial['third_party_details'])){
-                        if(empty($booktrial['multifit']) || !$booktrial['multifit']){
-                            $this->customermailer->cancelBookTrial($emaildata);
-                        }
-                    }
+                    // if(!isset($booktrial['third_party_details'])){
+                    //     if(empty($booktrial['multifit']) || !$booktrial['multifit']){
+                    //         $this->customermailer->cancelBookTrial($emaildata);
+                    //     }
+                    // }
                     Log::info('sending sms');
                     if(isset($booktrial['third_party_details'])){
                         $emaildata['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$emaildata['customer_email']);
