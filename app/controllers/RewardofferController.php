@@ -1138,15 +1138,16 @@ class RewardofferController extends BaseController {
                         $rewards[] = $rewardObjData;
                     }
                 }
-            }else{
-                Log::info("fitbox not applicable");
-                // if((!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($finder['flags']['monsoon_flash_discount_disabled'])){
-                    // || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)
-
-                // }else{
-                    $no_rewards = true;
-                // }
             }
+            // else{
+            //     Log::info("fitbox not applicable");
+            //     // if((!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($finder['flags']['monsoon_flash_discount_disabled'])){
+            //         // || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)
+
+            //     // }else{
+            //         $no_rewards = true;
+            //     // }
+            // }
         }
 
         if(empty($mixedreward_content)){
