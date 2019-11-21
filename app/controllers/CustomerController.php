@@ -9280,7 +9280,7 @@ class CustomerController extends \BaseController {
 				foreach($combo_vouchers as $key=>$value){
 					$formated_resp = $this->utilities->voucherClaimedResponse($value, $voucher_category, $key);
 					$resp1[] = $formated_resp['voucher_data'];
-					$email = empty($new_fitsquad_app) && (!empty($customer->loyalty['grid_id']) && $customer->loyalty['grid_id'] == 1) ? $this->voucherEmailReward($formated_resp, $customer) : null;
+					$email = empty($new_fitsquad_app) && (empty($customer->loyalty['grid_id'])) ? $this->voucherEmailReward($formated_resp, $customer) : null;
 					Log::info('email:::::', [$email]);
 					
 				}
