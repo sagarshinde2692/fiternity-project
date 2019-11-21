@@ -9097,7 +9097,7 @@ class CustomerController extends \BaseController {
 		
 		$jwt_token = Request::header('Authorization');
 
-		$new_fitsquad = newFitsquadCompatabilityVersion();
+		$new_fitsquad_app = newFitsquadCompatabilityVersion();
 		if(!empty($jwt_token) || !empty($customer_id)){
 			
 			if(empty($customer_id)){
@@ -9286,7 +9286,7 @@ class CustomerController extends \BaseController {
 				}
 			}
 
-			if($new_fitsquad){
+			if($new_fitsquad_app){
 				if(!empty($resp1)){
 					$resp = $resp1;
 				}else if(empty($communication) && !empty($combo_vouchers)) {
@@ -9306,6 +9306,11 @@ class CustomerController extends \BaseController {
 					'data'=>$resp
 				);
 
+			}
+			else {
+				if(!empty($resp['voucher_data']['coupon_image']) && is_array($resp['voucher_data']['coupon_image'])){
+					!empty($resp['voucher_data']['coupon_image'][0]['url']) ? $resp['voucher_data']['coupon_image'] = $resp['voucher_data']['coupon_image'][0]['url'] : null;
+				}
 			}
 
 			Log::info('resp::::::::::::', $resp);
