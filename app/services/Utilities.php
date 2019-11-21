@@ -11154,14 +11154,10 @@ Class Utilities {
 
     public function getComboVouchers($voucher_attached, $customer){
         $combo_vouchers = [];
-        $voucher_category = \VoucherCategory::where('_id', $voucher_attached['voucher_category'])->select('flags')->first();
-        if(!empty($voucher_category->flags) && !empty($voucher_category->flags['combo_vouchers_list'])){
-            $combo_voucher_list =$voucher_category->flags['combo_vouchers_list'];
-            Log::info('combo voucher lst:::::', $combo_voucher_list);
-            $combo_vouchers = \LoyaltyVoucher::active()->whereIn('voucher_category', $combo_voucher_list)->where('customer_id', $customer['id'])->get();
-            // foreach($combo_voucher_list as $key=>$value){
-            //     $combo_vouchers[$value] = \LoyaltyVoucher::active()->where('voucher_category', $value)->where('customer_id', $customer['id'])->first();
-            // }
+        if(!empty($voucher_attached['flags']['combo_vouchers_list'])){
+            Log::info('combo voucher lst:::::', $voucher_attached['flags']['combo_vouchers_list']);
+            $combo_vouchers = \LoyaltyVoucher::active()->whereIn('voucher_category', $voucher_attached['flags']['combo_vouchers_list'])->where('customer_id', $customer['id'])->get();
+           
         }
         return $combo_vouchers;
     }
