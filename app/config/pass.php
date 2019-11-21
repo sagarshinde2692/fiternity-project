@@ -175,7 +175,7 @@ return [
                     - You can only avail one offer at a time<br>
                     - This offer cannot be clubbed with any other existing offer
                 </li>
-                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag worth INR 2500<br>
+                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500<br>
                     -This offer is available on OnePass Red (3,6,12 months) and OnePass Black (30,45 sessions) only<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will reach the users doorstep by 2nd week of December<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
@@ -227,7 +227,7 @@ return [
                     - You can only avail one offer at a time<br>
                     - This offer cannot be clubbed with any other existing offer
                 </li>
-                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag worth INR 2500<br>
+                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500<br>
                     -This offer is available on OnePass Red (3,6,12 months) and OnePass Black (30,45 sessions) only<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will reach the users doorstep by 2nd week of December<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
@@ -278,7 +278,7 @@ return [
                     - You can only avail one offer at a time<br>
                     - This offer cannot be clubbed with any other existing offer
                 </li>
-                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag worth INR 2500<br>
+                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500<br>
                     -This offer is available on OnePass Red (3,6,12 months) and OnePass Black (30,45 sessions) only<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will reach the users doorstep by 2nd week of December<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
