@@ -9297,7 +9297,7 @@ class CustomerController extends \BaseController {
 						$resp[]  = $formated_resp['voucher_data'];
 					}
 				}else {
-					$resp = $resp['voucher_data'];
+					$resp[] = $resp['voucher_data'];
 				}
 				
 				$resp = array(
