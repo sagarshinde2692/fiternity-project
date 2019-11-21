@@ -11157,9 +11157,11 @@ Class Utilities {
         $voucher_category = \VoucherCategory::where('_id', $voucher_attached['voucher_category'])->select('flags')->first();
         if(!empty($voucher_category->flags) && !empty($voucher_category->flags['combo_vouchers_list'])){
             $combo_voucher_list =$voucher_category->flags['combo_vouchers_list'];
-            foreach($combo_voucher_list as $key=>$value){
-                $combo_vouchers[$value] = \LoyaltyVoucher::active()->where('voucher_category', $value)->where('customer_id', $customer['id'])->first();
-            }
+            Log::info('combo voucher lst:::::', $combo_voucher_list);
+            $combo_vouchers = \LoyaltyVoucher::active()->whereIn('voucher_category', $combo_voucher_list)->where('customer_id', $customer['id'])->get();
+            // foreach($combo_voucher_list as $key=>$value){
+            //     $combo_vouchers[$value] = \LoyaltyVoucher::active()->where('voucher_category', $value)->where('customer_id', $customer['id'])->first();
+            // }
         }
         return $combo_vouchers;
     }

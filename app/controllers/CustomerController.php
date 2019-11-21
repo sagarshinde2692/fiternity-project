@@ -9123,7 +9123,7 @@ class CustomerController extends \BaseController {
 
 				$voucherAttached = $milestones[intval($_GET['milestone']) - 1]['voucher'][(int)$_GET['index']];
 				
-				!empty($new_fitsquad) ? $combo_vouchers = $this->utilities->getComboVouchers($voucherAttached, $customer) : null;
+				!empty($new_fitsquad_app) ? $combo_vouchers = $this->utilities->getComboVouchers($voucherAttached, $customer) : null;
             }else{
 
                 $voucher_category = VoucherCategory::find($_id);
@@ -9313,7 +9313,6 @@ class CustomerController extends \BaseController {
 				}
 			}
 
-			Log::info('resp::::::::::::', $resp);
             return $resp;
 
 		}
