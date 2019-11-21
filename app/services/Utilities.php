@@ -10953,7 +10953,9 @@ Class Utilities {
         if(!empty($this->device_type) && !empty($this->app_version) && (($this->device_type=='android' && $this->app_version <= '5.31') || ($this->device_type=='ios' && $this->app_version <= '5.2.7'))){  
             Log::info('app version anded device type::::', [$this->device_type,$this->app_version]);
             if(empty($from) && !empty($voucher['image']) && is_array($voucher['image'])){
-                return !empty($voucher['image'][0]['url']) ? $voucher['image'][0]['url'] : "";
+                $image = $voucher['image'];
+                unset($voucher['image']);
+                return !empty($image[0]['url']) ? $image[0]['url'] : "";
             }
             else{
                 // $voucher['header']['image'] = $voucher['header']['image_new']; 
