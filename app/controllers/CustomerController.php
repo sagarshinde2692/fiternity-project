@@ -9142,7 +9142,7 @@ class CustomerController extends \BaseController {
 						foreach($combo_voucher_list as $key=>$value){
 							$voucher = VoucherCategory::find($value);
 							if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
-								$combo_vouchers[$value] = $this->utilities->assignInstantManualVoucher($customer, $voucher_category);
+								$combo_vouchers[$value] = $this->utilities->assignInstantManualVoucher($customer, $voucher);
 							}
 							else{
 								$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher);
