@@ -4762,11 +4762,13 @@ if(!function_exists('get_masterdata_from_cache')){
 
         $city_cache = Cache::tags('masterdata')->has('city-'.$slug) ? Cache::tags('masterdata')->get('city-'.$slug) : '';
 
-        if($city_cache){
-            return $city_cache;
+        if(!$city_cache){
+            $city_data = City::where('slug',$slug)->first();
+            Cache::tags('masterdata')->put('city-'.$slug,$city_data,1440);
+            $city_cache = Cache::tags('masterdata')->get('city-'.$slug);
         }
         
-        return City::where('slug',$slug)->first();
+        return $city_cache;
     }
 }
 
