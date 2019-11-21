@@ -8743,7 +8743,8 @@ class TransactionController extends \BaseController {
     					'amount'=>(int)$val["transactionValue"],
     					'status' => 'success',
                         'hash'=> $val["hash"],
-                        'orderId'=>$order['_id']
+                        'orderId'=>$order['_id'],
+                        'email'=>$order['customer_email'],
                         
     			];
     			if($website == "1"){
@@ -8837,7 +8838,8 @@ class TransactionController extends \BaseController {
     					'amount'=>(int)$val["orderTotalAmount"],
     					'status' => 'success',
                         'hash'=> $val["hash"],
-                        'orderId'=>$order['_id']
+                        'orderId'=>$order['_id'],
+                        'email'=>$order['customer_email']
     			];
     			if($website == "1"){
     				$url = $this->getAmazonPaySuccessUrl($order, $success_data);

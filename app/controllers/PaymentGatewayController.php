@@ -663,7 +663,8 @@ class PaymentGatewayController extends \BaseController {
         	'txnid'=>$data['txnid'],
             'amount'=>(int)$data["amount"],
             'status' => 'success',
-            'type'=>$order['type']
+            'type'=>$order['type'],
+            'email'=>$order['customer_email']
         ];
 
         $data['txnid'] = $data['txnid']."-MBKD";
