@@ -9139,9 +9139,9 @@ class CustomerController extends \BaseController {
 					$combo_vouchers =[];
 					if(!empty($voucher_category['flags']) && !empty($voucher_category['flags']['combo_vouchers_list'])){
 						$combo_voucher_list =$voucher_category['flags']['combo_vouchers_list'];
-						foreach($combo_voucher_list as $key=>$value){
+						foreach($combo_voucher_list as $index=>$value){
 							$voucher = VoucherCategory::find($value);
-							if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
+							if(!empty($voucher['flags']['instant_manual_redemption'])){
 								$combo_vouchers[$value] = $this->utilities->assignInstantManualVoucher($customer, $voucher);
 							}
 							else{
@@ -9150,7 +9150,7 @@ class CustomerController extends \BaseController {
 						}
 					}
 					if(count($combo_vouchers) > 0){
-						foreach($combo_vouchers as $key=>$value){
+						foreach($combo_vouchers as $index=>$value){
 							if(!$value){
 								$this->utilities->rollbackVouchers($customer, $combo_vouchers);
 								return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (6).'));
