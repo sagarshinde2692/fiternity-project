@@ -9297,7 +9297,8 @@ class CustomerController extends \BaseController {
 						$resp[]  = $formated_resp['voucher_data'];
 					}
 				}else {
-					$resp[] = $resp['voucher_data'];
+					Log::info('heregegb', $resp);
+					$resp = [$resp['voucher_data']];
 				}
 				
 				$resp = array(
@@ -9307,6 +9308,7 @@ class CustomerController extends \BaseController {
 
 			}
 
+			Log::info('resp::::::::::::', $resp);
             return $resp;
 
 		}
