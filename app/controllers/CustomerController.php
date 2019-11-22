@@ -11211,12 +11211,10 @@ class CustomerController extends \BaseController {
 		$data = Input::all();
 
 		$rules = [
-			'name' => 'required',
-			'email' => 'required',
-			'contact_no' => 'required',
-			'address' => 'required',
-			'landmark' => 'string',
-			'pincode' => 'required'
+			'customer_name' => 'required',
+			'customer_email' => 'required',
+			'customer_phone' => 'required',
+			'customer_address' => 'required',
 		];
 
 		$validator = Validator::make($data,$rules);
@@ -11228,6 +11226,7 @@ class CustomerController extends \BaseController {
 		$reward_detial = [];
 		if(!empty($data['tshirt_size'])){
 			$reward_detial['tshirt_size'] = $data['tshirt_size'];
+			unset($data['tshirt_size']);
 		}
 
 		$reward_detial['address'] = $data;
