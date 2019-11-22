@@ -4465,7 +4465,11 @@ class CustomerController extends \BaseController {
         }
 		
 		$customer = Customer::find((int)$customer_id);
-		
+
+		if(!empty($data['reward_type']) && $data['reward_type'] =='fitsquad'){
+			return $this->updateRewardDetails($data);
+		}
+
 		if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
 
 			$customerData['address'] = $data['customer_address'];
@@ -11202,7 +11206,7 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function updateRewardDetails(){
+	public function updateRewardDetails($data){
 
 		$data = Input::all();
 
