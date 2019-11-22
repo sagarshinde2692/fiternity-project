@@ -8864,12 +8864,12 @@ class CustomerController extends \BaseController {
 
 		$customer = null;
         $filter = [
-			"grid_id" => 1
+			"grid_version" => 1
 		];
 		$isReward = !empty($input['isReward']) && ($input['isReward']!=false && $input['isReward']!="false");
 
 		$customer = $this->utilities->getCustomerFromTokenAsObject();
-		$grid_id=1;
+		$grid_version=1;
         if(!empty($customer->_id)){
 			if(isset($customer->corporate_id)){
 				$customer = Customer::active()->where('_id', $customer->_id)->where('corporate_id', 1)->first();	
@@ -8878,9 +8878,9 @@ class CustomerController extends \BaseController {
 				$customer = Customer::active()->where('_id', $customer->_id)->where('loyalty', 'exists', true)->first();
 			}
 			if(!empty($customer) && !empty($customer->loyalty)){
-				$grid_id = null;
+				$grid_version = null;
 			}
-            $filter = $this->utilities->getMilestoneFilterData($customer, $isReward, $grid_id); //passing grid_id =>1, in order to display new rewards on preLoyaltyregisterPage
+            $filter = $this->utilities->getMilestoneFilterData($customer, $isReward, $grid_version); //passing grid_version =>1, in order to display new rewards on preLoyaltyregisterPage
 
 			if($customer && !empty($customer['loyalty'])){
 				$post = true;
@@ -8931,7 +8931,7 @@ class CustomerController extends \BaseController {
 
 		}else{
 
-        	return $this->preLoyaltyRegistration($voucher_categories_map, $grid_id);
+        	return $this->preLoyaltyRegistration($voucher_categories_map, $grid_version);
 			
 			
 		}
@@ -9272,7 +9272,7 @@ class CustomerController extends \BaseController {
 			*/
 
 			$voucher_category = !empty($voucher_category) ? $voucher_category : null;
-			$email_communication_check = empty($new_fitsquad_app) && (empty($customer->loyalty['grid_id']));
+			$email_communication_check = empty($new_fitsquad_app) && (empty($customer->loyalty['grid_version']));
 			$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key, $email_communication_check);
             if(!empty($communication) && (empty($combo_vouchers) || (!empty($combo_vouchers) && count($combo_vouchers)== 0))){
 				$email = $email_communication_check ? $this->voucherEmailReward($resp, $customer) : null;
@@ -10058,7 +10058,7 @@ class CustomerController extends \BaseController {
         return ['post_register'=>$post_register];
     }
 
-    public function preLoyaltyRegistration($voucher_categories_map, $grid_id){
+    public function preLoyaltyRegistration($voucher_categories_map, $grid_version){
 
 
         // $pre_register = Cache::tags('loyalty')->has('pre_register');
@@ -10078,7 +10078,7 @@ class CustomerController extends \BaseController {
 
 
         $pre_register_check_ins_data = [];
-        $milestones = empty($grid_id) ? Config::get('loyalty_constants.milestones') : Config::get('loyalty_constants.milestones_new');
+        $milestones = empty($grid_version) ? Config::get('loyalty_constants.milestones') : Config::get('loyalty_constants.milestones_new');
 		$pre_reward_milestone_contant = Config::get('loyalty_screens.milestones_constant');
         
         foreach($milestones as $milestone){
@@ -10095,7 +10095,7 @@ class CustomerController extends \BaseController {
             $pre_reward_template['count'] = intval(strtr($pre_reward_template['count'], $milestone));
 			// $pre_reward_template['images'] = array_column($voucher_categories_map[$milestone['milestone']], 'image');
 			$pre_reward_template['images'] = $this->utilities->getVoucherImages($voucher_categories_map[$milestone['milestone']]);
-			if(!empty($grid_id) && !empty($pre_reward_milestone_contant[$pre_reward_template['title']])){
+			if(!empty($grid_version) && !empty($pre_reward_milestone_contant[$pre_reward_template['title']])){
 				$pre_reward_template = array_merge($pre_reward_template, $pre_reward_milestone_contant[$pre_reward_template['title']]);
 				$pre_reward_template['sub_title'] = strtr($pre_reward_template['sub_title'], ["___count" => $pre_reward_template['count']]);
 			}
@@ -10388,7 +10388,7 @@ class CustomerController extends \BaseController {
 				$loyalty['cashback_type'] = $order['finder_flags']['cashback_type'];
 			}
 			// if(!empty($loyalty['reward_type']) && $loyalty['reward_type']==2 && empty($loyalty['cashback_type'])){
-			// 	$loyalty['grid_id'] = 1;
+			// 	$loyalty['grid_version'] = 1;
 			// }
 			$this->checkForFittenityGrid($loyalty); 
 			return $loyalty;
