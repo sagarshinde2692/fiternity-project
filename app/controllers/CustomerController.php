@@ -10387,9 +10387,7 @@ class CustomerController extends \BaseController {
 			if(!empty($loyalty['reward_type']) && !empty($order['finder_flags']['cashback_type'])){
 				$loyalty['cashback_type'] = $order['finder_flags']['cashback_type'];
 			}
-			// if(!empty($loyalty['reward_type']) && $loyalty['reward_type']==2 && empty($loyalty['cashback_type'])){
-			// 	$loyalty['grid_version'] = 1;
-			// }
+			
 			$this->checkForFittenityGrid($loyalty); 
 			return $loyalty;
 		}

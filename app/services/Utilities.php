@@ -7320,7 +7320,6 @@ Class Utilities {
                 if(!empty($data['type']) && $data['type'] == 'workout-session' && ( empty($data['finder_flags']['reward_type']) || (!empty($data['finder_flags']['reward_type']) && $data['finder_flags']['reward_type'] != 1)) ){
                     if(empty($customer['loyalty'])){
                         $loyalty['reward_type'] = 2;
-                        //$loyalty['grid_version'] = 1;
                         $dontUpdateLoyalty = false;
                         Log::info("dontUpdateLoyalty 2, first fitternity grid setting:::::::::::::::::::::::::",[$dontUpdateLoyalty]);
                     }
@@ -7360,15 +7359,9 @@ Class Utilities {
                             $dontUpdateLoyalty = false;
                             Log::info("dontUpdateLoyalty 3",[$dontUpdateLoyalty]);
                         }
-                        // else if(empty($loyalty['reward_type']) || ($loyalty['reward_type']==2 && empty($loyalty['cashback_type']))){
-                        //     $loyalty['grid_version'] = 1;
-                        //     Log::info("second fitternity grid setting:::::::::::::::::::::::");
-                        // }
+                        
                     }
-                    // else if(empty($loyalty['reward_type']) || ($loyalty['reward_type']==2 && empty($loyalty['cashback_type']))){
-                    //     $loyalty['grid_version'] = 1;
-                    //     Log::info("third fitternity grid setting:::::::::::::::::::::");
-                    // }
+                    
                     // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
                     // Log::info("type",[$data['type']]);
                     // $dontUpdateLoyalty = true;
