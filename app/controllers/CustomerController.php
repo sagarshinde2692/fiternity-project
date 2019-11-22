@@ -7796,7 +7796,8 @@ class CustomerController extends \BaseController {
                     $response['finder_id'] = $data['finder_id'];
                     // $response['skip'] = Config::get('app.url')."/customer/skipreview/".$data['_id'];
                     $response['optional'] = true;
-                    $response['show_rtc'] = true;
+                    // $response['show_rtc'] = true;
+                    $response['show_rtc'] = false;
                 }   
 
 		}
