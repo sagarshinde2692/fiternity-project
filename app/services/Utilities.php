@@ -10905,24 +10905,24 @@ Class Utilities {
             $post_reward_data_template['required_info'] = $required_data;
         }
 
-        if(!empty($customer['loyalty']['reward_pay'])){
+        // if(!empty($customer['loyalty']['reward_pay'])){
 
-            foreach($customer['loyalty']['reward_pay'] as $key=>$value){
-                if(empty($value['status']) && !empty($value['amount']) && (!empty($value['milestone_no']) && $value['milestone_no']== $milestone_no)){
+        //     foreach($customer['loyalty']['reward_pay'] as $key=>$value){
+        //         if(empty($value['status']) && !empty($value['amount']) && (!empty($value['milestone_no']) && $value['milestone_no']== $milestone_no)){
 
-                    $post_reward_data_template['block_message'] = strtr(Config::get('loyalty_screens.reward_pay_block_message'), ['reward_amount'=> $value['amount']]);
-                    $reward_amount_data = $voucher_required_info['reward_pay'];
+        //             $post_reward_data_template['block_message'] = strtr(Config::get('loyalty_screens.reward_pay_block_message'), ['reward_amount'=> $value['amount']]);
+        //             $reward_amount_data = $voucher_required_info['reward_pay'];
 
-                    $reward_amount_data['header'] = strtr($reward_amount_data['header'], ['reward_amount'=> $value['amount']]); 
-                    $reward_amount_data['data']['customer_id'] = $customer['_id'];
-                    !empty($customer['email']) ? $reward_amount_data['data']['customer_email'] = $customer['email'] : $reward_amount_data['data']['customer_email'] = null;
-                    !empty($customer['contact_no']) ? $reward_amount_data['data']['customer_phone'] = $customer['contact_no'] : $reward_amount_data['data']['contact_no'] = null;
-                    $reward_amount_data['data']['amount'] = $value['amount'];
+        //             $reward_amount_data['header'] = strtr($reward_amount_data['header'], ['reward_amount'=> $value['amount']]); 
+        //             $reward_amount_data['data']['customer_id'] = $customer['_id'];
+        //             !empty($customer['email']) ? $reward_amount_data['data']['customer_email'] = $customer['email'] : $reward_amount_data['data']['customer_email'] = null;
+        //             !empty($customer['contact_no']) ? $reward_amount_data['data']['customer_phone'] = $customer['contact_no'] : $reward_amount_data['data']['contact_no'] = null;
+        //             $reward_amount_data['data']['amount'] = $value['amount'];
         
-                    $post_reward_data_template['reward_pay'] = $reward_amount_data;
-                }
-            }
-        }
+        //             $post_reward_data_template['reward_pay'] = $reward_amount_data;
+        //         }
+        //     }
+        // }
     }
      
     public function getPassBranding($args = null){
