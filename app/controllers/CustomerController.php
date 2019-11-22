@@ -9272,15 +9272,16 @@ class CustomerController extends \BaseController {
 			*/
 
 			$voucher_category = !empty($voucher_category) ? $voucher_category : null;
-			$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key);
+			$email_communication_check = empty($new_fitsquad_app) && (empty($customer->loyalty['grid_id']));
+			$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key, $email_communication_check);
             if(!empty($communication) && (empty($combo_vouchers) || (!empty($combo_vouchers) && count($combo_vouchers)== 0))){
-				$email = $this->voucherEmailReward($resp, $customer);
+				$email = $email_communication_check ? $this->voucherEmailReward($resp, $customer) : null;
 				Log::info('email::::: of not combo reward::::', [$email]);
 			}else if(!empty($communication)) {
 				foreach($combo_vouchers as $key=>$value){
-					$formated_resp = $this->utilities->voucherClaimedResponse($value, $voucher_category, $key);
+					$formated_resp = $this->utilities->voucherClaimedResponse($value, $voucher_category, $key, $email_communication_check);
 					$resp1[] = $formated_resp['voucher_data'];
-					$email = empty($new_fitsquad_app) && (empty($customer->loyalty['grid_id'])) ? $this->voucherEmailReward($formated_resp, $customer) : null;
+					$email =  $email_communication_check ? $this->voucherEmailReward($formated_resp, $customer) : null;
 					Log::info('email:::::', [$email]);
 					
 				}

@@ -11101,7 +11101,7 @@ Class Utilities {
         }
     }
 
-    public function voucherClaimedResponse($voucherAttached, $voucher_category, $key){
+    public function voucherClaimedResponse($voucherAttached, $voucher_category, $key, $email_communication_check){
         $resp =  [
             'voucher_data'=>[
                 'header'=>"VOUCHER UNLOCKED",
@@ -11147,6 +11147,10 @@ Class Utilities {
             $resp['voucher_data']['coupon_text'] = "Under Verification";
             unset($resp['voucher_data']['terms_text']);
             unset($resp['voucher_data']['terms_detailed_text']);
+            unset($resp['voucher_data']['coupon_subtext']);
+        }
+        
+        if(empty($email_communication_check)){
             unset($resp['voucher_data']['coupon_subtext']);
         }
         return $resp;
