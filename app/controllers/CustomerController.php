@@ -5872,7 +5872,8 @@ class CustomerController extends \BaseController {
 					"message"=>"Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership."
 				]
 			];
-				
+			
+			$action['change_start_date_request'] = null;
 		}
 
 		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date']) && $renew_membership){
