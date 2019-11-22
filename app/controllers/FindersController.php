@@ -6753,6 +6753,7 @@ class FindersController extends \BaseController {
 					$tnc['description'] .= "<b> - </b>  Discount varies across different outlets depending on slot availability.";
 					$tnc['description'] .= "<br/><br/><b> - </b>  For memberships reserved by part payment and not fully paid for on date of joining, 5% of total membership value will be deducted as convenience fees & the remaining will be transferred in the wallet as Fitcash+ . The membership will also be terminated.";
 					$tnc['description'] .= "<br/><br/><b> - </b>  Memberships once purchased are not transferrable or resalable.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  A user will be allowed to select the start date within 30 days from the purchase date for a gym membership and 15 days for the group classes.";
 					$tnc['description'] .= "<br/><br/><b> - </b>  For detailed terms and conditions refer to <a href='https://www.fitternity.com/terms-conditions/all'> https://www.fitternity.com/terms-conditions/all</a>";
 					
 				}else{

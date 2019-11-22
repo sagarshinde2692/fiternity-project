@@ -5588,8 +5588,14 @@ class CustomerController extends \BaseController {
 
 		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days') && $change_start_date && !$cult_vendor_flag && empty($order['studio_extended_validity'])){
 
-			$min_date = strtotime('+1 days');
-			$max_date = strtotime($order['created_at'].'+29 days');
+			if(!empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], [65])){
+				$min_date = strtotime('+1 days');
+				$max_date = strtotime($order['created_at'].'+30 days');
+			}else{
+				$min_date = strtotime('+1 days');
+				$max_date = strtotime($order['created_at'].'+15 days');
+			}
+			
 			$available_days = null;
 
 

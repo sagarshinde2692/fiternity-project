@@ -265,6 +265,14 @@ class RewardofferController extends BaseController {
             $service_category_id = (int)$data['service_category_id'];
         }
 
+        if(!empty($service_category_id) && in_array($service_category_id, [65])){
+            $min_date = strtotime('+0 days');
+			$max_date = strtotime('+30 days');
+        }else{
+            $min_date = strtotime('+0 days');
+			$max_date = strtotime('+15 days');
+        }
+
         if($service_category_id != null){
 
             $service_category = Servicecategory::find($service_category_id);
