@@ -11227,7 +11227,14 @@ class CustomerController extends \BaseController {
 			unset($data['tshirt_size']);
 		}
 
-		$reward_detial['address'] = $data;
+		$address = [
+			"customer_name" => $data['customer_name'],
+			"customer_email" => $data['customer_email'],
+			"customer_phone" => $data['customer_phone'],
+			"address" => $data['customer_address']
+		];
+
+		$reward_detial['address'] = $address;
 
 		try{
 
