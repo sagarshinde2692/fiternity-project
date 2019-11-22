@@ -9294,7 +9294,7 @@ class CustomerController extends \BaseController {
 					$resp= [];
 					foreach($combo_vouchers as $key=>$value){
 
-						$formated_resp= $this->utilities->voucherClaimedResponse($value, $voucher_category, $key);
+						$formated_resp= $this->utilities->voucherClaimedResponse($value, $voucher_category, $key, $email_communication_check);
 						$resp[]  = $formated_resp['voucher_data'];
 					}
 				}else {

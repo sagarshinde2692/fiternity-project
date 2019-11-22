@@ -11094,7 +11094,7 @@ Class Utilities {
         }
     }
 
-    public function voucherClaimedResponse($voucherAttached, $voucher_category, $key, $email_communication_check){
+    public function voucherClaimedResponse($voucherAttached, $voucher_category, $key, $email_communication_check=null){
         $resp =  [
             'voucher_data'=>[
                 'header'=>"VOUCHER UNLOCKED",
