@@ -4467,7 +4467,7 @@ class CustomerController extends \BaseController {
 		$customer = Customer::find((int)$customer_id);
 
 		if(!empty($data['reward_type']) && $data['reward_type'] =='fitsquad'){
-			return $this->updateRewardDetails($data);
+			return $this->updateRewardDetails($data, $customer);
 		}
 
 		if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
@@ -11206,7 +11206,7 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function updateRewardDetails($data){
+	public function updateRewardDetails($data, $customer){
 
 		$data = Input::all();
 
@@ -11224,9 +11224,6 @@ class CustomerController extends \BaseController {
 		if ($validator->fails()) {
 			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),200);
 		}
-
-		$jwt_token = Request::header('Authorization');
-		$decodedToken = $this->customerTokenDecode($jwt_token);
 		
 		$reward_detial = [];
 		if(!empty($data['tshirt_size'])){
@@ -11236,9 +11233,7 @@ class CustomerController extends \BaseController {
 		$reward_detial['address'] = $data;
 
 		try{
-			 $customer_id = $decodedToken->customer->_id;
 
-			$customer = Customer::where('_id', $customer_id)->first();
 			$customer->reward = $reward_detial;
 
 			$customer->save();
