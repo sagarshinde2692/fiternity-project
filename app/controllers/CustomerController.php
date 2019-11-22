@@ -11224,7 +11224,6 @@ class CustomerController extends \BaseController {
 		$reward_detial = [];
 		if(!empty($data['tshirt_size'])){
 			$reward_detial['tshirt_size'] = $data['tshirt_size'];
-			unset($data['tshirt_size']);
 		}
 
 		$address = [
