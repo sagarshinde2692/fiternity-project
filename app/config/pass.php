@@ -181,7 +181,6 @@ return [
                     -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
                     -This offer can be clubbed with other existing offers
                 </li>
-                <li>All offers on Fitternity's OnePass expire on 23 November</li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -233,7 +232,6 @@ return [
                     -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
                     -This offer can be clubbed with other existing offers
                 </li>
-                <li>All offers on Fitternity's OnePass expire on 23 November</li>
 
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -284,7 +282,6 @@ return [
                     -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
                     -This offer can be clubbed with other existing offers
                 </li>
-                <li>All offers on Fitternity's OnePass expire on 23 November</li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>

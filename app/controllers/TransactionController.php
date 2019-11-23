@@ -6233,14 +6233,14 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 | 21-23 Nov",'position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 | Offer Ending Soon",'position'=>$position++];
 
 
             // if($data['ratecard_amount'] >= 8000){
             //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"On Gyms & Studio Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: SUPER20",'position'=>$position++];
             // }
             if(!empty($data['finder_flags']['monsoon_flash_discount']) && $data['finder_flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 25){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 | 21-23 Nov",'position'=>$position++];
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 | Offer Ending Soon",'position'=>$position++];
             }
 
             if(!empty($data['brand_id']) && $data['brand_id']== 88){
