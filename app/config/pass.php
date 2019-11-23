@@ -179,7 +179,7 @@ return [
                     -This offer is available on OnePass Red (3,6,12 months) and OnePass Black (30,45 sessions) only<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will reach the users doorstep by 2nd week of December<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
-                    -This offer can be clubbed with other existing offers
+                    -This offer cannot be clubbed with other existing offers
                 </li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
@@ -230,7 +230,7 @@ return [
                     -This offer is available on OnePass Red (3,6,12 months) and OnePass Black (30,45 sessions) only<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will reach the users doorstep by 2nd week of December<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
-                    -This offer can be clubbed with other existing offers
+                    -This offer cannot be clubbed with other existing offers
                 </li>
 
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
@@ -280,7 +280,7 @@ return [
                     -This offer is available on OnePass Red (3,6,12 months) and OnePass Black (30,45 sessions) only<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will reach the users doorstep by 2nd week of December<br>
                     -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
-                    -This offer can be clubbed with other existing offers
+                    -This offer cannot be clubbed with other existing offers
                 </li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
