@@ -3166,6 +3166,18 @@ class TransactionController extends \BaseController {
                 $this->customersms->fitboxMixedReward($order->toArray());
             }
 
+            if(!empty($order['vk_puma_bag_reward'])){
+
+                $order['finder_name'] = !empty($order['finder_name']) ? $order['finder_name'] : null ;
+
+                $sms_data = [];
+                $sms_data['customer_phone'] = $order['customer_phone'];
+                $sms_data['message'] = "Congratulations on purchasing a fitness membership at ".$order['finder_name'].". Your Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 will reach your doorstep by 2nd week of December. Kindly feel free to reach out to us on 022-61094444 for queries
+                ";
+                        
+                $this->customersms->custom($custom);
+            }
+
             Log::info("successCommon returned");
             Log::info($order['_id']);
             return Response::json($resp);
