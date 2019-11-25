@@ -74,7 +74,7 @@ Class Metropolis {
                 );
             }
             else if (!empty($thirdPartyAcronym) && $thirdPartyAcronym=='ekn') {
-                $apikey = array_values(array_filter(Config::get('app.corporate_mapping'), function($corpMap) {
+                $apikey = array_values(array_filter(\Config::get('app.corporate_mapping'), function($corpMap) {
                     return ($corpMap['acronym']=='ekn');
                 }))[0]['key'];
                 $response = json_decode(
