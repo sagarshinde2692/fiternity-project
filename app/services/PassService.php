@@ -796,7 +796,7 @@ class PassService {
             return;
         }
         $customer = Customer::find($customerId);
-        $upper_amount = 1001;
+        $upper_amount = Config::get('pass.price_upper_limit');
         if(empty($date)){
             $date = date('d-m-Y', time());
         }
@@ -861,7 +861,7 @@ class PassService {
                 else if($passOrder['pass']['pass_type']=='hybrid') {
                     Log::info('inside hybrid passs:::::', [strtotime($date)]);
                     if(!empty($passOrder['pass']['corporate']) && $passOrder['pass']['corporate'] == 'sodexo') {
-                        $upper_amount = 751;
+                        $upper_amount = Config::get('pass.sodexo_price_upper_limit');
                     }
                     // $duration = $passOrder['pass']['duration'];
                     // if(empty($finder) || empty($finder['brand_id']) || !in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
