@@ -523,7 +523,7 @@ class Service extends \Basemodel{
                     $value['duration_type'] = 'sessions';
                 }
 
-                if(isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios']) && !isset($finder['flags']['monsoon_flash_discount']) && !isset($finder['flags']['monsoon_flash_discount_per'])){
+                if(isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
                     if(!empty($value['offers'][0]['remarks'])){
                         $value['offers'][0]['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: GET100";
                         $value['remarks_imp'] =  true;
