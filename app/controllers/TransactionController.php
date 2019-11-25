@@ -3175,7 +3175,7 @@ class TransactionController extends \BaseController {
                 $sms_data['message'] = "Congratulations on purchasing a fitness membership at ".$order['finder_name'].". Your Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 will reach your doorstep by 2nd week of December. Kindly feel free to reach out to us on 022-61094444 for queries
                 ";
                         
-                $this->customersms->custom($custom);
+                $this->customersms->custom($sms_data);
             }
 
             Log::info("successCommon returned");
