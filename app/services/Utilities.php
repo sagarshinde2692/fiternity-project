@@ -10942,7 +10942,7 @@ Class Utilities {
                 }
                 $return_arr['black_remarks_header'] = "\n\nFLAT 15% Off + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 \nBuy Now To Save More! Start At Your Convenience \nOffer Ending Soon";
                 $return_arr['red_remarks_header'] = "\n\nFLAT 15% Off + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 \nBuy Now To Save More! Start At Your Convenience \nOffer Ending Soon";
-                $return_arr['footer_text'] = "FLAT 15% Off On OnePass Membership +  Special Edition Virat Kohli-Puma Gym Bag";
+                $return_arr['footer_text'] = "FLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000";
                 return $return_arr;
                 break;
             case "gurgaon":
@@ -10983,7 +10983,7 @@ Class Utilities {
                 }
                 $return_arr['black_remarks_header'] = "\n\nFlash Sale: FLAT 35% Off + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 \nBuy Now To Save More! Start At Your Convenience \nOffer Ending Soon";
                 $return_arr['red_remarks_header'] = "\n\nFlash Sale: FLAT 35% Off + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 \nBuy Now To Save More! Start At Your Convenience \nOffer Ending Soon";
-                $return_arr['footer_text'] = "Flash Sale: FLAT 35% Off On OnePass Membership +  Special Edition Virat Kohli-Puma Gym Bag";
+                $return_arr['footer_text'] = "FLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000";
                 return $return_arr;
                 break;
             case "hyderabad":
@@ -11027,7 +11027,7 @@ Class Utilities {
                 }
                 $return_arr['black_remarks_header'] = "\n\nFlash Sale: FLAT 50% Off + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 \nBuy Now To Save More! Start At Your Convenience \nOffer Ending Soon";
                 $return_arr['red_remarks_header'] = "\n\nFlash Sale: FLAT 50% Off + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 \nBuy Now To Save More! Start At Your Convenience \nOffer Ending Soon";
-                $return_arr['footer_text'] = "Flash Sale: FLAT 50% Off On OnePass Membership +  Special Edition Virat Kohli-Puma Gym Bag";
+                $return_arr['footer_text'] = "FLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000";
                 return $return_arr;
                 break;
             default: return $return_arr;
