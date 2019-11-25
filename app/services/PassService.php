@@ -2588,7 +2588,7 @@ class PassService {
                     if(empty($data['membership_order_id'])){
                         // $rewardinfo['diwali_mixed_reward'] = true;
                         // $rewardinfo['fitbox_mixed_reward'] = true;
-                        $rewardinfo['vk_bag_reward'] = true;
+                        $rewardinfo['vk_bag_and_box_reward'] = true;
                         $rewardinfo['reward_ids'] = [79];
                     }
                 }
