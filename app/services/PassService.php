@@ -1905,7 +1905,7 @@ class PassService {
                 
             }
 
-            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per'])) || (!empty($data['coupon_flags']['extension_percent']))){
+            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per'])) || (!empty($data['coupon_flags']['extension_percent'])) || (!empty($data['coupon_flags']['vk_bag_and_box_reward']))){
 
                 if($payment_mode_type != 'pay_later'){
 
@@ -1914,6 +1914,11 @@ class PassService {
                             'field' => 'Coupon Discount',
                             'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "Extension"
                         );
+                    }else if(!empty($data['coupon_flags']['vk_bag_and_box_reward'])){
+                            $amount_summary[] = array(
+                                'field' => 'Coupon Discount',
+                                'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "Reward"
+                            );
                     }else{
                         $amount_summary[] = array(
                             'field' => 'Coupon Discount',
