@@ -4039,7 +4039,7 @@ class FindersController extends \BaseController {
             }else{	
 				$line = "\nMembership Plus - ".ucwords($data['finder']['title'])."\n\nLowest price Multifit membership + 6 Months All Access OnePass";
             }
-		}else if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) && !isset($data['finder']['flags']['monsoon_flash_discount']) && !isset($data['finder']['flags']['monsoon_flash_discount_per'])){
+		}else if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) && !(isset($data['finder']['flags']['monsoon_flash_discount']) && isset($data['finder']['flags']['monsoon_flash_discount_per']))){
 			if(empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
             
