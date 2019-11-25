@@ -10942,8 +10942,7 @@ Class Utilities {
                             $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. 
                             We request you to go to www.fitternity.com - My Profile - Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. 
-                            We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
@@ -11003,8 +11002,7 @@ Class Utilities {
                             $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. 
                             We request you to go to www.fitternity.com - My Profile - Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. 
-                            We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
@@ -11067,8 +11065,7 @@ Class Utilities {
                             $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. 
                             We request you to go to www.fitternity.com - My Profile - Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
 
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. 
-                            We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
