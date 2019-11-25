@@ -11230,7 +11230,7 @@ class CustomerController extends \BaseController {
 			"customer_name" => $data['customer_name'],
 			"customer_email" => $data['customer_email'],
 			"customer_phone" => $data['customer_phone'],
-			"address" => $data['customer_address']
+			"customer_address" => $data['customer_address']
 		];
 
 		$reward_detial['address'] = $address;
