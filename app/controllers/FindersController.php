@@ -8637,7 +8637,7 @@ class FindersController extends \BaseController {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
 					}else if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
 
-						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0) && !isset($finder['flags']['monsoon_flash_discount']) && !isset($finder['flags']['monsoon_flash_discount_per'])){
+						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0) || !(isset($finder['flags']['monsoon_flash_discount']) && isset($finder['flags']['monsoon_flash_discount_per']))){
 							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."");
 						}else{
 							if($price >= 8000){
