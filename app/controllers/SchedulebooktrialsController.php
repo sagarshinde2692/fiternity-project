@@ -4799,7 +4799,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $this->customersms->bookTrialCancelByVendor($booktrial->toArray());
 
-        return $this->cancel($trial_id, 'vendor', $reason);
+        return $this->cancel($trial_id, 'vendor', $reason, true);
     }
 
 
