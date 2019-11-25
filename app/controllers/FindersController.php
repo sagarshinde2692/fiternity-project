@@ -1415,7 +1415,7 @@ class FindersController extends \BaseController {
 					$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br>Last Few Hours Left!";
 					$response['show_timer'] = true;
 				
-				}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+				}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id'))){
 
 					$vendor_stripe_line = "Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships <br> Last Few Hours Left!";
 
