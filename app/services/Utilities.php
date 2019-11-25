@@ -10941,9 +10941,9 @@ Class Utilities {
         return array_unique($image_new);
     }
 
-    public function voucherImagebasedAppVersion(&$voucher, $from=null){
+    public function voucherImagebasedAppVersion(&$voucher, $from=null, $customer=null){
 
-        if(!empty($this->device_type) && !empty($this->app_version) && (($this->device_type=='android' && $this->app_version <= '5.31') || ($this->device_type=='ios' && $this->app_version <= '5.2.7'))){  
+        if(!newFitsquadCompatabilityVersion()){  
             Log::info('app version anded device type::::', [$this->device_type,$this->app_version]);
             if(empty($from) && !empty($voucher['image']) && is_array($voucher['image'])){
                 $image = $voucher['image'];
@@ -10954,9 +10954,18 @@ Class Utilities {
                 // $voucher['header']['image'] = $voucher['header']['image_new']; 
                 unset($voucher['header']['image_new']); 
             }
-        }else if(!empty($from)){
+        }else if(!newFitsquadCompatabilityVersion() && !empty($from)){
                 $voucher['header']['image'] = $voucher['header']['image_new']; 
                 unset($voucher['header']['image_new']); 
+        }
+        
+        if(newFitsquadCompatabilityVersion() && empty($customer['loyalty']['grid_version'])) {
+            return [
+                [
+                    "text" => "",
+                    "url" => $voucher['image']
+                ]
+            ];
         }
         if(!empty($from)){
             return;
