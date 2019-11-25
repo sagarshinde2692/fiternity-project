@@ -796,7 +796,7 @@ class PassService {
             return;
         }
         $customer = Customer::find($customerId);
-        $upper_amount = 1000;
+        $upper_amount = 1001;
         if(empty($date)){
             $date = date('d-m-Y', time());
         }
@@ -861,7 +861,7 @@ class PassService {
                 else if($passOrder['pass']['pass_type']=='hybrid') {
                     Log::info('inside hybrid passs:::::', [strtotime($date)]);
                     if(!empty($passOrder['pass']['corporate']) && $passOrder['pass']['corporate'] == 'sodexo') {
-                        $upper_amount = 750;
+                        $upper_amount = 751;
                     }
                     // $duration = $passOrder['pass']['duration'];
                     // if(empty($finder) || empty($finder['brand_id']) || !in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
@@ -983,14 +983,14 @@ class PassService {
                 }
             }
             Log::info('allow session uppper amount', [$upper_amount]);
-            if (($amount> $upper_amount && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
+            if (($amount>= $upper_amount && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
                 // over 1000
                 return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, /*'profile_incomplete' => !$profile_completed,*/ 'pass_branding' => $pass_branding];
             }
             else {
                 // below 1001
                 
-            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding/*, 'profile_incomplete' => !$profile_completed*/ ];
+            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount/*, 'profile_incomplete' => !$profile_completed*/ ];
 
                 //return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }

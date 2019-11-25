@@ -760,7 +760,7 @@ class ServiceController extends \BaseController {
 			}
 		}
 		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-			
+			Log::info('finders id', [$finder_id]);
 			$allowSession = $this->passService->allowSession(1, $customer_id, $date, $finder_id, true);
 			// if(empty($allowSession['allow_session'])) {
 			// 	$allowSession = $allowSession['allow_session'];
@@ -940,14 +940,16 @@ class ServiceController extends \BaseController {
 						$rsh['price_only']=(isset($p_np['peak']))?$p_np['peak']:((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $p_np['non_peak'] + $p_np['non_peak_discount']:"");
                         $nrsh['price_only']=(isset($p_np['non_peak']))?$p_np['non_peak']:"";
                         Log::info("rsh price",[$rsh['price_only']]);
-                        Log::info("nrsh price",[$rsh['price_only']]);
-						if(!empty($allowSession['allow_session']) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+                        Log::info("nrsh price",[$rsh['price_only'], $allowSession['allow_session']]);
+						if(!empty($allowSession['allow_session']) && ($allowSession['allow_session']) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
-							if($rsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
+							Log::info('uppers price config', [Config::get('pass.price_upper_limit')]);
+							if($rsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)){
+								Log::info('rush hour insoide stting free via fitternity');
 								$rsh['price'] = Config::get('app.onepass_free_string');
 							}
 							
-							if($nrsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
+							if($nrsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
 							}
 							
