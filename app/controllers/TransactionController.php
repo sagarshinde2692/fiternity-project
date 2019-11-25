@@ -1525,7 +1525,7 @@ class TransactionController extends \BaseController {
             }
             
             
-            if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']))){
+            if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']) || !empty($data['coupon_flags']['vk_bag_and_box_reward']))){
                 $resp['data']["coupon_details"] = [];
                 $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
                 $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
@@ -2604,6 +2604,15 @@ class TransactionController extends \BaseController {
                                     array_set($data, 'fitbox_mixed_reward', true);
                                     array_set($data, 'multifit_fitbox_mixed_reward', true);
                                 }
+                            }else if(!empty($order['finder_id']) && in_array($order['finder_id'], Config::get('app.fitbox_reward_vendor_id'))){
+                                if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                                    array_set($data, 'fitbox_mixed_reward', true);
+                                    array_set($data, 'other_fitbox_mixed_reward', true);
+                                }
+                            }else{
+                                if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                                    array_set($data, 'vk_puma_bag_reward', true);
+                                }
                             }
 
                             $reward_type = $value->reward_type;
@@ -3155,6 +3164,18 @@ class TransactionController extends \BaseController {
 
             if(!empty($order['fitbox_mixed_reward'])){
                 $this->customersms->fitboxMixedReward($order->toArray());
+            }
+
+            if(!empty($order['vk_puma_bag_reward'])){
+
+                $order['finder_name'] = !empty($order['finder_name']) ? $order['finder_name'] : null ;
+
+                $sms_data = [];
+                $sms_data['customer_phone'] = $order['customer_phone'];
+                $sms_data['message'] = "Congratulations on purchasing a fitness membership at ".$order['finder_name'].". Your Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 will reach your doorstep by 2nd week of December. Kindly feel free to reach out to us on 022-61094444 for queries
+                ";
+                        
+                $this->customersms->custom($sms_data);
             }
 
             Log::info("successCommon returned");
@@ -6235,24 +6256,25 @@ class TransactionController extends \BaseController {
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
             $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 | Offer Ending Soon",'position'=>$position++];
 
-
-            // if($data['ratecard_amount'] >= 8000){
-            //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"On Gyms & Studio Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: SUPER20",'position'=>$position++];
-            // }
-            if(!empty($data['finder_flags']['monsoon_flash_discount']) && $data['finder_flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 25){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 | Offer Ending Soon",'position'=>$position++];
-            }
-
             if(!empty($data['brand_id']) && $data['brand_id']== 88){
                 if($data['ratecard_amount'] >= 8000){
                     $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15",'position'=>$position++];
                 }else{
                     $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices | Use Code: FITME15",'position'=>$position++];
                 }
+            }else{
+                if($data['ratecard_amount'] >= 8000){
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT | 26-28Nov",'position'=>$position++];
+                }else{
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT | 26-28 Nov",'position'=>$position++];
+                }
             }
+
+            // if(!empty($data['finder_flags']['monsoon_flash_discount']) && $data['finder_flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 25){
+                
+            // }
             
-            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
-                //  || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0)
+            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0) || !(isset($data['finder_flags']['monsoon_flash_discount']) && isset($data['finder_flags']['monsoon_flash_discount_per']))){ 
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
                 
 			}
@@ -6260,7 +6282,7 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: CB100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: GET100','position'=>$position++];
 
             $first_session_free = $this->firstSessionFree($data);
             if(!empty($first_session_free) && $first_session_free){
@@ -6271,8 +6293,7 @@ class TransactionController extends \BaseController {
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
 
-            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled']) || (!empty($data['brand_id']) && $data['brand_id'] == 88)){
-                // ||(isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)
+            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled']) || (!empty($data['brand_id']) && $data['brand_id'] == 88) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0) || !(isset($data['finder_flags']['monsoon_flash_discount']) && isset($data['finder_flags']['monsoon_flash_discount_per']))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
         }
