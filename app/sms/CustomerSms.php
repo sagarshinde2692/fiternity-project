@@ -14,8 +14,9 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'VipTrial-Instant-Customer';
 		}
 
-		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
-			$label = 'AutoTrial-Instant-Customer-abg';
+
+		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
+			$label = 'AutoTrial-Instant-Customer-Reliance';
 		}
 
 		$header = $this->multifitKioskOrder($data);
@@ -23,8 +24,8 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'AutoTrial-Instant-Multifit-Customer';
 		}
 
-		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
-			$label = 'AutoTrial-Instant-Customer-Reliance';
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
+			$label = 'AutoTrial-Instant-Customer-abg';
 		}
 
 		$to = $data['customer_phone'];

@@ -5588,8 +5588,14 @@ class CustomerController extends \BaseController {
 
 		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days') && $change_start_date && !$cult_vendor_flag && empty($order['studio_extended_validity'])){
 
-			$min_date = strtotime('+1 days');
-			$max_date = strtotime($order['created_at'].'+29 days');
+			if(!empty($order['servicecategory_id']) && in_array($order['servicecategory_id'], [65])){
+				$min_date = strtotime('+1 days');
+				$max_date = strtotime($order['created_at'].'+30 days');
+			}else{
+				$min_date = strtotime('+1 days');
+				$max_date = strtotime($order['created_at'].'+15 days');
+			}
+			
 			$available_days = null;
 
 
@@ -5872,7 +5878,8 @@ class CustomerController extends \BaseController {
 					"message"=>"Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership."
 				]
 			];
-				
+			
+			$action['change_start_date_request'] = null;
 		}
 
 		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date']) && $renew_membership){
@@ -7789,7 +7796,8 @@ class CustomerController extends \BaseController {
                     $response['finder_id'] = $data['finder_id'];
                     // $response['skip'] = Config::get('app.url')."/customer/skipreview/".$data['_id'];
                     $response['optional'] = true;
-                    $response['show_rtc'] = true;
+                    // $response['show_rtc'] = true;
+                    $response['show_rtc'] = false;
                 }   
 
 		}

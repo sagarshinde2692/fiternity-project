@@ -51,6 +51,11 @@ return array(
 	// "webhook_secret_key"=>"qwepoifghtyvb",
 	// "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
 	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-stage.cloudfunctions.net/',
+	// "corporate_mapping" => [
+	// 	[ "id" => "123456789123421", "key" => "wfuefiesieuwfuururuuiwri", "name" => "Goqii", "acronym" => "goqii", "dummy_email_domain" => "@goqii.com" ],
+	// 	[ "id" => "111332255567802", "key" => "wfuefiesekincareuuvfiwri", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ],
+	// 	[ "id" => "236348957967467", "key" => "wdsdfiavtruworthvuvfsdgs", "name" => "Truworth", "acronym" => "twh", "dummy_email_domain" => "@truworth.com" ]
+	// ],
 
     //beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -100,6 +105,9 @@ return array(
 	'ffEnquiryAPI'=>'http://api.fitnessforce.com/prospect',
 	'uploadStepsStage'=>'https://asia-east2-fitness-steps-live.cloudfunctions.net/',
     'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
+	"corporate_mapping" => [
+	    [ "id" => "555123098567", "key" => "sfgvdhfjekincarevdfggjfc", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ]
+	],
 
 	"app_download_url_branch_io" => "https://ftrnty.app.link/8v6VWNGwi0",
     'creditMap' => [
@@ -1078,7 +1086,7 @@ return array(
 
     'multifit_email'=>'info@multifit.co.in',
     
-    'no_convinience_finder_ids'=>[1259, 1263, 1266, 12986],
+    'no_convinience_finder_ids'=>[1259, 1263, 1266, 12986, 6168],
 
     'discount_vendors'=>[12592,13251,13252,14526,11437,15882,12793,13941,12794,12803,13282,11397,14206,13265,13266,14168,11580,14230,14278,12730,14274,14226,14439,14803,11778,13441,14529,11622,13963,14046,11622,13342,13345,13349,13352,11409,13382,12371,11613,14292,11372,13099,14119,14438,14293],
 
@@ -1095,7 +1103,7 @@ return array(
 	'non_flexi_service_cat'=>[111, 65, 5],
 	
 	// 'camp_excluded_vendor_id'=>[1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644,579,1233,1260,1261,1262,1874,2105,9171,9178,5742,10675,13791],
-	'camp_excluded_vendor_id'=>[9600,9954,10674,10970,11021,12208,14102,16062,16449,16450,16636,16644,579,1233,1260,1261,1262,1874,2105,9171,9178,5742,10675,13791],
+	'camp_excluded_vendor_id'=>[579,1233,1260,1261,1262,1874,2105,9171,9178,5742,10675,13791],
 
 	'occasion_dates' => ['2019-10-26', '2019-10-29'],
     
