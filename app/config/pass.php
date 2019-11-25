@@ -160,7 +160,7 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
-                <li><b>Now Or Never Sale</b></li>
+                <li>Buy Now Get More Sale<li>
                 <li>If the offer on OnePass is a Discount (with code)<br>
                     - Discount of upto 30% is pre-applied on MRP<br>
                     - Maximum discount offered is upto INR 3,000<br>
@@ -168,19 +168,22 @@ return [
                     - Discount varies across different types of pass<br>
                     - You can only avail one offer at a time<br>
                     - This offer cannot be clubbed with any other existing offer
-                </li>    
-                <li>If the offer on OnePass is a Discount (without code)<br>
-                    - Discount of upto 50% is pre-applied on MRP<br>
-                    - Discount varies across different types of pass<br>
-                    - You can only avail one offer at a time<br>
-                    - This offer cannot be clubbed with any other existing offer
                 </li>
-                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500<br>
+                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag and/or Healthy Food Hamper With Total Worth Of INR 5000<br>
                     -This offer is available on OnePass Red (3,6,12 months) and OnePass Black (30,45 sessions) only<br>
-                    -The Special Edition Virat Kohli-Puma Gym Bag will reach the users doorstep by 2nd week of December<br>
-                    -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
+                    -The Special Edition Virat Kohli-Puma Gym Bag and/or Healthy Food Hamper will reach the users doorstep by 2nd week of December<br>
+                    -This offer will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
                     -This offer cannot be clubbed with other existing offers
                 </li>
+                <li>If the offer on OnePass is Cashback<br>
+                    -The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
+                    -The FitCash received as cashback is not applicable on purchase of 15-day OnePass red.<br>
+                    -The validity of FitCash received as cashback is for 105 days only<br>
+                    - Discount varies across different types of pass<br>
+                    -This offer cannot be clubbed with any other existing offer<br>
+                    -The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts
+                </li>
+                <li>All offers on Fitternity's OnePass expire on 30 November</li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -211,7 +214,7 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li><b>Now Or Never Sale</b></li>
+                <li>Buy Now Get More Sale<li>
                 <li>If the offer on OnePass is a Discount (with code)<br>
                     - Discount of upto 30% is pre-applied on MRP<br>
                     - Maximum discount offered is upto INR 3,000<br>
@@ -219,19 +222,22 @@ return [
                     - Discount varies across different types of pass<br>
                     - You can only avail one offer at a time<br>
                     - This offer cannot be clubbed with any other existing offer
-                </li>    
-                <li>If the offer on OnePass is a Discount (without code)<br>
-                    - Discount of upto 50% is pre-applied on MRP<br>
-                    - Discount varies across different types of pass<br>
-                    - You can only avail one offer at a time<br>
-                    - This offer cannot be clubbed with any other existing offer
                 </li>
-                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500<br>
+                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag and/or Healthy Food Hamper With Total Worth Of INR 5000<br>
                     -This offer is available on OnePass Red (3,6,12 months) and OnePass Black (30,45 sessions) only<br>
-                    -The Special Edition Virat Kohli-Puma Gym Bag will reach the users doorstep by 2nd week of December<br>
-                    -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
+                    -The Special Edition Virat Kohli-Puma Gym Bag and/or Healthy Food Hamper will reach the users doorstep by 2nd week of December<br>
+                    -This offer will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
                     -This offer cannot be clubbed with other existing offers
                 </li>
+                <li>If the offer on OnePass is Cashback<br>
+                    -The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
+                    -The FitCash received as cashback is not applicable on purchase of 15-day OnePass red.<br>
+                    -The validity of FitCash received as cashback is for 105 days only<br>
+                    - Discount varies across different types of pass<br>
+                    -This offer cannot be clubbed with any other existing offer<br>
+                    -The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts
+                </li>
+                <li>All offers on Fitternity's OnePass expire on 30 November</li>
 
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -261,7 +267,7 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li><b>Now Or Never Sale</b></li>
+                <li>Buy Now Get More Sale<li>
                 <li>If the offer on OnePass is a Discount (with code)<br>
                     - Discount of upto 30% is pre-applied on MRP<br>
                     - Maximum discount offered is upto INR 3,000<br>
@@ -269,19 +275,22 @@ return [
                     - Discount varies across different types of pass<br>
                     - You can only avail one offer at a time<br>
                     - This offer cannot be clubbed with any other existing offer
-                </li>    
-                <li>If the offer on OnePass is a Discount (without code)<br>
-                    - Discount of upto 50% is pre-applied on MRP<br>
-                    - Discount varies across different types of pass<br>
-                    - You can only avail one offer at a time<br>
-                    - This offer cannot be clubbed with any other existing offer
                 </li>
-                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500<br>
+                <li>If the offer on OnePass is Special Edition Virat Kohli-Puma Gym Bag and/or Healthy Food Hamper With Total Worth Of INR 5000<br>
                     -This offer is available on OnePass Red (3,6,12 months) and OnePass Black (30,45 sessions) only<br>
-                    -The Special Edition Virat Kohli-Puma Gym Bag will reach the users doorstep by 2nd week of December<br>
-                    -The Special Edition Virat Kohli-Puma Gym Bag will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
+                    -The Special Edition Virat Kohli-Puma Gym Bag and/or Healthy Food Hamper will reach the users doorstep by 2nd week of December<br>
+                    -This offer will not be available on OnePass Black 15 sessions and OnePass Red 15 days & 1 month<br>
                     -This offer cannot be clubbed with other existing offers
                 </li>
+                <li>If the offer on OnePass is Cashback<br>
+                    -The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
+                    -The FitCash received as cashback is not applicable on purchase of 15-day OnePass red.<br>
+                    -The validity of FitCash received as cashback is for 105 days only<br>
+                    - Discount varies across different types of pass<br>
+                    -This offer cannot be clubbed with any other existing offer<br>
+                    -The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts
+                </li>
+                <li>All offers on Fitternity's OnePass expire on 30 November</li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>

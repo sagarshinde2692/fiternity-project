@@ -1528,6 +1528,7 @@ class PassService {
             'code' => $data['code'],
             'start_date' => strtotime($data['start_date']),
             'membership_order_id' => !empty($data['membership_order_id']) ? $data['membership_order_id'] : null,
+            'coupon_flags' => !empty($data['coupon_flags']) ? $data['coupon_flags'] : null,
         );
 
         if(!empty($data['onepass_attachment_type'])){
