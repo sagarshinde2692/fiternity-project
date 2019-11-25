@@ -4536,6 +4536,7 @@ if (!function_exists('setNewToken')) {
             $update_header = true;
         }else if(empty($pass)){
             unset($customer_data['pass']);
+            unset($customer_data['pass_id']);
             unset($customer_data['pass_start_date']);
             unset($customer_data['pass_expiry_date']);
             unset($customer_data['pass_type']);
