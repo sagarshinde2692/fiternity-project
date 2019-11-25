@@ -2604,6 +2604,15 @@ class TransactionController extends \BaseController {
                                     array_set($data, 'fitbox_mixed_reward', true);
                                     array_set($data, 'multifit_fitbox_mixed_reward', true);
                                 }
+                            }else if(!empty($order['finder_id']) && in_array($order['finder_id'], Config::get('app.fitbox_reward_vendor_id'))){
+                                if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                                    array_set($data, 'fitbox_mixed_reward', true);
+                                    array_set($data, 'other_fitbox_mixed_reward', true);
+                                }
+                            }else{
+                                if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                                    array_set($data, 'vk_puma_bag_reward', true);
+                                }
                             }
 
                             $reward_type = $value->reward_type;

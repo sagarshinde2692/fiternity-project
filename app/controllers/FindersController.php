@@ -1410,37 +1410,54 @@ class FindersController extends \BaseController {
                 $vendor_stripe_line = "";
 				$pricemore = false;
 				
-				// if(isset($response['finder']['flags']['monsoon_flash_discount_per']) && $response['finder']['flags']['monsoon_flash_discount_per'] == 0){
-				// 	$vendor_stripe_line = "Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships <br> Last Few Hours Left!";
+				if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
+					
+					$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br>Last Few Hours Left!";
+					$response['show_timer'] = true;
+				
+				}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
 
-				// }else{
-					// foreach($response['finder']['services'] as &$service){
-					// 	foreach($service['serviceratecard'] as &$ratecard){
-					// 		if($ratecard['type'] == 'membership'){
-					// 			$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-							if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
-								$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br>Last Few Hours Left!";
-								$response['show_timer'] = true;
-							}else if(!empty($finder['flags']['monsoon_flash_discount']) && $finder['flags']['monsoon_flash_discount'] == 'without_cap' && !empty($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 25){
-								$vendor_stripe_line = "FLAT 25% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5<br>Offer Ending Soon";
-							}else{
-								$vendor_stripe_line = "FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5<br>Offer Ending Soon";
+					$vendor_stripe_line = "Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships <br> Last Few Hours Left!";
+
+				}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) && !(isset($finder['flags']['monsoon_flash_discount_per']) &&  $finder['flags']['monsoon_flash_discount_per'] == 0)){
+					
+					$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT <br> 26-28 Nov";
+
+					foreach($response['finder']['services'] as &$service){
+						foreach($service['serviceratecard'] as &$ratecard){
+							if($ratecard['type'] == 'membership'){
+								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+								if($price >= 8000){
+									$pricemore = true;
+																	
+									$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT <br> 26-28 Nov";
+								}
 							}
-			
-					// 			if($price >= 8000){
-					// 				$pricemore = true;
-									
-					// 				$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br> Last Few Hours Left!";
-					// 			}
-					// 		}
-					// 	}
-					// 	if($pricemore){
-					// 		break;
-					// 	}
-					// }
-				// }
+						}
+						if($pricemore){
+							break;
+						}
+					}
+				}else{
+					$vendor_stripe_line = "";
+					foreach($response['finder']['services'] as &$service){
+						foreach($service['serviceratecard'] as &$ratecard){
+							if($ratecard['type'] == 'membership'){
+								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+								if($price >= 8000){
+									$pricemore = true;
+																	
+									$vendor_stripe_line = "Get Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 With Your Purchase <br> 26-28 Nov";
+								}
+							}
+						}
+						if($pricemore){
+							break;
+							}
+					}
+				}
 
-                if(empty($response['vendor_stripe_data']['text']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
+                if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
 						
 						if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
