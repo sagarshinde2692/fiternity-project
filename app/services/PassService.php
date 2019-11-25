@@ -796,7 +796,7 @@ class PassService {
             return;
         }
         $customer = Customer::find($customerId);
-
+        $upper_amount = 1000;
         if(empty($date)){
             $date = date('d-m-Y', time());
         }
@@ -860,6 +860,9 @@ class PassService {
                 }
                 else if($passOrder['pass']['pass_type']=='hybrid') {
                     Log::info('inside hybrid passs:::::', [strtotime($date)]);
+                    if(!empty($passOrder['pass']['corporate']) && $passOrder['pass']['corporate'] == 'sodexo') {
+                        $upper_amount = 750;
+                    }
                     // $duration = $passOrder['pass']['duration'];
                     // if(empty($finder) || empty($finder['brand_id']) || !in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
                     //     Log::info('inside hybrid passs:::::', [$finder, $finderId,  array_column($passOrder['pass']['brands'], '_id')]);
@@ -868,16 +871,11 @@ class PassService {
 
                     if($schedule_time<strtotime($passOrder['end_date'])){
                         // $month=(int)date("n",strtotime($date));
-                    Log::info('inside hybrid passs::::: after end date ::::::::::', [strtotime($date)]);
 
                         Booktrial::$withoutAppends = true;
                         $todaysBooking = Booktrial::where('pass_order_id', $passOrder['_id'])->where('schedule_date', new \MongoDate($schedule_time))->where('going_status_txt', '!=', 'cancel')->first();
 
-                        Log::info('inside hybrid passs::::: after end date ::::::::::2222', [strtotime($date), $todaysBooking]);
                         if(empty($todaysBooking)) {
-                            // $sessionsTotal = $passOrder['pass']['total_sessions'];
-                            // $monthlySessionsTotal = $passOrder['pass']['monthly_total_sessions'];
-                            // Log::info('inside hybrid passs::::: counts', [$sessionsTotal, $monthlySessionsTotal, $month]);
                             
                             $sessionsUsed = $passOrder['onepass_sessions_used'];
                             $sessionsTotal = $passOrder['onepass_sessions_total'];
@@ -984,7 +982,7 @@ class PassService {
                     }
                 }
             }
-            if (($amount>1000 && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
+            if (($amount> $upper_amount && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
                 // over 1000
                 return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, /*'profile_incomplete' => !$profile_completed,*/ 'pass_branding' => $pass_branding];
             }
