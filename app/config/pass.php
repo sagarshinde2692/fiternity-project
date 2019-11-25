@@ -183,7 +183,7 @@ return [
                     -This offer cannot be clubbed with any other existing offer<br>
                     -The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts
                 </li>
-                <li>All offers on Fitternity's OnePass expire on 30 November</li>
+                <li>All offers on Fitternity's OnePass expire on 28 November</li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -237,7 +237,7 @@ return [
                     -This offer cannot be clubbed with any other existing offer<br>
                     -The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts
                 </li>
-                <li>All offers on Fitternity's OnePass expire on 30 November</li>
+                <li>All offers on Fitternity's OnePass expire on 28 November</li>
 
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -290,7 +290,7 @@ return [
                     -This offer cannot be clubbed with any other existing offer<br>
                     -The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts
                 </li>
-                <li>All offers on Fitternity's OnePass expire on 30 November</li>
+                <li>All offers on Fitternity's OnePass expire on 28 November</li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
