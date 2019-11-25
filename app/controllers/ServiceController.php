@@ -760,6 +760,7 @@ class ServiceController extends \BaseController {
 			}
 		}
 		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+			
 			$allowSession = $this->passService->allowSession(1, $customer_id, $date, $finder_id, true);
 			// if(empty($allowSession['allow_session'])) {
 			// 	$allowSession = $allowSession['allow_session'];
@@ -940,10 +941,9 @@ class ServiceController extends \BaseController {
                         $nrsh['price_only']=(isset($p_np['non_peak']))?$p_np['non_peak']:"";
                         Log::info("rsh price",[$rsh['price_only']]);
                         Log::info("nrsh price",[$rsh['price_only']]);
-						if(!empty($allowSession['allow_session']) && ($allowSession['allow_session']) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+						if(!empty($allowSession['allow_session']) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
 							if($rsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)){
-								Log::info('rush hour insoide stting free via fitternity');
 								$rsh['price'] = Config::get('app.onepass_free_string');
 							}
 							
