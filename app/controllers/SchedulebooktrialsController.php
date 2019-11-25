@@ -8769,7 +8769,8 @@ class SchedulebooktrialsController extends \BaseController {
             if ($isBackendReq) {
                 Log::info("it is a backend request");
                 $metropolis = new Metropolis();
-                $metropolis->cancelThirdPartySession($cust['third_party_details'][$thirdPartyAcronym]['third_party_token_id'], $booktrial['_id'], $resp['message']);
+                $tokenId = !empty($cust['third_party_details'][$thirdPartyAcronym]['third_party_token_id'])?$cust['third_party_details'][$thirdPartyAcronym]['third_party_token_id']:null;
+                $metropolis->cancelThirdPartySession($thirdPartyAcronym, $tokenId, $booktrial['_id'], $resp['message']);
             }
         }
     }

@@ -51,6 +51,11 @@ return array(
 	// "webhook_secret_key"=>"qwepoifghtyvb",
 	// "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
 	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-stage.cloudfunctions.net/',
+	// "corporate_mapping" => [
+	// 	[ "id" => "123456789123421", "key" => "wfuefiesieuwfuururuuiwri", "name" => "Goqii", "acronym" => "goqii", "dummy_email_domain" => "@goqii.com" ],
+	// 	[ "id" => "111332255567802", "key" => "wfuefiesekincareuuvfiwri", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ],
+	// 	[ "id" => "236348957967467", "key" => "wdsdfiavtruworthvuvfsdgs", "name" => "Truworth", "acronym" => "twh", "dummy_email_domain" => "@truworth.com" ]
+	// ],
 
     //beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -100,6 +105,9 @@ return array(
 	'ffEnquiryAPI'=>'http://api.fitnessforce.com/prospect',
 	'uploadStepsStage'=>'https://asia-east2-fitness-steps-live.cloudfunctions.net/',
     'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
+	"corporate_mapping" => [
+	    [ "id" => "555123098567", "key" => "sfgvdhfjekincarevdfggjfc", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ]
+	],
 
 	"app_download_url_branch_io" => "https://ftrnty.app.link/8v6VWNGwi0",
     'creditMap' => [
