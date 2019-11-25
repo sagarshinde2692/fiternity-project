@@ -6274,7 +6274,7 @@ class TransactionController extends \BaseController {
                 
             // }
             
-            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0)){ 
+            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0) && isset($data['finder_flags']['monsoon_flash_discount']) && isset($data['finder_flags']['monsoon_flash_discount_per'])){ 
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
                 
 			}
@@ -6293,7 +6293,7 @@ class TransactionController extends \BaseController {
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
 
-            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled']) || (!empty($data['brand_id']) && $data['brand_id'] == 88) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0)){
+            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled']) || (!empty($data['brand_id']) && $data['brand_id'] == 88) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0) && isset($data['finder_flags']['monsoon_flash_discount']) && isset($data['finder_flags']['monsoon_flash_discount_per'])){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
         }

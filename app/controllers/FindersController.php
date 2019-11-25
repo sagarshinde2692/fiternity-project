@@ -3967,9 +3967,9 @@ class FindersController extends \BaseController {
 							$op_android_line = "<u>Buy Now Get More Sale</u><br><br>26-28 Nov <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT";
 							
 						}else{
-							$ios_line = "\nBuy Now Get More Sale\n\n26-28 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
+							$ios_line = "\nBuy Now Get More Sale\n\n26-28 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
 		
-								$op_ios_line = "\nBuy Now Get More Sale\n\n26-28 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT";
+							$op_ios_line = "\nBuy Now Get More Sale\n\n26-28 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT";
 						}
 	
 						if($price >= 8000){
@@ -4039,7 +4039,7 @@ class FindersController extends \BaseController {
             }else{	
 				$line = "\nMembership Plus - ".ucwords($data['finder']['title'])."\n\nLowest price Multifit membership + 6 Months All Access OnePass";
             }
-		}else if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
+		}else if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) && !isset($data['finder']['flags']['monsoon_flash_discount']) && !isset($data['finder']['flags']['monsoon_flash_discount_per'])){
 			if(empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
             
@@ -5636,7 +5636,7 @@ class FindersController extends \BaseController {
                             // }
 						}
 
-						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88)){
+						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88)  && !isset($finder['flags']['monsoon_flash_discount']) && !isset($finder['flags']['monsoon_flash_discount_per'])){
 							unset($ratecard['remarks']);
 						}
 						
@@ -8637,7 +8637,7 @@ class FindersController extends \BaseController {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
 					}else if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
 
-						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)){
+						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0) && !isset($finder['flags']['monsoon_flash_discount']) && !isset($finder['flags']['monsoon_flash_discount_per'])){
 							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."");
 						}else{
 							if($price >= 8000){
@@ -8918,7 +8918,7 @@ class FindersController extends \BaseController {
 				unset($rateCard['remarks_imp']);
 			}
 
-			if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88)){
+			if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88) && !isset($finder['flags']['monsoon_flash_discount']) && !isset($finder['flags']['monsoon_flash_discount_per'])){
 				unset($rateCard['remarks']);
 				unset($rateCard['remarks_imp']);
 			}
