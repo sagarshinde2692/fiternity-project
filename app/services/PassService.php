@@ -2583,12 +2583,12 @@ class PassService {
             if(!empty($data['pass'])){
                 $pass = $data['pass'];
 
-                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && in_array($pass['duration'], [15, 30]) || !empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['duration'], [15]))){
+                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['duration'], [15]))){
 
                     if(empty($data['membership_order_id'])){
                         // $rewardinfo['diwali_mixed_reward'] = true;
                         // $rewardinfo['fitbox_mixed_reward'] = true;
-                        $rewardinfo['vk_bag_and_box_reward'] = true;
+                        $rewardinfo['vk_bag_reward'] = true;
                         $rewardinfo['reward_ids'] = [79];
                     }
                 }
