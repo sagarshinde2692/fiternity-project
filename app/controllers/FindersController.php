@@ -1417,8 +1417,8 @@ class FindersController extends \BaseController {
 				
 				}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id'))){
 
-					$vendor_stripe_line = "Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships <br> Last Few Hours Left!";
-
+					$vendor_stripe_line = "LOWEST PRICES + HANDPICKED HEALTHY FOOD HAMPER WORTH INR 2,500 ON MEMBERSHIPS | OFFER ENDING SOON";
+					$response['vendor_stripe_data']['text'] = $vendor_stripe_line;
 				}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) && !(isset($finder['flags']['monsoon_flash_discount_per']) &&  $finder['flags']['monsoon_flash_discount_per'] == 0) && isset($finder['flags']['monsoon_flash_discount']) && isset($finder['flags']['monsoon_flash_discount_per'])){
 					
 					$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT <br> 26-28 Nov";
