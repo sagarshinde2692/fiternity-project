@@ -380,6 +380,19 @@ if(!function_exists('citywise_category')){
                 // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
 
+            $cat['kolkata'] = [
+                ["name" => "All Fitness Options","slug" => "fitness", "_id" => 0],
+                ["name" => "Gyms","slug" => "gyms","_id" => 5],
+                ["name" => "Fitness Studios","slug" => "fitness-studios", "_id" => 43],
+                ["name" => "Zumba","slug" => "zumba-classes","_id" => 12],
+                ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes", "_id" => 8],
+                ["name" => "Yoga","slug" => "yoga-classes", "_id" => 6],
+                ["name" => "Cross Functional Training","slug" => "functional-training","_id" => 35],
+                ["name" => "Aerobics","slug" => "aerobics"],
+                ["name" => "Dance","slug" => "dance-classes", "_id" => 7],
+                ["name" => "Luxury Hotels","slug" => "luxury-hotels", "_id" => 47],
+                ["name" => "Swimming","slug" => "swimming-pools", "_id" => 10]
+            ];
 
             $cat['all'] = [
                 ["name" => "All Fitness Options","slug" => "fitness", "_id" => 0],
@@ -470,6 +483,10 @@ if(!function_exists('getmy_city')){
                 break;	
 			case "jaipur":
                 return "jaipur";
+                break;
+			case "calcutta":
+			case "kolkata":
+                return "kolkata";
                 break;		
             default: return $city;
         };
@@ -548,7 +565,12 @@ if(!function_exists('ifCityPresent')){
             case "faridabad":
                 $send_city = "faridabad";
                 $ifcity = true;
-                break;		    
+                break;		
+            case "calcutta":
+            case "kolkata":
+                $send_city = "kolkata";
+                $ifcity = true;
+                break;
         };
         if($ifcity) {
             $bypass = false;
@@ -3973,6 +3995,9 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
             case 'faridabad':
                 $ids = [65, 1, 123, 2];
                 break;		    
+            case 'kolkata':
+                $ids = [65, 2, 1, 163, 5, 19, 85, 17, 123];
+                break;		    
             case 'all':
                 $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
                 break;
@@ -4539,7 +4564,7 @@ if (!function_exists('isExternalCity')) {
 
     function isExternalCity($city){
         
-        return !in_array($city, ['mumbai','delhi','hyderabad','bangalore','gurgaon','noida','pune','chandigarh','jaipur']);
+        return !in_array($city, ['mumbai','delhi','hyderabad','bangalore','gurgaon','noida','pune','chandigarh','jaipur','kolkata']);
     
     }
 

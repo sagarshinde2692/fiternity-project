@@ -14,8 +14,9 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'VipTrial-Instant-Customer';
 		}
 
-		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
-			$label = 'AutoTrial-Instant-Customer-abg';
+
+		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
+			$label = 'AutoTrial-Instant-Customer-Reliance';
 		}
 
 		$header = $this->multifitKioskOrder($data);
@@ -23,8 +24,8 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'AutoTrial-Instant-Multifit-Customer';
 		}
 
-		if(isset($data['corporate_id']) && $data['corporate_id'] != ''){
-			$label = 'AutoTrial-Instant-Customer-Reliance';
+		if(isset($data['third_party_details']) && isset($data['third_party_details']['abg'])) {
+			$label = 'AutoTrial-Instant-Customer-abg';
 		}
 
 		$to = $data['customer_phone'];
@@ -304,7 +305,7 @@ Class CustomerSms extends VersionNextSms{
 			Log::info('sending pass purchase sms::::::::::::::::::::');
 			$label = 'Pass-Purchase-Customer';
 			
-			if(($data['pass']['pass_type'] =='hybrid') && (empty($data['customer_source']) || $data['customer_source']!='sodexo')){
+			if(($data['pass']['pass_type'] =='hybrid') && (empty($data['customer_source']) || !in_array($data['customer_source'], ['sodexo', 'thelabellife']))){
 				$data['pass']['pass_type'] = $data['pass']['branding'];
 				if(empty($data['onepass_attachment_type']) || in_array($data['onepass_attachment_type'], ['complementary', 'membership_plus'])){
 					return;
@@ -1404,7 +1405,7 @@ Class CustomerSms extends VersionNextSms{
 	public function diwaliMixedReward($data){
 		$label = 'DiwaliMixedReward-Customer';
 		
-		if(!empty($data['customer_source']) && empty($data['customer_source']=='sodexo')){
+		if(!empty($data['customer_source']) && in_array($data['customer_source'], ['sodexo', 'thelabellife'])){
 			return;
 		}
 
@@ -1418,6 +1419,27 @@ Class CustomerSms extends VersionNextSms{
 		
 		$to = $data['customer_phone'];
 		
+		return $this->common($label,$to,$data);
+	}
+	
+	public function fitboxMixedReward($data){
+		$label = 'FitboxMixedReward-Customer';
+		
+		if(!empty($data['customer_source']) && in_array($data['customer_source'], ['sodexo', 'thelabellife'])){
+			return;
+		}
+
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);
+	}
+
+	public function externalVoucher($data){
+
+		$label = 'ExternalVoucher-Customer';
+		
+		$to = $data['customer_phone'];
+
 		return $this->common($label,$to,$data);
 	}
 	

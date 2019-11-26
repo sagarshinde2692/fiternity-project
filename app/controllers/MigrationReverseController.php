@@ -811,6 +811,10 @@ class MigrationReverseController extends \BaseController {
                 'poc'                                   => $finder_poc
             ];
 
+            if(!empty($insertData['flags']['monsoon_flash_discount']) && $insertData['flags']['monsoon_flash_discount'] == 'without_cap' && isset($insertData['flags']['monsoon_flash_discount_per'])){
+                unset($insertData['flags']['monsoon_flash_discount_per']);
+            }
+
     
 
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';

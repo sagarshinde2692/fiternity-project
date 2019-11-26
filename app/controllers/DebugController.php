@@ -11846,5 +11846,63 @@ public function yes($msg){
 
 	}
 
+    public function removePassOrders($email){
+
+        $email = strtolower($email);
+
+        $rules = [
+            'email'  => 'required|in:firojmulani@fitternity.com,sailismart@fitternity.com'
+        ];
+
+        $validator = Validator::make(['email'=>$email], $rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }
+
+        Order::active()->where('customer_email', $email)->where('type', 'pass')->update(['status'=>'0', 'manual_flags.deactivated_order'=>time()]);
+
+        return "Success";
+
+
+	}
+
+	public function set25FlatDiscountFlag(){
+		$vendor_ids = [15882,11986,14143,13342,13345,13349,13352,15591,12647,12668,11534,15782,16342,15154,16763,12543,11483,16872,17642,17602,14023,10393,11297,4291,15877,11024,15076,17623,3449,3450,13665,10659,16233,3476,4387,4653,16779,11123,14546,12677,13057,15872,17606,14905,15855,10398,15706,147,166,288,292,1258,2406,2865,4168,5939,6049,6139,6248,8932,9115,9461,9606,11032,11033,11062,12100,12213,13161,14522,16673,16774,7032,17380,17399,17400,1516,9424,11241,14066,15008,15791,2411,3451,6946,7155,8859,9575,12072,15070,15344,15739,17376,17416,17111,1752,2609,2627,2864,4416,6532,7122,7850,14105,14222,14533,14714,15066,15500,15765,6245,11065,2013,2101,2132,6054,7743,14701,14944,16554,2885,1818,1884,1891,1969,2051,2093,2109,2117,2135,2146,2215,2640,2663,2684,2707,3074,3094,5178,6131,6316,6977,7513,9331,9511,10405,10608,11090,11282,11492,11679,11680,12122,12655,12805,13918,13926,14442,14433,14434,14702,14654,14659,14700,14699,1912,14698,11058,14660,14738,15886,10696,15149,15574,16658,16658,11823,16701,16753,16775,16811,16923,17300,17301,17263,17262,1828,1892,1895,2183,14084,14106,16045,16666,16667,16668,14621,2837,11940,9385,8141,9421,4997,7403,10592,9369,13690,11812,14726,9567,6493,15533,15537,10544,4915,10957,10969,17394,17396,17401,9526,15257,6189,13613,5006,6607,15523,17475,17508,17627,9470,5597,8189,10425,11618,11941,7133,15273,15247,14753,16760,17448,14687,6516,14821,14836,14825,14831,14832,14833,14861];
+
+		// return count($vendor_ids);
+		// $vendor_ids = [15882];
+
+		$update_data = [];
+
+		Finder::$withoutAppends=true;
+		$finders = Finder::whereIn('_id', $vendor_ids)->get(['flags']);
+		foreach($finders as $finder){
+			$update_arr = array();
+			if(!empty($finder['flags']['monsoon_flash_discount'])){
+				$update_arr['flags.monsoon_flash_discount_old20'] = $finder['flags']['monsoon_flash_discount'];
+			}
+
+			if(!empty($finder['flags']['monsoon_flash_discount_per'])){
+				$update_arr['flags.monsoon_flash_discount_per_old20'] = $finder['flags']['monsoon_flash_discount_per'];
+			}
+
+			$update_arr['flags.monsoon_flash_discount'] = 'without_cap';
+			$update_arr['flags.monsoon_flash_discount_per'] = 25;
+			$update_arr['flat25'] = true;
+
+			array_push($update_data, [
+				"q"=>['_id'=>$finder['_id']],
+				"u"=>[
+					'$set' => $update_arr
+				],
+				'multi' => false
+			]);
+		}
+
+		$this->batchUpdate('mongodb', 'finders', $update_data);
+		$this->batchUpdate('mongodb2', 'vendors', $update_data);
+	}
+
 }
 

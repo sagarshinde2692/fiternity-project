@@ -54,10 +54,20 @@ class ThirdPartyController extends \BaseController {
     public function decryptQRCode() {
         $data = Input::json()->all();
         Log::info('$data: ', [$data]);
-        return Response::json([
-            'status' => 200,
-            'data' => json_decode(preg_replace('/[\x00-\x1F\x7F]/', '', $this->utilities->decryptQr($data['code'], Config::get('app.core_key'))),true),
-            'message' => 'Success'
-        ]);
+        try {
+            $code = $this->utilities->decryptQr($data['code'], Config::get('app.core_key'));
+            return Response::json([
+                'status' => 200,
+                'data' => json_decode(preg_replace('/[\x00-\x1F\x7F]/', '', $code),true),
+                'message' => 'Success'
+            ]);
+        }  catch (\Exception $e) {
+            Log::info('Error : '.$e->getMessage());
+            return Response::json([
+                'status' => 400,
+                'data' => 'Invalid QR Code',
+                'message' => 'Failure'
+            ]);
+        }
     }
 }

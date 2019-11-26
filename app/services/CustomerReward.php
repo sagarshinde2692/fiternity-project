@@ -379,6 +379,14 @@ Class CustomerReward {
                             $mixedreward_content = \MixedRewardContent::where('flags.type', 'membership')->first();
                         }
 
+                        if(!empty($data['fitbox_mixed_reward'])){
+                            $mixedreward_content = \MixedRewardContent::where('flags.type', 'fitbox')->first();
+                        }
+
+                        if(!empty($data['vk_puma_bag_reward'])){
+                            $mixedreward_content = \MixedRewardContent::where('flags.type', 'vk_puma_bag')->first();
+                        }
+
                         if(!empty($mixedreward_content)){
 							$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
@@ -804,8 +812,8 @@ Class CustomerReward {
                         $amount_paid = $amount_paid - $order['convinience_fee'];
                     }
 
-                    if($amount_paid > 1000){
-                        $amount_paid = 1000;
+                    if($amount_paid > 250){
+                        $amount_paid = 250;
                     }
 
                 }else{
@@ -869,7 +877,7 @@ Class CustomerReward {
                             $sms_data['customer_phone'] = $order['customer_phone'];
                     
                             // $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$cashback_amount." Fitcash has been added in your Fitternity wallet.Valid for 14 days from booking time. For quick assistance call ".Config::get('app.contact_us_customer_number');
-                            $sms_data['message'] = "Congratulations on receiving your instant cashback of".$cashback_amount." as Fitcash. Book multiple workout sessions using this cashback on Fitternity App for yourself as well as your friends & family.\nValidity: 14 days\nHappy working out!";
+                            $sms_data['message'] = "Congratulations on receiving your instant cashback of ".$cashback_amount." as Fitcash. Book multiple workout sessions using this cashback on Fitternity App for yourself as well as your friends & family without any restriction on spend value.\nValidity: 14 days\nHappy working out!";
                     
                             $customersms->custom($sms_data);
                         }
@@ -1742,6 +1750,7 @@ Class CustomerReward {
 
 
     public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null, $first_session_free = false, $corporate_discount_coupon = false){
+
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
 
@@ -2471,7 +2480,7 @@ Class CustomerReward {
                     $header = array('source'=>'multifit');
                 }
                 
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header, 'customer_id' => $customer_id];
                
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
@@ -2506,7 +2515,7 @@ Class CustomerReward {
                                 }
                             
                             }else if($condition['operator'] == 'nin'){
-                                if(!empty($embedded_value) && in_array($embedded_value, $condition['values'])){
+                                if(isset($embedded_value)  && in_array($embedded_value, $condition['values'])){
                                     $and_condition = false;
                                     break;
 
@@ -2937,25 +2946,25 @@ Class CustomerReward {
                             if((!empty($embedded_value) || $embedded_value == 0) && preg_match($y['values'], $embedded_value)){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'gt'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value > $yc['values']){
+                        }else if($y['operator'] == 'gt'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value > $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'gte'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value >= $yc['values']){
+                        }else if($y['operator'] == 'gte'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value >= $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'lt'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value < $yc['values']){
+                        }else if($y['operator'] == 'lt'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value < $y['values']){
                                 Log::info("chk");
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'lte'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value <= $yc['values']){
+                        }else if($y['operator'] == 'lte'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value <= $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'eq'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value == $yc['values']){
+                        }else if($y['operator'] == 'eq'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value == $y['values']){
                                 $discount_max_overridable = true;
                             }
                         }
@@ -3161,25 +3170,25 @@ Class CustomerReward {
                             if((!empty($embedded_value) || $embedded_value == 0) && preg_match($y['values'], $embedded_value)){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'gt'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value > $yc['values']){
+                        }else if($y['operator'] == 'gt'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value > $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'gte'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value >= $yc['values']){
+                        }else if($y['operator'] == 'gte'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value >= $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'lt'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value < $yc['values']){
+                        }else if($y['operator'] == 'lt'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value < $y['values']){
                                 Log::info("chk");
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'lte'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value <= $yc['values']){
+                        }else if($y['operator'] == 'lte'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value <= $y['values']){
                                 $discount_max_overridable = true;
                             }
-                        }else if($yc['operator'] == 'eq'){
-                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value == $yc['values']){
+                        }else if($y['operator'] == 'eq'){
+                            if((!empty($embedded_value) || $embedded_value == 0) && $embedded_value == $y['values']){
                                 $discount_max_overridable = true;
                             }
                         }
@@ -3261,6 +3270,12 @@ Class CustomerReward {
             }
             if(!empty($coupon['discount_percent'])){
                 $resp['coupon_discount_percent'] = $coupon['discount_percent'];
+            }
+
+            if($discount_amount == 0 && !empty($coupon['flags']['not_applicable']) && $coupon['flags']['not_applicable']){
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon Not Applicable");
+
+                return $resp;
             }
 
         }else{

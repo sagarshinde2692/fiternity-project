@@ -663,7 +663,8 @@ class PaymentGatewayController extends \BaseController {
         	'txnid'=>$data['txnid'],
             'amount'=>(int)$data["amount"],
             'status' => 'success',
-            'type'=>$order['type']
+            'type'=>$order['type'],
+            'email'=>$order['customer_email']
         ];
 
         $data['txnid'] = $data['txnid']."-MBKD";
@@ -1109,7 +1110,7 @@ class PaymentGatewayController extends \BaseController {
 						"error_Message" => "",
 						"service_name" => $order['service_name'],
 						"amount" => $order['amount_customer'],
-						"finder_id" => $order['finder_id'],
+						"finder_id" => (!empty($order['finder_id']))?$order['finder_id']:0,
 						"schedule_date" => (empty($order['schedule_date']))? "" : $order['schedule_date'],
 						"type" => $order['type'],
 						"parent_payment_id_paypal" => $parent_payment_id,
@@ -1127,7 +1128,7 @@ class PaymentGatewayController extends \BaseController {
 					$res = json_decode(json_encode($res_obj->getData()),true);
 					if($res['status'] == 200){
 						Log::info("db updated");
-						if($order['device_type'] == 'android' || $order['device_type'] == 'ios'){
+						if(!empty($order['device_type']) && ($order['device_type'] == 'android' || $order['device_type'] == 'ios')){
 							return Redirect::to('ftrnty://ftrnty.com/paypalresponse?status=200');
 						}
 

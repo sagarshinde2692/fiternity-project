@@ -1525,7 +1525,7 @@ class TransactionController extends \BaseController {
             }
             
             
-            if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']))){
+            if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']) || !empty($data['coupon_flags']['vk_bag_and_box_reward']))){
                 $resp['data']["coupon_details"] = [];
                 $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
                 $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
@@ -2595,8 +2595,24 @@ class TransactionController extends \BaseController {
                             $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
                             array_set($data, 'reward_type', $value->reward_type);
 
-                            if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity_order_id']) && empty($order['studio_extended_validity_order_id']) ){
-                                array_set($data, 'diwali_mixed_reward', true);
+                            // if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity_order_id']) && empty($order['studio_extended_validity_order_id']) ){
+                            //     array_set($data, 'diwali_mixed_reward', true);
+                            // }
+
+                            if(!empty($order['brand_id']) && $order['brand_id'] == 88){
+                                if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                                    array_set($data, 'fitbox_mixed_reward', true);
+                                    array_set($data, 'multifit_fitbox_mixed_reward', true);
+                                }
+                            }else if(!empty($order['finder_id']) && in_array($order['finder_id'], Config::get('app.fitbox_reward_vendor_id'))){
+                                if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                                    array_set($data, 'fitbox_mixed_reward', true);
+                                    array_set($data, 'other_fitbox_mixed_reward', true);
+                                }
+                            }else{
+                                if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                                    array_set($data, 'vk_puma_bag_reward', true);
+                                }
                             }
 
                             $reward_type = $value->reward_type;
@@ -3146,6 +3162,22 @@ class TransactionController extends \BaseController {
                 $this->customersms->diwaliMixedReward($order->toArray());
             }
 
+            if(!empty($order['fitbox_mixed_reward'])){
+                $this->customersms->fitboxMixedReward($order->toArray());
+            }
+
+            if(!empty($order['vk_puma_bag_reward'])){
+
+                $order['finder_name'] = !empty($order['finder_name']) ? $order['finder_name'] : null ;
+
+                $sms_data = [];
+                $sms_data['customer_phone'] = $order['customer_phone'];
+                $sms_data['message'] = "Congratulations on purchasing a fitness membership at ".$order['finder_name'].". Your Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 will reach your doorstep by 2nd week of December. Kindly feel free to reach out to us on 022-61094444 for queries
+                ";
+                        
+                $this->customersms->custom($sms_data);
+            }
+
             Log::info("successCommon returned");
             Log::info($order['_id']);
             return Response::json($resp);
@@ -3196,6 +3228,7 @@ class TransactionController extends \BaseController {
 
             $decoded = customerTokenDecode($jwt_token);
             $data['logged_in_customer_id'] = (int)$decoded->customer->_id;            
+            $data['logged_in_customer_email'] = $decoded->customer->email;            
         }
 
         $customer = Customer::find((int)$customer_id);
@@ -5025,6 +5058,7 @@ class TransactionController extends \BaseController {
         $finder_category_slug                  =    (isset($finder['category']['slug']) && $finder['category']['slug'] != '') ? $finder['category']['slug'] : "";
         $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
         $finder_notes                        =    (isset($finder['notes']) && $finder['notes'] != '') ? $finder['notes'] : "";
+        $brand_id                        =    (!empty($finder['brand_id'])) ? $finder['brand_id'] : 0;
         
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
@@ -5053,6 +5087,10 @@ class TransactionController extends \BaseController {
         $data['finder_notes'] = $finder_notes;
         $data['trial'] = !empty($finder['trial']) ? $finder['trial'] : 'auto';
 
+        if(!empty($brand_id)){
+            $data['brand_id'] = $brand_id;
+        }
+        
         return array('status' => 200,'data' =>$data);
     }
 
@@ -6215,17 +6253,36 @@ class TransactionController extends \BaseController {
             unset($booking_details_data['service_duration']);  
         }
 
-        if(!empty($data['type']) && $data['type'] == 'memberships' && empty($extended_validity_order_id) && empty($studio_extended_validity_order_id)){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 25% Off On Memberships\nUse Code: FITDVLI",'position'=>$position++];
+        if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 15% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: MEMX5 | Offer Ending Soon",'position'=>$position++];
 
-            if($data['ratecard_amount'] >= 8000){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>"50% off + Additional 25% Off On Memberships + First Hand Access To Exclusive Marvel Fitness Merchandise + Gift Vouchers From Myntra, The Label Life, EaseMyTrip & More\nUse Code: FITDVLI",'position'=>$position++];
+            if(!empty($data['brand_id']) && $data['brand_id']== 88){
+                if($data['ratecard_amount'] >= 8000){
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15",'position'=>$position++];
+                }else{
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices | Use Code: FITME15",'position'=>$position++];
+                }
+            }else{
+                if($data['ratecard_amount'] >= 8000){
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT | 26-28Nov",'position'=>$position++];
+                }else{
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT | 26-28 Nov",'position'=>$position++];
+                }
             }
+
+            // if(!empty($data['finder_flags']['monsoon_flash_discount']) && $data['finder_flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 25){
+                
+            // }
+            
+            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0) || !(isset($data['finder_flags']['monsoon_flash_discount']) && isset($data['finder_flags']['monsoon_flash_discount_per']))){ 
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
+                
+			}
         }
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: GET100','position'=>$position++];
 
             $first_session_free = $this->firstSessionFree($data);
             if(!empty($first_session_free) && $first_session_free){
@@ -6236,7 +6293,7 @@ class TransactionController extends \BaseController {
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
 
-            if(!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp'] || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))){
+            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled']) || (!empty($data['brand_id']) && $data['brand_id'] == 88) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0) || !(isset($data['finder_flags']['monsoon_flash_discount']) && isset($data['finder_flags']['monsoon_flash_discount_per']))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
         }
@@ -6450,6 +6507,7 @@ class TransactionController extends \BaseController {
                         'field' => 'Coupon Discount',
                         'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "100% Cashback"
                     );
+                    
                     $you_save += (!empty($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0);
                 }else{
                     $amount_final = $amount_final + $data['coupon_discount_amount'];
@@ -6616,7 +6674,7 @@ class TransactionController extends \BaseController {
                 'options'=>[
                         [
                                 'title' => 'Paypal',
-                                'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
+                                'subtitle' => 'Get 50% Instant Cashback Upto INR 300 (New Users Only)',
                                 'value' => 'paypal'
                         ],
                         [
@@ -6687,7 +6745,7 @@ class TransactionController extends \BaseController {
                     );
                 }else{
                     $payment_modes[] = array(
-                        'title' => 'Online Payment (100% Cashback)',
+                        'title' => 'Online Payment',
                         'subtitle' => 'Transact online with netbanking, card and wallet',
                         'value' => 'paymentgateway',
                         'payment_options'=>$payment_options
@@ -8706,7 +8764,8 @@ class TransactionController extends \BaseController {
     					'amount'=>(int)$val["transactionValue"],
     					'status' => 'success',
                         'hash'=> $val["hash"],
-                        'orderId'=>$order['_id']
+                        'orderId'=>$order['_id'],
+                        'email'=>$order['customer_email'],
                         
     			];
     			if($website == "1"){
@@ -8800,7 +8859,8 @@ class TransactionController extends \BaseController {
     					'amount'=>(int)$val["orderTotalAmount"],
     					'status' => 'success',
                         'hash'=> $val["hash"],
-                        'orderId'=>$order['_id']
+                        'orderId'=>$order['_id'],
+                        'email'=>$order['customer_email']
     			];
     			if($website == "1"){
     				$url = $this->getAmazonPaySuccessUrl($order, $success_data);
@@ -9895,7 +9955,7 @@ class TransactionController extends \BaseController {
                     Booktrial::where('_id',(int)$booktrial_id)->update($data);
                 }
                 
-            }else{
+            }else if(isset($service_flag['bulk_purchase_b2c_pps']['commission'])){
 
                 $service = array();
                 Service::$withoutAppends = true;

@@ -2176,6 +2176,10 @@ class SchedulebooktrialsController extends \BaseController {
             );
 
 
+            if(!empty($order['logged_in_customer_email'])) {
+                $booktrialdata['logged_in_customer_email'] = $order['logged_in_customer_email'];
+            }
+            
             if(!empty($order['pass_order_id'])) {
                 $booktrialdata['pass_order_id'] = $order['pass_order_id'];
             }
@@ -2305,6 +2309,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(!empty($order['ratecard_flags'])){
                 $booktrialdata['ratecard_flags'] = $order['ratecard_flags'];
+            }
+
+            if(!empty($order['brand_id'])){
+                $booktrialdata['brand_id'] = $order['brand_id'];
             }
 
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
@@ -3698,6 +3706,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $logged_in_customer = customerTokenDecode($this->authorization);
                 $logged_in_customer_id = $logged_in_customer->customer->_id;
                 $booktrialdata["logged_in_customer_id"] = $logged_in_customer_id;
+                $booktrialdata["logged_in_customer_email"] = $logged_in_customer->customer->email;
             }
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
@@ -4790,7 +4799,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $this->customersms->bookTrialCancelByVendor($booktrial->toArray());
 
-        return $this->cancel($trial_id, 'vendor', $reason);
+        return $this->cancel($trial_id, 'vendor', $reason, true);
     }
 
 
@@ -5296,11 +5305,11 @@ class SchedulebooktrialsController extends \BaseController {
                     $this->findersms->cancelBookTrial($emaildata);
                 }
                 if((isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip') && (empty($booktrial['third_party_details']['ekn']))){
-                    if(!isset($booktrial['third_party_details'])){
-                        if(empty($booktrial['multifit']) || !$booktrial['multifit']){
-                            $this->customermailer->cancelBookTrial($emaildata);
-                        }
-                    }
+                    // if(!isset($booktrial['third_party_details'])){
+                    //     if(empty($booktrial['multifit']) || !$booktrial['multifit']){
+                    //         $this->customermailer->cancelBookTrial($emaildata);
+                    //     }
+                    // }
                     Log::info('sending sms');
                     if(isset($booktrial['third_party_details'])){
                         $emaildata['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$emaildata['customer_email']);
@@ -8760,7 +8769,8 @@ class SchedulebooktrialsController extends \BaseController {
             if ($isBackendReq) {
                 Log::info("it is a backend request");
                 $metropolis = new Metropolis();
-                $metropolis->cancelThirdPartySession($cust['third_party_details'][$thirdPartyAcronym]['third_party_token_id'], $booktrial['_id'], $resp['message']);
+                $tokenId = !empty($cust['third_party_details'][$thirdPartyAcronym]['third_party_token_id'])?$cust['third_party_details'][$thirdPartyAcronym]['third_party_token_id']:null;
+                $metropolis->cancelThirdPartySession($thirdPartyAcronym, $tokenId, $booktrial['_id'], $resp['message']);
             }
         }
     }
@@ -8825,9 +8835,9 @@ class SchedulebooktrialsController extends \BaseController {
         $finder_category_name = 'gym';
         $max_unlock_distance= Config::get('app.checkin_checkout_max_distance_in_meters');
 
-        if(!empty($booktrial->servicecategory_id) && $booktrial->servicecategory_id != 65){
-            $time_in_seconds = 60*30;
-            $post_hour = '30 min';
+        if(!empty($booktrial->servicecategory_id) && !in_array($booktrial->servicecategory_id, [65, 123])){
+            $time_in_seconds = 60* 60 * 1;
+            $post_hour = '1 hr';
             $finder_category_name = 'studio';
         }
 

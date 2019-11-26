@@ -530,10 +530,10 @@ class Service extends \Basemodel{
 
                 if(isFinderIntegrated($finder) && isServiceIntegrated($this) && !empty($value['type']) && $value['type'] == "workout session" && !empty(Request::header('Device-Type')) && in_array(strtolower(Request::header('Device-Type')), ['android', 'ios'])){
                     if(!empty($value['offers'][0]['remarks'])){
-                        $value['offers'][0]['remarks'] = "Get 50% Off On Workout Sessions, Use Code: PFWD";
+                        $value['offers'][0]['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: GET100";
                         $value['remarks_imp'] =  true;
                     }else{
-                        $value['remarks'] =  "Get 50% Off On Workout Sessions, Use Code: PFWD";
+                        $value['remarks'] =  "100% Instant Cashback On Booking Workout Sessions, Use Code: GET100";
                         $value['remarks_imp'] =  true;
                     }
                 }

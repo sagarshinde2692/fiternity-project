@@ -295,18 +295,19 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::post('reportareview', array('as' => 'finderdetails.reportareview','uses' => 'FindersController@reportReview'));
     
-	Route::post('passcapture', 'PassController@passCapture');
+    Route::post('passcapture', 'PassController@passCapture');
 	
 	Route::get('customer/getstepprofile/{city?}',  array('as' => 'customer.getstepprofile','uses' => 'CustomerController@getStepProfile'));
+    
+    /******************** AUTHENTICATION ENFORCED FOR SECURITY START HERE ***********************/
+    Route::get('booktrialdetail/{captureid}/{type?}', 'SchedulebooktrialsController@booktrialdetail');
+    
+    Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
+    
+    Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
+    /******************** AUTHENTICATION ENFORCED FOR SECURITY END HERE ***********************/
 
 });
-
-Route::get('booktrialdetail/{captureid}/{type?}', 'SchedulebooktrialsController@booktrialdetail');
-
-Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
-
-Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
-
 
 Route::post('walletTransactionnew', array('uses' => 'OrderController@debitWalletTransaction'));
 /******************** CUSTOMERS SECTION END HERE ********************/
@@ -1306,7 +1307,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('listcheckins', 'CustomerController@listCheckins');
 
-	Route::get('claimexternalcoupon/{_id}', 'CustomerController@claimExternalCoupon');
+	Route::get('claimexternalcoupon/{_id}/{customer_id?}/{key?}', 'CustomerController@claimExternalCoupon');
 	Route::get('claimexternalcouponrewards/{_id}', 'CustomerController@claimExternalCouponRewards');
 
 	Route::get('markcheckin/{finder_id}', 'CustomerController@markCheckin');
@@ -1416,3 +1417,4 @@ Route::get('healthobject', 'RelianceController@buildHealthObjectStructure');
 Route::post('tpcancelsession', 'SchedulebooktrialsController@tpcancelsession');
 Route::post('decryptqrcode', 'ThirdPartyController@decryptQRCode');
 Route::get('renewalOnepass', 'DebugController@renewalOnepass');
+Route::get('removePassOrders/{email}', 'DebugController@removePassOrders');

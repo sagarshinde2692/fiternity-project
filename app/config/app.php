@@ -109,6 +109,26 @@ return array(
 	],
 
 	'pass_payment_options' => [
+		[
+			'title' => 'Paypal',
+			'subtitle' => 'Get 50% Instant Cashback Upto INR 700 (New Users Only)',
+			'value' => 'paypal'
+		],
+		[
+				'title' => 'Paytm',
+				// 'subtitle' => 'Paytm',
+				'value' => 'paytm'
+		],
+		// [
+		// 		'title' => 'AmazonPay',
+		// 		// 'subtitle' => 'AmazonPay',
+		// 		'value' => 'amazonpay'
+		// ],
+		[
+				'title' => 'Mobikwik',
+				// 'subtitle' => 'Mobikwik',
+				'value' => 'mobikwik'
+		],
         [
                 'title' => 'PayU',
                 // 'subtitle' => 'PayU',
@@ -119,7 +139,7 @@ return array(
 	'pass_payment_options_wallets_test' => [
 		[
 			'title' => 'Paypal',
-			'subtitle' => '100% off upto 350 INR on first PayPal transaction.',
+			'subtitle' => 'Get 50% Instant Cashback Upto INR 700 (New Users Only)',
 			'value' => 'paypal'
 		],
 		[
@@ -406,8 +426,8 @@ return array(
 
 	// Production
 	'es' =>array(
-		'url'		=> 			'ESAdmin:fitternity2020@13.234.226.35:8050',
-		'host'		=> 			'ESAdmin:fitternity2020@13.234.226.35',
+		'url'		=> 			'ESAdmin:fitternity2020@15.206.111.50:8050',
+		'host'		=> 			'ESAdmin:fitternity2020@15.206.111.50',
 		'port'		=>			8050,
 		'default_index' => 	'fitternity',
 		'default_type' 	=> 	'finder',
@@ -498,6 +518,7 @@ return array(
 	'contact_us_customer_email_onepass' => 'onepass@fitternity.com',
 	'contact_us_vendor_number' => '+919699998838',
 	'contact_us_customer_number' => '+912261094444',
+	'contact_us_customer_number_pps' => "+918879886083",
 	'contact_us_customer_number_onepass' => '+917400062849',
 	'display_contact_us_customer_number_onepass' => '+91 74000 62849',
 	'followup_fitness_concierge' => 'Rachel',
@@ -1057,7 +1078,7 @@ return array(
 
     'multifit_email'=>'info@multifit.co.in',
     
-    'no_convinience_finder_ids'=>[1259, 1263, 1266, 12986],
+    'no_convinience_finder_ids'=>[1259, 1263, 1266, 12986, 6168],
 
     'discount_vendors'=>[12592,13251,13252,14526,11437,15882,12793,13941,12794,12803,13282,11397,14206,13265,13266,14168,11580,14230,14278,12730,14274,14226,14439,14803,11778,13441,14529,11622,13963,14046,11622,13342,13345,13349,13352,11409,13382,12371,11613,14292,11372,13099,14119,14438,14293],
 
@@ -1073,7 +1094,9 @@ return array(
     
 	'non_flexi_service_cat'=>[111, 65, 5],
 	
-	'camp_excluded_vendor_id'=>[1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644,579,1233,1260,1261,1262,1874,2105,9171,9178,5742,10675],
+	// 'camp_excluded_vendor_id'=>[1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644,579,1233,1260,1261,1262,1874,2105,9171,9178,5742,10675,13791],
+	'camp_excluded_vendor_id'=>[579,1233,1260,1261,1262,1874,2105,9171,9178,5742,10675,13791],
+	'fitbox_reward_vendor_id'=>[9111,12516,15103,7335,11037,11103,5728,11363,5745,8871,6250,5746,5748,12221,16569,16209,10570,10568,13124,8823,7902,16591,4819,4823,4824,4825,4826,15758],
 
 	'occasion_dates' => ['2019-10-26', '2019-10-29'],
     

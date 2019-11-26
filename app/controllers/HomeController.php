@@ -1062,7 +1062,7 @@ class HomeController extends BaseController {
                 
                 $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there. FitCode helps you mark your attendance that let\'s you earn cashbacks.'."<br><br>Keep booking sessions at ".$item['finder_name']." without buying a membership and earn rewards on your every workout";
 
-                if(!empty($item['coupon_flags']['cashback_100_per'])){
+                if(!empty($item['coupon_flags']['cashback_100_per']) && ((isset($item['customer_quantity']) && $item['customer_quantity'] == 1) || empty($item['customer_quantity']) )){
                     $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
                 }
 
@@ -1082,6 +1082,10 @@ class HomeController extends BaseController {
                     $steps = Config::get('paypersession.pps_booking_success_message');
 
                     $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time;
+
+                    if(!empty($item['coupon_flags']['cashback_100_per']) && ((isset($item['customer_quantity']) && $item['customer_quantity'] == 1) || empty($item['customer_quantity']) )){
+                        $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
+                    }
 
                     if(!empty($item['first_session_free'])){
                         $steps = Config::get('paypersession.trial_booking_success_message');
@@ -1976,7 +1980,7 @@ class HomeController extends BaseController {
                         };
 
                         
-                        if(!empty($item['coupon_flags']['cashback_100_per'])){
+                        if(!empty($item['coupon_flags']['cashback_100_per']) && ((isset($item['customer_quantity']) && $item['customer_quantity'] == 1) || empty($item['customer_quantity']) )){
                             $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
                         }
 

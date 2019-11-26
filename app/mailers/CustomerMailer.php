@@ -182,7 +182,7 @@ Class CustomerMailer extends Mailer {
 		}
 		
 		if(!empty($data['type']) && ($data['type']=='pass')){
-			if(($data['pass']['pass_type'] =='hybrid') && (empty($data['customer_source']) || $data['customer_source']!='sodexo')){
+			if(($data['pass']['pass_type'] =='hybrid') && (empty($data['customer_source']) || !in_array($data['customer_source'], ['sodexo', 'thelabellife']))){
 				$data['pass']['pass_type'] = $data['pass']['branding'];
 				if(empty($data['onepass_attachment_type']) || in_array($data['onepass_attachment_type'], ['complementary', 'membership_plus'])){
 					return;
@@ -195,12 +195,12 @@ Class CustomerMailer extends Mailer {
 		if(!empty($data['combo_pass_id'])){
 			
 			$data['pass'] = \Pass::where('pass_id', (int)$data['combo_pass_id'])->first();
-			if(empty($data['ratecard_flags']['onepass_attachment_type']) || in_array($data['ratecard_flags']['onepass_attachment_type'], ['complementary', 'membership_plus']))
-                $label = "Membership-Plus-Hybrid-Pass-Purchase";
+			if(empty($data['ratecard_flags']['onepass_attachment_type']) || in_array($data['ratecard_flags']['onepass_attachment_type'], ['complementary', 'membership_plus'])){
+				$label = "Membership-Plus-Hybrid-Pass-Purchase";
                 if(!empty($data['multifit'])){
                     $label = "Membership-Plus-Hybrid-Pass-Purchase-Multifit";
                 }
-			else {
+			}else {
 				return;
 			}
 		}
@@ -1042,7 +1042,7 @@ Class CustomerMailer extends Mailer {
 	public function diwaliMixedReward($data){
 		$label = 'DiwaliMixedReward-Customer';
 		
-		if(!empty($data['customer_source']) && empty($data['customer_source']=='sodexo')){
+		if(!empty($data['customer_source']) && in_array($data['customer_source'], ['sodexo', 'thelabellife'])){
 			return;
 		}
 
