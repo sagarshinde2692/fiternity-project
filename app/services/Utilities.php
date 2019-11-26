@@ -10959,7 +10959,7 @@ Class Utilities {
                 unset($voucher['header']['image_new']); 
         }
         
-        if(newFitsquadCompatabilityVersion() && empty($customer['loyalty']['grid_version'])) {
+        if(empty($from) && newFitsquadCompatabilityVersion() && empty($customer['loyalty']['grid_version'])) {
             return [
                 [
                     "text" => "",
