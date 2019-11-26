@@ -11155,6 +11155,15 @@ Class Utilities {
         if(empty($email_communication_check)){
             unset($resp['voucher_data']['coupon_subtext']);
         }
+
+        if(!empty($resp['voucher_data']['coupon_image']) && is_array($resp['voucher_data']['coupon_image']) && !empty($resp['voucher_data']['coupon_image'][0]['url'])){
+            $resp['voucher_data']['coupon_image'] = $resp['voucher_data']['coupon_image'][0]['url'];
+        }
+
+        if(is_array($resp['voucher_data']['coupon_image'])){
+            unset($resp['voucher_data']['coupon_image']);
+        }
+
         return $resp;
     }
 
