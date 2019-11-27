@@ -9876,6 +9876,10 @@ class CustomerController extends \BaseController {
 							$post_reward_data_template['block_message'] = "Thank you for selecting the reward. Your check-in data is under verification. ";
 						}
 
+						if(!empty($claimed_voucher['title'])){
+							$post_reward_data_template['title'] = $claimed_voucher['title'];
+						}
+						
                         $post_reward_template['data'][] = $post_reward_data_template;
 
                         array_push($claimed_voucher_categories, $claimed_voucher);
