@@ -10899,7 +10899,7 @@ Class Utilities {
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
-                        $return_arr['text'] = "FLAT 20% Off (Code: DISC20) / \nSpecial Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 (Use Code: INDFIT)";
+                        $return_arr['text'] = "FLAT 20% Off (Code: DISC20)";
                         
                         $return_arr['purchase_summary_value'] = "Get FLAT 20% Off (Use Code: DISC20) / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 (Use Code: INDFIT) | 26-28 Nov";
 
@@ -10956,7 +10956,7 @@ Class Utilities {
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
-                        $return_arr['text'] = "FLAT 20% Off (Code: DISC20) / \nSpecial Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 (Use Code: INDFIT)";
+                        $return_arr['text'] = "FLAT 20% Off (Code: DISC20)";
                         
                         $return_arr['purchase_summary_value'] = "Get FLAT 20% Off (Use Code: DISC20) / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 (Use Code: INDFIT) | 26-28 Nov";
 
@@ -11016,7 +11016,7 @@ Class Utilities {
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
-                        $return_arr['text'] = "FLAT 20% Off (Code: DISC20) / \nSpecial Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 (Use Code: INDFIT)";
+                        $return_arr['text'] = "FLAT 20% Off (Code: DISC20)";
                         
                         $return_arr['purchase_summary_value'] = "Get FLAT 20% Off (Use Code: DISC20) / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 (Use Code: INDFIT) | 26-28 Nov";
 
