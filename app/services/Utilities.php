@@ -10944,7 +10944,7 @@ Class Utilities {
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
-                $return_arr['red_remarks_header'] = "\n\nFLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000 \n\nBuy Now To Save More! Start At Your Convenience \n\n26-28Nov";
+                $return_arr['red_remarks_header'] = "\n\nFLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000 \n\nBuy Now To Save More! Start At Your Convenience \n\nLast Few Hours Left";
                 $return_arr['footer_text'] = "FLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000";
                 return $return_arr;
                 break;
@@ -11001,7 +11001,7 @@ Class Utilities {
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
-                $return_arr['red_remarks_header'] = "\n\nFLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000 \n\nBuy Now To Save More! Start At Your Convenience \n\n26-28Nov";
+                $return_arr['red_remarks_header'] = "\n\nFLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000 \n\nBuy Now To Save More! Start At Your Convenience \n\nLast Few Hours Left";
                 $return_arr['footer_text'] = "FLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000";
                 return $return_arr;
                 break;
@@ -11061,7 +11061,7 @@ Class Utilities {
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
-                $return_arr['red_remarks_header'] = "\n\nFLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000 \n\nBuy Now To Save More! Start At Your Convenience \n\n26-28Nov";
+                $return_arr['red_remarks_header'] = "\n\nFLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000 \n\nBuy Now To Save More! Start At Your Convenience \n\nLast Few Hours Left";
                 $return_arr['footer_text'] = "FLAT 20% Off / Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper  Worth INR 5000";
                 return $return_arr;
                 break;
