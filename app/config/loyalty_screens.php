@@ -167,7 +167,7 @@ return array(
 
         "size" => [
             "header" => "T-Shirt Size",
-            "data" => ["S", "L", "XL"]
+            "data" => ["S", "M", "L", "XL"]
         ],
 
         // "reward_pay" => [
