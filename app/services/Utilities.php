@@ -11164,10 +11164,6 @@ Class Utilities {
             unset($resp['voucher_data']['coupon_image']);
         }
 
-        if(!empty($voucherAttached['title'])){
-            $resp['voucher_data']['voucher_title'] = $voucherAttached['title'];
-        }
-
         return $resp;
     }
 
