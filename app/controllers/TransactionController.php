@@ -6266,7 +6266,7 @@ class TransactionController extends \BaseController {
                 if($data['ratecard_amount'] >= 8000){
                     $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT | 26-28Nov",'position'=>$position++];
                 }else{
-                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT | 26-28 Nov",'position'=>$position++];
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT | Last Few Hours Left",'position'=>$position++];
                 }
             }
 

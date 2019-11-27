@@ -1421,7 +1421,7 @@ class FindersController extends \BaseController {
 					$response['vendor_stripe_data']['text'] = $vendor_stripe_line;
 				}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) && !(isset($finder['flags']['monsoon_flash_discount_per']) &&  $finder['flags']['monsoon_flash_discount_per'] == 0) && isset($finder['flags']['monsoon_flash_discount']) && isset($finder['flags']['monsoon_flash_discount_per'])){
 					
-					$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT <br> 26-28 Nov";
+					$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT <br> Last Few Hours Left";
 
 					foreach($response['finder']['services'] as &$service){
 						foreach($service['serviceratecard'] as &$ratecard){
@@ -1430,7 +1430,7 @@ class FindersController extends \BaseController {
 								if($price >= 8000){
 									$pricemore = true;
 																	
-									$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT <br> 26-28 Nov";
+									$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT <br> Last Few Hours Left";
 								}
 							}
 						}
@@ -1448,7 +1448,7 @@ class FindersController extends \BaseController {
 								if($price >= 8000){
 									$pricemore = true;
 																	
-									$vendor_stripe_line = "Get Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 With Your Purchase <br> 26-28 Nov";
+									$vendor_stripe_line = "Get Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 With Your Purchase <br> Last Few Hours Left";
 								}
 							}
 						}
@@ -3962,26 +3962,26 @@ class FindersController extends \BaseController {
 						
 						if($this->device_type == 'android'){
 							
-							$android_line = "<u>Buy Now Get More Sale</u><br><br>26-28 Nov <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
+							$android_line = "<u>Buy Now Get More Sale</u><br><br>Last Few Hours Left <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
 	
-							$op_android_line = "<u>Buy Now Get More Sale</u><br><br>26-28 Nov <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT";
+							$op_android_line = "<u>Buy Now Get More Sale</u><br><br>Last Few Hours Left <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT";
 							
 						}else{
-							$ios_line = "\nBuy Now Get More Sale\n\n26-28 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
+							$ios_line = "\nBuy Now Get More Sale\n\nLast Few Hours Left \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
 		
-							$op_ios_line = "\nBuy Now Get More Sale\n\n26-28 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT";
+							$op_ios_line = "\nBuy Now Get More Sale\n\nLast Few Hours Left \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT";
 						}
 	
 						if($price >= 8000){
 							$pricemore = true;
 							if($this->device_type == 'android'){
-								$android_line = "<u>Buy Now Get More Sale</u><br><br>26-28 Nov <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
+								$android_line = "<u>Buy Now Get More Sale</u><br><br>Last Few Hours Left <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
 		
-								$op_android_line = "<u>Buy Now Get More Sale</u><br><br>26-28 Nov <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT ";
+								$op_android_line = "<u>Buy Now Get More Sale</u><br><br>Last Few Hours Left <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT ";
 							}else{	
-								$ios_line = "\nBuy Now Get More Sale\n\n26-28 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
+								$ios_line = "\nBuy Now Get More Sale\n\nLast Few Hours Left \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
 		
-								$op_ios_line = "\nBuy Now Get More Sale\n\n26-28 Nov \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT";
+								$op_ios_line = "\nBuy Now Get More Sale\n\nLast Few Hours Left \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT";
 							}
 							
 							break;
@@ -8651,7 +8651,7 @@ class FindersController extends \BaseController {
 							if($price >= 8000){
 								$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT \n\n26-28Nov");
 							}else{
-								$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT \n\n26-28 Nov");
+								$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT \n\nLast Few Hours Left");
 							}
 						}
 					}
