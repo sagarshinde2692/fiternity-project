@@ -11170,8 +11170,32 @@ Class Utilities {
     public function getComboVouchers($voucher_attached, $customer){
         $combo_vouchers = [];
         if(!empty($voucher_attached['flags']['combo_vouchers_list'])){
-            $combo_vouchers = \LoyaltyVoucher::active()->whereIn('voucher_category', $voucher_attached['flags']['combo_vouchers_list'])->where('customer_id', $customer['id'])->orderBy('_id')->get();
+            $vouchers_list = $voucher_attached['flags']['combo_vouchers_list'];
+            $combo_vouchers = \LoyaltyVoucher::active()->whereIn('voucher_category', $vouchers_list)->where('customer_id', $customer['id'])->orderBy('_id')->get();
+            // $temp =[];
+            // foreach($combo_vouchers as $key=>$value){
+            //     if(is_array($value['voucher_category'])){
+            //         foreach($value['voucher_category'] as $voucher_key=>$voucher_value){
+            //             $index = array_search($voucher_value, $vouchers_list);
+            //             if($index !==false){
+            //                 break;
+            //             }
+            //         }
+            //     }
+            //     else {
+            //         $index = array_search($value['voucher_category'], $vouchers_list);
+            //     }
+
+            //     $temp = [
+            //         $index => $value
+            //     ];
+            //     Log::info('voucher infog:::', [$index]);
+            // }
         }
+
+        // $temp = array_values($temp);
+        // Log::info('voucher infog:::', [$temp]);
+        // return $temp;
         return $combo_vouchers;
     }
 }
