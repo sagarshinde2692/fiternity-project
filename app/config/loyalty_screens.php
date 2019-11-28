@@ -48,7 +48,7 @@ return array(
                     'image' => 'https://b.fitn.in/loyalty/Group%20128.png'
                 ],
                 [
-                    'title' => 'EARN REWARDS WORTH Rs. 25,000',
+                    'title' => 'EARN REWARDS WORTH Rs. 32,000',
                     'description' => 'Exciting Rewards from Best Brands in the Country',
                     'image' => 'https://b.fitn.in/loyalty/Group%2049.png'
                 ],
