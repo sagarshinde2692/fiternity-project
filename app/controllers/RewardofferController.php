@@ -202,6 +202,7 @@ class RewardofferController extends BaseController {
 
             $data['finder_id'] = (int) $vendor['_id'];
 
+            $source = "kiosk";
         }
 
 
@@ -1182,7 +1183,12 @@ class RewardofferController extends BaseController {
                     }
                 }
             }else{
-                $no_rewards = true; 
+                if(isset($source) && $source == "kiosk"){
+                    $no_rewards = false;
+                }else{
+                    $no_rewards = true;
+                }
+                
             }
         }
 
