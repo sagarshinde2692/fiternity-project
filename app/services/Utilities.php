@@ -10954,7 +10954,7 @@ Class Utilities {
                 // $voucher['header']['image'] = $voucher['header']['image_new']; 
                 unset($voucher['header']['image_new']); 
             }
-        }else if(!newFitsquadCompatabilityVersion() && !empty($from)){
+        }else if(newFitsquadCompatabilityVersion() && !empty($from)){
                 $voucher['header']['image'] = $voucher['header']['image_new']; 
                 unset($voucher['header']['image_new']); 
         }
