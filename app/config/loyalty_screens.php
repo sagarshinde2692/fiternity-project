@@ -70,7 +70,8 @@ return array(
         'Terms' => [
             'Title' => 'FitSquad - FAQ and Terms and conditions',
             'text' => 'HTML Text',
-            'url' => Config::get('loyalty_constants.fitsquad_faq')
+            'url' => Config::get('loyalty_constants.fitsquad_faq'),
+            'button_text' => 'JOIN THE CLUB'
         ],
     ],
     'post_register' => [
