@@ -9776,7 +9776,7 @@ class CustomerController extends \BaseController {
         
         $post_register['milestones']['data'] = $milestones_data['data'];
 		
-        $next_milestone_checkins = !empty($milestones[$milestone_no]['next_count']) ? $milestones[$milestone_no]['next_count'] : 225;
+        $next_milestone_checkins = !empty($milestones[$milestone_no]['next_count']) ? $milestones[$milestone_no]['next_count'] : 250;
         
         $milestone_text = '';
         
