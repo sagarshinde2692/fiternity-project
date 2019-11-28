@@ -61,9 +61,10 @@ return array(
         ],
 
         'footer' => [
-            'image' => 'https://b.fitn.in/loyalty/FITSQUAD-APP-Registration-design.jpg',
+            'image' => "https://b.fitn.in/external-vouchers1/new_grid_images/fitsquad_app_design_footer.png",
             'ratio' => 1.38,
-            'url'=> Config::get('loyalty_constants.register_url')
+            'url'=> Config::get('loyalty_constants.register_url'),
+            'button_text' => 'JOIN THE CLUB'
         ],
         'Terms' => [
             'Title' => 'FitSquad - FAQ and Terms and conditions',
