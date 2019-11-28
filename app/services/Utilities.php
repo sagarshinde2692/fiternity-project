@@ -11131,7 +11131,7 @@ Class Utilities {
         if(!empty($voucher_category['email_text'])){
             $resp['voucher_data']['email_text']= $voucher_category['email_text'];
         }
-        $resp['voucher_data']['terms_detailed_text'] = strtr($voucherAttached['terms'], ['<li>'=>'<p>', '</li>'=>'</p>', '<ul>'=>'', '</ul>'=>'']);
+        $resp['voucher_data']['terms_detailed_text'] = strtr($voucherAttached['terms'], ['<li>'=>'<p> •', '</li>'=>'</p>', '<ul>'=>'', '</ul>'=>'']);
         
         if(!empty($voucher_category['flags'])){
             $resp['voucher_data']['flags'] = $voucherAttached['flags'];
