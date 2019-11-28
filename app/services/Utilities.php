@@ -11170,7 +11170,7 @@ Class Utilities {
     public function getComboVouchers($voucher_attached, $customer){
         $combo_vouchers = [];
         if(!empty($voucher_attached['flags']['combo_vouchers_list'])){
-            $combo_vouchers = \LoyaltyVoucher::active()->whereIn('voucher_category', $voucher_attached['flags']['combo_vouchers_list'])->where('customer_id', $customer['id'])->get();
+            $combo_vouchers = \LoyaltyVoucher::active()->whereIn('voucher_category', $voucher_attached['flags']['combo_vouchers_list'])->where('customer_id', $customer['id'])->orderBy('_id')->get();
         }
         return $combo_vouchers;
     }
