@@ -1125,9 +1125,15 @@ class PassService {
 
         $order->status = '1';
         $order->onepass_sessions_total = (!empty($order->pass['classes']))?$order->pass['classes']:-1;
-        $communication = $this->passPurchaseCommunication($order);
-        $order->communication = $communication;
         $order->update();
+
+        try{
+            $communication = $this->passPurchaseCommunication($order);
+            $order->communication = $communication;
+            $order->update();
+        }catch (Exception $e) {
+            Log::info('Error : '.$e->getMessage());
+        }
 
         try{
             $this->giveCashbackOnOrderSuccess($order->toArray());
