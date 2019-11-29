@@ -10980,7 +10980,7 @@ Class Utilities {
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
                             $return_arr['text'] = "Full 100% Cashback";
-                            // $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | 1-3 Dec";
+                            $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | 1-3 Dec";
 
                             if(empty($coupon_flags['no_cashback'])){
                                 $return_arr['offer_success_msg'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account on 6th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
@@ -10991,7 +10991,7 @@ Class Utilities {
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
                             $return_arr['text'] = "Flat 42% Off. Additional 50% cashback via PayPal";
-                            $return_arr['purchase_summary_value'] = "Get Full 100% Cashback (No Code Needed) | Last Few Hours Left";
+                            // $return_arr['purchase_summary_value'] = "Get Full 100% Cashback (No Code Needed) | Last Few Hours Left";
 
                             if(empty($coupon_flags['no_cashback'])){
                                 $return_arr['offer_success_msg'] = "CCongratulations on your OnePass purchase. You will receive full cashback worth INR 4500 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
