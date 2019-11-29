@@ -1506,6 +1506,8 @@ class PassService {
         $utilities = new Utilities();
 
         $pass_data = array(
+            "amount" => $data['amount'],
+            "amount_customer" => $data['amount_customer'],
             "customer_name" => $data['customer_name'],
             "customer_phone" => $data['customer_phone'],
             "customer_email" => $data['customer_email'],
