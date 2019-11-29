@@ -57,7 +57,7 @@ return array(
 
 
         'check_ins' => [
-            'header' => "GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <font color='#f8a81b'> 30, 75, 150 & 250 </font> WORKOUTS",//'GET CRAZY REWARDS ON COMPLETING EACH MILESTONE',
+            'header' => "GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <font color='#f8a81b'>30, 75, 150 & 250</font> WORKOUTS",//'GET CRAZY REWARDS ON COMPLETING EACH MILESTONE',
             'data' => []
         ],
 

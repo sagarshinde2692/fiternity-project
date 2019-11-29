@@ -7917,14 +7917,14 @@ class FindersController extends \BaseController {
 						'background'=>'https://b.fitn.in/global/banner%20image.png',
 						'header'=>[
 							'line1'=>"India's Biggest Rewards Club",
-							'line2'=>"Get Rewards Upto Rs 25,000 For Working Out!",
+							'line2'=>"Get Rewards Upto Rs 32,000 For Working Out!",
 							'line3'=>"Burn More, Earn More"
 						],
 						'title'=>"Workout at ".$finderDetails['title']." by buying a membership or booking a session & get rewarded in 3 easy steps",
 						'steps'=>[
 							"1. Check-in every time you workout",
 							"2. Workout more and level up",
-							"3. Earn rewards worth Rs.25,000",
+							"3. Earn rewards worth Rs.32,000",
 						],
 						// 'steps_image' => 'https://b.fitn.in/global/Group%20770%403x.png',
 						// 'steps_desc'=>[
