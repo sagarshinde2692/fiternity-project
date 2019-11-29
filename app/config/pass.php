@@ -179,14 +179,13 @@ return [
                     -The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
                     -The FitCash received can be utilized only to upgrade your OnePass<br>
                     -The validity of your FitCash is 105 days after your OnePass expires and can be used as follows<br>
-                            -- 45% of the Fitcash received can be used to upgrade to 1 month, 3 months or 6 months OnePass Red within 15 days of the pass expiry. Post 15 days, 45% of the Fitcash received will expire.<br>
-                            -- 33% of the Fitcash received can be used to upgrade to 1 month, 3 months or 6 months OnePass Red within 60 days of the pass expiry. Post 60 days, 33% of the Fitcash received will expire.<br>
-                            -- 22% of the Fitcash received can be used to upgrade to 1 month, 3 months or 6 months OnePass Red within 105 days of the pass expiry. Post 105 days, 22% of the Fitcash received will expire.<br>
-                    -100% of the FitCash received can be used to upgrade to 12 months OnePass Red within 15 days of the pass expiry.<br>
-                    - After 15 days, 100% of the balance FitCash left after above expiry conditions can be used to upgrade to 12 months OnePass Red within 15 days of the pass expiry.<br>
+                            -- 45% of the 1 Month OnePass Red purchase price can be paid using the received Fitcash<br>
+                            -- 20% of the 3 Month OnePass Red purchase price can be paid using the received Fitcash<br>
+                            -- 15% of the 6 Month OnePass Red purchase price can be paid using the received Fitcash<br>
+                            -- 100% of the FitCash received can be used to upgrade to 12 months OnePass Red<br>
                     - The FitCash received will not be valid on upgrade to 15 Days OnePass Red<br>
                     - This offer cannot be clubbed with any other existing offer<br>
-                    -The offer ends on 30 November
+                    - The offer ends on 30 November
                 </li>
                 <li>All offers on Fitternity's OnePass expire on 30th November</li>
 
@@ -241,14 +240,13 @@ return [
                     -The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
                     -The FitCash received can be utilized only to upgrade your OnePass<br>
                     -The validity of your FitCash is 105 days after your OnePass expires and can be used as follows<br>
-                            -- 45% of the Fitcash received can be used to upgrade to 1 month, 3 months or 6 months OnePass Red within 15 days of the pass expiry. Post 15 days, 45% of the Fitcash received will expire.<br>
-                            -- 33% of the Fitcash received can be used to upgrade to 1 month, 3 months or 6 months OnePass Red within 60 days of the pass expiry. Post 60 days, 33% of the Fitcash received will expire.<br>
-                            -- 22% of the Fitcash received can be used to upgrade to 1 month, 3 months or 6 months OnePass Red within 105 days of the pass expiry. Post 105 days, 22% of the Fitcash received will expire.<br>
-                    -100% of the FitCash received can be used to upgrade to 12 months OnePass Red within 15 days of the pass expiry.<br>
-                    - After 15 days, 100% of the balance FitCash left after above expiry conditions can be used to upgrade to 12 months OnePass Red within 15 days of the pass expiry.<br>
+                            -- 45% of the 1 Month OnePass Red purchase price can be paid using the received Fitcash<br>
+                            -- 20% of the 3 Month OnePass Red purchase price can be paid using the received Fitcash<br>
+                            -- 15% of the 6 Month OnePass Red purchase price can be paid using the received Fitcash<br>
+                            -- 100% of the FitCash received can be used to upgrade to 12 months OnePass Red<br>
                     - The FitCash received will not be valid on upgrade to 15 Days OnePass Red<br>
                     - This offer cannot be clubbed with any other existing offer<br>
-                    -The offer ends on 30 November
+                    - The offer ends on 30 November
                 </li>
                 <li>All offers on Fitternity's OnePass expire on 30th November</li>
 
@@ -302,14 +300,13 @@ return [
                     -The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
                     -The FitCash received can be utilized only to upgrade your OnePass<br>
                     -The validity of your FitCash is 105 days after your OnePass expires and can be used as follows<br>
-                            -- 45% of the Fitcash received can be used to upgrade to 1 month, 3 months or 6 months OnePass Red within 15 days of the pass expiry. Post 15 days, 45% of the Fitcash received will expire.<br>
-                            -- 33% of the Fitcash received can be used to upgrade to 1 month, 3 months or 6 months OnePass Red within 60 days of the pass expiry. Post 60 days, 33% of the Fitcash received will expire.<br>
-                            -- 22% of the Fitcash received can be used to upgrade to 1 month, 3 months or 6 months OnePass Red within 105 days of the pass expiry. Post 105 days, 22% of the Fitcash received will expire.<br>
-                    -100% of the FitCash received can be used to upgrade to 12 months OnePass Red within 15 days of the pass expiry.<br>
-                    - After 15 days, 100% of the balance FitCash left after above expiry conditions can be used to upgrade to 12 months OnePass Red within 15 days of the pass expiry.<br>
+                            -- 45% of the 1 Month OnePass Red purchase price can be paid using the received Fitcash<br>
+                            -- 20% of the 3 Month OnePass Red purchase price can be paid using the received Fitcash<br>
+                            -- 15% of the 6 Month OnePass Red purchase price can be paid using the received Fitcash<br>
+                            -- 100% of the FitCash received can be used to upgrade to 12 months OnePass Red<br>
                     - The FitCash received will not be valid on upgrade to 15 Days OnePass Red<br>
                     - This offer cannot be clubbed with any other existing offer<br>
-                    -The offer ends on 30 November
+                    - The offer ends on 30 November
                 </li>
                 <li>All offers on Fitternity's OnePass expire on 30th November</li>
 
