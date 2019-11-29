@@ -2588,7 +2588,7 @@ class PassService {
             if(!empty($data['pass'])){
                 $pass = $data['pass'];
 
-                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['classes'], [30,45]))){
+                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['classes']) && in_array($pass['classes'], [30,45]))){
 
                     if(empty($data['membership_order_id'])){
                         // $rewardinfo['diwali_mixed_reward'] = true;
