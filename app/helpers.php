@@ -4539,7 +4539,7 @@ if (!function_exists('setNewToken')) {
             ];
             
             if(!empty($pass['pass']['corporate'])){
-                $pass_data['corporate'] = $pass['pass']['corporate'];
+                $pass_data['pass_corporate'] = $pass['pass']['corporate'];
             }
             if($pass_data['pass_type'] =='hybrid'){
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
@@ -4769,7 +4769,7 @@ if (!function_exists(('setPassToToken'))){
                 $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
             }
             if(!empty($passOrder['pass']['corporate'])){
-                $data['corporate'] = $passOrder['pass']['corporate'];
+                $data['pass_corporate'] = $passOrder['pass']['corporate'];
             }
         }
     }
