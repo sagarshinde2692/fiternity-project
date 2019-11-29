@@ -4525,9 +4525,22 @@ if (!function_exists('setNewToken')) {
             
             $totalSessions = (!empty($pass['onepass_sessions_total']))?($pass['onepass_sessions_total']-1):null;
             
-            $pass_data = ['pass'=>1, 
-            "pass_id" => $pass['pass_id'], 'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 'pass_type' => $pass['pass']['pass_type'], 'pass_sessions_total'=>$totalSessions, 'pass_sessions_used'=>$pass['onepass_sessions_used'],'pass_order_id'=>$pass['_id'], 'pass_city_id' => (!empty($pass['pass_city_id']) ? $pass['pass_city_id'] : null), 'pass_city_name' => (!empty($pass['pass_city_name']) ? $pass['pass_city_name'] : null)];
-
+            $pass_data = [
+                'pass'=>1, 
+                "pass_id" => $pass['pass_id'], 
+                'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 
+                'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 
+                'pass_type' => $pass['pass']['pass_type'], 
+                'pass_sessions_total'=>$totalSessions, 
+                'pass_sessions_used'=>$pass['onepass_sessions_used'],
+                'pass_order_id'=>$pass['_id'], 
+                'pass_city_id' => (!empty($pass['pass_city_id']) ? $pass['pass_city_id'] : null), 
+                'pass_city_name' => (!empty($pass['pass_city_name']) ? $pass['pass_city_name'] : null)
+            ];
+            
+            if(!empty($pass['pass']['corporate'])){
+                $pass_data['corporate'] = $pass['pass']['corporate'];
+            }
             if($pass_data['pass_type'] =='hybrid'){
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
                 $pass_data['pass_sessions_monthly_used'] = (!empty($pass['monthly_total_sessions_used']))?$pass['monthly_total_sessions_used']:0;
@@ -4754,6 +4767,9 @@ if (!function_exists(('setPassToToken'))){
             if($data['pass_type'] =='hybrid'){
                 $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
                 $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
+            }
+            if(!empty($passOrder['pass']['corporate'])){
+                $data['corporate'] = $passOrder['pass']['corporate'];
             }
         }
     }
