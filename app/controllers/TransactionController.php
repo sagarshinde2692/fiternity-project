@@ -2609,11 +2609,12 @@ class TransactionController extends \BaseController {
                                     array_set($data, 'fitbox_mixed_reward', true);
                                     array_set($data, 'other_fitbox_mixed_reward', true);
                                 }
-                            }else{
-                                if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
-                                    array_set($data, 'vk_puma_bag_reward', true);
-                                }
                             }
+                            // else{
+                            //     if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                            //         array_set($data, 'vk_puma_bag_reward', true);
+                            //     }
+                            // }
 
                             $reward_type = $value->reward_type;
 
@@ -6283,7 +6284,7 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: GET100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase, use code: CB100','position'=>$position++];
 
             $first_session_free = $this->firstSessionFree($data);
             if(!empty($first_session_free) && $first_session_free){
@@ -6676,7 +6677,7 @@ class TransactionController extends \BaseController {
                 'options'=>[
                         [
                                 'title' => 'Paypal',
-                                'subtitle' => 'Get 50% Instant Cashback Upto INR 300 (New Users Only)',
+                                'subtitle' => 'Get 50% Instant Cashback Upto INR 500 (New Users Only)',
                                 'value' => 'paypal'
                         ],
                         [

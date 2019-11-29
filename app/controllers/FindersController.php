@@ -1440,24 +1440,25 @@ class FindersController extends \BaseController {
 						}
 					}
 
-				}else{
-					$vendor_stripe_line = "";
-					foreach($response['finder']['services'] as &$service){
-						foreach($service['serviceratecard'] as &$ratecard){
-							if($ratecard['type'] == 'membership'){
-								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-								if($price >= 8000){
-									$pricemore = true;
-																	
-									$vendor_stripe_line = "Get Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 With Your Purchase <br> Last Few Hours Left";
-								}
-							}
-						}
-						if($pricemore){
-							break;
-							}
-					}
 				}
+				// else{
+				// 	$vendor_stripe_line = "";
+				// 	foreach($response['finder']['services'] as &$service){
+				// 		foreach($service['serviceratecard'] as &$ratecard){
+				// 			if($ratecard['type'] == 'membership'){
+				// 				$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+				// 				if($price >= 8000){
+				// 					$pricemore = true;
+																	
+				// 					$vendor_stripe_line = "Get Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 With Your Purchase <br> Last Few Hours Left";
+				// 				}
+				// 			}
+				// 		}
+				// 		if($pricemore){
+				// 			break;
+				// 			}
+				// 	}
+				// }
 
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
@@ -3963,30 +3964,30 @@ class FindersController extends \BaseController {
 						
 						if($this->device_type == 'android'){
 							
-							$android_line = "<u>Buy Now Get More Sale</u><br><br>Last Few Hours Left <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
+							$android_line = "<u>Fit-astic Flash Sale</u><br><br>1-3 Dec <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: FIT20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100 <br><br>- Get additional 50% cashback via PayPal on OnePass, Membership and Pay-Per-Session";
 	
-							$op_android_line = "<u>Buy Now Get More Sale</u><br><br>Last Few Hours Left <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT";
+							$op_android_line = "<u>Fit-astic Flash Sale</u><br><br>1-3 Dec <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: FIT20 <br><br>- Get additional 50% cashback via PayPal on OnePass, Membership and Pay-Per-Session";
 							
 						}else{
-							$ios_line = "\nBuy Now Get More Sale\n\nLast Few Hours Left \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
+							$ios_line = "\nFit-astic Flash Sale\n\n1-3 Dec \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: FIT20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100 \n\n- Get additional 50% cashback via PayPal on OnePass, Membership and Pay-Per-Session";
 		
-							$op_ios_line = "\nBuy Now Get More Sale\n\nLast Few Hours Left \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: VKFIT";
+							$op_ios_line = "\nFit-astic Flash Sale\n\n1-3 Dec \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: FIT20 \n\n- Get additional 50% cashback via PayPal on OnePass, Membership and Pay-Per-Session";
 						}
 	
-						if($price >= 8000){
-							$pricemore = true;
-							if($this->device_type == 'android'){
-								$android_line = "<u>Buy Now Get More Sale</u><br><br>Last Few Hours Left <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
+						// if($price >= 8000){
+						// 	$pricemore = true;
+						// 	if($this->device_type == 'android'){
+						// 		$android_line = "<u>Fit-astic Flash Sale</u><br><br>1-3 Dec <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 		
-								$op_android_line = "<u>Buy Now Get More Sale</u><br><br>Last Few Hours Left <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT ";
-							}else{	
-								$ios_line = "\nBuy Now Get More Sale\n\nLast Few Hours Left \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : GET100";
+						// 		$op_android_line = "<u>Fit-astic Flash Sale</u><br><br>1-3 Dec <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT ";
+						// 	}else{	
+						// 		$ios_line = "\nFit-astic Flash Sale\n\n1-3 Dec \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 		
-								$op_ios_line = "\nBuy Now Get More Sale\n\nLast Few Hours Left \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT";
-							}
+						// 		$op_ios_line = "\nFit-astic Flash Sale\n\n1-3 Dec \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT";
+						// 	}
 							
-							break;
-						}
+						// 	break;
+						// }
 					}
 				}
 				if($pricemore){
@@ -8650,13 +8651,14 @@ class FindersController extends \BaseController {
 						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) ){
 							// if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0) || !(isset($finder['flags']['monsoon_flash_discount']) && isset($finder['flags']['monsoon_flash_discount_per']))){
 							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."");
-						}else{
-							if($price >= 8000){
-								$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT \n\nLast Few Hours Left");
-							}else{
-								$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT \n\nLast Few Hours Left");
-							}
 						}
+						// else{
+						// 	if($price >= 8000){
+						// 		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT \n\nLast Few Hours Left");
+						// 	}else{
+						// 		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT \n\nLast Few Hours Left");
+						// 	}
+						// }
 					}
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Get Fit Go Sale \n\n Get 50% Off On Workout Sessions. Use Code: PPS");
