@@ -3794,11 +3794,11 @@ class TransactionController extends \BaseController {
 
             if($free_trial_ratecard){
                 if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
-                    // $data['coupon_code'] = 'FIRSTPPSFREE';
+                    $data['coupon_code'] = 'firstppsfree';
                     // $data['coupon_description'] = 'First wourkout session free';
                     // $data['coupon_discount_amount'] = $data['ratecard_amount'];
                     // $amount = $data['amount'] - $data['coupon_discount_amount'];
-                    $data['first_session_free'] = true;
+                    // $data['first_session_free'] = true;
                     // $data['amount_finder'] = 0;
                     // $data['vendor_price'] = 0;
                     $first_session_free = true;
@@ -7675,22 +7675,24 @@ class TransactionController extends \BaseController {
                     $already_booked_trials = $this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, !empty($data['customer_email']) ? $data['customer_email'] : '', !empty($data['customer_phone']) ? $data['customer_phone'] : null , true, 'checkoutSummary');
                     if(empty($already_booked_trials)){
 
-                        // $data['coupon_discount'] = $data['ratecard_amount'];
+                        $data['coupon_discount'] = $data['ratecard_amount'];
 
-                        // $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                        $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
                         
-                        // $data['you_save'] += $data['coupon_discount'];
+                        $data['you_save'] += $data['coupon_discount'];
 
                         $result['free_trial_available'] = true;
                         
-                        // $result['payment_details']['amount_summary'][] = [
-                        //     'field' => 'Coupon Discount',
-                        //     'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
-                        // ];
+                        $result['coupon_code'] = "FIRSTPPSFREE";
+                        
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => 'Coupon Discount',
+                            'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
+                        ];
 
                         $first_session_free = true;
 
-                        $result['payment_details']['free_session_coupon'] = "FREE";
+                        // $result['payment_details']['free_session_coupon'] = "FREE";
                         
                     }else{
                         Log::info($already_booked_trials['created_at']);
