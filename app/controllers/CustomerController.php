@@ -9112,6 +9112,10 @@ class CustomerController extends \BaseController {
 				return Response::json(array('status' => 400, 'message' => 'Cannot claim reward. '.$fitsquad_expired['claim_expired']['message']));
 			}
 
+			if(empty($new_fitsquad_app) && !empty($customer['loyalty']['grid_version'])){
+				return Response::json(array('status' => 400, 'message' => 'Please update the app to claim the reward.'));
+			}
+			
 			$milestones = $this->getCustomerMilestones($customer);
 
 
