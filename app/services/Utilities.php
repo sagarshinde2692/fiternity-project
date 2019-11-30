@@ -10921,7 +10921,7 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Flat 50% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 50% Off. Limited Slots. Additional 50% cashback via PayPal";
                             $return_arr['purchase_summary_value'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | 1-3 Dec";
 
                             // if(empty($coupon_flags['no_cashback'])){
@@ -10932,15 +10932,15 @@ Class Utilities {
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Flat 30% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 30% Off. Limited Slots. Additional 50% cashback via PayPal";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 180){
-                            $return_arr['text'] = "Flat 35% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 35% Off. Limited Slots. Additional 50% cashback via PayPal";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 360){
-                            $return_arr['text'] = "Flat 30% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 30% Off. Limited Slots. Additional 50% cashback via PayPal";
                         }
                     }
 
@@ -10990,7 +10990,7 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Flat 40% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 40% Off. Limited Slots. Additional 50% cashback via PayPal";
                             // $return_arr['purchase_summary_value'] = "Get Full 100% Cashback (No Code Needed) | Last Few Hours Left";
 
                             if(empty($coupon_flags['no_cashback'])){
@@ -11001,15 +11001,15 @@ Class Utilities {
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Flat 25% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 25% Off. Limited Slots. Additional 50% cashback via PayPal";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 180){
-                            $return_arr['text'] = "Flat 30% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 30% Off. Limited Slots. Additional 50% cashback via PayPal";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 360){
-                            $return_arr['text'] = "Flat 30% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 30% Off. Limited Slots. Additional 50% cashback via PayPal";
                         }
                     }
 
@@ -11064,7 +11064,7 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Flat 45% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 45% Off. Limited Slots. Additional 50% cashback via PayPal";
                             // $return_arr['purchase_summary_value'] = "Get Full 100% Cashback (No Code Needed) | Last Few Hours Left";
 
                             if(empty($coupon_flags['no_cashback'])){
@@ -11075,15 +11075,15 @@ Class Utilities {
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Flat 45% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 45% Off. Limited Slots. Additional 50% cashback via PayPal";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 180){
-                            $return_arr['text'] = "Flat 50% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 50% Off. Limited Slots. Additional 50% cashback via PayPal";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 360){
-                            $return_arr['text'] = "Flat 40% Off. Additional 50% cashback via PayPal";
+                            $return_arr['text'] = "Flat 40% Off. Limited Slots. Additional 50% cashback via PayPal";
                         }
                     }
 
