@@ -6285,10 +6285,10 @@ class TransactionController extends \BaseController {
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
             $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: GET100','position'=>$position++];
 
-            $first_session_free = $this->firstSessionFree($data);
-            if(!empty($first_session_free) && $first_session_free){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>'Apply code FREE to get this session for free','position'=>$position++];
-            }
+            // $first_session_free = $this->firstSessionFree($data);
+            // if(!empty($first_session_free) && $first_session_free){
+            //     $booking_details_data["add_remark"] = ['field'=>'','value'=>'Apply code FREE to get this session for free','position'=>$position++];
+            // }
             
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']]))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
