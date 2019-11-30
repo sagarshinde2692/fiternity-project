@@ -1422,7 +1422,7 @@ class FindersController extends \BaseController {
 				}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
 				// }else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) && !(isset($finder['flags']['monsoon_flash_discount_per']) &&  $finder['flags']['monsoon_flash_discount_per'] == 0) && isset($finder['flags']['monsoon_flash_discount']) && isset($finder['flags']['monsoon_flash_discount_per'])){
 					
-					$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: FIT20";
+					$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code: FIT20 | Addnl 50% Cashback Via PayPal | 1-3 Dec";
 
 					// foreach($response['finder']['services'] as &$service){
 					// 	foreach($service['serviceratecard'] as &$ratecard){
