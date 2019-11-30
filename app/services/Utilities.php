@@ -1995,6 +1995,9 @@ Class Utilities {
             //Log::info("query ::            ", [$query]);
 
             $allWallets  = $query->OrderBy('restricted','desc')->OrderBy('_id','asc')->get();
+            // print_r(\DB::getQueryLog());
+
+            Log::info('allWallets query  ::             ',[]);
 
             Log::info('wallet ::             ',[count($allWallets)]);
 

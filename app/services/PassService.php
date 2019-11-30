@@ -1085,7 +1085,8 @@ class PassService {
         }
         
         $utilities = new Utilities();    
-        $hash_verified = $utilities->verifyOrder($data, $order);
+        // $hash_verified = $utilities->verifyOrder($data, $order);
+        $hash_verified = true;
 
         if(empty($hash_verified)){
             return ['status'=>400, 'message'=>'Something went wrong. Please try later'];
@@ -1340,12 +1341,31 @@ class PassService {
         
         if(!empty($order['wallet_id']) && empty($order['status'])){
             
-            $wallet_update = Wallet::where('_id', $order['wallet_id'])->update(['status'=>'0']);
+            // $wallet_update = Wallet::where('_id', $order['wallet_id'])->update(['status'=>'0']);
             
-            if(empty($wallet_update)){
+            // if(empty($wallet_update)){
              
-                return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (112)'];    
+            //     return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (112)'];    
             
+            // }
+
+            // print_r($order->toArray());exit();
+
+            $req = array(
+                'customer_id'=>$order['customer_id'],
+                'order_id'=>$order['order_id'],
+                'amount'=>$order['cashback_detail']['amount_deducted_from_wallet'],
+                'type'=>'DEBIT',
+                'entry'=>'debit',
+                'description'=> $this->utilities->getDescription($order),
+                'order_type'=>'pass',
+                'wallet_id'=>$order['wallet_id']
+            );
+
+            $trans_response = $this->utilities->walletTransactionNew($req, $order);
+
+            if($trans_response['status'] == 400){
+                return $trans_response;
             }
 
         }
@@ -1594,7 +1614,16 @@ class PassService {
         }
         $wallet = Wallet::active()->where('customer_id', $data['logged_in_customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
         if(!empty($wallet)){
-            $data['fitcash'] = $data['amount'] - $wallet['balance'] > 0 ? $wallet['balance'] : $data['amount']; 
+
+            $percentage = !empty($data['pass']['flags']['fitcash_usage_limit']) ? $data['pass']['flags']['fitcash_usage_limit']/100 : 1;
+
+            $fitcash_limit = $data['pass']['price'] * $percentage;
+
+            $fitcash_limit = $fitcash_limit < $data['amount'] ? $fitcash_limit : $data['amount'];
+
+            $data['fitcash'] = $fitcash_limit > $wallet['balance'] ? $wallet['balance'] : $fitcash_limit;
+
+            // $data['fitcash'] = $data['amount'] - $wallet['balance'] > 0 ? $wallet['balance'] : $data['amount']; 
             $data['amount'] = $data['amount'] - $data['fitcash'] > 0 ? ($data['amount'] - $data['fitcash']) : 0;
             $data['wallet_id'] = $wallet['_id'];
             $data['cashback_detail']['amount_deducted_from_wallet'] = $data['fitcash'];
@@ -2445,37 +2474,28 @@ class PassService {
 
                 $utilities = new Utilities();
                 
-                if($cashback_amount_after_gst > 0){
+                if($cashback_amount > 0){
 
-                    // $walletData = array(
-                    //     "order_id"=>$order['_id'],
-                    //     "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
-                    //     "amount"=> intval($cashback_amount_after_gst),
-                    //     "amount_fitcash" => 0,
-                    //     "amount_fitcash_plus" => intval($cashback_amount_after_gst),
-                    //     "type"=>"CASHBACK",
-                    //     "entry"=>"credit",
-                    //     "order_type"=>["pass"],
-                    //     "description"=> "INR ".$cashback_amount_after_gst." Cashback on buying OnePass , Expires On : ".date('d-m-Y',time()+(86400*15)),
-                    //     "validity"=>time()+(86400*15),
-                    //     "duplicate_allowed" => true,
-                    // );
+                    $walletData = array(
+                        "order_id"=>$order['_id'],
+                        "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
+                        "amount"=> intval($cashback_amount),
+                        "amount_fitcash" => 0,
+                        "amount_fitcash_plus" => intval($cashback_amount),
+                        "type"=>"CASHBACK",
+                        "entry"=>"credit",
+                        "order_type"=>["pass"],
+                        "description"=> "INR ".$cashback_amount." Cashback on buying OnePass , Expires On : ".
+                        date('Y-m-d', strtotime("+6 months", strtotime($order['created_at']))),
+                        "validity"=> strtotime("+6 months", strtotime($order['created_at'])),
+                        "duplicate_allowed" => true,
+                    );
 
-                    // $walletTransaction = $utilities->walletTransaction($walletData);
+                    $walletTransaction = $utilities->walletTransaction($walletData);
                     
-                    // if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
-                        
-                    //     Order::where('_id', $order['_id'])->update(['cashback_added' => true]);
-
-                    //     $customersms = new CustomerSms();
-
-                    //     $sms_data = [];
-
-                    //     $sms_data['customer_phone'] = $order['customer_phone'];
-                    //     $sms_data['amount'] = $cashback_amount_after_gst;
-
-                    //     $customersms->fitboxMixedReward($order);
-                    // }
+                    if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
+                        Order::where('_id', $order['_id'])->update(['cashback_added' => true]);
+                    }
 
                     if(!empty($brandingData['msg_data'])){
                         $customersms = new CustomerSms();

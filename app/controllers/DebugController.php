@@ -11904,5 +11904,46 @@ public function yes($msg){
 		$this->batchUpdate('mongodb2', 'vendors', $update_data);
 	}
 
+	//Update fitcash of customers where pass.flags.cashback exists
+	//and flag coupon_flags.no_cashback is empty  
+	public function updateFitCashManualOnePass(){
+		ini_set('max_execution_time', 3000);
+
+        $orders = Order::where('pass.flags.cashback','exists',true)
+        ->where('coupon_flags.no_cashback','!=',true)
+        ->where('cashback_added','!=',true)
+        ->get();
+
+        $utilities = new Utilities();
+        $count = 0;
+        foreach ($orders as $order){
+
+        	$cashback_amount = $order['pass']['flags']['cashback'];
+        	$walletData = array(
+	            "order_id"=>$order['_id'],
+	            "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
+	            "amount"=> intval($cashback_amount),
+	            "amount_fitcash" => 0,
+	            "amount_fitcash_plus" => intval($cashback_amount),
+	            "type"=>"CASHBACK",
+	            "entry"=>"credit",
+	            "order_type"=>["pass"],
+	            "description"=> "INR ".$cashback_amount." Cashback on buying OnePass , Expires On : ".date('Y-m-d', strtotime("+6 months", strtotime($order['created_at']))),
+	            "validity"=> strtotime("+6 months", strtotime($order['created_at'])),
+	            "duplicate_allowed" => true,
+        	);
+
+	        $walletTransaction = $utilities->walletTransaction($walletData);
+	        
+	        if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
+	        	$count = $count + 1;
+	            $update = Order::where('_id', $order['_id'])->update(['cashback_added' => true,'manual_flags.cashback_added'=> new DateTime()]);
+	        }
+        }
+
+        echo "Fit cash updated successfully for ".$count." users";
+        exit();
+    }
+
 }
 
