@@ -10895,11 +10895,11 @@ Class Utilities {
         
         switch($city_name){
             case "mumbai":
+                $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
+                $return_arr['footer_text'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
 
-                    $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
-                    $return_arr['footer_text'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
                         // $return_arr['text'] = "Flat 24 Off. Additional 50% cashback via PayPal";
@@ -10967,11 +10967,11 @@ Class Utilities {
             case "noida":
             case "delhi": 
             case "bangalore":
+                $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
+                $return_arr['footer_text'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
 
-                    $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
-                    $return_arr['footer_text'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
@@ -11044,12 +11044,12 @@ Class Utilities {
             case "kolkata":
             case "ahmedabad":
             case "faridabad":
+                $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
+                $return_arr['footer_text'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
 
-                    $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
-                    $return_arr['footer_text'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
-
+                    
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
                         // $return_arr['text'] = "FLAT 20% Off (Code: DISC20)";
