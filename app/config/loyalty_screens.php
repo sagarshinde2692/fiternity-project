@@ -13,8 +13,8 @@ return array(
             'ratio' => 1.23,
             'logo_ratio' => 1.23,
             'url'=> Config::get('loyalty_constants.register_url'),
-            'title' => 'GET REWARD FOR EVERY WORKOUT',
-            'sub_title' => 'BURN MORE. EARN MORE',
+            'title' => 'GET REWARDED FOR EVERY WORKOUT',
+            'sub_title' => 'BURN MORE, EARN MORE',
             'button_text' => 'JOIN THE CLUB',
             'text' => 'workout and earn rewards worth ₹ 32,000'
          ],
