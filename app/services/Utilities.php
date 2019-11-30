@@ -11172,30 +11172,26 @@ Class Utilities {
         if(!empty($voucher_attached['flags']['combo_vouchers_list'])){
             $vouchers_list = $voucher_attached['flags']['combo_vouchers_list'];
             $combo_vouchers = \LoyaltyVoucher::active()->whereIn('voucher_category', $vouchers_list)->where('customer_id', $customer['id'])->orderBy('_id')->get();
-            // $temp =[];
-            // foreach($combo_vouchers as $key=>$value){
-            //     if(is_array($value['voucher_category'])){
-            //         foreach($value['voucher_category'] as $voucher_key=>$voucher_value){
-            //             $index = array_search($voucher_value, $vouchers_list);
-            //             if($index !==false){
-            //                 break;
-            //             }
-            //         }
-            //     }
-            //     else {
-            //         $index = array_search($value['voucher_category'], $vouchers_list);
-            //     }
-
-            //     $temp = [
-            //         $index => $value
-            //     ];
-            //     Log::info('voucher infog:::', [$index]);
-            // }
         }
 
-        // $temp = array_values($temp);
-        // Log::info('voucher infog:::', [$temp]);
-        // return $temp;
         return $combo_vouchers;
+    }
+
+    public function preRegisterDataFormatingOldVersion(&$preRegistrationScreenData){
+        if(empty(newFitsquadCompatabilityVersion())){
+            if(!empty($this->device_type) && $this->device_type=='ios'){
+                $preRegistrationScreenData['check_ins']['header'] =  $preRegistrationScreenData['check_ins']['ios_old'];
+            }
+
+            if(!empty($this->device_type) && $this->device_type=='android' && !empty($preRegistrationScreenData['partners_new'])){
+                $preRegistrationScreenData['partners'] =  $preRegistrationScreenData['partners_new'];
+            }
+
+            foreach($preRegistrationScreenData['check_ins']['data'] as &$value){
+                $value['milestone'] = $value['milestone']." - ".$value['count'];
+            }
+        }
+        unset($preRegistrationScreenData['partners_new']);
+        unset($preRegistrationScreenData['check_ins']['ios_old']);   
     }
 }

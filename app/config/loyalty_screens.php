@@ -57,7 +57,8 @@ return array(
 
 
         'check_ins' => [
-            'header' => "GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <font color='#f8a81b'> 30, 75, 150 & 250 </font> WORKOUTS",//'GET CRAZY REWARDS ON COMPLETING EACH MILESTONE',
+            'header' => "<font color='#3B3B3B'> GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <font color='#f8a81b'> 30, 75, 150 & 250 </font> WORKOUTS</font>",//'GET CRAZY REWARDS ON COMPLETING EACH MILESTONE',
+            'ios_old' => "GET EXCITING REWARDS ON ACHIEVING MILESTONES OF 30, 75, 150 & 250 WORKOUTS",
             'data' => []
         ],
 
@@ -73,6 +74,10 @@ return array(
             'url' => Config::get('loyalty_constants.fitsquad_faq'),
             'button_text' => 'JOIN THE CLUB'
         ],
+        "partners_new" => [
+            "header" => '',
+            "data" => []
+        ]
     ],
     'post_register' => [
         'header' => [
