@@ -8657,7 +8657,7 @@ class FindersController extends \BaseController {
 							// 	$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT \n\nLast Few Hours Left");
 							// }
 							// else{
-								$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: FIT20");
+								$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: FIT20\\1-3 Dec");
 							// }
 						}
 					}
