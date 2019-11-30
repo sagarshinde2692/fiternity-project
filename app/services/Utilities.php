@@ -11029,9 +11029,7 @@ Class Utilities {
 
                             $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com - My Profile - Type in the delivery address Your Limited Edition Marvel Universe Gym Bag Worth INR 2500 will reach your doorstep in the 20th Dec 2019. Kindly feel free to reach out to us on +917400062849 for queries";
 
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. 
-                            We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address
-                            Your Limited Edition Marvel Universe Gym Bag Worth INR 2500 will reach your doorstep in the 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address Your Limited Edition Marvel Universe Gym Bag Worth INR 2500 will reach your doorstep in the 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
@@ -11106,13 +11104,9 @@ Class Utilities {
                             $return_arr['text'] = "Limited Edition Marvel Universe Gym Bag worth INR 2500";
                             $return_arr['purchase_summary_value'] = "Limited Edition Marvel Universe Gym Bag Worth INR 2500. Additional 50% cashback via PayPal | 1-3 Dec";
 
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. 
-                            We request you to go to www.fitternity.com - My Profile - Type in the delivery address
-                            Your Limited Edition Marvel Universe Gym Bag Worth INR 2500 will reach your doorstep in the 20th Dec 2019. Kindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com - My Profile - Type in the delivery address Your Limited Edition Marvel Universe Gym Bag Worth INR 2500 will reach your doorstep in the 20th Dec 2019. Kindly feel free to reach out to us on +917400062849 for queries";
 
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. 
-                            We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address
-                            Your Limited Edition Marvel Universe Gym Bag Worth INR 2500 will reach your doorstep in the 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address Your Limited Edition Marvel Universe Gym Bag Worth INR 2500 will reach your doorstep in the 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
