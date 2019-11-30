@@ -9934,7 +9934,8 @@ class CustomerController extends \BaseController {
                                 }else{
                                     $post_reward_data_template['receipt_message'] = Config::get('loyalty_screens.receipt_message');
                                 }
-                            
+								
+								unset($post_reward_data_template['terms']);
                             }else{
 
                                 if(!empty($milestone['bookings']) && !empty($milestone['booking_amount'])){
