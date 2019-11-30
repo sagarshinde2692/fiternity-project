@@ -10887,7 +10887,8 @@ Class Utilities {
 
         $voucher_required_info = Config::get('loyalty_screens.voucher_required_info');
 
-        $required_data['header'] = $voucher_required_info['header'];
+        // $required_data['header'] = $voucher_required_info['header'];
+        $required_data = [];
         if(!empty($voucher['required_info'])){
             // foreach($voucher['required_info'] as $key=>$value){
 
