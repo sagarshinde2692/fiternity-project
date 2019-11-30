@@ -10956,8 +10956,8 @@ Class Utilities {
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
-                $return_arr['red_remarks_header'] = "\n\nUp to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
-                $return_arr['footer_text'] = "Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
+                $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
+                $return_arr['footer_text'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
                 return $return_arr;
                 break;
             case "gurgaon":
@@ -11027,8 +11027,8 @@ Class Utilities {
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
-                $return_arr['red_remarks_header'] = "\n\nUp to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
-                $return_arr['footer_text'] = "Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
+                $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
+                $return_arr['footer_text'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
                 return $return_arr;
                 break;
             case "hyderabad":
@@ -11103,8 +11103,8 @@ Class Utilities {
                     }
                 }
                 $return_arr['black_remarks_header'] = "";
-                $return_arr['red_remarks_header'] = "\n\nUp to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
-                $return_arr['footer_text'] = "Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
+                $return_arr['red_remarks_header'] = "\n\nBiggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
+                $return_arr['footer_text'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Addnl 50% Cashback Via PayPal";
                 return $return_arr;
                 break;
             default: return $return_arr;
