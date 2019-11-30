@@ -11179,13 +11179,8 @@ Class Utilities {
 
     public function preRegisterDataFormatingOldVersion(&$preRegistrationScreenData){
         if(empty(newFitsquadCompatabilityVersion())){
-            if(!empty($this->device_type) && $this->device_type=='ios'){
-                $preRegistrationScreenData['check_ins']['header'] =  $preRegistrationScreenData['check_ins']['ios_old'];
-            }
 
-            if(!empty($this->device_type) && $this->device_type=='android' && !empty($preRegistrationScreenData['partners_new'])){
-                // $preRegistrationScreenData['partners'] =  $preRegistrationScreenData['partners_new'];
-            }
+            $preRegistrationScreenData['check_ins']['header'] =  $preRegistrationScreenData['check_ins']['ios_old'];
 
             foreach($preRegistrationScreenData['check_ins']['data'] as &$value){
                 $value['milestone'] = $value['milestone']." - ".$value['count'];
