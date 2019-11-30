@@ -11184,7 +11184,7 @@ Class Utilities {
             }
 
             if(!empty($this->device_type) && $this->device_type=='android' && !empty($preRegistrationScreenData['partners_new'])){
-                $preRegistrationScreenData['partners'] =  $preRegistrationScreenData['partners_new'];
+                // $preRegistrationScreenData['partners'] =  $preRegistrationScreenData['partners_new'];
             }
 
             foreach($preRegistrationScreenData['check_ins']['data'] as &$value){
