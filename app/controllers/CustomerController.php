@@ -9779,8 +9779,8 @@ class CustomerController extends \BaseController {
         $milestones_data = $this->utilities->getMilestoneSection($customer, $brand_milestones, 'fitsquad');
         
         $post_register['milestones']['data'] = $milestones_data['data'];
-		
-        $next_milestone_checkins = !empty($milestones[$milestone_no]['next_count']) ? $milestones[$milestone_no]['next_count'] : 250;
+		$last_milestone_checkin_count = !empty($customer['loyalty']['grid_version']) ? 250 : 225;
+        $next_milestone_checkins = !empty($milestones[$milestone_no]['next_count']) ? $milestones[$milestone_no]['next_count'] : $last_milestone_checkin_count;
         
         $milestone_text = '';
         
