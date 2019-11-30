@@ -174,7 +174,7 @@ return [
                 
                 <li>B. Full 100% Cashback on 15 days OnePass Red<br>
                     How does it work?<br>
-                    - The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 1st Dec 2019.<br>
+                    - The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 6th Dec 2019<br>
                     - The FitCash received can be utilized only to upgrade your OnePass.<br>
                     - The validity of your FitCash is 6 months starting from your OnePass expiry date.<br>
                     - The received FitCash can be used to upgrade as follows:<br>
@@ -250,7 +250,7 @@ return [
                 
                 <li>Full 100% Cashback on 15 days OnePass Red<br>
                     How does it work?<br>
-                    - The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 1st Dec 2019.<br>
+                    - The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 6th Dec 2019<br>
                     - The FitCash received can be utilized only to upgrade your OnePass.<br>
                     - The validity of your FitCash is 6 months starting from your OnePass expiry date.<br>
                     - The received FitCash can be used to upgrade as follows:<br>
@@ -325,7 +325,7 @@ return [
                 
                 <li>Full 100% Cashback on 15 days OnePass Red<br>
                     How does it work?<br>
-                    - The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 1st Dec 2019.<br>
+                    - The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 6th Dec 2019<br>
                     - The FitCash received can be utilized only to upgrade your OnePass.<br>
                     - The validity of your FitCash is 6 months starting from your OnePass expiry date.<br>
                     - The received FitCash can be used to upgrade as follows:<br>
