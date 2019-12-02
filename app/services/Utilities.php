@@ -8919,6 +8919,7 @@ Class Utilities {
         $validity = strtotime('+90 days');
         if(!empty($data['validity_in_days'])){
             $validity = strtotime('+'.$data['validity_in_days'].' days');
+            Log::info('validity::::::', [$validity]);
         }
         $request = array(
             "customer_id"=> $data['id'],
