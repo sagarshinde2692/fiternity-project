@@ -9913,7 +9913,7 @@ class CustomerController extends \BaseController {
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
                         $post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $vc);
                         $post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$post_reward_data_template['_id'];
-                        unset($vc['finder_ids']);
+						unset($vc['finder_ids']);
                         $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
 						$post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
 						if($milestone_claim_count > 1){
@@ -10028,6 +10028,7 @@ class CustomerController extends \BaseController {
 
                         }else{
 							$post_reward_data_template['claim_enabled'] = false;
+							unset($post_reward_data_template['terms']);
 							if(!empty($vc['sold_out'])){
 								$post_reward_data_template['button_title'] = "Sold Out";
 								unset($post_reward_data_template['terms']);
