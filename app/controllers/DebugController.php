@@ -11909,8 +11909,9 @@ public function yes($msg){
 	public function updateFitCashManualOnePass(){
 		ini_set('max_execution_time', 3000);
 
-        $orders = Order::where('pass.flags.cashback','exists',true)
-        ->where('coupon_flags.no_cashback','!=',true)
+        $orders = Order::active()
+        ->where('pass.flags.cashback','exists',true)
+        ->where('pass.flags.no_cashback' ,true)
         ->where('cashback_added','!=',true)
         ->get();
 
@@ -11936,7 +11937,8 @@ public function yes($msg){
 	        $walletTransaction = $utilities->walletTransaction($walletData);
 	        
 	        if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
-	        	$count = $count + 1;
+                $count = $count + 1;
+                Log::info($count);
 	            $update = Order::where('_id', $order['_id'])->update(['cashback_added' => true,'manual_flags.cashback_added'=> new DateTime()]);
 	        }
         }
