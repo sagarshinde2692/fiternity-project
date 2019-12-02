@@ -8917,6 +8917,9 @@ Class Utilities {
 
     public function addFitcashforVoucherCatageory($data){
         $validity = strtotime('+90 days');
+        if(!empty($data['validity_in_days'])){
+            $validity = strtotime('+'.$data['validity_in_days'].' days');
+        }
         $request = array(
             "customer_id"=> $data['id'],
             "amount"=> $data['voucher_catageory']['fitcash'],
