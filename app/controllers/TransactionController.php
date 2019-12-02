@@ -2609,11 +2609,12 @@ class TransactionController extends \BaseController {
                                     array_set($data, 'fitbox_mixed_reward', true);
                                     array_set($data, 'other_fitbox_mixed_reward', true);
                                 }
-                            }else{
-                                if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
-                                    array_set($data, 'vk_puma_bag_reward', true);
-                                }
                             }
+                            // else{
+                            //     if($data['reward_type'] == "mixed" && $order['ratecard_amount'] >= 8000 && ($order['type'] == 'memberships' || $order['type'] == 'membership') && empty($order['extended_validity']) && empty($order['studio_extended_validity']) ){
+                            //         array_set($data, 'vk_puma_bag_reward', true);
+                            //     }
+                            // }
 
                             $reward_type = $value->reward_type;
 
@@ -3794,11 +3795,11 @@ class TransactionController extends \BaseController {
 
             if($free_trial_ratecard){
                 if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
-                    // $data['coupon_code'] = 'FIRSTPPSFREE';
+                    $data['coupon_code'] = 'firstppsfree';
                     // $data['coupon_description'] = 'First wourkout session free';
                     // $data['coupon_discount_amount'] = $data['ratecard_amount'];
                     // $amount = $data['amount'] - $data['coupon_discount_amount'];
-                    $data['first_session_free'] = true;
+                    // $data['first_session_free'] = true;
                     // $data['amount_finder'] = 0;
                     // $data['vendor_price'] = 0;
                     $first_session_free = true;
@@ -6262,12 +6263,13 @@ class TransactionController extends \BaseController {
                 }else{
                     $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices | Use Code: FITME15",'position'=>$position++];
                 }
-            }else{
-                if($data['ratecard_amount'] >= 8000){
-                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT | Last Few Hours Left",'position'=>$position++];
-                }else{
-                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: VKFIT | Last Few Hours Left",'position'=>$position++];
-                }
+            }
+            else{
+                // if($data['ratecard_amount'] >= 8000){
+                //     $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT | Last Few Hours Left",'position'=>$position++];
+                // }else{
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code: FIT20 | 1-3 Dec",'position'=>$position++];
+                // }
             }
 
             // if(!empty($data['finder_flags']['monsoon_flash_discount']) && $data['finder_flags']['monsoon_flash_discount'] == 'without_cap' && !empty($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 25){
@@ -6283,12 +6285,12 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback  with this purchase, use code: GET100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase, use code: CB100','position'=>$position++];
 
-            $first_session_free = $this->firstSessionFree($data);
-            if(!empty($first_session_free) && $first_session_free){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>'Apply code FREE to get this session for free','position'=>$position++];
-            }
+            // $first_session_free = $this->firstSessionFree($data);
+            // if(!empty($first_session_free) && $first_session_free){
+            //     $booking_details_data["add_remark"] = ['field'=>'','value'=>'Apply code FREE to get this session for free','position'=>$position++];
+            // }
             
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']]))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
@@ -6676,7 +6678,7 @@ class TransactionController extends \BaseController {
                 'options'=>[
                         [
                                 'title' => 'Paypal',
-                                'subtitle' => 'Get 50% Instant Cashback Upto INR 300 (New Users Only)',
+                                'subtitle' => 'Get 50% Instant Cashback Upto INR 500 (New Users Only)',
                                 'value' => 'paypal'
                         ],
                         [
@@ -7654,7 +7656,7 @@ class TransactionController extends \BaseController {
 
             // if((empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && (empty($data['coupon_code']) || strtoupper($data['coupon_code']) ==  "FIRSTPPSFREE") && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
             $first_session_free = false;
-            if((empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
+            if(empty($data['coupon']) && (empty($data['init_source']) || $data['init_source'] != 'pps') && (empty($order['init_source']) || $order['init_source'] != 'pps') && !empty($data['amount_payable']) && $data['type'] == 'workout session' && (empty($data['customer_quantity']) || $data['customer_quantity'] == 1)){
 
                 $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])
                 ->where('type', 'trial')
@@ -7675,22 +7677,24 @@ class TransactionController extends \BaseController {
                     $already_booked_trials = $this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, !empty($data['customer_email']) ? $data['customer_email'] : '', !empty($data['customer_phone']) ? $data['customer_phone'] : null , true, 'checkoutSummary');
                     if(empty($already_booked_trials)){
 
-                        // $data['coupon_discount'] = $data['ratecard_amount'];
+                        $data['coupon_discount'] = $data['ratecard_amount'];
 
-                        // $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                        $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
                         
-                        // $data['you_save'] += $data['coupon_discount'];
+                        $data['you_save'] += $data['coupon_discount'];
 
                         $result['free_trial_available'] = true;
                         
-                        // $result['payment_details']['amount_summary'][] = [
-                        //     'field' => 'Coupon Discount',
-                        //     'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
-                        // ];
+                        $result['coupon_code'] = "FIRSTPPSFREE";
+                        
+                        $result['payment_details']['amount_summary'][] = [
+                            'field' => 'Coupon Discount',
+                            'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
+                        ];
 
                         $first_session_free = true;
 
-                        $result['payment_details']['free_session_coupon'] = "FREE";
+                        // $result['payment_details']['free_session_coupon'] = "FREE";
                         
                     }else{
                         Log::info($already_booked_trials['created_at']);

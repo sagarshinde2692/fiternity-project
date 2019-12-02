@@ -1526,6 +1526,8 @@ class PassService {
         $utilities = new Utilities();
 
         $pass_data = array(
+            "amount" => $data['amount'],
+            "amount_customer" => $data['amount_customer'],
             "customer_name" => $data['customer_name'],
             "customer_phone" => $data['customer_phone'],
             "customer_email" => $data['customer_email'],
@@ -2608,13 +2610,14 @@ class PassService {
             if(!empty($data['pass'])){
                 $pass = $data['pass'];
 
-                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['duration'], [15]))){
+                if((!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['classes']) && in_array($pass['classes'], [30,45]))){
 
                     if(empty($data['membership_order_id'])){
                         // $rewardinfo['diwali_mixed_reward'] = true;
                         // $rewardinfo['fitbox_mixed_reward'] = true;
-                        $rewardinfo['vk_bag_reward'] = true;
-                        $rewardinfo['reward_ids'] = [79];
+                        // $rewardinfo['vk_bag_reward'] = true;
+                        $rewardinfo['mv_bag_reward'] = true;
+                        // $rewardinfo['reward_ids'] = [79];
                     }
                 }
 
