@@ -1618,7 +1618,7 @@ class PassService {
 
             $percentage = !empty($data['pass']['flags']['fitcash_usage_limit']) ? $data['pass']['flags']['fitcash_usage_limit']/100 : 1;
 
-            $fitcash_limit = $data['pass']['price'] * $percentage;
+            $fitcash_limit = ceil($data['pass']['price'] * $percentage);
 
             $fitcash_limit = $fitcash_limit < $data['amount'] ? $fitcash_limit : $data['amount'];
 
