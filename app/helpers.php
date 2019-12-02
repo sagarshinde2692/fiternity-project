@@ -4560,6 +4560,7 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass_sessions_monthly_total']);
             unset($customer_data['pass_sessions_monthly_used']);
             unset($customer_data['pass_order_id']);
+            unset($customer_data['pass_corporate']);
             $update_header = true;
         }
         if(!empty($update_header) || $rel_banner_shown){
