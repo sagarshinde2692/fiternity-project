@@ -383,6 +383,10 @@ Class CustomerReward {
                             $mixedreward_content = \MixedRewardContent::where('flags.type', 'fitbox')->first();
                         }
 
+                        if(!empty($data['vk_puma_bag_reward'])){
+                            $mixedreward_content = \MixedRewardContent::where('flags.type', 'vk_puma_bag')->first();
+                        }
+
                         if(!empty($mixedreward_content)){
 							$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 

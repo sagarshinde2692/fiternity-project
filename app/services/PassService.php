@@ -518,7 +518,7 @@ class PassService {
             ];
         }
         // if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']))){
-        if(checkAppVersionFromHeader(['ios'=>'5.2.3', 'android'=>5]) && (!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per'])))){
+        if(checkAppVersionFromHeader(['ios'=>'5.2.3', 'android'=>5]) && (!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']) || !empty($data['coupon_flags']['vk_bag_and_box_reward'])))){
             $resp['data']["coupon_details"] = [];
             $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
             $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
@@ -1259,7 +1259,7 @@ class PassService {
             $success_template['offer_success_msg'] = "";
             
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
-                $success_template['offer_success_msg'] = "Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass";
+                $success_template['offer_success_msg'] = "Congratulations on receiving your instant cashback. You will receive full 100% cashback as FitCash in your Fitternity account on 1st December. Make the most of the cashback to upgrade your OnePass";
             }
 
             if(!empty($order['diwali_mixed_reward'])){
@@ -1505,6 +1505,8 @@ class PassService {
         $utilities = new Utilities();
 
         $pass_data = array(
+            "amount" => $data['amount'],
+            "amount_customer" => $data['amount_customer'],
             "customer_name" => $data['customer_name'],
             "customer_phone" => $data['customer_phone'],
             "customer_email" => $data['customer_email'],
@@ -1527,6 +1529,7 @@ class PassService {
             'code' => $data['code'],
             'start_date' => strtotime($data['start_date']),
             'membership_order_id' => !empty($data['membership_order_id']) ? $data['membership_order_id'] : null,
+            'coupon_flags' => !empty($data['coupon_flags']) ? $data['coupon_flags'] : null,
         );
 
         if(!empty($data['onepass_attachment_type'])){
@@ -1903,7 +1906,7 @@ class PassService {
                 
             }
 
-            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per'])) || (!empty($data['coupon_flags']['extension_percent']))){
+            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per'])) || (!empty($data['coupon_flags']['extension_percent'])) || (!empty($data['coupon_flags']['vk_bag_and_box_reward']))){
 
                 if($payment_mode_type != 'pay_later'){
 
@@ -1912,6 +1915,11 @@ class PassService {
                             'field' => 'Coupon Discount',
                             'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "Extension"
                         );
+                    }else if(!empty($data['coupon_flags']['vk_bag_and_box_reward'])){
+                            $amount_summary[] = array(
+                                'field' => 'Coupon Discount',
+                                'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "Reward"
+                            );
                     }else{
                         $amount_summary[] = array(
                             'field' => 'Coupon Discount',
@@ -2581,13 +2589,14 @@ class PassService {
             if(!empty($data['pass'])){
                 $pass = $data['pass'];
 
-                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && in_array($pass['duration'], [15, 30]) || !empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['duration'], [15]))){
+                if((!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['classes']) && in_array($pass['classes'], [30,45]))){
 
                     if(empty($data['membership_order_id'])){
                         // $rewardinfo['diwali_mixed_reward'] = true;
                         // $rewardinfo['fitbox_mixed_reward'] = true;
-                        $rewardinfo['vk_bag_reward'] = true;
-                        $rewardinfo['reward_ids'] = [79];
+                        // $rewardinfo['vk_bag_reward'] = true;
+                        $rewardinfo['mv_bag_reward'] = true;
+                        // $rewardinfo['reward_ids'] = [79];
                     }
                 }
 

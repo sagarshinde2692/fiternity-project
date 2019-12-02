@@ -202,6 +202,7 @@ class RewardofferController extends BaseController {
 
             $data['finder_id'] = (int) $vendor['_id'];
 
+            $source = "kiosk";
         }
 
 
@@ -1120,7 +1121,7 @@ class RewardofferController extends BaseController {
         $no_rewards = false;
         $fitbox_mixed_reward = false;
         // if(!empty($finder['_id']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
-        if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
+        if((!empty($finder['brand_id']) && $finder['brand_id'] == 88) || (!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id')))){
             Log::info("camp applicable");
             if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
                 Log::info("fitbox applicable");
@@ -1157,6 +1158,40 @@ class RewardofferController extends BaseController {
             //     // }
             // }
         }
+        // else{
+        //     if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
+        //         Log::info("fitbox applicable");
+        //         $fitbox_mixed_reward = true;
+        //         $rewardObj = $this->getMixedReward();
+        //         $mixedreward_content = MixedRewardContent::where('flags.type', 'vk_puma_bag')->first();
+    
+        //         if(!empty($mixedreward_content)){
+        //             if($rewardObj && $mixedreward_content){
+                        
+        //                 $rewards = [];
+    
+        //                 $rewardObjData = $rewardObj->toArray();
+    
+        //                 $this->unsetRewardObjFields($rewardObjData);
+
+        //                 $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+    
+        //                 list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
+    
+        //                 list($rewardObjData) = $this->rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData);
+    
+        //                 $rewards[] = $rewardObjData;
+        //             }
+        //         }
+        //     }else{
+        //         if(isset($source) && $source == "kiosk"){
+        //             $no_rewards = false;
+        //         }else{
+        //             $no_rewards = true;
+        //         }
+                
+        //     }
+        // }
 
         if(empty($mixedreward_content)){
            
