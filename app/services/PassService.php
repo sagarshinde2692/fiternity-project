@@ -1613,7 +1613,13 @@ class PassService {
         if(empty($data['logged_in_customer_id'])){
             return;
         }
+
+        if(empty($data['pass']['flags']['fitcash_applicable'])){
+            return;
+        }
+        
         $wallet = Wallet::active()->where('customer_id', $data['logged_in_customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
+        
         if(!empty($wallet)){
 
             $percentage = !empty($data['pass']['flags']['fitcash_usage_limit']) ? $data['pass']['flags']['fitcash_usage_limit']/100 : 1;
