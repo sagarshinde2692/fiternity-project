@@ -129,6 +129,11 @@ class PassService {
                 'max_start_date' => strtotime('31-12-2019'),
                 'duration' => $pass['duration']
             ];
+
+            if(!empty($pass['duration']) && $pass['duration'] == 30 && !empty($pass['pass_type']) && $pass['pass_type'] =='red'){
+                $passDetails['max_start_date'] = strtotime('+15 days');
+            }
+
             if($pass['type']=='trial') {
                 $utilities = new Utilities();
                 $passDetails['header'] .= ' Trial';
