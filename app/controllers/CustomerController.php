@@ -9871,7 +9871,7 @@ class CustomerController extends \BaseController {
                         }
 						$post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
 						
-						$post_reward_data_template['logo'] = $this->utilities->voucherImagebasedAppVersion($vc, null, $customer);//strtr($post_reward_data_template['logo'], $vc);
+						$post_reward_data_template['logo'] = $this->utilities->voucherImagebasedAppVersion($vc, null, $customer);
 						
                         $vc = array_only($vc, ['_id', 'terms', 'amount', 'description', 'title', 'sold_out', 'required_info']);
 						
