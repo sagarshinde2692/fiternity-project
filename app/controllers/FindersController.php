@@ -5096,7 +5096,6 @@ class FindersController extends \BaseController {
 					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
 				
-
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
 			}
