@@ -211,6 +211,7 @@ Class CustomerReward {
                                 foreach ($content_data as $content_key => $content_value) {
 
                                     if(in_array($service_category_id,$content_value['category_id'])){
+
                                         $reward['content'] = $content_value['product'];
                                         $reward['image'] = $content_value['image'];
 
@@ -228,7 +229,6 @@ Class CustomerReward {
                             }
                         }
 
-                        Log::info('reward content::::', [$reward]);
                         if(!$reward_data_flag && $amount >= 2000){
 
                             foreach ($fitness_kit_array as $data_key => $data_value) {
