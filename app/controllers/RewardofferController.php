@@ -202,6 +202,7 @@ class RewardofferController extends BaseController {
 
             $data['finder_id'] = (int) $vendor['_id'];
 
+            $source = "kiosk";
         }
 
 
@@ -263,6 +264,14 @@ class RewardofferController extends BaseController {
         if(isset($data['service_category_id']) && $data['service_category_id'] != ""){
 
             $service_category_id = (int)$data['service_category_id'];
+        }
+
+        if(!empty($service_category_id) && in_array($service_category_id, [65])){
+            $min_date = strtotime('+0 days');
+			$max_date = strtotime('+30 days');
+        }else{
+            $min_date = strtotime('+0 days');
+			$max_date = strtotime('+15 days');
         }
 
         if($service_category_id != null){
@@ -1109,15 +1118,52 @@ class RewardofferController extends BaseController {
             
         }
 
-        // $no_rewards = false;
+        $no_rewards = false;
         $fitbox_mixed_reward = false;
-        // // if(!empty($finder['_id']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
-        //     Log::info("camp applicable");
+        // if(!empty($finder['_id']) && !in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled'])){
+        if((!empty($finder['brand_id']) && $finder['brand_id'] == 88) || (!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id')))){
+            Log::info("camp applicable");
+            if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
+                Log::info("fitbox applicable");
+                $fitbox_mixed_reward = true;
+                $rewardObj = $this->getMixedReward();
+                $mixedreward_content = MixedRewardContent::where('flags.type', 'fitbox')->first();
+    
+                if(!empty($mixedreward_content)){
+                    if($rewardObj && $mixedreward_content){
+                        
+                        $rewards = [];
+    
+                        $rewardObjData = $rewardObj->toArray();
+    
+                        $this->unsetRewardObjFields($rewardObjData);
+
+                        $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+    
+                        list($rewardObjData) = $this->compileRewardObject($mixedreward_content, $rewardObjData, $rewards_snapfitness_contents);
+    
+                        list($rewardObjData) = $this->rewardObjDescByDuration($mixedreward_content, $duration_day, $rewardObjData);
+    
+                        $rewards[] = $rewardObjData;
+                    }
+                }
+            }
+            // else{
+            //     Log::info("fitbox not applicable");
+            //     // if((!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($finder['flags']['monsoon_flash_discount_disabled'])){
+            //         // || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)
+
+            //     // }else{
+            //         $no_rewards = true;
+            //     // }
+            // }
+        }
+        // else{
         //     if($amount >= 8000 && in_array($ratecard['type'],["membership"])){
         //         Log::info("fitbox applicable");
         //         $fitbox_mixed_reward = true;
         //         $rewardObj = $this->getMixedReward();
-        //         $mixedreward_content = MixedRewardContent::where('flags.type', 'fitbox')->first();
+        //         $mixedreward_content = MixedRewardContent::where('flags.type', 'vk_puma_bag')->first();
     
         //         if(!empty($mixedreward_content)){
         //             if($rewardObj && $mixedreward_content){
@@ -1138,15 +1184,14 @@ class RewardofferController extends BaseController {
         //             }
         //         }
         //     }else{
-        //         Log::info("fitbox not applicable");
-        //         if((!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($finder['flags']['monsoon_flash_discount_disabled'])){
-        //             // || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0)
-
+        //         if(isset($source) && $source == "kiosk"){
+        //             $no_rewards = false;
         //         }else{
         //             $no_rewards = true;
         //         }
+                
         //     }
-        // // }
+        // }
 
         if(empty($mixedreward_content)){
            
