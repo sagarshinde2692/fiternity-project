@@ -8253,6 +8253,13 @@ Class Utilities {
 
 			$brand_milestones = FinderMilestone::where('reward_type', $filter['reward_type']);
 
+            if(!empty($filter['grid_version'])){
+                $brand_milestones->where('grid_version', $filter['grid_version']);
+            }
+            else {
+                $brand_milestones->where('grid_version', null);
+            }
+            
 			if(in_array($filter['reward_type'], [3, 4, 5]) && !empty($filter['cashback_type'])){
 				$brand_milestones = $brand_milestones->where('cashback_type', $filter['cashback_type']);
 			}
