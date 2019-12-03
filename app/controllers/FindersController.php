@@ -5096,6 +5096,12 @@ class FindersController extends \BaseController {
 					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
 				
+				try{
+					$this->addAttachedPassDescription($data, 'app');
+				}catch(Exception $e){
+					Log::info("Error while attaching pass to ratecard", [$e]);
+				}
+
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
 			}
@@ -5483,11 +5489,6 @@ class FindersController extends \BaseController {
                 Log::info("Error while sorting ratecard", [$e]);
             }
 	
-			try{
-                $this->addAttachedPassDescription($finderData, 'app');
-            }catch(Exception $e){
-                Log::info("Error while sorting ratecard", [$e]);
-			}
 			
             // $workout_ratecard_arr = array();
             // foreach($finderData['finder']['services'] as $service){
@@ -8958,19 +8959,11 @@ class FindersController extends \BaseController {
 	}
 
 	public function addAttachedPassDescription(&$finder){
-		// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-
 		$attach_pass_template_status = false;
 		if(!empty($finder['finder']['services'])){
 			$template = Config::get('pass.attached_pass');
 			foreach($finder['finder']['services'] as &$service){
 				foreach($service['ratecard'] as $key => &$ratecard){
-
-					// if(!empty($onepassHoldCustomer) && !empty($ratecard['combo_pass_id'])){
-					// 	unset($service['ratecard'][$key]);
-					// 	$service['ratecard'] = array_values($service['ratecard']);
-					// 	continue;
-					// }
 
 					if(!empty($ratecard['flags']['onepass_attachment_type'])){
 						$attach_pass_template = $template[$ratecard['flags']['onepass_attachment_type']];
