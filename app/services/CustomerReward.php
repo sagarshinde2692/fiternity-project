@@ -383,6 +383,10 @@ Class CustomerReward {
                             $mixedreward_content = \MixedRewardContent::where('flags.type', 'fitbox')->first();
                         }
 
+                        if(!empty($data['vk_puma_bag_reward'])){
+                            $mixedreward_content = \MixedRewardContent::where('flags.type', 'vk_puma_bag')->first();
+                        }
+
                         if(!empty($mixedreward_content)){
 							$rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
@@ -1746,6 +1750,7 @@ Class CustomerReward {
 
 
     public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null, $first_session_free = false, $corporate_discount_coupon = false){
+
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
 
@@ -2475,7 +2480,7 @@ Class CustomerReward {
                     $header = array('source'=>'multifit');
                 }
                 
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header, 'customer_id' => $customer_id];
                
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 

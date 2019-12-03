@@ -31,6 +31,7 @@ Route::get('migrations/onboard', 'MigrationsController@onboard');
 Route::get('migrations/feedback', 'MigrationsController@feedback');
 Route::get('newordermigration', 'DebugController@newOrderMigration');
 Route::get('ppsRepeat', 'DebugController@ppsRepeat');
+Route::get('set25FlatDiscountFlag', 'DebugController@set25FlatDiscountFlag');
 
 
 
@@ -2748,3 +2749,4 @@ Route::get('hyperLocal', 'DebugController@hyperLocal');
 Route::get('fitnessForce','TransactionController@fitnessForce');
 Route::post('combopasscreateforce', 'PassController@passCaptureAutoForce');
 Route::get('hyperLocalList', 'DebugController@hyperLocalList');
+Route::get('onepass/update-fitcash','DebugController@updateFitCashManualOnePass');

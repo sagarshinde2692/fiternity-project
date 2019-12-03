@@ -8,6 +8,7 @@ $black_pass = 'https://b.fitn.in/passes/cards/onepass-black.png';
 
 return [
     'price_upper_limit' => 1001,
+    'sodexo_price_upper_limit' => 751,
     'list' => [
         'title'=>'ONEPASS',
         'passes' => [
@@ -160,38 +161,49 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
-                    <li>If the offer on OnePass is a Discount (with code)<br><br>
-                    - Discount of upto 30% is pre-applied on MRP<br>
-                    - Maximum discount offered is upto INR 3,000<br>
-                    - Coupon codes are applicable only on OnePass Red (3,6,12 months)<br>
-                    - Discount varies across different types of pass<br>
-                    - You can only avail one offer at a time<br>
-                    - This offer cannot be clubbed with any other existing offer
+                <li>Fit-astic Flash Sale</li>
+                <li><b>1st to 3rd December 2019</b></li>
+                <li>A. Up to 60% off on OnePass Memberships (No code required). Addnl 50% cashback via PayPal<br>
+                    How does it work?<br>
+                    - The discount of up to 60% off is pre-applied on MRP.<br>
+                    - The discount value is capped upto INR 3,000.<br>
+                    - Discount varies across different durations of OnePass.<br>
+                    - Additional 50% cashback via PayPal is upto INR 500. Refer point D for more details.<br>
+                    - This offer is not applicable on OnePass Black and 15 days OnePass Red.<br>
+                    - This offer cannot be clubbed with any other existing offer.
                 </li>
                 
-                <li>If the offer on OnePass is a Discount (without code)<br><br>
-                    - Discount of upto 50% is pre-applied on MRP<br>
-                    - Discount varies across different types of pass<br>
-                    - You can only avail one offer at a time<br>
-                    - This offer cannot be clubbed with any other existing offer
+                <li>B. Full 100% Cashback on 15 days OnePass Red<br>
+                    How does it work?<br>
+                    - The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 6th Dec 2019<br>
+                    - The FitCash received can be utilized only to upgrade your OnePass.<br>
+                    - The validity of your FitCash is 6 months starting from your OnePass expiry date.<br>
+                    - The received FitCash can be used to upgrade as follows:<br>
+                            -- 45% of the 1 Month OnePass Red purchase price can be paid using the received Fitcash.<br>
+                            -- 20% of the 3 Month OnePass Red purchase price can be paid using the received Fitcash.<br>
+                            -- 15% of the 6 Month OnePass Red purchase price can be paid using the received Fitcash.<br>
+                            -- 100% of the FitCash received can be used to upgrade to 12 months OnePass Red.<br>
+                    - The FitCash received will not be valid on upgrade to 15 Days OnePass Red.<br>
+                    - This offer cannot be clubbed with any other existing offer.
                 </li>
                 
-                <li>If the offer on OnePass is Cashback<br><br>
-                    - The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
-                    - The FitCash received as cashback is not applicable on purchase of 15-  day OnePass red.<br>
-                    - The validity of FitCash received as cashback is for 105 days only<br>
-                    - Discount varies across different types of pass<br>
-                    - This offer cannot be clubbed with any other existing offer<br>
-                    - The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts.
+                
+                <li>C. Limited Edition Marvel Universe Gym Bag worth INR 2500 on OnePass Black. Addnl 50% cashback via PayPal<br>
+                    - The offer is not applicable on 15 sessions OnePass Black.<br>
+                    - The Limited Edition Marvel Universe Gym Bag will reach your doorstep by 20th December 2019.<br>
+                    - Additional 50% cashback via PayPal is upto INR 500. Refer point D for more details.<br>
+                    - This offer cannot be clubbed with any other existing offer.<br>
+                    - No additional discount code is applicable on OnePass Black.
                 </li>
-                
-                <li>If the offer on OnePass is an Extension<br><br>
-                    - You get an additional 25% extension on your Onepass Red validity when the purchase is  OnePass Red 3,6 or 12 months.<br>
-                    - You can avail only one offer at the time.<br>
-                    - This cannot be clubbed with any other existing offer
-                <li>
-                
-                <li>Note: No promotional code is applicable on OnePass Black</li>
+            
+                <li>D. Exclusive PayPal Cashback Offer (No code required)<br>
+                    - Get 50% instant cashback upto INR 500 on making payment via PayPal.<br>
+                    - Min purchase value should be INR 50.<br>
+                    - Offer is applicable on new users only.<br>
+                    - Instant cashback will be credited in the users PayPal wallet.<br>
+                    - This offer is applicable along with Fitternity's promotional offers.<br>
+                    - Instant Cashback received expires within 60 days.<br>
+                </li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -200,7 +212,10 @@ return [
                 <li>Cashback receivable on the trial subscription of OnePass Red will be added in the Fitternity wallet in the form of FitCash after deducting GST fees.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
                 <li>At select fitness centers available on the OnePass program, users have limited access to work out at the following locations (Applicable to both OnePass Black & OnePass Red Subscription)
-                <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.</li>
+                <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.
+                <br/> - The Lalit in Andheri East Mumbai - 8 Sessions per month including both Swimming and Gym Workout.
+                <br/> - Talwalker FLC, Juhu Versova - 10 Sessions per month, per customer for bookings taking place from 21st November 2019.
+                </li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on the attendance of workout sessions.</li>
                 <li>In the case of session cancellation or unfulfillment from the service provider’s end, OnePass Red user will get an additional day.</li>
@@ -222,44 +237,58 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li>If the offer on OnePass is a Discount (with code)<br><br>
-                    - Discount of upto 30% is pre-applied on MRP<br>
-                    - Maximum discount offered is upto INR 3,000<br>
-                    - Coupon codes are applicable only on OnePass Red (3,6,12 months)<br>
-                    - Discount varies across different types of pass<br>
-                    - You can only avail one offer at a time<br>
-                    - This offer cannot be clubbed with any other existing offer
+                <li>Fit-astic Flash Sale</li>
+                <li><b>1st to 3rd December 2019</b></li>
+                <li>Up to 60% off on OnePass Memberships (No code required). Addnl 50% cashback via PayPal<br>
+                    How does it work?<br>
+                    - The discount of up to 60% off is pre-applied on MRP.<br>
+                    - The discount value is capped upto INR 3,000.<br>
+                    - Discount varies across different durations of OnePass.<br>
+                    - Additional 50% cashback via PayPal is upto INR 500. Refer point D for more details.<br>
+                    - This offer is not applicable on OnePass Black and 15 days OnePass Red.<br>
+                    - This offer cannot be clubbed with any other existing offer.
                 </li>
-
-                <li>If the offer on OnePass is a Discount (without code)<br><br>
-                    - Discount of upto 50% is pre-applied on MRP<br>
-                    - Discount varies across different types of pass<br>
-                    - You can only avail one offer at a time<br>
-                    - This offer cannot be clubbed with any other existing offer
+                
+                <li>Full 100% Cashback on 15 days OnePass Red<br>
+                    How does it work?<br>
+                    - The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 6th Dec 2019<br>
+                    - The FitCash received can be utilized only to upgrade your OnePass.<br>
+                    - The validity of your FitCash is 6 months starting from your OnePass expiry date.<br>
+                    - The received FitCash can be used to upgrade as follows:<br>
+                            -- 45% of the 1 Month OnePass Red purchase price can be paid using the received Fitcash.<br>
+                            -- 20% of the 3 Month OnePass Red purchase price can be paid using the received Fitcash.<br>
+                            -- 15% of the 6 Month OnePass Red purchase price can be paid using the received Fitcash.<br>
+                            -- 100% of the FitCash received can be used to upgrade to 12 months OnePass Red.<br>
+                    - The FitCash received will not be valid on upgrade to 15 Days OnePass Red.<br>
+                    - This offer cannot be clubbed with any other existing offer.
                 </li>
-
-                <li>If the offer on OnePass is Cashback<br><br>
-                    - The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
-                    - The FitCash received as cashback is not applicable on purchase of 15-  day OnePass red.<br>
-                    - The validity of FitCash received as cashback is for 105 days only<br>
-                    - Discount varies across different types of pass<br>
-                    - This offer cannot be clubbed with any other existing offer<br>
-                    - The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts.
+                
+                
+                <li>Limited Edition Marvel Universe Gym Bag worth INR 2500 on OnePass Black. Addnl 50% cashback via PayPal<br>
+                    - The offer is not applicable on 15 sessions OnePass Black.<br>
+                    - The Limited Edition Marvel Universe Gym Bag will reach your doorstep by 20th December 2019.<br>
+                    - Additional 50% cashback via PayPal is upto INR 500. Refer point D for more details.<br>
+                    - This offer cannot be clubbed with any other existing offer.<br>
+                    - No additional discount code is applicable on OnePass Black.
                 </li>
-
-                <li>If the offer on OnePass is an Extension<br><br>
-                    - You get an additional 25% extension on your Onepass Red validity when the purchase is  OnePass Red 3,6 or 12 months.<br>
-                    - You can avail only one offer at the time.<br>
-                    - This cannot be clubbed with any other existing offer
-                <li>
-
-                <li>Note: No promotional code is applicable on OnePass Black</li>
+            
+                <li>Exclusive PayPal Cashback Offer (No code required)<br>
+                    - Get 50% instant cashback upto INR 500 on making payment via PayPal.<br>
+                    - Min purchase value should be INR 50.<br>
+                    - Offer is applicable on new users only.<br>
+                    - Instant cashback will be credited in the users PayPal wallet.<br>
+                    - This offer is applicable along with Fitternity's promotional offers.<br>
+                    - Instant Cashback received expires within 60 days.<br>
+                </li>
 
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
                 <li>At select fitness centers available on the OnePass program, users have limited access to work out at the following locations (Applicable to both OnePass Black & OnePass Red Subscription)
-                <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.</li>
+                <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.
+                <br/> - The Lalit in Andheri East Mumbai - 8 Sessions per month including both Swimming and Gym Workout.
+                <br/> - Talwalker FLC, Juhu Versova - 10 Sessions per month, per customer for bookings taking place from 21st November 2019.
+                </li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on attendance of workout sessions.</li>
                 <li>In case if a customer does not attend the session, the session cannot be reversed or re-booked for the same day.</li>
@@ -283,38 +312,49 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li>If the offer on OnePass is a Discount (with code)<br><br>
-                    - Discount of upto 30% is pre-applied on MRP<br>
-                    - Maximum discount offered is upto INR 3,000<br>
-                    - Coupon codes are applicable only on OnePass Red (3,6,12 months)<br>
-                    - Discount varies across different types of pass<br>
-                    - You can only avail one offer at a time<br>
-                    - This offer cannot be clubbed with any other existing offer
+                <li>Fit-astic Flash Sale</li>
+                <li><b>1st to 3rd December 2019</b></li>
+                <li>Up to 60% off on OnePass Memberships (No code required). Addnl 50% cashback via PayPal<br>
+                    How does it work?<br>
+                    - The discount of up to 60% off is pre-applied on MRP.<br>
+                    - The discount value is capped upto INR 3,000.<br>
+                    - Discount varies across different durations of OnePass.<br>
+                    - Additional 50% cashback via PayPal is upto INR 500. Refer point D for more details.<br>
+                    - This offer is not applicable on OnePass Black and 15 days OnePass Red.<br>
+                    - This offer cannot be clubbed with any other existing offer.
                 </li>
-
-                <li>If the offer on OnePass is a Discount (without code)<br><br>
-                    - Discount of upto 50% is pre-applied on MRP<br>
-                    - Discount varies across different types of pass<br>
-                    - You can only avail one offer at a time<br>
-                    - This offer cannot be clubbed with any other existing offer
+                
+                <li>Full 100% Cashback on 15 days OnePass Red<br>
+                    How does it work?<br>
+                    - The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 6th Dec 2019<br>
+                    - The FitCash received can be utilized only to upgrade your OnePass.<br>
+                    - The validity of your FitCash is 6 months starting from your OnePass expiry date.<br>
+                    - The received FitCash can be used to upgrade as follows:<br>
+                            -- 45% of the 1 Month OnePass Red purchase price can be paid using the received Fitcash.<br>
+                            -- 20% of the 3 Month OnePass Red purchase price can be paid using the received Fitcash.<br>
+                            -- 15% of the 6 Month OnePass Red purchase price can be paid using the received Fitcash.<br>
+                            -- 100% of the FitCash received can be used to upgrade to 12 months OnePass Red.<br>
+                    - The FitCash received will not be valid on upgrade to 15 Days OnePass Red.<br>
+                    - This offer cannot be clubbed with any other existing offer.
                 </li>
-
-                <li>If the offer on OnePass is Cashback<br><br>
-                    - The cashback received will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash point = INR 1)<br>
-                    - The FitCash received as cashback is not applicable on purchase of 15-  day OnePass red.<br>
-                    - The validity of FitCash received as cashback is for 105 days only<br>
-                    - Discount varies across different types of pass<br>
-                    - This offer cannot be clubbed with any other existing offer<br>
-                    - The entire FitCash received as cashback on purchase of OnePass Red can only be used when upgrading to 1 year OnePass Red, otherwise, Fitcash will be applicable in parts.
+                
+                
+                <li>Limited Edition Marvel Universe Gym Bag worth INR 2500 on OnePass Black. Addnl 50% cashback via PayPal<br>
+                    - The offer is not applicable on 15 sessions OnePass Black.<br>
+                    - The Limited Edition Marvel Universe Gym Bag will reach your doorstep by 20th December 2019.<br>
+                    - Additional 50% cashback via PayPal is upto INR 500. Refer point D for more details.<br>
+                    - This offer cannot be clubbed with any other existing offer.<br>
+                    - No additional discount code is applicable on OnePass Black.
                 </li>
-
-                <li>If the offer on OnePass is an Extension<br><br>
-                    - You get an additional 25% extension on your Onepass Red validity when the purchase is  OnePass Red 3,6 or 12 months.<br>
-                    - You can avail only one offer at the time.<br>
-                    - This cannot be clubbed with any other existing offer
-                <li>
-
-                <li>Note: No promotional code is applicable on OnePass Black</li>
+            
+                <li>Exclusive PayPal Cashback Offer (No code required)<br>
+                    - Get 50% instant cashback upto INR 500 on making payment via PayPal.<br>
+                    - Min purchase value should be INR 50.<br>
+                    - Offer is applicable on new users only.<br>
+                    - Instant cashback will be credited in the users PayPal wallet.<br>
+                    - This offer is applicable along with Fitternity's promotional offers.<br>
+                    - Instant Cashback received expires within 60 days.<br>
+                </li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -325,7 +365,10 @@ return [
                 <li>In case of session cancellation or unfulfillment from the service provider’s end, the OnePass Black user will get the session back as well as an additional session.</li>	
                 <li>OnePass is a proprietary offering of Fitternity and bookings can only be done on the Fitternity app. Any booking or exchange of interest cannot be done at the gym/fitness center. If done so, Fitternity holds the rights to cancel the particular booking or take appropriate action.</li>
                 <li>At select fitness centers available on the OnePass program, users have limited access to work out at the following locations (Applicable to both OnePass Black & OnePass Red Subscription)
-                <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.</li>
+                <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.
+                <br/> - The Lalit in Andheri East Mumbai - 8 Sessions per month including both Swimming and Gym Workout.
+                <br/> - Talwalker FLC, Juhu Versova - 10 Sessions per month, per customer for bookings taking place from 21st November 2019.
+                </li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on the attendance of workout sessions.</li>
                 <li>In the case of session cancellation or unfulfillment from the service provider’s end, OnePass Red user will get an additional day.</li>
