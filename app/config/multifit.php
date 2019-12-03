@@ -10,6 +10,5 @@ return array(
         'mysuru'=>['slug'=>'multifitvendor/multifit---mysuru-mysuru', 'city_brand'=>false],
         'nagpur'=> ['slug'=>'multifitvendor/multifit-nagpur-dharampeth-nagpur', 'city_brand'=>false],
         'salem'=> ['slug'=>'multifitvendor/multifit---salem-salem', 'city_brand'=>false]
-    ],
-    
+    ]
 );
