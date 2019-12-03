@@ -5488,8 +5488,7 @@ class FindersController extends \BaseController {
             }catch(Exception $e){
                 Log::info("Error while sorting ratecard", [$e]);
             }
-	
-			
+    
             // $workout_ratecard_arr = array();
             // foreach($finderData['finder']['services'] as $service){
             // 	foreach($service['ratecard'] as $ratecard){
