@@ -162,7 +162,7 @@ return [
         "red"=>[
             "<ul>
                 <li>Fit-astic Flash Sale</li>
-                <li><b>1st to 3rd December 2019</b></li>
+                <li><b>Offer Ending Soon</b></li>
                 <li>A. Up to 60% off on OnePass Memberships (No code required). Addnl 50% cashback via PayPal<br>
                     How does it work?<br>
                     - The discount of up to 60% off is pre-applied on MRP.<br>
@@ -238,7 +238,7 @@ return [
         "black" =>[
             "<ul>
                 <li>Fit-astic Flash Sale</li>
-                <li><b>1st to 3rd December 2019</b></li>
+                <li><b>Offer Ending Soon</b></li>
                 <li>Up to 60% off on OnePass Memberships (No code required). Addnl 50% cashback via PayPal<br>
                     How does it work?<br>
                     - The discount of up to 60% off is pre-applied on MRP.<br>
@@ -313,7 +313,7 @@ return [
         "default"=>[
             "<ul>
                 <li>Fit-astic Flash Sale</li>
-                <li><b>1st to 3rd December 2019</b></li>
+                <li><b>Offer Ending Soon</b></li>
                 <li>Up to 60% off on OnePass Memberships (No code required). Addnl 50% cashback via PayPal<br>
                     How does it work?<br>
                     - The discount of up to 60% off is pre-applied on MRP.<br>

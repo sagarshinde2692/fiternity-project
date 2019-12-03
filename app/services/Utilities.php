@@ -10904,7 +10904,7 @@ Class Utilities {
 
                         // $return_arr['text'] = "Flat 24 Off. Additional 50% cashback via PayPal";
                         
-                        $return_arr['purchase_summary_value'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | 1-3 Dec";
+                        $return_arr['purchase_summary_value'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | Offer Ending Soon";
                         
                         // if(!empty($coupon_flags['vk_bag_and_box_reward'])){
                         //     $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
@@ -10914,7 +10914,7 @@ Class Utilities {
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
                             $return_arr['text'] = "Full 100% Cashback";
-                            $return_arr['purchase_summary_value'] = "Get Full 100% Cashback (No Code Needed) | 1-3 Dec";
+                            $return_arr['purchase_summary_value'] = "Get Full 100% Cashback (No Code Needed) | Offer Ending Soon";
 
                             if(empty($coupon_flags['no_cashback'])){
                                 $return_arr['offer_success_msg'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account on 6th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
@@ -10922,12 +10922,12 @@ Class Utilities {
 
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account on 6th December 2019. Make the most of your FitCash to upgrade your OnePass Kindly feel free to reach out to us on +917400062849 for queries";
 
-                            $return_arr['red_remarks_header'] = 'Get Full 100% Cashback (No Code Needed) | 1-3 Dec';
+                            $return_arr['red_remarks_header'] = 'Get Full 100% Cashback (No Code Needed) | Offer Ending Soon';
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
                             $return_arr['text'] = "Flat 50% Off. Limited Slots. Additional 50% cashback via PayPal";
-                            $return_arr['purchase_summary_value'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | 1-3 Dec";
+                            $return_arr['purchase_summary_value'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | Offer Ending Soon";
 
                             // if(empty($coupon_flags['no_cashback'])){
                             //     $return_arr['offer_success_msg'] = "CCongratulations on your OnePass purchase. You will receive full cashback worth INR 4500 as FitCash in your Fitternity account on 1st December. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
@@ -10952,7 +10952,7 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[30, 45])){
                             $return_arr['text'] = "Limited Edition Marvel Universe Gym Bag worth INR 2500";
-                            $return_arr['purchase_summary_value'] = "Limited Edition Marvel Universe Gym Bag Worth INR 2500. Additional 50% cashback via PayPal | 1-3 Dec";
+                            $return_arr['purchase_summary_value'] = "Limited Edition Marvel Universe Gym Bag Worth INR 2500. Additional 50% cashback via PayPal | Offer Ending Soon";
 
                             $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com - My Profile - Type in the delivery address Your Limited Edition Marvel Universe Gym Bag Worth INR 2500 will reach your doorstep in the 20th Dec 2019. Kindly feel free to reach out to us on +917400062849 for queries";
 
@@ -10977,7 +10977,7 @@ Class Utilities {
 
                         // $return_arr['text'] = "FLAT 20% Off (Code: DISC20)";
                         
-                        $return_arr['purchase_summary_value'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | 1-3 Dec";
+                        $return_arr['purchase_summary_value'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | Offer Ending Soon";
 
                         // if(!empty($coupon_flags['vk_bag_and_box_reward'])){
                         //     $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
@@ -10987,7 +10987,7 @@ Class Utilities {
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
                             $return_arr['text'] = "Full 100% Cashback";
-                            $return_arr['purchase_summary_value'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | 1-3 Dec";
+                            $return_arr['purchase_summary_value'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | Offer Ending Soon";
 
                             if(empty($coupon_flags['no_cashback'])){
                                 $return_arr['offer_success_msg'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account on 6th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
@@ -10995,7 +10995,7 @@ Class Utilities {
 
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account on 6th December 2019. Make the most of your FitCash to upgrade your OnePass Kindly feel free to reach out to us on +917400062849 for queries";
 
-                            $return_arr['red_remarks_header'] = 'Get Full 100% Cashback (No Code Needed) | 1-3 Dec';
+                            $return_arr['red_remarks_header'] = 'Get Full 100% Cashback (No Code Needed) | Offer Ending Soon';
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
@@ -11025,7 +11025,7 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[30, 45])){
                             $return_arr['text'] = "Limited Edition Marvel Universe Gym Bag worth INR 2500";
-                            $return_arr['purchase_summary_value'] = "Limited Edition Marvel Universe Gym Bag Worth INR 2500. Additional 50% cashback via PayPal | 1-3 Dec";
+                            $return_arr['purchase_summary_value'] = "Limited Edition Marvel Universe Gym Bag Worth INR 2500. Additional 50% cashback via PayPal | Offer Ending Soon";
 
                             $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com - My Profile - Type in the delivery address Your Limited Edition Marvel Universe Gym Bag Worth INR 2500 will reach your doorstep in the 20th Dec 2019. Kindly feel free to reach out to us on +917400062849 for queries";
 
@@ -11054,7 +11054,7 @@ Class Utilities {
 
                         // $return_arr['text'] = "FLAT 20% Off (Code: DISC20)";
                         
-                        $return_arr['purchase_summary_value'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | 1-3 Dec";
+                        $return_arr['purchase_summary_value'] = "Biggest Price Drop Ever - Up to 60% Off On OnePass Membership. Additional 50% cashback via PayPal | Offer Ending Soon";
 
                         // if(!empty($coupon_flags['vk_bag_and_box_reward'])){
                         //     $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Special Edition Virat Kohli-Puma Gym Bag + Healthy Food Hamper Worth INR 5000 will reach your doorstep in the 2nd week of Dec. Kindly feel free to reach out to us on +917400062849 for queries";
@@ -11064,7 +11064,7 @@ Class Utilities {
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
                             $return_arr['text'] = "Full 100% Cashback";
-                            $return_arr['purchase_summary_value'] = "Get Full 100% Cashback (No Code Needed) | 1-3 Dec";
+                            $return_arr['purchase_summary_value'] = "Get Full 100% Cashback (No Code Needed) | Offer Ending Soon";
 
                             if(empty($coupon_flags['no_cashback'])){
                                 $return_arr['offer_success_msg'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account on 6th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
@@ -11072,7 +11072,7 @@ Class Utilities {
 
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account on 6th December 2019. Make the most of your FitCash to upgrade your OnePass Kindly feel free to reach out to us on +917400062849 for queries";
 
-                            $return_arr['red_remarks_header'] = 'Get Full 100% Cashback (No Code Needed) | 1-3 Dec';
+                            $return_arr['red_remarks_header'] = 'Get Full 100% Cashback (No Code Needed) | Offer Ending Soon';
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
@@ -11102,7 +11102,7 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[30, 45])){
                             $return_arr['text'] = "Limited Edition Marvel Universe Gym Bag worth INR 2500";
-                            $return_arr['purchase_summary_value'] = "Limited Edition Marvel Universe Gym Bag Worth INR 2500. Additional 50% cashback via PayPal | 1-3 Dec";
+                            $return_arr['purchase_summary_value'] = "Limited Edition Marvel Universe Gym Bag Worth INR 2500. Additional 50% cashback via PayPal | Offer Ending Soon";
 
                             $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com - My Profile - Type in the delivery address Your Limited Edition Marvel Universe Gym Bag Worth INR 2500 will reach your doorstep in the 20th Dec 2019. Kindly feel free to reach out to us on +917400062849 for queries";
 
