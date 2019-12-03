@@ -943,11 +943,11 @@ class ServiceController extends \BaseController {
                         Log::info("nrsh price",[$rsh['price_only']]);
 						if(!empty($allowSession['allow_session']) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
-							if($rsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
+							if($rsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)){
 								$rsh['price'] = Config::get('app.onepass_free_string');
 							}
 							
-							if($nrsh['price_only'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)){
+							if($nrsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
 							}
 							

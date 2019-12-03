@@ -8084,6 +8084,8 @@ class TransactionController extends \BaseController {
             }
             if(!empty($data['pass_id'])){
                 $pass = Pass::where('pass_id', intval($data['pass_id']))->first();
+
+                $data['pass'] = $pass;
                 
                 $jwt_token = Request::header('Authorization');
 
@@ -8092,7 +8094,7 @@ class TransactionController extends \BaseController {
                     $decoded = customerTokenDecode($jwt_token);
 
                     if(!empty($decoded)){
-                        $data['customer_id'] = $decoded->customer->_id;
+                        $data['logged_in_customer_id'] = $data['customer_id'] = $decoded->customer->_id;
                     }
                 }                
 
