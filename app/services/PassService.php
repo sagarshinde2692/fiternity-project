@@ -129,6 +129,11 @@ class PassService {
                 'max_start_date' => strtotime('31-12-2019'),
                 'duration' => $pass['duration']
             ];
+
+            if(!empty($pass['duration']) && $pass['duration'] == 30 && !empty($pass['pass_type']) && $pass['pass_type'] =='red'){
+                $passDetails['max_start_date'] = strtotime('+15 days');
+            }
+
             if($pass['type']=='trial') {
                 $utilities = new Utilities();
                 $passDetails['header'] .= ' Trial';
@@ -796,7 +801,7 @@ class PassService {
             return;
         }
         $customer = Customer::find($customerId);
-
+        $upper_amount = Config::get('pass.price_upper_limit');
         if(empty($date)){
             $date = date('d-m-Y', time());
         }
@@ -860,6 +865,9 @@ class PassService {
                 }
                 else if($passOrder['pass']['pass_type']=='hybrid') {
                     Log::info('inside hybrid passs:::::', [strtotime($date)]);
+                    if(!empty($passOrder['pass']['corporate']) && $passOrder['pass']['corporate'] == 'sodexo') {
+                        $upper_amount = Config::get('pass.sodexo_price_upper_limit');
+                    }
                     // $duration = $passOrder['pass']['duration'];
                     // if(empty($finder) || empty($finder['brand_id']) || !in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
                     //     Log::info('inside hybrid passs:::::', [$finder, $finderId,  array_column($passOrder['pass']['brands'], '_id')]);
@@ -868,16 +876,11 @@ class PassService {
 
                     if($schedule_time<strtotime($passOrder['end_date'])){
                         // $month=(int)date("n",strtotime($date));
-                    Log::info('inside hybrid passs::::: after end date ::::::::::', [strtotime($date)]);
 
                         Booktrial::$withoutAppends = true;
                         $todaysBooking = Booktrial::where('pass_order_id', $passOrder['_id'])->where('schedule_date', new \MongoDate($schedule_time))->where('going_status_txt', '!=', 'cancel')->first();
 
-                        Log::info('inside hybrid passs::::: after end date ::::::::::2222', [strtotime($date), $todaysBooking]);
                         if(empty($todaysBooking)) {
-                            // $sessionsTotal = $passOrder['pass']['total_sessions'];
-                            // $monthlySessionsTotal = $passOrder['pass']['monthly_total_sessions'];
-                            // Log::info('inside hybrid passs::::: counts', [$sessionsTotal, $monthlySessionsTotal, $month]);
                             
                             $sessionsUsed = $passOrder['onepass_sessions_used'];
                             $sessionsTotal = $passOrder['onepass_sessions_total'];
@@ -984,14 +987,15 @@ class PassService {
                     }
                 }
             }
-            if (($amount>1000 && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
+            Log::info('allow session uppper amount', [$upper_amount]);
+            if (($amount>= $upper_amount && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
                 // over 1000
                 return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, /*'profile_incomplete' => !$profile_completed,*/ 'pass_branding' => $pass_branding];
             }
             else {
                 // below 1001
                 
-            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding/*, 'profile_incomplete' => !$profile_completed*/ ];
+            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount/*, 'profile_incomplete' => !$profile_completed*/ ];
 
                 //return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
@@ -1260,7 +1264,7 @@ class PassService {
             $success_template['offer_success_msg'] = "";
             
             if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
-                $success_template['offer_success_msg'] = "Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass";
+                $success_template['offer_success_msg'] = "Congratulations on receiving your instant cashback. You will receive full 100% cashback as FitCash in your Fitternity account on 1st December. Make the most of the cashback to upgrade your OnePass";
             }
 
             if(!empty($order['diwali_mixed_reward'])){
@@ -1340,12 +1344,31 @@ class PassService {
         
         if(!empty($order['wallet_id']) && empty($order['status'])){
             
-            $wallet_update = Wallet::where('_id', $order['wallet_id'])->update(['status'=>'0']);
+            // $wallet_update = Wallet::where('_id', $order['wallet_id'])->update(['status'=>'0']);
             
-            if(empty($wallet_update)){
+            // if(empty($wallet_update)){
              
-                return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (112)'];    
+            //     return ['status'=>400, 'message'=>'Something went wrong. Please contact customer support. (112)'];    
             
+            // }
+
+            // print_r($order->toArray());exit();
+
+            $req = array(
+                'customer_id'=>$order['customer_id'],
+                'order_id'=>$order['order_id'],
+                'amount'=>$order['cashback_detail']['amount_deducted_from_wallet'],
+                'type'=>'DEBIT',
+                'entry'=>'debit',
+                'description'=> $this->utilities->getDescription($order),
+                'order_type'=>'pass',
+                'wallet_id'=>$order['wallet_id']
+            );
+
+            $trans_response = $this->utilities->walletTransactionNew($req, $order);
+
+            if($trans_response['status'] == 400){
+                return $trans_response;
             }
 
         }
@@ -1506,6 +1529,8 @@ class PassService {
         $utilities = new Utilities();
 
         $pass_data = array(
+            "amount" => $data['amount'],
+            "amount_customer" => $data['amount_customer'],
             "customer_name" => $data['customer_name'],
             "customer_phone" => $data['customer_phone'],
             "customer_email" => $data['customer_email'],
@@ -1592,9 +1617,24 @@ class PassService {
         if(empty($data['logged_in_customer_id'])){
             return;
         }
+
+        if(empty($data['pass']['flags']['fitcash_applicable'])){
+            return;
+        }
+        
         $wallet = Wallet::active()->where('customer_id', $data['logged_in_customer_id'])->where('balance', '>', 0)->where('order_type', 'pass')->first();
+        
         if(!empty($wallet)){
-            $data['fitcash'] = $data['amount'] - $wallet['balance'] > 0 ? $wallet['balance'] : $data['amount']; 
+
+            $percentage = !empty($data['pass']['flags']['fitcash_usage_limit']) ? $data['pass']['flags']['fitcash_usage_limit']/100 : 1;
+
+            $fitcash_limit = ceil($data['pass']['price'] * $percentage);
+
+            $fitcash_limit = $fitcash_limit < $data['amount'] ? $fitcash_limit : $data['amount'];
+
+            $data['fitcash'] = $fitcash_limit > $wallet['balance'] ? $wallet['balance'] : $fitcash_limit;
+
+            // $data['fitcash'] = $data['amount'] - $wallet['balance'] > 0 ? $wallet['balance'] : $data['amount']; 
             $data['amount'] = $data['amount'] - $data['fitcash'] > 0 ? ($data['amount'] - $data['fitcash']) : 0;
             $data['wallet_id'] = $wallet['_id'];
             $data['cashback_detail']['amount_deducted_from_wallet'] = $data['fitcash'];
@@ -2445,37 +2485,28 @@ class PassService {
 
                 $utilities = new Utilities();
                 
-                if($cashback_amount_after_gst > 0){
+                if($cashback_amount > 0){
 
-                    // $walletData = array(
-                    //     "order_id"=>$order['_id'],
-                    //     "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
-                    //     "amount"=> intval($cashback_amount_after_gst),
-                    //     "amount_fitcash" => 0,
-                    //     "amount_fitcash_plus" => intval($cashback_amount_after_gst),
-                    //     "type"=>"CASHBACK",
-                    //     "entry"=>"credit",
-                    //     "order_type"=>["pass"],
-                    //     "description"=> "INR ".$cashback_amount_after_gst." Cashback on buying OnePass , Expires On : ".date('d-m-Y',time()+(86400*15)),
-                    //     "validity"=>time()+(86400*15),
-                    //     "duplicate_allowed" => true,
-                    // );
+                    $walletData = array(
+                        "order_id"=>$order['_id'],
+                        "customer_id"=> !empty($order['logged_in_customer_id']) ? intval($order['logged_in_customer_id']) : intval($order['customer_id']),
+                        "amount"=> intval($cashback_amount),
+                        "amount_fitcash" => 0,
+                        "amount_fitcash_plus" => intval($cashback_amount),
+                        "type"=>"CASHBACK",
+                        "entry"=>"credit",
+                        "order_type"=>["pass"],
+                        "description"=> "INR ".$cashback_amount." Cashback on buying OnePass , Expires On : ".
+                        date('Y-m-d', strtotime("+6 months", strtotime($order['created_at']))),
+                        "validity"=> strtotime("+6 months", strtotime($order['created_at'])),
+                        "duplicate_allowed" => true,
+                    );
 
-                    // $walletTransaction = $utilities->walletTransaction($walletData);
+                    $walletTransaction = $utilities->walletTransaction($walletData);
                     
-                    // if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
-                        
-                    //     Order::where('_id', $order['_id'])->update(['cashback_added' => true]);
-
-                    //     $customersms = new CustomerSms();
-
-                    //     $sms_data = [];
-
-                    //     $sms_data['customer_phone'] = $order['customer_phone'];
-                    //     $sms_data['amount'] = $cashback_amount_after_gst;
-
-                    //     $customersms->fitboxMixedReward($order);
-                    // }
+                    if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
+                        Order::where('_id', $order['_id'])->update(['cashback_added' => true]);
+                    }
 
                     if(!empty($brandingData['msg_data'])){
                         $customersms = new CustomerSms();
@@ -2588,13 +2619,14 @@ class PassService {
             if(!empty($data['pass'])){
                 $pass = $data['pass'];
 
-                if(!(!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['duration'], [15]))){
+                if((!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['classes']) && in_array($pass['classes'], [30,45]))){
 
                     if(empty($data['membership_order_id'])){
                         // $rewardinfo['diwali_mixed_reward'] = true;
                         // $rewardinfo['fitbox_mixed_reward'] = true;
-                        $rewardinfo['vk_bag_reward'] = true;
-                        $rewardinfo['reward_ids'] = [79];
+                        // $rewardinfo['vk_bag_reward'] = true;
+                        $rewardinfo['mv_bag_reward'] = true;
+                        // $rewardinfo['reward_ids'] = [79];
                     }
                 }
 
