@@ -156,10 +156,6 @@ return array(
     "reward_pay_block_message" => "Plese do a transaction of reward_amount-/ Rs.", 
 
     "voucher_required_info" => [
-        // "header" => [
-        //     'header' => 'this is header',
-        //     'image' => "http://b.fitn.in/external-vouchers1/new_grid_images/gym%20bag.png"
-        // ],
         "address" => [
             "header" => "Please Enter Your Number",
             "text" => "We will user this address to deliver you Rewards and Hamper",
