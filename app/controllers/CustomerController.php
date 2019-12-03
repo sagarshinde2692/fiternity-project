@@ -2525,7 +2525,8 @@ class CustomerController extends \BaseController {
 			'notification'=>NULL,
 			'fitness_goal'=>NULL,
 			'city'=>NULL,
-			'place'=>NULL
+			'place'=>NULL,
+			'reward'=>NULL
 			);
 
 		$customer = Customer::where('_id',(int) $customer_id)->get(array('name',
@@ -2547,7 +2548,7 @@ class CustomerController extends \BaseController {
 			'fitness_goal',
 			'city',
 			'place',
-			'freshchat_restore_id', 'corporate_id', 'external_reliance'))->toArray();
+			'freshchat_restore_id', 'corporate_id', 'external_reliance', 'reward'))->toArray();
 			
 			
 		if($customer){
@@ -2610,6 +2611,17 @@ class CustomerController extends \BaseController {
 
 			if($onepassRequired) {
 				$customer[0]['onepass'] = $this->passService->homePostPassPurchaseData($customer_id);
+			}
+
+			if(!empty($customer[0]['address']) && is_array($customer[0]['address']) && empty($customer[0]['reward'])){
+				$customer[0]['reward'] = [
+					'address' => [
+						'customer_name' => !empty($customer[0]['name']) ? $customer[0]['name'] : null,
+						'customer_email' => !empty($customer[0]['email']) ? $customer[0]['email'] : null,
+						'customer_phone' => !empty($customer[0]['contact_no']) ? $customer[0]['contact_no'] : null,
+						'customer_address' => !empty($customer[0]['address']) ? $customer[0]['address'] : null,
+					]
+				];
 			}
 
 			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
@@ -4451,7 +4463,11 @@ class CustomerController extends \BaseController {
         }
 		
 		$customer = Customer::find((int)$customer_id);
-		
+
+		if(!empty($data['reward_type']) && $data['reward_type'] =='fitsquad'){
+			return $this->updateRewardDetails($data, $customer);
+		}
+
 		if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
 
 			$customerData['address'] = $data['customer_address'];
@@ -9815,7 +9831,7 @@ class CustomerController extends \BaseController {
                         if(in_array($vc['name'], $claimed_voucher_categories)){
                             continue;
                         }
-                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description', 'sold_out']);
+                        $vc = array_only($vc, ['image', '_id', 'terms', 'amount', 'description', 'required_info', 'sold_out']);
                         $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
                         $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);
                         $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
@@ -9925,6 +9941,7 @@ class CustomerController extends \BaseController {
                                 
                                 }
 
+								$this->utilities->checkRequriredDataForClaimingReward($post_reward_data_template, $customer, $vc, $milestone, $milestone['milestone']);
                             }
 
 							!isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
@@ -11192,6 +11209,58 @@ class CustomerController extends \BaseController {
 			}
 
 			return $result;
+		}
+	}
+
+	public function updateRewardDetails($data, $customer){
+
+		$data = Input::all();
+
+		$rules = [
+			'customer_name' => 'required',
+			'customer_email' => 'required',
+			'customer_phone' => 'required',
+			'customer_address' => 'required',
+		];
+
+		$validator = Validator::make($data,$rules);
+		
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),200);
+		}
+		
+		$reward_detial = [];
+		if(!empty($data['tshirt_size'])){
+			$reward_detial['tshirt_size'] = $data['tshirt_size'];
+		}
+
+		$address = [
+			"customer_name" => $data['customer_name'],
+			"customer_email" => $data['customer_email'],
+			"customer_phone" => $data['customer_phone'],
+			"customer_address" => $data['customer_address']
+		];
+
+		$reward_detial['address'] = $address;
+
+		try{
+
+			$customer->reward = $reward_detial;
+
+			$customer->save();
+
+			return array(
+				'status' => 200,
+				'message' => "Address Updated Successfully",
+				'data' => $data
+			);
+			
+		} catch(\Exception $e){
+			Log::info('error occured while saving reward addresss', [$e]);
+			return array(
+				'status' => 400,
+				'message' => "something went wrong. Please try again after a while."
+			);
 		}
 	}
 

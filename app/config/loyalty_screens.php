@@ -151,6 +151,20 @@ return array(
         "https://b.fitn.in/external-vouchers1/cleartrip.png",
         "https://b.fitn.in/external-vouchers1/o2.png",
         "https://b.fitn.in/external-vouchers1/book%20my%20show.png",
+    ],
+
+    "reward_pay_block_message" => "Plese do a transaction of reward_amount-/ Rs.", 
+
+    "voucher_required_info" => [
+        "address" => [
+            "header" => "Please Enter Your Number",
+            "text" => "We will user this address to deliver you Rewards and Hamper",
+        ],
+
+        "size" => [
+            "header" => "T-Shirt Size",
+            "data" => ["S", "M", "L", "XL"]
+        ]
     ]
 );
 ?>

@@ -10883,6 +10883,25 @@ Class Utilities {
     //     return $fitsquad_expired;
     // }
 
+    public function checkRequriredDataForClaimingReward(&$post_reward_data_template, $customer, $voucher, $milestone, $milestone_no){
+
+        $voucher_required_info = Config::get('loyalty_screens.voucher_required_info');
+
+        $required_data = [];
+        if(!empty($voucher['required_info'])){
+
+            if(in_array('address', $voucher['required_info'])){
+                $required_data['address'] = $voucher_required_info['address'];
+            }
+
+            if(in_array('size',$voucher['required_info'])){
+                $required_data['size'] = $voucher_required_info['size'];
+            }
+
+            $post_reward_data_template['required_info'] = $required_data;
+        }
+    }
+     
     public function getPassBranding($args = null){
         $return_arr = array();
 
