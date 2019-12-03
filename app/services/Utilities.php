@@ -66,6 +66,7 @@ Class Utilities {
         
     $vendor_token = Request::header('Authorization-Vendor');
     $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+    $this->app_version = Request::header('App-Version');
 
 
     if($vendor_token){
@@ -6568,6 +6569,10 @@ Class Utilities {
 			}
             $customer_id = $data['customer_id'];
             $customer = Customer::where('_id', $customer_id)->where('loyalty.start_date', 'exists', true)->first(['loyalty']);
+            $fitsquad_expired = $this->checkFitsquadExpired($customer);
+            if(!empty($fitsquad_expired['checkin_expired']['status'])){
+				return ['status' => 400, 'message' => $fitsquad_expired['checkin_expired']['message']];
+            }
             $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
             $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
             $brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
@@ -7354,7 +7359,7 @@ Class Utilities {
 
                             $dontUpdateLoyalty = false;
                             Log::info("dontUpdateLoyalty 3",[$dontUpdateLoyalty]);
-                        }
+                        }                        
                     }
                     
                     // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
@@ -7386,6 +7391,7 @@ Class Utilities {
 
                 $loyalty['updated_at'] = new \MongoDate();
 
+                $this->checkForFittenityGrid($loyalty);
                 $update_data = [
                     'loyalty'=>$loyalty 
                 ];
@@ -8254,6 +8260,15 @@ Class Utilities {
             $brand_milestones = $brand_milestones->first();
             
         }
+        else if(!empty($filter['grid_version'])){
+            $brand_milestones = FinderMilestone::where('grid_version', $filter['grid_version']);
+            
+            if(!empty($filter['reward_type'])){
+                $brand_milestones = $brand_milestones->where('reward_type', $filter['reward_type']);
+            }
+
+            $brand_milestones = $brand_milestones->first();
+        }
         
         if(empty($brand_milestones)){
 
@@ -8265,7 +8280,7 @@ Class Utilities {
     
     }
 
-    public function getMilestoneFilterData($customer, $includeCorporate=false){
+    public function getMilestoneFilterData($customer, $includeCorporate=false, $grid_version=null){
         $filter = [];
         if($includeCorporate) {
             $filter['corporate_id'] = !empty($customer->corporate_id) ? $customer->corporate_id : null;
@@ -8277,6 +8292,7 @@ Class Utilities {
         $filter['brand_version'] = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
         $filter['reward_type'] = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
         $filter['cashback_type'] = !empty($customer->loyalty['cashback_type']) ? $customer->loyalty['cashback_type'] : null;
+        $filter['grid_version'] = !empty($customer->loyalty['grid_version']) ? $customer->loyalty['grid_version'] : $grid_version;
         return $filter;
     }
 
@@ -8329,6 +8345,11 @@ Class Utilities {
                 }
             }
 
+            if(!empty($filter['grid_version'])){
+                $match['$match']['grid_version'] = $filter['grid_version'];
+            }else {
+                $match['$match']['grid_version'] = ['$exists' => false];
+            }
 
             // print_r($match);
             // exit();
@@ -8895,6 +8916,9 @@ Class Utilities {
 
     public function addFitcashforVoucherCatageory($data){
         $validity = strtotime('+90 days');
+        if(!empty($data['voucher_catageory']['validity_in_days'])){
+            $validity = strtotime('+'.$data['voucher_catageory']['validity_in_days'].' days');
+        }
         $request = array(
             "customer_id"=> $data['id'],
             "amount"=> $data['voucher_catageory']['fitcash'],
@@ -9623,9 +9647,11 @@ Class Utilities {
         Log::info('chekcins:::::::::::;', [$device_token, $checkins, $customer_id]);
         $customer = Customer::active()->where('_id', (int)$customer_id)->first();
         
-        // if(!empty($customer['loyalty']['start_date']) && strtotime('midnight', strtotime('+1 year',$customer['loyalty']['start_date']->sec)) < strtotime('today')){
-        //     return $this->checkinCheckoutFailureMsg("Your Fitsquad program has been expired.");
-        // }
+
+        $fitsquad_expired = $this->checkFitsquadExpired($customer);
+        if(!empty($fitsquad_expired['checkin_expired']['status'])){
+            return $this->checkinCheckoutFailureMsg($fitsquad_expired['checkin_expired']['message']);
+        }
 
 		if(count($checkins)>0)
 		{
@@ -10869,19 +10895,82 @@ Class Utilities {
         return $fin_vouchers_arr;
     }
 
-    // public function checkFitsquadExpired($customer = null){
+    public function checkFitsquadExpired($customer = null){
 
-    //     $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year',$customer['loyalty']['start_date']->sec));
-    //     $current_date = date('Y-m-d');
+        $fitsquad_claim_expired = ['status' => false, "message"=>''];
+        $fitsquad_checkin_expired = ['status' => false, "message"=>''];
         
-    //     $fitsquad_expired = false;
+        if(!empty($customer['loyalty']['start_date']->sec)){
+            $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year', $customer['loyalty']['start_date']->sec));
+            $current_date = date('Y-m-d');
 
-    //     if($fitsquad_expiery_date < $current_date){
-    //         $fitsquad_expired = true;
-    //     }
+            if(strtotime('+15 days', strtotime($fitsquad_expiery_date)) < strtotime($current_date)){
+                $fitsquad_claim_expired = [ 'status' => true, "message"=> "Your Fitsquad program has been expired."];
+            }
 
-    //     return $fitsquad_expired;
-    // }
+            if($fitsquad_expiery_date < $current_date){
+                $fitsquad_checkin_expired = [ 'status' => true, "message" => "Your Fitsquad program has been expired."];
+            }
+        }
+
+        return ['claim_expired'=> $fitsquad_claim_expired, 'checkin_expired'=> $fitsquad_checkin_expired];
+    }
+
+    public function checkForFittenityGrid(&$loyalty){
+        if(empty($loyalty['brand_loyalty']) && empty($loyalty['cashback_type']) && (empty($loyalty['reward_type']) || $loyalty['reward_type']==2)){
+            $loyalty['grid_version'] = 1;
+        }
+        return;
+    }
+
+    public function getVoucherImages($voucher){
+        $image = array_column($voucher, 'image');
+
+        $image_new = [];
+        foreach($image as $key=>$value){
+            if(is_array($value)){
+                $temp = array_column($value, 'url');
+                $image_new = array_merge($image_new, $temp);
+            }
+            else {
+                array_push($image_new, $value);
+            }
+        }
+        array_splice($image_new, 6);
+        return array_unique($image_new);
+    }
+
+    public function voucherImagebasedAppVersion(&$voucher, $from=null, $customer=null){
+
+        if(!newFitsquadCompatabilityVersion()){  
+            if(empty($from) && !empty($voucher['image']) && is_array($voucher['image'])){
+                $image = $voucher['image'];
+                unset($voucher['image']);
+                return !empty($image[0]['url']) ? $image[0]['url'] : "";
+            }
+            else{ 
+                unset($voucher['header']['image_new']); 
+            }
+        }else if(newFitsquadCompatabilityVersion() && !empty($from)){
+                $voucher['header']['image'] = $voucher['header']['image_new']; 
+                unset($voucher['header']['image_new']); 
+        }
+        
+        if(empty($from) && newFitsquadCompatabilityVersion() && empty($customer['loyalty']['grid_version'])) {
+            return [
+                [
+                    "text" => "",
+                    "url" => $voucher['image']
+                ]
+            ];
+        }
+        if(!empty($from)){
+            return;
+        }
+        $image = $voucher['image'];
+		unset($voucher['image']);
+        return $image;
+    }
 
     public function checkRequriredDataForClaimingReward(&$post_reward_data_template, $customer, $voucher, $milestone, $milestone_no){
 
@@ -11135,5 +11224,92 @@ Class Utilities {
                 break;
             default: return $return_arr;
         }
+    }
+
+    public function voucherClaimedResponse($voucherAttached, $voucher_category, $key, $email_communication_check=null){
+        $resp =  [
+            'voucher_data'=>[
+                'header'=>"VOUCHER UNLOCKED",
+                'sub_header'=>"You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : ""),
+                'coupon_title'=>(!empty($voucherAttached['description']) ? $voucherAttached['description'] : ""),
+                'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
+                'coupon_image'=>(!empty($voucherAttached['image']) ? $voucherAttached['image'] : ""),
+                'coupon_code'=>strtoupper($voucherAttached['code']),
+                'coupon_subtext'=>'(also sent via email/sms)',
+                'unlock'=>'UNLOCK VOUCHER',
+                'terms_text'=>'T & C applied.'
+            ]
+        ];
+        if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
+            $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
+            $resp['voucher_data']['header']= "REWARD UNLOCKED";
+            
+            if(isset($voucherAttached['link'])){
+                $resp['voucher_data']['sub_header']= "You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name'])."<br> Share your details & get your insurance policy activated. " : "");
+                $resp['voucher_data']['coupon_text']= $voucherAttached['link'];
+            }
+            
+        }
+
+        if(!empty($voucher_category['email_text'])){
+            $resp['voucher_data']['email_text']= $voucher_category['email_text'];
+        }
+        $resp['voucher_data']['terms_detailed_text'] = strtr($voucherAttached['terms'], ['<li>'=>'<p> •', '</li>'=>'</p>', '<ul>'=>'', '</ul>'=>'']);
+        
+        if(!empty($voucher_category['flags'])){
+            $resp['voucher_data']['flags'] = $voucherAttached['flags'];
+        }
+
+        if(!empty($key)){
+            $resp['voucher_data']['key'] = $key;
+        }
+
+        if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
+            
+            $resp['voucher_data']['header'] = "VOUCHER SELECTED";
+            $resp['voucher_data']['sub_header'] = "You have selected ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : "");
+            unset($resp['voucher_data']['coupon_title']);
+            $resp['voucher_data']['coupon_text'] = "Under Verification";
+            unset($resp['voucher_data']['terms_text']);
+            unset($resp['voucher_data']['terms_detailed_text']);
+            unset($resp['voucher_data']['coupon_subtext']);
+        }
+        
+        if(empty($email_communication_check)){
+            unset($resp['voucher_data']['coupon_subtext']);
+        }
+
+        if(!empty($resp['voucher_data']['coupon_image']) && is_array($resp['voucher_data']['coupon_image']) && !empty($resp['voucher_data']['coupon_image'][0]['url'])){
+            $resp['voucher_data']['coupon_image'] = $resp['voucher_data']['coupon_image'][0]['url'];
+        }
+
+        if(is_array($resp['voucher_data']['coupon_image'])){
+            unset($resp['voucher_data']['coupon_image']);
+        }
+
+        return $resp;
+    }
+
+    public function getComboVouchers($voucher_attached, $customer){
+        $combo_vouchers = [];
+        if(!empty($voucher_attached['flags']['combo_vouchers_list'])){
+            $vouchers_list = $voucher_attached['flags']['combo_vouchers_list'];
+            $combo_vouchers = \LoyaltyVoucher::active()->whereIn('voucher_category', $vouchers_list)->where('customer_id', $customer['id'])->orderBy('_id')->get();
+        }
+
+        return $combo_vouchers;
+    }
+
+    public function preRegisterDataFormatingOldVersion(&$preRegistrationScreenData){
+        if(empty(newFitsquadCompatabilityVersion())){
+
+            $preRegistrationScreenData['check_ins']['header'] =  $preRegistrationScreenData['check_ins']['ios_old'];
+
+            foreach($preRegistrationScreenData['check_ins']['data'] as &$value){
+                $value['milestone'] = $value['milestone']." - ".$value['count'];
+            }
+        }
+        unset($preRegistrationScreenData['partners_new']);
+        unset($preRegistrationScreenData['check_ins']['ios_old']);   
     }
 }
