@@ -168,29 +168,7 @@ return array(
         "size" => [
             "header" => "T-Shirt Size",
             "data" => ["S", "M", "L", "XL"]
-        ],
-
-        // "reward_pay" => [
-        //     "transaction" => "required",
-        //     "header" => "please do a transaction of amount reward_amount",
-        //     "text" => "this is text",
-        //     "url" => Config::get('app.url').'/capture',
-        //     "data" => [
-        //         "type" => "reward_pay",
-        //         "customer_id" => "customer_id",
-        //         "customer_email" => "customer_email",
-        //         "customer_phone" => "customer_phone",
-        //         "amount" => "reward_amount"
-        //     ]
-        // ]
-    ],
-
-    // "reward_pay_detail" => [
-    //     [
-    //         "status" => false,
-    //         "milestone_no" => 3,
-    //         "amount" => 299
-    //     ]
-    // ]
+        ]
+    ]
 );
 ?>
