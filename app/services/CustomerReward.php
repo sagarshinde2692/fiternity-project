@@ -1209,9 +1209,7 @@ Class CustomerReward {
 
             $query = $utilities->getWalletQuery($request);
 
-            $current_wallet_balance = $query->sum('balance');
-            Log::info('current wallt balanvr :::::::', [$current_wallet_balance]);
-            /*
+            $current_wallet_balance = $query->sum('balance');/*
 
             if(isset($customer->demonetisation)){
 
