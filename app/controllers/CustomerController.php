@@ -9232,13 +9232,11 @@ class CustomerController extends \BaseController {
 			$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key, $email_communication_check);
             if(!empty($communication) && (empty($combo_vouchers) || (!empty($combo_vouchers) && count($combo_vouchers)== 0))){
 				$email = $email_communication_check ? $this->voucherEmailReward($resp, $customer) : null;
-				Log::info('email::::: of not combo reward::::', [$email]);
 			}else if(!empty($communication)) {
 				foreach($combo_vouchers as $key=>$value){
 					$formated_resp = $this->utilities->voucherClaimedResponse($value, $voucher_category, $key, $email_communication_check);
 					$resp1[] = $formated_resp['voucher_data'];
 					$email =  $email_communication_check ? $this->voucherEmailReward($formated_resp, $customer) : null;
-					Log::info('email:::::', [$email]);
 					
 				}
 			}
@@ -9810,7 +9808,6 @@ class CustomerController extends \BaseController {
 
                         unset($claimed_voucher['flags']);
                         $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
-						// $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $claimed_voucher);
 						$post_reward_data_template['logo'] = $this->utilities->voucherImagebasedAppVersion($claimed_voucher, null, $customer);
 						$post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $claimed_voucher);
 						$post_reward_data_template['terms'] = strtr($post_reward_data_template['terms'], $claimed_voucher);
