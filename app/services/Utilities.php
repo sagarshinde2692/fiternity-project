@@ -2723,15 +2723,8 @@ Class Utilities {
     
                     }
                 }
-
                 
-                if(!empty($request['order_type']) && ($request['order_type'] != "workout-session" || $request['order_type'] != "workout session") && !empty($request['city_id']) && $request['city_id'] != '3'){
-                    $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id)->orwhere('flags.use_for_self', 'exists', false)->orWhere('flags.use_for_self', false);});
-                }else if(!empty($request['order_type']) && ($request['order_type'] == "workout-session" || $request['order_type'] == "workout session") && !empty($request['city_id']) && $request['city_id'] == '3'){
-                    
-                }else{
-                    $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
-                }
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
     
             }else{
                 
