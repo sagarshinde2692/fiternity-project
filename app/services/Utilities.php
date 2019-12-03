@@ -68,6 +68,7 @@ Class Utilities {
     $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
     $this->app_version = Request::header('App-Version');
 
+
     if($vendor_token){
 
         $this->vendor_token = true;
@@ -7321,7 +7322,7 @@ Class Utilities {
                     if(empty($customer['loyalty'])){
                         $loyalty['reward_type'] = 2;
                         $dontUpdateLoyalty = false;
-                        Log::info("dontUpdateLoyalty 2, first fitternity grid setting:::::::::::::::::::::::::",[$dontUpdateLoyalty]);
+                        Log::info("dontUpdateLoyalty 2",[$dontUpdateLoyalty]);
                     }
                 }else{
 
@@ -7358,8 +7359,7 @@ Class Utilities {
 
                             $dontUpdateLoyalty = false;
                             Log::info("dontUpdateLoyalty 3",[$dontUpdateLoyalty]);
-                        }
-                        
+                        }                        
                     }
                     
                     // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
@@ -8348,7 +8348,6 @@ Class Utilities {
             if(!empty($filter['grid_version'])){
                 $match['$match']['grid_version'] = $filter['grid_version'];
             }else {
-                Log::info('fitternity grid id:::::::::::::: does not exists');
                 $match['$match']['grid_version'] = ['$exists' => false];
             }
 
@@ -8919,7 +8918,6 @@ Class Utilities {
         $validity = strtotime('+90 days');
         if(!empty($data['voucher_catageory']['validity_in_days'])){
             $validity = strtotime('+'.$data['voucher_catageory']['validity_in_days'].' days');
-            Log::info('validity::::::', [$validity, $data['voucher_catageory']['validity_in_days']]);
         }
         $request = array(
             "customer_id"=> $data['id'],
@@ -9651,7 +9649,6 @@ Class Utilities {
         
 
         $fitsquad_expired = $this->checkFitsquadExpired($customer);
-        //if(!empty($customer['loyalty']['start_date']) && strtotime('midnight', strtotime('+1 year',$customer['loyalty']['start_date']->sec)) < strtotime('today')){
         if(!empty($fitsquad_expired['checkin_expired']['status'])){
             return $this->checkinCheckoutFailureMsg($fitsquad_expired['checkin_expired']['message']);
         }
@@ -10929,12 +10926,10 @@ Class Utilities {
     public function getVoucherImages($voucher){
         $image = array_column($voucher, 'image');
 
-        // Log::info('voucher data:::::::::', $image);
         $image_new = [];
         foreach($image as $key=>$value){
             if(is_array($value)){
                 $temp = array_column($value, 'url');
-                Log::info('temp:::', $temp);
                 $image_new = array_merge($image_new, $temp);
             }
             else {
@@ -10948,14 +10943,12 @@ Class Utilities {
     public function voucherImagebasedAppVersion(&$voucher, $from=null, $customer=null){
 
         if(!newFitsquadCompatabilityVersion()){  
-            Log::info('app version anded device type::::', [$this->device_type,$this->app_version]);
             if(empty($from) && !empty($voucher['image']) && is_array($voucher['image'])){
                 $image = $voucher['image'];
                 unset($voucher['image']);
                 return !empty($image[0]['url']) ? $image[0]['url'] : "";
             }
-            else{
-                // $voucher['header']['image'] = $voucher['header']['image_new']; 
+            else{ 
                 unset($voucher['header']['image_new']); 
             }
         }else if(newFitsquadCompatabilityVersion() && !empty($from)){

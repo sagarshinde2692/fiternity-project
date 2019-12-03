@@ -9226,62 +9226,6 @@ class CustomerController extends \BaseController {
                 
                 }
             }
-			/*
-
-				//	moved to utilities in function -> voucherClaimedResponse 
-				
-            $resp =  [
-                'voucher_data'=>[
-                    'header'=>"VOUCHER UNLOCKED",
-                    'sub_header'=>"You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : ""),
-                    'coupon_title'=>(!empty($voucherAttached['description']) ? $voucherAttached['description'] : ""),
-                    'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
-                    'coupon_image'=>(!empty($voucherAttached['image']) ? $voucherAttached['image'] : ""),
-                    'coupon_code'=>strtoupper($voucherAttached['code']),
-                    'coupon_subtext'=>'(also sent via email/sms)',
-                    'unlock'=>'UNLOCK VOUCHER',
-                    'terms_text'=>'T & C applied.'
-                ]
-            ];
-            if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
-				$resp['voucher_data']['coupon_text']= $voucherAttached['name'];
-				$resp['voucher_data']['header']= "REWARD UNLOCKED";
-				
-				if(isset($voucherAttached['link'])){
-					$resp['voucher_data']['sub_header']= "You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name'])."<br> Share your details & get your insurance policy activated. " : "");
-					$resp['voucher_data']['coupon_text']= $voucherAttached['link'];
-				}
-                
-            }
-
-            if(!empty($voucher_category['email_text'])){
-                $resp['voucher_data']['email_text']= $voucher_category['email_text'];
-            }
-			$resp['voucher_data']['terms_detailed_text'] = $voucherAttached['terms'];
-			
-			if(!empty($voucher_category['flags'])){
-				$resp['voucher_data']['flags'] = $voucherAttached['flags'];
-			}
-
-			if(!empty($key)){
-				$resp['voucher_data']['key'] = $key;
-			}
-
-			if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
-				
-				$resp['voucher_data']['header'] = "VOUCHER SELECTED";
-				$resp['voucher_data']['sub_header'] = "You have selected ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : "");
-				unset($resp['voucher_data']['coupon_title']);
-				$resp['voucher_data']['coupon_text'] = "Under Verification";
-				unset($resp['voucher_data']['terms_text']);
-				unset($resp['voucher_data']['terms_detailed_text']);
-				unset($resp['voucher_data']['coupon_subtext']);
-			}
-
-            if(!empty($communication)){
-				$redisid = Queue::connection('redis')->push('CustomerController@voucherCommunication', array('resp'=>$resp['voucher_data'], 'delay'=>0,'customer_name' => $customer['name'],'customer_email' => $customer['email'],'customer_phone' => $customer['contact_no'],'voucher_name' => strtoupper($voucherAttached['name']), 'milestone' => $voucherAttached['milestone']),Config::get('app.queue'));
-			}
-			*/
 
 			$voucher_category = !empty($voucher_category) ? $voucher_category : null;
 			$email_communication_check = empty($new_fitsquad_app) && (empty($customer->loyalty['grid_version']));
