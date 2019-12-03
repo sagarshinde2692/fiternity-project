@@ -5096,11 +5096,6 @@ class FindersController extends \BaseController {
 					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
 				
-				try{
-					$this->addAttachedPassDescription($data, 'app');
-				}catch(Exception $e){
-					Log::info("Error while attaching pass to ratecard", [$e]);
-				}
 
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
@@ -5488,7 +5483,12 @@ class FindersController extends \BaseController {
             }catch(Exception $e){
                 Log::info("Error while sorting ratecard", [$e]);
             }
-    
+	
+			try{
+				$this->addAttachedPassDescription($finderData, 'app');
+			}catch(Exception $e){
+				Log::info("Error while attaching pass to ratecard", [$e]);
+			}
             // $workout_ratecard_arr = array();
             // foreach($finderData['finder']['services'] as $service){
             // 	foreach($service['ratecard'] as $ratecard){
