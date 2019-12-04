@@ -5162,11 +5162,11 @@ class FindersController extends \BaseController {
                         if(empty($customer_trials_with_vendors->toArray())){
 
                             if(!empty($finderData['finder']['facilities']) && in_array( "Free Trial" , $finderData['finder']['facilities'])){
-                                $finderData['call_for_action_button']      =      "Book A Session";
-                                $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first session';    
+                                $finderData['call_for_action_button']      =      "Book Free Session";
+                                $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first session free';    
                             }else{
                                 $finderData['call_for_action_button']      =      "Book A Session";
-								$finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first session'; 
+								$finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking session'; 
 								// if(!empty($finderData['finder']['flags']['monsoon_campaign_pps'])){
                                 //     $finderData['call_for_action_button']      =      "Book a Session @ 73";
                                 // }   
@@ -5517,7 +5517,14 @@ class FindersController extends \BaseController {
                 foreach($service['ratecard'] as &$ratecard){
                     if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
                         $price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-                        Log::info("Price onepass ::",[$price]);
+						Log::info("Price onepass ::",[$price]);
+						
+						if(empty($customer_trials_with_vendors->toArray())){
+                            if(!empty($finderData['finder']['facilities']) && in_array( "Free Trial" , $finderData['finder']['facilities'])){
+								$ratecard['cashback_on_trial'] = Config::get('app.first_free_string');
+							}
+						}
+
                         $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
                         
                         $_allowSession = false;
@@ -5533,6 +5540,7 @@ class FindersController extends \BaseController {
                             unset($ratecard['remarks']);
                             unset($ratecard['remarks_imp']);
                             unset($ratecard['price_text']);
+                            unset($ratecard['cashback_on_trial']);
     
                             unset($finderData['fit_ex']);
     
