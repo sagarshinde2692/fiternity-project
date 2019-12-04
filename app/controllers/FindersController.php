@@ -5166,7 +5166,7 @@ class FindersController extends \BaseController {
                                 $finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first session free';    
                             }else{
                                 $finderData['call_for_action_button']      =      "Book A Session";
-								$finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking your first session'; 
+								$finderData['call_for_action_text'] = 'Experience a workout at '.$finderData['finder']['title'].' by booking session'; 
 								// if(!empty($finderData['finder']['flags']['monsoon_campaign_pps'])){
                                 //     $finderData['call_for_action_button']      =      "Book a Session @ 73";
                                 // }   
