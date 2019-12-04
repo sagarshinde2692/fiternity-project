@@ -6464,6 +6464,11 @@ Class Utilities {
             $new_voucher->title = $voucher_category['title'];
         }
 
+        if(!empty($voucher_category['required_info'])){
+            $new_voucher->required_info = $voucher_category['required_info'];
+            !empty($customer->reward) ? $new_voucher->deleviry_details = $customer->reward : null;
+        }
+
         $new_voucher->update();
         try{
             $this->remaningVoucherNotification($voucher_category);
@@ -7727,7 +7732,11 @@ Class Utilities {
             $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months'))], $workout_session_flag);
             Log::info("asdsad");
         }
-        
+
+        if(!empty($voucher_category['required_info'])){
+            $voucher_data['required_info'] = $voucher_category['required_info'];
+            !empty($customer->reward) ? $voucher_data['deleviry_details'] = $customer->reward : null;
+        }
         return $voucher = \LoyaltyVoucher::create($voucher_data);
 
     }
