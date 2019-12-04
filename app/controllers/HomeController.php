@@ -5541,4 +5541,8 @@ class HomeController extends BaseController {
 		return $this->utilities->getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false);
 	}
 
+    public function getCampaignData(){
+        $currentCampDet = Cache::tags('campaign_data')->get('current');
+        
+    }
 }
