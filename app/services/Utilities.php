@@ -7735,7 +7735,7 @@ Class Utilities {
 
         if(!empty($voucher_category['required_info'])){
             $voucher_data['required_info'] = $voucher_category['required_info'];
-            !empty($customer->reward) ? $voucher_data->deleviry_details = $customer->reward : null;
+            !empty($customer->reward) ? $voucher_data['deleviry_details'] = $customer->reward : null;
         }
         return $voucher = \LoyaltyVoucher::create($voucher_data);
 
