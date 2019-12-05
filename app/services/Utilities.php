@@ -7399,13 +7399,13 @@ Class Utilities {
 
                 $loyalty['updated_at'] = new \MongoDate();
 
-                if((empty($customer['loyalty']) && !empty($customer['loyalty']['reward_type'])) ||(!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type'] ==2)){
+                if((!empty($customer['loyalty']) && empty($customer['loyalty']['reward_type'])) ||(!empty($customer['loyalty']['reward_type']) && $customer['loyalty']['reward_type'] ==2)){
                     $dontUpdateLoyalty = true;
                 }
                 else{
                     $this->checkForFittenityGrid($loyalty);
                 }
-                
+
                 $update_data = [
                     'loyalty'=>$loyalty 
                 ];
