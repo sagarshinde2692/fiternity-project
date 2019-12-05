@@ -10932,7 +10932,7 @@ Class Utilities {
     }
 
     public function checkForFittenityGrid(&$loyalty){
-        if(empty($loyalty['brand_loyalty']) && empty($loyalty['cashback_type']) && (empty($loyalty['reward_type']) || in_array($loyalty['reward_type'], [2,4,6]))){
+        if(empty($loyalty['brand_loyalty']) && empty($loyalty['cashback_type']) && (empty($loyalty['reward_type']) || $loyalty['reward_type'] == 2)){
             $loyalty['grid_version'] = 1;
         }
         return;
