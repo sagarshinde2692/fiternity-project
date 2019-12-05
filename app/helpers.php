@@ -4789,7 +4789,7 @@ if (!function_exists('getLineBreaker')) {
 
     function getLineBreaker(){        
 
-        return isRequestFromApp() ? '\n' : '<br>';
+        return '\n';
     }
 
 }
