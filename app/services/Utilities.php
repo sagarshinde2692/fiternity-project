@@ -7735,7 +7735,7 @@ Class Utilities {
             $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months'))], $workout_session_flag);
             Log::info("asdsad");
         }
-
+        
         return $voucher = \LoyaltyVoucher::create($voucher_data);
 
     }
