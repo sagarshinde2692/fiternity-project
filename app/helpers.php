@@ -4776,4 +4776,22 @@ if (!function_exists(('setPassToToken'))){
     }
 }
 
+if (!function_exists('isRequestFromApp')) {
+
+    function isRequestFromApp(){        
+
+        return checkAppVersionFromHeader(['ios'=>'0', 'android'=>0]);
+    }
+
+}
+
+if (!function_exists('getLineBreaker')) {
+
+    function getLineBreaker(){        
+
+        return isRequestFromApp() ? '\n' : '<br>';
+    }
+
+}
+
 ?>

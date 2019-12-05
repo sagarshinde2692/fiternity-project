@@ -10924,9 +10924,9 @@ Class Utilities {
                         if(!empty($pass['duration']) && in_array($pass['duration'], [180, 360])){
                             
                             if(!empty($pass['duration']) && in_array($pass['duration'], [180])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 15% Off, Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Upto 30% Off + Addnl 15% Off, Use Code: STEAL ".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [360])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 11% Off, Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Upto 30% Off + Addnl 11% Off, Use Code: STEAL ".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }
                             
                             $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500 | 6-10 Dec";
