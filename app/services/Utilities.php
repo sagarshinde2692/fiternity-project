@@ -6467,6 +6467,9 @@ Class Utilities {
         if(!empty($voucher_category['required_info'])){
             $new_voucher->required_info = $voucher_category['required_info'];
             !empty($customer->reward) ? $new_voucher->deleviry_details = $customer->reward : null;
+            if(empty($new_voucher->required_info->size) && !empty($new_voucher->deleviry_details->tshirt_size)){
+                unset($new_voucher->deleviry_details->tshirt_size);
+            }
         }
 
         $new_voucher->update();
@@ -7733,10 +7736,6 @@ Class Utilities {
             Log::info("asdsad");
         }
 
-        if(!empty($voucher_category['required_info'])){
-            $voucher_data['required_info'] = $voucher_category['required_info'];
-            !empty($customer->reward) ? $voucher_data['deleviry_details'] = $customer->reward : null;
-        }
         return $voucher = \LoyaltyVoucher::create($voucher_data);
 
     }
