@@ -4525,8 +4525,22 @@ if (!function_exists('setNewToken')) {
             
             $totalSessions = (!empty($pass['onepass_sessions_total']))?($pass['onepass_sessions_total']-1):null;
             
-            $pass_data = ['pass'=>1, 'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 'pass_type' => $pass['pass']['pass_type'], 'pass_sessions_total'=>$totalSessions, 'pass_sessions_used'=>$pass['onepass_sessions_used'],'pass_order_id'=>$pass['_id'], 'pass_city_id' => (!empty($pass['pass_city_id']) ? $pass['pass_city_id'] : null), 'pass_city_name' => (!empty($pass['pass_city_name']) ? $pass['pass_city_name'] : null)];
-
+            $pass_data = [
+                'pass'=>1, 
+                "pass_id" => $pass['pass_id'], 
+                'pass_start_date' => (!empty($pass['start_date']))?strtotime($pass['start_date']):null, 
+                'pass_expiry_date' => (!empty($pass['end_date']))?strtotime($pass['end_date']):null, 
+                'pass_type' => $pass['pass']['pass_type'], 
+                'pass_sessions_total'=>$totalSessions, 
+                'pass_sessions_used'=>$pass['onepass_sessions_used'],
+                'pass_order_id'=>$pass['_id'], 
+                'pass_city_id' => (!empty($pass['pass_city_id']) ? $pass['pass_city_id'] : null), 
+                'pass_city_name' => (!empty($pass['pass_city_name']) ? $pass['pass_city_name'] : null)
+            ];
+            
+            if(!empty($pass['pass']['corporate'])){
+                $pass_data['pass_corporate'] = $pass['pass']['corporate'];
+            }
             if($pass_data['pass_type'] =='hybrid'){
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
                 $pass_data['pass_sessions_monthly_used'] = (!empty($pass['monthly_total_sessions_used']))?$pass['monthly_total_sessions_used']:0;
@@ -4535,6 +4549,7 @@ if (!function_exists('setNewToken')) {
             $update_header = true;
         }else if(empty($pass)){
             unset($customer_data['pass']);
+            unset($customer_data['pass_id']);
             unset($customer_data['pass_start_date']);
             unset($customer_data['pass_expiry_date']);
             unset($customer_data['pass_type']);
@@ -4545,6 +4560,7 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass_sessions_monthly_total']);
             unset($customer_data['pass_sessions_monthly_used']);
             unset($customer_data['pass_order_id']);
+            unset($customer_data['pass_corporate']);
             $update_header = true;
         }
         if(!empty($update_header) || $rel_banner_shown){
@@ -4737,6 +4753,7 @@ if (!function_exists(('setPassToToken'))){
 
         if(!empty($passOrder)){
             $data['pass']=1;
+            $data['pass_id']= $passOrder['pass_id'];
             $data['pass_start_date']=(!empty($passOrder['start_date']))?strtotime($passOrder['start_date']):null;
             $data['pass_expiry_date']=(!empty($passOrder['end_date']))?strtotime($passOrder['end_date']):null;
             $data['pass_type']=$passOrder['pass']['pass_type'];
@@ -4752,8 +4769,29 @@ if (!function_exists(('setPassToToken'))){
                 $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
                 $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
             }
+            if(!empty($passOrder['pass']['corporate'])){
+                $data['pass_corporate'] = $passOrder['pass']['corporate'];
+            }
         }
     }
+}
+
+if (!function_exists('isRequestFromApp')) {
+
+    function isRequestFromApp(){        
+
+        return checkAppVersionFromHeader(['ios'=>'0', 'android'=>0]);
+    }
+
+}
+
+if (!function_exists('getLineBreaker')) {
+
+    function getLineBreaker(){        
+
+        return "\n";
+    }
+
 }
 
 ?>
