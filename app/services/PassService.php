@@ -1267,14 +1267,6 @@ class PassService {
                 $success_template['offer_success_msg'] = "Congratulations on receiving your instant cashback. You will receive full 100% cashback as FitCash in your Fitternity account on 1st December. Make the most of the cashback to upgrade your OnePass";
             }
 
-            if(!empty($order['diwali_mixed_reward'])){
-                $success_template['offer_success_msg'] = "Congratulations on your purchase. Your Fitaka Diwali Hamper will reach your inbox soon. Happy Fitwali Diwali";
-            }
-
-            if(!empty($order['fitbox_mixed_reward'])){
-                $success_template['offer_success_msg'] .= "\nCongratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -> My Profile-> Type in the delivery address\nYour handpicked healthy food hamper worth INR 2,500 will reach your doorstep by 7th December. Kindly feel free to reach out to us on +917400062849 for queries ";
-            }
-
             if(empty($brandingData['offer_success_msg'])){
                 unset($success_template['offer_success_msg']);
             }else{
@@ -1293,13 +1285,6 @@ class PassService {
             //     $item = $utilities->bullet()." ".$item;
             // }
             unset($success_template['info']['app_data']);
-            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
-                $success_template['subline'] .= 'Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
-            }
-
-            if(!empty($order['diwali_mixed_reward'])){
-                $success_template['subline'] .= "\nCongratulations on your purchase. Your Fitaka Diwali Hamper will reach your inbox soon. Happy Fitwali Diwali";
-            }
             
             $profile_completed = $this->utilities->checkOnepassProfileCompleted(null, $order['customer_id']);
 
@@ -1312,10 +1297,6 @@ class PassService {
                 $success_template['subline'] .= 'Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
             }
             
-            if(!empty($order['fitbox_mixed_reward'])){
-                $success_template['subline'] .= "\nCongratulations on purchasing your OnePass.\nWe request you to go to www.fitternity.com -> My Profile-> Type in the delivery address\nYour handpicked healthy food hamper worth INR 2,500 will reach your doorstep by 7th December. Kindly feel free to reach out to us on +917400062849 for queries ";
-            }
-
             if(!empty($brandingData['offer_success_msg'])){
                 $success_template['subline'] .= $brandingData['offer_success_msg'];
             }
@@ -1581,10 +1562,6 @@ class PassService {
             $hamper_data = $utilities->getVoucherDetail($pass_data);
             $mail->diwaliMixedReward($hamper_data);
             $sms->diwaliMixedReward($pass_data);
-        }
-
-        if( empty($data['membership_order_id']) && (!empty($data['fitbox_mixed_reward']))){
-            $sms->fitboxMixedReward($pass_data);
         }
 
         if(!empty($data['customer_city'])){
@@ -2619,14 +2596,11 @@ class PassService {
             if(!empty($data['pass'])){
                 $pass = $data['pass'];
 
-                if((!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['classes']) && in_array($pass['classes'], [30,45]))){
+                if((!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['duration'], [60,100])) || (!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && in_array($pass['duration'], [180,360]))){
 
                     if(empty($data['membership_order_id'])){
-                        // $rewardinfo['diwali_mixed_reward'] = true;
-                        // $rewardinfo['fitbox_mixed_reward'] = true;
-                        // $rewardinfo['vk_bag_reward'] = true;
-                        $rewardinfo['mv_bag_reward'] = true;
-                        // $rewardinfo['reward_ids'] = [79];
+                        $rewardinfo['mufm_kit_reward'] = true;
+                        $rewardinfo['reward_ids'] = [79];
                     }
                 }
 

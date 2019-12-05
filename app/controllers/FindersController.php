@@ -1407,96 +1407,32 @@ class FindersController extends \BaseController {
                     Log::info("Error while sorting ratecard");
 				}
 				
-                $vendor_stripe_line = "";
-				$pricemore = false;
-				
-				if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
-					
-					$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br>Last Few Hours Left!";
-					$response['show_timer'] = true;
-				
-				}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id'))){
-
-					$vendor_stripe_line = "LOWEST PRICES + HANDPICKED HEALTHY FOOD HAMPER WORTH INR 2,500 ON MEMBERSHIPS | OFFER ENDING SOON";
-					$response['vendor_stripe_data']['text'] = $vendor_stripe_line;
-				}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
-				// }else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) && !(isset($finder['flags']['monsoon_flash_discount_per']) &&  $finder['flags']['monsoon_flash_discount_per'] == 0) && isset($finder['flags']['monsoon_flash_discount']) && isset($finder['flags']['monsoon_flash_discount_per'])){
-					
-					$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code: FIT20 | Addnl 50% Cashback Via PayPal <br>Offer Ending Soon";
-
-					// foreach($response['finder']['services'] as &$service){
-					// 	foreach($service['serviceratecard'] as &$ratecard){
-					// 		if($ratecard['type'] == 'membership'){
-					// 			$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-					// 			if($price >= 8000){
-					// 				$pricemore = true;
-																	
-					// 				$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT <br> Last Few Hours Left";
-					// 			}
-					// 		}
-					// 	}
-					// 	if($pricemore){
-					// 		break;
-					// 	}
-					// }
-
-				}
-				// else{
-				// 	$vendor_stripe_line = "";
-				// 	foreach($response['finder']['services'] as &$service){
-				// 		foreach($service['serviceratecard'] as &$ratecard){
-				// 			if($ratecard['type'] == 'membership'){
-				// 				$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-				// 				if($price >= 8000){
-				// 					$pricemore = true;
-																	
-				// 					$vendor_stripe_line = "Get Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 With Your Purchase <br> Last Few Hours Left";
-				// 				}
-				// 			}
-				// 		}
-				// 		if($pricemore){
-				// 			break;
-				// 			}
-				// 	}
-				// }
-
                 if(empty($response['vendor_stripe_data']['text'])){
                     if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut'] )){
+
+						$vendor_stripe_line = "";
+						if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
+							$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br>Last Few Hours Left!";
+						}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id'))){
+							$vendor_stripe_line = "LOWEST PRICES + HANDPICKED HEALTHY FOOD HAMPER WORTH INR 2,500 ON MEMBERSHIPS | OFFER ENDING SOON";
+						}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
+							$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Code: DEC20 <br> 6-10 Dec";
+						}
 						
-						if(!empty($response['finder']['flags']['monsoon_campaign_pps']) && empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
-                            $response['vendor_stripe_data']	= [
-								
+						if(!empty($vendor_stripe_line)){
+							$response['vendor_stripe_data']	= [
 								'text1'=> $vendor_stripe_line,
-                                'text3'=>"",
-                                'background-color'=> "",
-                                'text_color'=> '$fff',
-                                'background'=> '#49bfb3'
-                            ];
-
-                            $response['show_timer'] = true;
-                        
-                        }else if(!empty($response['finder']['flags']['monsoon_campaign_pps'])){
-                            $response['vendor_stripe_data']	= [
-                            
-								'text1'=> $vendor_stripe_line,
-                                'text_color'=> '$fff',
-                            ];
-
-                            $response['show_timer'] = true;
-                        
-                        }else if(empty($response['finder']['flags']['monsoon_flash_discount_disabled'])){
-                            $response['vendor_stripe_data']	= [
-                            
-								'text1'=> $vendor_stripe_line,
-                                'text3'=>"",
-                                'background-color'=> "",
-                                'text_color'=> '$fff',
-                                'background'=> '#49bfb3'
-                            ];
-
-                            $response['show_timer'] = true;
-                        
-                        }
+								'text3'=>"",
+								'background-color'=> "",
+								'text_color'=> '$fff',
+								'background'=> '#49bfb3'
+							];
+	
+							$response['show_timer'] = true;
+						}else{
+							$response['vendor_stripe_data'] = "no-patti";
+						}
+						
                     }
 					
                 }else if(!empty($response['vendor_stripe_data']['text'])){
@@ -3949,53 +3885,7 @@ class FindersController extends \BaseController {
 	public function getFinderOneLiner($data) {
 
 		$line = null;
-		
-		$pricemore = false;
-		$android_line = "";
-		$ios_line = "";
-		$op_android_line = "";
-		$op_ios_line = "";
-		// if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !(isset($data['finder']['flags']['monsoon_flash_discount_per']) &&  $data['finder']['flags']['monsoon_flash_discount_per'] == 0)){
-					
-			foreach($data['finder']['services'] as &$service){
-				foreach($service['ratecard'] as &$ratecard){
-					if($ratecard['type'] == 'membership'){
-						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-						
-						if($this->device_type == 'android'){
-							
-							$android_line = "<u>Fit-astic Flash Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: FIT20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100 <br><br>- Get additional 50% cashback via PayPal on OnePass, Membership and Pay-Per-Session";
 	
-							$op_android_line = "<u>Fit-astic Flash Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: FIT20 <br><br>- Get additional 50% cashback via PayPal on OnePass, Membership and Pay-Per-Session";
-							
-						}else{
-							$ios_line = "\nFit-astic Flash Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: FIT20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100 \n\n- Get additional 50% cashback via PayPal on OnePass, Membership and Pay-Per-Session";
-		
-							$op_ios_line = "\nFit-astic Flash Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: FIT20 \n\n- Get additional 50% cashback via PayPal on OnePass, Membership and Pay-Per-Session";
-						}
-	
-						// if($price >= 8000){
-						// 	$pricemore = true;
-						// 	if($this->device_type == 'android'){
-						// 		$android_line = "<u>Fit-astic Flash Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
-		
-						// 		$op_android_line = "<u>Fit-astic Flash Sale</u><br><br>Offer Ending Soon <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT ";
-						// 	}else{	
-						// 		$ios_line = "\nFit-astic Flash Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
-		
-						// 		$op_ios_line = "\nFit-astic Flash Sale\n\nOffer Ending Soon \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500| Use Code: VKFIT";
-						// 	}
-							
-						// 	break;
-						// }
-					}
-				}
-				if($pricemore){
-					break;
-				}
-			}
-		// }
-		
 		$m_pricemore = false;
 		$m_android_line = "";
 		$m_ios_line = "";
@@ -4042,58 +3932,31 @@ class FindersController extends \BaseController {
 				$line = "\nMembership Plus - ".ucwords($data['finder']['title'])."\n\nLowest price Multifit membership + 6 Months All Access OnePass";
             }
 		}else if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
-			if(empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && !empty($data['finder']['flags']['monsoon_campaign_pps'])){
 
-            
-				if($this->device_type == 'android'){
-					$line = $android_line;
-				}else{	
-					$line = $ios_line;
-				}
-				
-			}else if(empty($data['finder']['flags']['monsoon_flash_discount_disabled'])){
-	
-				if($this->device_type == 'android'){
-					$line = $android_line;
-				}else{	
-					$line = $ios_line;
-				}
-			
-			}else if(!empty($data['finder']['flags']['monsoon_campaign_pps'])){
-	
-				if($this->device_type == 'android'){
-					$line = $android_line;
-				}else{	
-					$line = $ios_line;
-				}
-				
+			if($this->device_type == 'android'){				
+				$line = "<u>December Steal Sale</u><br><br>6-10 Dec <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: DEC20 <br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
+			}else{
+				$line = "\nDecember Steal Sale\n\n6-10 Dec \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: DEC20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 			}
-
-			// if(!(isset($data['finder']['flags']['monsoon_flash_discount']) && isset($data['finder']['flags']['monsoon_flash_discount_per'])) || (isset($data['finder']['flags']['monsoon_flash_discount_per']) && $data['finder']['flags']['monsoon_flash_discount_per'] == 0)){
-			// 	if($this->device_type == 'android'){
-			// 		$line = "";
-			// 	}else{	
-			// 		$line = "";
-			// 	}
-			// }
 		}
         
-		
 		$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 		if(!empty($onepassHoldCustomer) && $onepassHoldCustomer){
 			if((!empty($data['finder']['brand_id']) && $data['finder']['brand_id'] != 88) || (!empty($data['finder']['brand_id']) && $data['finder']['brand_id']!=135) || empty($data['finder']['brand_id'])){
-				foreach($data['finder']['services'] as &$service){
-					foreach($service['ratecard'] as &$ratecard){
-						if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
-							$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-							if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
-								if($this->device_type == 'android'){
-									$line = $op_android_line;
-								}else{	
-									$line = $op_ios_line;
-								}
+				if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
+					foreach($data['finder']['services'] as &$service){
+						foreach($service['ratecard'] as &$ratecard){
+							if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
+								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+								if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
+									if($this->device_type == 'android'){
+										$line = "<u>December Steal Sale</u><br><br>6-10 Dec <br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: DEC20";
+									}else{
+										$line = "\nDecember Steal Sale\n\n6-10 Dec \n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: DEC20";
+									}
 								
-								break;
+									break;
+								}
 							}
 						}
 					}
@@ -8654,23 +8517,13 @@ class FindersController extends \BaseController {
 						}
 					}else if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [135])) {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
-					}else if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
-
-						if(!empty($finder['flags']['monsoon_flash_discount_disabled']) ){
-							// if(!empty($finder['flags']['monsoon_flash_discount_disabled']) || (isset($finder['flags']['monsoon_flash_discount_per']) && $finder['flags']['monsoon_flash_discount_per'] == 0) || !(isset($finder['flags']['monsoon_flash_discount']) && isset($finder['flags']['monsoon_flash_discount_per']))){
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."");
-						}
-						else{
-							// if($price >= 8000){
-							// 	$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Special Edition Virat Kohli-Puma Gym Bag Worth INR 2500 | Use Code: VKFIT \n\nLast Few Hours Left");
-							// }
-							// else{
-								$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: FIT20\nOffer Ending Soon");
-							// }
+					}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
+						if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20 \n\n6-10 Dec");
 						}
 					}
                 }else{
-                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']])."\n\n Fit-astic Flash Sale \n\n Get 50% Off On Workout Sessions. Use Code: PPS");
+                    $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
 					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // }
