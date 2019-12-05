@@ -4789,7 +4789,7 @@ if (!function_exists('getLineBreaker')) {
 
     function getLineBreaker(){        
 
-        return '\n';
+        return "\n";
     }
 
 }
