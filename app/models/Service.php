@@ -424,8 +424,13 @@ class Service extends \Basemodel{
 						'duration' => $pass['duration'],
 						'duration_text' => $pass['duration_text'],
 						'total_sessions' => $pass['total_sessions'],
-						'total_sessions_text' => $pass['total_sessions_text']
+						'total_sessions_text' => $pass['total_sessions_text'],
 					];
+
+					if($pass['pass_type']=='hybrid'){
+						$value['pass_details']['monthly_total_sessions_text'] = $pass['monthly_total_sessions_text'];
+					}
+					
 					if((!empty($value['combo_pass_id'])) && (!empty($value['flags']['onepass_attachment_type']) && ($value['flags']['onepass_attachment_type']=='membership_plus')) ) {
 						$value['membership_plus'] = true;
 						$value['title'] = 'Membership Plus';

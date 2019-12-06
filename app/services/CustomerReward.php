@@ -217,6 +217,9 @@ Class CustomerReward {
 
                                         $reward_data_flag = true;
 
+                                        if(in_array( 'Breather T-Shirt', $reward['content'])){
+                                            $reward['tshirt_include'] = true;
+                                        }
                                         break;
                                     }
                                 }
@@ -1061,13 +1064,13 @@ Class CustomerReward {
 
                 switch ($myreward->reward_type) {
 
-                    case 'fitness_kit': $message = "Thank you! Your Fitness Kit would be delivered in next 7 to 10 working days.";break;
-                    case 'healthy_snacks': $message = "Thank you! Your Healthy Snacks Hamper would be delivered in next 7 to 10 working days.";break;
+                    case 'fitness_kit': $message = "Thank you! Your Fitness Kit would be delivered in next 10 to 12 working days. In case of any query you can call us on 022-61094444 or email us on support@fitternity.com";break;
+                    case 'healthy_snacks': $message = "Thank you! Your Healthy Snacks Hamper would be delivered in next 10 to 12 working days. In case of any query you can call us on 022-61094444 or email us on support@fitternity.com";break;
                     case 'personal_trainer_at_studio': $message = "Thank you! We have notified ".$myreward->title."about your Personal training sessions.";break;
                     case 'personal_trainer_at_home': $message = "Your Personal Training at Home request has being processed. We will reach out to you shortly with trainer details to schedule your first session.";break;
                     case 'swimming_sessions' :
                     case 'sessions' : $message = "Congratulations! You have successfully claimed your reward - ".$myreward->title." <br/>Your coupon code vouchers (worth Rs. ".$myreward['payload']['amount'].") are as follows. (also shared via sms/email)";break;
-                    default: $message = "Reward Claimed Successfull";break;
+                    default: $message = "Thank you for claiming your Reward. Our team would reach out to you in next 48 hours to schedule a Diet Session. If any queries you can reach out to us on 022-61094444.";break;
                 }
 
                 $result['status'] = 200;
