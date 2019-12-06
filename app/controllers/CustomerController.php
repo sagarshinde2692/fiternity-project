@@ -10348,7 +10348,7 @@ class CustomerController extends \BaseController {
 				$loyalty['cashback_type'] = $order['finder_flags']['cashback_type'];
 			}
 			
-			$this->checkForFittenityGrid($loyalty); 
+			$this->utilities->checkForFittenityGrid($loyalty); 
 			return $loyalty;
 		}
 		return null;
