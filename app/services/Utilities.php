@@ -7405,6 +7405,8 @@ Class Utilities {
                             !empty($customer['loyalty']) 
                             && 
                             empty($customer['loyalty']['reward_type'])
+                            && 
+                            empty($customer['loyalty']['brand_loyalty'])
                         ) 
                         ||
                         (
