@@ -11061,21 +11061,21 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 27% Off, Use Code: STEAL. Limited Slots";
+                            $return_arr['text'] = "Flat 30% Off + Addnl 27% Off".getLineBreaker()."Use Code: STEAL. Limited Slots";
                             $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 15% Off, Use Code: STEAL";
+                            $return_arr['text'] = "Flat 20% Off + Addnl 14% Off".getLineBreaker()."Use Code: STEAL";
                             $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'], [180, 360])){
                             
                             if(!empty($pass['duration']) && in_array($pass['duration'], [180])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 15% Off, Use Code: STEAL ".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 25% Off + Addnl 13% Off, Use Code: STEAL ".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [360])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 11% Off, Use Code: STEAL ".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 25% Off + Addnl 9% Off, Use Code: STEAL ".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }
                             
                             $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500 | 6-10 Dec";
@@ -11089,12 +11089,12 @@ Class Utilities {
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "19% Off. Limited Slots";
+                            $return_arr['text'] = "Flat 19% Off. Limited Slots";
                             $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "22% Off. Limited Slots";
+                            $return_arr['text'] = "Flat 22% Off. Limited Slots";
                             $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
                         }
 
@@ -11140,21 +11140,21 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 27% Off, Use Code: STEAL. Limited Slots";
+                            $return_arr['text'] = "Flat 15% Off + Addnl 28% Off".getLineBreaker()."Use Code: STEAL. Limited Slots";
                             $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 15% Off, Use Code: STEAL";
+                            $return_arr['text'] = "Flat 15% Off + Addnl 14% Off".getLineBreaker()."Use Code: STEAL";
                             $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'], [180, 360])){
                             
                             if(!empty($pass['duration']) && in_array($pass['duration'], [180])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 15% Off, Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 20% Off + Addnl 12% Off".getLineBreaker()."Use Code: STEAL. Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [360])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 11% Off, Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 20% Off + Addnl 12% Of".getLineBreaker()." Use Code: STEAL. Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }
                             
                             $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500 | 6-10 Dec";
@@ -11168,21 +11168,21 @@ Class Utilities {
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "19% Off. Limited Slots";
+                            $return_arr['text'] = "Flat 19% Off. Limited Slots";
                             $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "22% Off. Limited Slots";
+                            $return_arr['text'] = "Flat 22% Off. Limited Slots";
                             $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
 
                             if(!empty($pass['duration']) && in_array($pass['duration'], [60])){
-                                $return_arr['text'] = "27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [100])){
-                                $return_arr['text'] = "27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }
 
                             $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
@@ -11222,21 +11222,21 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 25% Off, Use Code: STEAL. Limited Slots";
+                            $return_arr['text'] = "Flat 30% Off + Addnl 21% Off".getLineBreaker()."Use Code: STEAL. Limited Slots";
                             $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 20% Off, Use Code: STEAL";
+                            $return_arr['text'] = "Flat 35% Off + Addnl 20% Off".getLineBreaker()."Use Code: STEAL";
                             $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'], [180, 360])){
                             
                             if(!empty($pass['duration']) && in_array($pass['duration'], [180])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 20% Off, Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 35% Off + Addnl 23% Off".getLineBreaker()."Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [360])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 17% Off, Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 35% Off + Addnl 16% Off".getLineBreaker()."Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }
                             
                             $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500 | 6-10 Dec";
@@ -11250,21 +11250,21 @@ Class Utilities {
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "19% Off. Limited Slots";
+                            $return_arr['text'] = "Flat 19% Off. Limited Slots";
                             $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "21% Off. Limited Slots";
+                            $return_arr['text'] = "Flat 21% Off. Limited Slots";
                             $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
 
                             if(!empty($pass['duration']) && in_array($pass['duration'], [60])){
-                                $return_arr['text'] = "27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [100])){
-                                $return_arr['text'] = "28% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 28% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
                             }
 
                             $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
