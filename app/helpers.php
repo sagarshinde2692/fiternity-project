@@ -4806,7 +4806,7 @@ if(!function_exists('get_masterdata_from_cache')){
         }
         
         return $city_cache;
-
+    }
 }
 
 ?>
