@@ -4791,6 +4791,21 @@ if (!function_exists('getLineBreaker')) {
 
         return "\n";
     }
+}
+
+if(!function_exists('get_masterdata_from_cache')){
+
+    function get_masterdata_from_cache($slug){
+
+        $city_cache = Cache::tags('masterdata')->has('city-'.$slug) ? Cache::tags('masterdata')->get('city-'.$slug) : '';
+
+        if(!$city_cache){
+            $city_data = City::where('slug',$slug)->first();
+            Cache::tags('masterdata')->put('city-'.$slug,$city_data,1440);
+            $city_cache = Cache::tags('masterdata')->get('city-'.$slug);
+        }
+        
+        return $city_cache;
 
 }
 

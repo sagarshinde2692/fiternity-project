@@ -2611,4 +2611,25 @@ class PassService {
             Log::info('Error : '.$e->getMessage());
         }
     }
+
+    public function preProcessCityData($data){
+        if(!empty($data['city']) && !is_array($data['city'])){
+
+            $cityData = get_masterdata_from_cache(getmy_city($data['city']));
+
+        }elseif (!empty($data['customer_city']) && !is_array($data['customer_city'])) {
+
+            $cityData = get_masterdata_from_cache(getmy_city($data['customer_city']));
+
+        }
+
+        if($cityData){
+            $data['finder_city'] = $cityData['slug'];
+            $data['city_id'] = $cityData['_id'];
+            $data['city_name'] = $cityData['slug'];
+            $data['city_slug'] = $cityData['slug'];
+        }
+
+        return $data;
+    }
 }
