@@ -9,7 +9,7 @@ $black_pass = 'https://b.fitn.in/passes/cards/onepass-black.png';
 return [
     'price_upper_limit' => 1001,
     'sodexo_price_upper_limit' => 751,
-    'onepass_lite_price_upper_limit' => 300,
+    'onepass_lite_price_upper_limit' => 301,
     'list' => [
         'title'=>'ONEPASS',
         'passes' => [
