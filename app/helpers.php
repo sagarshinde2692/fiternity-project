@@ -4547,7 +4547,7 @@ if (!function_exists('setNewToken')) {
             }
 
             if(!empty($pass['pass']['lite'])){
-                $pass_data['lite'] = $pass['pass']['lite'];
+                $pass_data['pass_lite'] = $pass['pass']['lite'];
             }
 
             $customer_data = array_merge($customer_data, $pass_data);
@@ -4566,7 +4566,7 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass_sessions_monthly_used']);
             unset($customer_data['pass_order_id']);
             unset($customer_data['pass_corporate']);
-            unset($customer_data['lite']);
+            unset($customer_data['pass_lite']);
             $update_header = true;
         }
         if(!empty($update_header) || $rel_banner_shown){
@@ -4780,7 +4780,7 @@ if (!function_exists(('setPassToToken'))){
             }
 
             if(!empty($passOrder['lite'])){
-                $data['lite'] = $passOrder['lite'];
+                $data['pass_lite'] = $passOrder['lite'];
             }
         }
     }
