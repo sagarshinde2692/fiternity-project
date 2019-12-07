@@ -4545,6 +4545,11 @@ if (!function_exists('setNewToken')) {
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
                 $pass_data['pass_sessions_monthly_used'] = (!empty($pass['monthly_total_sessions_used']))?$pass['monthly_total_sessions_used']:0;
             }
+
+            if(!empty($pass['pass']['lite'])){
+                $pass_data['lite'] = $pass['pass']['lite'];
+            }
+
             $customer_data = array_merge($customer_data, $pass_data);
             $update_header = true;
         }else if(empty($pass)){
@@ -4561,6 +4566,7 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass_sessions_monthly_used']);
             unset($customer_data['pass_order_id']);
             unset($customer_data['pass_corporate']);
+            unset($customer_data['lite']);
             $update_header = true;
         }
         if(!empty($update_header) || $rel_banner_shown){
@@ -4771,6 +4777,10 @@ if (!function_exists(('setPassToToken'))){
             }
             if(!empty($passOrder['pass']['corporate'])){
                 $data['pass_corporate'] = $passOrder['pass']['corporate'];
+            }
+
+            if(!empty($passOrder['lite'])){
+                $data['lite'] = $passOrder['lite'];
             }
         }
     }
