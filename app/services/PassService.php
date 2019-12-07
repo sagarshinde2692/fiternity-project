@@ -818,14 +818,23 @@ class PassService {
         if(!empty($passOrder)) {
             $passType = $passOrder['pass']['pass_type'];
 
+            if(!empty($passOrder['pass']['lite'])){
+                $upper_amount = Config::get('pass.onepass_lite_price_upper_limit');
+            }
             // $profile_completed = !empty($fromService) ? $this->utilities->checkOnepassProfileCompleted($customer): true;
             // Log::info('pass orders:::::::::::::::::', [$amount, $passOrder, $profile_completed]);
         }
 
         $finder = null;
         if(!empty($finderId)) {
+            $finder_onepass_flag = 'flags.not_available_on_onepass';
+
+            if(!empty($passOrder['pass']['lite'])){
+                $finder_onepass_flag = 'flags.not_available_on_onepass_lite';
+            }
+            
             Finder::$withoutAppends = true;
-            $finder = Finder::active()->where('_id', $finderId)->where('flags.not_available_on_onepass', '!=', true)->first();
+            $finder = Finder::active()->where('_id', $finderId)->where($finder_onepass_flag, '!=', true)->first();
             
             if(
                 empty($finder) 
