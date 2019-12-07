@@ -42,6 +42,11 @@ return [
                     'header' => 'Onepass Red city_name',
                     'description' => 'description of red pass',
                     'button_text' => 'buy'
+                ],
+                'offerings_lite' => [
+                    'header' => 'ONEPASS Lite UNLIMITED USAGE PASS',
+                    'text' => '(Limited Access)',
+                    'ratecards' => []
                 ]
             ],
             [
@@ -70,6 +75,11 @@ return [
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
 
+                ],
+                'offerings_lite' => [
+                    'header' => 'ONEPASS Lite UNLIMITED USAGE PASS',
+                    'text' => '(Limited Access)',
+                    'ratecards' => []
                 ]
             ]
         ],
@@ -111,6 +121,12 @@ return [
                     'header' => 'Onepass Red city_name',
                     'description' => 'description of red pass',
                     'button_text' => 'buy'
+                ],
+                "offerings_lite" => [
+                    'text' => (json_decode('"'."\u2713".'"')."OnePassLite Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
+                    'button_text' => 'Checkout Gyms/Studios',
+                    "onepass_lite" => true,
+                    'ratecards' => []
                 ]
             ],
             [
@@ -146,6 +162,12 @@ return [
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
 
+                ],
+                "offerings_lite" => [
+                    'text' => (json_decode('"'."\u2713".'"')."OnePassLite Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
+                    'button_text' => 'Checkout Gyms/Studios',
+                    "onepass_lite" => true,
+                    'ratecards' => []
                 ]
             ]
         ],

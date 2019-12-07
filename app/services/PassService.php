@@ -31,7 +31,7 @@ class PassService {
         $this->device_id = !empty(Request::header('Device-Id'))? Request::header('Device-Id'): null;
     }
 
-    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null, $source=null){
+    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null, $source=null, $include_onepass_lite_web=null){
         
         $utilities = new Utilities();
 
@@ -68,7 +68,7 @@ class PassService {
             $response['app_passes'][0]['header'] = $response['app_passes'][0]['header']. " LOCAL";
             unset($response['app_passes'][1]);
         }
-        else if(!empty($city)){
+        else if(false && !empty($city)){
             $local_pass_count =  Pass::where('status', '1')->where('pass_category', 'local')->where('local_cities.city_name', $city)->count();
             Log::info('localpass count::::', [$local_pass_count, $city]);
 
@@ -110,6 +110,10 @@ class PassService {
             if(!empty($city)) {
                 $city = getmy_city($city);
                 $passList = $passList->where('cities', $city);
+            }
+
+            if(!checkAppVersionFromHeader(['ios'=>'5.2.8', 'android'=> "5.33"]) && empty($include_onepass_lite_web)){
+                $passList->where('lite', null);
             }
             $passList = $passList->orderBy('duration')->get();
         }
@@ -177,25 +181,23 @@ class PassService {
             $passDetails['price'] = 'Rs. '.$pass['price'];
             $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
             if(($pass['pass_type']=='red') || ($pass['pass_type']=='hybrid' && $pass['branding']=='red')) {
-                if(!empty($device) && in_array($device, ['android', 'ios'])) {
-                    $response['app_passes'][0]['offerings']['ratecards'][] = $passDetails;
-                }
-                else {
-                    $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
-                }
+
+                $this->formatPassOffering($response, $pass, $passDetails, $device, 0);
+
             } else{
-                if(!empty($device) && in_array($device, ['android', 'ios'])) {
-                    $response['app_passes'][1]['offerings']['ratecards'][] = $passDetails;
-                }
-                else {
-                    $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
-                }
+                
+                $this->formatPassOffering($response, $pass, $passDetails, $device, 1);
             }
         }
+
+        $this->formatPassListingWithOnePassLite($response, $include_onepass_lite_web);
+        
         if(!empty($device) && in_array($device, ['android', 'ios'])) {
             $response['passes'] = $response['app_passes'];
         }
         unset($response['app_passes']);
+        unset($response['passes'][0]['offerings_lite']);
+        unset($response['passes'][1]['offerings_lite']);
 
         $agrs1 = array('city' => $city);
         $brandingData1 = $utilities->getPassBranding($agrs1);
@@ -2631,5 +2633,58 @@ class PassService {
         }
 
         return $data;
+    }
+
+    public function formatPassListingWithOnePassLite(&$response, $include_onepass_lite_web){
+
+        if(checkAppVersionFromHeader(['ios'=>'5.2.8', 'android'=> "5.33"])){
+            $this->formatOfferingOnePassLite('app_passes', 0, $response);
+            $this->formatOfferingOnePassLite('app_passes', 1, $response);
+        }
+        else if(!empty($include_onepass_lite_web)){
+            $this->formatOfferingOnePassLite('passes', 0, $response);
+            $this->formatOfferingOnePassLite('passes', 1, $response);
+        }
+    }
+
+    public function formatOfferingOnePassLite($key, $index, &$response){
+
+        if(!empty($response[$key][$index]['offerings_lite'])){
+            $response[$key][$index]['offerings'] = [
+                $response[$key][$index]['offerings_lite'],
+                $response[$key][$index]['offerings']
+            ];
+        }else {
+            $response[$key][$index]['offerings'] = [
+                $response[$key][$index]['offerings']
+            ];
+        }
+
+    }
+
+    public function formatPassOffering(&$response, $pass, $passDetails, $device, $key){
+
+        if(!empty($device) && in_array($device, ['android', 'ios'])) {
+            if(checkAppVersionFromHeader(['ios'=>'5.2.8', 'android'=> "5.33"])){
+                if(!empty($pass['lite'])){
+                    $response['app_passes'][$key]['offerings_lite']['ratecards'][] = $passDetails;
+                }
+                else {
+                    $response['app_passes'][$key]['offerings']['ratecards'][] = $passDetails;
+                }
+            }
+            else {
+                $response['app_passes'][$key]['offerings']['ratecards'][] = $passDetails;
+            }
+        }
+        else {
+            if(!empty($pass['lite'])){
+                $response['passes'][$key]['offerings_lite']['ratecards'][] = $passDetails;
+            }
+            else {
+                $response['passes'][$key]['offerings']['ratecards'][] = $passDetails;
+            }
+        }
+
     }
 }

@@ -28,7 +28,7 @@ class PassController extends \BaseController {
         $category = null;
         $city = null;
         $source = null;
-
+        $include_onepass_lite_web= null;
         if(!empty($input['category'])){
             $category = $input['category'];
         }
@@ -45,7 +45,10 @@ class PassController extends \BaseController {
             $city = 'mumbai';
         }
 
-        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source);
+        if(!empty($input['include_onepass_lite_web'])) {
+            $include_onepass_lite_web = true;
+        }
+        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source, $include_onepass_lite_web);
         if(empty($passes)) {
             return [
                 "status" => 400,

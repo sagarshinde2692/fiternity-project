@@ -4821,4 +4821,17 @@ if (!function_exists(('newFitsquadCompatabilityVersion'))){
         return true;
     }
 }
+
+if (!function_exists(('onePassLiteAppVersion'))){
+    function onePassLiteAppVersion(){
+        $app_version = Request::header('App-Version');
+        $device_type = Request::header('Device-Type');
+
+        if(!empty($device_type) && !empty($app_version) && (($device_type=='android' && $app_version <= '5.32') || ($device_type=='ios' && $app_version <= '5.2.8'))){
+            return false;
+        }
+
+        return true;
+    }
+}
 ?>
