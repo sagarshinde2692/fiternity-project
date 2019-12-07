@@ -44,7 +44,9 @@ return [
                     'button_text' => 'buy'
                 ],
                 'offerings_lite' => [
-                    'header' => 'ONEPASS Lite UNLIMITED USAGE PASS',
+                    "image" => "",
+                    'header' => '<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.',
+                    "onepass_lite" => true,
                     'text' => '(Limited Access)',
                     'ratecards' => []
                 ]
@@ -77,7 +79,9 @@ return [
 
                 ],
                 'offerings_lite' => [
-                    'header' => 'ONEPASS Lite UNLIMITED USAGE PASS',
+                    "image" => "",
+                    'header' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
+                    "onepass_lite" => true,
                     'text' => '(Limited Access)',
                     'ratecards' => []
                 ]
@@ -123,7 +127,8 @@ return [
                     'button_text' => 'buy'
                 ],
                 "offerings_lite" => [
-                    'text' => (json_decode('"'."\u2713".'"')."OnePassLite Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
+                    "image" => "",
+                    'text' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
                     'button_text' => 'Checkout Gyms/Studios',
                     "onepass_lite" => true,
                     'ratecards' => []
@@ -164,7 +169,8 @@ return [
 
                 ],
                 "offerings_lite" => [
-                    'text' => (json_decode('"'."\u2713".'"')."OnePassLite Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
+                    "image" => "",
+                    'text' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
                     'button_text' => 'Checkout Gyms/Studios',
                     "onepass_lite" => true,
                     'ratecards' => []
