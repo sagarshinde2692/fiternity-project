@@ -2662,27 +2662,27 @@ class PassService {
 
     }
 
-    public function formatPassOffering(&$response, $pass, $passDetails, $device, $key){
+    public function formatPassOffering(&$response, $pass, $passDetails, $device, $index){
 
         if(!empty($device) && in_array($device, ['android', 'ios'])) {
             if(checkAppVersionFromHeader(['ios'=>'5.2.8', 'android'=> "5.33"])){
                 if(!empty($pass['lite'])){
-                    $response['app_passes'][$key]['offerings_lite']['ratecards'][] = $passDetails;
+                    $response['app_passes'][$index]['offerings_lite']['ratecards'][] = $passDetails;
                 }
                 else {
-                    $response['app_passes'][$key]['offerings']['ratecards'][] = $passDetails;
+                    $response['app_passes'][$index]['offerings']['ratecards'][] = $passDetails;
                 }
             }
             else {
-                $response['app_passes'][$key]['offerings']['ratecards'][] = $passDetails;
+                $response['app_passes'][$index]['offerings']['ratecards'][] = $passDetails;
             }
         }
         else {
             if(!empty($pass['lite'])){
-                $response['passes'][$key]['offerings_lite']['ratecards'][] = $passDetails;
+                $response['passes'][$index]['offerings_lite']['ratecards'][] = $passDetails;
             }
             else {
-                $response['passes'][$key]['offerings']['ratecards'][] = $passDetails;
+                $response['passes'][$index]['offerings']['ratecards'][] = $passDetails;
             }
         }
 

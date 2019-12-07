@@ -48,6 +48,7 @@ class PassController extends \BaseController {
         if(!empty($input['include_onepass_lite_web'])) {
             $include_onepass_lite_web = true;
         }
+        
         $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source, $include_onepass_lite_web);
         if(empty($passes)) {
             return [
