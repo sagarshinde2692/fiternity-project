@@ -2658,7 +2658,7 @@ class PassService {
 
     public function formatOfferingOnePassLite($key, $index, &$response){
 
-        if(!empty($response[$key][$index]['offerings_lite'])){
+        if(!empty($response[$key][$index]['offerings_lite']['ratecards'])){
             $response[$key][$index]['offerings'] = [
                 $response[$key][$index]['offerings_lite'],
                 $response[$key][$index]['offerings']
